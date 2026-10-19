@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>i18n 翻译校对编辑器</title>
+<style>
+  :root {
+    --bg: #f5f6f8; --panel: #fff; --border: #d9dce1; --text: #24292f;
+    --muted: #6e7781; --error: #cf222e; --warn: #9a6700; --info: #57606a;
+    --accent: #0969da; --dirty: #fff8c5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font: 13px/1.5 "Microsoft YaHei", system-ui, sans-serif; background: var(--bg); color: var(--text); }
+  #topbar {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    padding: 8px 14px; background: var(--panel); border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 5;
+  }
+  #topbar h1 { font-size: 15px; font-weight: 600; white-space: nowrap; }
+  #stats { display: flex; gap: 6px; font-size: 12px; }
+  .pill { padding: 1px 8px; border-radius: 10px; background: #eef1f4; border: 1px solid var(--border); }
+  .pill.err { color: var(--error); background: #ffebe9; border-color: #ff818266; }
+  .pill.warn { color: var(--warn); background: #fff8c5; border-color: #d4a72c66; }
+  .pill.info { color: var(--info); background: #eaeef2; }
+  .pill.ok { color: #1a7f37; background: #dafbe1; }
+  #search { flex: 1; min-width: 180px; max-width: 340px; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; }
+  .chips { display: flex; gap: 4px; }
+  .chip {
+    padding: 3px 10px; border-radius: 12px; border: 1px solid var(--border);
+    background: #fff; cursor: pointer; font-size: 12px; user-select: none;
+  }
+  .chip.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  #save-btn {
+    padding: 6px 18px; border: none; border-radius: 6px; background: var(--accent);
+    color: #fff; font-size: 13px; cursor: pointer; font-weight: 600;
+  }
+  #save-btn:disabled { background: #9bb7d6; cursor: default; }
+  #save-msg { font-size: 12px; color: var(--muted); }
+  #dirty-n { font-size: 12px; color: var(--warn); font-weight: 600; }
+  #main { display: grid; grid-template-columns: 420px 1fr; height: calc(100vh - 52px); }
+  #list-pane { border-right: 1px solid var(--border); background: var(--panel); overflow-y: auto; }
+  .row {
+    display: flex; gap: 6px; align-items: baseline; padding: 5px 10px;
+    border-bottom: 1px solid #f0f1f3; cursor: pointer;
+  }
+  .row:hover { background: #f6f8fa; }
+  .row.sel { background: #ddf4ff; }
+  .row.dirty { background: var(--dirty); }
+  .row .key { font-family: Consolas, monospace; font-size: 12px; flex-shrink: 0; }
+  .row .prev { color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+  .row .prev.empty { font-style: italic; }
+  .badges { display: inline-flex; gap: 2px; flex-shrink: 0; }
+  .b { font-size: 10px; padding: 0 5px; border-radius: 8px; color: #fff; font-weight: 700; }
+  .b.err { background: var(--error); }
+  .b.warn { background: #bf8700; }
+  .b.info { background: #8c959f; }
+  #detail-pane { padding: 14px 18px; overflow-y: auto; background: var(--bg); }
+  #detail-pane .empty-hint { color: var(--muted); margin-top: 80px; text-align: center; font-size: 14px; }
+  #dk { font-family: Consolas, monospace; font-size: 13px; color: var(--muted); margin-bottom: 8px; word-break: break-all; }
+  #dflags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+  .flag { font-size: 11px; padding: 2px 8px; border-radius: 4px; }
+  .flag.err { background: #ffebe9; color: var(--error); border: 1px solid #ff818266; }
+  .flag.warn { background: #fff8c5; color: var(--warn); border: 1px solid #d4a72c66; }
+  .flag.info { background: #eaeef2; color: var(--info); border: 1px solid #d0d7de; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-weight: 600; margin-bottom: 4px; font-size: 13px; }
+  .field label .hint { font-weight: 400; color: var(--muted); font-size: 12px; margin-left: 8px; }
+  textarea {
+    width: 100%; min-height: 88px; padding: 8px 10px; border: 1px solid var(--border);
+    border-radius: 6px; font: 13px/1.6 Consolas, "Microsoft YaHei", monospace;
+    resize: vertical; background: #fff; color: var(--text);
+  }
+  textarea:focus { outline: 2px solid #0969da55; }
+  textarea.missing { border-color: var(--error); background: #fffbef; }
+  .ph-note { font-size: 12px; margin-top: 4px; }
+  .ph-note.bad { color: var(--error); }
+  .ph-note.ok { color: var(--muted); }
+  #dbtns { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
+  #dbtns button, #next-btn {
+    padding: 5px 14px; border: 1px solid var(--border); border-radius: 6px;
+    background: #fff; cursor: pointer; font-size: 12px;
+  }
+  #dbtns button:hover, #next-btn:hover { background: #f6f8fa; }
+  #next-btn { margin-top: 10px; color: var(--accent); }
+  kbd { background: #eef1f4; border: 1px solid #d0d7de; border-radius: 3px; padding: 0 4px; font-size: 11px; }
+</style>
+</head>
+<body>
+<div id="topbar">
+  <h1>i18n 校对编辑器</h1>
+  <div id="stats"></div>
+  <input id="search" placeholder="搜索键名或文案… (Ctrl+F)">
+  <div class="chips" id="chips"></div>
+  <span id="dirty-n"></span>
+  <button id="save-btn" disabled>保存修改 (Ctrl+S)</button>
+  <span id="save-msg"></span>
+</div>
+<div id="main">
+  <div id="list-pane"></div>
+  <div id="detail-pane">
+    <div class="empty-hint">← 点击左侧键开始校对编辑<br><br>筛选默认"仅问题"，可切换到其他视图</div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+let L = null;             // 数据: {langs, issues, flags, stats}
+let orig = null;          // {key: {zh, en}} 初始值（用于重置）
+let cur = null;           // {key: {zh, en}} 当前暂存值
+let dirty = new Set();    // 已修改的键
+let selKey = null;
+let filter = "problem";   // 当前筛选
+let q = "";
+
+// ---------- 初始化 ----------
+async function load() {
+  const resp = await fetch("/api/data");
+  const data = await resp.json();
+  if (data.error) { alert(data.error); return; }
+  L = data;
+  orig = {}; cur = {};
+  for (const k of Object.keys(data.langs["zh-CN"])) {
+    orig[k] = { zh: data.langs["zh-CN"][k], en: data.langs.en[k] ?? "" };
+  }
+  for (const k of Object.keys(data.langs.en)) {
+    if (!orig[k]) orig[k] = { zh: data.langs["zh-CN"][k] ?? "", en: data.langs.en[k] };
+  }
+  for (const k of Object.keys(orig)) cur[k] = { ...orig[k] };
+  buildChips();
+  renderStats();
+  renderList();
+}
+function issueLevel(key) {
+  const flags = L.issues[key] || [];
+  if (flags.some(f => L.flags[f][0] === "error")) return 3;
+  if (flags.some(f => L.flags[f][0] === "warn")) return 2;
+  if (flags.length) return 1;
+  return 0;
+}
+function issueBadges(key) {
+  const flags = L.issues[key] || [];
+  const html = { error: "E", warn: "W", info: "I" };
+  const seen = new Set();
+  return flags.map(f => html[L.flags[f][0]]).filter(x => !seen.has(x) && seen.add(x))
+              .map(x => `<span class="b ${x === "E" ? "err" : x === "W" ? "warn" : "info"}">${x}</span>`).join("");
+}
+
+// ---------- 筛选与渲染 ----------
+const CHIP_DEFS = [
+  ["problem", "仅问题", "problem"],
+  ["all",     "全部",   "all"],
+  ["error",   "仅错误", "error"],
+  ["warn",    "仅警告", "warn"],
+  ["dead",    "死键",   "dead"],
+];
+function buildChips() {
+  $("chips").innerHTML = CHIP_DEFS.map(([id, label]) =>
+    `<span class="chip ${filter === id ? "on" : ""}" data-f="${id}">${label}</span>`).join("");
+  $("chips").onclick = (e) => {
+    const f = e.target.dataset.f;
+    if (!f) return;
+    filter = f;
+    document.querySelectorAll(".chip").forEach(c => c.classList.toggle("on", c.dataset.f === f));
+    renderList();
+  };
+}
+function matchFilter(key) {
+  if (filter === "dead") return (L.issues[key] || []).includes("dead");
+  if (filter === "all") return true;
+  if (filter === "error" || filter === "warn")
+    return (L.issues[key] || []).some(f => L.flags[f][0] === filter);
+  const lv = issueLevel(key);
+  if (filter === "problem") {
+    const flags = L.issues[key] || [];
+    // 仅排除“只有死键问题”的键；空文案+死键等组合问题仍需显示
+    return lv > 0 && !flags.every(f => f === "dead");
+  }
+  return true;
+}
+function matchQuery(key) {
+  if (!q) return true;
+  const zh = (cur[key]?.zh || "").toLowerCase();
+  const en = (cur[key]?.en || "").toLowerCase();
+  return key.toLowerCase().includes(q) || zh.includes(q) || en.includes(q);
+}
+function renderList() {
+  const pane = $("list-pane");
+  const keys = Object.keys(cur).filter(matchFilter).filter(matchQuery);
+  keys.sort((a, b) => (issueLevel(b) - issueLevel(a)) || a.localeCompare(b));
+  const frag = document.createDocumentFragment();
+  for (const k of keys) {
+    const div = document.createElement("div");
+    div.className = "row" + (k === selKey ? " sel" : "") + (dirty.has(k) ? " dirty" : "");
+    const prev = cur[k].zh || (cur[k].en ? "[" + cur[k].en + "]" : "");
+    div.innerHTML = `<span class="badges">${issueBadges(k)}</span>
+      <span class="key">${esc(k)}</span>
+      <span class="prev ${prev ? "" : "empty"}">${esc(prev || "(空)")}</span>`;
+    div.onclick = () => selectKey(k);
+    frag.appendChild(div);
+  }
+  pane.replaceChildren(frag);
+}
+function esc(s) {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+          .replace(/\n/g, "⏎");
+}
+
+// ---------- 右侧编辑 ----------
+function selectKey(k) {
+  selKey = k;
+  renderList();
+  const d = cur[k];
+  const flags = (L.issues[k] || []).map(f => L.flags[f]);
+  $("detail-pane").innerHTML = `
+    <div id="dk">${esc(k)}</div>
+    <div id="dflags">${flags.map(f =>
+      `<span class="flag ${f[0]}">${f[1]}</span>`).join("") || '<span class="flag info">正常</span>'}</div>
+    <div class="field"><label>zh-CN <span class="hint">简体中文</span></label>
+      <textarea id="ta-zh" class="${flags.some(f => f[1] === "en 有/zh 缺") ? "missing" : ""}"></textarea></div>
+    <div class="field"><label>en <span class="hint">English</span></label>
+      <textarea id="ta-en" class="${flags.some(f => f[1] === "zh 有/en 缺") ? "missing" : ""}"></textarea></div>
+    <div id="phnote"></div>
+    <div id="dbtns">
+      <button id="reset-btn">重置此键</button>
+      <button id="next-btn">下一问题 ↓</button>
+    </div>`;
+  $("ta-zh").value = d.zh;
+  $("ta-en").value = d.en;
+  $("ta-zh").oninput = () => onEdit("zh");
+  $("ta-en").oninput = () => onEdit("en");
+  $("reset-btn").onclick = () => {
+    cur[k] = { ...orig[k] };
+    dirty.delete(k);
+    $("ta-zh").value = cur[k].zh;
+    $("ta-en").value = cur[k].en;
+    updatePhNote();
+    renderDirty();
+    renderList();
+  };
+  $("next-btn").onclick = goNext;
+  updatePhNote();
+}
+function onEdit(lang) {
+  cur[selKey][lang] = $(`ta-${lang}`).value;
+  dirty.add(selKey);
+  updatePhNote();
+  renderDirty();
+  renderList();
+}
+function placeholders(text) {
+  const set = new Set();
+  let i = 0;
+  while (i < text.length) {
+    if (text[i] === "{") {
+      const j = text.indexOf("}", i + 1);
+      if (j < 0) break;
+      const inner = text.slice(i + 1, j);
+      set.add(inner ? inner.split("!")[0].split(":")[0] : "");
+      i = j + 1;
+    } else i++;
+  }
+  return set;
+}
+function updatePhNote() {
+  const zhPh = [...placeholders($("ta-zh").value)].sort();
+  const enPh = [...placeholders($("ta-en").value)].sort();
+  const same = JSON.stringify(zhPh) === JSON.stringify(enPh);
+  const note = $("phnote");
+  note.className = "ph-note " + (same ? "ok" : "bad");
+  note.innerHTML = same
+    ? `占位符: zh-CN {${zhPh.join("}, {")}} = en {${enPh.join("}, {")}} ✓`
+    : `⚠ 占位符不一致 — zh-CN {${zhPh.join("}, {")}} vs en {${enPh.join("}, {")}}`;
+}
+function goNext() {
+  const keys = Object.keys(cur).filter(matchFilter).filter(matchQuery)
+    .sort((a, b) => (issueLevel(b) - issueLevel(a)) || a.localeCompare(b));
+  const idx = keys.indexOf(selKey);
+  const next = keys[idx + 1] || keys[0];
+  if (next) selectKey(next);
+}
+
+// ---------- 保存 ----------
+function renderDirty() {
+  $("dirty-n").textContent = dirty.size ? `未保存 ${dirty.size} 处` : "";
+  $("save-btn").disabled = dirty.size === 0;
+}
+async function save() {
+  if (!dirty.size) return;
+  $("save-btn").disabled = true;
+  $("save-msg").textContent = "保存中…";
+  const payload = { "zh-CN": {}, en: {} };
+  for (const k of Object.keys(cur)) payload["zh-CN"][k] = cur[k].zh;
+  for (const k of Object.keys(cur)) payload.en[k] = cur[k].en;
+  try {
+    for (const lang of ["zh-CN", "en"]) {
+      const resp = await fetch("/api/save", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lang, data: payload[lang] }),
+      });
+      const r = await resp.json();
+      if (r.error) throw new Error(r.error);
+    }
+    dirty.clear();
+    orig = {}; cur = {};
+    for (const k of Object.keys(payload["zh-CN"])) orig[k] = { zh: payload["zh-CN"][k], en: payload.en[k] };
+    for (const k of Object.keys(payload.en)) {
+      if (!orig[k]) orig[k] = { zh: payload["zh-CN"][k] ?? "", en: payload.en[k] };
+    }
+    for (const k of Object.keys(orig)) cur[k] = { ...orig[k] };
+    const t = new Date().toLocaleTimeString();
+    $("save-msg").textContent = `已保存 ${t}（文件已写回 resources/i18n/）`;
+  } catch (e) {
+    $("save-msg").textContent = "保存失败: " + e.message;
+  }
+  renderDirty();
+  renderList();
+}
+function renderStats() {
+  const s = L.stats;
+  const errorN = Object.keys(L.issues).filter(k => issueLevel(k) === 3).length;
+  const warnN = Object.keys(L.issues).filter(k => issueLevel(k) === 2).length;
+  const deadN = s.dead || 0;
+  const total = Object.keys(orig).length;
+  $("stats").innerHTML =
+    `<span class="pill ok">${total} 键</span>
+     <span class="pill err">错误 ${errorN}</span>
+     <span class="pill warn">警告 ${warnN}</span>
+     <span class="pill info">死键 ${deadN}</span>`;
+}
+
+// ---------- 事件 ----------
+$("search").addEventListener("input", (e) => { q = e.target.value.trim().toLowerCase(); renderList(); });
+$("save-btn").onclick = save;
+document.addEventListener("keydown", (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") { e.preventDefault(); save(); }
+});
+load();
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Geometry extracted from railmapgen/rmp:
+  src/components/svgs/stations/chongqingrt-basic.tsx
+  GPL-3.0, https://github.com/railmapgen/rmp
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5 5" width="25" height="25">
+  <circle cx="2.5" cy="2.5" r="2.1" stroke="currentColor" stroke-width="0.8" fill="white"/>
+</svg>

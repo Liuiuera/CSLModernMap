@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <title>CSLModernMap application icon</title>
+  <rect width="1024" height="1024" fill="#69B7E6"/>
+  <g fill="#2F7FAF" opacity="0.28" transform="translate(12 18)">
+    <path d="M430 145h65l-20 245h-73zM529 145h65l28 245h-73z"/>
+    <path d="M396 468h76l-32 397H275zM552 468h76l121 397H584z"/>
+    <path d="M150 390h724v78H150zM235 468h48v45h-48zM488 468h48v45h-48zM741 468h48v45h-48z"/>
+  </g>
+  <g fill="#FFFFFF">
+    <path d="M430 145h65l-20 245h-73zM529 145h65l28 245h-73z"/>
+    <path d="M396 468h76l-32 397H275zM552 468h76l121 397H584z"/>
+    <path d="M150 390h724v78H150zM235 468h48v45h-48zM488 468h48v45h-48zM741 468h48v45h-48z"/>
+  </g>
+</svg>

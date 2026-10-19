@@ -1,0 +1,5168 @@
+# Korean translations for CSLModernMap.
+# Copyright (C) 2026 CSLModernMap contributors
+# This file is distributed under the same license as the CSLModernMap project.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: CSLModernMap 6.7.1\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-10-13 17:20+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: CSLModernMap contributors\n"
+"Language: ko\n"
+"Language-Team: ko\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "gui.about.body"
+msgstr ""
+"CSLModernMap 렌더러 v{version}\n"
+"제작자: Shaotang Shaoxiancao\n"
+"© 2026 Shaotang Shaoxiancao. All rights reserved\n"
+"\n"
+"Cities: Skylines 저장 파일(.mmap / .cslmap)에서 현대적인 스타일의 지도를 렌더링합니다.\n"
+"\n"
+"제작 기여:\n"
+"  · CSLMapView (kkshoko) — 내보내기 형식의 기반\n"
+"  · TM:PE (Traffic Manager President Edition) — 교통 데이터\n"
+"  · Python / Pillow / numpy / PyYAML / Nuitka 및 기타 오픈 소스 프로젝트\n"
+"\n"
+"일부 아이콘은 제3자 출처에서 제공되었으며 각 권리자의 자산입니다."
+
+msgid "gui.about.close"
+msgstr "닫기"
+
+msgid "gui.about.copy_info"
+msgstr "버전 정보 복사"
+
+msgid "gui.about.mode_bundled"
+msgstr "번들 버전"
+
+msgid "gui.about.mode_source"
+msgstr "소스"
+
+msgid "gui.about.title"
+msgstr "정보"
+
+msgid "gui.action.about"
+msgstr "CSLModernMap 정보"
+
+msgid "gui.action.clear_selection"
+msgstr "선택 지우기"
+
+msgid "gui.action.close_metro"
+msgstr "지하철 노선도 닫기"
+
+msgid "gui.action.close_transit"
+msgstr "대중교통 보기 닫기"
+
+msgid "gui.action.export"
+msgstr "지도 내보내기…"
+
+msgid "gui.action.fit"
+msgstr "전체 지도에 맞추기"
+
+msgid "gui.action.layers"
+msgstr "레이어 설정…"
+
+msgid "gui.action.lines"
+msgstr "노선 목록"
+
+msgid "gui.action.lines_layer"
+msgstr "노선 선택"
+
+msgid "gui.action.merge_settings"
+msgstr "병합 및 그룹화"
+
+msgid "gui.action.metro_editor"
+msgstr "노선망 직접 편집"
+
+msgid "gui.action.open"
+msgstr "도시 열기"
+
+msgid "gui.action.refresh"
+msgstr "실시간 미리 보기 새로 고침"
+
+msgid "gui.action.regen_metro"
+msgstr "지하철 노선도 내보내기…"
+
+msgid "gui.action.regen_transit"
+msgstr "대중교통 지도 내보내기…"
+
+msgid "gui.action.render_selection"
+msgstr "선택 영역 렌더링"
+
+msgid "gui.advanced.built_area"
+msgstr "시가지"
+
+msgid "gui.advanced.built_preset.低"
+msgstr "낮음"
+
+msgid "gui.advanced.built_preset.强"
+msgstr "강함"
+
+msgid "gui.advanced.built_preset.极强"
+msgstr "매우 강함"
+
+msgid "gui.advanced.built_preset.标准"
+msgstr "표준"
+
+msgid "gui.advanced.font_preset.大"
+msgstr "크게"
+
+msgid "gui.advanced.font_preset.小"
+msgstr "작게"
+
+msgid "gui.advanced.font_preset.标准"
+msgstr "표준"
+
+msgid "gui.advanced.font_preset.特大"
+msgstr "특대"
+
+msgid "gui.advanced.merge_enable"
+msgstr "병합"
+
+msgid "gui.advanced.title"
+msgstr "고급 설정"
+
+msgid "gui.advanced.water"
+msgstr "수역"
+
+msgid "gui.advanced.water_preset.低"
+msgstr "낮음"
+
+msgid "gui.advanced.water_preset.强"
+msgstr "강함"
+
+msgid "gui.advanced.water_preset.极强"
+msgstr "매우 강함"
+
+msgid "gui.advanced.water_preset.标准"
+msgstr "표준"
+
+msgid "gui.appearance.dark"
+msgstr "어두움"
+
+msgid "gui.appearance.follow_system"
+msgstr "시스템 설정 따르기"
+
+msgid "gui.appearance.light"
+msgstr "밝게"
+
+msgid "gui.appearance.menu"
+msgstr "인터페이스 모양"
+
+msgid "gui.appearance.save_failed"
+msgstr "모양을 적용했지만 저장하지 못했습니다"
+
+msgid "gui.btn.save_png"
+msgstr "PNG 저장"
+
+msgid "gui.city.districts"
+msgstr "구역"
+
+msgid "gui.city.transports"
+msgstr "대중교통 노선"
+
+msgid "gui.cmd.tab_layers"
+msgstr "레이어"
+
+msgid "gui.cmd.tab_map"
+msgstr "지도"
+
+msgid "gui.creator.bounds"
+msgstr "영역: ({bounds})"
+
+msgid "gui.creator.bounds_none"
+msgstr "아직 무작위 범위를 선택하지 않음"
+
+msgid "gui.creator.current_spot"
+msgstr "현재 확대 영역"
+
+msgid "gui.creator.hint.aa"
+msgstr "더 높은 해상도로 그린 뒤 축소하여 도로와 텍스트 가장자리를 부드럽게 합니다. 사용하면 시간과 메모리가 더 듭니다."
+
+msgid "gui.creator.hint.interchange_count"
+msgstr "모음에 포함할 입체 교차로의 최대 개수입니다. 큰 순서대로 선택합니다."
+
+msgid "gui.creator.hint.layers"
+msgstr "각 입체교차 타일에 표시할 레이어를 선택합니다."
+
+msgid "gui.creator.hint.tile_size"
+msgstr "각 인터체인지 타일의 출력 한 변 길이(픽셀)입니다. 클수록 선명하지만 렌더링이 느립니다."
+
+msgid "gui.creator.interchange.auto"
+msgstr "자동 선택"
+
+msgid "gui.creator.interchange.count"
+msgstr "입체교차로 수"
+
+msgid "gui.creator.interchange.hint"
+msgstr "아래 매개변수를 설정해 갤러리를 생성하세요. 결과는 중앙 미리보기에 표시됩니다. 실제 내보내기에는 내보내기 창을 사용하세요."
+
+msgid "gui.creator.interchange.hint2"
+msgstr "저장 파일에서 인터체인지를 자동으로 찾습니다. 직접 선택하지 않으면 규모가 큰 인터체인지가 선택됩니다."
+
+msgid "gui.creator.interchange.layers"
+msgstr "모음 레이어"
+
+msgid "gui.creator.interchange.run"
+msgstr "입체교차로 모음 생성"
+
+msgid "gui.creator.interchange.section"
+msgstr "모음 매개변수"
+
+msgid "gui.creator.interchange.tile_size"
+msgstr "타일 크기"
+
+msgid "gui.creator.interchange.title"
+msgstr "인터체인지 갤러리"
+
+msgid "gui.creator.placeholder.seed"
+msgstr "비워 두면 매번 임의로 선택합니다."
+
+msgid "gui.creator.placeholder.theme_title"
+msgstr "비워 두면 테마의 기본 제목을 사용합니다."
+
+msgid "gui.creator.preference.balanced"
+msgstr "균형"
+
+msgid "gui.creator.preference.buildings"
+msgstr "건물이 밀집함"
+
+msgid "gui.creator.preference.congestion"
+msgstr "혼잡한 도로"
+
+msgid "gui.creator.preference.park"
+msgstr "공원 및 녹지"
+
+msgid "gui.creator.preference.transit"
+msgstr "대중교통"
+
+msgid "gui.creator.preference.water"
+msgstr "수변"
+
+msgid "gui.creator.preference_label"
+msgstr "화면 구도 선호도"
+
+msgid "gui.creator.random.hint"
+msgstr "무작위 선택은 미리보기 영역만 바꾸며 바로 렌더링하지 않습니다. 중앙 미리보기에서 범위를 계속 조정할 수 있습니다."
+
+msgid "gui.creator.random.pick"
+msgstr "임의 선택"
+
+msgid "gui.creator.random.preference_section"
+msgstr "무작위 설정"
+
+msgid "gui.creator.random.save"
+msgstr "현재 확대 영역 저장…"
+
+msgid "gui.creator.random.steps"
+msgstr "선호도 → 임의 선택 → 미리 보기 조정 → 저장"
+
+msgid "gui.creator.random.title"
+msgstr "임의 확대 영역"
+
+msgid "gui.creator.seed"
+msgstr "임의 시드"
+
+msgid "gui.creator.show_labels"
+msgstr "도로 및 장소 레이블 표시"
+
+msgid "gui.creator.show_place_names"
+msgstr "장소 이름 표시"
+
+msgid "gui.creator.webmap.hint"
+msgstr "통합 내보내기 창에서 HTML 출력을 선택하세요."
+
+msgid "gui.creator.webmap.title"
+msgstr "웹 지도"
+
+msgid "gui.diagnostics.auto"
+msgstr "자동"
+
+msgid "gui.diagnostics.clear_errors"
+msgstr "세션 오류 지우기"
+
+msgid "gui.diagnostics.context_label"
+msgstr "미리보기 컨텍스트"
+
+msgid "gui.diagnostics.error_prefix"
+msgstr "미리보기: {error}"
+
+msgid "gui.diagnostics.no_errors"
+msgstr "이번 실행에서 오류가 발생하지 않았습니다."
+
+msgid "gui.diagnostics.not_opened"
+msgstr "열지 않음"
+
+msgid "gui.diagnostics.not_ready"
+msgstr "준비되지 않음"
+
+msgid "gui.diagnostics.open_logs"
+msgstr "성능 로그 폴더 열기"
+
+msgid "gui.diagnostics.opened"
+msgstr "열림"
+
+msgid "gui.diagnostics.preview_state"
+msgstr "미리 보기 상태"
+
+msgid "gui.diagnostics.purpose"
+msgstr "저장 파일, 미리보기 및 교통 데이터가 준비되었는지 확인합니다. 자세한 오류는 아래 “오류 메시지”를 참조하세요."
+
+msgid "gui.diagnostics.ready"
+msgstr "준비됨"
+
+msgid "gui.diagnostics.refresh_preview"
+msgstr "지도 미리보기 새로고침"
+
+msgid "gui.diagnostics.save_label"
+msgstr "저장 파일"
+
+msgid "gui.diagnostics.subtitle"
+msgstr "지도 상태, 오류 메시지, 성능 로그가 한곳에 모여 있습니다"
+
+msgid "gui.diagnostics.tab_errors"
+msgstr "오류 메시지"
+
+msgid "gui.diagnostics.tab_map"
+msgstr "지도 진단"
+
+msgid "gui.diagnostics.title"
+msgstr "진단 센터"
+
+msgid "gui.diagnostics.transit_lines_label"
+msgstr "대중교통 노선"
+
+msgid "gui.dialog.cancel"
+msgstr "취소"
+
+msgid "gui.dialog.close"
+msgstr "닫기"
+
+msgid "gui.dialog.custom_resolution"
+msgstr "사용자 지정 해상도"
+
+msgid "gui.dialog.custom_resolution.prompt"
+msgstr "출력 가장자리 길이(픽셀)"
+
+msgid "gui.dialog.layer_settings"
+msgstr "레이어 설정"
+
+msgid "gui.dialog.open_city"
+msgstr "도시 저장 파일 열기"
+
+msgid "gui.dialog.open_city.filter"
+msgstr "도시 지도 (*.mmap.gz *.mmap *.cmm.gz *.cmm *.cmm.json)"
+
+msgid "gui.dialog.save"
+msgstr "저장"
+
+msgid "gui.dialog.save_png_filter"
+msgstr "PNG 이미지 (*.png)"
+
+msgid "gui.editor.airport"
+msgstr "공항"
+
+msgid "gui.editor.annotation"
+msgstr "주석"
+
+msgid "gui.editor.bus"
+msgstr "버스"
+
+msgid "gui.editor.display"
+msgstr "표시"
+
+msgid "gui.editor.hospital"
+msgstr "병원"
+
+msgid "gui.editor.kind"
+msgstr "유형"
+
+msgid "gui.editor.language"
+msgstr "언어"
+
+msgid "gui.editor.metro"
+msgstr "지하철"
+
+msgid "gui.editor.outline"
+msgstr "윤곽선"
+
+msgid "gui.editor.output"
+msgstr "출력"
+
+msgid "gui.editor.park"
+msgstr "공원"
+
+msgid "gui.editor.right"
+msgstr "오른쪽"
+
+msgid "gui.editor.school"
+msgstr "학교"
+
+msgid "gui.editor.spacing"
+msgstr "정류장 간격"
+
+msgid "gui.editor.stations"
+msgstr "역 표시"
+
+msgid "gui.editor.style"
+msgstr "스타일"
+
+msgid "gui.error.clipboard_alloc"
+msgstr "메모리 할당 실패"
+
+msgid "gui.error.clipboard_api"
+msgstr "시스템 API를 사용할 수 없습니다"
+
+msgid "gui.error.clipboard_busy"
+msgstr "클립보드 사용 중"
+
+msgid "gui.error.clipboard_error"
+msgstr "복사 중 문제가 발생했습니다"
+
+msgid "gui.error.clipboard_lock"
+msgstr "메모리 잠금 실패"
+
+msgid "gui.error.clipboard_windows_only"
+msgstr "Windows에서만 지원"
+
+msgid "gui.error.clipboard_write"
+msgstr "클립보드에 쓸 수 없습니다"
+
+msgid "gui.error.copy_details"
+msgstr "세부 정보 복사"
+
+msgid "gui.error.copy_no_image"
+msgstr "복사할 이미지가 없습니다"
+
+msgid "gui.error.export_cancelled"
+msgstr "내보내기 취소됨"
+
+msgid "gui.error.no_congestion"
+msgstr "혼잡 구역을 찾지 못했습니다(혼잡도 ≥ {pct}인 도로 구간)"
+
+msgid "gui.error.no_interchange"
+msgstr "생성할 수 있는 입체교차로가 없습니다"
+
+msgid "gui.error.no_mosaic_tiles"
+msgstr "모자이크로 만들 타일이 없습니다"
+
+msgid "gui.error.no_spot_region"
+msgstr "사용할 수 있는 확대 영역이 없습니다"
+
+msgid "gui.error.operation_failed"
+msgstr "작업을 완료할 수 없습니다. 다시 시도하세요."
+
+msgid "gui.error.poi_mapping_no_section"
+msgstr "poi_mapping.yaml에 poi_kinds: 섹션이 없습니다"
+
+msgid "gui.error.poi_mapping_parse"
+msgstr "저장된 내용을 분석할 수 없습니다: {error}"
+
+msgid "gui.error.poi_mapping_save_no_kind"
+msgstr "저장된 결과에 범주 {kind}이(가) 없습니다"
+
+msgid "gui.error.poi_mapping_save_no_section"
+msgstr "저장 결과에 poi_kinds 섹션이 없습니다"
+
+msgid "gui.error.preview_body"
+msgstr "중앙 지도 미리 보기를 생성하지 못했습니다."
+
+msgid "gui.error.preview_host_timeout"
+msgstr ""
+"지도 미리보기 구성 요소가 시간 내에 시작되지 않았습니다({seconds}초).\n"
+"\n"
+"앱을 닫았다가 다시 여세요. 계속되면 이 진단 로그를 개발자에게 보내 주세요:\n"
+"{path}"
+
+msgid "gui.error.preview_live_body"
+msgstr "중앙 지도 미리 보기에 오류가 발생했습니다."
+
+msgid "gui.error.preview_live_title"
+msgstr "실시간 미리보기 오류"
+
+msgid "gui.error.preview_navigate"
+msgstr "지도 미리보기 페이지를 불러오지 못했습니다(오류 코드 {code})."
+
+msgid "gui.error.preview_need_map"
+msgstr "먼저 지도를 가져오세요"
+
+msgid "gui.error.preview_title"
+msgstr "실시간 미리보기에 실패했습니다"
+
+msgid "gui.error.preview_unavailable"
+msgstr ""
+"지도 미리보기를 표시할 수 없습니다.\n"
+"\n"
+"{error}\n"
+"\n"
+"WebView2 Runtime이 설치되어 있고 지도 미리보기 리소스가 빌드되었는지 확인하세요."
+
+msgid "gui.error.pypinyin_missing"
+msgstr "이중 언어 지하철 노선도에는 pypinyin이 필요합니다. 런타임 종속성을 설치하세요."
+
+msgid "gui.error.pyyaml_missing"
+msgstr "PyYAML이 필요합니다: pip install pyyaml"
+
+msgid "gui.error.range_n_number"
+msgstr "범위 크기는 숫자여야 합니다"
+
+msgid "gui.error.range_n_range"
+msgstr "범위 크기는 {min}~{max} 사이여야 합니다"
+
+msgid "gui.error.task_submit_failed"
+msgstr "렌더링 작업을 제출하지 못했습니다: {error}"
+
+msgid "gui.error.theme_save_failed"
+msgstr "테마를 저장하지 못했습니다: {error}"
+
+msgid "gui.error.webview2_assembly"
+msgstr "pywebview에 WebView2 어셈블리가 포함되어 있지 않습니다: {path}"
+
+msgid "gui.error.webview2_missing"
+msgstr "Windows WebView2 런타임이 없습니다"
+
+msgid "gui.error.worker_start_failed"
+msgstr "렌더링 프로세스를 시작할 수 없습니다"
+
+msgid "gui.export.actual_dimensions"
+msgstr "긴 변 해상도 · 출력: {width} × {height} px"
+
+msgid "gui.export.auto_open"
+msgstr "내보내기가 끝나면 결과 자동 열기"
+
+msgid "gui.export.auto_open_hint"
+msgstr "선택하면 내보내기 성공 후 생성된 파일을 자동으로 엽니다."
+
+msgid "gui.export.browse"
+msgstr "찾아보기…"
+
+msgid "gui.export.busy"
+msgstr "이미 다른 작업이 실행 중입니다"
+
+msgid "gui.export.cancel"
+msgstr "취소"
+
+msgid "gui.export.choose_dir"
+msgstr "출력 폴더 선택"
+
+msgid "gui.export.context.map.desc"
+msgstr "현재 테마, 레이어 표시 상태, 지도 범위를 사용해 지도 이미지를 내보냅니다."
+
+msgid "gui.export.context.map.title"
+msgstr "일반 지도"
+
+msgid "gui.export.context.metro.desc"
+msgstr "현재 노선도 배치, 노선 및 정류장 설정을 내보냅니다."
+
+msgid "gui.export.context.metro.theme"
+msgstr "지하철 노선도 스타일"
+
+msgid "gui.export.context.metro.title"
+msgstr "지하철 노선도"
+
+msgid "gui.export.context.selection.desc"
+msgstr "현재 선택 영역을 내보냅니다."
+
+msgid "gui.export.context.selection.title"
+msgstr "지도 선택 영역"
+
+msgid "gui.export.context.spot.desc"
+msgstr "현재 무작위 확대 영역 내보내기"
+
+msgid "gui.export.context.spot.title"
+msgstr "지도 확대 보기"
+
+msgid "gui.export.context.transit.desc"
+msgstr "현재 노선, 정류장 및 대중교통 스타일을 내보냅니다."
+
+msgid "gui.export.context.transit.title"
+msgstr "대중교통 지도"
+
+msgid "gui.export.done"
+msgstr "내보내기 완료: {path}"
+
+msgid "gui.export.done_no_open"
+msgstr "내보내기 완료(자동으로 열지 못함): {path}"
+
+msgid "gui.export.failed"
+msgstr "내보내기 실패: {error}"
+
+msgid "gui.export.field.range"
+msgstr "범위"
+
+msgid "gui.export.field.size"
+msgstr "이미지 크기"
+
+msgid "gui.export.field.theme"
+msgstr "테마"
+
+msgid "gui.export.fields_note"
+msgstr "이번 내보내기에 사용된 설정:"
+
+msgid "gui.export.filename"
+msgstr "파일 이름"
+
+msgid "gui.export.filename_bad_chars"
+msgstr "파일 이름에 사용할 수 없는 문자(\\ / : * ? \" < > |)가 포함되어 있습니다. 수정하세요"
+
+msgid "gui.export.filename_has_path"
+msgstr "파일 이름에 경로를 포함할 수 없습니다. 파일 이름만 입력하세요"
+
+msgid "gui.export.filename_hint"
+msgstr "파일 이름은 아래 “출력 폴더”에 저장됩니다. 확장자는 출력 형식에 따라 자동으로 변경됩니다."
+
+msgid "gui.export.filename_placeholder"
+msgstr "파일 이름 입력"
+
+msgid "gui.export.format"
+msgstr "출력 형식"
+
+msgid "gui.export.format_hint"
+msgstr "PNG는 정적 이미지입니다. HTML은 오프라인으로 열 수 있는 단일 파일 대화형 지도로 확대/축소, 이동, 레이어 전환을 지원합니다."
+
+msgid "gui.export.not_started"
+msgstr "시작되지 않음"
+
+msgid "gui.export.open_dir_failed"
+msgstr "폴더를 열 수 없음: {target}"
+
+msgid "gui.export.open_folder"
+msgstr "출력 폴더 열기"
+
+msgid "gui.export.output_dir"
+msgstr "출력 폴더"
+
+msgid "gui.export.png_only"
+msgstr "현재 보기는 PNG로만 내보낼 수 있습니다"
+
+msgid "gui.export.poi.collision_hint"
+msgstr "아이콘이 겹치면 시설 대표 아이콘과 주요 장소를 우선 표시합니다."
+
+msgid "gui.export.poi.custom"
+msgstr "세부 설정…"
+
+msgid "gui.export.poi.custom.hint"
+msgstr "이 PNG에 사용할 건물 아이콘 표시 규칙을 별도로 조정합니다."
+
+msgid "gui.export.poi.density"
+msgstr "아이콘 밀도"
+
+msgid "gui.export.poi.detail"
+msgstr "세부 정보"
+
+msgid "gui.export.poi.detail.hint"
+msgstr "더 많은 장소와 시설 내부 건물 아이콘을 표시하고 가까운 중복 아이콘을 합칩니다. 이번 PNG에만 적용됩니다."
+
+msgid "gui.export.poi.internal"
+msgstr "시설 내부 건물 아이콘 표시"
+
+msgid "gui.export.poi.internal.tip"
+msgstr "캠퍼스, 공원, 공항 등의 시설 내부 건물 아이콘을 개별 표시합니다. 부속 모듈은 계속 주 건물에 포함됩니다."
+
+msgid "gui.export.poi.major"
+msgstr "주요 장소"
+
+msgid "gui.export.poi.major.hint"
+msgstr "주요 장소 아이콘은 유지하고 시설 내부 건물 아이콘은 숨기며 가까운 같은 유형의 건물 아이콘을 합칩니다. 이번 PNG에만 적용됩니다."
+
+msgid "gui.export.poi.merge"
+msgstr "가까운 같은 유형의 건물 아이콘 합치기"
+
+msgid "gui.export.poi.merge.tip"
+msgstr "주변의 같은 유형 건물에서 대표 아이콘을 선택하며 건물 외곽은 변경하지 않습니다. 끄면 각 건물 아이콘을 유지하고, 겹치는 아이콘은 계속 조정됩니다."
+
+msgid "gui.export.poi.off"
+msgstr "끄기"
+
+msgid "gui.export.poi.off.hint"
+msgstr "장소 아이콘과 연결된 이름을 숨깁니다. 건물 윤곽, 도로 이름, 대중교통 노선의 설정은 유지됩니다."
+
+msgid "gui.export.range.all_metro_lines"
+msgstr "모든 지하철 노선"
+
+msgid "gui.export.range.all_transit_lines"
+msgstr "모든 대중교통 노선"
+
+msgid "gui.export.range.auto_fit"
+msgstr "노선망 자동 맞춤"
+
+msgid "gui.export.range.selected_lines"
+msgstr "노선 {count}개 선택됨"
+
+msgid "gui.export.start"
+msgstr "내보내기 시작"
+
+msgid "gui.export.svg_unavailable"
+msgstr "SVG 내보내기는 일시적으로 사용할 수 없습니다. PNG 또는 HTML을 사용하세요."
+
+msgid "gui.export.title"
+msgstr "내보내기"
+
+msgid "gui.export.title_format"
+msgstr "내보내기 · {title}"
+
+msgid "gui.external.done"
+msgstr "외부 프로젝트 생성됨: {path}"
+
+msgid "gui.external.preparing"
+msgstr "도시 데이터 준비 중…"
+
+msgid "gui.external.rmg"
+msgstr "RMG 프로젝트 내보내기"
+
+msgid "gui.external.rmg_layout_note"
+msgstr "RMG가 정류장을 다시 자동 배치하므로 CMM에서 드래그한 정류장 위치는 가져오지 않습니다."
+
+msgid "gui.external.rmp"
+msgstr "RMP 전체 도시 노선망 내보내기"
+
+msgid "gui.external.use_selection"
+msgstr "현재 선택 영역을 내보낼까요? “아니요”를 선택하면 도시 전체를 내보냅니다."
+
+msgid "gui.external.writing"
+msgstr "외부 프로젝트 쓰는 중…"
+
+msgid "gui.field.line_color"
+msgstr "노선 색상"
+
+msgid "gui.field.palette"
+msgstr "색 구성표"
+
+msgid "gui.field.range"
+msgstr "출력 범위"
+
+msgid "gui.field.range_anchor"
+msgstr "위치"
+
+msgid "gui.field.rotation"
+msgstr "회전"
+
+msgid "gui.field.theme"
+msgstr "테마"
+
+msgid "gui.field.transport.station.label"
+msgstr "역 원형 표시"
+
+msgid "gui.field.transport.station_names.label"
+msgstr "역 이름"
+
+msgid "gui.file.all"
+msgstr "모든 파일"
+
+msgid "gui.font_tier.large"
+msgstr "크게"
+
+msgid "gui.font_tier.small"
+msgstr "작게"
+
+msgid "gui.font_tier.standard"
+msgstr "표준"
+
+msgid "gui.font_tier.xlarge"
+msgstr "특대"
+
+msgid "gui.game_running.title"
+msgstr "게임이 아직 실행 중입니다"
+
+msgid "gui.game_running.warning"
+msgstr "게임이 아직 실행 중입니다. 메모리가 부족하면 고해상도 이미지나 대도시 렌더링에 실패할 수 있습니다. 렌더링 전에 게임을 종료하는 것이 좋습니다."
+
+msgid "gui.help.layout"
+msgstr "리본에는 자주 쓰는 작업이 있고 왼쪽 패널에서 현재 기능을 편집하며 오른쪽 패널에는 지도에서 선택한 항목이 표시됩니다."
+
+msgid "gui.help.shortcuts"
+msgstr ""
+"Ctrl+O  도시 열기\n"
+"Ctrl+S  PNG 저장\n"
+"Ctrl+Shift+S  지도 내보내기\n"
+"Ctrl+P  실시간 미리 보기 새로 고침\n"
+"Esc  현재 작업 취소"
+
+msgid "gui.help.title"
+msgstr "도움말 및 바로 가기"
+
+msgid "gui.inspector.explore"
+msgstr "탐색"
+
+msgid "gui.inspector.export_hint"
+msgstr "내보내기 창에서 형식, 범위 및 저장 위치를 선택하세요."
+
+msgid "gui.inspector.export_section"
+msgstr "지도 내보내기"
+
+msgid "gui.inspector.hint"
+msgstr "중앙 지도에서 도로, 건물, 장소, 노선 또는 정류장을 클릭하면 세부 정보를 볼 수 있습니다."
+
+msgid "gui.inspector.object_fallback"
+msgstr "개체"
+
+msgid "gui.inspector.object_info"
+msgstr "개체 정보"
+
+msgid "gui.inspector.object_properties"
+msgstr "개체 속성"
+
+msgid "gui.inspector.title"
+msgstr "세부 설정"
+
+msgid "gui.json_editor.invalid"
+msgstr "잘못된 콘텐츠"
+
+msgid "gui.label.attr.tip"
+msgstr "{heading}의 {attr}"
+
+msgid "gui.label.place_text"
+msgstr "지역 텍스트"
+
+msgid "gui.label_child.building_icon"
+msgstr "일반 건물 아이콘"
+
+msgid "gui.label_child.building_icon_text"
+msgstr "건물 아이콘 텍스트"
+
+msgid "gui.label_child.district_text"
+msgstr "구역 텍스트"
+
+msgid "gui.label_child.road_text"
+msgstr "도로 텍스트"
+
+msgid "gui.label_child.transit_icon"
+msgstr "대중교통 아이콘"
+
+msgid "gui.label_child.transit_icon_text"
+msgstr "대중교통 아이콘 텍스트"
+
+msgid "gui.label_detail.hint"
+msgstr "텍스트와 아이콘: 여기에서 바꾼 내용은 지도 레이블에 반영됩니다"
+
+msgid "gui.label_detail.reset"
+msgstr "텍스트와 아이콘 기본값 복원"
+
+msgid "gui.label_detail.text.hint"
+msgstr "글꼴, 크기, 색상 및 테두리는 텍스트 유형별로 설정합니다. “건물/공원 텍스트”는 장소 이름이고 “구역 텍스트”는 지역 이름입니다."
+
+msgid "gui.label_detail.title"
+msgstr "레이블 세부 정보"
+
+msgid "gui.language.contribute"
+msgstr "GitHub에 각 언어 번역을 제출해 주시면 개선에 큰 도움이 됩니다. 번역 기여를 환영합니다."
+
+msgid "gui.language.notice"
+msgstr "간체 중국어가 원문이며, 다른 언어는 ChatGPT가 자동으로 번역했습니다. 부정확하거나 이해하기 어려운 표현이 있을 수 있습니다."
+
+msgid "gui.layer.building"
+msgstr "건물"
+
+msgid "gui.layer.building_desc"
+msgstr "도시의 주택, 설비 등 건물 윤곽입니다. 건물이 많은 도시에서는 이 레이어를 끄면 렌더링 속도가 크게 빨라집니다."
+
+msgid "gui.layer.built_area"
+msgstr "시가지"
+
+msgid "gui.layer.built_area_desc"
+msgstr "연결된 도시 지역에 기본 색상을 칠해 시가지와 시골을 구분합니다."
+
+msgid "gui.layer.district"
+msgstr "구역 경계"
+
+msgid "gui.layer.district_desc"
+msgstr "직접 그린 구역 경계입니다."
+
+msgid "gui.layer.hint.params"
+msgstr "레이어 표시 및 현재 테마 매개변수"
+
+msgid "gui.layer.label"
+msgstr "구역 이름, 도로 이름"
+
+msgid "gui.layer.label_desc"
+msgstr "지도에 표시되는 도로, 구역 및 장소 이름 등의 텍스트입니다. 너무 빽빽하면 “라벨 세부 설정…”에서 유형별로 끄세요."
+
+msgid "gui.layer.land_use"
+msgstr "토지 이용"
+
+msgid "gui.layer.land_use_desc"
+msgstr "구역 유형별 색상(주거/상업/산업)"
+
+msgid "gui.layer.metro"
+msgstr "지하철"
+
+msgid "gui.layer.metro_desc"
+msgstr "일반 지도에 버스, 트램, 지하철 노선과 정류장을 표시합니다. 별도 노선도를 만들려면 “대중교통 보기”를 사용하세요."
+
+msgid "gui.layer.po"
+msgstr "PO 객체"
+
+msgid "gui.layer.po_desc"
+msgstr "Procedural Objects 모드의 사용자 지정 객체"
+
+msgid "gui.layer.poi"
+msgstr "장소 아이콘"
+
+msgid "gui.layer.poi_area"
+msgstr "건물 영역 채우기"
+
+msgid "gui.layer.poi_area_desc"
+msgstr "건물 윤곽과 색상을 재사용해 테두리 없이 내부만 채웁니다. 건물 레이어와 독립적으로 표시할 수 있습니다."
+
+msgid "gui.layer.poi_desc"
+msgstr "병원, 학교, 역 등의 아이콘입니다. 아이콘의 텍스트는 “텍스트 라벨”에서 별도로 설정합니다."
+
+msgid "gui.layer.procedural_objects"
+msgstr "PO 객체"
+
+msgid "gui.layer.railway"
+msgstr "철도"
+
+msgid "gui.layer.railway_desc"
+msgstr "철도, 지하철 등 선로 자체만 표시합니다. 지도에 노선 색상과 정류장을 표시하려면 ‘대중교통’을 사용하세요."
+
+msgid "gui.layer.reset"
+msgstr "이 레이어의 기본값 복원"
+
+msgid "gui.layer.road"
+msgstr "도로"
+
+msgid "gui.layer.road_desc"
+msgstr "고가도로와 터널을 포함한 모든 도로 등급입니다. ‘설정…’에서 등급별 채우기, 윤곽선, 너비를 조정할 수 있습니다."
+
+msgid "gui.layer.row.district"
+msgstr "구역 범위"
+
+msgid "gui.layer.row.district_settings"
+msgstr "구역 선택"
+
+msgid "gui.layer.row.poi"
+msgstr "아이콘"
+
+msgid "gui.layer.row.zone"
+msgstr "구역 범위"
+
+msgid "gui.layer.row.zone_settings"
+msgstr "기능 구역 선택"
+
+msgid "gui.layer.settings.water"
+msgstr "수역 모양 설정"
+
+msgid "gui.layer.show_this"
+msgstr "이 레이어 표시"
+
+msgid "gui.layer.terrain"
+msgstr "지형"
+
+msgid "gui.layer.terrain_desc"
+msgstr "고도에 따라 음영을 넣어 산과 계곡의 높낮이를 표시합니다."
+
+msgid "gui.layer.title.building"
+msgstr "건물"
+
+msgid "gui.layer.title.built_area"
+msgstr "시가지"
+
+msgid "gui.layer.title.district"
+msgstr "구역"
+
+msgid "gui.layer.title.label"
+msgstr "텍스트 레이블"
+
+msgid "gui.layer.title.land_use"
+msgstr "용도 지역 격자"
+
+msgid "gui.layer.title.metro"
+msgstr "대중교통"
+
+msgid "gui.layer.title.poi"
+msgstr "장소 아이콘"
+
+msgid "gui.layer.title.poi_area"
+msgstr "건물 용도별 색상"
+
+msgid "gui.layer.title.procedural_objects"
+msgstr "사용자 지정 개체"
+
+msgid "gui.layer.title.railway"
+msgstr "철도"
+
+msgid "gui.layer.title.road"
+msgstr "도로"
+
+msgid "gui.layer.title.terrain"
+msgstr "지형"
+
+msgid "gui.layer.title.traffic"
+msgstr "교통량"
+
+msgid "gui.layer.title.water"
+msgstr "수역"
+
+msgid "gui.layer.title.watermark"
+msgstr "워터마크"
+
+msgid "gui.layer.title.zone"
+msgstr "구역 범위"
+
+msgid "gui.layer.traffic"
+msgstr "교통 정보"
+
+msgid "gui.layer.traffic_desc"
+msgstr ""
+"내보내기 시 저장된 도로 혼잡 스냅샷을 표시합니다. Cities: Skylines에서는 TM:PE 통계, Cities: Skylines II에서는 게임 기본 교통 통계를 "
+"사용합니다."
+
+msgid "gui.layer.transit"
+msgstr "대중교통"
+
+msgid "gui.layer.transit_desc"
+msgstr "저장 파일에 있는 모든 대중교통 노선 유형입니다."
+
+msgid "gui.layer.water"
+msgstr "수역"
+
+msgid "gui.layer.water_desc"
+msgstr "호수, 강 및 기타 수역을 채웁니다."
+
+msgid "gui.layer.watermark"
+msgstr "워터마크"
+
+msgid "gui.layer.watermark_desc"
+msgstr "왼쪽 아래에 워터마크를 표시합니다."
+
+msgid "gui.layer.zone"
+msgstr "구역 경계"
+
+msgid "gui.layer.zone_desc"
+msgstr "공원, 산업, 캠퍼스, 공항, 보행자 구역 등의 기능 구역을 색상 블록으로 표시합니다. ‘구역 범위’와는 별도로 설정됩니다."
+
+msgid "gui.layers.detail_settings_title"
+msgstr "{name} 세부 설정"
+
+msgid "gui.layers.hint"
+msgstr "지도에 표시할 내용을 제어합니다."
+
+msgid "gui.layers.settings.appearance"
+msgstr "표시 설정…"
+
+msgid "gui.layers.settings.detail"
+msgstr "세부 설정…"
+
+msgid "gui.layers.settings.generic"
+msgstr "설정…"
+
+msgid "gui.layers.settings.labels"
+msgstr "레이블 세부 설정…"
+
+msgid "gui.layers.settings_title"
+msgstr "{name} 설정"
+
+msgid "gui.layers.style_title"
+msgstr "{name} 스타일"
+
+msgid "gui.map.hint.overview"
+msgstr "전체 설정, 빠른 작업, 현재 지도 개요"
+
+msgid "gui.map.hint.range"
+msgstr "내보낼 지형 범위를 설정합니다. 이 설정은 내보내는 콘텐츠에만 적용됩니다."
+
+msgid "gui.map.hint.resolution"
+msgstr "출력 이미지의 긴 변 픽셀 수입니다. 크기가 클수록 선명하지만 출력 시간과 메모리 사용량이 늘어납니다."
+
+msgid "gui.map.hint.rotation"
+msgstr "시계 방향 회전"
+
+msgid "gui.map.hint.theme"
+msgstr "지도 색상과 선 스타일을 선택하세요. 항목별로 세부 조정하려면 리본의 “테마 편집…”을 누르세요."
+
+msgid "gui.menu.button"
+msgstr "메뉴"
+
+msgid "gui.menu.language"
+msgstr "언어"
+
+msgid "gui.menu.no_recent"
+msgstr "최근 파일이 없습니다"
+
+msgid "gui.menu.quick_preview"
+msgstr "미리보기"
+
+msgid "gui.menu.quit"
+msgstr "종료"
+
+msgid "gui.menu.recent"
+msgstr "최근 항목 열기"
+
+msgid "gui.menu.tooltip"
+msgstr "애플리케이션 메뉴"
+
+msgid "gui.merge.block_distance"
+msgstr "건물 군집 거리"
+
+msgid "gui.merge.building"
+msgstr "건물 병합"
+
+msgid "gui.merge.category.commercial"
+msgstr "상업 및 상점"
+
+msgid "gui.merge.category.hospital"
+msgstr "병원"
+
+msgid "gui.merge.category.park"
+msgstr "공원 및 녹지"
+
+msgid "gui.merge.category.school"
+msgstr "학교"
+
+msgid "gui.merge.category.transit"
+msgstr "대중교통 시설"
+
+msgid "gui.merge.enable"
+msgstr "병합 및 그룹화 사용"
+
+msgid "gui.merge.enable.tip"
+msgstr "끄면 아래 모든 옵션이 적용되지 않으며 장소 아이콘 병합도 여기서 제어합니다"
+
+msgid "gui.merge.entry"
+msgstr "병합 및 그룹화 설정…"
+
+msgid "gui.merge.entry.tip"
+msgstr "병합 및 그룹화를 엽니다. 전체 스위치, 건물/같은 시설/정류장 병합 및 각 거리를 설정합니다"
+
+msgid "gui.merge.facility"
+msgstr "같은 시설 병합"
+
+msgid "gui.merge.facility.hint"
+msgstr "실제 건물 관계와 ParkGrid 구역을 기준으로 시설을 구성합니다. 산업 및 보행자 구역은 건물이 별도로 유지됩니다."
+
+msgid "gui.merge.facility_area_labels"
+msgstr "시설 구역의 중복 라벨 숨기기"
+
+msgid "gui.merge.facility_area_labels.tip"
+msgstr "공항, 캠퍼스, 공원 등의 상위 시설 POI와 중복되는 지역 이름을 숨깁니다. 산업 구역과 보행자 구역 레이블에는 영향을 주지 않습니다."
+
+msgid "gui.merge.facility_children"
+msgstr "시설 내부 하위 POI 표시"
+
+msgid "gui.merge.facility_children.tip"
+msgstr "끄면 공항, 캠퍼스, 공원 등의 상위 POI만 표시되며 시설 그룹 관계는 유지됩니다."
+
+msgid "gui.merge.facility_list.tip"
+msgstr "시설과 내부 POI를 표시합니다. 건물, 도로 및 용도지역 채우기는 각각 별도로 설정할 수 있습니다."
+
+msgid "gui.merge.facility_zoom"
+msgstr "하위 POI 최소 확대 수준"
+
+msgid "gui.merge.facility_zoom.tip"
+msgstr "하위 POI가 표시되기 시작하는 최소 확대 수준입니다. 값이 클수록 더 확대해야 표시됩니다. 기본값은 1.0입니다."
+
+msgid "gui.merge.hint.intro"
+msgstr "먼저 전체 스위치를 켠 다음 각 기능과 거리를 조정하세요"
+
+msgid "gui.merge.hub_distance"
+msgstr "대중교통 허브 중심 거리"
+
+msgid "gui.merge.override.use"
+msgstr "개별 규칙"
+
+msgid "gui.merge.overrides.hint"
+msgstr "별도 규칙이 없는 유형은 전체 병합 스위치와 거리를 따릅니다."
+
+msgid "gui.merge.poi_distance"
+msgstr "POI 병합 거리"
+
+msgid "gui.merge.stops"
+msgstr "대중교통 정류장 병합"
+
+msgid "gui.metro.adaptive"
+msgstr "적응형 축척"
+
+msgid "gui.metro.adaptive_hint"
+msgstr "긴 직선 구간을 줄이고 혼잡한 구간을 늘려 노선망이 캔버스에 더 고르게 배치됩니다. 끄면 실제 역 간격에 비례해 배치됩니다."
+
+msgid "gui.metro.adjust_network"
+msgstr "노선망 수동 조정…"
+
+msgid "gui.metro.annotation_hint"
+msgstr "항목을 선택하면 해당 주석을 지도에 인쇄합니다."
+
+msgid "gui.metro.bad_edit_doc"
+msgstr "{name}을(를) 읽을 수 없습니다. 이 도구에서 내보낸 편집 파일이 아닙니다."
+
+msgid "gui.metro.bilingual_names"
+msgstr "정류장 이름 두 언어 표시"
+
+msgid "gui.metro.debug_band"
+msgstr "축척 색상 띠 표시"
+
+msgid "gui.metro.debug_band_hint"
+msgstr "압축된 구간(파랑)과 늘어난 구간(주황)을 색으로 표시하여 동적 축척 효과를 확인합니다. 최종 출력 전에는 끄는 것이 좋습니다."
+
+msgid "gui.metro.display_size"
+msgstr "표시 크기"
+
+msgid "gui.metro.draw_default"
+msgstr "기본적으로 지하철, 열차, 모노레일을 그립니다. 도시 상황에 맞게 조정하세요."
+
+msgid "gui.metro.facility_density_hint"
+msgstr "확대할수록 더 많은 시설이 표시됩니다. “희소 단계”를 선택하면 시설이 한 단계 더 확대된 뒤 나타나고 간격도 넓어집니다."
+
+msgid "gui.metro.facility_icon_hint"
+msgstr "공항, 기차역, 항구 등 환승 시설 아이콘을 표시합니다. 이 스위치와 크기 설정은 역 아이콘에 영향을 주지 않습니다."
+
+msgid "gui.metro.facility_icons"
+msgstr "연결 아이콘"
+
+msgid "gui.metro.follow_theme_bg"
+msgstr "테마 배경 따르기"
+
+msgid "gui.metro.font_size"
+msgstr "글꼴 크기"
+
+msgid "gui.metro.generate_preview"
+msgstr "미리 보기 생성"
+
+msgid "gui.metro.import_edits_button"
+msgstr "편집 파일 가져오기…"
+
+msgid "gui.metro.import_edits_failed"
+msgstr "편집 문서를 가져오지 못했습니다"
+
+msgid "gui.metro.import_edits_filter"
+msgstr "노선 편집 파일 (*.json);;모든 파일 (*.*)"
+
+msgid "gui.metro.import_edits_hint"
+msgstr "‘편집 파일 가져오기’는 이전에 저장한 JSON 조정값(노선 경로/정류장 위치/공유 구간)을 불러와 즉시 다시 그립니다."
+
+msgid "gui.metro.import_edits_title"
+msgstr "편집 문서 가져오기"
+
+msgid "gui.metro.imported_doc"
+msgstr "{name} 가져옴, 다시 렌더링하는 중…"
+
+msgid "gui.metro.label_position"
+msgstr "레이블 위치"
+
+msgid "gui.metro.label_position.auto"
+msgstr "자동"
+
+msgid "gui.metro.label_position.left"
+msgstr "왼쪽"
+
+msgid "gui.metro.label_position.right"
+msgstr "오른쪽"
+
+msgid "gui.metro.label_scale_hint"
+msgstr "기본 크기 대비 비율로 조정합니다. 100%가 기본 크기입니다."
+
+msgid "gui.metro.layer_scope_hint"
+msgstr "여기서 설정하는 레이어 스위치는 대중교통 보기에만 적용되며 도시 지도의 레이어 표시에는 영향을 주지 않습니다."
+
+msgid "gui.metro.legend_label"
+msgstr "노선 레이블 / 범례"
+
+msgid "gui.metro.legend_position"
+msgstr "범례 위치"
+
+msgid "gui.metro.legend_section"
+msgstr "범례 및 제목"
+
+msgid "gui.metro.line_count"
+msgstr "{name} · 노선 {count}개"
+
+msgid "gui.metro.line_gap"
+msgstr "노선 간 평행 간격"
+
+msgid "gui.metro.line_gap_hint"
+msgstr "평행 노선 간 간격을 선 너비의 배수로 지정합니다. 범위: 1.05~3.00."
+
+msgid "gui.metro.line_outline"
+msgstr "노선 테두리"
+
+msgid "gui.metro.line_type_hint"
+msgstr "‘노선 유형’은 교통수단별로 필터링합니다. 노선 하나만 표시하려면 위의 ‘노선 선택…’을 사용하세요."
+
+msgid "gui.metro.manual_section"
+msgstr "수동 조정"
+
+msgid "gui.metro.output.auto"
+msgstr "자동"
+
+msgid "gui.metro.output.tooltip"
+msgstr "출력 이미지의 긴 변 픽셀 수입니다. ‘자동’을 선택하면 노선망 규모를 기준으로 적절한 크기를 권장합니다. 즉시 렌더링되지는 않으며 내보내기 창을 열면 적용됩니다."
+
+msgid "gui.metro.result_broken"
+msgstr "생성된 결과를 표시할 수 없습니다."
+
+msgid "gui.metro.result_empty"
+msgstr ""
+"아직 생성되지 않았습니다.\n"
+"\n"
+"위의 ‘{button}’을 눌러 시작하세요."
+
+msgid "gui.metro.result_note"
+msgstr "노선도는 현재 설정으로 한 번에 생성됩니다. “노선 너비/정류장 간격”을 변경한 후 위의 “{button}”을 눌러 내보내기 창을 여세요."
+
+msgid "gui.metro.scale_section"
+msgstr "축척 및 해상도"
+
+msgid "gui.metro.scale_strength"
+msgstr "축척 강도"
+
+msgid "gui.metro.settings_title"
+msgstr "지하철 노선도 설정"
+
+msgid "gui.metro.show_facility_icons"
+msgstr "연결 아이콘 표시"
+
+msgid "gui.metro.show_stations"
+msgstr "역 표시"
+
+msgid "gui.metro.show_water"
+msgstr "수역 표시"
+
+msgid "gui.metro.spacing_hint"
+msgstr "노선도에서 인접 역 사이의 거리입니다. 값이 클수록 노선망이 더 넓게 펼쳐지고 긴 노선이 더 많은 캔버스를 차지합니다."
+
+msgid "gui.metro.station_diameter"
+msgstr "켜면 건물과 시설에 게임에서 생성한 임의 이름을 사용합니다. 사용자 지정 이름에는 영향을 주지 않습니다."
+
+msgid "gui.metro.station_form"
+msgstr "정류장 형태"
+
+msgid "gui.metro.station_name_hint"
+msgstr "‘사용자 지정 역 이름만’을 선택하면 직접 입력한 이름만 표시되고 나머지는 자동으로 이름이 지정됩니다."
+
+msgid "gui.metro.station_names.all"
+msgstr "모든 정류장 이름"
+
+msgid "gui.metro.station_names.custom"
+msgstr "사용자 지정 정류장 이름만"
+
+msgid "gui.metro.station_names.none"
+msgstr "정류장 이름 표시 안 함"
+
+msgid "gui.metro.station_style.rmg"
+msgstr "클래식 철도"
+
+msgid "gui.metro.station_style.standard"
+msgstr "표준 원형"
+
+msgid "gui.metro.station_style_hint"
+msgstr "“레일 클래식”은 철도 스타일 역 아이콘을 사용하고, “표준 원형”은 일반 점을 사용합니다."
+
+msgid "gui.metro.title"
+msgstr "지하철 노선도"
+
+msgid "gui.metro.title_template"
+msgstr "제목 템플릿"
+
+msgid "gui.metro_editor.apply"
+msgstr "적용하고 미리 보기 새로 고침"
+
+msgid "gui.metro_editor.diagnostics"
+msgstr "레이아웃 진단"
+
+msgid "gui.metro_editor.display"
+msgstr "캔버스 표시"
+
+msgid "gui.metro_editor.empty"
+msgstr "편집을 시작하려면 역이나 노선을 선택하세요."
+
+msgid "gui.metro_editor.hint"
+msgstr "역을 드래그하면 정수 격자에 맞춰집니다. 편집을 적용하면 미리 보기가 자동으로 다시 렌더링됩니다."
+
+msgid "gui.metro_editor.labels.all"
+msgstr "모든 역 이름 표시"
+
+msgid "gui.metro_editor.labels.named"
+msgstr "이름이 있는 역만"
+
+msgid "gui.metro_editor.labels.none"
+msgstr "모든 역 이름 숨기기"
+
+msgid "gui.metro_editor.line"
+msgstr "노선"
+
+msgid "gui.metro_editor.line_outline"
+msgstr "노선에 어두운 윤곽선 표시"
+
+msgid "gui.metro_editor.loop"
+msgstr "순환 노선으로 렌더링"
+
+msgid "gui.metro_editor.no_diagnostics"
+msgstr "레이아웃 진단이 없습니다."
+
+msgid "gui.metro_editor.plan_saved"
+msgstr "편집 계획을 저장했습니다."
+
+msgid "gui.metro_editor.position"
+msgstr "정류장 위치: ({x}, {y})"
+
+msgid "gui.metro_editor.save_plan"
+msgstr "편집 계획 저장…"
+
+msgid "gui.metro_editor.shared"
+msgstr "공유 구간"
+
+msgid "gui.metro_editor.shared_applied"
+msgstr "공유 구간 설정을 기록했습니다."
+
+msgid "gui.metro_editor.shared_apply"
+msgstr "공유 구간 적용"
+
+msgid "gui.metro_editor.shared_need_two"
+msgstr "공유 구간은 노선을 두 개 이상 선택해야 합니다."
+
+msgid "gui.metro_editor.shared_pick_end"
+msgstr "공유 구간의 끝 역을 선택하세요."
+
+msgid "gui.metro_editor.shared_start"
+msgstr "이 역을 공유 구간 시작점으로 설정"
+
+msgid "gui.metro_editor.shared_unavailable"
+msgstr "이 두 역 사이에 인접한 노선이 최소 두 개 없습니다."
+
+msgid "gui.metro_editor.shared_waiting"
+msgstr "시작 역을 선택했습니다. 끝 역을 선택하세요"
+
+msgid "gui.metro_editor.station"
+msgstr "역"
+
+msgid "gui.metro_editor.station_labels"
+msgstr "역 이름 표시"
+
+msgid "gui.metro_editor.station_type"
+msgstr "역 유형"
+
+msgid "gui.metro_editor.title"
+msgstr "간편 지하철 편집기"
+
+msgid "gui.metro_editor.type.auto"
+msgstr "자동"
+
+msgid "gui.metro_editor.type.interchange"
+msgstr "환승역"
+
+msgid "gui.metro_editor.type.normal"
+msgstr "일반 역"
+
+msgid "gui.metro_editor.type.terminal"
+msgstr "종착역"
+
+msgid "gui.msg.no_congestion"
+msgstr "혼잡 구역을 찾지 못했습니다"
+
+msgid "gui.msg.no_spot_region"
+msgstr "사용할 수 있는 확대 영역을 찾지 못했습니다. 개수나 테마를 조정한 뒤 다시 시도하세요."
+
+msgid "gui.msg.no_traffic_spot"
+msgstr "이 저장 파일에는 교통 스냅샷이 없어 혼잡 지점을 만들 수 없습니다. 다시 시도하세요."
+
+msgid "gui.msg.open_first"
+msgstr "먼저 도시 저장 파일을 여세요"
+
+msgid "gui.msg.open_or_wait"
+msgstr "도시를 먼저 열거나 현재 작업이 끝날 때까지 기다려 주세요"
+
+msgid "gui.msg.select_map_area"
+msgstr "먼저 지도에서 범위를 선택하세요"
+
+msgid "gui.msg.title"
+msgstr "안내"
+
+msgid "gui.msg.title_error"
+msgstr "작업 실패"
+
+msgid "gui.nav.back"
+msgstr "← 뒤로"
+
+msgid "gui.nav.back_home"
+msgstr "← 홈으로 돌아가기"
+
+msgid "gui.nav.back_home.tip"
+msgstr "지도 홈으로 돌아가기"
+
+msgid "gui.nav.back_properties"
+msgstr "객체 속성으로 돌아가기"
+
+msgid "gui.panel.base"
+msgstr "바탕 지도"
+
+msgid "gui.panel.city"
+msgstr "도시"
+
+msgid "gui.panel.close"
+msgstr "닫기"
+
+msgid "gui.panel.color_strength"
+msgstr "색상 강도"
+
+msgid "gui.panel.create"
+msgstr "빠른 만들기"
+
+msgid "gui.panel.distance"
+msgstr "거리"
+
+msgid "gui.panel.export"
+msgstr "내보내기"
+
+msgid "gui.panel.facility_tiers"
+msgstr "시설 단계"
+
+msgid "gui.panel.functions"
+msgstr "기능"
+
+msgid "gui.panel.icon_text"
+msgstr "아이콘 및 텍스트"
+
+msgid "gui.panel.labels"
+msgstr "라벨"
+
+msgid "gui.panel.line_and_station"
+msgstr "노선과 정류장"
+
+msgid "gui.panel.line_station"
+msgstr "노선 및 정류장"
+
+msgid "gui.panel.line_style"
+msgstr "노선 스타일"
+
+msgid "gui.panel.lines"
+msgstr "노선"
+
+msgid "gui.panel.map"
+msgstr "지도"
+
+msgid "gui.panel.merge"
+msgstr "병합 및 그룹화"
+
+msgid "gui.panel.output"
+msgstr "출력"
+
+msgid "gui.panel.overrides"
+msgstr "유형별 재정의"
+
+msgid "gui.panel.poi_style"
+msgstr "장소 아이콘 스타일"
+
+msgid "gui.panel.preview"
+msgstr "미리보기"
+
+msgid "gui.panel.programs"
+msgstr "애플리케이션"
+
+msgid "gui.panel.regions"
+msgstr "지역 및 구역"
+
+msgid "gui.panel.road_overall"
+msgstr "도로 전체"
+
+msgid "gui.panel.scale"
+msgstr "축척"
+
+msgid "gui.panel.share"
+msgstr "공유 및 내보내기"
+
+msgid "gui.panel.showcase"
+msgstr "도시 둘러보기"
+
+msgid "gui.panel.statistics"
+msgstr "통계"
+
+msgid "gui.panel.style"
+msgstr "스타일"
+
+msgid "gui.panel.theme_pick"
+msgstr "빠른 테마 선택"
+
+msgid "gui.panel.transit"
+msgstr "교통"
+
+msgid "gui.poi.building_icon"
+msgstr "건물 아이콘"
+
+msgid "gui.poi_category.airport"
+msgstr "공항"
+
+msgid "gui.poi_category.bus"
+msgstr "버스 정류장"
+
+msgid "gui.poi_category.highway_exit"
+msgstr "고속도로 출구"
+
+msgid "gui.poi_category.hospital"
+msgstr "병원"
+
+msgid "gui.poi_category.metro"
+msgstr "지하철역"
+
+msgid "gui.poi_category.park"
+msgstr "공원"
+
+msgid "gui.poi_category.residential"
+msgstr "주거"
+
+msgid "gui.poi_category.school"
+msgstr "학교"
+
+msgid "gui.poi_category.ship"
+msgstr "항구"
+
+msgid "gui.poi_category.traffic_light"
+msgstr "신호등"
+
+msgid "gui.poi_category.train"
+msgstr "기차역"
+
+msgid "gui.poi_editor.advanced_yaml"
+msgstr "고급: YAML 편집"
+
+msgid "gui.poi_editor.advanced_yaml_help"
+msgstr "고급: POI 매핑 YAML을 직접 편집합니다. 저장 후 매핑 설정이 다시 로드됩니다. 설정 형식에 익숙한 사용자에게만 권장합니다."
+
+msgid "gui.poi_editor.col.category"
+msgstr "범주"
+
+msgid "gui.poi_editor.col.message"
+msgstr "설명"
+
+msgid "gui.poi_editor.col.rule"
+msgstr "규칙"
+
+msgid "gui.poi_editor.delete_confirm"
+msgstr "poi_mapping.yaml에서 범주 “{kind}”을(를) 삭제할까요?"
+
+msgid "gui.poi_editor.delete_failed"
+msgstr "삭제 실패"
+
+msgid "gui.poi_editor.delete_kind"
+msgstr "범주 삭제"
+
+msgid "gui.poi_editor.deleted_kind"
+msgstr "범주 “{kind}” 삭제됨"
+
+msgid "gui.poi_editor.display.hidden"
+msgstr "숨김"
+
+msgid "gui.poi_editor.display.inherit"
+msgstr "상위 건물 상속"
+
+msgid "gui.poi_editor.display.visible"
+msgstr "표시"
+
+msgid "gui.poi_editor.field.current_icon"
+msgstr "현재 아이콘"
+
+msgid "gui.poi_editor.field.display"
+msgstr "표시 방식"
+
+msgid "gui.poi_editor.field.icon_key"
+msgstr "아이콘 키"
+
+msgid "gui.poi_editor.field.label"
+msgstr "이름"
+
+msgid "gui.poi_editor.field.min_zoom"
+msgstr "최소 확대"
+
+msgid "gui.poi_editor.field.priority"
+msgstr "우선순위"
+
+msgid "gui.poi_editor.filter.all"
+msgstr "전체"
+
+msgid "gui.poi_editor.filter.dup_icon"
+msgstr "중복 아이콘"
+
+msgid "gui.poi_editor.filter.hidden"
+msgstr "정책에 따라 숨김"
+
+msgid "gui.poi_editor.filter.missing_icon"
+msgstr "아이콘 누락"
+
+msgid "gui.poi_editor.filter.orphan"
+msgstr "고아 범주"
+
+msgid "gui.poi_editor.filter.unmapped"
+msgstr "매핑되지 않음"
+
+msgid "gui.poi_editor.group.enum"
+msgstr "서비스 목록"
+
+msgid "gui.poi_editor.group.facility"
+msgstr "시설 구분"
+
+msgid "gui.poi_editor.group.general"
+msgstr "일반"
+
+msgid "gui.poi_editor.group.service"
+msgstr "서비스 세부 항목"
+
+msgid "gui.poi_editor.icon_filter_placeholder"
+msgstr "이름/id로 필터링하고 클릭해 icon_key 채우기"
+
+msgid "gui.poi_editor.icon_library_info"
+msgstr "아이콘 라이브러리: {name}({count}개 아이콘)"
+
+msgid "gui.poi_editor.icon_load_failed"
+msgstr "아이콘 라이브러리를 불러올 수 없습니다: {exc}"
+
+msgid "gui.poi_editor.icon_manifest_missing"
+msgstr "아이콘 매니페스트를 찾을 수 없습니다: {path}"
+
+msgid "gui.poi_editor.icon_pick_hint"
+msgstr "가운데 아이콘을 선택하거나 아이콘 ID를 직접 입력하세요"
+
+msgid "gui.poi_editor.info_display"
+msgstr "표시 방식: {display}"
+
+msgid "gui.poi_editor.info_refs"
+msgstr "매핑 참조: {count}개"
+
+msgid "gui.poi_editor.issue_count"
+msgstr "총 {total}개 중 {shown}개 표시"
+
+msgid "gui.poi_editor.missing_icon"
+msgstr "아이콘 없음"
+
+msgid "gui.poi_editor.nothing_to_save"
+msgstr "저장할 변경 사항이 없습니다"
+
+msgid "gui.poi_editor.ready"
+msgstr "준비됨"
+
+msgid "gui.poi_editor.refs_body_none"
+msgstr "범주 {kind}은(는) 어떤 AI 유형에서도 참조되지 않습니다."
+
+msgid "gui.poi_editor.refs_body_some"
+msgstr ""
+"범주 {kind}은(는) AI 유형 {count}개에서 참조합니다:\n"
+"\n"
+"{list}"
+
+msgid "gui.poi_editor.refs_title"
+msgstr "매핑 참조"
+
+msgid "gui.poi_editor.save"
+msgstr "저장"
+
+msgid "gui.poi_editor.save_error_body"
+msgstr "poi_mapping.yaml이 변경되지 않았습니다: {exc}"
+
+msgid "gui.poi_editor.save_failed"
+msgstr "저장 실패"
+
+msgid "gui.poi_editor.save_kind"
+msgstr "범주 저장"
+
+msgid "gui.poi_editor.saved_count"
+msgstr "범주 {count}개 저장됨"
+
+msgid "gui.poi_editor.search_label"
+msgstr "범주 검색"
+
+msgid "gui.poi_editor.search_placeholder"
+msgstr "범주 이름 또는 키로 필터링"
+
+msgid "gui.poi_editor.section.categories"
+msgstr "범주"
+
+msgid "gui.poi_editor.section.icons"
+msgstr "아이콘 라이브러리"
+
+msgid "gui.poi_editor.section.properties"
+msgstr "속성"
+
+msgid "gui.poi_editor.show_refs"
+msgstr "매핑 참조 표시…"
+
+msgid "gui.poi_editor.title"
+msgstr "POI 매핑 관리자"
+
+msgid "gui.poi_editor.unsaved_body"
+msgstr "저장하지 않은 변경 사항이 있습니다. 저장하고 닫을까요?"
+
+msgid "gui.poi_editor.unsaved_count"
+msgstr "저장되지 않은 변경 사항: 범주 {count}개"
+
+msgid "gui.poi_editor.unsaved_title"
+msgstr "저장되지 않은 변경 사항"
+
+msgid "gui.poi_editor.validate"
+msgstr "검증"
+
+msgid "gui.poi_editor.yaml_title"
+msgstr "POI 매핑 관리"
+
+msgid "gui.poi_shared.all_games"
+msgstr "모든 게임"
+
+msgid "gui.poi_shared.close"
+msgstr "닫기"
+
+msgid "gui.poi_shared.display"
+msgstr "아이콘 표시"
+
+msgid "gui.poi_shared.external_change"
+msgstr "매핑이 외부에서 변경되었습니다. 창을 닫은 뒤 다시 여세요."
+
+msgid "gui.poi_shared.image_search"
+msgstr "아이콘 검색"
+
+msgid "gui.poi_shared.no_image"
+msgstr "아이콘 없음"
+
+msgid "gui.poi_shared.restore"
+msgstr "기본값 복원"
+
+msgid "gui.poi_shared.save"
+msgstr "저장"
+
+msgid "gui.poi_shared.saved"
+msgstr "저장했습니다. 모든 지도에서 이 설정을 공유합니다."
+
+msgid "gui.poi_shared.search"
+msgstr "이름 또는 네이티브 ID 검색"
+
+msgid "gui.poi_shared.unsaved"
+msgstr "저장하지 않은 변경을 저장할까요?"
+
+msgid "gui.poi_style.color"
+msgstr "컬러"
+
+msgid "gui.poi_style.simple"
+msgstr "간단"
+
+msgid "gui.poi_style.switch.tip"
+msgstr "아이콘 스타일 전환: {name}"
+
+msgid "gui.preview.busy"
+msgstr ""
+"지도 생성 중…\n"
+"\n"
+"도시 저장 파일을 읽고 있습니다. 도시가 클수록 시간이 더 걸립니다."
+
+msgid "gui.preview.host_unavailable"
+msgstr "이 플랫폼에서는 포함된 지도 미리 보기를 사용할 수 없지만 이미지 출력은 계속 사용할 수 있습니다."
+
+msgid "gui.preview.map_hint"
+msgstr "드래그하여 이동 · 스크롤하여 확대/축소"
+
+msgid "gui.preview.no_map"
+msgstr ""
+"아직 열린 도시가 없습니다\n"
+"\n"
+"도시 저장 파일을 열면 여기에 지도가 실시간으로 표시됩니다."
+
+msgid "gui.progress.built_area.done"
+msgstr "시가지 완료"
+
+msgid "gui.progress.built_area.fill"
+msgstr "시가지 채우기 {i}/{n}"
+
+msgid "gui.progress.built_area.outline"
+msgstr "시가지 윤곽 추출 중"
+
+msgid "gui.progress.built_area.surface"
+msgstr "시가지 합성 완료"
+
+msgid "gui.progress.interchange"
+msgstr "입체교차로 렌더링 {i}/{n}"
+
+msgid "gui.progress.layer_detail"
+msgstr "{layer}: {msg}"
+
+msgid "gui.progress.load.buildings"
+msgstr "건물 구성 중"
+
+msgid "gui.progress.load.document"
+msgstr "지도 문서 구성 중"
+
+msgid "gui.progress.load.done"
+msgstr "로드 완료"
+
+msgid "gui.progress.load.meta"
+msgstr "메타데이터 읽는 중"
+
+msgid "gui.progress.load.nodes"
+msgstr "건물 노드 구성 중"
+
+msgid "gui.progress.load.props"
+msgstr "숲과 Procedural Objects 구성 중"
+
+msgid "gui.progress.load.road_types"
+msgstr "도로 유형 구성 중"
+
+msgid "gui.progress.load.segments"
+msgstr "건물 구간 로드 중"
+
+msgid "gui.progress.load.terrain"
+msgstr "지형 구성 중"
+
+msgid "gui.progress.load.traffic"
+msgstr "내장 교통 스냅샷 불러오는 중({count}개 구간)"
+
+msgid "gui.progress.load.transit"
+msgstr "교통 노선 구성 중"
+
+msgid "gui.progress.load.xml"
+msgstr "XML 읽는 중"
+
+msgid "gui.progress.load.zones"
+msgstr "구역 및 용도지역 구성 중"
+
+msgid "gui.progress.merge_tile"
+msgstr "타일 병합 중 {i}/{n}({col},{row})"
+
+msgid "gui.progress.mosaic"
+msgstr "모자이크 합성 중…"
+
+msgid "gui.progress.preview"
+msgstr "지도 미리 보기 생성 중…"
+
+msgid "gui.progress.render_base_layer"
+msgstr "기본 지도 {layer} 레이어 렌더링 중"
+
+msgid "gui.progress.render_layer"
+msgstr "{layer} 레이어 렌더링 중"
+
+msgid "gui.progress.render_tiles"
+msgstr "타일 렌더링 중(총 {n}개)"
+
+msgid "gui.progress.scene.data"
+msgstr "지도 데이터 준비 중…"
+
+msgid "gui.progress.scene.draw_layer"
+msgstr "{label} 그리는 중…"
+
+msgid "gui.progress.scene.draw_roads"
+msgstr "도로 그리는 중…"
+
+msgid "gui.progress.scene.layers"
+msgstr "지도 레이어 그리는 중…"
+
+msgid "gui.progress.scene.ready"
+msgstr "지도 생성 완료"
+
+msgid "gui.progress.scene.roads"
+msgstr "도로 정리 중…"
+
+msgid "gui.progress.scene.write"
+msgstr "지도 파일 쓰는 중…"
+
+msgid "gui.progress.spot"
+msgstr "확대 영역 렌더링 {i}/{n}"
+
+msgid "gui.progress.svg_done"
+msgstr "SVG 내보내기 완료"
+
+msgid "gui.progress.svg_write"
+msgstr "SVG 쓰는 중…"
+
+msgid "gui.progress.terrain.color"
+msgstr "지형 색칠 중 {i}/{n}개 블록"
+
+msgid "gui.progress.terrain.colored"
+msgstr "지형 색상 지정 완료"
+
+msgid "gui.progress.terrain.done"
+msgstr "지형 완료"
+
+msgid "gui.progress.terrain.interpolate"
+msgstr "지형 높이 보간 중"
+
+msgid "gui.progress.terrain.relief"
+msgstr "지형 음영 합성 중"
+
+msgid "gui.progress.tile_detail"
+msgstr "[{i}/{n}] {msg}"
+
+msgid "gui.progress.water.contours"
+msgstr "수면 등고선 준비 완료"
+
+msgid "gui.progress.water.done"
+msgstr "수역 완료"
+
+msgid "gui.progress.water.fill"
+msgstr "수면 채우기 {i}/{n}"
+
+msgid "gui.progress.water.mask"
+msgstr "수면 마스크 완료"
+
+msgid "gui.range.anchor.busiest"
+msgstr "가장 붐비는 구역"
+
+msgid "gui.range.anchor.center"
+msgstr "지도 중심"
+
+msgid "gui.range.custom"
+msgstr "사용자 지정…"
+
+msgid "gui.range.dialog.apply"
+msgstr "적용 범위"
+
+msgid "gui.range.dialog.by_tiles"
+msgstr "n × n 토지 타일 선택"
+
+msgid "gui.range.dialog.cancel"
+msgstr "취소"
+
+msgid "gui.range.dialog.diagram"
+msgstr "드래그하여 범위 선택 · 안쪽을 드래그하여 이동"
+
+msgid "gui.range.dialog.draw"
+msgstr "영역 그리기"
+
+msgid "gui.range.dialog.full_tiles"
+msgstr "모든 타일 · {n} × {n}（총 {total}개）"
+
+msgid "gui.range.dialog.legacy"
+msgstr "기존 범위는 {side} × {side}km입니다. 적용하면 위의 타일 범위를 사용하고, 취소하면 기존 범위를 유지합니다."
+
+msgid "gui.range.dialog.note"
+msgstr "여기서 내보낼 범위를 선택하고, 이미지 픽셀 크기는 내보내기 창에서 설정하세요."
+
+msgid "gui.range.dialog.open"
+msgstr "범위 설정…"
+
+msgid "gui.range.dialog.outside"
+msgstr "모든 토지 타일 + 주변 지형"
+
+msgid "gui.range.dialog.outside_missing"
+msgstr "이 파일에는 주변 지형이 없습니다. 게임 모드를 업데이트한 뒤 다시 내보내세요."
+
+msgid "gui.range.dialog.redraw"
+msgstr "다시 범위 선택"
+
+msgid "gui.range.dialog.side"
+msgstr "한 변당 타일 수"
+
+msgid "gui.range.dialog.small"
+msgstr "파일이 완전한 토지 타일 하나보다 작습니다. 전체 지도 또는 영역 선택을 사용하세요."
+
+msgid "gui.range.dialog.square"
+msgstr "→ {n} × {n}"
+
+msgid "gui.range.dialog.summary"
+msgstr ""
+"{n} × {n} 타일 · 총 {total}개\n"
+"약 {side} × {side}km 포함"
+
+msgid "gui.range.dialog.title"
+msgstr "지도 범위 설정"
+
+msgid "gui.range.dimensions_km"
+msgstr "{width} × {height} km"
+
+msgid "gui.range.entire_city"
+msgstr "전체 지도"
+
+msgid "gui.range.game.cs1"
+msgstr "Cities: Skylines · 오리지널"
+
+msgid "gui.range.game.cs2"
+msgstr "Cities: Skylines II"
+
+msgid "gui.range.tiles"
+msgstr "{n} × {n} 토지 타일"
+
+msgid "gui.region.hint"
+msgstr "범위를 표시하고 선택한 뒤 색상 강도 조정"
+
+msgid "gui.region.no_items"
+msgstr "이 저장 파일에는 선택할 수 있는 범위가 없습니다."
+
+msgid "gui.result.empty"
+msgstr "아직 생성되지 않음."
+
+msgid "gui.ribbon.group.output"
+msgstr "출력"
+
+msgid "gui.ribbon.group.style"
+msgstr "스타일"
+
+msgid "gui.ribbon.tab.create"
+msgstr "만들기"
+
+msgid "gui.ribbon.tab.icons"
+msgstr "아이콘"
+
+msgid "gui.ribbon.tab.layers"
+msgstr "레이어"
+
+msgid "gui.ribbon.tab.metro"
+msgstr "지하철"
+
+msgid "gui.ribbon.tab.start"
+msgstr "홈"
+
+msgid "gui.ribbon.tab.style"
+msgstr "스타일"
+
+msgid "gui.ribbon.tab.tools"
+msgstr "도구"
+
+msgid "gui.ribbon.tab.transit"
+msgstr "대중교통"
+
+msgid "gui.road.fill"
+msgstr "채우기"
+
+msgid "gui.road.width.tip"
+msgstr "이 등급의 최소 표시 너비입니다. 좁은 도로나 지도를 축소했을 때 차이가 드러납니다."
+
+msgid "gui.sidebar.edit_style"
+msgstr "테마 편집…"
+
+msgid "gui.sidebar.group.map"
+msgstr "지도"
+
+msgid "gui.sidebar.group.map_layers"
+msgstr "지도"
+
+msgid "gui.sidebar.group.output"
+msgstr "출력"
+
+msgid "gui.sidebar.group.render"
+msgstr "지도"
+
+msgid "gui.sidebar.group.text"
+msgstr "텍스트"
+
+msgid "gui.sidebar.group.theme"
+msgstr "테마"
+
+msgid "gui.sidebar.group.transit"
+msgstr "대중교통"
+
+msgid "gui.sidebar.group.transit_layers"
+msgstr "대중교통"
+
+msgid "gui.sidebar.label.quality"
+msgstr "화질"
+
+msgid "gui.sidebar.label.style"
+msgstr "스타일"
+
+msgid "gui.sidebar.label.theme"
+msgstr "스타일"
+
+msgid "gui.sidebar.spot_transit"
+msgstr "대중교통 보기"
+
+msgid "gui.sidebar.terrain_settings"
+msgstr "지형 모양 설정"
+
+msgid "gui.sidebar.transit_types_title"
+msgstr "노선 유형"
+
+msgid "gui.smooth.extreme"
+msgstr "매우 강함"
+
+msgid "gui.smooth.high"
+msgstr "높음"
+
+msgid "gui.smooth.low"
+msgstr "낮음"
+
+msgid "gui.smooth.standard"
+msgstr "표준"
+
+msgid "gui.smooth.strong"
+msgstr "강함"
+
+msgid "gui.stats.buildings"
+msgstr "건물"
+
+msgid "gui.stats.built_area"
+msgstr "시가지 면적"
+
+msgid "gui.stats.districts"
+msgstr "구역 수"
+
+msgid "gui.stats.regions"
+msgstr "지역 수"
+
+msgid "gui.stats.road_length"
+msgstr "도로 길이"
+
+msgid "gui.stats.transit_length"
+msgstr "대중교통 운행 거리"
+
+msgid "gui.status.back_to_city_map"
+msgstr "도시 지도 화면으로 돌아왔습니다"
+
+msgid "gui.status.cache_cleared"
+msgstr "렌더링 프로세스와 파싱 캐시를 지웠습니다"
+
+msgid "gui.status.canvas_moved"
+msgstr "지도가 이동하여 선택 영역을 지웠습니다"
+
+msgid "gui.status.city_loaded"
+msgstr "도시를 불러왔습니다. 실시간 미리 보기를 생성하는 중입니다"
+
+msgid "gui.status.city_unknown"
+msgstr "알 수 없는 도시"
+
+msgid "gui.status.copied_scaled"
+msgstr "（{w}×{h} 크기로 조정됨）"
+
+msgid "gui.status.entered_metro"
+msgstr "지하철 노선도로 전환됨. 생성 중…"
+
+msgid "gui.status.entered_metro_no_city"
+msgstr "지하철 노선도로 전환됨 · 먼저 도시 저장 파일을 여세요"
+
+msgid "gui.status.entered_transit"
+msgstr "대중교통 보기로 전환했습니다. 생성 중…"
+
+msgid "gui.status.entered_transit_no_city"
+msgstr "대중교통 보기로 전환됨 · 먼저 도시 저장 파일을 여세요"
+
+msgid "gui.status.file_moved"
+msgstr "{name}이(가) 원래 위치에 없어 최근 항목에서 제거되었습니다."
+
+msgid "gui.status.image_copied"
+msgstr "이미지 복사됨"
+
+msgid "gui.status.lang_save_failed"
+msgstr "언어 설정을 저장할 수 없습니다"
+
+msgid "gui.status.log_dir_failed"
+msgstr "로그 폴더를 열 수 없습니다: {detail}"
+
+msgid "gui.status.map_area_selected"
+msgstr "지도 영역을 선택했습니다"
+
+msgid "gui.status.map_failed_detail"
+msgstr "지도를 만들지 못했습니다: {error}"
+
+msgid "gui.status.metro_cannot_start"
+msgstr "생성할 수 없습니다. 먼저 도시 저장 파일을 열거나 현재 작업이 끝날 때까지 기다리세요."
+
+msgid "gui.status.metro_failed"
+msgstr "생성 실패."
+
+msgid "gui.status.metro_preview_first"
+msgstr "먼저 지하철 노선도를 한 번 생성하세요"
+
+msgid "gui.status.metro_progress"
+msgstr "노선도 생성 중… {pct}%"
+
+msgid "gui.status.metro_rendering"
+msgstr "노선도 생성 중…"
+
+msgid "gui.status.no_city"
+msgstr "열린 도시 없음"
+
+msgid "gui.status.no_render_result"
+msgstr "아직 지도가 생성되지 않았습니다. 먼저 ‘지도 렌더링’을 누르세요."
+
+msgid "gui.status.no_traffic"
+msgstr "교통량 없음"
+
+msgid "gui.status.parsing"
+msgstr "분석 중: {msg}"
+
+msgid "gui.status.parsing_save"
+msgstr "저장 파일 분석 중…"
+
+msgid "gui.status.pick_region_first"
+msgstr "먼저 무작위로 확대 영역을 선택하세요"
+
+msgid "gui.status.preview_failed"
+msgstr "중앙 미리보기를 만들지 못했습니다"
+
+msgid "gui.status.preview_prefix"
+msgstr "미리 보기: {msg}"
+
+msgid "gui.status.random_spot_picked"
+msgstr "확대 영역을 임의로 선택했습니다. 미리 보기를 조정한 뒤 저장하세요"
+
+msgid "gui.status.render_short"
+msgstr "지도 생성 완료 · {size}px · {elapsed}s"
+
+msgid "gui.status.rendering_stall"
+msgstr "렌더링 중… {sec}초 동안 진행 상황이 업데이트되지 않았습니다. 큰 이미지나 고품질 출력에서는 정상입니다."
+
+msgid "gui.status.save_missing_or_parsing"
+msgstr "파일이 없거나 다른 저장 파일을 분석 중입니다"
+
+msgid "gui.status.saved"
+msgstr "저장됨: {path}"
+
+msgid "gui.status.select_mode"
+msgstr "선택 모드: 지도에서 드래그해 영역 선택"
+
+msgid "gui.status.traffic_embedded"
+msgstr "포함된 교통 데이터: {n}"
+
+msgid "gui.status.traffic_ext"
+msgstr "외부 JSON: {n}"
+
+msgid "gui.status.web_done"
+msgstr "웹 지도 내보내기 완료"
+
+msgid "gui.status.writing_png"
+msgstr "PNG 쓰는 중…"
+
+msgid "gui.style.hint.redirect"
+msgstr "지도 스타일은 테마 편집기에서 수정합니다. 여기에는 별도의 빠른 설정 페이지가 없습니다"
+
+msgid "gui.style.hint.theme_editor"
+msgstr "지형, 도로, 건물, 수역, 라벨 및 아이콘은 모두 같은 테마 편집기에서 관리합니다."
+
+msgid "gui.style_editor.add_step"
+msgstr "+ 단계 추가"
+
+msgid "gui.style_editor.advanced"
+msgstr "고급 설정"
+
+msgid "gui.style_editor.advanced_json_tip"
+msgstr "고급: 전체 테마 JSON 직접 편집"
+
+msgid "gui.style_editor.applied_no_file"
+msgstr "적용됨(파일 변경 없음)"
+
+msgid "gui.style_editor.apply"
+msgstr "적용"
+
+msgid "gui.style_editor.apply_tip"
+msgstr "이번 세션에만 적용되며 파일에 저장되지 않습니다"
+
+msgid "gui.style_editor.auto_preview"
+msgstr "자동 미리 보기"
+
+msgid "gui.style_editor.basic.aa.desc"
+msgstr "더 높은 해상도로 그린 뒤 축소하여 도로와 텍스트 가장자리를 부드럽게 합니다. 사용하면 시간과 메모리가 더 듭니다."
+
+msgid "gui.style_editor.basic.aa.label"
+msgstr "가장자리 부드럽게"
+
+msgid "gui.style_editor.basic.contrast.label"
+msgstr "대비"
+
+msgid "gui.style_editor.basic.contrast.value.enhanced"
+msgstr "강화"
+
+msgid "gui.style_editor.basic.contrast.value.social"
+msgstr "소셜"
+
+msgid "gui.style_editor.basic.contrast.value.standard"
+msgstr "표준"
+
+msgid "gui.style_editor.basic.font_tier.label"
+msgstr "텍스트 크기"
+
+msgid "gui.style_editor.basic.font_tier.value.large"
+msgstr "크게"
+
+msgid "gui.style_editor.basic.font_tier.value.small"
+msgstr "작게"
+
+msgid "gui.style_editor.basic.font_tier.value.standard"
+msgstr "표준"
+
+msgid "gui.style_editor.basic.font_tier.value.xlarge"
+msgstr "특대"
+
+msgid "gui.style_editor.basic.theme.label"
+msgstr "지도 테마"
+
+msgid "gui.style_editor.cannot_save"
+msgstr "저장할 수 없음"
+
+msgid "gui.style_editor.category_modified"
+msgstr "{label} · {count}개 수정됨"
+
+msgid "gui.style_editor.choose_color"
+msgstr "색상 선택"
+
+msgid "gui.style_editor.comma_separated"
+msgstr "쉼표로 구분"
+
+msgid "gui.style_editor.compare_before"
+msgstr "변경 전"
+
+msgid "gui.style_editor.desc.buildings.border"
+msgstr "건물 테두리 색상"
+
+msgid "gui.style_editor.desc.buildings.border_width"
+msgstr "건물 외곽선 두께입니다. 값이 클수록 더 두드러집니다."
+
+msgid "gui.style_editor.desc.buildings.default"
+msgstr "건물 본체 채우기 색상입니다. 건물 유형별 색상을 사용할 때 기본값으로 쓰입니다."
+
+msgid "gui.style_editor.desc.buildings.poi_tint.enabled"
+msgstr "용도에 따라 건물 색조를 약간 조정할지 여부"
+
+msgid "gui.style_editor.desc.buildings.shadow"
+msgstr "건물에 그림자를 추가해 입체감을 줍니다. 렌더링 시간이 조금 길어집니다."
+
+msgid "gui.style_editor.desc.buildings.shadow.enabled"
+msgstr "건물에 그림자를 적용할지 여부"
+
+msgid "gui.style_editor.desc.built_area.buffer_meters"
+msgstr "시가지 경계가 바깥쪽으로 확장되는 거리"
+
+msgid "gui.style_editor.desc.built_area.color"
+msgstr "시가지 전체 색상"
+
+msgid "gui.style_editor.desc.built_area.enabled"
+msgstr "도시 시가지를 그릴지 여부"
+
+msgid "gui.style_editor.desc.built_area.exclude_services"
+msgstr "시가지에 포함되지 않는 서비스 시설"
+
+msgid "gui.style_editor.desc.built_area.include_parks"
+msgstr "공원을 시가지에 포함할지"
+
+msgid "gui.style_editor.desc.canvas"
+msgstr "캔버스 크기(픽셀)입니다. 최종 내보내기 크기는 내보내기 창의 설정을 따릅니다."
+
+msgid "gui.style_editor.desc.canvas.background"
+msgstr "지도 전체 배경색"
+
+msgid "gui.style_editor.desc.district.border"
+msgstr "구역 경계 색상"
+
+msgid "gui.style_editor.desc.district.border_width"
+msgstr "구역 경계선 두께입니다."
+
+msgid "gui.style_editor.desc.district.enabled"
+msgstr "구역을 그릴지 여부"
+
+msgid "gui.style_editor.desc.district.fill_alpha"
+msgstr "구역 채우기 불투명도"
+
+msgid "gui.style_editor.desc.district.fill_colors"
+msgstr "구역에 반복해서 사용할 색상 팔레트"
+
+msgid "gui.style_editor.desc.forest.color"
+msgstr "숲 덮개 색상"
+
+msgid "gui.style_editor.desc.labels.building"
+msgstr "건물 이름 글꼴, 크기, 색상 및 테두리입니다."
+
+msgid "gui.style_editor.desc.labels.district"
+msgstr "구역 이름 텍스트 설정: 글꼴, 크기, 색상, 윤곽선."
+
+msgid "gui.style_editor.desc.labels.district.color"
+msgstr "구역 이름 색상"
+
+msgid "gui.style_editor.desc.labels.park"
+msgstr "공원 이름 글꼴, 크기, 색상 및 테두리입니다."
+
+msgid "gui.style_editor.desc.labels.road"
+msgstr "도로 이름 글꼴, 크기, 색상 및 테두리입니다."
+
+msgid "gui.style_editor.desc.labels.road.color"
+msgstr "도로 이름 색상"
+
+msgid "gui.style_editor.desc.labels.road_repeat"
+msgstr "도로 이름 반복 간격"
+
+msgid "gui.style_editor.desc.labels.stop"
+msgstr "정류장 이름 글꼴, 크기, 색상 및 테두리입니다."
+
+msgid "gui.style_editor.desc.land_use.alpha"
+msgstr "기능 구역 색상의 불투명도"
+
+msgid "gui.style_editor.desc.land_use.colors"
+msgstr "용도지역 색상"
+
+msgid "gui.style_editor.desc.land_use.detail"
+msgstr "기능 분류 세밀도"
+
+msgid "gui.style_editor.desc.land_use.enabled"
+msgstr "용도에 따라 색상 블록을 표시할지 여부"
+
+msgid "gui.style_editor.desc.poi_icons.bg_circle"
+msgstr "아이콘 아래에 흰색 원을 추가할지 여부"
+
+msgid "gui.style_editor.desc.poi_icons.bg_circle_size"
+msgstr "아이콘 뒤 흰색 원의 지름(픽셀)입니다. 아이콘이 바탕 지도와 비슷한 색이면 값을 키우세요."
+
+msgid "gui.style_editor.desc.poi_icons.enabled"
+msgstr "장소 아이콘 표시 여부"
+
+msgid "gui.style_editor.desc.poi_icons.grid_size"
+msgstr "아이콘 밀도를 조절하는 클러스터 격자 크기"
+
+msgid "gui.style_editor.desc.poi_icons.hidden_categories"
+msgstr "표시되지 않는 장소 범주"
+
+msgid "gui.style_editor.desc.poi_icons.icon_size"
+msgstr "아이콘 크기"
+
+msgid "gui.style_editor.desc.poi_icons.icons_dir"
+msgstr "사용할 아이콘 라이브러리"
+
+msgid "gui.style_editor.desc.poi_icons.merge_distance"
+msgstr "두 장소 아이콘의 거리가 이 값보다 가까우면 하나로 합칠 수 있습니다. 단위는 게임 월드 거리(m)입니다."
+
+msgid "gui.style_editor.desc.poi_icons.name_size"
+msgstr "아이콘 이름 글꼴 크기(픽셀)입니다."
+
+msgid "gui.style_editor.desc.poi_icons.show_name"
+msgstr "아이콘 옆에 장소 이름 표시"
+
+msgid "gui.style_editor.desc.procedural_objects.border"
+msgstr "사용자 지정 개체 테두리 색상"
+
+msgid "gui.style_editor.desc.procedural_objects.custom_color_alpha"
+msgstr "사용자 지정 객체 색조 강도"
+
+msgid "gui.style_editor.desc.roads.highway.fill"
+msgstr "고속도로 및 자동차 전용 도로 색상"
+
+msgid "gui.style_editor.desc.roads.width_scale"
+msgstr "전체 도로 굵기 조정"
+
+msgid "gui.style_editor.desc.terrain.elevation_colors"
+msgstr "고도 구간별로 색칠하며 임계값이 낮을수록 더 낮은 지형에 적용됩니다"
+
+msgid "gui.style_editor.desc.terrain.elevation_mode"
+msgstr "continuous=연속 그라데이션; stepped=단계별 색상"
+
+msgid "gui.style_editor.desc.terrain.ground.enabled"
+msgstr "지면 기본 색상을 그릴지 여부"
+
+msgid "gui.style_editor.desc.terrain.ground.far_green"
+msgstr "고지대 지면 색상"
+
+msgid "gui.style_editor.desc.terrain.ground.mountain_colors"
+msgstr "산지를 고도 구간별로 색칠"
+
+msgid "gui.style_editor.desc.terrain.ground.mountain_threshold"
+msgstr "이 높이보다 높은 지형을 산지로 간주"
+
+msgid "gui.style_editor.desc.terrain.ground.near_green"
+msgstr "저지대 지면 색상"
+
+msgid "gui.style_editor.desc.terrain.ground.ramp_meters"
+msgstr "두 지면 색이 섞이는 높이 범위"
+
+msgid "gui.style_editor.desc.terrain.hillshade.altitude"
+msgstr "빛과 지면 사이의 각도입니다. 값이 작을수록 그림자가 길어지고 지형 기복이 강조됩니다."
+
+msgid "gui.style_editor.desc.terrain.hillshade.azimuth"
+msgstr "정북을 0°로 하여 시계 방향으로 측정한 빛의 방위각입니다."
+
+msgid "gui.style_editor.desc.terrain.hillshade.enabled"
+msgstr "산지에 음영을 넣어 입체감 표현"
+
+msgid "gui.style_editor.desc.terrain.hillshade.intensity"
+msgstr "햇빛이 드는 경사와 그늘진 경사 사이의 밝기 차이입니다. 값이 너무 크면 도로와 건물을 가릴 수 있습니다."
+
+msgid "gui.style_editor.desc.terrain.hillshade.large_scale_meters"
+msgstr "산맥의 전반적인 방향을 표현하는 평활화 규모(미터)입니다."
+
+msgid "gui.style_editor.desc.terrain.hillshade.large_scale_weight"
+msgstr "혼합 결과에서 광역 산악 음영의 비중입니다. 값이 높을수록 큰 산맥 형태가 강조됩니다. 두 가중치의 합은 보통 1.0입니다."
+
+msgid "gui.style_editor.desc.terrain.hillshade.small_scale_meters"
+msgstr "계곡과 주름 등의 세부 지형을 나타내는 규모(미터)입니다."
+
+msgid "gui.style_editor.desc.terrain.hillshade.small_scale_weight"
+msgstr "혼합 결과에서 소규모 지형 음영의 비중입니다. 값이 높을수록 질감이 세밀해집니다. 두 가중치의 합은 보통 1.0으로 설정합니다."
+
+msgid "gui.style_editor.desc.transports.auto_color"
+msgstr "색상이 지정되지 않은 노선에 자동으로 색을 선택할지 여부"
+
+msgid "gui.style_editor.desc.transports.label"
+msgstr "노선 이름 배지: 글꼴, 크기, 안쪽 여백, 테두리 및 노선을 따라 반복되는 간격입니다."
+
+msgid "gui.style_editor.desc.transports.label.bg"
+msgstr "이름 배지 배경색"
+
+msgid "gui.style_editor.desc.transports.label.enabled"
+msgstr "노선 이름 배지를 표시할지 여부"
+
+msgid "gui.style_editor.desc.transports.label.repeat_interval"
+msgstr "노선을 따라 배지가 반복되는 간격"
+
+msgid "gui.style_editor.desc.transports.label.size"
+msgstr "노선 이름 글꼴 크기"
+
+msgid "gui.style_editor.desc.transports.octilinear"
+msgstr "노선을 더 정돈된 직선 격자로 만들지 여부"
+
+msgid "gui.style_editor.desc.transports.schematic.parallel_gap"
+msgstr "평행 노선 사이 간격"
+
+msgid "gui.style_editor.desc.transports.schematic.spacing"
+msgstr "정류장 간 거리입니다. 값이 클수록 레이아웃이 넓어집니다."
+
+msgid "gui.style_editor.desc.transports.smooth"
+msgstr "노선 모서리 둥글기"
+
+msgid "gui.style_editor.desc.transports.station.enabled"
+msgstr "역 점을 표시할지 여부"
+
+msgid "gui.style_editor.desc.transports.station.merge_enabled"
+msgstr "가까운 정류장을 하나로 합칠지 여부"
+
+msgid "gui.style_editor.desc.transports.station.merge_range"
+msgstr "정류장을 같은 역으로 간주할 거리"
+
+msgid "gui.style_editor.desc.transports.station.size"
+msgstr "역 원형 크기"
+
+msgid "gui.style_editor.desc.transports.station.transfer_scale"
+msgstr "환승역을 일반 역보다 크게 표시하는 정도"
+
+msgid "gui.style_editor.desc.transports.transit_view.mask_intensity"
+msgstr "대중교통 보기에서 바탕 지도를 흐리게 하는 정도"
+
+msgid "gui.style_editor.desc.water.border"
+msgstr "해안선 테두리 색상"
+
+msgid "gui.style_editor.desc.water.border_width"
+msgstr "물가 테두리 두께"
+
+msgid "gui.style_editor.desc.water.color"
+msgstr "수면 색상"
+
+msgid "gui.style_editor.desc.watermark.content"
+msgstr "워터마크에 표시할 정보"
+
+msgid "gui.style_editor.desc.watermark.enabled"
+msgstr "지도에 워터마크를 추가할지 여부"
+
+msgid "gui.style_editor.desc.watermark.margin"
+msgstr "워터마크와 캔버스 가장자리 사이 거리(픽셀)입니다."
+
+msgid "gui.style_editor.desc.watermark.mod_name"
+msgstr "워터마크에 표시할 텍스트"
+
+msgid "gui.style_editor.desc.watermark.padding"
+msgstr "워터마크 텍스트와 배경 블록 가장자리 사이 거리(픽셀)입니다."
+
+msgid "gui.style_editor.desc.watermark.position"
+msgstr "워터마크가 표시될 모서리"
+
+msgid "gui.style_editor.desc.zone.border"
+msgstr "용도지역 경계 색상"
+
+msgid "gui.style_editor.desc.zone.border_width"
+msgstr "용도지역 경계선 두께입니다."
+
+msgid "gui.style_editor.desc.zone.enabled"
+msgstr "공원 및 산업 구역을 그릴지 여부"
+
+msgid "gui.style_editor.desc.zone.fill"
+msgstr "구역 기본 채우기 색상"
+
+msgid "gui.style_editor.desc.zone.fill_alpha"
+msgstr "용도지역 채우기 불투명도"
+
+msgid "gui.style_editor.edit_help"
+msgstr "원시 테마 데이터를 편집합니다. 저장하면 미리 보기에 바로 적용됩니다."
+
+msgid "gui.style_editor.edit_title"
+msgstr "테마 편집"
+
+msgid "gui.style_editor.elevation_threshold_tip"
+msgstr "고도 임계값(m)"
+
+msgid "gui.style_editor.field.adaptive"
+msgstr "자동"
+
+msgid "gui.style_editor.field.alpha"
+msgstr "불투명도"
+
+msgid "gui.style_editor.field.altitude"
+msgstr "빛 고도각"
+
+msgid "gui.style_editor.field.auto_color"
+msgstr "자동 색상"
+
+msgid "gui.style_editor.field.azimuth"
+msgstr "빛 방위각"
+
+msgid "gui.style_editor.field.background"
+msgstr "배경색"
+
+msgid "gui.style_editor.field.beautification"
+msgstr "보행/자전거 도로"
+
+msgid "gui.style_editor.field.beautification_elevated"
+msgstr "고가 보행로"
+
+msgid "gui.style_editor.field.beautification_tunnel"
+msgstr "터널 보행로"
+
+msgid "gui.style_editor.field.bg"
+msgstr "배경"
+
+msgid "gui.style_editor.field.bg_circle"
+msgstr "흰색 배경 원 그리기"
+
+msgid "gui.style_editor.field.bg_circle_size"
+msgstr "흰색 배경 원 지름"
+
+msgid "gui.style_editor.field.bold"
+msgstr "굵게"
+
+msgid "gui.style_editor.field.border"
+msgstr "테두리 색상"
+
+msgid "gui.style_editor.field.border_radius"
+msgstr "모서리 반경"
+
+msgid "gui.style_editor.field.border_width"
+msgstr "테두리 너비"
+
+msgid "gui.style_editor.field.branch"
+msgstr "지선"
+
+msgid "gui.style_editor.field.bridge"
+msgstr "교량"
+
+msgid "gui.style_editor.field.buffer_meters"
+msgstr "범위 여백"
+
+msgid "gui.style_editor.field.building"
+msgstr "건물 이름"
+
+msgid "gui.style_editor.field.categories"
+msgstr "범주 필터(쉼표로 구분)"
+
+msgid "gui.style_editor.field.categories_palette"
+msgstr "범주 색상"
+
+msgid "gui.style_editor.field.cell_meters"
+msgstr "경계 세밀도"
+
+msgid "gui.style_editor.field.city_color"
+msgstr "도시 텍스트 색상"
+
+msgid "gui.style_editor.field.city_name"
+msgstr "도시 이름"
+
+msgid "gui.style_editor.field.color"
+msgstr "색상"
+
+msgid "gui.style_editor.field.colors"
+msgstr "색상"
+
+msgid "gui.style_editor.field.column_gap"
+msgstr "열 간격"
+
+msgid "gui.style_editor.field.commercial"
+msgstr "상업"
+
+msgid "gui.style_editor.field.content"
+msgstr "콘텐츠 옵션"
+
+msgid "gui.style_editor.field.contour_upscale"
+msgstr "윤곽 세밀도"
+
+msgid "gui.style_editor.field.corridor"
+msgstr "복도"
+
+msgid "gui.style_editor.field.custom_color_alpha"
+msgstr "색상 강도"
+
+msgid "gui.style_editor.field.custom_text"
+msgstr "사용자 지정 텍스트"
+
+msgid "gui.style_editor.field.dash"
+msgstr "점선 패턴(선/간격)"
+
+msgid "gui.style_editor.field.dash_width"
+msgstr "점선 너비"
+
+msgid "gui.style_editor.field.debug"
+msgstr "디버그"
+
+msgid "gui.style_editor.field.decoration_length"
+msgstr "장식 길이"
+
+msgid "gui.style_editor.field.decoration_span"
+msgstr "장식 간격"
+
+msgid "gui.style_editor.field.decoration_width"
+msgstr "장식 너비"
+
+msgid "gui.style_editor.field.default"
+msgstr "기본값"
+
+msgid "gui.style_editor.field.dense_gap"
+msgstr "밀집 간격"
+
+msgid "gui.style_editor.field.description"
+msgstr "테마 설명"
+
+msgid "gui.style_editor.field.detail"
+msgstr "세부 수준"
+
+msgid "gui.style_editor.field.district"
+msgstr "구역 이름"
+
+msgid "gui.style_editor.field.elevation_colors"
+msgstr "고도 색상 단계(낮은 임계값일수록 낮은 지대)"
+
+msgid "gui.style_editor.field.elevation_mode"
+msgstr "고도 색칠 방식"
+
+msgid "gui.style_editor.field.enabled"
+msgstr "사용"
+
+msgid "gui.style_editor.field.exclude_services"
+msgstr "제외된 서비스"
+
+msgid "gui.style_editor.field.far_green"
+msgstr "고지대 색상"
+
+msgid "gui.style_editor.field.fill"
+msgstr "채우기 색상"
+
+msgid "gui.style_editor.field.fill_alpha"
+msgstr "채우기 불투명도"
+
+msgid "gui.style_editor.field.fill_colors"
+msgstr "구역 팔레트"
+
+msgid "gui.style_editor.field.fixed"
+msgstr "고정값(픽셀)"
+
+msgid "gui.style_editor.field.font"
+msgstr "글꼴"
+
+msgid "gui.style_editor.field.font_size"
+msgstr "글꼴 크기"
+
+msgid "gui.style_editor.field.gap"
+msgstr "간격"
+
+msgid "gui.style_editor.field.geometry"
+msgstr "도형"
+
+msgid "gui.style_editor.field.green"
+msgstr "녹지"
+
+msgid "gui.style_editor.field.grid_size"
+msgstr "클러스터링 격자 크기"
+
+msgid "gui.style_editor.field.height"
+msgstr "높이"
+
+msgid "gui.style_editor.field.hidden_categories"
+msgstr "숨길 범주(쉼표로 구분)"
+
+msgid "gui.style_editor.field.highway"
+msgstr "고속도로/자동차전용도로"
+
+msgid "gui.style_editor.field.highway_elevated"
+msgstr "고가 고속도로"
+
+msgid "gui.style_editor.field.highway_tunnel"
+msgstr "터널 고속도로"
+
+msgid "gui.style_editor.field.hillshade"
+msgstr "산지 음영"
+
+msgid "gui.style_editor.field.icon_size"
+msgstr "아이콘 크기"
+
+msgid "gui.style_editor.field.icons_dir"
+msgstr "아이콘 라이브러리 폴더"
+
+msgid "gui.style_editor.field.include_parks"
+msgstr "공원 포함"
+
+msgid "gui.style_editor.field.industrial"
+msgstr "산업"
+
+msgid "gui.style_editor.field.info_color"
+msgstr "정보 텍스트 색상"
+
+msgid "gui.style_editor.field.intensity"
+msgstr "그림자 강도"
+
+msgid "gui.style_editor.field.label"
+msgstr "노선 이름 배지"
+
+msgid "gui.style_editor.field.large_scale_meters"
+msgstr "대규모 음영 반경"
+
+msgid "gui.style_editor.field.large_scale_weight"
+msgstr "대규모 음영 비중"
+
+msgid "gui.style_editor.field.line"
+msgstr "선 색상"
+
+msgid "gui.style_editor.field.link_meters"
+msgstr "연결 거리"
+
+msgid "gui.style_editor.field.main"
+msgstr "주요 도로"
+
+msgid "gui.style_editor.field.margin"
+msgstr "바깥 여백"
+
+msgid "gui.style_editor.field.mask_intensity"
+msgstr "지도 배경 어둡게"
+
+msgid "gui.style_editor.field.max_cells"
+msgstr "최대 셀 수"
+
+msgid "gui.style_editor.field.max_per_cell"
+msgstr "셀당 최대 아이콘 수"
+
+msgid "gui.style_editor.field.max_per_line"
+msgstr "노선당 최대 배지 수"
+
+msgid "gui.style_editor.field.merge_bus_tram"
+msgstr "버스/트램 병합"
+
+msgid "gui.style_editor.field.merge_distance"
+msgstr "병합 거리"
+
+msgid "gui.style_editor.field.merge_enabled"
+msgstr "가까운 장소 병합"
+
+msgid "gui.style_editor.field.merge_range"
+msgstr "병합 반경"
+
+msgid "gui.style_editor.field.merge_train_metro"
+msgstr "철도/지하철 병합"
+
+msgid "gui.style_editor.field.meta_color"
+msgstr "메타데이터 텍스트 색상"
+
+msgid "gui.style_editor.field.min_fill_px"
+msgstr "최소 도로 너비"
+
+msgid "gui.style_editor.field.min_gap"
+msgstr "최소 간격"
+
+msgid "gui.style_editor.field.min_priority"
+msgstr "최소 표시 우선순위"
+
+msgid "gui.style_editor.field.min_zoom"
+msgstr "최소 확대"
+
+msgid "gui.style_editor.field.mix_white"
+msgstr "흰색 혼합 비율"
+
+msgid "gui.style_editor.field.mod_name"
+msgstr "워터마크 텍스트"
+
+msgid "gui.style_editor.field.mode"
+msgstr "지형 표현 모드"
+
+msgid "gui.style_editor.field.mountain_colors"
+msgstr "산지 색상 단계"
+
+msgid "gui.style_editor.field.mountain_threshold"
+msgstr "산지 임계값"
+
+msgid "gui.style_editor.field.name"
+msgstr "테마 이름"
+
+msgid "gui.style_editor.field.name_offset"
+msgstr "이름 오프셋"
+
+msgid "gui.style_editor.field.name_size"
+msgstr "이름 크기"
+
+msgid "gui.style_editor.field.name_z"
+msgstr "렌더링 우선순위"
+
+msgid "gui.style_editor.field.names"
+msgstr "역 이름"
+
+msgid "gui.style_editor.field.near_green"
+msgstr "저고도 색상"
+
+msgid "gui.style_editor.field.octilinear"
+msgstr "정돈된 레이아웃"
+
+msgid "gui.style_editor.field.office"
+msgstr "사무실"
+
+msgid "gui.style_editor.field.offset"
+msgstr "오프셋"
+
+msgid "gui.style_editor.field.outline"
+msgstr "윤곽선 색상"
+
+msgid "gui.style_editor.field.padding"
+msgstr "안쪽 여백"
+
+msgid "gui.style_editor.field.parallel_gap"
+msgstr "평행 간격"
+
+msgid "gui.style_editor.field.park"
+msgstr "공원 이름"
+
+msgid "gui.style_editor.field.pattern"
+msgstr "점선 간격"
+
+msgid "gui.style_editor.field.pedestrian"
+msgstr "보행로"
+
+msgid "gui.style_editor.field.poi_tint"
+msgstr "장소 색조"
+
+msgid "gui.style_editor.field.position"
+msgstr "위치"
+
+msgid "gui.style_editor.field.primary"
+msgstr "간선도로"
+
+msgid "gui.style_editor.field.prop"
+msgstr "소품"
+
+msgid "gui.style_editor.field.public"
+msgstr "공공"
+
+msgid "gui.style_editor.field.publictransport"
+msgstr "대중교통"
+
+msgid "gui.style_editor.field.ramp_meters"
+msgstr "색상 램프 높이"
+
+msgid "gui.style_editor.field.render_time"
+msgstr "렌더링 시각"
+
+msgid "gui.style_editor.field.repeat_interval"
+msgstr "반복 간격"
+
+msgid "gui.style_editor.field.residential"
+msgstr "주거"
+
+msgid "gui.style_editor.field.resolution"
+msgstr "해상도"
+
+msgid "gui.style_editor.field.road"
+msgstr "지상 도로"
+
+msgid "gui.style_editor.field.road_barrier_extra"
+msgstr "도로 장벽 여백"
+
+msgid "gui.style_editor.field.road_elevated"
+msgstr "고가 도로"
+
+msgid "gui.style_editor.field.road_min_gap"
+msgstr "도로 이름 최소 간격"
+
+msgid "gui.style_editor.field.road_repeat"
+msgstr "도로 이름 간격"
+
+msgid "gui.style_editor.field.road_repeat_ratio"
+msgstr "도로 이름 반복 비율"
+
+msgid "gui.style_editor.field.road_tunnel"
+msgstr "터널 도로"
+
+msgid "gui.style_editor.field.road_wide"
+msgstr "넓은 도로"
+
+msgid "gui.style_editor.field.road_width_scale"
+msgstr "도로 너비 배율"
+
+msgid "gui.style_editor.field.scaled"
+msgstr "해상도에 맞춰 크기 조정"
+
+msgid "gui.style_editor.field.schematic"
+msgstr "개략도 배치"
+
+msgid "gui.style_editor.field.secondary"
+msgstr "보조 간선도로"
+
+msgid "gui.style_editor.field.separator"
+msgstr "구분 기호"
+
+msgid "gui.style_editor.field.shadow"
+msgstr "그림자"
+
+msgid "gui.style_editor.field.show_name"
+msgstr "이름 표시"
+
+msgid "gui.style_editor.field.sign"
+msgstr "표지판"
+
+msgid "gui.style_editor.field.size"
+msgstr "텍스트 크기"
+
+msgid "gui.style_editor.field.size_z"
+msgstr "도로 이름 크기 단계"
+
+msgid "gui.style_editor.field.small_scale_meters"
+msgstr "소규모 음영 반경"
+
+msgid "gui.style_editor.field.small_scale_weight"
+msgstr "소규모 음영 비중"
+
+msgid "gui.style_editor.field.smooth"
+msgstr "곡선 부드럽게 하기(샘플 수)"
+
+msgid "gui.style_editor.field.smooth_blur"
+msgstr "흐림 반경"
+
+msgid "gui.style_editor.field.smooth_iters"
+msgstr "부드럽게 하기 반복 횟수"
+
+msgid "gui.style_editor.field.spacing"
+msgstr "정류장 간격"
+
+msgid "gui.style_editor.field.special"
+msgstr "특수 도로"
+
+msgid "gui.style_editor.field.sprite"
+msgstr "스프라이트 이미지"
+
+msgid "gui.style_editor.field.station"
+msgstr "역"
+
+msgid "gui.style_editor.field.station_width"
+msgstr "역 구간 너비"
+
+msgid "gui.style_editor.field.stop"
+msgstr "대중교통 정류장 이름"
+
+msgid "gui.style_editor.field.street_furn"
+msgstr "거리 시설물"
+
+msgid "gui.style_editor.field.stroke"
+msgstr "윤곽선 색상"
+
+msgid "gui.style_editor.field.stroke_width"
+msgstr "테두리 너비"
+
+msgid "gui.style_editor.field.style_name"
+msgstr "테마 이름"
+
+msgid "gui.style_editor.field.sub"
+msgstr "하위 색상"
+
+msgid "gui.style_editor.field.tertiary"
+msgstr "지선"
+
+msgid "gui.style_editor.field.threshold"
+msgstr "고도 임계값"
+
+msgid "gui.style_editor.field.time_format"
+msgstr "시간 형식"
+
+msgid "gui.style_editor.field.traffic_time"
+msgstr "교통 상황 시각"
+
+msgid "gui.style_editor.field.transfer_scale"
+msgstr "환승역 크기"
+
+msgid "gui.style_editor.field.transit_view"
+msgstr "대중교통 보기"
+
+msgid "gui.style_editor.field.transit_view_scale"
+msgstr "대중교통 보기 확대"
+
+msgid "gui.style_editor.field.tree"
+msgstr "나무"
+
+msgid "gui.style_editor.field.tunnel"
+msgstr "터널"
+
+msgid "gui.style_editor.field.types"
+msgstr "노선 스타일"
+
+msgid "gui.style_editor.field.unknown"
+msgstr "알 수 없음"
+
+msgid "gui.style_editor.field.walk"
+msgstr "보행로"
+
+msgid "gui.style_editor.field.width"
+msgstr "너비"
+
+msgid "gui.style_editor.field.width_scale"
+msgstr "너비 배율(미터 → 픽셀)"
+
+msgid "gui.style_editor.field.x"
+msgstr "가로"
+
+msgid "gui.style_editor.field.y"
+msgstr "세로"
+
+msgid "gui.style_editor.file_filter"
+msgstr "테마 파일 (*.yaml)"
+
+msgid "gui.style_editor.fixed"
+msgstr "고정"
+
+msgid "gui.style_editor.font_current"
+msgstr "현재 글꼴({value})"
+
+msgid "gui.style_editor.footer_hint"
+msgstr "편집 내용은 미리 보기에 즉시 반영됩니다. 테마 파일은 저장해야 기록됩니다"
+
+msgid "gui.style_editor.group_basic"
+msgstr "기본"
+
+msgid "gui.style_editor.invalid_colors"
+msgstr ""
+"다음 색상 값이 올바르지 않습니다(#RRGGBB 또는 #RRGGBBAA 필요):\n"
+"{list}"
+
+msgid "gui.style_editor.preview"
+msgstr "실시간 미리보기"
+
+msgid "gui.style_editor.preview_need_map"
+msgstr ""
+"인라인 미리 보기를 사용하려면 먼저 도시 저장 파일을 가져오세요.\n"
+"가져온 뒤 여기에서 부분 결과를 확인할 수 있습니다."
+
+msgid "gui.style_editor.preview_scene_auto"
+msgstr "현재 범주 따르기"
+
+msgid "gui.style_editor.preview_scene_buildings"
+msgstr "건물"
+
+msgid "gui.style_editor.preview_scene_overall"
+msgstr "전체"
+
+msgid "gui.style_editor.preview_scene_railway"
+msgstr "철도"
+
+msgid "gui.style_editor.preview_scene_roads"
+msgstr "도로"
+
+msgid "gui.style_editor.preview_scene_terrain"
+msgstr "지형"
+
+msgid "gui.style_editor.preview_scene_transports"
+msgstr "대중교통"
+
+msgid "gui.style_editor.preview_scene_water"
+msgstr "수역"
+
+msgid "gui.style_editor.preview_scene_zones"
+msgstr "구역/용도 지역"
+
+msgid "gui.style_editor.range"
+msgstr "범위 {lo}～{hi}{unit}"
+
+msgid "gui.style_editor.redo"
+msgstr "다시 실행"
+
+msgid "gui.style_editor.refresh_preview"
+msgstr "미리 보기 새로 고침"
+
+msgid "gui.style_editor.remove_step"
+msgstr "이 단계 제거"
+
+msgid "gui.style_editor.reset"
+msgstr "원래 값으로 재설정"
+
+msgid "gui.style_editor.restore_group"
+msgstr "이 그룹 복원"
+
+msgid "gui.style_editor.restore_group_tip"
+msgstr "이 그룹을 창을 열었을 때의 값으로 재설정합니다"
+
+msgid "gui.style_editor.save"
+msgstr "테마 파일에 저장"
+
+msgid "gui.style_editor.save_as"
+msgstr "다른 이름으로 저장…"
+
+msgid "gui.style_editor.save_as_title"
+msgstr "새 테마로 저장"
+
+msgid "gui.style_editor.save_failed_body"
+msgstr "테마를 적용하거나 저장할 수 없습니다."
+
+msgid "gui.style_editor.save_failed_title"
+msgstr "저장 실패"
+
+msgid "gui.style_editor.scaled"
+msgstr "배율 조정됨"
+
+msgid "gui.style_editor.search"
+msgstr "매개변수 검색"
+
+msgid "gui.style_editor.search_placeholder"
+msgstr "매개변수 이름/경로로 필터링"
+
+msgid "gui.style_editor.section.basic"
+msgstr "기본 정보"
+
+msgid "gui.style_editor.section.buildings"
+msgstr "건물"
+
+msgid "gui.style_editor.section.built_area"
+msgstr "시가지"
+
+msgid "gui.style_editor.section.canvas"
+msgstr "캔버스"
+
+msgid "gui.style_editor.section.district"
+msgstr "구역"
+
+msgid "gui.style_editor.section.forest"
+msgstr "숲"
+
+msgid "gui.style_editor.section.labels"
+msgstr "라벨/텍스트"
+
+msgid "gui.style_editor.section.land_use"
+msgstr "토지 이용"
+
+msgid "gui.style_editor.section.poi_icons"
+msgstr "장소 아이콘"
+
+msgid "gui.style_editor.section.procedural_objects"
+msgstr "PO 객체"
+
+msgid "gui.style_editor.section.railway"
+msgstr "철도"
+
+msgid "gui.style_editor.section.roads"
+msgstr "도로"
+
+msgid "gui.style_editor.section.terrain"
+msgstr "지형"
+
+msgid "gui.style_editor.section.transports"
+msgstr "교통 노선"
+
+msgid "gui.style_editor.section.water"
+msgstr "수역"
+
+msgid "gui.style_editor.section.watermark"
+msgstr "워터마크"
+
+msgid "gui.style_editor.section.zone"
+msgstr "구역"
+
+msgid "gui.style_editor.status.auto_paused"
+msgstr "자동 미리보기가 일시 중지되었습니다. “미리보기 새로고침”을 클릭하세요"
+
+msgid "gui.style_editor.status.modified"
+msgstr "수정됨"
+
+msgid "gui.style_editor.status.rendering"
+msgstr "미리보기 생성 중…"
+
+msgid "gui.style_editor.status.saved"
+msgstr "저장됨"
+
+msgid "gui.style_editor.status.updated"
+msgstr "미리 보기 업데이트됨"
+
+msgid "gui.style_editor.status.waiting"
+msgstr "미리 보기 대기 중"
+
+msgid "gui.style_editor.title"
+msgstr "테마 편집기"
+
+msgid "gui.style_editor.undo"
+msgstr "실행 취소"
+
+msgid "gui.style_editor.unit.alpha255"
+msgstr "(0-255)"
+
+msgid "gui.style_editor.unit.count"
+msgstr "개"
+
+msgid "gui.style_editor.unit.degree"
+msgstr "도"
+
+msgid "gui.style_editor.unit.meter"
+msgstr "m"
+
+msgid "gui.style_editor.unit.meter_to_pixel"
+msgstr "m→px"
+
+msgid "gui.style_editor.unit.priority"
+msgstr "우선순위"
+
+msgid "gui.style_editor.unit.px"
+msgstr "px"
+
+msgid "gui.style_editor.unit.ratio"
+msgstr "배수"
+
+msgid "gui.style_editor.unit.samples"
+msgstr "샘플 수"
+
+msgid "gui.style_editor.unsaved_body"
+msgstr "테마에 저장되지 않은 변경 사항이 있습니다. 저장한 뒤 닫을까요?"
+
+msgid "gui.style_editor.unsaved_title"
+msgstr "저장되지 않은 변경 사항"
+
+msgid "gui.style_editor.value.base"
+msgstr "기본 범주"
+
+msgid "gui.style_editor.value.continuous"
+msgstr "연속 그라데이션"
+
+msgid "gui.style_editor.value.detailed"
+msgstr "상세 범주"
+
+msgid "gui.style_editor.value.left_bottom"
+msgstr "왼쪽 아래"
+
+msgid "gui.style_editor.value.left_top"
+msgstr "왼쪽 위"
+
+msgid "gui.style_editor.value.poi"
+msgstr "POI 범주 색상"
+
+msgid "gui.style_editor.value.right_bottom"
+msgstr "오른쪽 아래"
+
+msgid "gui.style_editor.value.right_top"
+msgstr "오른쪽 위"
+
+msgid "gui.style_editor.value.standard"
+msgstr "표준"
+
+msgid "gui.style_editor.value.stepped"
+msgstr "단계별 색상"
+
+msgid "gui.style_editor.value.uniform"
+msgstr "단색 채우기"
+
+msgid "gui.style_editor.view_label"
+msgstr "장면"
+
+msgid "gui.task.preview"
+msgstr "미리보기"
+
+msgid "gui.task.transit"
+msgstr "대중교통 보기"
+
+msgid "gui.terrain_relief.unit.degree"
+msgstr "°"
+
+msgid "gui.theme.choice.amap"
+msgstr "밝은 지도"
+
+msgid "gui.theme.choice.apple_maps"
+msgstr "미니멀 모던"
+
+msgid "gui.theme.choice.dark"
+msgstr "어두운 스타일"
+
+msgid "gui.theme.choice.google"
+msgstr "따뜻한 자연색"
+
+msgid "gui.theme.choice.vintage"
+msgstr "빈티지 스타일"
+
+msgid "gui.theme.switch.tip"
+msgstr "테마 전환: {name}"
+
+msgid "gui.title.toolbar"
+msgstr "CSLModernMap"
+
+msgid "gui.title.window"
+msgstr "CSLModernMap"
+
+msgid "gui.tools.clear_cache"
+msgstr "메모리 캐시 비우기"
+
+msgid "gui.tools.clear_cache.tip"
+msgstr "백그라운드 렌더링 프로세스를 종료하고 파싱 캐시를 지워 메모리를 확보합니다. 다음에 도시를 열 때 다시 파싱해야 하므로 더 오래 걸립니다."
+
+msgid "gui.tools.copy_image"
+msgstr "이미지 복사"
+
+msgid "gui.tools.diagnostics.tip"
+msgstr "저장 파일, 미리보기 및 교통 데이터의 로드 상태와 오류, 소요 시간을 확인합니다."
+
+msgid "gui.tools.layers.tip"
+msgstr "그릴 항목을 선택하고 각 레이어의 매개변수를 조정하세요."
+
+msgid "gui.tools.lines_layer.tip"
+msgstr "체크하면 해당 노선이 표시됩니다. 노선을 선택한 뒤에는 스타일 변경이 해당 노선에만 적용됩니다."
+
+msgid "gui.tools.merge_settings.tip"
+msgstr "건물, 같은 시설 장소 및 대중교통 정류장의 병합 옵션과 거리를 설정합니다."
+
+msgid "gui.tools.metro"
+msgstr "지하철 노선도"
+
+msgid "gui.tools.metro.short"
+msgstr "지하철 노선도"
+
+msgid "gui.tools.metro_editor.tip"
+msgstr "지하철 노선도 편집기를 엽니다. 정류장을 드래그하고 환승역과 공유 구간을 설정한 뒤 적용하면 다시 그립니다."
+
+msgid "gui.tools.poi_editor"
+msgstr "장소 아이콘 매핑 관리"
+
+msgid "gui.tools.poi_editor.tip"
+msgstr "게임 건물에 장소 아이콘을 지정하여 지도에서 어떻게 표시할지 정합니다."
+
+msgid "gui.tools.refresh.tip"
+msgstr "중앙 미리보기를 다시 생성합니다. 레이어나 스타일을 바꾸면 보통 자동으로 새로고침되며, 한동안 반응이 없을 때 사용하세요."
+
+msgid "gui.tools.select_short"
+msgstr "범위 선택"
+
+msgid "gui.tools.theme.tip"
+msgstr "색상, 선 너비, 텍스트 등 지도 스타일을 항목별로 조정할 수 있습니다. 오른쪽에서 실시간 미리 보기를 확인하세요."
+
+msgid "gui.tools.transit"
+msgstr "대중교통 보기"
+
+msgid "gui.tools.transit.short"
+msgstr "대중교통 지도"
+
+msgid "gui.transit.ann.credit"
+msgstr "제작자 정보"
+
+msgid "gui.transit.ann.data_notice"
+msgstr "데이터 출처 안내"
+
+msgid "gui.transit.ann.disclaimer"
+msgstr "면책 조항"
+
+msgid "gui.transit.ann.generated_at"
+msgstr "생성 시간"
+
+msgid "gui.transit.ann.north_arrow"
+msgstr "북쪽 표시(위쪽이 북쪽)"
+
+msgid "gui.transit.ann.scale_info"
+msgstr "축척 안내"
+
+msgid "gui.transit.annotations"
+msgstr "주석"
+
+msgid "gui.transit.back_to_line_select"
+msgstr "노선 선택으로 돌아가기"
+
+msgid "gui.transit.clear_line_selection"
+msgstr "노선 선택 지우기"
+
+msgid "gui.transit.edit_file"
+msgstr "지하철 편집 오버레이 파일"
+
+msgid "gui.transit.edit_line_style"
+msgstr "노선 스타일 편집"
+
+msgid "gui.transit.facilities"
+msgstr "연결 시설"
+
+msgid "gui.transit.layout_draft"
+msgstr "지리 초안: 배치 검토 필요, 교차로는 환승을 뜻하지 않습니다"
+
+msgid "gui.transit.layout_fallback"
+msgstr "대체 배치를 사용 중이며 모든 노선과 역을 유지했습니다"
+
+msgid "gui.transit.legend_enabled"
+msgstr "범례 표시"
+
+msgid "gui.transit.legend_size"
+msgstr "범례 크기"
+
+msgid "gui.transit.line_select_hint"
+msgstr "체크하면 노선이 표시됩니다. 노선을 선택하면 아래 스타일 설정은 해당 노선에만 적용됩니다."
+
+msgid "gui.transit.line_select_title"
+msgstr "노선 선택"
+
+msgid "gui.transit.merge_stations"
+msgstr "정류장 병합"
+
+msgid "gui.transit.no_lines"
+msgstr "이 저장 파일에는 대중교통 노선이 없습니다. 다른 저장 파일을 여세요."
+
+msgid "gui.transit.no_lines_selected"
+msgstr "선택한 노선이 없습니다. 먼저 노선을 하나 이상 선택하세요."
+
+msgid "gui.transit.no_transport"
+msgstr "이 저장 파일에 대중교통 노선이 없습니다"
+
+msgid "gui.transit.preview"
+msgstr "미리보기"
+
+msgid "gui.transit.preview_btn"
+msgstr "미리보기"
+
+msgid "gui.transit.result_broken"
+msgstr "대중교통 지도 결과를 표시할 수 없습니다."
+
+msgid "gui.transit.result_empty"
+msgstr ""
+"아직 생성되지 않았습니다.\n"
+"\n"
+"위의 ‘{button}’을 눌러 시작하세요."
+
+msgid "gui.transit.result_note"
+msgstr "현재 설정으로 대중교통 지도를 한 번에 생성합니다. “노선/노선 스타일”을 변경한 후 위의 “{button}”을 눌러 내보내기 창을 여세요."
+
+msgid "gui.transit.settings_title"
+msgstr "대중교통 설정"
+
+msgid "gui.transit.title_enabled"
+msgstr "제목 표시"
+
+msgid "gui.transit.title_size"
+msgstr "제목 크기"
+
+msgid "gui.transit.type.Airplane"
+msgstr "비행선"
+
+msgid "gui.transit.type.Bus"
+msgstr "버스"
+
+msgid "gui.transit.type.CableCar"
+msgstr "케이블카"
+
+msgid "gui.transit.type.Ferry"
+msgstr "페리"
+
+msgid "gui.transit.type.Helicopter"
+msgstr "헬리콥터"
+
+msgid "gui.transit.type.Metro"
+msgstr "지하철"
+
+msgid "gui.transit.type.Monorail"
+msgstr "모노레일"
+
+msgid "gui.transit.type.Ship"
+msgstr "페리"
+
+msgid "gui.transit.type.Train"
+msgstr "열차"
+
+msgid "gui.transit.type.Tram"
+msgstr "트램"
+
+msgid "gui.transit.type.Trolleybus"
+msgstr "트롤리버스"
+
+msgid "gui.transit.view_state.hidden"
+msgstr "노선, 정류장, 정류장 이름이 숨겨져 있습니다"
+
+msgid "gui.transit.view_state.synced"
+msgstr "정류장과 정류장 이름은 선택한 노선을 따릅니다"
+
+msgid "gui.transit.view_summary"
+msgstr "대중교통 보기: 노선 {count}개 선택됨; {state}"
+
+msgid "gui.transit.water_unverified"
+msgstr "수역을 확인하지 못하여 수면 없는 노선도를 생성했습니다."
+
+msgid "gui.transit_line.color.note"
+msgstr "노선 색상은 저장 파일에 정의되어 있습니다. 여기에서 색상을 보려면 노선을 선택하세요."
+
+msgid "gui.transit_line.default.hint"
+msgstr "선택한 노선이 없습니다. 값은 기본 노선 스타일에 적용됩니다"
+
+msgid "gui.transit_line.style.hint"
+msgstr "노선 스타일: 색상 및 너비"
+
+msgid "gui.transit_type.Airplane"
+msgstr "비행기"
+
+msgid "gui.transit_type.Blimp"
+msgstr "비행선"
+
+msgid "gui.transit_type.Bus"
+msgstr "버스"
+
+msgid "gui.transit_type.CableCar"
+msgstr "케이블카"
+
+msgid "gui.transit_type.Ferry"
+msgstr "페리"
+
+msgid "gui.transit_type.Helicopter"
+msgstr "헬리콥터"
+
+msgid "gui.transit_type.Metro"
+msgstr "지하철"
+
+msgid "gui.transit_type.Monorail"
+msgstr "모노레일"
+
+msgid "gui.transit_type.Ship"
+msgstr "페리"
+
+msgid "gui.transit_type.Train"
+msgstr "열차"
+
+msgid "gui.transit_type.Tram"
+msgstr "트램"
+
+msgid "gui.transit_type.Trolleybus"
+msgstr "트롤리버스"
+
+msgid "gui.transit_view.choose_lines"
+msgstr "노선 선택…"
+
+msgid "gui.transit_view.density.sparse"
+msgstr "희소 단계"
+
+msgid "gui.transit_view.density.tiered"
+msgstr "단계별 표시"
+
+msgid "gui.transit_view.hint.fade"
+msgstr "대중교통 보기에서 도시 지도를 얼마나 흐리게 할지 설정합니다. 0%는 원본, 100%는 완전히 흰색입니다. 60%부터 시작해 보세요."
+
+msgid "gui.transit_view.hint.labels"
+msgstr "“이름 간격”은 노선을 따라 노선명이 반복되는 간격이며, 클수록 덜 표시됩니다. “이름 크기”는 배지 글자 크기(픽셀)입니다."
+
+msgid "gui.transit_view.hint.stations"
+msgstr ""
+"‘역 크기’는 역 원의 지름(픽셀)이며 환승역은 테마에서 지정한 비율로 자동 확대됩니다. ‘가까운 정류장 합치기’를 켜면 ‘병합 거리’보다 가까운 정류장은 하나의 레이블로 "
+"합쳐집니다. 레이블에만 영향을 주며 노선 경로는 바뀌지 않습니다."
+
+msgid "gui.transit_view.independent_layers"
+msgstr "독립 레이어"
+
+msgid "gui.transit_view.label_interval"
+msgstr "이름 간격"
+
+msgid "gui.transit_view.layer.base_district"
+msgstr "구역 기본 지도"
+
+msgid "gui.transit_view.layer.base_road"
+msgstr "도로 바탕 지도"
+
+msgid "gui.transit_view.layer.base_water"
+msgstr "수역 기본 지도"
+
+msgid "gui.transit_view.layer.facilities"
+msgstr "대중교통 시설"
+
+msgid "gui.transit_view.layer.facility_names"
+msgstr "아이콘 이름"
+
+msgid "gui.transit_view.layer.line_labels"
+msgstr "노선 이름"
+
+msgid "gui.transit_view.layer.lines"
+msgstr "노선"
+
+msgid "gui.transit_view.layer.stations"
+msgstr "역"
+
+msgid "gui.transit_view.section.view_layers"
+msgstr "보기 및 레이어"
+
+msgid "gui.tree.length"
+msgstr "길이"
+
+msgid "gui.view.city_map"
+msgstr "도시 지도"
+
+msgid "gui.view.open_to_start"
+msgstr "도시 저장 파일을 열어 시작하세요"
+
+msgid "gui.viewer.unavailable"
+msgstr ""
+"중앙 미리 보기를 사용할 수 없습니다\n"
+"\n"
+"{detail}"
+
+msgid "gui.workspace.view"
+msgstr "보기"
+
+msgid "gui.zone.district_fallback"
+msgstr "구역 #{id}"
+
+msgid "gui.zone.park_fallback"
+msgstr "구역 #{id}"
+
+msgid "gui.zoom.city"
+msgstr "도시"
+
+msgid "gui.zoom.district"
+msgstr "구역"
+
+msgid "gui.zoom.region"
+msgstr "지역"
+
+msgid "lang.en"
+msgstr "English"
+
+msgid "lang.zh-CN"
+msgstr "중국어(간체)"
+
+msgid "metro.annotation.credit"
+msgstr "제작: CSLModernMap"
+
+msgid "metro.annotation.data_notice"
+msgstr "역, 노선 및 운행 정보는 게임 저장 파일을 내보낼 당시의 상태를 반영합니다"
+
+msgid "metro.annotation.disclaimer"
+msgstr "노선 형태만 나타내며 실제 거리와 방향을 나타내지 않습니다"
+
+msgid "metro.annotation.generated"
+msgstr "생성 시간: {time}"
+
+msgid "metro.annotation.north"
+msgstr "↑ 북쪽"
+
+msgid "metro.annotation.scale_adaptive"
+msgstr "개략도 비율: 1칸≈{spacing}m; 부분 배율 {low}–{high}×; 강도 {strength}%; 캔버스 확대 {zoom}×"
+
+msgid "metro.annotation.scale_fixed"
+msgstr "노선도 축척: 1칸≈{spacing}m; 적응형 축척 끔; 캔버스 확대 {zoom}×"
+
+msgid "metro.legend.airport"
+msgstr "공항 연결편"
+
+msgid "metro.legend.port"
+msgstr "여객 항구"
+
+msgid "metro.legend.rail"
+msgstr "철도 환승"
+
+msgid "metro.legend.title"
+msgstr "노선 범례"
+
+msgid "style.aa.label"
+msgstr "가장자리 부드럽게"
+
+msgid "style.building.border.label"
+msgstr "건물 윤곽선"
+
+msgid "style.building.color.label"
+msgstr "건물 채우기"
+
+msgid "style.building.color_mode.label"
+msgstr "건물 채우기 방식"
+
+msgid "style.building.color_mode.value.poi"
+msgstr "장소별 색조"
+
+msgid "style.building.color_mode.value.uniform"
+msgstr "단일 색상"
+
+msgid "style.building.default.label"
+msgstr "건물 색상 통일"
+
+msgid "style.building.poi_tint.contrast.label"
+msgstr "장소 색조 대비"
+
+msgid "style.building.scheme.label"
+msgstr "건물 색상"
+
+msgid "style.building.scheme.value.dark"
+msgstr "짙은 회색"
+
+msgid "style.building.scheme.value.light"
+msgstr "연한 회색"
+
+msgid "style.building.scheme.value.original"
+msgstr "유형별"
+
+msgid "style.building.shadow.label"
+msgstr "건물 그림자"
+
+msgid "style.built_area.color.label"
+msgstr "시가지 채우기"
+
+msgid "style.built_area.smooth.label"
+msgstr "윤곽선 부드럽게"
+
+msgid "style.detail.label"
+msgstr "지도 세부 정보"
+
+msgid "style.detail.value.auto"
+msgstr "자동"
+
+msgid "style.detail.value.full"
+msgstr "상세"
+
+msgid "style.detail.value.simple"
+msgstr "간단"
+
+msgid "style.district.color.label"
+msgstr "경계 색상"
+
+msgid "style.district.opacity.label"
+msgstr "지역 채우기"
+
+msgid "style.district.width.label"
+msgstr "경계 너비"
+
+msgid "style.edit.color.label"
+msgstr "객체 색상"
+
+msgid "style.edit.connected.label"
+msgstr "도로 연결 유지"
+
+msgid "style.edit.filter.label"
+msgstr "객체 선택"
+
+msgid "style.edit.filter.value.all"
+msgstr "모든 객체"
+
+msgid "style.edit.filter.value.building"
+msgstr "건물"
+
+msgid "style.edit.filter.value.icon"
+msgstr "장소 아이콘"
+
+msgid "style.edit.filter.value.label"
+msgstr "텍스트 레이블"
+
+msgid "style.edit.filter.value.road"
+msgstr "도로"
+
+msgid "style.edit.lock.label"
+msgstr "객체 잠금"
+
+msgid "style.edit.name.label"
+msgstr "표시 이름"
+
+msgid "style.edit.offset_x.label"
+msgstr "가로 오프셋 (px)"
+
+msgid "style.edit.offset_y.label"
+msgstr "세로 오프셋 (px)"
+
+msgid "style.edit.snap.label"
+msgstr "주변 개체에 맞춰 정렬"
+
+msgid "style.edit.width.label"
+msgstr "개체 너비"
+
+msgid "style.label.color.building.label"
+msgstr "건물 텍스트 색상"
+
+msgid "style.label.color.district.label"
+msgstr "구역 텍스트 색상"
+
+msgid "style.label.color.label"
+msgstr "텍스트 색상"
+
+msgid "style.label.color.park.label"
+msgstr "공원 텍스트 색상"
+
+msgid "style.label.color.road.label"
+msgstr "도로 텍스트 색상"
+
+msgid "style.label.color.stop.label"
+msgstr "정류장 텍스트 색상"
+
+msgid "style.label.districts.label"
+msgstr "구역 이름"
+
+msgid "style.label.font.building.label"
+msgstr "건물 글꼴"
+
+msgid "style.label.font.district.label"
+msgstr "구역 글꼴"
+
+msgid "style.label.font.park.label"
+msgstr "공원 글꼴"
+
+msgid "style.label.font.road.label"
+msgstr "도로 글꼴"
+
+msgid "style.label.font.stop.label"
+msgstr "정류장 글꼴"
+
+msgid "style.label.outline.building.label"
+msgstr "건물 텍스트 테두리"
+
+msgid "style.label.outline.district.label"
+msgstr "구역 텍스트 테두리"
+
+msgid "style.label.outline.label"
+msgstr "텍스트 테두리"
+
+msgid "style.label.outline.park.label"
+msgstr "공원 텍스트 테두리"
+
+msgid "style.label.outline.road.label"
+msgstr "도로 텍스트 테두리"
+
+msgid "style.label.outline.stop.label"
+msgstr "역 이름 테두리"
+
+msgid "style.label.places.label"
+msgstr "장소 이름"
+
+msgid "style.label.roads.label"
+msgstr "도로 이름"
+
+msgid "style.label.size.building.label"
+msgstr "건물 텍스트 크기"
+
+msgid "style.label.size.district.label"
+msgstr "구역 텍스트 크기"
+
+msgid "style.label.size.label"
+msgstr "텍스트 크기"
+
+msgid "style.label.size.park.label"
+msgstr "공원 텍스트 크기"
+
+msgid "style.label.size.road.label"
+msgstr "도로 텍스트 크기"
+
+msgid "style.label.size.stop.label"
+msgstr "정류장 텍스트 크기"
+
+msgid "style.label.stroke_color.building.label"
+msgstr "건물 텍스트 윤곽선 색상"
+
+msgid "style.label.stroke_color.district.label"
+msgstr "구역 텍스트 테두리 색상"
+
+msgid "style.label.stroke_color.park.label"
+msgstr "용도지역 텍스트 테두리 색상"
+
+msgid "style.label.stroke_color.road.label"
+msgstr "도로 텍스트 테두리 색상"
+
+msgid "style.label.stroke_color.stop.label"
+msgstr "정류장 텍스트 윤곽선 색상"
+
+msgid "style.label.stroke_width.building.label"
+msgstr "건물 텍스트 윤곽선 너비"
+
+msgid "style.label.stroke_width.district.label"
+msgstr "구역 텍스트 윤곽선 너비"
+
+msgid "style.label.stroke_width.park.label"
+msgstr "용도지역 텍스트 테두리 너비"
+
+msgid "style.label.stroke_width.road.label"
+msgstr "도로 텍스트 테두리 너비"
+
+msgid "style.label.stroke_width.stop.label"
+msgstr "정류장 텍스트 윤곽선 너비"
+
+msgid "style.land_use.grid.label"
+msgstr "용도지역 격자 표시"
+
+msgid "style.land_use.opacity.label"
+msgstr "용도 지역 격자 불투명도"
+
+msgid "style.metro.language.label"
+msgstr "역 이름 언어"
+
+msgid "style.metro.language.value.bilingual"
+msgstr "중국어/영어 병기"
+
+msgid "style.metro.language.value.zh"
+msgstr "중국어"
+
+msgid "style.metro.names.label"
+msgstr "역 이름 표시"
+
+msgid "style.metro.names.value.all"
+msgstr "모든 역"
+
+msgid "style.metro.names.value.custom"
+msgstr "사용자 지정 역 이름"
+
+msgid "style.metro.names.value.none"
+msgstr "역 이름 숨김"
+
+msgid "style.metro.palette.label"
+msgstr "노선 색상표"
+
+msgid "style.metro.palette.value.classic"
+msgstr "클래식 색상"
+
+msgid "style.metro.palette.value.game"
+msgstr "게임 색상"
+
+msgid "style.metro.palette.value.soft"
+msgstr "부드럽게"
+
+msgid "style.metro.title.label"
+msgstr "지도 제목"
+
+msgid "style.poi.density.label"
+msgstr "표시 밀도"
+
+msgid "style.poi.density.value.auto"
+msgstr "자동 회피"
+
+msgid "style.poi.density.value.full"
+msgstr "아이콘 더 많이 표시"
+
+msgid "style.poi.density.value.sparse"
+msgstr "성김"
+
+msgid "style.poi.distance.label"
+msgstr "병합 거리 (m)"
+
+msgid "style.poi.font.label"
+msgstr "장소 이름 글꼴"
+
+msgid "style.poi.game_names.label"
+msgstr "게임에서 자동 생성한 건물명 사용"
+
+msgid "style.poi.merge.label"
+msgstr "비슷한 장소 병합"
+
+msgid "style.poi.name_size.label"
+msgstr "장소 이름 크기"
+
+msgid "style.poi.name_stroke.label"
+msgstr "장소 이름 테두리 색상"
+
+msgid "style.poi.name_stroke_ratio.label"
+msgstr "장소 이름 윤곽선 너비"
+
+msgid "style.poi.names.label"
+msgstr "장소 이름 표시"
+
+msgid "style.poi.set.label"
+msgstr "아이콘 스타일"
+
+msgid "style.poi.set.value.color"
+msgstr "컬러 아이콘"
+
+msgid "style.poi.set.value.modern"
+msgstr "CSLModernMap"
+
+msgid "style.poi.set.value.modern-dark"
+msgstr "어두움"
+
+msgid "style.poi.set.value.simple"
+msgstr "간단한 아이콘"
+
+msgid "style.poi.size.label"
+msgstr "아이콘 크기"
+
+msgid "style.procedural_objects.border.label"
+msgstr "외곽선 표시"
+
+msgid "style.procedural_objects.color.label"
+msgstr "개체 채우기"
+
+msgid "style.quality.label"
+msgstr "화질"
+
+msgid "style.quality.value.best"
+msgstr "최고 품질"
+
+msgid "style.quality.value.high"
+msgstr "높음"
+
+msgid "style.quality.value.standard"
+msgstr "표준"
+
+msgid "style.railway.color.label"
+msgstr "선로 색상"
+
+msgid "style.railway.sleepers.label"
+msgstr "침목 표시"
+
+msgid "style.railway.width.label"
+msgstr "선로 너비"
+
+msgid "style.range.label"
+msgstr "지도 범위"
+
+msgid "style.range.value.center"
+msgstr "도심"
+
+msgid "style.range.value.city"
+msgstr "도시 전체"
+
+msgid "style.range.value.custom"
+msgstr "사용자 지정…"
+
+msgid "style.range.value.selection"
+msgstr "선택 영역"
+
+msgid "style.road.accurate_intersections.desc"
+msgstr "도로 겹침, 교량/터널 차폐, 이음새를 정밀하게 계산합니다. 복잡한 도시에서는 더 오래 걸립니다."
+
+msgid "style.road.accurate_intersections.label"
+msgstr "정확한 교차로"
+
+msgid "style.road.border.label"
+msgstr "도로 테두리"
+
+msgid "style.road.bridge.label"
+msgstr "교량 표시"
+
+msgid "style.road.color.label"
+msgstr "일반 도로"
+
+msgid "style.road.game_names.label"
+msgstr "게임에서 자동 생성한 도로명 사용"
+
+msgid "style.road.highway.label"
+msgstr "고속도로"
+
+msgid "style.road.level.beautification.border.label"
+msgstr "보행/자전거 도로 윤곽선"
+
+msgid "style.road.level.beautification.fill.label"
+msgstr "보행/자전거 도로 채우기"
+
+msgid "style.road.level.beautification.width.label"
+msgstr "보행/자전거 도로 너비"
+
+msgid "style.road.level.branch.border.label"
+msgstr "지선 윤곽선"
+
+msgid "style.road.level.branch.fill.label"
+msgstr "지선 채우기"
+
+msgid "style.road.level.branch.width.label"
+msgstr "지선 폭"
+
+msgid "style.road.level.highway.border.label"
+msgstr "고속도로/자동차 전용 도로 윤곽선"
+
+msgid "style.road.level.highway.fill.label"
+msgstr "고속도로/자동차 전용 도로 채우기"
+
+msgid "style.road.level.highway.width.label"
+msgstr "고속도로/자동차전용도로 너비"
+
+msgid "style.road.level.main.border.label"
+msgstr "간선도로 윤곽선"
+
+msgid "style.road.level.main.fill.label"
+msgstr "간선도로 채우기"
+
+msgid "style.road.level.main.width.label"
+msgstr "간선도로 너비"
+
+msgid "style.road.level.special.border.label"
+msgstr "특수 도로 테두리"
+
+msgid "style.road.level.special.fill.label"
+msgstr "특수 도로 채우기"
+
+msgid "style.road.level.special.width.label"
+msgstr "특수 도로 너비"
+
+msgid "style.road.names.label"
+msgstr "도로 이름 표시"
+
+msgid "style.road.tunnel.label"
+msgstr "터널 표시"
+
+msgid "style.road.width.label"
+msgstr "도로 너비"
+
+msgid "style.rotation.label"
+msgstr "회전"
+
+msgid "style.rotation.value.0"
+msgstr "0°"
+
+msgid "style.rotation.value.180"
+msgstr "180°"
+
+msgid "style.rotation.value.270"
+msgstr "270°"
+
+msgid "style.rotation.value.90"
+msgstr "90°"
+
+msgid "style.size.label"
+msgstr "이미지 크기"
+
+msgid "style.size.value.2k"
+msgstr "2K · 2048"
+
+msgid "style.size.value.4k"
+msgstr "4K · 4096"
+
+msgid "style.size.value.8k"
+msgstr "8K · 7680"
+
+msgid "style.size.value.custom"
+msgstr "사용자 지정…"
+
+msgid "style.terrain.color.label"
+msgstr "육지 색상"
+
+msgid "style.terrain.forest.label"
+msgstr "식생 색상"
+
+msgid "style.terrain.mode.label"
+msgstr "지형 스타일"
+
+msgid "style.terrain.mode.value.shade"
+msgstr "고도 구간 + 음영"
+
+msgid "style.terrain.mode.value.simple"
+msgstr "고도 구간"
+
+msgid "style.terrain.shade.label"
+msgstr "음영"
+
+msgid "style.terrain.sun.label"
+msgstr "빛 방향"
+
+msgid "style.theme.label"
+msgstr "지도 테마"
+
+msgid "style.theme.value.amap"
+msgstr "밝은 지도"
+
+msgid "style.theme.value.dark"
+msgstr "어두운 스타일"
+
+msgid "style.theme.value.google"
+msgstr "따뜻한 자연색"
+
+msgid "style.theme.value.modern"
+msgstr "미니멀 모던"
+
+msgid "style.theme.value.paper"
+msgstr "빈티지 스타일"
+
+msgid "style.traffic.busy.label"
+msgstr "혼잡"
+
+msgid "style.traffic.free.label"
+msgstr "원활"
+
+msgid "style.traffic.slow.label"
+msgstr "서행"
+
+msgid "style.transport.distance.label"
+msgstr "병합 거리 (m)"
+
+msgid "style.transport.font.label"
+msgstr "역 이름 글자 크기"
+
+msgid "style.transport.legend.label"
+msgstr "범례 위치"
+
+msgid "style.transport.legend.value.bl"
+msgstr "왼쪽 아래"
+
+msgid "style.transport.legend.value.br"
+msgstr "오른쪽 아래"
+
+msgid "style.transport.legend.value.none"
+msgstr "숨김"
+
+msgid "style.transport.mask.label"
+msgstr "바탕 지도 흐리게 하기"
+
+msgid "style.transport.merge.label"
+msgstr "가까운 정류장 합치기"
+
+msgid "style.transport.names.label"
+msgstr "역 이름 표시"
+
+msgid "style.transport.size.label"
+msgstr "역 크기"
+
+msgid "style.transport.station_names.label"
+msgstr "역 이름"
+
+msgid "style.transport.stations.label"
+msgstr "역 원형 표시"
+
+msgid "style.transport.width.label"
+msgstr "노선 너비"
+
+msgid "style.view.grid.label"
+msgstr "격자"
+
+msgid "style.view.info.label"
+msgstr "정보 패널"
+
+msgid "style.view.rulers.label"
+msgstr "눈금자"
+
+msgid "style.view.sidebar.label"
+msgstr "탐색 바"
+
+msgid "style.view.status.label"
+msgstr "상태 표시줄"
+
+msgid "style.water.border.label"
+msgstr "해안선 색상"
+
+msgid "style.water.color.label"
+msgstr "수역 채우기"
+
+msgid "style.water.smooth.label"
+msgstr "해안선 부드럽게(내보내기만)"
+
+msgid "style.water.width.label"
+msgstr "해안선 너비"
+
+msgid "style.watermark.opacity.label"
+msgstr "워터마크 불투명도"
+
+msgid "style.watermark.position.label"
+msgstr "워터마크 위치"
+
+msgid "style.watermark.position.value.bl"
+msgstr "왼쪽 아래"
+
+msgid "style.watermark.position.value.br"
+msgstr "오른쪽 아래"
+
+msgid "style.watermark.text.label"
+msgstr "워터마크 텍스트"
+
+msgid "style.zone.color.label"
+msgstr "경계 색상"
+
+msgid "style.zone.opacity.label"
+msgstr "지역 채우기"
+
+msgid "transport.station_prefix"
+msgstr "역"
+
+msgid "ui.guir_backend.__init__.6bea77acef"
+msgstr "표준"
+
+msgid "ui.guir_backend._extract_city_info.ec7227d6cd"
+msgstr "알 수 없는 도시"
+
+msgid "ui.guir_backend._handler_water_smooth.6bea77acef"
+msgstr "표준"
+
+msgid "ui.guir_backend._handler_water_smooth.f038053bed"
+msgstr "강함"
+
+msgid "ui.guir_backend._load_persisted_state.6bea77acef"
+msgstr "표준"
+
+msgid "ui.guir_backend._poll.28e5fa4dbd"
+msgstr "렌더링 결과를 읽지 못했습니다"
+
+msgid "ui.guir_backend._poll.528c98ff25"
+msgstr "렌더링 프로세스가 예기치 않게 종료되었습니다(종료 코드 {p0})."
+
+msgid "ui.guir_backend._poll.effd01f5d1"
+msgstr "렌더링 결과를 읽지 못했습니다: {p0}"
+
+msgid "ui.guir_backend.check_cancel.e4267bce68"
+msgstr "PNG 내보내기 취소됨"
+
+msgid "ui.guir_backend.discard_png_result.850166ad36"
+msgstr "PNG 임시 폴더를 정리하지 못했습니다: %s"
+
+msgid "ui.guir_backend.facility_poi_catalog.0fd9e19000"
+msgstr "동물원"
+
+msgid "ui.guir_backend.facility_poi_catalog.163ee5a292"
+msgstr "화물 항구"
+
+msgid "ui.guir_backend.facility_poi_catalog.4513bba543"
+msgstr "대학교"
+
+msgid "ui.guir_backend.facility_poi_catalog.6a5347ac5f"
+msgstr "공항"
+
+msgid "ui.guir_backend.facility_poi_catalog.82be57d9af"
+msgstr "놀이공원"
+
+msgid "ui.guir_backend.facility_poi_catalog.a0cc394994"
+msgstr "여객 항구"
+
+msgid "ui.guir_backend.facility_poi_catalog.b2c3ea6ae5"
+msgstr "자연 보호 구역"
+
+msgid "ui.guir_backend.facility_poi_catalog.cf3e1046a3"
+msgstr "캠퍼스"
+
+msgid "ui.guir_backend.facility_poi_catalog.e852dca995"
+msgstr "공원"
+
+msgid "ui.guir_backend.field_value.6bea77acef"
+msgstr "표준"
+
+msgid "ui.guir_backend.progress.ab09202a2b"
+msgstr "지하철 노선도 생성 취소됨"
+
+msgid "ui.guir_backend.region_catalog.06f15683dd"
+msgstr "구역"
+
+msgid "ui.guir_backend.region_catalog.4f56683e73"
+msgstr "구역"
+
+msgid "ui.object_inspector.catalog.06f15683dd"
+msgstr "용도지역"
+
+msgid "ui.object_inspector.catalog.0711877f34"
+msgstr "버스"
+
+msgid "ui.object_inspector.catalog.109688e695"
+msgstr "지선 도로"
+
+msgid "ui.object_inspector.catalog.10b329e9a6"
+msgstr "철도 선로"
+
+msgid "ui.object_inspector.catalog.170c9b910c"
+msgstr "트램"
+
+msgid "ui.object_inspector.catalog.1f6835c0d8"
+msgstr "병원"
+
+msgid "ui.object_inspector.catalog.2a8548b84f"
+msgstr "주거"
+
+msgid "ui.object_inspector.catalog.341394deda"
+msgstr "헬리콥터"
+
+msgid "ui.object_inspector.catalog.358023d968"
+msgstr "트롤리버스"
+
+msgid "ui.object_inspector.catalog.35cde54ceb"
+msgstr "조경 산책로"
+
+msgid "ui.object_inspector.catalog.3cb53b9c23"
+msgstr "공원 구역"
+
+msgid "ui.object_inspector.catalog.3fb4ae5556"
+msgstr "교통 노선"
+
+msgid "ui.object_inspector.catalog.4513bba543"
+msgstr "대학교"
+
+msgid "ui.object_inspector.catalog.4a91350aa5"
+msgstr "소방서"
+
+msgid "ui.object_inspector.catalog.4f56683e73"
+msgstr "구역"
+
+msgid "ui.object_inspector.catalog.534c553126"
+msgstr "고속도로"
+
+msgid "ui.object_inspector.catalog.55d2d31f2a"
+msgstr "터널"
+
+msgid "ui.object_inspector.catalog.5b46860a8e"
+msgstr "건물"
+
+msgid "ui.object_inspector.catalog.666dd3886c"
+msgstr "비교통 시설"
+
+msgid "ui.object_inspector.catalog.674ddf7793"
+msgstr "소방서"
+
+msgid "ui.object_inspector.catalog.6a5347ac5f"
+msgstr "공항"
+
+msgid "ui.object_inspector.catalog.70b41c7440"
+msgstr "케이블카"
+
+msgid "ui.object_inspector.catalog.7823428e45"
+msgstr "사무실"
+
+msgid "ui.object_inspector.catalog.7f2e47390d"
+msgstr "항공"
+
+msgid "ui.object_inspector.catalog.7f48b47270"
+msgstr "페리"
+
+msgid "ui.object_inspector.catalog.85155a34a5"
+msgstr "일반 장소"
+
+msgid "ui.object_inspector.catalog.85f71ec8da"
+msgstr "간선도로"
+
+msgid "ui.object_inspector.catalog.92f0b57fd4"
+msgstr "선박"
+
+msgid "ui.object_inspector.catalog.97492a0e5d"
+msgstr "열차"
+
+msgid "ui.object_inspector.catalog.9fc7d0cf1d"
+msgstr "장소 아이콘"
+
+msgid "ui.object_inspector.catalog.a44c7ba211"
+msgstr "도로"
+
+msgid "ui.object_inspector.catalog.a59fe62777"
+msgstr "역"
+
+msgid "ui.object_inspector.catalog.af5a323677"
+msgstr "산업"
+
+msgid "ui.object_inspector.catalog.b1c0532855"
+msgstr "상업"
+
+msgid "ui.object_inspector.catalog.b76daf0239"
+msgstr "경찰 시설"
+
+msgid "ui.object_inspector.catalog.b8466cd555"
+msgstr "지하철"
+
+msgid "ui.object_inspector.catalog.c9a0955518"
+msgstr "지면"
+
+msgid "ui.object_inspector.catalog.cf7a18690f"
+msgstr "모노레일"
+
+msgid "ui.object_inspector.catalog.d2909f1647"
+msgstr "기타"
+
+msgid "ui.object_inspector.catalog.dc6e2aafeb"
+msgstr "학교"
+
+msgid "ui.object_inspector.catalog.e852dca995"
+msgstr "공원"
+
+msgid "ui.object_inspector.catalog.ed867ccbf0"
+msgstr "대중교통 역"
+
+msgid "ui.object_inspector.catalog.ede0519a4c"
+msgstr "특수 도로"
+
+msgid "ui.object_inspector.catalog.f543a15123"
+msgstr "고가"
+
+msgid "ui.object_inspector.catalog.f7ccd76bf8"
+msgstr "대중교통 장소"
+
+msgid "ui.object_inspector.describe.047fa9d803"
+msgstr "전체 도로 모양"
+
+msgid "ui.object_inspector.describe.0af02ac692"
+msgstr "레이아웃 및 병합(미리 보기)"
+
+msgid "ui.object_inspector.describe.0af2dc2f96"
+msgstr "현재 모델의 정류장 수"
+
+msgid "ui.object_inspector.describe.0c70665b6e"
+msgstr "아니요"
+
+msgid "ui.object_inspector.describe.145219e726"
+msgstr "숨김"
+
+msgid "ui.object_inspector.describe.1712bbea62"
+msgstr "모든 건물에 적용됩니다."
+
+msgid "ui.object_inspector.describe.18202c5a9d"
+msgstr "선로 유형"
+
+msgid "ui.object_inspector.describe.198dd9da2d"
+msgstr "이름 표시 대상"
+
+msgid "ui.object_inspector.describe.1a1ef51c8d"
+msgstr "용도/시설 범주별"
+
+msgid "ui.object_inspector.describe.1c786295e3"
+msgstr "밀도와 겹침 방지는 미리 보기의 모든 장소에 적용됩니다. 그룹 병합은 다음에 적용됩니다: "
+
+msgid "ui.object_inspector.describe.1d4da9cc30"
+msgstr "시설 내 건물 수"
+
+msgid "ui.object_inspector.describe.1efb861668"
+msgstr "노선 모양"
+
+msgid "ui.object_inspector.describe.23fb29e3a5"
+msgstr "구간 수"
+
+msgid "ui.object_inspector.describe.29941bc99d"
+msgstr "선택한 구간 길이"
+
+msgid "ui.object_inspector.describe.2abba61725"
+msgstr "선로 색상"
+
+msgid "ui.object_inspector.describe.2b42dd52ee"
+msgstr "건물 모양"
+
+msgid "ui.object_inspector.describe.2cb3f5a066"
+msgstr "선로 모양"
+
+msgid "ui.object_inspector.describe.34cf4e5507"
+msgstr "아이콘 리소스가 없거나 유형이 등록되지 않았습니다. 장소 매핑을 확인하세요."
+
+msgid "ui.object_inspector.describe.395ee8e80b"
+msgstr "성김"
+
+msgid "ui.object_inspector.describe.3c18993515"
+msgstr "모든 장소 병합 사용"
+
+msgid "ui.object_inspector.describe.3fbdb548d1"
+msgstr "이름 크기(모든 장소)"
+
+msgid "ui.object_inspector.describe.4247a9c3ad"
+msgstr "대중교통 장소 표시"
+
+msgid "ui.object_inspector.describe.42a2766d08"
+msgstr "선로 장식 색상"
+
+msgid "ui.object_inspector.describe.4317d9a490"
+msgstr "등록되지 않은 유형"
+
+msgid "ui.object_inspector.describe.43f6aa3376"
+msgstr "대체 색상"
+
+msgid "ui.object_inspector.describe.44c9e48874"
+msgstr "도로 형태"
+
+msgid "ui.object_inspector.describe.492aa3d50c"
+msgstr "기능 범주"
+
+msgid "ui.object_inspector.describe.4a0788a10b"
+msgstr "표시 우선순위"
+
+msgid "ui.object_inspector.describe.4c93e617e4"
+msgstr "모든 도로에 적용됩니다."
+
+msgid "ui.object_inspector.describe.4d99c976be"
+msgstr "사용 가능"
+
+msgid "ui.object_inspector.describe.4ff1d894c3"
+msgstr "현재 용도 색상"
+
+msgid "ui.object_inspector.describe.54f5431ad3"
+msgstr "채우기 색상"
+
+msgid "ui.object_inspector.describe.57baf59886"
+msgstr "운행 노선 수"
+
+msgid "ui.object_inspector.describe.5807d1dc81"
+msgstr "모든 노선의 선 너비"
+
+msgid "ui.object_inspector.describe.5910b70e80"
+msgstr "모든 장소 부착 이름 크기"
+
+msgid "ui.object_inspector.describe.5d2232b103"
+msgstr "경계 및 채우기"
+
+msgid "ui.object_inspector.describe.5e3f198ad9"
+msgstr "경계 색상"
+
+msgid "ui.object_inspector.describe.5e85b1c73c"
+msgstr "아이콘 유형"
+
+msgid "ui.object_inspector.describe.614eb9e832"
+msgstr "미리보기 경로 길이"
+
+msgid "ui.object_inspector.describe.638668bac9"
+msgstr "밀집"
+
+msgid "ui.object_inspector.describe.67bee6acfc"
+msgstr "이름 없음"
+
+msgid "ui.object_inspector.describe.6bea77acef"
+msgstr "표준"
+
+msgid "ui.object_inspector.describe.6efd17aac1"
+msgstr "표시 그룹"
+
+msgid "ui.object_inspector.describe.6fb3f1e4e4"
+msgstr "채우기 불투명도"
+
+msgid "ui.object_inspector.describe.711617512b"
+msgstr "균일 채우기"
+
+msgid "ui.object_inspector.describe.72c55cb5e7"
+msgstr "건물 용도"
+
+msgid "ui.object_inspector.describe.747c2ffdcb"
+msgstr "연결용 포장면 또는 알 수 없는 등급입니다. 전체 도로 테마에서 조정하세요."
+
+msgid "ui.object_inspector.describe.756762e293"
+msgstr "제공되지 않음"
+
+msgid "ui.object_inspector.describe.77007520ba"
+msgstr "선 스타일은 이 교통수단에 적용되며 이름 설정은 이 보기의 모든 노선에 적용됩니다."
+
+msgid "ui.object_inspector.describe.7aeb540769"
+msgstr "아이콘 크기"
+
+msgid "ui.object_inspector.describe.81a3bdaa03"
+msgstr "실제 너비"
+
+msgid "ui.object_inspector.describe.836cbed510"
+msgstr "색상 지정 방식"
+
+msgid "ui.object_inspector.describe.86a200764b"
+msgstr "모든 기능 구역에 적용됩니다."
+
+msgid "ui.object_inspector.describe.876c0c149d"
+msgstr "원본 구역 수"
+
+msgid "ui.object_inspector.describe.8b301292a2"
+msgstr "노선 이름 크기"
+
+msgid "ui.object_inspector.describe.9035e1788e"
+msgstr "밀도 필터링"
+
+msgid "ui.object_inspector.describe.9659c81207"
+msgstr "단일 색상"
+
+msgid "ui.object_inspector.describe.995f11ecdc"
+msgstr "운행 노선"
+
+msgid "ui.object_inspector.describe.9a6361d604"
+msgstr "최소 표시 너비"
+
+msgid "ui.object_inspector.describe.9c41525ce4"
+msgstr "개체 역할"
+
+msgid "ui.object_inspector.describe.9f1de8eaf7"
+msgstr "시설 본체 수"
+
+msgid "ui.object_inspector.describe.9fe74bef39"
+msgstr ". PNG 프로필은 변경되지 않습니다."
+
+msgid "ui.object_inspector.describe.a54fa2904e"
+msgstr "크기와 모양은 모든 장소에 적용되며, 이름 표시 스위치는 아래에 지정된 그룹에만 적용됩니다."
+
+msgid "ui.object_inspector.describe.a76488cf50"
+msgstr "노선 색상(원본 데이터)"
+
+msgid "ui.object_inspector.describe.a8a9631df4"
+msgstr "노선 이름 표시"
+
+msgid "ui.object_inspector.describe.a8e3637209"
+msgstr "경계 너비"
+
+msgid "ui.object_inspector.describe.a9f595ad22"
+msgstr "병합 허용"
+
+msgid "ui.object_inspector.describe.aa3955f916"
+msgstr "장소 밀도"
+
+msgid "ui.object_inspector.describe.abd181271c"
+msgstr "평균 고도(m)"
+
+msgid "ui.object_inspector.describe.ac0bf8c3b7"
+msgstr "모든 교통 장소에 적용됩니다."
+
+msgid "ui.object_inspector.describe.ac41b1adda"
+msgstr "역 이름 윤곽선 및 글꼴"
+
+msgid "ui.object_inspector.describe.ae299c3aef"
+msgstr "이 스타일을 사용하는 모든 도로에 적용됩니다. 선택한 도로는 효과를 보여 주는 기준입니다."
+
+msgid "ui.object_inspector.describe.b05f246ac9"
+msgstr "현재 보기의 모든 정류장에 적용됩니다."
+
+msgid "ui.object_inspector.describe.b1349d2cb4"
+msgstr "시설 단계"
+
+msgid "ui.object_inspector.describe.b5141d3d19"
+msgstr "예"
+
+msgid "ui.object_inspector.describe.b6d3e078db"
+msgstr "이 객체에는 사용할 수 있는 스타일 편집 항목이 없습니다."
+
+msgid "ui.object_inspector.describe.b842da00b0"
+msgstr "리소스 누락"
+
+msgid "ui.object_inspector.describe.b87011f842"
+msgstr "노선 이름 표시(전체 노선)"
+
+msgid "ui.object_inspector.describe.b874b614a7"
+msgstr "선택한 경로 길이"
+
+msgid "ui.object_inspector.describe.bc8600a16e"
+msgstr "아이콘 및 이름"
+
+msgid "ui.object_inspector.describe.bf21786b6a"
+msgstr "이름 테두리 및 글꼴"
+
+msgid "ui.object_inspector.describe.c122178ce4"
+msgstr "교통수단"
+
+msgid "ui.object_inspector.describe.c2ced2decf"
+msgstr "그룹 병합 거리"
+
+msgid "ui.object_inspector.describe.c3b7111911"
+msgstr "구성 건물 수"
+
+msgid "ui.object_inspector.describe.c3cdf137f2"
+msgstr "시설 이름은 장소 아이콘 채널에서 그려질 수 있습니다. 건물 텍스트 스타일은 장소에 연결된 이름을 바꾸지 않습니다."
+
+msgid "ui.object_inspector.describe.c6c54bf846"
+msgstr "모든 연결된 장소 이름에 적용됩니다."
+
+msgid "ui.object_inspector.describe.c8a2d11ead"
+msgstr "아이콘 스타일(모든 장소)"
+
+msgid "ui.object_inspector.describe.c97044edbe"
+msgstr "평균 실제 너비"
+
+msgid "ui.object_inspector.describe.cfcef8fa7d"
+msgstr "노선 경로 출처"
+
+msgid "ui.object_inspector.describe.d211657dd1"
+msgstr "역 크기"
+
+msgid "ui.object_inspector.describe.dcbc3f5adb"
+msgstr "색상 출처"
+
+msgid "ui.object_inspector.describe.df6859de66"
+msgstr "용도 색상이 일치하지 않는 건물에만 적용됩니다."
+
+msgid "ui.object_inspector.describe.e1cfcbb06d"
+msgstr "로드 대기 중"
+
+msgid "ui.object_inspector.describe.e211926d3a"
+msgstr "현재 보기 선 너비"
+
+msgid "ui.object_inspector.describe.e3b04e065c"
+msgstr "그룹 표시"
+
+msgid "ui.object_inspector.describe.e4a79af431"
+msgstr "노선 "
+
+msgid "ui.object_inspector.describe.e4f5889abd"
+msgstr "교통수단별 선 너비"
+
+msgid "ui.object_inspector.describe.e522761331"
+msgstr "이름 출처"
+
+msgid "ui.object_inspector.describe.e55e6f2bac"
+msgstr "색상 강도"
+
+msgid "ui.object_inspector.describe.e58ee3c2db"
+msgstr "표시 너비"
+
+msgid "ui.object_inspector.describe.e5bd2eef37"
+msgstr "역 및 이름"
+
+msgid "ui.object_inspector.describe.ea3973e49b"
+msgstr "아이콘 상태"
+
+msgid "ui.object_inspector.describe.ead247ca08"
+msgstr "아이콘과 이름 겹침 방지"
+
+msgid "ui.object_inspector.describe.eccafde326"
+msgstr "역 구간"
+
+msgid "ui.object_inspector.describe.ef34af6177"
+msgstr "역 구간 너비"
+
+msgid "ui.object_inspector.describe.efc9ada2bd"
+msgstr "지도 객체"
+
+msgid "ui.object_inspector.describe.f2c5395498"
+msgstr "역 이름은 장소 아이콘에 붙은 이름 레이어에 그려지며, 모든 부착 이름에 적용됩니다."
+
+msgid "ui.object_inspector.describe.f38d46b4f4"
+msgstr "시설 용도 색상"
+
+msgid "ui.object_inspector.describe.f4017deede"
+msgstr "이 유형의 기본 지도 선로에 적용됩니다."
+
+msgid "ui.object_inspector.describe.f7ec5c27de"
+msgstr "이 아이콘 그룹은 숨겨져 있습니다. 그룹 표시에서 다시 켤 수 있습니다."
+
+msgid "ui.object_inspector.describe.f8ddaae464"
+msgstr "지역 유형"
+
+msgid "ui.object_inspector.describe.f8febafe49"
+msgstr "장소 범주"
+
+msgid "ui.object_inspector.describe.fa715dea69"
+msgstr "아이콘 리소스 상태"
+
+msgid "ui.object_inspector.describe.fbd529d0c7"
+msgstr "모든 구역에 적용됩니다."
+
+msgid "ui.object_inspector.describe.fbe0108a42"
+msgstr "대체 채우기 색상"
+
+msgid "ui.object_inspector.describe.fbe666f1e0"
+msgstr "도로 등급"
+
+msgid "ui.object_inspector.fact.0c70665b6e"
+msgstr "아니요"
+
+msgid "ui.object_inspector.fact.b5141d3d19"
+msgstr "예"
+
+msgid "ui.object_inspector.names.078838da42"
+msgstr "글꼴"
+
+msgid "ui.object_inspector.names.2f66a7f608"
+msgstr "이 라벨 채널의 모든 같은 유형 이름에 적용됩니다."
+
+msgid "ui.object_inspector.names.3cc1ba50ed"
+msgstr "텍스트 윤곽선"
+
+msgid "ui.object_inspector.names.a98585871c"
+msgstr "이름 표시"
+
+msgid "ui.object_inspector.names.c86c040c4c"
+msgstr "이름 모양"
+
+msgid "ui.object_inspector.names.f21ef4aba5"
+msgstr "텍스트 색상"
+
+msgid "ui.object_inspector.names.f71561b5af"
+msgstr "글꼴 크기"
+
+msgid "ui.object_inspector.visibility_field.39e0705286"
+msgstr "아이콘 표시"
+
+msgid "ui.object_inspector.visibility_field.a98585871c"
+msgstr "이름 표시"
+
+#: csmodernmap/object_inspector.py
+msgid "ui.poi_density.extremely_dense"
+msgstr "가장 많이"
+
+#: csmodernmap/object_inspector.py
+msgid "ui.poi_density.extremely_sparse"
+msgstr "가장 적게"
+
+#: csmodernmap/object_inspector.py
+msgid "ui.poi_density.very_dense"
+msgstr "매우 많이"
+
+#: csmodernmap/object_inspector.py
+msgid "ui.poi_density.very_sparse"
+msgstr "매우 적게"
+
+msgid "ui.web_export_v2._payload_from_bundle.cea7853717"
+msgstr "장면 데이터 패키징"
+
+msgid "ui.web_export_v2._viewer_assets.1669cd8574"
+msgstr ""
+"Viewer 프런트엔드 {p0}을(를) 찾을 수 없습니다\n"
+"tools/build_preview_viewer.py를 먼저 실행하세요"
+
+msgid "ui.web_export_v2._viewer_assets.28040ea0ef"
+msgstr "{p0}에서 index-*.js / index-*.css 자산 참조를 찾지 못했습니다"
+
+msgid "ui.web_export_v2._viewer_assets.3c4c241c6f"
+msgstr ""
+"Viewer 자산이 없습니다: {p0}\n"
+"tools/build_preview_viewer.py를 다시 실행하세요"
+
+msgid "ui.web_export_v2.build_scene_payload.6084dd902b"
+msgstr "장면 컴파일 준비 중"
+
+msgid "ui.web_export_v2.export_web.29024b3e04"
+msgstr "웹 내보내기 준비 중…"
+
+msgid "ui.web_export_v2.export_web.b99e3597ca"
+msgstr "웹 지도 내보내기 완료"
+
+msgid "ui.web_export_v2.export_web.eae840aba7"
+msgstr "단일 파일 HTML 조립 중…"
+
+msgid "ui.web_export_v2.render_export_html.0fe5c970b8"
+msgstr "CSL 도시 지도"
+
+msgid "ui.web_export_v2.render_export_html.cee2179528"
+msgstr "CSL 도시 지도 · {p0}"
+
+msgid "ui.winui_engine._capture_output_snapshot.9e411d9c27"
+msgstr "긴 변의 픽셀 수를 유효한 정수로 입력하세요."
+
+msgid "ui.winui_engine._export_completed.bcd13e5ccc"
+msgstr "도시가 바뀌어 이전 문서의 내보내기 결과를 삭제했습니다"
+
+msgid "ui.winui_engine._render_done.0cdaea5eb6"
+msgstr "지하철 미리보기를 저장하지 못했습니다: {p0}"
+
+msgid "ui.winui_engine._render_done.bcd13e5ccc"
+msgstr "도시가 바뀌어 이전 문서의 내보내기 결과를 삭제했습니다"
+
+msgid "ui.winui_engine._require_document_epoch.8e11490207"
+msgstr "도시가 전환되었습니다. 현재 페이지를 새로 고친 후 다시 시도하세요."
+
+msgid "ui.winui_engine._start_external_project_export.ae3f8c8a07"
+msgstr "도시를 먼저 여세요"
+
+msgid "ui.winui_engine._start_external_project_export.fd1e2dca12"
+msgstr "내보낼 폴더를 선택하세요"
+
+msgid "ui.winui_engine.dispatch.19bb4eb8a9"
+msgstr "외부 프로젝트 쓰기는 중간에 취소할 수 없습니다"
+
+msgid "ui.winui_engine.dispatch.43f245906a"
+msgstr "테마가 전환되었습니다. 편집기를 다시 여세요"
+
+msgid "ui.winui_engine.dispatch.5f67276ac1"
+msgstr "되돌리거나 다시 실행할 작업이 없습니다"
+
+msgid "ui.winui_engine.dispatch.69d8708938"
+msgstr "다른 페이지에서 테마 설정이 변경되었습니다. 다시 불러온 후 적용하세요"
+
+msgid "ui.winui_engine.dispatch.6f6dff2c57"
+msgstr "POI 매핑이 외부에서 변경되었습니다. 다시 불러오세요."
+
+msgid "ui.winui_engine.dispatch.73db60d7fc"
+msgstr "테마 파일은 YAML이어야 합니다"
+
+msgid "ui.winui_engine.dispatch.7ddd21b8bf"
+msgstr "현재 테마가 변경되었습니다. 설정을 다시 여세요"
+
+msgid "ui.winui_engine.dispatch.80bd243ed5"
+msgstr "설정이 변경되었습니다. 객체 속성을 새로 고친 뒤 다시 시도하세요"
+
+msgid "ui.winui_engine.dispatch.837a5ba76c"
+msgstr "테마 저장 실패"
+
+msgid "ui.winui_engine.dispatch.8d612deac2"
+msgstr "다른 작업에서 설정을 변경하여 이전 기록을 되돌릴 수 없습니다"
+
+msgid "ui.winui_engine.dispatch.96b57316e5"
+msgstr "텍스트 및 아이콘 전체 스위치는 부울 값이어야 합니다"
+
+msgid "ui.winui_engine.dispatch.9c2202a4e4"
+msgstr "지하철 노선도를 만들려면 노선을 하나 이상 선택하세요"
+
+msgid "ui.winui_engine.dispatch.ae3f8c8a07"
+msgstr "도시를 먼저 여세요"
+
+msgid "ui.winui_engine.dispatch.b3dbf7b21a"
+msgstr "POI 편집 세션이 만료되었습니다. 다시 열어 주세요"
+
+msgid "ui.winui_engine.dispatch.c2952a0254"
+msgstr "지하철 노선 윤곽선 설정 실패"
+
+msgid "ui.winui_engine.dispatch.c9a482b2c3"
+msgstr "알 수 없는 텍스트 또는 아이콘 설정"
+
+msgid "ui.winui_engine.dispatch.dd98f132f7"
+msgstr "알 수 없는 대중교통 표시 설정"
+
+msgid "ui.winui_engine.dispatch.dfeec4838c"
+msgstr "내보내기 파일 쓰는 중"
+
+msgid "ui.winui_engine.dispatch.e668d01e2c"
+msgstr "PNG를 기록하는 중입니다. 완료될 때까지 기다려 주세요"
+
+msgid "ui.winui_engine.dispatch.e8e08b0f61"
+msgstr "취소 중…"
+
+msgid "ui.winui_engine.dispatch.f7297a7ae6"
+msgstr "잘못된 설정: {p0}"
+
+msgid "ui.winui_engine.dispatch.fd1e2dca12"
+msgstr "내보낼 폴더를 선택하세요"
+
+msgid "ui.winui_engine.queue_theme_preview.ae3f8c8a07"
+msgstr "도시를 먼저 여세요"
+
+msgid "ui.winui_engine.theme_text_sample.c1fff780e0"
+msgstr "人民广场 · Central Avenue"
+
+msgid "ui.winui_engine.worker.bcd13e5ccc"
+msgstr "도시가 바뀌어 이전 문서의 내보내기 결과를 삭제했습니다"
+
+msgid "ui.winui_workflows.dispatch.155590bba2"
+msgstr "환승 모음의 수량 또는 크기가 범위를 벗어났습니다"
+
+msgid "ui.winui_workflows.dispatch.2712805913"
+msgstr "인터페이스 언어를 저장하지 못했습니다"
+
+msgid "watermark.save_timestamp"
+msgstr "저장 시간"
+
+msgid "watermark.traffic_at"
+msgstr "교통량"

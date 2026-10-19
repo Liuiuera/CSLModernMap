@@ -1,0 +1,332 @@
+# 暗黑风格主题
+name: 暗黑风格
+description: 深色底地图，适合夜间使用
+
+canvas:
+  width: 4096
+  height: 4096
+  background: "#1C1E22"
+
+terrain:
+  elevation_colors:
+    - { threshold: 0, color: "#1C1E22" }
+    - { threshold: 80, color: "#1C1E22" }
+    - { threshold: 120, color: "#23262B" }
+    - { threshold: 250, color: "#2A2E34" }
+    - { threshold: 600, color: "#33383F" }
+    - { threshold: 1200, color: "#3E444C" }
+  elevation_mode: continuous
+  hillshade:
+    enabled: true
+    intensity: 0.3
+    azimuth: 315
+    altitude: 45
+    large_scale_meters: 320.0
+    small_scale_meters: 0.0
+    large_scale_weight: 0.35
+    small_scale_weight: 0.65
+
+# 建成区底色：由建筑轮廓+缓冲推导城市范围，画在地形之上、水域之下
+built_area:
+  enabled: true
+  cell_meters: 8.0
+  buffer_meters: 60.0
+  smooth_blur: 2.0
+  smooth_iters: 6
+  contour_upscale: 4
+  color: "#1C1E22"
+  exclude_services: [Electricity, Water, Road, Beautification]
+  include_parks: false
+
+water:
+  color: "#12293B"
+  border: "#1D4057"
+  border_width: 1
+
+forest:
+  color: "#1E2E1E"
+
+# 用地类型图层（独立功能，默认关闭，GUI/CLI 显式启用时生效）
+land_use:
+  enabled: true
+  detail: base
+  cell_meters: 16.0
+  smooth_blur: 1.5
+  smooth_iters: 3
+  contour_upscale: 2
+  alpha: 90
+  colors:
+    green: "#243B24"
+    public: "#3A3A3A"
+    residential: "#5C4A26"
+    industrial: "#46324E"
+    office: "#2C4258"
+    publictransport: "#27453A"
+    commercial: "#5C3326"
+
+# 区划边界图层（独立功能，默认关闭，GUI/CLI 显式启用时生效）
+district:
+  enabled: true
+  border: "#8A8578"
+  border_width: { fixed: 1.0, scaled: 0.5 }
+  fill_alpha: 85
+  fill_colors:
+    - "#3A4640"
+    - "#46403A"
+    - "#3A404A"
+    - "#463A44"
+    - "#40463A"
+    - "#3A4646"
+    - "#46403F"
+    - "#403A46"
+  smooth_blur: 1.0
+  smooth_iters: 3
+  contour_upscale: 2
+
+# 功能区图层（独立功能，默认关闭）
+zone:
+  enabled: true
+  border: "#7A6A50"
+  border_width: { fixed: 1.0, scaled: 0.5 }
+  fill_alpha: 80
+  fill: "#404040"
+  smooth_blur: 1.0
+  smooth_iters: 3
+  contour_upscale: 2
+
+roads:
+  width_scale: 0.15
+  highway:
+    fill: "#4A4436"
+    border: "#6B5F3E"
+    min_fill_px: 1.8
+    border_width: 1.5
+  main:
+    fill: "#3C3E44"
+    border: "#5A5E66"
+    min_fill_px: 1.4
+    border_width: 1.2
+  special:
+    fill: "#313338"
+    border: "#4A4D54"
+    min_fill_px: 0.8
+    border_width: 1
+  branch:
+    fill: "#2A2C30"
+    border: "#3E4046"
+    min_fill_px: 0.8
+    border_width: 0.8
+  beautification:
+    fill: "#24262A"
+    border: "#36383D"
+    min_fill_px: 0.5
+    border_width: 0.5
+
+buildings:
+  default: "#26282D"
+  border: "#3A3D42"
+  border_width: 1
+  shadow:
+    enabled: true
+    offset: [2, 2]
+    color: "#00000030"
+
+procedural_objects:
+  colors:
+    geometry:     "#35383E"     # 几何体：深灰蓝
+    building:     "#2E3136"     # 建筑：略浅于建筑填充
+    prop:         "#323439"     # 摆件：中灰
+    tree:         "#2A4838"     # 植物：深森林绿
+    street_furn:  "#3A3C40"     # 街道设施：深灰
+    sign:         "#8A7130"     # 招牌：暗金
+    unknown:      "#34363B"     # 兜底
+  border: "#484B50"
+  border_width: 0.8
+  custom_color_alpha: 0.85
+
+railway:
+  enabled: true
+  train:
+    line: "#C8C8C8"        # 火车铁路：亮灰主线（深色底上的黑白对比）
+    dash: "#454545"        # 深灰虚线（道碴感）
+    pattern: [2, 4]
+  tram:
+    line: "#B9A3C4"        # 有轨电车：亮灰紫
+    dash: "#F0F0F0"
+  metro:
+    line:
+      color: "#C39BCB"     # 地铁轨道：亮紫
+      alpha: 200
+    dash: "#F0F0F0"
+  monorail:
+    line: "#B9A3C4"
+  cablecar:
+    line: "#8E93A0"
+
+transports:
+  # 常规图默认启用的线路类型（公共交通视图 view_all 会按 default_enabled 全开）
+  enabled:
+  - Metro
+  - Train
+  - Monorail
+  - Tram
+  - CableCar
+  - Ship
+  - Ferry
+  - Bus
+  - Trolleybus
+  - Airplane
+  - Helicopter
+  # 自动配色开关：true=对无用户色（纯白）的线路自动配色（transit.assign_auto_colors）
+  auto_color: false
+  # 兜底线宽（未在 types 里配置时）
+  width:
+    fixed: 0.5
+    scaled: 2.05
+  smooth: 10
+  # 公共交通视图：底图淡白遮罩强度（0=不遮罩，1=纯白；默认0.5）
+  transit_view:
+    mask_intensity: 0.6
+  # 类型级样式（键 = transit 注册表类型；dash: [] = 实线）
+  types:
+    Metro:
+      width:
+        fixed: 0.5
+        scaled: 2.05
+      dash: []
+    Train:
+      width:
+        fixed: 0.5
+        scaled: 2.2
+      dash: []
+    Monorail:
+      width:
+        fixed: 0.4
+        scaled: 1.85
+      dash: []
+    Tram:
+      width:
+        fixed: 0.4
+        scaled: 1.7
+      dash: []
+    CableCar:
+      width:
+        fixed: 0.4
+        scaled: 1.7
+      dash: []
+    Ship:
+      width:
+        fixed: 0.45
+        scaled: 1.875
+      dash:
+      - 8
+      - 6
+      color: '#2E86AB'
+    Ferry:
+      width:
+        fixed: 0.45
+        scaled: 1.875
+      dash:
+      - 8
+      - 6
+      color: '#2E86AB'
+    Bus:
+      width:
+        fixed: 0.35
+        scaled: 1.525
+      dash: []
+      color: '#5A6472'
+    Trolleybus:
+      width:
+        fixed: 0.35
+        scaled: 1.525
+      dash:
+      - 4
+      - 4
+      color: '#7A8391'
+    Airplane:
+      width:
+        fixed: 0.4
+        scaled: 1.7
+      dash:
+      - 10
+      - 8
+      color: '#8A94A6'
+    Helicopter:
+      width:
+        fixed: 0.3
+        scaled: 1.35
+      dash:
+      - 6
+      - 6
+      color: '#8A94A6'
+  label:
+    enabled: true
+    font: SimHei
+    min_zoom: 0.5
+    size:
+      fixed: 8.0
+      scaled: 6.0
+    padding:
+      fixed: 5.0
+      scaled: 3.5
+    border_width:
+      fixed: 0.9
+      scaled: 0.6
+    bg: '#FFFFFF'
+    repeat_interval: 600
+    min_gap: 350
+    max_per_line: 4
+
+labels:
+  district:
+    font: "SimHei"
+    size: 28
+    color: "#C8CDD2"
+    stroke: "#1C1E22"
+    stroke_width: 1.5
+  road:
+    font: "SimHei"
+    size: 7
+    color: "#9A9EA4"
+    stroke: "#1C1E22"
+    stroke_width: 1.0
+  building:
+    font: "SimHei"
+    size: 16
+    color: "#7A7E84"
+  park:
+    font: "SimHei"
+    size: 14
+    color: "#6E9E5E"
+    stroke: '#FFFFFF'
+    stroke_width: 1.5
+  stop:
+    font: "SimHei"
+    size: 20
+    color: "#4A9AE8"
+
+# 水印：左下角单行紧凑水印（宋体小字，横排）
+# 暗色主题：深色半透明底 + 浅色文字
+watermark:
+  enabled: true
+  mod_name: "CSLModernMap"
+  position: left_bottom
+  font_size: { fixed: 11, scaled: 1.5 }
+  separator: " · "
+  margin: { x: 20, y: 20 }
+  padding: { x: 12, y: 6 }
+  border_radius: 6
+  background: transparent
+  time_format: "%Y-%m-%d %H:%M:%S"
+  city_color: "#F0F0F0"
+  info_color: "#C8CDD2"
+  meta_color: "#8A8F96"
+  content:
+    mod_name: true
+    city_name: true
+    render_time: true
+    style_name: true
+    resolution: true
+    traffic_time: true
+    custom_text: false

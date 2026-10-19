@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/dev/">
+    <Project Path="dev/CSLModernMapRenderer/winui/CSLModernMapWinUI.csproj" />
+  </Folder>
+</Solution>

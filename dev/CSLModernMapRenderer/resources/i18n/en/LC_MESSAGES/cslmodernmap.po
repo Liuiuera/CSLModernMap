@@ -1,0 +1,5295 @@
+# English translations for CSLModernMap.
+# Copyright (C) 2026 CSLModernMap contributors
+# This file is distributed under the same license as the CSLModernMap project.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: CSLModernMap 6.7.1\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-10-13 17:20+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: CSLModernMap contributors\n"
+"Language: en\n"
+"Language-Team: en\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "gui.about.body"
+msgstr ""
+"CSLModernMap Renderer  v{version}\n"
+"Author: Shaotang Shaoxiancao\n"
+"© 2026 Shaotang Shaoxiancao. All rights reserved\n"
+"\n"
+"Renders modern-style maps from Cities: Skylines save files (.mmap / .cslmap).\n"
+"\n"
+"Credits:\n"
+"  · CSLMapView (kkshoko) — basis for the export format\n"
+"  · TM:PE (Traffic Manager President Edition) — traffic data\n"
+"  · Python / Pillow / numpy / PyYAML / Nuitka and other open-source projects\n"
+"\n"
+"Some icon assets were collected from third-party sources and remain the property of their "
+"respective owners."
+
+msgid "gui.about.close"
+msgstr "Close"
+
+msgid "gui.about.copy_info"
+msgstr "Copy version info"
+
+msgid "gui.about.mode_bundled"
+msgstr "bundled"
+
+msgid "gui.about.mode_source"
+msgstr "source"
+
+msgid "gui.about.title"
+msgstr "About"
+
+msgid "gui.action.about"
+msgstr "About CSLModernMap"
+
+msgid "gui.action.clear_selection"
+msgstr "Clear selection"
+
+msgid "gui.action.close_metro"
+msgstr "Close metro schematic"
+
+msgid "gui.action.close_transit"
+msgstr "Close transit view"
+
+msgid "gui.action.export"
+msgstr "Export map…"
+
+msgid "gui.action.fit"
+msgstr "Fit whole map"
+
+msgid "gui.action.layers"
+msgstr "Layer settings…"
+
+msgid "gui.action.lines"
+msgstr "Line list"
+
+msgid "gui.action.lines_layer"
+msgstr "Select lines"
+
+msgid "gui.action.merge_settings"
+msgstr "Merging & grouping"
+
+msgid "gui.action.metro_editor"
+msgstr "Edit network by hand"
+
+msgid "gui.action.open"
+msgstr "Open city"
+
+msgid "gui.action.refresh"
+msgstr "Refresh preview"
+
+msgid "gui.action.regen_metro"
+msgstr "Export metro schematic…"
+
+msgid "gui.action.regen_transit"
+msgstr "Export transit map…"
+
+msgid "gui.action.render_selection"
+msgstr "Render selection"
+
+msgid "gui.advanced.built_area"
+msgstr "Built-up Area"
+
+msgid "gui.advanced.built_preset.低"
+msgstr "Low"
+
+msgid "gui.advanced.built_preset.强"
+msgstr "Strong"
+
+msgid "gui.advanced.built_preset.极强"
+msgstr "Very strong"
+
+msgid "gui.advanced.built_preset.标准"
+msgstr "Standard"
+
+msgid "gui.advanced.font_preset.大"
+msgstr "Large"
+
+msgid "gui.advanced.font_preset.小"
+msgstr "Small"
+
+msgid "gui.advanced.font_preset.标准"
+msgstr "Standard"
+
+msgid "gui.advanced.font_preset.特大"
+msgstr "Extra large"
+
+msgid "gui.advanced.merge_enable"
+msgstr "Merge"
+
+msgid "gui.advanced.title"
+msgstr "Advanced settings"
+
+msgid "gui.advanced.water"
+msgstr "Water"
+
+msgid "gui.advanced.water_preset.低"
+msgstr "Low"
+
+msgid "gui.advanced.water_preset.强"
+msgstr "Strong"
+
+msgid "gui.advanced.water_preset.极强"
+msgstr "Very strong"
+
+msgid "gui.advanced.water_preset.标准"
+msgstr "Standard"
+
+msgid "gui.appearance.dark"
+msgstr "Dark"
+
+msgid "gui.appearance.follow_system"
+msgstr "Follow system"
+
+msgid "gui.appearance.light"
+msgstr "Light"
+
+msgid "gui.appearance.menu"
+msgstr "Appearance"
+
+msgid "gui.appearance.save_failed"
+msgstr "Appearance applied, but could not be saved"
+
+msgid "gui.btn.save_png"
+msgstr "Save PNG"
+
+msgid "gui.city.districts"
+msgstr "Districts"
+
+msgid "gui.city.transports"
+msgstr "Transit lines"
+
+msgid "gui.cmd.tab_layers"
+msgstr "Layers"
+
+msgid "gui.cmd.tab_map"
+msgstr "Map"
+
+msgid "gui.creator.bounds"
+msgstr "Area: ({bounds})"
+
+msgid "gui.creator.bounds_none"
+msgstr "No area picked yet"
+
+msgid "gui.creator.current_spot"
+msgstr "Current close-up"
+
+msgid "gui.creator.hint.aa"
+msgstr ""
+"Draws at a higher resolution and scales down, smoothing road and text edges. Costs extra time and"
+" memory."
+
+msgid "gui.creator.hint.interchange_count"
+msgstr "How many interchanges the gallery includes at most, taken largest first."
+
+msgid "gui.creator.hint.layers"
+msgstr "Which layers appear inside each interchange tile."
+
+msgid "gui.creator.hint.tile_size"
+msgstr "Output side length of each interchange tile in pixels. Larger is sharper but slower."
+
+msgid "gui.creator.interchange.auto"
+msgstr "Automatic"
+
+msgid "gui.creator.interchange.count"
+msgstr "Interchange count"
+
+msgid "gui.creator.interchange.hint"
+msgstr ""
+"Set the parameters below to generate the gallery; the result appears in the central preview. Use "
+"the export window for the final export."
+
+msgid "gui.creator.interchange.hint2"
+msgstr ""
+"Interchanges are detected from the save automatically; if none is selected manually, the largest "
+"ones are used."
+
+msgid "gui.creator.interchange.layers"
+msgstr "Collection layers"
+
+msgid "gui.creator.interchange.run"
+msgstr "Generate interchange collection"
+
+msgid "gui.creator.interchange.section"
+msgstr "Collection parameters"
+
+msgid "gui.creator.interchange.tile_size"
+msgstr "Tile size"
+
+msgid "gui.creator.interchange.title"
+msgstr "Interchange Gallery"
+
+msgid "gui.creator.placeholder.seed"
+msgstr "Leave empty for a random pick each time."
+
+msgid "gui.creator.placeholder.theme_title"
+msgstr "Leave empty to use the theme's default title."
+
+msgid "gui.creator.preference.balanced"
+msgstr "Balanced"
+
+msgid "gui.creator.preference.buildings"
+msgstr "Dense buildings"
+
+msgid "gui.creator.preference.congestion"
+msgstr "Congested roads"
+
+msgid "gui.creator.preference.park"
+msgstr "Parks & green"
+
+msgid "gui.creator.preference.transit"
+msgstr "Public transport"
+
+msgid "gui.creator.preference.water"
+msgstr "Waterfront"
+
+msgid "gui.creator.preference_label"
+msgstr "Framing preference"
+
+msgid "gui.creator.random.hint"
+msgstr ""
+"Random pick only moves the preview area and does not render. Keep adjusting the selection in the "
+"central preview."
+
+msgid "gui.creator.random.pick"
+msgstr "Pick at random"
+
+msgid "gui.creator.random.preference_section"
+msgstr "Random preference"
+
+msgid "gui.creator.random.save"
+msgstr "Save this close-up…"
+
+msgid "gui.creator.random.steps"
+msgstr "Preference → random pick → adjust in preview → save"
+
+msgid "gui.creator.random.title"
+msgstr "Random Highlight"
+
+msgid "gui.creator.seed"
+msgstr "Random seed"
+
+msgid "gui.creator.show_labels"
+msgstr "Show road and place labels"
+
+msgid "gui.creator.show_place_names"
+msgstr "Show place names"
+
+msgid "gui.creator.webmap.hint"
+msgstr "Use the unified export window to choose the HTML output."
+
+msgid "gui.creator.webmap.title"
+msgstr "Web map"
+
+msgid "gui.diagnostics.auto"
+msgstr "Automatic"
+
+msgid "gui.diagnostics.clear_errors"
+msgstr "Clear session errors"
+
+msgid "gui.diagnostics.context_label"
+msgstr "Preview context"
+
+msgid "gui.diagnostics.error_prefix"
+msgstr "Preview: {error}"
+
+msgid "gui.diagnostics.no_errors"
+msgstr "No errors occurred in this run."
+
+msgid "gui.diagnostics.not_opened"
+msgstr "Not opened"
+
+msgid "gui.diagnostics.not_ready"
+msgstr "Not ready"
+
+msgid "gui.diagnostics.open_logs"
+msgstr "Open performance log folder"
+
+msgid "gui.diagnostics.opened"
+msgstr "Opened"
+
+msgid "gui.diagnostics.preview_state"
+msgstr "Preview state"
+
+msgid "gui.diagnostics.purpose"
+msgstr ""
+"Shows whether the save, preview and transport data are ready. See Error Messages below for "
+"details."
+
+msgid "gui.diagnostics.ready"
+msgstr "Ready"
+
+msgid "gui.diagnostics.refresh_preview"
+msgstr "Refresh map preview"
+
+msgid "gui.diagnostics.save_label"
+msgstr "Savegame"
+
+msgid "gui.diagnostics.subtitle"
+msgstr "Map status, error messages and performance logs in one place"
+
+msgid "gui.diagnostics.tab_errors"
+msgstr "Errors"
+
+msgid "gui.diagnostics.tab_map"
+msgstr "Map"
+
+msgid "gui.diagnostics.title"
+msgstr "Diagnostics"
+
+msgid "gui.diagnostics.transit_lines_label"
+msgstr "Transit lines"
+
+msgid "gui.dialog.cancel"
+msgstr "Cancel"
+
+msgid "gui.dialog.close"
+msgstr "Close"
+
+msgid "gui.dialog.custom_resolution"
+msgstr "Custom resolution"
+
+msgid "gui.dialog.custom_resolution.prompt"
+msgstr "Output edge length (pixels)"
+
+msgid "gui.dialog.layer_settings"
+msgstr "Layer Settings"
+
+msgid "gui.dialog.open_city"
+msgstr "Open City Save"
+
+msgid "gui.dialog.open_city.filter"
+msgstr "City map (*.mmap.gz *.mmap *.cmm.gz *.cmm *.cmm.json)"
+
+msgid "gui.dialog.save"
+msgstr "Save"
+
+msgid "gui.dialog.save_png_filter"
+msgstr "PNG image (*.png)"
+
+msgid "gui.editor.airport"
+msgstr "Airport"
+
+msgid "gui.editor.annotation"
+msgstr "Annotations"
+
+msgid "gui.editor.bus"
+msgstr "Bus"
+
+msgid "gui.editor.display"
+msgstr "Display"
+
+msgid "gui.editor.hospital"
+msgstr "Hospital"
+
+msgid "gui.editor.kind"
+msgstr "Type"
+
+msgid "gui.editor.language"
+msgstr "Language"
+
+msgid "gui.editor.metro"
+msgstr "Metro"
+
+msgid "gui.editor.outline"
+msgstr "Outline"
+
+msgid "gui.editor.output"
+msgstr "Output"
+
+msgid "gui.editor.park"
+msgstr "Park"
+
+msgid "gui.editor.right"
+msgstr "Right"
+
+msgid "gui.editor.school"
+msgstr "School"
+
+msgid "gui.editor.spacing"
+msgstr "Station spacing"
+
+msgid "gui.editor.stations"
+msgstr "Show stations"
+
+msgid "gui.editor.style"
+msgstr "Style"
+
+msgid "gui.error.clipboard_alloc"
+msgstr "Memory allocation failed"
+
+msgid "gui.error.clipboard_api"
+msgstr "The system API is unavailable"
+
+msgid "gui.error.clipboard_busy"
+msgstr "The clipboard is in use"
+
+msgid "gui.error.clipboard_error"
+msgstr "Something went wrong while copying"
+
+msgid "gui.error.clipboard_lock"
+msgstr "Memory locking failed"
+
+msgid "gui.error.clipboard_windows_only"
+msgstr "Only supported on Windows"
+
+msgid "gui.error.clipboard_write"
+msgstr "Could not write to the clipboard"
+
+msgid "gui.error.copy_details"
+msgstr "Copy details"
+
+msgid "gui.error.copy_no_image"
+msgstr "There is no image to copy"
+
+msgid "gui.error.export_cancelled"
+msgstr "Export cancelled"
+
+msgid "gui.error.no_congestion"
+msgstr "No congested areas found (segments with congestion ≥ {pct})"
+
+msgid "gui.error.no_interchange"
+msgstr "No interchange could be generated"
+
+msgid "gui.error.no_mosaic_tiles"
+msgstr "Nothing to compose into a mosaic"
+
+msgid "gui.error.no_spot_region"
+msgstr "No usable highlight regions"
+
+msgid "gui.error.operation_failed"
+msgstr "The operation could not be completed. Please try again."
+
+msgid "gui.error.poi_mapping_no_section"
+msgstr "poi_mapping.yaml has no poi_kinds: section"
+
+msgid "gui.error.poi_mapping_parse"
+msgstr "The saved content could not be parsed: {error}"
+
+msgid "gui.error.poi_mapping_save_no_kind"
+msgstr "The saved result is missing category {kind}"
+
+msgid "gui.error.poi_mapping_save_no_section"
+msgstr "The saved result has no poi_kinds section"
+
+msgid "gui.error.preview_body"
+msgstr "The centre map preview could not be generated."
+
+msgid "gui.error.preview_host_timeout"
+msgstr ""
+"The map preview component did not start in time ({seconds}s).\n"
+"\n"
+"Reopen the app. If this keeps happening, send this diagnostic log to the developer:\n"
+"{path}"
+
+msgid "gui.error.preview_live_body"
+msgstr "An error occurred in the centre map preview."
+
+msgid "gui.error.preview_live_title"
+msgstr "Live preview error"
+
+msgid "gui.error.preview_navigate"
+msgstr "The map preview page failed to load (error code {code})."
+
+msgid "gui.error.preview_need_map"
+msgstr "Import a map first"
+
+msgid "gui.error.preview_title"
+msgstr "Live preview failed"
+
+msgid "gui.error.preview_unavailable"
+msgstr ""
+"The map preview could not be shown.\n"
+"\n"
+"{error}\n"
+"\n"
+"Check that the WebView2 Runtime is installed and that the map preview resources have been built."
+
+msgid "gui.error.pypinyin_missing"
+msgstr "Bilingual metro diagrams need pypinyin; install the runtime dependency"
+
+msgid "gui.error.pyyaml_missing"
+msgstr "PyYAML is required: pip install pyyaml"
+
+msgid "gui.error.range_n_number"
+msgstr "The range size must be a number"
+
+msgid "gui.error.range_n_range"
+msgstr "The range size must be between {min} and {max}"
+
+msgid "gui.error.task_submit_failed"
+msgstr "The render task could not be submitted: {error}"
+
+msgid "gui.error.theme_save_failed"
+msgstr "The theme could not be saved: {error}"
+
+msgid "gui.error.webview2_assembly"
+msgstr "pywebview does not ship the WebView2 assemblies: {path}"
+
+msgid "gui.error.webview2_missing"
+msgstr "The Windows WebView2 runtime dependency is missing"
+
+msgid "gui.error.worker_start_failed"
+msgstr "The render process could not be started"
+
+msgid "gui.export.actual_dimensions"
+msgstr "Long-edge resolution · Output: {width} × {height} px"
+
+msgid "gui.export.auto_open"
+msgstr "Open the result automatically when the export finishes"
+
+msgid "gui.export.auto_open_hint"
+msgstr "When ticked, the generated file opens automatically once the export succeeds."
+
+msgid "gui.export.browse"
+msgstr "Browse…"
+
+msgid "gui.export.busy"
+msgstr "Another task is already running"
+
+msgid "gui.export.cancel"
+msgstr "Cancel"
+
+msgid "gui.export.choose_dir"
+msgstr "Choose output folder"
+
+msgid "gui.export.context.map.desc"
+msgstr "Export a map image using the current theme, layer visibility and map extent."
+
+msgid "gui.export.context.map.title"
+msgstr "Standard map"
+
+msgid "gui.export.context.metro.desc"
+msgstr "Export the current diagram layout, routes and stop settings."
+
+msgid "gui.export.context.metro.theme"
+msgstr "Metro diagram style"
+
+msgid "gui.export.context.metro.title"
+msgstr "Metro diagram"
+
+msgid "gui.export.context.selection.desc"
+msgstr "Export the current selection extent."
+
+msgid "gui.export.context.selection.title"
+msgstr "Map selection"
+
+msgid "gui.export.context.spot.desc"
+msgstr "Export the current random close-up extent."
+
+msgid "gui.export.context.spot.title"
+msgstr "Map close-up"
+
+msgid "gui.export.context.transit.desc"
+msgstr "Export the current routes, stops and public transport styling."
+
+msgid "gui.export.context.transit.title"
+msgstr "Public transport map"
+
+msgid "gui.export.done"
+msgstr "Export finished: {path}"
+
+msgid "gui.export.done_no_open"
+msgstr "Export finished (could not open automatically): {path}"
+
+msgid "gui.export.failed"
+msgstr "Export failed: {error}"
+
+msgid "gui.export.field.range"
+msgstr "Extent"
+
+msgid "gui.export.field.size"
+msgstr "Image size"
+
+msgid "gui.export.field.theme"
+msgstr "Theme"
+
+msgid "gui.export.fields_note"
+msgstr "Settings for this export:"
+
+msgid "gui.export.filename"
+msgstr "File name"
+
+msgid "gui.export.filename_bad_chars"
+msgstr "The file name contains characters that cannot be used (\\ / : * ? \" < > |); please change it"
+
+msgid "gui.export.filename_has_path"
+msgstr "The file name cannot contain a path; enter the file name only"
+
+msgid "gui.export.filename_hint"
+msgstr ""
+"File name saved into the output folder below. The extension follows the output format "
+"automatically."
+
+msgid "gui.export.filename_placeholder"
+msgstr "Enter a file name"
+
+msgid "gui.export.format"
+msgstr "Output format"
+
+msgid "gui.export.format_hint"
+msgstr ""
+"PNG is a static image; HTML is a single-file interactive map that works offline, with zoom, pan, "
+"and layer controls."
+
+msgid "gui.export.not_started"
+msgstr "Not started"
+
+msgid "gui.export.open_dir_failed"
+msgstr "Cannot open the folder: {target}"
+
+msgid "gui.export.open_folder"
+msgstr "Open output folder"
+
+msgid "gui.export.output_dir"
+msgstr "Output folder"
+
+msgid "gui.export.png_only"
+msgstr "This view can only be exported as PNG"
+
+msgid "gui.export.poi.collision_hint"
+msgstr "When icons overlap, facility icons and important places take priority."
+
+msgid "gui.export.poi.custom"
+msgstr "Detailed settings…"
+
+msgid "gui.export.poi.custom.hint"
+msgstr "Adjust building icon rules for this PNG."
+
+msgid "gui.export.poi.density"
+msgstr "Icon density"
+
+msgid "gui.export.poi.detail"
+msgstr "Details"
+
+msgid "gui.export.poi.detail.hint"
+msgstr ""
+"Include more places and buildings inside facilities, while combining nearby duplicate icons. "
+"Applies to this PNG only."
+
+msgid "gui.export.poi.internal"
+msgstr "Show buildings inside facilities"
+
+msgid "gui.export.poi.internal.tip"
+msgstr ""
+"Show individual buildings inside campuses, parks, airports, and other facilities. Attached "
+"modules remain part of their main building."
+
+msgid "gui.export.poi.major"
+msgstr "Main places"
+
+msgid "gui.export.poi.major.hint"
+msgstr ""
+"Keep main places, hide buildings inside facilities, and combine nearby building icons of the same"
+" type. Applies to this PNG only."
+
+msgid "gui.export.poi.merge"
+msgstr "Combine nearby building icons of the same type"
+
+msgid "gui.export.poi.merge.tip"
+msgstr ""
+"Choose representative icons without changing building outlines. When disabled, keep individual "
+"buildings; overlapping icons are still filtered."
+
+msgid "gui.export.poi.off"
+msgstr "Off"
+
+msgid "gui.export.poi.off.hint"
+msgstr ""
+"Hide place icons and their attached names. Building outlines, road names, and transit lines keep "
+"their existing settings."
+
+msgid "gui.export.range.all_metro_lines"
+msgstr "All metro lines"
+
+msgid "gui.export.range.all_transit_lines"
+msgstr "All public transport lines"
+
+msgid "gui.export.range.auto_fit"
+msgstr "Fit the network automatically"
+
+msgid "gui.export.range.selected_lines"
+msgstr "{count} line(s) selected"
+
+msgid "gui.export.start"
+msgstr "Start export"
+
+msgid "gui.export.svg_unavailable"
+msgstr "SVG export is temporarily unavailable. Please use PNG or HTML."
+
+msgid "gui.export.title"
+msgstr "Export"
+
+msgid "gui.export.title_format"
+msgstr "Export · {title}"
+
+msgid "gui.external.done"
+msgstr "External project created: {path}"
+
+msgid "gui.external.preparing"
+msgstr "Preparing city data…"
+
+msgid "gui.external.rmg"
+msgstr "Export RMG Projects"
+
+msgid "gui.external.rmg_layout_note"
+msgstr "RMG will arrange stations again; positions dragged in CMM are not carried over."
+
+msgid "gui.external.rmp"
+msgstr "Export RMP Network"
+
+msgid "gui.external.use_selection"
+msgstr "Export the current selection? Choose No for the whole city."
+
+msgid "gui.external.writing"
+msgstr "Writing external projects…"
+
+msgid "gui.field.line_color"
+msgstr "Line colour"
+
+msgid "gui.field.palette"
+msgstr "Color scheme"
+
+msgid "gui.field.range"
+msgstr "Export area"
+
+msgid "gui.field.range_anchor"
+msgstr "Location"
+
+msgid "gui.field.rotation"
+msgstr "Rotation"
+
+msgid "gui.field.theme"
+msgstr "Theme"
+
+msgid "gui.field.transport.station.label"
+msgstr "Station circles"
+
+msgid "gui.field.transport.station_names.label"
+msgstr "Station names"
+
+msgid "gui.file.all"
+msgstr "All files"
+
+msgid "gui.font_tier.large"
+msgstr "Large"
+
+msgid "gui.font_tier.small"
+msgstr "Small"
+
+msgid "gui.font_tier.standard"
+msgstr "Standard"
+
+msgid "gui.font_tier.xlarge"
+msgstr "Extra large"
+
+msgid "gui.game_running.title"
+msgstr "Game still running"
+
+msgid "gui.game_running.warning"
+msgstr ""
+"The game is still running. If memory is insufficient, rendering high-resolution images or large "
+"cities may fail. Consider closing the game before rendering."
+
+msgid "gui.help.layout"
+msgstr ""
+"The ribbon holds high-frequency actions; the left panel edits the current feature; the right "
+"panel shows what is selected on the map."
+
+msgid "gui.help.shortcuts"
+msgstr ""
+"Ctrl+O  Open city\n"
+"Ctrl+S  Save PNG\n"
+"Ctrl+Shift+S  Export map\n"
+"Ctrl+P  Refresh live preview\n"
+"Esc  Cancel current task"
+
+msgid "gui.help.title"
+msgstr "Help & Shortcuts"
+
+msgid "gui.inspector.explore"
+msgstr "Explore"
+
+msgid "gui.inspector.export_hint"
+msgstr "Open the export window to pick format, area and where to save."
+
+msgid "gui.inspector.export_section"
+msgstr "Export map"
+
+msgid "gui.inspector.hint"
+msgstr "Click a road, building, place, line or stop on the map to see its details."
+
+msgid "gui.inspector.object_fallback"
+msgstr "Object"
+
+msgid "gui.inspector.object_info"
+msgstr "Object info"
+
+msgid "gui.inspector.object_properties"
+msgstr "Object properties"
+
+msgid "gui.inspector.title"
+msgstr "Details"
+
+msgid "gui.json_editor.invalid"
+msgstr "Invalid content"
+
+msgid "gui.label.attr.tip"
+msgstr "{heading} — {attr}"
+
+msgid "gui.label.place_text"
+msgstr "Area text"
+
+msgid "gui.label_child.building_icon"
+msgstr "Building icons"
+
+msgid "gui.label_child.building_icon_text"
+msgstr "Building icon text"
+
+msgid "gui.label_child.district_text"
+msgstr "District text"
+
+msgid "gui.label_child.road_text"
+msgstr "Road text"
+
+msgid "gui.label_child.transit_icon"
+msgstr "Transit icons"
+
+msgid "gui.label_child.transit_icon_text"
+msgstr "Transit icon text"
+
+msgid "gui.label_detail.hint"
+msgstr "Text and icons: changes here are visible in the map labels"
+
+msgid "gui.label_detail.reset"
+msgstr "Restore text and icon defaults"
+
+msgid "gui.label_detail.text.hint"
+msgstr ""
+"Font, size, colour and outline are set per text category: building/park text is the place name, "
+"district text is the area name."
+
+msgid "gui.label_detail.title"
+msgstr "Label details"
+
+msgid "gui.language.contribute"
+msgstr ""
+"Native speakers are welcome to submit local-language translations on GitHub to help improve the "
+"translations."
+
+msgid "gui.language.notice"
+msgstr ""
+"Simplified Chinese is the original text. Other languages are translated automatically by ChatGPT "
+"and may be inaccurate or unclear."
+
+msgid "gui.layer.building"
+msgstr "Buildings"
+
+msgid "gui.layer.building_desc"
+msgstr ""
+"Outlines of houses, equipment and other buildings. Turning this layer off noticeably speeds up "
+"rendering when the city has many buildings."
+
+msgid "gui.layer.built_area"
+msgstr "Built-up area"
+
+msgid "gui.layer.built_area_desc"
+msgstr "Paints a base colour over contiguous urban areas to separate the city from the countryside."
+
+msgid "gui.layer.district"
+msgstr "District borders"
+
+msgid "gui.layer.district_desc"
+msgstr "Boundaries of the districts you drew yourself."
+
+msgid "gui.layer.hint.params"
+msgstr "Layer visibility and the current theme parameters"
+
+msgid "gui.layer.label"
+msgstr "District & road names"
+
+msgid "gui.layer.label_desc"
+msgstr ""
+"Road, district and place names on the map. If they get too dense, turn categories off in Label "
+"settings…."
+
+msgid "gui.layer.land_use"
+msgstr "Land use"
+
+msgid "gui.layer.land_use_desc"
+msgstr "Colored by area type (residential / commercial / industrial)"
+
+msgid "gui.layer.metro"
+msgstr "Metro"
+
+msgid "gui.layer.metro_desc"
+msgstr ""
+"Draws bus, tram and metro lines and stops on the normal map. For a standalone line diagram, use "
+"Public transport view."
+
+msgid "gui.layer.po"
+msgstr "PO Objects"
+
+msgid "gui.layer.po_desc"
+msgstr "Custom objects from the Procedural Objects mod"
+
+msgid "gui.layer.poi"
+msgstr "POI Markers"
+
+msgid "gui.layer.poi_area"
+msgstr "POI footprint"
+
+msgid "gui.layer.poi_area_desc"
+msgstr ""
+"Reuse building footprints and colours for interior fills without outlines. Works independently of"
+" the Buildings layer.Colours buildings by use (residential, commercial, industrial, office and so"
+" on). The Buildings layer must also be on, or the colours will not show."
+
+msgid "gui.layer.poi_desc"
+msgstr ""
+"Icons for hospitals, schools, stations and other places. The text on the icons is controlled "
+"separately under Text labels."
+
+msgid "gui.layer.procedural_objects"
+msgstr "PO Objects"
+
+msgid "gui.layer.railway"
+msgstr "Railways"
+
+msgid "gui.layer.railway_desc"
+msgstr ""
+"Railway, metro and other track lines — the tracks only. To see line colours and stations on the "
+"map, use Public transport."
+
+msgid "gui.layer.reset"
+msgstr "Restore this layer's defaults"
+
+msgid "gui.layer.road"
+msgstr "Roads"
+
+msgid "gui.layer.road_desc"
+msgstr ""
+"Roads of all classes, including elevated roads and tunnels. Use Settings… to adjust fill, outline"
+" and width per class."
+
+msgid "gui.layer.row.district"
+msgstr "District extents"
+
+msgid "gui.layer.row.district_settings"
+msgstr "Select districts"
+
+msgid "gui.layer.row.poi"
+msgstr "Icons"
+
+msgid "gui.layer.row.zone"
+msgstr "Zone extents"
+
+msgid "gui.layer.row.zone_settings"
+msgstr "Select zones"
+
+msgid "gui.layer.settings.water"
+msgstr "Water appearance"
+
+msgid "gui.layer.show_this"
+msgstr "Show this layer"
+
+msgid "gui.layer.terrain"
+msgstr "Terrain"
+
+msgid "gui.layer.terrain_desc"
+msgstr "Shaded by elevation to show the height of hills and valleys."
+
+msgid "gui.layer.title.building"
+msgstr "Buildings"
+
+msgid "gui.layer.title.built_area"
+msgstr "Built-up area"
+
+msgid "gui.layer.title.district"
+msgstr "Districts"
+
+msgid "gui.layer.title.label"
+msgstr "Text labels"
+
+msgid "gui.layer.title.land_use"
+msgstr "Zoning grid"
+
+msgid "gui.layer.title.metro"
+msgstr "Public transport"
+
+msgid "gui.layer.title.poi"
+msgstr "Place icons"
+
+msgid "gui.layer.title.poi_area"
+msgstr "Building use colours"
+
+msgid "gui.layer.title.procedural_objects"
+msgstr "Custom objects"
+
+msgid "gui.layer.title.railway"
+msgstr "Rail"
+
+msgid "gui.layer.title.road"
+msgstr "Roads"
+
+msgid "gui.layer.title.terrain"
+msgstr "Terrain"
+
+msgid "gui.layer.title.traffic"
+msgstr "Traffic"
+
+msgid "gui.layer.title.water"
+msgstr "Water"
+
+msgid "gui.layer.title.watermark"
+msgstr "Watermark"
+
+msgid "gui.layer.title.zone"
+msgstr "Zone extents"
+
+msgid "gui.layer.traffic"
+msgstr "Traffic info"
+
+msgid "gui.layer.traffic_desc"
+msgstr ""
+"Shows the road congestion snapshot saved at export time. Uses TM:PE statistics in Cities: "
+"Skylines and native traffic statistics in Cities: Skylines II."
+
+msgid "gui.layer.transit"
+msgstr "Public transit"
+
+msgid "gui.layer.transit_desc"
+msgstr "All public transit line types found in the save"
+
+msgid "gui.layer.water"
+msgstr "Water"
+
+msgid "gui.layer.water_desc"
+msgstr "Fills for lakes, rivers and other water bodies."
+
+msgid "gui.layer.watermark"
+msgstr "Watermark"
+
+msgid "gui.layer.watermark_desc"
+msgstr "Shows a watermark at the bottom left (mod name + time)"
+
+msgid "gui.layer.zone"
+msgstr "Zone boundaries"
+
+msgid "gui.layer.zone_desc"
+msgstr ""
+"Colour blocks for parks, industry, campuses, airports, walking areas and other functional zones. "
+"Independent of Districts."
+
+msgid "gui.layers.detail_settings_title"
+msgstr "{name} details"
+
+msgid "gui.layers.hint"
+msgstr "Controls which content is shown on the map."
+
+msgid "gui.layers.settings.appearance"
+msgstr "Appearance…"
+
+msgid "gui.layers.settings.detail"
+msgstr "Details…"
+
+msgid "gui.layers.settings.generic"
+msgstr "Settings…"
+
+msgid "gui.layers.settings.labels"
+msgstr "Label settings…"
+
+msgid "gui.layers.settings_title"
+msgstr "{name} settings"
+
+msgid "gui.layers.style_title"
+msgstr "{name} style"
+
+msgid "gui.map.hint.overview"
+msgstr "Global settings, quick entries and an overview of the current map"
+
+msgid "gui.map.hint.range"
+msgstr "Set the terrain area to export. This setting applies only to exported content."
+
+msgid "gui.map.hint.resolution"
+msgstr ""
+"Longest side of the output image in pixels. Larger is sharper, but renders slower and uses more "
+"memory."
+
+msgid "gui.map.hint.rotation"
+msgstr "Rotate clockwise"
+
+msgid "gui.map.hint.theme"
+msgstr ""
+"Choose the colour and line style of the map. To fine-tune individual items, use Edit Theme on the"
+" ribbon."
+
+msgid "gui.menu.button"
+msgstr "Menu"
+
+msgid "gui.menu.language"
+msgstr "Language"
+
+msgid "gui.menu.no_recent"
+msgstr "No recent files"
+
+msgid "gui.menu.quick_preview"
+msgstr "Preview"
+
+msgid "gui.menu.quit"
+msgstr "Quit"
+
+msgid "gui.menu.recent"
+msgstr "Open recent"
+
+msgid "gui.menu.tooltip"
+msgstr "Application menu"
+
+msgid "gui.merge.block_distance"
+msgstr "Building cluster distance"
+
+msgid "gui.merge.building"
+msgstr "Merge buildings"
+
+msgid "gui.merge.category.commercial"
+msgstr "Commercial & shops"
+
+msgid "gui.merge.category.hospital"
+msgstr "Hospital"
+
+msgid "gui.merge.category.park"
+msgstr "Parks & greenery"
+
+msgid "gui.merge.category.school"
+msgstr "School"
+
+msgid "gui.merge.category.transit"
+msgstr "Public transport facilities"
+
+msgid "gui.merge.enable"
+msgstr "Enable merging & grouping"
+
+msgid "gui.merge.enable.tip"
+msgstr "When off, none of the options below apply; place-icon merging is controlled here as well"
+
+msgid "gui.merge.entry"
+msgstr "Merging & grouping settings…"
+
+msgid "gui.merge.entry.tip"
+msgstr ""
+"Opens merging & grouping: the master switch, building / same-facility / stop merging and the "
+"various distances"
+
+msgid "gui.merge.facility"
+msgstr "Merge same facility"
+
+msgid "gui.merge.facility.hint"
+msgstr ""
+"Facilities are grouped by real building relations and ParkGrid areas; industrial and pedestrian "
+"zones keep their own buildings."
+
+msgid "gui.merge.facility_area_labels"
+msgstr "Hide duplicated facility area labels"
+
+msgid "gui.merge.facility_area_labels.tip"
+msgstr ""
+"Hides area names that duplicate the parent place of an airport, campus or park; industrial and "
+"pedestrian zone labels are unaffected."
+
+msgid "gui.merge.facility_children"
+msgstr "Show child places inside facilities"
+
+msgid "gui.merge.facility_children.tip"
+msgstr ""
+"When off, only the parent place of an airport, campus or park is shown; the facility grouping is "
+"kept."
+
+msgid "gui.merge.facility_list.tip"
+msgstr ""
+"Show the facility and its internal POIs. Buildings, roads and area fill remain independently "
+"controlled."
+
+msgid "gui.merge.facility_zoom"
+msgstr "Minimum zoom for child places"
+
+msgid "gui.merge.facility_zoom.tip"
+msgstr ""
+"Minimum zoom at which child places appear; larger values mean you have to zoom in further. "
+"Default 1.0."
+
+msgid "gui.merge.hint.intro"
+msgstr "Turn on the master switch first, then tune each feature and distance"
+
+msgid "gui.merge.hub_distance"
+msgstr "Transport hub core distance"
+
+msgid "gui.merge.override.use"
+msgstr "Own rule"
+
+msgid "gui.merge.overrides.hint"
+msgstr "Types without their own rule follow the global merge switches and distances."
+
+msgid "gui.merge.poi_distance"
+msgstr "Place merge distance"
+
+msgid "gui.merge.stops"
+msgstr "Merge public transport stops"
+
+msgid "gui.metro.adaptive"
+msgstr "Adaptive scale"
+
+msgid "gui.metro.adaptive_hint"
+msgstr ""
+"Compresses long straight sections and stretches dense ones so the network fills the canvas more "
+"evenly. Turn it off to keep true station spacing."
+
+msgid "gui.metro.adjust_network"
+msgstr "Adjust network…"
+
+msgid "gui.metro.annotation_hint"
+msgstr "Tick an item to print its note on the map."
+
+msgid "gui.metro.bad_edit_doc"
+msgstr "Cannot read {name}: this is not an edit document exported by this tool."
+
+msgid "gui.metro.bilingual_names"
+msgstr "Bilingual stop names"
+
+msgid "gui.metro.debug_band"
+msgstr "Show scale colour band"
+
+msgid "gui.metro.debug_band_hint"
+msgstr ""
+"Marks compressed sections in blue and stretched ones in orange so you can check the adaptive "
+"scaling. Turn it off before the final export."
+
+msgid "gui.metro.display_size"
+msgstr "Display size"
+
+msgid "gui.metro.draw_default"
+msgstr "Draws metro, train and monorail by default. Adjust to match your city."
+
+msgid "gui.metro.facility_density_hint"
+msgstr ""
+"More facilities appear as you zoom in. With Sparse tiers, facilities appear one step later and "
+"with wider spacing."
+
+msgid "gui.metro.facility_icon_hint"
+msgstr ""
+"Show icons for airports, train stations, harbours and other interchange facilities. This switch "
+"and the size setting do not affect station icons."
+
+msgid "gui.metro.facility_icons"
+msgstr "Connection icons"
+
+msgid "gui.metro.follow_theme_bg"
+msgstr "Follow theme background"
+
+msgid "gui.metro.font_size"
+msgstr "Font size"
+
+msgid "gui.metro.generate_preview"
+msgstr "Generate preview"
+
+msgid "gui.metro.import_edits_button"
+msgstr "Import edit file…"
+
+msgid "gui.metro.import_edits_failed"
+msgstr "Could not import the edit file"
+
+msgid "gui.metro.import_edits_filter"
+msgstr "Network edit file (*.json);;All files (*.*)"
+
+msgid "gui.metro.import_edits_hint"
+msgstr ""
+"“Import edit file” loads a previously saved JSON adjustment (line paths, stop positions, shared "
+"segments) and redraws immediately."
+
+msgid "gui.metro.import_edits_title"
+msgstr "Import edit file"
+
+msgid "gui.metro.imported_doc"
+msgstr "Imported {name}, re-rendering…"
+
+msgid "gui.metro.label_position"
+msgstr "Label position"
+
+msgid "gui.metro.label_position.auto"
+msgstr "Auto"
+
+msgid "gui.metro.label_position.left"
+msgstr "Left"
+
+msgid "gui.metro.label_position.right"
+msgstr "Right"
+
+msgid "gui.metro.label_scale_hint"
+msgstr "Scales relative to the default size; 100% is the default."
+
+msgid "gui.metro.layer_scope_hint"
+msgstr ""
+"The layer switches here only affect the public transport view; they do not change the map's layer"
+" display."
+
+msgid "gui.metro.legend_label"
+msgstr "Line labels / legend"
+
+msgid "gui.metro.legend_position"
+msgstr "Legend position"
+
+msgid "gui.metro.legend_section"
+msgstr "Legend & title"
+
+msgid "gui.metro.line_count"
+msgstr "{name} · {count} lines"
+
+msgid "gui.metro.line_gap"
+msgstr "Parallel line spacing"
+
+msgid "gui.metro.line_gap_hint"
+msgstr "Spacing between parallel lines, expressed as a multiple of line width. Range 1.05–3.00."
+
+msgid "gui.metro.line_outline"
+msgstr "Line outline"
+
+msgid "gui.metro.line_type_hint"
+msgstr "Line type filters by mode of transport. To show a single line, use Select Lines above."
+
+msgid "gui.metro.manual_section"
+msgstr "Manual adjustment"
+
+msgid "gui.metro.output.auto"
+msgstr "Auto"
+
+msgid "gui.metro.output.tooltip"
+msgstr ""
+"Long-edge output size in pixels. Automatic picks a size based on network scale. This does not "
+"render immediately; it takes effect once you open the export window."
+
+msgid "gui.metro.result_broken"
+msgstr "The generated result cannot be shown."
+
+msgid "gui.metro.result_empty"
+msgstr ""
+"Not generated yet.\n"
+"\n"
+"Click “{button}” above to start."
+
+msgid "gui.metro.result_note"
+msgstr ""
+"The diagram is generated in one pass from the current settings. After changing the line width or "
+"stop spacing, click “{button}” above to open the export window."
+
+msgid "gui.metro.scale_section"
+msgstr "Scale & resolution"
+
+msgid "gui.metro.scale_strength"
+msgstr "Scale strength"
+
+msgid "gui.metro.settings_title"
+msgstr "Metro schematic settings"
+
+msgid "gui.metro.show_facility_icons"
+msgstr "Show connection icons"
+
+msgid "gui.metro.show_stations"
+msgstr "Show stations"
+
+msgid "gui.metro.show_water"
+msgstr "Show water"
+
+msgid "gui.metro.spacing_hint"
+msgstr ""
+"Distance between adjacent stations in the schematic. Larger values spread the network out and "
+"make long lines take more canvas."
+
+msgid "gui.metro.station_diameter"
+msgstr "Station diameter"
+
+msgid "gui.metro.station_form"
+msgstr "Stop style"
+
+msgid "gui.metro.station_name_hint"
+msgstr ""
+"With Only custom station names, only the names you entered are shown; the rest are named "
+"automatically."
+
+msgid "gui.metro.station_names.all"
+msgstr "All stop names"
+
+msgid "gui.metro.station_names.custom"
+msgstr "Custom stop names only"
+
+msgid "gui.metro.station_names.none"
+msgstr "No stop names"
+
+msgid "gui.metro.station_style.rmg"
+msgstr "Rail classic"
+
+msgid "gui.metro.station_style.standard"
+msgstr "Standard circle"
+
+msgid "gui.metro.station_style_hint"
+msgstr "Rail Classic uses rail-style station icons; Standard Circle uses plain dots."
+
+msgid "gui.metro.title"
+msgstr "Metro Map"
+
+msgid "gui.metro.title_template"
+msgstr "Title template"
+
+msgid "gui.metro_editor.apply"
+msgstr "Apply and refresh preview"
+
+msgid "gui.metro_editor.diagnostics"
+msgstr "Layout diagnostics"
+
+msgid "gui.metro_editor.display"
+msgstr "Canvas display"
+
+msgid "gui.metro_editor.empty"
+msgstr "Select a station or line to begin editing."
+
+msgid "gui.metro_editor.hint"
+msgstr "Drag stations to integer grid cells. Applying edits refreshes the preview."
+
+msgid "gui.metro_editor.labels.all"
+msgstr "Show every station name"
+
+msgid "gui.metro_editor.labels.named"
+msgstr "Named stations only"
+
+msgid "gui.metro_editor.labels.none"
+msgstr "Hide all station names"
+
+msgid "gui.metro_editor.line"
+msgstr "Line"
+
+msgid "gui.metro_editor.line_outline"
+msgstr "Show dark line outlines"
+
+msgid "gui.metro_editor.loop"
+msgstr "Render as loop"
+
+msgid "gui.metro_editor.no_diagnostics"
+msgstr "No layout diagnostics found."
+
+msgid "gui.metro_editor.plan_saved"
+msgstr "Edit plan saved."
+
+msgid "gui.metro_editor.position"
+msgstr "Station position: ({x}, {y})"
+
+msgid "gui.metro_editor.save_plan"
+msgstr "Save edit plan…"
+
+msgid "gui.metro_editor.shared"
+msgstr "Shared segment"
+
+msgid "gui.metro_editor.shared_applied"
+msgstr "The shared segment setting was recorded."
+
+msgid "gui.metro_editor.shared_apply"
+msgstr "Apply shared segment"
+
+msgid "gui.metro_editor.shared_need_two"
+msgstr "Select at least two lines for a shared segment."
+
+msgid "gui.metro_editor.shared_pick_end"
+msgstr "Choose the end station of the shared segment."
+
+msgid "gui.metro_editor.shared_start"
+msgstr "Use this station as segment start"
+
+msgid "gui.metro_editor.shared_unavailable"
+msgstr "At least two adjacent lines must connect these stations."
+
+msgid "gui.metro_editor.shared_waiting"
+msgstr "Start selected; choose the end station"
+
+msgid "gui.metro_editor.station"
+msgstr "Station"
+
+msgid "gui.metro_editor.station_labels"
+msgstr "Station labels"
+
+msgid "gui.metro_editor.station_type"
+msgstr "Station type"
+
+msgid "gui.metro_editor.title"
+msgstr "Lightweight metro editor"
+
+msgid "gui.metro_editor.type.auto"
+msgstr "Automatic"
+
+msgid "gui.metro_editor.type.interchange"
+msgstr "Interchange"
+
+msgid "gui.metro_editor.type.normal"
+msgstr "Regular station"
+
+msgid "gui.metro_editor.type.terminal"
+msgstr "Terminal"
+
+msgid "gui.msg.no_congestion"
+msgstr "No congested areas found"
+
+msgid "gui.msg.no_spot_region"
+msgstr "No usable highlight regions found. Adjust the count or theme and try again."
+
+msgid "gui.msg.no_traffic_spot"
+msgstr "This save has no traffic snapshot, so a traffic hotspot cannot be generated. Please try again."
+
+msgid "gui.msg.open_first"
+msgstr "Please open a city save first"
+
+msgid "gui.msg.open_or_wait"
+msgstr "Open a city save first, or wait for the current task to finish"
+
+msgid "gui.msg.select_map_area"
+msgstr "Select an area on the map first"
+
+msgid "gui.msg.title"
+msgstr "Notice"
+
+msgid "gui.msg.title_error"
+msgstr "Operation Failed"
+
+msgid "gui.nav.back"
+msgstr "← Back"
+
+msgid "gui.nav.back_home"
+msgstr "← Back to home"
+
+msgid "gui.nav.back_home.tip"
+msgstr "Back to the map home page"
+
+msgid "gui.nav.back_properties"
+msgstr "Back to object properties"
+
+msgid "gui.panel.base"
+msgstr "Base map"
+
+msgid "gui.panel.city"
+msgstr "City"
+
+msgid "gui.panel.close"
+msgstr "Close"
+
+msgid "gui.panel.color_strength"
+msgstr "Colour strength"
+
+msgid "gui.panel.create"
+msgstr "Quick create"
+
+msgid "gui.panel.distance"
+msgstr "Distances"
+
+msgid "gui.panel.export"
+msgstr "Export"
+
+msgid "gui.panel.facility_tiers"
+msgstr "Facility tiers"
+
+msgid "gui.panel.functions"
+msgstr "Features"
+
+msgid "gui.panel.icon_text"
+msgstr "Icons and text"
+
+msgid "gui.panel.labels"
+msgstr "Labels"
+
+msgid "gui.panel.line_and_station"
+msgstr "Lines and stops"
+
+msgid "gui.panel.line_station"
+msgstr "Lines & stops"
+
+msgid "gui.panel.line_style"
+msgstr "Line style"
+
+msgid "gui.panel.lines"
+msgstr "Lines"
+
+msgid "gui.panel.map"
+msgstr "Map"
+
+msgid "gui.panel.merge"
+msgstr "Merging & grouping"
+
+msgid "gui.panel.output"
+msgstr "Output"
+
+msgid "gui.panel.overrides"
+msgstr "Per-type overrides"
+
+msgid "gui.panel.poi_style"
+msgstr "Place icon style"
+
+msgid "gui.panel.preview"
+msgstr "Preview"
+
+msgid "gui.panel.programs"
+msgstr "Application"
+
+msgid "gui.panel.regions"
+msgstr "Regions & districts"
+
+msgid "gui.panel.road_overall"
+msgstr "Roads overall"
+
+msgid "gui.panel.scale"
+msgstr "Scale"
+
+msgid "gui.panel.share"
+msgstr "Share & export"
+
+msgid "gui.panel.showcase"
+msgstr "City showcase"
+
+msgid "gui.panel.statistics"
+msgstr "Statistics"
+
+msgid "gui.panel.style"
+msgstr "Style"
+
+msgid "gui.panel.theme_pick"
+msgstr "Quick theme pick"
+
+msgid "gui.panel.transit"
+msgstr "Transport"
+
+msgid "gui.poi.building_icon"
+msgstr "Building icons"
+
+msgid "gui.poi_category.airport"
+msgstr "Airport"
+
+msgid "gui.poi_category.bus"
+msgstr "Bus stop"
+
+msgid "gui.poi_category.highway_exit"
+msgstr "Highway exit"
+
+msgid "gui.poi_category.hospital"
+msgstr "Hospital"
+
+msgid "gui.poi_category.metro"
+msgstr "Metro station"
+
+msgid "gui.poi_category.park"
+msgstr "Park"
+
+msgid "gui.poi_category.residential"
+msgstr "Residential"
+
+msgid "gui.poi_category.school"
+msgstr "School"
+
+msgid "gui.poi_category.ship"
+msgstr "Harbor"
+
+msgid "gui.poi_category.traffic_light"
+msgstr "Traffic light"
+
+msgid "gui.poi_category.train"
+msgstr "Train station"
+
+msgid "gui.poi_editor.advanced_yaml"
+msgstr "Advanced: edit YAML"
+
+msgid "gui.poi_editor.advanced_yaml_help"
+msgstr ""
+"Advanced: edit the POI mapping YAML directly. The mapping reloads after saving; recommended only "
+"for users familiar with the configuration format."
+
+msgid "gui.poi_editor.col.category"
+msgstr "Category"
+
+msgid "gui.poi_editor.col.message"
+msgstr "Message"
+
+msgid "gui.poi_editor.col.rule"
+msgstr "Rule"
+
+msgid "gui.poi_editor.delete_confirm"
+msgstr "Remove category \"{kind}\" from poi_mapping.yaml?"
+
+msgid "gui.poi_editor.delete_failed"
+msgstr "Delete failed"
+
+msgid "gui.poi_editor.delete_kind"
+msgstr "Delete category"
+
+msgid "gui.poi_editor.deleted_kind"
+msgstr "Removed \"{kind}\""
+
+msgid "gui.poi_editor.display.hidden"
+msgstr "Hidden"
+
+msgid "gui.poi_editor.display.inherit"
+msgstr "Inherit parent"
+
+msgid "gui.poi_editor.display.visible"
+msgstr "Visible"
+
+msgid "gui.poi_editor.field.current_icon"
+msgstr "Current icon"
+
+msgid "gui.poi_editor.field.display"
+msgstr "Display"
+
+msgid "gui.poi_editor.field.icon_key"
+msgstr "Icon key"
+
+msgid "gui.poi_editor.field.label"
+msgstr "Label"
+
+msgid "gui.poi_editor.field.min_zoom"
+msgstr "Min zoom"
+
+msgid "gui.poi_editor.field.priority"
+msgstr "Priority"
+
+msgid "gui.poi_editor.filter.all"
+msgstr "All"
+
+msgid "gui.poi_editor.filter.dup_icon"
+msgstr "Duplicate icons"
+
+msgid "gui.poi_editor.filter.hidden"
+msgstr "Hidden by policy"
+
+msgid "gui.poi_editor.filter.missing_icon"
+msgstr "Missing icon"
+
+msgid "gui.poi_editor.filter.orphan"
+msgstr "Orphan category"
+
+msgid "gui.poi_editor.filter.unmapped"
+msgstr "Unmapped"
+
+msgid "gui.poi_editor.group.enum"
+msgstr "Service list"
+
+msgid "gui.poi_editor.group.facility"
+msgstr "Facilities"
+
+msgid "gui.poi_editor.group.general"
+msgstr "General"
+
+msgid "gui.poi_editor.group.service"
+msgstr "Services"
+
+msgid "gui.poi_editor.icon_filter_placeholder"
+msgstr "Filter by name/id; click to fill icon_key"
+
+msgid "gui.poi_editor.icon_library_info"
+msgstr "Library: {name} ({count} icons)"
+
+msgid "gui.poi_editor.icon_load_failed"
+msgstr "Could not load icon library: {exc}"
+
+msgid "gui.poi_editor.icon_manifest_missing"
+msgstr "Icon manifest not found: {path}"
+
+msgid "gui.poi_editor.icon_pick_hint"
+msgstr "Pick an icon in the middle, or type an icon id"
+
+msgid "gui.poi_editor.info_display"
+msgstr "Display: {display}"
+
+msgid "gui.poi_editor.info_refs"
+msgstr "Mapped by {count} AI types"
+
+msgid "gui.poi_editor.issue_count"
+msgstr "{total} issues, showing {shown}"
+
+msgid "gui.poi_editor.missing_icon"
+msgstr "missing icon"
+
+msgid "gui.poi_editor.nothing_to_save"
+msgstr "Nothing to save"
+
+msgid "gui.poi_editor.ready"
+msgstr "Ready"
+
+msgid "gui.poi_editor.refs_body_none"
+msgstr "Category {kind} is not referenced by any AI type."
+
+msgid "gui.poi_editor.refs_body_some"
+msgstr ""
+"Category {kind} is referenced by {count} AI types:\n"
+"\n"
+"{list}"
+
+msgid "gui.poi_editor.refs_title"
+msgstr "Mapping references"
+
+msgid "gui.poi_editor.save"
+msgstr "Save"
+
+msgid "gui.poi_editor.save_error_body"
+msgstr "poi_mapping.yaml was left untouched: {exc}"
+
+msgid "gui.poi_editor.save_failed"
+msgstr "Save failed"
+
+msgid "gui.poi_editor.save_kind"
+msgstr "Save category"
+
+msgid "gui.poi_editor.saved_count"
+msgstr "Saved {count} categories"
+
+msgid "gui.poi_editor.search_label"
+msgstr "Category search"
+
+msgid "gui.poi_editor.search_placeholder"
+msgstr "Filter by name or key"
+
+msgid "gui.poi_editor.section.categories"
+msgstr "Categories"
+
+msgid "gui.poi_editor.section.icons"
+msgstr "Icon library"
+
+msgid "gui.poi_editor.section.properties"
+msgstr "Properties"
+
+msgid "gui.poi_editor.show_refs"
+msgstr "Show mapping references…"
+
+msgid "gui.poi_editor.title"
+msgstr "POI mapping manager"
+
+msgid "gui.poi_editor.unsaved_body"
+msgstr "There are unsaved changes. Save before closing?"
+
+msgid "gui.poi_editor.unsaved_count"
+msgstr "Unsaved changes: {count} categories"
+
+msgid "gui.poi_editor.unsaved_title"
+msgstr "Unsaved changes"
+
+msgid "gui.poi_editor.validate"
+msgstr "Validate"
+
+msgid "gui.poi_editor.yaml_title"
+msgstr "POI mapping"
+
+msgid "gui.poi_shared.all_games"
+msgstr "All games"
+
+msgid "gui.poi_shared.close"
+msgstr "Close"
+
+msgid "gui.poi_shared.display"
+msgstr "Display icon"
+
+msgid "gui.poi_shared.external_change"
+msgstr "Mappings changed externally. Close and reopen the editor."
+
+msgid "gui.poi_shared.image_search"
+msgstr "Search icons"
+
+msgid "gui.poi_shared.no_image"
+msgstr "No icon"
+
+msgid "gui.poi_shared.restore"
+msgstr "Restore defaults"
+
+msgid "gui.poi_shared.save"
+msgstr "Save"
+
+msgid "gui.poi_shared.saved"
+msgstr "Saved for all maps."
+
+msgid "gui.poi_shared.search"
+msgstr "Search name or native ID"
+
+msgid "gui.poi_shared.unsaved"
+msgstr "Save unsaved changes?"
+
+msgid "gui.poi_style.color"
+msgstr "Colour"
+
+msgid "gui.poi_style.simple"
+msgstr "Simple"
+
+msgid "gui.poi_style.switch.tip"
+msgstr "Switch icon style: {name}"
+
+msgid "gui.preview.busy"
+msgstr ""
+"Generating map…\n"
+"\n"
+"Reading the city save. Larger cities take longer."
+
+msgid "gui.preview.host_unavailable"
+msgstr "Embedded map preview is not available on this platform; image export still works."
+
+msgid "gui.preview.map_hint"
+msgstr "Drag to pan · Scroll to zoom"
+
+msgid "gui.preview.no_map"
+msgstr ""
+"No city open yet\n"
+"\n"
+"Open a city save to view the map here in real time."
+
+msgid "gui.progress.built_area.done"
+msgstr "Built-up area done"
+
+msgid "gui.progress.built_area.fill"
+msgstr "Filling the built-up area {i}/{n}"
+
+msgid "gui.progress.built_area.outline"
+msgstr "Extracting the built-up outline"
+
+msgid "gui.progress.built_area.surface"
+msgstr "Built-up area composited"
+
+msgid "gui.progress.interchange"
+msgstr "Rendering interchange {i}/{n}"
+
+msgid "gui.progress.layer_detail"
+msgstr "{layer}: {msg}"
+
+msgid "gui.progress.load.buildings"
+msgstr "Building buildings"
+
+msgid "gui.progress.load.document"
+msgstr "Building the map document"
+
+msgid "gui.progress.load.done"
+msgstr "Loaded"
+
+msgid "gui.progress.load.meta"
+msgstr "Reading metadata"
+
+msgid "gui.progress.load.nodes"
+msgstr "Building nodes"
+
+msgid "gui.progress.load.props"
+msgstr "Building forests and procedural objects"
+
+msgid "gui.progress.load.road_types"
+msgstr "Building road types"
+
+msgid "gui.progress.load.segments"
+msgstr "Building segments"
+
+msgid "gui.progress.load.terrain"
+msgstr "Building terrain"
+
+msgid "gui.progress.load.traffic"
+msgstr "Loading the embedded traffic snapshot ({count} segments)"
+
+msgid "gui.progress.load.transit"
+msgstr "Building transit lines"
+
+msgid "gui.progress.load.xml"
+msgstr "Reading XML"
+
+msgid "gui.progress.load.zones"
+msgstr "Building districts and zones"
+
+msgid "gui.progress.merge_tile"
+msgstr "Merging tile {i}/{n} ({col},{row})"
+
+msgid "gui.progress.mosaic"
+msgstr "Compositing mosaic…"
+
+msgid "gui.progress.preview"
+msgstr "Generating the map preview…"
+
+msgid "gui.progress.render_base_layer"
+msgstr "Rendering base-map {layer} layer"
+
+msgid "gui.progress.render_layer"
+msgstr "Rendering {layer} layer"
+
+msgid "gui.progress.render_tiles"
+msgstr "Rendering tiles ({n} total)"
+
+msgid "gui.progress.scene.data"
+msgstr "Preparing map data…"
+
+msgid "gui.progress.scene.draw_layer"
+msgstr "Drawing {label}…"
+
+msgid "gui.progress.scene.draw_roads"
+msgstr "Drawing roads…"
+
+msgid "gui.progress.scene.layers"
+msgstr "Drawing map layers…"
+
+msgid "gui.progress.scene.ready"
+msgstr "Map ready"
+
+msgid "gui.progress.scene.roads"
+msgstr "Preparing roads…"
+
+msgid "gui.progress.scene.write"
+msgstr "Writing the map file…"
+
+msgid "gui.progress.spot"
+msgstr "Rendering highlight {i}/{n}"
+
+msgid "gui.progress.svg_done"
+msgstr "SVG export complete"
+
+msgid "gui.progress.svg_write"
+msgstr "Writing SVG…"
+
+msgid "gui.progress.terrain.color"
+msgstr "Colouring terrain block {i}/{n}"
+
+msgid "gui.progress.terrain.colored"
+msgstr "Terrain colouring done"
+
+msgid "gui.progress.terrain.done"
+msgstr "Terrain done"
+
+msgid "gui.progress.terrain.interpolate"
+msgstr "Interpolating terrain heights"
+
+msgid "gui.progress.terrain.relief"
+msgstr "Compositing terrain shading"
+
+msgid "gui.progress.tile_detail"
+msgstr "[{i}/{n}] {msg}"
+
+msgid "gui.progress.water.contours"
+msgstr "Water contours ready"
+
+msgid "gui.progress.water.done"
+msgstr "Water done"
+
+msgid "gui.progress.water.fill"
+msgstr "Filling water {i}/{n}"
+
+msgid "gui.progress.water.mask"
+msgstr "Water mask done"
+
+msgid "gui.range.anchor.busiest"
+msgstr "Busiest area"
+
+msgid "gui.range.anchor.center"
+msgstr "Map centre"
+
+msgid "gui.range.custom"
+msgstr "Custom…"
+
+msgid "gui.range.dialog.apply"
+msgstr "Apply extent"
+
+msgid "gui.range.dialog.by_tiles"
+msgstr "Choose n × n land tiles"
+
+msgid "gui.range.dialog.cancel"
+msgstr "Cancel"
+
+msgid "gui.range.dialog.diagram"
+msgstr "Drag to select · Drag inside to move"
+
+msgid "gui.range.dialog.draw"
+msgstr "Draw a region"
+
+msgid "gui.range.dialog.full_tiles"
+msgstr "All land tiles · {n} × {n} ({total} tiles)"
+
+msgid "gui.range.dialog.legacy"
+msgstr ""
+"The old extent is {side} × {side} km. Apply switches to the tile extent above; Cancel keeps the "
+"old extent."
+
+msgid "gui.range.dialog.note"
+msgstr "Choose the export area here; set image pixel dimensions in the export dialog."
+
+msgid "gui.range.dialog.open"
+msgstr "Set extent…"
+
+msgid "gui.range.dialog.outside"
+msgstr "All land tiles + surrounding terrain"
+
+msgid "gui.range.dialog.outside_missing"
+msgstr "This file has no surrounding terrain. Export again with the updated game mod."
+
+msgid "gui.range.dialog.redraw"
+msgstr "Draw again"
+
+msgid "gui.range.dialog.side"
+msgstr "Tiles per side"
+
+msgid "gui.range.dialog.small"
+msgstr "This file is smaller than one complete tile. Use Full map or Select area."
+
+msgid "gui.range.dialog.square"
+msgstr "→ {n} × {n}"
+
+msgid "gui.range.dialog.summary"
+msgstr ""
+"{n} × {n} tiles · {total} tiles total\n"
+"Covers about {side} × {side} km"
+
+msgid "gui.range.dialog.title"
+msgstr "Map extent"
+
+msgid "gui.range.dimensions_km"
+msgstr "{width} × {height} km"
+
+msgid "gui.range.entire_city"
+msgstr "Entire map"
+
+msgid "gui.range.game.cs1"
+msgstr "Cities: Skylines · Original"
+
+msgid "gui.range.game.cs2"
+msgstr "Cities: Skylines II"
+
+msgid "gui.range.tiles"
+msgstr "{n} × {n} land tiles"
+
+msgid "gui.region.hint"
+msgstr "Show extents, pick extents and adjust colour strength"
+
+msgid "gui.region.no_items"
+msgstr "This save has no selectable extents."
+
+msgid "gui.result.empty"
+msgstr "Not generated yet."
+
+msgid "gui.ribbon.group.output"
+msgstr "Output"
+
+msgid "gui.ribbon.group.style"
+msgstr "Style"
+
+msgid "gui.ribbon.tab.create"
+msgstr "Create"
+
+msgid "gui.ribbon.tab.icons"
+msgstr "Icons"
+
+msgid "gui.ribbon.tab.layers"
+msgstr "Layers"
+
+msgid "gui.ribbon.tab.metro"
+msgstr "Metro"
+
+msgid "gui.ribbon.tab.start"
+msgstr "Home"
+
+msgid "gui.ribbon.tab.style"
+msgstr "Style"
+
+msgid "gui.ribbon.tab.tools"
+msgstr "Tools"
+
+msgid "gui.ribbon.tab.transit"
+msgstr "Transit"
+
+msgid "gui.road.fill"
+msgstr "Fill"
+
+msgid "gui.road.width.tip"
+msgstr ""
+"How thin this level may be drawn; the difference shows on narrow roads and when the map is zoomed"
+" out"
+
+msgid "gui.sidebar.edit_style"
+msgstr "Edit style…"
+
+msgid "gui.sidebar.group.map"
+msgstr "Map"
+
+msgid "gui.sidebar.group.map_layers"
+msgstr "Map"
+
+msgid "gui.sidebar.group.output"
+msgstr "Output"
+
+msgid "gui.sidebar.group.render"
+msgstr "Map"
+
+msgid "gui.sidebar.group.text"
+msgstr "Text"
+
+msgid "gui.sidebar.group.theme"
+msgstr "Theme"
+
+msgid "gui.sidebar.group.transit"
+msgstr "Public transit"
+
+msgid "gui.sidebar.group.transit_layers"
+msgstr "Transit"
+
+msgid "gui.sidebar.label.quality"
+msgstr "Quality"
+
+msgid "gui.sidebar.label.style"
+msgstr "Style"
+
+msgid "gui.sidebar.label.theme"
+msgstr "Style"
+
+msgid "gui.sidebar.spot_transit"
+msgstr "Public Transit View"
+
+msgid "gui.sidebar.terrain_settings"
+msgstr "Terrain appearance"
+
+msgid "gui.sidebar.transit_types_title"
+msgstr "Line types"
+
+msgid "gui.smooth.extreme"
+msgstr "Extra strong"
+
+msgid "gui.smooth.high"
+msgstr "High"
+
+msgid "gui.smooth.low"
+msgstr "Low"
+
+msgid "gui.smooth.standard"
+msgstr "Standard"
+
+msgid "gui.smooth.strong"
+msgstr "Strong"
+
+msgid "gui.stats.buildings"
+msgstr "Buildings"
+
+msgid "gui.stats.built_area"
+msgstr "Built-up area"
+
+msgid "gui.stats.districts"
+msgstr "Districts"
+
+msgid "gui.stats.regions"
+msgstr "Areas"
+
+msgid "gui.stats.road_length"
+msgstr "Road length"
+
+msgid "gui.stats.transit_length"
+msgstr "Public transport length"
+
+msgid "gui.status.back_to_city_map"
+msgstr "Back on the city map"
+
+msgid "gui.status.cache_cleared"
+msgstr "Render processes and parse cache cleared"
+
+msgid "gui.status.canvas_moved"
+msgstr "The map was moved, so the selection was cleared"
+
+msgid "gui.status.city_loaded"
+msgstr "City loaded — generating the live preview"
+
+msgid "gui.status.city_unknown"
+msgstr "Unknown city"
+
+msgid "gui.status.copied_scaled"
+msgstr " (scaled to {w}×{h})"
+
+msgid "gui.status.entered_metro"
+msgstr "Entered the metro diagram — generating…"
+
+msgid "gui.status.entered_metro_no_city"
+msgstr "Entered the metro diagram · open a city save first"
+
+msgid "gui.status.entered_transit"
+msgstr "Entered the public transit view — generating…"
+
+msgid "gui.status.entered_transit_no_city"
+msgstr "Entered the public transit view · open a city save first"
+
+msgid "gui.status.file_moved"
+msgstr "{name} is no longer in its original location and was removed from Recent."
+
+msgid "gui.status.image_copied"
+msgstr "Image copied"
+
+msgid "gui.status.lang_save_failed"
+msgstr "The language setting could not be saved"
+
+msgid "gui.status.log_dir_failed"
+msgstr "Cannot open the log folder: {detail}"
+
+msgid "gui.status.map_area_selected"
+msgstr "Map area selected"
+
+msgid "gui.status.map_failed_detail"
+msgstr "The map could not be generated: {error}"
+
+msgid "gui.status.metro_cannot_start"
+msgstr "Cannot generate: open a city save first, or wait for the current task to finish."
+
+msgid "gui.status.metro_failed"
+msgstr "Generation failed."
+
+msgid "gui.status.metro_preview_first"
+msgstr "Generate the metro diagram once first"
+
+msgid "gui.status.metro_progress"
+msgstr "Generating the diagram… {pct}%"
+
+msgid "gui.status.metro_rendering"
+msgstr "Generating the diagram…"
+
+msgid "gui.status.no_city"
+msgstr "No city open"
+
+msgid "gui.status.no_render_result"
+msgstr "No map has been generated yet. Click Render Map first."
+
+msgid "gui.status.no_traffic"
+msgstr "No traffic"
+
+msgid "gui.status.parsing"
+msgstr "Parsing: {msg}"
+
+msgid "gui.status.parsing_save"
+msgstr "Parsing the save…"
+
+msgid "gui.status.pick_region_first"
+msgstr "Pick a close-up area at random first"
+
+msgid "gui.status.preview_failed"
+msgstr "The centre preview could not be generated"
+
+msgid "gui.status.preview_prefix"
+msgstr "Preview: {msg}"
+
+msgid "gui.status.random_spot_picked"
+msgstr "Close-up area picked at random — adjust the preview, then save"
+
+msgid "gui.status.render_short"
+msgstr "Map generated · {size}px · {elapsed}s"
+
+msgid "gui.status.rendering_stall"
+msgstr "Still rendering… (no progress update for {sec}s; normal for large/high-quality renders)"
+
+msgid "gui.status.save_missing_or_parsing"
+msgstr "The file is missing, or another save is still being parsed"
+
+msgid "gui.status.saved"
+msgstr "Saved: {path}"
+
+msgid "gui.status.select_mode"
+msgstr "Select mode: drag on the map to choose an area"
+
+msgid "gui.status.traffic_embedded"
+msgstr "Embedded traffic: {n}"
+
+msgid "gui.status.traffic_ext"
+msgstr "External JSON: {n}"
+
+msgid "gui.status.web_done"
+msgstr "Web map export complete"
+
+msgid "gui.status.writing_png"
+msgstr "Writing PNG…"
+
+msgid "gui.style.hint.redirect"
+msgstr "Map styling is edited in the theme editor; there is no second set of quick parameters here"
+
+msgid "gui.style.hint.theme_editor"
+msgstr "Terrain, roads, buildings, water, labels and icons are all managed by the same theme editor."
+
+msgid "gui.style_editor.add_step"
+msgstr "+ Add step"
+
+msgid "gui.style_editor.advanced"
+msgstr "Advanced settings"
+
+msgid "gui.style_editor.advanced_json_tip"
+msgstr "Advanced: edit the raw theme JSON"
+
+msgid "gui.style_editor.applied_no_file"
+msgstr "Applied (file unchanged)"
+
+msgid "gui.style_editor.apply"
+msgstr "Apply"
+
+msgid "gui.style_editor.apply_tip"
+msgstr "Apply for this session only"
+
+msgid "gui.style_editor.auto_preview"
+msgstr "Auto preview"
+
+msgid "gui.style_editor.basic.aa.desc"
+msgstr ""
+"Draws at a higher resolution and scales down, smoothing road and text edges. Costs extra time and"
+" memory."
+
+msgid "gui.style_editor.basic.aa.label"
+msgstr "Smooth edges"
+
+msgid "gui.style_editor.basic.contrast.label"
+msgstr "Contrast"
+
+msgid "gui.style_editor.basic.contrast.value.enhanced"
+msgstr "Enhanced"
+
+msgid "gui.style_editor.basic.contrast.value.social"
+msgstr "Social media"
+
+msgid "gui.style_editor.basic.contrast.value.standard"
+msgstr "Standard"
+
+msgid "gui.style_editor.basic.font_tier.label"
+msgstr "Text size"
+
+msgid "gui.style_editor.basic.font_tier.value.large"
+msgstr "Large"
+
+msgid "gui.style_editor.basic.font_tier.value.small"
+msgstr "Small"
+
+msgid "gui.style_editor.basic.font_tier.value.standard"
+msgstr "Standard"
+
+msgid "gui.style_editor.basic.font_tier.value.xlarge"
+msgstr "Extra large"
+
+msgid "gui.style_editor.basic.theme.label"
+msgstr "Map theme"
+
+msgid "gui.style_editor.cannot_save"
+msgstr "Cannot save"
+
+msgid "gui.style_editor.category_modified"
+msgstr "{label} · {count} modified"
+
+msgid "gui.style_editor.choose_color"
+msgstr "Choose color"
+
+msgid "gui.style_editor.comma_separated"
+msgstr "comma-separated"
+
+msgid "gui.style_editor.compare_before"
+msgstr "Before"
+
+msgid "gui.style_editor.desc.buildings.border"
+msgstr "Building outline color"
+
+msgid "gui.style_editor.desc.buildings.border_width"
+msgstr ""
+"Thickness of the building outline. Higher values make it stand out more; too high and it covers "
+"neighbouring buildings."
+
+msgid "gui.style_editor.desc.buildings.default"
+msgstr "Fill colour of the building body. Used as the fallback when colouring by building type."
+
+msgid "gui.style_editor.desc.buildings.poi_tint.enabled"
+msgstr "Whether to tint buildings slightly by their use"
+
+msgid "gui.style_editor.desc.buildings.shadow"
+msgstr "Adds a drop shadow to buildings for a sense of depth. Rendering gets a little slower."
+
+msgid "gui.style_editor.desc.buildings.shadow.enabled"
+msgstr "Whether to add drop shadows to buildings"
+
+msgid "gui.style_editor.desc.built_area.buffer_meters"
+msgstr "How far the boundary extends outward"
+
+msgid "gui.style_editor.desc.built_area.color"
+msgstr "Overall color of the built-up area"
+
+msgid "gui.style_editor.desc.built_area.enabled"
+msgstr "Whether to draw the urban built-up area"
+
+msgid "gui.style_editor.desc.built_area.exclude_services"
+msgstr "Services not counted as built-up area"
+
+msgid "gui.style_editor.desc.built_area.include_parks"
+msgstr "Whether parks count as built-up area"
+
+msgid "gui.style_editor.desc.canvas"
+msgstr "Canvas size in pixels. The export window decides the final output size."
+
+msgid "gui.style_editor.desc.canvas.background"
+msgstr "Background color of the whole map"
+
+msgid "gui.style_editor.desc.district.border"
+msgstr "District boundary colour"
+
+msgid "gui.style_editor.desc.district.border_width"
+msgstr "Thickness of the district boundary line."
+
+msgid "gui.style_editor.desc.district.enabled"
+msgstr "Whether to draw districts"
+
+msgid "gui.style_editor.desc.district.fill_alpha"
+msgstr "Opacity of district colors"
+
+msgid "gui.style_editor.desc.district.fill_colors"
+msgstr "Repeating colour palette for districts"
+
+msgid "gui.style_editor.desc.forest.color"
+msgstr "Colour of forest cover"
+
+msgid "gui.style_editor.desc.labels.building"
+msgstr "Text for building names: font, size, colour and stroke."
+
+msgid "gui.style_editor.desc.labels.district"
+msgstr "Text for district names: font, size, colour and stroke."
+
+msgid "gui.style_editor.desc.labels.district.color"
+msgstr "District name color"
+
+msgid "gui.style_editor.desc.labels.park"
+msgstr "Text for park names: font, size, colour and stroke."
+
+msgid "gui.style_editor.desc.labels.road"
+msgstr "Text for road names: font, size, colour and stroke."
+
+msgid "gui.style_editor.desc.labels.road.color"
+msgstr "Road name color"
+
+msgid "gui.style_editor.desc.labels.road_repeat"
+msgstr "How often a road name repeats"
+
+msgid "gui.style_editor.desc.labels.stop"
+msgstr "Text for stop names: font, size, colour and stroke."
+
+msgid "gui.style_editor.desc.land_use.alpha"
+msgstr "Opacity of the function colors"
+
+msgid "gui.style_editor.desc.land_use.colors"
+msgstr "Colours used for function zones"
+
+msgid "gui.style_editor.desc.land_use.detail"
+msgstr "How fine the function grouping is"
+
+msgid "gui.style_editor.desc.land_use.enabled"
+msgstr "Whether to color blocks by function"
+
+msgid "gui.style_editor.desc.poi_icons.bg_circle"
+msgstr "Whether to add a white circle under icons"
+
+msgid "gui.style_editor.desc.poi_icons.bg_circle_size"
+msgstr ""
+"Diameter of the white circle behind each icon, in pixels. Increase it when icons blend into the "
+"basemap."
+
+msgid "gui.style_editor.desc.poi_icons.enabled"
+msgstr "Whether to show POI markers"
+
+msgid "gui.style_editor.desc.poi_icons.grid_size"
+msgstr "Size of the clustering grid that controls icon density"
+
+msgid "gui.style_editor.desc.poi_icons.hidden_categories"
+msgstr "Place categories that are not shown"
+
+msgid "gui.style_editor.desc.poi_icons.icon_size"
+msgstr "Icon size"
+
+msgid "gui.style_editor.desc.poi_icons.icons_dir"
+msgstr "Which icon library is used"
+
+msgid "gui.style_editor.desc.poi_icons.merge_distance"
+msgstr "Icons closer than this can merge into one. Measured in metres of world distance."
+
+msgid "gui.style_editor.desc.poi_icons.name_size"
+msgstr "Font size of the icon name, in pixels."
+
+msgid "gui.style_editor.desc.poi_icons.show_name"
+msgstr "Whether to show place names next to markers"
+
+msgid "gui.style_editor.desc.procedural_objects.border"
+msgstr "Outline colour of custom objects"
+
+msgid "gui.style_editor.desc.procedural_objects.custom_color_alpha"
+msgstr "Strength of the custom object tint"
+
+msgid "gui.style_editor.desc.roads.highway.fill"
+msgstr "Colour of highways and expressways"
+
+msgid "gui.style_editor.desc.roads.width_scale"
+msgstr "Adjust overall road thickness"
+
+msgid "gui.style_editor.desc.terrain.elevation_colors"
+msgstr "Colours by elevation band; lower thresholds sit lower"
+
+msgid "gui.style_editor.desc.terrain.elevation_mode"
+msgstr "continuous blends colors; stepped uses fixed bands"
+
+msgid "gui.style_editor.desc.terrain.ground.enabled"
+msgstr "Whether to draw the ground base colour"
+
+msgid "gui.style_editor.desc.terrain.ground.far_green"
+msgstr "Ground colour at high elevation"
+
+msgid "gui.style_editor.desc.terrain.ground.mountain_colors"
+msgstr "Mountain colours by height band"
+
+msgid "gui.style_editor.desc.terrain.ground.mountain_threshold"
+msgstr "Height above which terrain counts as mountain"
+
+msgid "gui.style_editor.desc.terrain.ground.near_green"
+msgstr "Ground colour at low elevation"
+
+msgid "gui.style_editor.desc.terrain.ground.ramp_meters"
+msgstr "Height over which the two ground colours blend"
+
+msgid "gui.style_editor.desc.terrain.hillshade.altitude"
+msgstr "Angle between the light and the ground. Lower values give longer shadows and exaggerated relief."
+
+msgid "gui.style_editor.desc.terrain.hillshade.azimuth"
+msgstr "Azimuth the light comes from, measured clockwise from north."
+
+msgid "gui.style_editor.desc.terrain.hillshade.enabled"
+msgstr "Adds shading to make mountains look 3D"
+
+msgid "gui.style_editor.desc.terrain.hillshade.intensity"
+msgstr "Difference between lit and shaded slopes. Too high hides roads and buildings."
+
+msgid "gui.style_editor.desc.terrain.hillshade.large_scale_meters"
+msgstr "Smoothing scale for the overall direction of mountain ranges, in metres."
+
+msgid "gui.style_editor.desc.terrain.hillshade.large_scale_weight"
+msgstr ""
+"Weight of broad mountain shading in the blend. Higher values look like large mountain masses; the"
+" two weights usually add up to 1.0."
+
+msgid "gui.style_editor.desc.terrain.hillshade.small_scale_meters"
+msgstr "Scale for valley and fold detail, in metres."
+
+msgid "gui.style_editor.desc.terrain.hillshade.small_scale_weight"
+msgstr ""
+"Weight of local relief shading in the blend. Higher values give a finer texture; the two weights "
+"usually add up to 1.0."
+
+msgid "gui.style_editor.desc.transports.auto_color"
+msgstr "Auto pick a color for lines without one"
+
+msgid "gui.style_editor.desc.transports.label"
+msgstr "Line-name badges: font, size, padding, border and how often they repeat along a line."
+
+msgid "gui.style_editor.desc.transports.label.bg"
+msgstr "Background colour of the name badge"
+
+msgid "gui.style_editor.desc.transports.label.enabled"
+msgstr "Whether to show line name badges"
+
+msgid "gui.style_editor.desc.transports.label.repeat_interval"
+msgstr "How often the badge repeats along a line"
+
+msgid "gui.style_editor.desc.transports.label.size"
+msgstr "Font size of line names"
+
+msgid "gui.style_editor.desc.transports.octilinear"
+msgstr "Whether to straighten lines into a tidy grid"
+
+msgid "gui.style_editor.desc.transports.schematic.parallel_gap"
+msgstr "Gap between parallel lines"
+
+msgid "gui.style_editor.desc.transports.schematic.spacing"
+msgstr "Distance between stops; larger is looser"
+
+msgid "gui.style_editor.desc.transports.smooth"
+msgstr "How rounded the line corners are"
+
+msgid "gui.style_editor.desc.transports.station.enabled"
+msgstr "Whether to show station dots"
+
+msgid "gui.style_editor.desc.transports.station.merge_enabled"
+msgstr "Whether nearby stops are merged into one"
+
+msgid "gui.style_editor.desc.transports.station.merge_range"
+msgstr "How close stops count as the same station"
+
+msgid "gui.style_editor.desc.transports.station.size"
+msgstr "Size of the station dot"
+
+msgid "gui.style_editor.desc.transports.station.transfer_scale"
+msgstr "How much bigger transfer stations are"
+
+msgid "gui.style_editor.desc.transports.transit_view.mask_intensity"
+msgstr "How much the map fades in public transit view"
+
+msgid "gui.style_editor.desc.water.border"
+msgstr "Shoreline outline colour"
+
+msgid "gui.style_editor.desc.water.border_width"
+msgstr "Shoreline outline width"
+
+msgid "gui.style_editor.desc.water.color"
+msgstr "Water color"
+
+msgid "gui.style_editor.desc.watermark.content"
+msgstr "Which details appear in the watermark"
+
+msgid "gui.style_editor.desc.watermark.enabled"
+msgstr "Whether to add a watermark"
+
+msgid "gui.style_editor.desc.watermark.margin"
+msgstr "Distance from the watermark to the canvas edge, in pixels."
+
+msgid "gui.style_editor.desc.watermark.mod_name"
+msgstr "Text shown on the watermark"
+
+msgid "gui.style_editor.desc.watermark.padding"
+msgstr "Distance between the watermark text and the edge of its background, in pixels."
+
+msgid "gui.style_editor.desc.watermark.position"
+msgstr "Which corner the watermark sits in"
+
+msgid "gui.style_editor.desc.zone.border"
+msgstr "Zone boundary colour"
+
+msgid "gui.style_editor.desc.zone.border_width"
+msgstr "Thickness of the zone boundary line."
+
+msgid "gui.style_editor.desc.zone.enabled"
+msgstr "Whether to draw park and industry zones"
+
+msgid "gui.style_editor.desc.zone.fill"
+msgstr "Base fill colour for zones"
+
+msgid "gui.style_editor.desc.zone.fill_alpha"
+msgstr "Opacity of zone colors"
+
+msgid "gui.style_editor.edit_help"
+msgstr "Edit the raw theme data; saving applies it to the preview."
+
+msgid "gui.style_editor.edit_title"
+msgstr "Edit theme"
+
+msgid "gui.style_editor.elevation_threshold_tip"
+msgstr "Elevation threshold (m)"
+
+msgid "gui.style_editor.field.adaptive"
+msgstr "Automatic"
+
+msgid "gui.style_editor.field.alpha"
+msgstr "Opacity"
+
+msgid "gui.style_editor.field.altitude"
+msgstr "Light altitude"
+
+msgid "gui.style_editor.field.auto_color"
+msgstr "Auto color"
+
+msgid "gui.style_editor.field.azimuth"
+msgstr "Light azimuth"
+
+msgid "gui.style_editor.field.background"
+msgstr "Background color"
+
+msgid "gui.style_editor.field.beautification"
+msgstr "Pedestrian / bicycle path"
+
+msgid "gui.style_editor.field.beautification_elevated"
+msgstr "Elevated pedestrian path"
+
+msgid "gui.style_editor.field.beautification_tunnel"
+msgstr "Tunnel pedestrian path"
+
+msgid "gui.style_editor.field.bg"
+msgstr "Background"
+
+msgid "gui.style_editor.field.bg_circle"
+msgstr "Draw white background circle"
+
+msgid "gui.style_editor.field.bg_circle_size"
+msgstr "Background circle diameter"
+
+msgid "gui.style_editor.field.bold"
+msgstr "Bold"
+
+msgid "gui.style_editor.field.border"
+msgstr "Border color"
+
+msgid "gui.style_editor.field.border_radius"
+msgstr "Corner radius"
+
+msgid "gui.style_editor.field.border_width"
+msgstr "Border width"
+
+msgid "gui.style_editor.field.branch"
+msgstr "Side roads"
+
+msgid "gui.style_editor.field.bridge"
+msgstr "Bridges"
+
+msgid "gui.style_editor.field.buffer_meters"
+msgstr "Buffer extent"
+
+msgid "gui.style_editor.field.building"
+msgstr "Building name"
+
+msgid "gui.style_editor.field.categories"
+msgstr "Category filter (comma-separated)"
+
+msgid "gui.style_editor.field.categories_palette"
+msgstr "Category colours"
+
+msgid "gui.style_editor.field.cell_meters"
+msgstr "Boundary detail"
+
+msgid "gui.style_editor.field.city_color"
+msgstr "City text color"
+
+msgid "gui.style_editor.field.city_name"
+msgstr "City name"
+
+msgid "gui.style_editor.field.color"
+msgstr "Color"
+
+msgid "gui.style_editor.field.colors"
+msgstr "Colours"
+
+msgid "gui.style_editor.field.column_gap"
+msgstr "Column gap"
+
+msgid "gui.style_editor.field.commercial"
+msgstr "Commercial"
+
+msgid "gui.style_editor.field.content"
+msgstr "Content options"
+
+msgid "gui.style_editor.field.contour_upscale"
+msgstr "Outline detail"
+
+msgid "gui.style_editor.field.corridor"
+msgstr "Corridor"
+
+msgid "gui.style_editor.field.custom_color_alpha"
+msgstr "Color strength"
+
+msgid "gui.style_editor.field.custom_text"
+msgstr "Custom text"
+
+msgid "gui.style_editor.field.dash"
+msgstr "Dash pattern (line / gap)"
+
+msgid "gui.style_editor.field.dash_width"
+msgstr "Dash width"
+
+msgid "gui.style_editor.field.debug"
+msgstr "Debug"
+
+msgid "gui.style_editor.field.decoration_length"
+msgstr "Decoration length"
+
+msgid "gui.style_editor.field.decoration_span"
+msgstr "Decoration spacing"
+
+msgid "gui.style_editor.field.decoration_width"
+msgstr "Decoration width"
+
+msgid "gui.style_editor.field.default"
+msgstr "Default"
+
+msgid "gui.style_editor.field.dense_gap"
+msgstr "Dense gap"
+
+msgid "gui.style_editor.field.description"
+msgstr "Theme description"
+
+msgid "gui.style_editor.field.detail"
+msgstr "Detail level"
+
+msgid "gui.style_editor.field.district"
+msgstr "District name"
+
+msgid "gui.style_editor.field.elevation_colors"
+msgstr "Elevation colors (lower thresholds are lower elevations)"
+
+msgid "gui.style_editor.field.elevation_mode"
+msgstr "Elevation color mode"
+
+msgid "gui.style_editor.field.enabled"
+msgstr "Enabled"
+
+msgid "gui.style_editor.field.exclude_services"
+msgstr "Excluded services"
+
+msgid "gui.style_editor.field.far_green"
+msgstr "High-elevation colour"
+
+msgid "gui.style_editor.field.fill"
+msgstr "Fill color"
+
+msgid "gui.style_editor.field.fill_alpha"
+msgstr "Fill opacity"
+
+msgid "gui.style_editor.field.fill_colors"
+msgstr "Region palette"
+
+msgid "gui.style_editor.field.fixed"
+msgstr "Fixed value (pixels)"
+
+msgid "gui.style_editor.field.font"
+msgstr "Font"
+
+msgid "gui.style_editor.field.font_size"
+msgstr "Font size"
+
+msgid "gui.style_editor.field.gap"
+msgstr "Gap"
+
+msgid "gui.style_editor.field.geometry"
+msgstr "Geometry"
+
+msgid "gui.style_editor.field.green"
+msgstr "Green space"
+
+msgid "gui.style_editor.field.grid_size"
+msgstr "Clustering grid size"
+
+msgid "gui.style_editor.field.height"
+msgstr "Height"
+
+msgid "gui.style_editor.field.hidden_categories"
+msgstr "Hidden categories (comma-separated)"
+
+msgid "gui.style_editor.field.highway"
+msgstr "Highway / expressway"
+
+msgid "gui.style_editor.field.highway_elevated"
+msgstr "Elevated highway"
+
+msgid "gui.style_editor.field.highway_tunnel"
+msgstr "Tunnel highway"
+
+msgid "gui.style_editor.field.hillshade"
+msgstr "Hillshade"
+
+msgid "gui.style_editor.field.icon_size"
+msgstr "Icon size"
+
+msgid "gui.style_editor.field.icons_dir"
+msgstr "Icon library folder"
+
+msgid "gui.style_editor.field.include_parks"
+msgstr "Include parks"
+
+msgid "gui.style_editor.field.industrial"
+msgstr "Industrial"
+
+msgid "gui.style_editor.field.info_color"
+msgstr "Info text color"
+
+msgid "gui.style_editor.field.intensity"
+msgstr "Shadow intensity"
+
+msgid "gui.style_editor.field.label"
+msgstr "Line name badge"
+
+msgid "gui.style_editor.field.large_scale_meters"
+msgstr "Large-scale shade radius"
+
+msgid "gui.style_editor.field.large_scale_weight"
+msgstr "Large-scale shade weight"
+
+msgid "gui.style_editor.field.line"
+msgstr "Line color"
+
+msgid "gui.style_editor.field.link_meters"
+msgstr "Link distance"
+
+msgid "gui.style_editor.field.main"
+msgstr "Main roads"
+
+msgid "gui.style_editor.field.margin"
+msgstr "Margin"
+
+msgid "gui.style_editor.field.mask_intensity"
+msgstr "Background dimming"
+
+msgid "gui.style_editor.field.max_cells"
+msgstr "Max cells"
+
+msgid "gui.style_editor.field.max_per_cell"
+msgstr "Max icons per cell"
+
+msgid "gui.style_editor.field.max_per_line"
+msgstr "Max badges per line"
+
+msgid "gui.style_editor.field.merge_bus_tram"
+msgstr "Merge bus/tram"
+
+msgid "gui.style_editor.field.merge_distance"
+msgstr "Merge distance"
+
+msgid "gui.style_editor.field.merge_enabled"
+msgstr "Merge nearby"
+
+msgid "gui.style_editor.field.merge_range"
+msgstr "Merge radius"
+
+msgid "gui.style_editor.field.merge_train_metro"
+msgstr "Merge train/metro"
+
+msgid "gui.style_editor.field.meta_color"
+msgstr "Metadata text color"
+
+msgid "gui.style_editor.field.min_fill_px"
+msgstr "Minimum road width"
+
+msgid "gui.style_editor.field.min_gap"
+msgstr "Minimum gap"
+
+msgid "gui.style_editor.field.min_priority"
+msgstr "Minimum display priority"
+
+msgid "gui.style_editor.field.min_zoom"
+msgstr "Min zoom"
+
+msgid "gui.style_editor.field.mix_white"
+msgstr "White mix ratio"
+
+msgid "gui.style_editor.field.mod_name"
+msgstr "Watermark text"
+
+msgid "gui.style_editor.field.mode"
+msgstr "Relief display mode"
+
+msgid "gui.style_editor.field.mountain_colors"
+msgstr "Mountain colour bands"
+
+msgid "gui.style_editor.field.mountain_threshold"
+msgstr "Mountain threshold"
+
+msgid "gui.style_editor.field.name"
+msgstr "Theme name"
+
+msgid "gui.style_editor.field.name_offset"
+msgstr "Name offset"
+
+msgid "gui.style_editor.field.name_size"
+msgstr "Name size"
+
+msgid "gui.style_editor.field.name_z"
+msgstr "Render priority"
+
+msgid "gui.style_editor.field.names"
+msgstr "Stop names"
+
+msgid "gui.style_editor.field.near_green"
+msgstr "Low-elevation colour"
+
+msgid "gui.style_editor.field.octilinear"
+msgstr "Tidy layout"
+
+msgid "gui.style_editor.field.office"
+msgstr "Office"
+
+msgid "gui.style_editor.field.offset"
+msgstr "Offset"
+
+msgid "gui.style_editor.field.outline"
+msgstr "Outline color"
+
+msgid "gui.style_editor.field.padding"
+msgstr "Padding"
+
+msgid "gui.style_editor.field.parallel_gap"
+msgstr "Parallel gap"
+
+msgid "gui.style_editor.field.park"
+msgstr "Park name"
+
+msgid "gui.style_editor.field.pattern"
+msgstr "Dash pattern"
+
+msgid "gui.style_editor.field.pedestrian"
+msgstr "Pedestrian path"
+
+msgid "gui.style_editor.field.poi_tint"
+msgstr "Place tint"
+
+msgid "gui.style_editor.field.position"
+msgstr "Position"
+
+msgid "gui.style_editor.field.primary"
+msgstr "Primary road"
+
+msgid "gui.style_editor.field.prop"
+msgstr "Props"
+
+msgid "gui.style_editor.field.public"
+msgstr "Public"
+
+msgid "gui.style_editor.field.publictransport"
+msgstr "Public transport"
+
+msgid "gui.style_editor.field.ramp_meters"
+msgstr "Colour ramp height"
+
+msgid "gui.style_editor.field.render_time"
+msgstr "Generated at"
+
+msgid "gui.style_editor.field.repeat_interval"
+msgstr "Repeat interval"
+
+msgid "gui.style_editor.field.residential"
+msgstr "Residential"
+
+msgid "gui.style_editor.field.resolution"
+msgstr "Resolution"
+
+msgid "gui.style_editor.field.road"
+msgstr "Ground road"
+
+msgid "gui.style_editor.field.road_barrier_extra"
+msgstr "Road barrier margin"
+
+msgid "gui.style_editor.field.road_elevated"
+msgstr "Elevated road"
+
+msgid "gui.style_editor.field.road_min_gap"
+msgstr "Min name gap"
+
+msgid "gui.style_editor.field.road_repeat"
+msgstr "Name repeat"
+
+msgid "gui.style_editor.field.road_repeat_ratio"
+msgstr "Name repeat ratio"
+
+msgid "gui.style_editor.field.road_tunnel"
+msgstr "Tunnel road"
+
+msgid "gui.style_editor.field.road_wide"
+msgstr "Wide road"
+
+msgid "gui.style_editor.field.road_width_scale"
+msgstr "Road width scale"
+
+msgid "gui.style_editor.field.scaled"
+msgstr "Scale with resolution"
+
+msgid "gui.style_editor.field.schematic"
+msgstr "Schematic layout"
+
+msgid "gui.style_editor.field.secondary"
+msgstr "Secondary road"
+
+msgid "gui.style_editor.field.separator"
+msgstr "Separator"
+
+msgid "gui.style_editor.field.shadow"
+msgstr "Shadow"
+
+msgid "gui.style_editor.field.show_name"
+msgstr "Show name"
+
+msgid "gui.style_editor.field.sign"
+msgstr "Signs"
+
+msgid "gui.style_editor.field.size"
+msgstr "Text size"
+
+msgid "gui.style_editor.field.size_z"
+msgstr "Name size grading"
+
+msgid "gui.style_editor.field.small_scale_meters"
+msgstr "Small-scale shade radius"
+
+msgid "gui.style_editor.field.small_scale_weight"
+msgstr "Small-scale shade weight"
+
+msgid "gui.style_editor.field.smooth"
+msgstr "Curve smoothing (samples)"
+
+msgid "gui.style_editor.field.smooth_blur"
+msgstr "Blur radius"
+
+msgid "gui.style_editor.field.smooth_iters"
+msgstr "Smoothing passes"
+
+msgid "gui.style_editor.field.spacing"
+msgstr "Stop spacing"
+
+msgid "gui.style_editor.field.special"
+msgstr "Special roads"
+
+msgid "gui.style_editor.field.sprite"
+msgstr "Sprite image"
+
+msgid "gui.style_editor.field.station"
+msgstr "Stations"
+
+msgid "gui.style_editor.field.station_width"
+msgstr "Station line width"
+
+msgid "gui.style_editor.field.stop"
+msgstr "Transit stop name"
+
+msgid "gui.style_editor.field.street_furn"
+msgstr "Street fixtures"
+
+msgid "gui.style_editor.field.stroke"
+msgstr "Stroke color"
+
+msgid "gui.style_editor.field.stroke_width"
+msgstr "Stroke width"
+
+msgid "gui.style_editor.field.style_name"
+msgstr "Theme name"
+
+msgid "gui.style_editor.field.sub"
+msgstr "Sub colors"
+
+msgid "gui.style_editor.field.tertiary"
+msgstr "Tertiary road"
+
+msgid "gui.style_editor.field.threshold"
+msgstr "Elevation threshold"
+
+msgid "gui.style_editor.field.time_format"
+msgstr "Time format"
+
+msgid "gui.style_editor.field.traffic_time"
+msgstr "Traffic time"
+
+msgid "gui.style_editor.field.transfer_scale"
+msgstr "Transfer station size"
+
+msgid "gui.style_editor.field.transit_view"
+msgstr "Public transit view"
+
+msgid "gui.style_editor.field.transit_view_scale"
+msgstr "Public transit view zoom"
+
+msgid "gui.style_editor.field.tree"
+msgstr "Trees"
+
+msgid "gui.style_editor.field.tunnel"
+msgstr "Tunnels"
+
+msgid "gui.style_editor.field.types"
+msgstr "Line styles"
+
+msgid "gui.style_editor.field.unknown"
+msgstr "Unknown"
+
+msgid "gui.style_editor.field.walk"
+msgstr "Walkway"
+
+msgid "gui.style_editor.field.width"
+msgstr "Width"
+
+msgid "gui.style_editor.field.width_scale"
+msgstr "Width scale (meters → pixels)"
+
+msgid "gui.style_editor.field.x"
+msgstr "Horizontal"
+
+msgid "gui.style_editor.field.y"
+msgstr "Vertical"
+
+msgid "gui.style_editor.file_filter"
+msgstr "Theme files (*.yaml)"
+
+msgid "gui.style_editor.fixed"
+msgstr "Fixed"
+
+msgid "gui.style_editor.font_current"
+msgstr "Current font ({value})"
+
+msgid "gui.style_editor.footer_hint"
+msgstr "Edits apply to the preview instantly; saving writes the file"
+
+msgid "gui.style_editor.group_basic"
+msgstr "Basics"
+
+msgid "gui.style_editor.invalid_colors"
+msgstr ""
+"Invalid colour values (need #RRGGBB or #RRGGBBAA):\n"
+"{list}"
+
+msgid "gui.style_editor.preview"
+msgstr "Live Preview"
+
+msgid "gui.style_editor.preview_need_map"
+msgstr ""
+"The inline preview needs an imported city save.\n"
+"Import one to see the local result here."
+
+msgid "gui.style_editor.preview_scene_auto"
+msgstr "Follow current category"
+
+msgid "gui.style_editor.preview_scene_buildings"
+msgstr "Buildings"
+
+msgid "gui.style_editor.preview_scene_overall"
+msgstr "Overall"
+
+msgid "gui.style_editor.preview_scene_railway"
+msgstr "Railway"
+
+msgid "gui.style_editor.preview_scene_roads"
+msgstr "Roads"
+
+msgid "gui.style_editor.preview_scene_terrain"
+msgstr "Terrain"
+
+msgid "gui.style_editor.preview_scene_transports"
+msgstr "Transit"
+
+msgid "gui.style_editor.preview_scene_water"
+msgstr "Water"
+
+msgid "gui.style_editor.preview_scene_zones"
+msgstr "Zones"
+
+msgid "gui.style_editor.range"
+msgstr "Range {lo}–{hi}{unit}"
+
+msgid "gui.style_editor.redo"
+msgstr "Redo"
+
+msgid "gui.style_editor.refresh_preview"
+msgstr "Refresh preview"
+
+msgid "gui.style_editor.remove_step"
+msgstr "Remove this step"
+
+msgid "gui.style_editor.reset"
+msgstr "Reset original"
+
+msgid "gui.style_editor.restore_group"
+msgstr "Restore group"
+
+msgid "gui.style_editor.restore_group_tip"
+msgstr "Reset this group to the values it had when the window opened"
+
+msgid "gui.style_editor.save"
+msgstr "Save theme file"
+
+msgid "gui.style_editor.save_as"
+msgstr "Save As…"
+
+msgid "gui.style_editor.save_as_title"
+msgstr "Save as new theme"
+
+msgid "gui.style_editor.save_failed_body"
+msgstr "The theme could not be applied."
+
+msgid "gui.style_editor.save_failed_title"
+msgstr "Save failed"
+
+msgid "gui.style_editor.scaled"
+msgstr "Scaled"
+
+msgid "gui.style_editor.search"
+msgstr "Search parameters"
+
+msgid "gui.style_editor.search_placeholder"
+msgstr "Filter by name or path"
+
+msgid "gui.style_editor.section.basic"
+msgstr "Basic Information"
+
+msgid "gui.style_editor.section.buildings"
+msgstr "Buildings"
+
+msgid "gui.style_editor.section.built_area"
+msgstr "Built-up Area"
+
+msgid "gui.style_editor.section.canvas"
+msgstr "Canvas"
+
+msgid "gui.style_editor.section.district"
+msgstr "Districts"
+
+msgid "gui.style_editor.section.forest"
+msgstr "Forest"
+
+msgid "gui.style_editor.section.labels"
+msgstr "Labels / Text"
+
+msgid "gui.style_editor.section.land_use"
+msgstr "Land Use"
+
+msgid "gui.style_editor.section.poi_icons"
+msgstr "POI Markers"
+
+msgid "gui.style_editor.section.procedural_objects"
+msgstr "Procedural Objects"
+
+msgid "gui.style_editor.section.railway"
+msgstr "Railway"
+
+msgid "gui.style_editor.section.roads"
+msgstr "Roads"
+
+msgid "gui.style_editor.section.terrain"
+msgstr "Terrain"
+
+msgid "gui.style_editor.section.transports"
+msgstr "Transit Lines"
+
+msgid "gui.style_editor.section.water"
+msgstr "Water"
+
+msgid "gui.style_editor.section.watermark"
+msgstr "Watermark"
+
+msgid "gui.style_editor.section.zone"
+msgstr "Zones"
+
+msgid "gui.style_editor.status.auto_paused"
+msgstr "Auto preview paused. Click “Refresh preview” to render."
+
+msgid "gui.style_editor.status.modified"
+msgstr "Modified"
+
+msgid "gui.style_editor.status.rendering"
+msgstr "Generating preview…"
+
+msgid "gui.style_editor.status.saved"
+msgstr "Saved"
+
+msgid "gui.style_editor.status.updated"
+msgstr "Preview updated"
+
+msgid "gui.style_editor.status.waiting"
+msgstr "Waiting for preview"
+
+msgid "gui.style_editor.title"
+msgstr "Theme editor"
+
+msgid "gui.style_editor.undo"
+msgstr "Undo"
+
+msgid "gui.style_editor.unit.alpha255"
+msgstr "(0-255)"
+
+msgid "gui.style_editor.unit.count"
+msgstr "items"
+
+msgid "gui.style_editor.unit.degree"
+msgstr "°"
+
+msgid "gui.style_editor.unit.meter"
+msgstr "m"
+
+msgid "gui.style_editor.unit.meter_to_pixel"
+msgstr "m→px"
+
+msgid "gui.style_editor.unit.priority"
+msgstr "Priority"
+
+msgid "gui.style_editor.unit.px"
+msgstr "px"
+
+msgid "gui.style_editor.unit.ratio"
+msgstr "×"
+
+msgid "gui.style_editor.unit.samples"
+msgstr "samples"
+
+msgid "gui.style_editor.unsaved_body"
+msgstr "This theme has unsaved changes. Save before closing?"
+
+msgid "gui.style_editor.unsaved_title"
+msgstr "Unsaved changes"
+
+msgid "gui.style_editor.value.base"
+msgstr "Base categories"
+
+msgid "gui.style_editor.value.continuous"
+msgstr "Continuous gradient"
+
+msgid "gui.style_editor.value.detailed"
+msgstr "Detailed categories"
+
+msgid "gui.style_editor.value.left_bottom"
+msgstr "Bottom left"
+
+msgid "gui.style_editor.value.left_top"
+msgstr "Top left"
+
+msgid "gui.style_editor.value.poi"
+msgstr "POI categories"
+
+msgid "gui.style_editor.value.right_bottom"
+msgstr "Bottom right"
+
+msgid "gui.style_editor.value.right_top"
+msgstr "Top right"
+
+msgid "gui.style_editor.value.standard"
+msgstr "Standard"
+
+msgid "gui.style_editor.value.stepped"
+msgstr "Stepped colors"
+
+msgid "gui.style_editor.value.uniform"
+msgstr "Uniform fill"
+
+msgid "gui.style_editor.view_label"
+msgstr "Scene"
+
+msgid "gui.task.preview"
+msgstr "Preview"
+
+msgid "gui.task.transit"
+msgstr "Transit View"
+
+msgid "gui.terrain_relief.unit.degree"
+msgstr "°"
+
+msgid "gui.theme.choice.amap"
+msgstr "Bright Map"
+
+msgid "gui.theme.choice.apple_maps"
+msgstr "Minimal Modern"
+
+msgid "gui.theme.choice.dark"
+msgstr "Dark Style"
+
+msgid "gui.theme.choice.google"
+msgstr "Warm Natural"
+
+msgid "gui.theme.choice.vintage"
+msgstr "Vintage Style"
+
+msgid "gui.theme.switch.tip"
+msgstr "Switch theme: {name}"
+
+msgid "gui.title.toolbar"
+msgstr "CSLModernMap"
+
+msgid "gui.title.window"
+msgstr "CSLModernMap"
+
+msgid "gui.tools.clear_cache"
+msgstr "Free memory cache"
+
+msgid "gui.tools.clear_cache.tip"
+msgstr ""
+"Closes the background render processes and clears the parse cache to free memory. The next city "
+"load takes longer because everything is parsed again."
+
+msgid "gui.tools.copy_image"
+msgstr "Copy Image"
+
+msgid "gui.tools.diagnostics.tip"
+msgstr "Load status, error messages and timings for the save, preview and transport data."
+
+msgid "gui.tools.layers.tip"
+msgstr "Choose what to draw and tune the parameters of each layer."
+
+msgid "gui.tools.lines_layer.tip"
+msgstr "Tick a line to show it. Once a line is selected, style changes apply to that line only."
+
+msgid "gui.tools.merge_settings.tip"
+msgstr "Merge switches and merge distances for buildings, same-facility places and transit stops."
+
+msgid "gui.tools.metro"
+msgstr "Metro Schematic"
+
+msgid "gui.tools.metro.short"
+msgstr ""
+"Metro\n"
+"Schematic"
+
+msgid "gui.tools.metro_editor.tip"
+msgstr ""
+"Opens the metro schematic editor: drag stops, set interchange stations and shared segments; the "
+"map is redrawn when you confirm."
+
+msgid "gui.tools.poi_editor"
+msgstr "Place icon mapping"
+
+msgid "gui.tools.poi_editor.tip"
+msgstr "Assign a place icon to each in-game building to control how it appears on the map."
+
+msgid "gui.tools.refresh.tip"
+msgstr ""
+"Regenerates the centre preview. It usually refreshes by itself after layer or style changes; use "
+"this when nothing happens for a while."
+
+msgid "gui.tools.select_short"
+msgstr "Select"
+
+msgid "gui.tools.theme.tip"
+msgstr ""
+"Adjust colours, line widths, text and other map styling item by item, with a live preview on the "
+"right."
+
+msgid "gui.tools.transit"
+msgstr "Transit View"
+
+msgid "gui.tools.transit.short"
+msgstr ""
+"Transit\n"
+"View"
+
+msgid "gui.transit.ann.credit"
+msgstr "Credit"
+
+msgid "gui.transit.ann.data_notice"
+msgstr "Data notice"
+
+msgid "gui.transit.ann.disclaimer"
+msgstr "Disclaimer"
+
+msgid "gui.transit.ann.generated_at"
+msgstr "Generated time"
+
+msgid "gui.transit.ann.north_arrow"
+msgstr "North indicator (up = north)"
+
+msgid "gui.transit.ann.scale_info"
+msgstr "Scale info"
+
+msgid "gui.transit.annotations"
+msgstr "Annotations"
+
+msgid "gui.transit.back_to_line_select"
+msgstr "Back to line selection"
+
+msgid "gui.transit.clear_line_selection"
+msgstr "Clear line selection"
+
+msgid "gui.transit.edit_file"
+msgstr "Metro edit overlay"
+
+msgid "gui.transit.edit_line_style"
+msgstr "Edit line style"
+
+msgid "gui.transit.facilities"
+msgstr "Connection facilities"
+
+msgid "gui.transit.layout_draft"
+msgstr "Geographic draft: layout needs review; crossings are not transfers"
+
+msgid "gui.transit.layout_fallback"
+msgstr "Using an alternate layout; all lines and stations retained"
+
+msgid "gui.transit.legend_enabled"
+msgstr "Show legend"
+
+msgid "gui.transit.legend_size"
+msgstr "Legend size"
+
+msgid "gui.transit.line_select_hint"
+msgstr ""
+"The checkbox controls whether the line is shown; once a line is selected, the style settings "
+"below apply to that line only."
+
+msgid "gui.transit.line_select_title"
+msgstr "Line selection"
+
+msgid "gui.transit.merge_stations"
+msgstr "Merge stops"
+
+msgid "gui.transit.no_lines"
+msgstr "This save has no public transport lines. Please open another save."
+
+msgid "gui.transit.no_lines_selected"
+msgstr "No routes selected. Select at least one route first."
+
+msgid "gui.transit.no_transport"
+msgstr "No public transport lines found in this save"
+
+msgid "gui.transit.preview"
+msgstr "Preview"
+
+msgid "gui.transit.preview_btn"
+msgstr "Preview"
+
+msgid "gui.transit.result_broken"
+msgstr "The transit map result cannot be shown."
+
+msgid "gui.transit.result_empty"
+msgstr ""
+"Not generated yet.\n"
+"\n"
+"Click “{button}” above to start."
+
+msgid "gui.transit.result_note"
+msgstr ""
+"The transit map is generated in one pass from the current settings. After changing the lines or "
+"line style, click “{button}” above to open the export window."
+
+msgid "gui.transit.settings_title"
+msgstr "Public transport settings"
+
+msgid "gui.transit.title_enabled"
+msgstr "Show title"
+
+msgid "gui.transit.title_size"
+msgstr "Title size"
+
+msgid "gui.transit.type.Airplane"
+msgstr "Blimp"
+
+msgid "gui.transit.type.Bus"
+msgstr "Bus"
+
+msgid "gui.transit.type.CableCar"
+msgstr "Cable Car"
+
+msgid "gui.transit.type.Ferry"
+msgstr "Ferry"
+
+msgid "gui.transit.type.Helicopter"
+msgstr "Helicopter"
+
+msgid "gui.transit.type.Metro"
+msgstr "Metro"
+
+msgid "gui.transit.type.Monorail"
+msgstr "Monorail"
+
+msgid "gui.transit.type.Ship"
+msgstr "Ferry"
+
+msgid "gui.transit.type.Train"
+msgstr "Train"
+
+msgid "gui.transit.type.Tram"
+msgstr "Tram"
+
+msgid "gui.transit.type.Trolleybus"
+msgstr "Trolleybus"
+
+msgid "gui.transit.view_state.hidden"
+msgstr "lines, stops and stop names are hidden"
+
+msgid "gui.transit.view_state.synced"
+msgstr "stops and stop names follow the selection"
+
+msgid "gui.transit.view_summary"
+msgstr "Public transit view: {count} line(s) selected; {state}"
+
+msgid "gui.transit.water_unverified"
+msgstr "Water could not be verified; the schematic was generated without water."
+
+msgid "gui.transit_line.color.note"
+msgstr "Line colours come from the save; pick a line to see its colour here."
+
+msgid "gui.transit_line.default.hint"
+msgstr "No line selected; the values apply to the default line style"
+
+msgid "gui.transit_line.style.hint"
+msgstr "Line style: colour and width"
+
+msgid "gui.transit_type.Airplane"
+msgstr "Airplane"
+
+msgid "gui.transit_type.Blimp"
+msgstr "Blimp"
+
+msgid "gui.transit_type.Bus"
+msgstr "Bus"
+
+msgid "gui.transit_type.CableCar"
+msgstr "Cable car"
+
+msgid "gui.transit_type.Ferry"
+msgstr "Ferry"
+
+msgid "gui.transit_type.Helicopter"
+msgstr "Helicopter"
+
+msgid "gui.transit_type.Metro"
+msgstr "Metro"
+
+msgid "gui.transit_type.Monorail"
+msgstr "Monorail"
+
+msgid "gui.transit_type.Ship"
+msgstr "Ferry"
+
+msgid "gui.transit_type.Train"
+msgstr "Train"
+
+msgid "gui.transit_type.Tram"
+msgstr "Tram"
+
+msgid "gui.transit_type.Trolleybus"
+msgstr "Trolleybus"
+
+msgid "gui.transit_view.choose_lines"
+msgstr "Choose lines…"
+
+msgid "gui.transit_view.density.sparse"
+msgstr "Sparse tiers"
+
+msgid "gui.transit_view.density.tiered"
+msgstr "Tiered"
+
+msgid "gui.transit_view.hint.fade"
+msgstr ""
+"How much the city map is faded in the public transport view. 0% keeps the original, 100% turns it"
+" fully white; 60% is a good starting point."
+
+msgid "gui.transit_view.hint.labels"
+msgstr ""
+"Name interval is how often the line name repeats along the line; larger means sparser. Name size "
+"is the badge text size in pixels."
+
+msgid "gui.transit_view.hint.stations"
+msgstr ""
+"Station size is the dot diameter in pixels; interchanges are scaled up automatically. With Merge "
+"nearby stations on, stations closer than Merge distance share one label; this affects labels "
+"only, not the lines."
+
+msgid "gui.transit_view.independent_layers"
+msgstr "Independent layers"
+
+msgid "gui.transit_view.label_interval"
+msgstr "Name interval"
+
+msgid "gui.transit_view.layer.base_district"
+msgstr "District base map"
+
+msgid "gui.transit_view.layer.base_road"
+msgstr "Road base map"
+
+msgid "gui.transit_view.layer.base_water"
+msgstr "Water base map"
+
+msgid "gui.transit_view.layer.facilities"
+msgstr "Transit facilities"
+
+msgid "gui.transit_view.layer.facility_names"
+msgstr "Icon names"
+
+msgid "gui.transit_view.layer.line_labels"
+msgstr "Line names"
+
+msgid "gui.transit_view.layer.lines"
+msgstr "Lines"
+
+msgid "gui.transit_view.layer.stations"
+msgstr "Stations"
+
+msgid "gui.transit_view.section.view_layers"
+msgstr "View & layers"
+
+msgid "gui.tree.length"
+msgstr "Length"
+
+msgid "gui.view.city_map"
+msgstr "City map"
+
+msgid "gui.view.open_to_start"
+msgstr "Open a city save to begin"
+
+msgid "gui.viewer.unavailable"
+msgstr ""
+"The centre preview is not available\n"
+"\n"
+"{detail}"
+
+msgid "gui.workspace.view"
+msgstr "View"
+
+msgid "gui.zone.district_fallback"
+msgstr "District #{id}"
+
+msgid "gui.zone.park_fallback"
+msgstr "Zone #{id}"
+
+msgid "gui.zoom.city"
+msgstr "City"
+
+msgid "gui.zoom.district"
+msgstr "Districts"
+
+msgid "gui.zoom.region"
+msgstr "Areas"
+
+msgid "lang.en"
+msgstr "English"
+
+msgid "lang.zh-CN"
+msgstr "Chinese (Simplified)"
+
+msgid "metro.annotation.credit"
+msgstr "Cartography: CSLModernMap"
+
+msgid "metro.annotation.data_notice"
+msgstr "Stations, lines and service information reflect the exported save"
+
+msgid "metro.annotation.disclaimer"
+msgstr "Schematic only; distance and direction are not to scale"
+
+msgid "metro.annotation.generated"
+msgstr "Generated {time}"
+
+msgid "metro.annotation.north"
+msgstr "↑ North"
+
+msgid "metro.annotation.scale_adaptive"
+msgstr "Schematic: 1 grid≈{spacing}m; local ratio {low}–{high}×; strength {strength}%; canvas zoom {zoom}×"
+
+msgid "metro.annotation.scale_fixed"
+msgstr "Schematic: 1 grid≈{spacing}m; adaptive scale off; canvas zoom {zoom}×"
+
+msgid "metro.legend.airport"
+msgstr "Airport connection"
+
+msgid "metro.legend.port"
+msgstr "Passenger port"
+
+msgid "metro.legend.rail"
+msgstr "Rail interchange"
+
+msgid "metro.legend.title"
+msgstr "Line Legend"
+
+msgid "style.aa.label"
+msgstr "Smooth edges"
+
+msgid "style.building.border.label"
+msgstr "Building outline"
+
+msgid "style.building.color.label"
+msgstr "Building fill"
+
+msgid "style.building.color_mode.label"
+msgstr "Building fill mode"
+
+msgid "style.building.color_mode.value.poi"
+msgstr "Tint by place"
+
+msgid "style.building.color_mode.value.uniform"
+msgstr "Uniform color"
+
+msgid "style.building.default.label"
+msgstr "Uniform building color"
+
+msgid "style.building.poi_tint.contrast.label"
+msgstr "Place tint contrast"
+
+msgid "style.building.scheme.label"
+msgstr "Building colors"
+
+msgid "style.building.scheme.value.dark"
+msgstr "Dark gray"
+
+msgid "style.building.scheme.value.light"
+msgstr "Light gray"
+
+msgid "style.building.scheme.value.original"
+msgstr "By type"
+
+msgid "style.building.shadow.label"
+msgstr "Building shadows"
+
+msgid "style.built_area.color.label"
+msgstr "Built-up fill"
+
+msgid "style.built_area.smooth.label"
+msgstr "Outline smoothing"
+
+msgid "style.detail.label"
+msgstr "Map detail"
+
+msgid "style.detail.value.auto"
+msgstr "Automatic"
+
+msgid "style.detail.value.full"
+msgstr "Detailed"
+
+msgid "style.detail.value.simple"
+msgstr "Simple"
+
+msgid "style.district.color.label"
+msgstr "Boundary color"
+
+msgid "style.district.opacity.label"
+msgstr "Area fill"
+
+msgid "style.district.width.label"
+msgstr "Boundary width"
+
+msgid "style.edit.color.label"
+msgstr "Object color"
+
+msgid "style.edit.connected.label"
+msgstr "Keep road connections"
+
+msgid "style.edit.filter.label"
+msgstr "Select objects"
+
+msgid "style.edit.filter.value.all"
+msgstr "All objects"
+
+msgid "style.edit.filter.value.building"
+msgstr "Buildings"
+
+msgid "style.edit.filter.value.icon"
+msgstr "Place icons"
+
+msgid "style.edit.filter.value.label"
+msgstr "Text labels"
+
+msgid "style.edit.filter.value.road"
+msgstr "Roads"
+
+msgid "style.edit.lock.label"
+msgstr "Lock object"
+
+msgid "style.edit.name.label"
+msgstr "Display name"
+
+msgid "style.edit.offset_x.label"
+msgstr "Horizontal offset"
+
+msgid "style.edit.offset_y.label"
+msgstr "Vertical offset"
+
+msgid "style.edit.snap.label"
+msgstr "Snap to nearby objects"
+
+msgid "style.edit.width.label"
+msgstr "Object width"
+
+msgid "style.label.color.building.label"
+msgstr "Building text color"
+
+msgid "style.label.color.district.label"
+msgstr "District text color"
+
+msgid "style.label.color.label"
+msgstr "Text color"
+
+msgid "style.label.color.park.label"
+msgstr "Park text color"
+
+msgid "style.label.color.road.label"
+msgstr "Road text color"
+
+msgid "style.label.color.stop.label"
+msgstr "Stop text color"
+
+msgid "style.label.districts.label"
+msgstr "District names"
+
+msgid "style.label.font.building.label"
+msgstr "Building font"
+
+msgid "style.label.font.district.label"
+msgstr "District font"
+
+msgid "style.label.font.park.label"
+msgstr "Park font"
+
+msgid "style.label.font.road.label"
+msgstr "Road font"
+
+msgid "style.label.font.stop.label"
+msgstr "Stop font"
+
+msgid "style.label.outline.building.label"
+msgstr "Building text halo"
+
+msgid "style.label.outline.district.label"
+msgstr "District text halo"
+
+msgid "style.label.outline.label"
+msgstr "Text halo"
+
+msgid "style.label.outline.park.label"
+msgstr "Park text halo"
+
+msgid "style.label.outline.road.label"
+msgstr "Road text halo"
+
+msgid "style.label.outline.stop.label"
+msgstr "Stop text halo"
+
+msgid "style.label.places.label"
+msgstr "Place names"
+
+msgid "style.label.roads.label"
+msgstr "Road names"
+
+msgid "style.label.size.building.label"
+msgstr "Building text size"
+
+msgid "style.label.size.district.label"
+msgstr "District text size"
+
+msgid "style.label.size.label"
+msgstr "Text size"
+
+msgid "style.label.size.park.label"
+msgstr "Park text size"
+
+msgid "style.label.size.road.label"
+msgstr "Road text size"
+
+msgid "style.label.size.stop.label"
+msgstr "Stop text size"
+
+msgid "style.label.stroke_color.building.label"
+msgstr "Building text outline color"
+
+msgid "style.label.stroke_color.district.label"
+msgstr "District text outline color"
+
+msgid "style.label.stroke_color.park.label"
+msgstr "Functional area text outline color"
+
+msgid "style.label.stroke_color.road.label"
+msgstr "Road text outline color"
+
+msgid "style.label.stroke_color.stop.label"
+msgstr "Stop text outline color"
+
+msgid "style.label.stroke_width.building.label"
+msgstr "Building text outline width"
+
+msgid "style.label.stroke_width.district.label"
+msgstr "District text outline width"
+
+msgid "style.label.stroke_width.park.label"
+msgstr "Functional area text outline width"
+
+msgid "style.label.stroke_width.road.label"
+msgstr "Road text outline width"
+
+msgid "style.label.stroke_width.stop.label"
+msgstr "Stop text outline width"
+
+msgid "style.land_use.grid.label"
+msgstr "Show zoning grid"
+
+msgid "style.land_use.opacity.label"
+msgstr "Zoning opacity"
+
+msgid "style.metro.language.label"
+msgstr "Language"
+
+msgid "style.metro.language.value.bilingual"
+msgstr "Bilingual"
+
+msgid "style.metro.language.value.zh"
+msgstr "Chinese"
+
+msgid "style.metro.names.label"
+msgstr "Station names"
+
+msgid "style.metro.names.value.all"
+msgstr "All stations"
+
+msgid "style.metro.names.value.custom"
+msgstr "Custom names"
+
+msgid "style.metro.names.value.none"
+msgstr "Hidden"
+
+msgid "style.metro.palette.label"
+msgstr "Line palette"
+
+msgid "style.metro.palette.value.classic"
+msgstr "Classic"
+
+msgid "style.metro.palette.value.game"
+msgstr "Game colors"
+
+msgid "style.metro.palette.value.soft"
+msgstr "Soft"
+
+msgid "style.metro.title.label"
+msgstr "Map title"
+
+msgid "style.poi.density.label"
+msgstr "Density"
+
+msgid "style.poi.density.value.auto"
+msgstr "Automatic"
+
+msgid "style.poi.density.value.full"
+msgstr "More icons"
+
+msgid "style.poi.density.value.sparse"
+msgstr "Sparse"
+
+msgid "style.poi.distance.label"
+msgstr "Merge distance (m)"
+
+msgid "style.poi.font.label"
+msgstr "Place name font"
+
+msgid "style.poi.game_names.label"
+msgstr "Use game-generated building names"
+
+msgid "style.poi.merge.label"
+msgstr "Merge similar places"
+
+msgid "style.poi.name_size.label"
+msgstr "Place name size"
+
+msgid "style.poi.name_stroke.label"
+msgstr "Place name outline color"
+
+msgid "style.poi.name_stroke_ratio.label"
+msgstr "Place name outline width"
+
+msgid "style.poi.names.label"
+msgstr "Place names"
+
+msgid "style.poi.set.label"
+msgstr "Icon style"
+
+msgid "style.poi.set.value.color"
+msgstr "Color icons"
+
+msgid "style.poi.set.value.modern"
+msgstr "CSLModernMap"
+
+msgid "style.poi.set.value.modern-dark"
+msgstr "Dark"
+
+msgid "style.poi.set.value.simple"
+msgstr "Simple icons"
+
+msgid "style.poi.size.label"
+msgstr "Icon size"
+
+msgid "style.procedural_objects.border.label"
+msgstr "Show outlines"
+
+msgid "style.procedural_objects.color.label"
+msgstr "Object fill"
+
+msgid "style.quality.label"
+msgstr "Quality"
+
+msgid "style.quality.value.best"
+msgstr "Fine"
+
+msgid "style.quality.value.high"
+msgstr "High"
+
+msgid "style.quality.value.standard"
+msgstr "Standard"
+
+msgid "style.railway.color.label"
+msgstr "Track color"
+
+msgid "style.railway.sleepers.label"
+msgstr "Show sleepers"
+
+msgid "style.railway.width.label"
+msgstr "Track width"
+
+msgid "style.range.label"
+msgstr "Map extent"
+
+msgid "style.range.value.center"
+msgstr "City center"
+
+msgid "style.range.value.city"
+msgstr "Whole city"
+
+msgid "style.range.value.custom"
+msgstr "Custom…"
+
+msgid "style.range.value.selection"
+msgstr "Selection"
+
+msgid "style.road.accurate_intersections.desc"
+msgstr ""
+"Precisely calculate road overlaps, bridge and tunnel occlusion, and seams. Complex cities take "
+"longer."
+
+msgid "style.road.accurate_intersections.label"
+msgstr "Accurate intersections"
+
+msgid "style.road.border.label"
+msgstr "Road outline"
+
+msgid "style.road.bridge.label"
+msgstr "Show bridges"
+
+msgid "style.road.color.label"
+msgstr "Local roads"
+
+msgid "style.road.game_names.label"
+msgstr "Use game-generated road names"
+
+msgid "style.road.highway.label"
+msgstr "Highways"
+
+msgid "style.road.level.beautification.border.label"
+msgstr "Pedestrian & bike outline"
+
+msgid "style.road.level.beautification.fill.label"
+msgstr "Pedestrian & bike fill"
+
+msgid "style.road.level.beautification.width.label"
+msgstr "Pedestrian & bike width"
+
+msgid "style.road.level.branch.border.label"
+msgstr "Side roads outline"
+
+msgid "style.road.level.branch.fill.label"
+msgstr "Side roads fill"
+
+msgid "style.road.level.branch.width.label"
+msgstr "Side roads width"
+
+msgid "style.road.level.highway.border.label"
+msgstr "Highways outline"
+
+msgid "style.road.level.highway.fill.label"
+msgstr "Highways fill"
+
+msgid "style.road.level.highway.width.label"
+msgstr "Highways width"
+
+msgid "style.road.level.main.border.label"
+msgstr "Main roads outline"
+
+msgid "style.road.level.main.fill.label"
+msgstr "Main roads fill"
+
+msgid "style.road.level.main.width.label"
+msgstr "Main roads width"
+
+msgid "style.road.level.special.border.label"
+msgstr "Special roads outline"
+
+msgid "style.road.level.special.fill.label"
+msgstr "Special roads fill"
+
+msgid "style.road.level.special.width.label"
+msgstr "Special roads width"
+
+msgid "style.road.names.label"
+msgstr "Road names"
+
+msgid "style.road.tunnel.label"
+msgstr "Show tunnels"
+
+msgid "style.road.width.label"
+msgstr "Road width"
+
+msgid "style.rotation.label"
+msgstr "Rotation"
+
+msgid "style.rotation.value.0"
+msgstr "0°"
+
+msgid "style.rotation.value.180"
+msgstr "180°"
+
+msgid "style.rotation.value.270"
+msgstr "270°"
+
+msgid "style.rotation.value.90"
+msgstr "90°"
+
+msgid "style.size.label"
+msgstr "Image size"
+
+msgid "style.size.value.2k"
+msgstr "2K · 2048"
+
+msgid "style.size.value.4k"
+msgstr "4K · 4096"
+
+msgid "style.size.value.8k"
+msgstr "8K · 7680"
+
+msgid "style.size.value.custom"
+msgstr "Custom…"
+
+msgid "style.terrain.color.label"
+msgstr "Land color"
+
+msgid "style.terrain.forest.label"
+msgstr "Vegetation"
+
+msgid "style.terrain.mode.label"
+msgstr "Terrain style"
+
+msgid "style.terrain.mode.value.shade"
+msgstr "Elevation bands + hillshade"
+
+msgid "style.terrain.mode.value.simple"
+msgstr "Elevation bands"
+
+msgid "style.terrain.shade.label"
+msgstr "Shading"
+
+msgid "style.terrain.sun.label"
+msgstr "Light direction"
+
+msgid "style.theme.label"
+msgstr "Map theme"
+
+msgid "style.theme.value.amap"
+msgstr "Bright Map"
+
+msgid "style.theme.value.dark"
+msgstr "Dark Style"
+
+msgid "style.theme.value.google"
+msgstr "Warm Natural"
+
+msgid "style.theme.value.modern"
+msgstr "Minimal Modern"
+
+msgid "style.theme.value.paper"
+msgstr "Vintage Style"
+
+msgid "style.traffic.busy.label"
+msgstr "Congested"
+
+msgid "style.traffic.free.label"
+msgstr "Free flowing"
+
+msgid "style.traffic.slow.label"
+msgstr "Slow traffic"
+
+msgid "style.transport.distance.label"
+msgstr "Merge distance (m)"
+
+msgid "style.transport.font.label"
+msgstr "Station text"
+
+msgid "style.transport.legend.label"
+msgstr "Legend"
+
+msgid "style.transport.legend.value.bl"
+msgstr "Bottom left"
+
+msgid "style.transport.legend.value.br"
+msgstr "Bottom right"
+
+msgid "style.transport.legend.value.none"
+msgstr "Hidden"
+
+msgid "style.transport.mask.label"
+msgstr "Base map fade"
+
+msgid "style.transport.merge.label"
+msgstr "Merge nearby stops"
+
+msgid "style.transport.names.label"
+msgstr "Station names"
+
+msgid "style.transport.size.label"
+msgstr "Station size"
+
+msgid "style.transport.station_names.label"
+msgstr "Station names"
+
+msgid "style.transport.stations.label"
+msgstr "Station circles"
+
+msgid "style.transport.width.label"
+msgstr "Line width"
+
+msgid "style.view.grid.label"
+msgstr "Grid"
+
+msgid "style.view.info.label"
+msgstr "Information"
+
+msgid "style.view.rulers.label"
+msgstr "Rulers"
+
+msgid "style.view.sidebar.label"
+msgstr "Navigation"
+
+msgid "style.view.status.label"
+msgstr "Status bar"
+
+msgid "style.water.border.label"
+msgstr "Shoreline"
+
+msgid "style.water.color.label"
+msgstr "Water fill"
+
+msgid "style.water.smooth.label"
+msgstr "Smooth shoreline (export only)"
+
+msgid "style.water.width.label"
+msgstr "Shore width"
+
+msgid "style.watermark.opacity.label"
+msgstr "Watermark opacity"
+
+msgid "style.watermark.position.label"
+msgstr "Position"
+
+msgid "style.watermark.position.value.bl"
+msgstr "Bottom left"
+
+msgid "style.watermark.position.value.br"
+msgstr "Bottom right"
+
+msgid "style.watermark.text.label"
+msgstr "Watermark text"
+
+msgid "style.zone.color.label"
+msgstr "Boundary color"
+
+msgid "style.zone.opacity.label"
+msgstr "Area fill"
+
+msgid "transport.station_prefix"
+msgstr "Station"
+
+msgid "ui.guir_backend.__init__.6bea77acef"
+msgstr "Standard"
+
+msgid "ui.guir_backend._extract_city_info.ec7227d6cd"
+msgstr "Unknown city"
+
+msgid "ui.guir_backend._handler_water_smooth.6bea77acef"
+msgstr "Standard"
+
+msgid "ui.guir_backend._handler_water_smooth.f038053bed"
+msgstr "Strong"
+
+msgid "ui.guir_backend._load_persisted_state.6bea77acef"
+msgstr "Standard"
+
+msgid "ui.guir_backend._poll.28e5fa4dbd"
+msgstr "Failed to read render result"
+
+msgid "ui.guir_backend._poll.528c98ff25"
+msgstr "Render process exited unexpectedly (exit code {p0})"
+
+msgid "ui.guir_backend._poll.effd01f5d1"
+msgstr "Failed to read render result: {p0}"
+
+msgid "ui.guir_backend.check_cancel.e4267bce68"
+msgstr "PNG export cancelled"
+
+msgid "ui.guir_backend.discard_png_result.850166ad36"
+msgstr "Failed to clean up PNG temporary folder: %s"
+
+msgid "ui.guir_backend.facility_poi_catalog.0fd9e19000"
+msgstr "Zoo"
+
+msgid "ui.guir_backend.facility_poi_catalog.163ee5a292"
+msgstr "Cargo port"
+
+msgid "ui.guir_backend.facility_poi_catalog.4513bba543"
+msgstr "University"
+
+msgid "ui.guir_backend.facility_poi_catalog.6a5347ac5f"
+msgstr "Airport"
+
+msgid "ui.guir_backend.facility_poi_catalog.82be57d9af"
+msgstr "Amusement park"
+
+msgid "ui.guir_backend.facility_poi_catalog.a0cc394994"
+msgstr "Passenger port"
+
+msgid "ui.guir_backend.facility_poi_catalog.b2c3ea6ae5"
+msgstr "Nature reserve"
+
+msgid "ui.guir_backend.facility_poi_catalog.cf3e1046a3"
+msgstr "Campus"
+
+msgid "ui.guir_backend.facility_poi_catalog.e852dca995"
+msgstr "Park"
+
+msgid "ui.guir_backend.field_value.6bea77acef"
+msgstr "Standard"
+
+msgid "ui.guir_backend.progress.ab09202a2b"
+msgstr "Metro diagram generation cancelled"
+
+msgid "ui.guir_backend.region_catalog.06f15683dd"
+msgstr "Zones"
+
+msgid "ui.guir_backend.region_catalog.4f56683e73"
+msgstr "Districts"
+
+msgid "ui.object_inspector.catalog.06f15683dd"
+msgstr "Functional area"
+
+msgid "ui.object_inspector.catalog.0711877f34"
+msgstr "Bus"
+
+msgid "ui.object_inspector.catalog.109688e695"
+msgstr "Local roads"
+
+msgid "ui.object_inspector.catalog.10b329e9a6"
+msgstr "Railway track"
+
+msgid "ui.object_inspector.catalog.170c9b910c"
+msgstr "Tram"
+
+msgid "ui.object_inspector.catalog.1f6835c0d8"
+msgstr "Hospital"
+
+msgid "ui.object_inspector.catalog.2a8548b84f"
+msgstr "Residential"
+
+msgid "ui.object_inspector.catalog.341394deda"
+msgstr "Helicopter"
+
+msgid "ui.object_inspector.catalog.358023d968"
+msgstr "Trolleybus"
+
+msgid "ui.object_inspector.catalog.35cde54ceb"
+msgstr "Landscape paths"
+
+msgid "ui.object_inspector.catalog.3cb53b9c23"
+msgstr "Park area"
+
+msgid "ui.object_inspector.catalog.3fb4ae5556"
+msgstr "Transit line"
+
+msgid "ui.object_inspector.catalog.4513bba543"
+msgstr "University"
+
+msgid "ui.object_inspector.catalog.4a91350aa5"
+msgstr "Fire station"
+
+msgid "ui.object_inspector.catalog.4f56683e73"
+msgstr "District"
+
+msgid "ui.object_inspector.catalog.534c553126"
+msgstr "Highways"
+
+msgid "ui.object_inspector.catalog.55d2d31f2a"
+msgstr "Tunnel"
+
+msgid "ui.object_inspector.catalog.5b46860a8e"
+msgstr "Building"
+
+msgid "ui.object_inspector.catalog.666dd3886c"
+msgstr "Facilities"
+
+msgid "ui.object_inspector.catalog.674ddf7793"
+msgstr "Fire station"
+
+msgid "ui.object_inspector.catalog.6a5347ac5f"
+msgstr "Airport"
+
+msgid "ui.object_inspector.catalog.70b41c7440"
+msgstr "Cable car"
+
+msgid "ui.object_inspector.catalog.7823428e45"
+msgstr "Office"
+
+msgid "ui.object_inspector.catalog.7f2e47390d"
+msgstr "Airplane"
+
+msgid "ui.object_inspector.catalog.7f48b47270"
+msgstr "Ferry"
+
+msgid "ui.object_inspector.catalog.85155a34a5"
+msgstr "Ordinary places"
+
+msgid "ui.object_inspector.catalog.85f71ec8da"
+msgstr "Main roads"
+
+msgid "ui.object_inspector.catalog.92f0b57fd4"
+msgstr "Ship"
+
+msgid "ui.object_inspector.catalog.97492a0e5d"
+msgstr "Train"
+
+msgid "ui.object_inspector.catalog.9fc7d0cf1d"
+msgstr "Place icon"
+
+msgid "ui.object_inspector.catalog.a44c7ba211"
+msgstr "Road"
+
+msgid "ui.object_inspector.catalog.a59fe62777"
+msgstr "Station"
+
+msgid "ui.object_inspector.catalog.af5a323677"
+msgstr "Industrial"
+
+msgid "ui.object_inspector.catalog.b1c0532855"
+msgstr "Commercial"
+
+msgid "ui.object_inspector.catalog.b76daf0239"
+msgstr "Police"
+
+msgid "ui.object_inspector.catalog.b8466cd555"
+msgstr "Metro"
+
+msgid "ui.object_inspector.catalog.c9a0955518"
+msgstr "Ground"
+
+msgid "ui.object_inspector.catalog.cf7a18690f"
+msgstr "Monorail"
+
+msgid "ui.object_inspector.catalog.d2909f1647"
+msgstr "Other"
+
+msgid "ui.object_inspector.catalog.dc6e2aafeb"
+msgstr "School"
+
+msgid "ui.object_inspector.catalog.e852dca995"
+msgstr "Park"
+
+msgid "ui.object_inspector.catalog.ed867ccbf0"
+msgstr "Transit station"
+
+msgid "ui.object_inspector.catalog.ede0519a4c"
+msgstr "Special roads"
+
+msgid "ui.object_inspector.catalog.f543a15123"
+msgstr "Elevated"
+
+msgid "ui.object_inspector.catalog.f7ccd76bf8"
+msgstr "Transit places"
+
+msgid "ui.object_inspector.describe.047fa9d803"
+msgstr "All-road appearance"
+
+msgid "ui.object_inspector.describe.0af02ac692"
+msgstr "Layout and merging (preview)"
+
+msgid "ui.object_inspector.describe.0af2dc2f96"
+msgstr "Stops in current model"
+
+msgid "ui.object_inspector.describe.0c70665b6e"
+msgstr "No"
+
+msgid "ui.object_inspector.describe.145219e726"
+msgstr "Hidden"
+
+msgid "ui.object_inspector.describe.1712bbea62"
+msgstr "Applies to all buildings."
+
+msgid "ui.object_inspector.describe.18202c5a9d"
+msgstr "Track type"
+
+msgid "ui.object_inspector.describe.198dd9da2d"
+msgstr "Name eligible"
+
+msgid "ui.object_inspector.describe.1a1ef51c8d"
+msgstr "Use / facility category"
+
+msgid "ui.object_inspector.describe.1c786295e3"
+msgstr "Density and overlap apply to all preview places; group merging applies to "
+
+msgid "ui.object_inspector.describe.1d4da9cc30"
+msgstr "Buildings in facility"
+
+msgid "ui.object_inspector.describe.1efb861668"
+msgstr "Line appearance"
+
+msgid "ui.object_inspector.describe.23fb29e3a5"
+msgstr "Segment count"
+
+msgid "ui.object_inspector.describe.29941bc99d"
+msgstr "Selected segment length"
+
+msgid "ui.object_inspector.describe.2abba61725"
+msgstr "Track color"
+
+msgid "ui.object_inspector.describe.2b42dd52ee"
+msgstr "Building appearance"
+
+msgid "ui.object_inspector.describe.2cb3f5a066"
+msgstr "Track appearance"
+
+msgid "ui.object_inspector.describe.34cf4e5507"
+msgstr "Missing icon resource or unregistered type. Check place mapping."
+
+msgid "ui.object_inspector.describe.395ee8e80b"
+msgstr "Sparse"
+
+msgid "ui.object_inspector.describe.3c18993515"
+msgstr "Enable merging (all places)"
+
+msgid "ui.object_inspector.describe.3fbdb548d1"
+msgstr "Name size (all places)"
+
+msgid "ui.object_inspector.describe.4247a9c3ad"
+msgstr "Transit place visibility"
+
+msgid "ui.object_inspector.describe.42a2766d08"
+msgstr "Track decoration color"
+
+msgid "ui.object_inspector.describe.4317d9a490"
+msgstr "Unregistered type"
+
+msgid "ui.object_inspector.describe.43f6aa3376"
+msgstr "Fallback color"
+
+msgid "ui.object_inspector.describe.44c9e48874"
+msgstr "Road form"
+
+msgid "ui.object_inspector.describe.492aa3d50c"
+msgstr "Function"
+
+msgid "ui.object_inspector.describe.4a0788a10b"
+msgstr "Display priority"
+
+msgid "ui.object_inspector.describe.4c93e617e4"
+msgstr "Applies to all roads."
+
+msgid "ui.object_inspector.describe.4d99c976be"
+msgstr "Available"
+
+msgid "ui.object_inspector.describe.4ff1d894c3"
+msgstr "Current use color"
+
+msgid "ui.object_inspector.describe.54f5431ad3"
+msgstr "Fill color"
+
+msgid "ui.object_inspector.describe.57baf59886"
+msgstr "Serving lines"
+
+msgid "ui.object_inspector.describe.5807d1dc81"
+msgstr "All-route width"
+
+msgid "ui.object_inspector.describe.5910b70e80"
+msgstr "Name size (all attached place names)"
+
+msgid "ui.object_inspector.describe.5d2232b103"
+msgstr "Border and fill"
+
+msgid "ui.object_inspector.describe.5e3f198ad9"
+msgstr "Border color"
+
+msgid "ui.object_inspector.describe.5e85b1c73c"
+msgstr "Icon type"
+
+msgid "ui.object_inspector.describe.614eb9e832"
+msgstr "Preview route length"
+
+msgid "ui.object_inspector.describe.638668bac9"
+msgstr "Dense"
+
+msgid "ui.object_inspector.describe.67bee6acfc"
+msgstr "Unnamed"
+
+msgid "ui.object_inspector.describe.6bea77acef"
+msgstr "Standard"
+
+msgid "ui.object_inspector.describe.6efd17aac1"
+msgstr "Visibility group"
+
+msgid "ui.object_inspector.describe.6fb3f1e4e4"
+msgstr "Fill opacity"
+
+msgid "ui.object_inspector.describe.711617512b"
+msgstr "Uniform fill"
+
+msgid "ui.object_inspector.describe.72c55cb5e7"
+msgstr "Building use"
+
+msgid "ui.object_inspector.describe.747c2ffdcb"
+msgstr "Connection surface or unknown class: edit the complete road theme."
+
+msgid "ui.object_inspector.describe.756762e293"
+msgstr "Not provided"
+
+msgid "ui.object_inspector.describe.77007520ba"
+msgstr "Line style applies to this transport mode; label settings apply to all routes in this view."
+
+msgid "ui.object_inspector.describe.7aeb540769"
+msgstr "Icon size"
+
+msgid "ui.object_inspector.describe.81a3bdaa03"
+msgstr "Physical width"
+
+msgid "ui.object_inspector.describe.836cbed510"
+msgstr "Color mode"
+
+msgid "ui.object_inspector.describe.86a200764b"
+msgstr "Applies to all functional areas."
+
+msgid "ui.object_inspector.describe.876c0c149d"
+msgstr "Source area count"
+
+msgid "ui.object_inspector.describe.8b301292a2"
+msgstr "Line name size"
+
+msgid "ui.object_inspector.describe.9035e1788e"
+msgstr "Density filtering"
+
+msgid "ui.object_inspector.describe.9659c81207"
+msgstr "Uniform color"
+
+msgid "ui.object_inspector.describe.995f11ecdc"
+msgstr "Serving routes"
+
+msgid "ui.object_inspector.describe.9a6361d604"
+msgstr "Minimum display width"
+
+msgid "ui.object_inspector.describe.9c41525ce4"
+msgstr "Object role"
+
+msgid "ui.object_inspector.describe.9f1de8eaf7"
+msgstr "Facility roots"
+
+msgid "ui.object_inspector.describe.9fe74bef39"
+msgstr ". PNG profiles are unchanged."
+
+msgid "ui.object_inspector.describe.a54fa2904e"
+msgstr "Size and appearance apply to all places; the name switch affects the named group."
+
+msgid "ui.object_inspector.describe.a76488cf50"
+msgstr "Line color (source data)"
+
+msgid "ui.object_inspector.describe.a8a9631df4"
+msgstr "Show line names"
+
+msgid "ui.object_inspector.describe.a8e3637209"
+msgstr "Border width"
+
+msgid "ui.object_inspector.describe.a9f595ad22"
+msgstr "Allow merging"
+
+msgid "ui.object_inspector.describe.aa3955f916"
+msgstr "Place density"
+
+msgid "ui.object_inspector.describe.abd181271c"
+msgstr "Mean height (m)"
+
+msgid "ui.object_inspector.describe.ac0bf8c3b7"
+msgstr "Applies to all transit places."
+
+msgid "ui.object_inspector.describe.ac41b1adda"
+msgstr "Station-name outline and font"
+
+msgid "ui.object_inspector.describe.ae299c3aef"
+msgstr "Applies to every road using this style; the selected road is the reference."
+
+msgid "ui.object_inspector.describe.b05f246ac9"
+msgstr "Applies to all stations in this view."
+
+msgid "ui.object_inspector.describe.b1349d2cb4"
+msgstr "Facility level"
+
+msgid "ui.object_inspector.describe.b5141d3d19"
+msgstr "Yes"
+
+msgid "ui.object_inspector.describe.b6d3e078db"
+msgstr "No style controls are available for this object."
+
+msgid "ui.object_inspector.describe.b842da00b0"
+msgstr "Missing resource"
+
+msgid "ui.object_inspector.describe.b87011f842"
+msgstr "Show line names (all routes)"
+
+msgid "ui.object_inspector.describe.b874b614a7"
+msgstr "Selected chain length"
+
+msgid "ui.object_inspector.describe.bc8600a16e"
+msgstr "Icon and name"
+
+msgid "ui.object_inspector.describe.bf21786b6a"
+msgstr "Name outline and font"
+
+msgid "ui.object_inspector.describe.c122178ce4"
+msgstr "Transport mode"
+
+msgid "ui.object_inspector.describe.c2ced2decf"
+msgstr "Group merge distance"
+
+msgid "ui.object_inspector.describe.c3b7111911"
+msgstr "Member buildings"
+
+msgid "ui.object_inspector.describe.c3cdf137f2"
+msgstr "Facility names may use the place-icon channel; building labels do not change attached place names."
+
+msgid "ui.object_inspector.describe.c6c54bf846"
+msgstr "Applies to all attached place names."
+
+msgid "ui.object_inspector.describe.c8a2d11ead"
+msgstr "Icon style (all places)"
+
+msgid "ui.object_inspector.describe.c97044edbe"
+msgstr "Mean physical width"
+
+msgid "ui.object_inspector.describe.cfcef8fa7d"
+msgstr "Route geometry source"
+
+msgid "ui.object_inspector.describe.d211657dd1"
+msgstr "Station size"
+
+msgid "ui.object_inspector.describe.dcbc3f5adb"
+msgstr "Color source"
+
+msgid "ui.object_inspector.describe.df6859de66"
+msgstr "Only for buildings without a matching use color."
+
+msgid "ui.object_inspector.describe.e1cfcbb06d"
+msgstr "Pending"
+
+msgid "ui.object_inspector.describe.e211926d3a"
+msgstr "View line width"
+
+msgid "ui.object_inspector.describe.e3b04e065c"
+msgstr "Group visibility"
+
+msgid "ui.object_inspector.describe.e4a79af431"
+msgstr "Route "
+
+msgid "ui.object_inspector.describe.e4f5889abd"
+msgstr "Mode line width"
+
+msgid "ui.object_inspector.describe.e522761331"
+msgstr "Name source"
+
+msgid "ui.object_inspector.describe.e55e6f2bac"
+msgstr "Color strength"
+
+msgid "ui.object_inspector.describe.e58ee3c2db"
+msgstr "Display width"
+
+msgid "ui.object_inspector.describe.e5bd2eef37"
+msgstr "Station and name"
+
+msgid "ui.object_inspector.describe.ea3973e49b"
+msgstr "Icon status"
+
+msgid "ui.object_inspector.describe.ead247ca08"
+msgstr "Avoid icon/name overlap"
+
+msgid "ui.object_inspector.describe.eccafde326"
+msgstr "Station segment"
+
+msgid "ui.object_inspector.describe.ef34af6177"
+msgstr "Station segment width"
+
+msgid "ui.object_inspector.describe.efc9ada2bd"
+msgstr "Map object"
+
+msgid "ui.object_inspector.describe.f2c5395498"
+msgstr "Station names use the attached place-name channel; applies to all attached place names."
+
+msgid "ui.object_inspector.describe.f38d46b4f4"
+msgstr "Facility use color"
+
+msgid "ui.object_inspector.describe.f4017deede"
+msgstr "Applies to base-map tracks of this type."
+
+msgid "ui.object_inspector.describe.f7ec5c27de"
+msgstr "This icon group is hidden. Re-enable it in Group visibility."
+
+msgid "ui.object_inspector.describe.f8ddaae464"
+msgstr "Area type"
+
+msgid "ui.object_inspector.describe.f8febafe49"
+msgstr "Place category"
+
+msgid "ui.object_inspector.describe.fa715dea69"
+msgstr "Icon resource status"
+
+msgid "ui.object_inspector.describe.fbd529d0c7"
+msgstr "Applies to all districts."
+
+msgid "ui.object_inspector.describe.fbe0108a42"
+msgstr "Fallback fill"
+
+msgid "ui.object_inspector.describe.fbe666f1e0"
+msgstr "Road class"
+
+msgid "ui.object_inspector.fact.0c70665b6e"
+msgstr "No"
+
+msgid "ui.object_inspector.fact.b5141d3d19"
+msgstr "Yes"
+
+msgid "ui.object_inspector.names.078838da42"
+msgstr "Font"
+
+msgid "ui.object_inspector.names.2f66a7f608"
+msgstr "Applies to all names in this label channel."
+
+msgid "ui.object_inspector.names.3cc1ba50ed"
+msgstr "Text outline"
+
+msgid "ui.object_inspector.names.a98585871c"
+msgstr "Show names"
+
+msgid "ui.object_inspector.names.c86c040c4c"
+msgstr "Name appearance"
+
+msgid "ui.object_inspector.names.f21ef4aba5"
+msgstr "Text color"
+
+msgid "ui.object_inspector.names.f71561b5af"
+msgstr "Font size"
+
+msgid "ui.object_inspector.visibility_field.39e0705286"
+msgstr "Show icons"
+
+msgid "ui.object_inspector.visibility_field.a98585871c"
+msgstr "Show names"
+
+#: csmodernmap/object_inspector.py
+msgid "ui.poi_density.extremely_dense"
+msgstr "Very many"
+
+#: csmodernmap/object_inspector.py
+msgid "ui.poi_density.extremely_sparse"
+msgstr "Very few"
+
+#: csmodernmap/object_inspector.py
+msgid "ui.poi_density.very_dense"
+msgstr "Many"
+
+#: csmodernmap/object_inspector.py
+msgid "ui.poi_density.very_sparse"
+msgstr "Few"
+
+msgid "ui.web_export_v2._payload_from_bundle.cea7853717"
+msgstr "Bundle scene data"
+
+msgid "ui.web_export_v2._viewer_assets.1669cd8574"
+msgstr ""
+"Viewer frontend not found: {p0}\n"
+"Run tools/build_preview_viewer.py first"
+
+msgid "ui.web_export_v2._viewer_assets.28040ea0ef"
+msgstr "No index-*.js / index-*.css asset references found in {p0}"
+
+msgid "ui.web_export_v2._viewer_assets.3c4c241c6f"
+msgstr ""
+"Viewer assets are missing: {p0}\n"
+"Run tools/build_preview_viewer.py again"
+
+msgid "ui.web_export_v2.build_scene_payload.6084dd902b"
+msgstr "Preparing scene compilation"
+
+msgid "ui.web_export_v2.export_web.29024b3e04"
+msgstr "Prepare web export"
+
+msgid "ui.web_export_v2.export_web.b99e3597ca"
+msgstr "Web map export complete"
+
+msgid "ui.web_export_v2.export_web.eae840aba7"
+msgstr "Bundle as a single HTML file…"
+
+msgid "ui.web_export_v2.render_export_html.0fe5c970b8"
+msgstr "CSL City Map"
+
+msgid "ui.web_export_v2.render_export_html.cee2179528"
+msgstr "CSL City Map · {p0}"
+
+msgid "ui.winui_engine._capture_output_snapshot.9e411d9c27"
+msgstr "Enter a valid whole number of pixels for the long edge."
+
+msgid "ui.winui_engine._export_completed.bcd13e5ccc"
+msgstr "The city changed; the export result for the previous document was discarded"
+
+msgid "ui.winui_engine._render_done.0cdaea5eb6"
+msgstr "Metro preview save failed: {p0}"
+
+msgid "ui.winui_engine._render_done.bcd13e5ccc"
+msgstr "The city changed; the export result for the previous document was discarded"
+
+msgid "ui.winui_engine._require_document_epoch.8e11490207"
+msgstr "The city has changed. Refresh this page and try again."
+
+msgid "ui.winui_engine._start_external_project_export.ae3f8c8a07"
+msgstr "Open a city first"
+
+msgid "ui.winui_engine._start_external_project_export.fd1e2dca12"
+msgstr "Select an export folder"
+
+msgid "ui.winui_engine.dispatch.19bb4eb8a9"
+msgstr "Writing to the external project cannot be cancelled once started"
+
+msgid "ui.winui_engine.dispatch.43f245906a"
+msgstr "The theme has changed. Reopen the editor."
+
+msgid "ui.winui_engine.dispatch.5f67276ac1"
+msgstr "Nothing to undo or redo"
+
+msgid "ui.winui_engine.dispatch.69d8708938"
+msgstr "Theme settings were changed on another page. Reload them before applying."
+
+msgid "ui.winui_engine.dispatch.6f6dff2c57"
+msgstr "POI mapping was changed externally. Reload it."
+
+msgid "ui.winui_engine.dispatch.73db60d7fc"
+msgstr "Theme file must be YAML"
+
+msgid "ui.winui_engine.dispatch.7ddd21b8bf"
+msgstr "The current theme has changed. Reopen settings."
+
+msgid "ui.winui_engine.dispatch.80bd243ed5"
+msgstr "Settings have changed. Refresh object properties and try again."
+
+msgid "ui.winui_engine.dispatch.837a5ba76c"
+msgstr "Could not save theme"
+
+msgid "ui.winui_engine.dispatch.8d612deac2"
+msgstr "Settings were changed by another operation. The old change cannot be undone."
+
+msgid "ui.winui_engine.dispatch.96b57316e5"
+msgstr "The master text and icon toggle must be a Boolean value"
+
+msgid "ui.winui_engine.dispatch.9c2202a4e4"
+msgstr "Select at least one metro diagram line"
+
+msgid "ui.winui_engine.dispatch.ae3f8c8a07"
+msgstr "Open a city first"
+
+msgid "ui.winui_engine.dispatch.b3dbf7b21a"
+msgstr "The POI editing session has expired. Reopen it."
+
+msgid "ui.winui_engine.dispatch.c2952a0254"
+msgstr "Failed to set metro line outline"
+
+msgid "ui.winui_engine.dispatch.c9a482b2c3"
+msgstr "Unknown text or icon setting"
+
+msgid "ui.winui_engine.dispatch.dd98f132f7"
+msgstr "Unknown transit display setting"
+
+msgid "ui.winui_engine.dispatch.dfeec4838c"
+msgstr "Export file writing is in progress"
+
+msgid "ui.winui_engine.dispatch.e668d01e2c"
+msgstr "Writing PNG to disk. Please wait."
+
+msgid "ui.winui_engine.dispatch.e8e08b0f61"
+msgstr "Cancelling…"
+
+msgid "ui.winui_engine.dispatch.f7297a7ae6"
+msgstr "Invalid setting: {p0}"
+
+msgid "ui.winui_engine.dispatch.fd1e2dca12"
+msgstr "Select an export folder"
+
+msgid "ui.winui_engine.queue_theme_preview.ae3f8c8a07"
+msgstr "Open a city first"
+
+msgid "ui.winui_engine.theme_text_sample.c1fff780e0"
+msgstr "People’s Square · Central Avenue"
+
+msgid "ui.winui_engine.worker.bcd13e5ccc"
+msgstr "The city changed; the export result for the previous document was discarded"
+
+msgid "ui.winui_workflows.dispatch.155590bba2"
+msgstr "Transfer gallery count or size is out of range"
+
+msgid "ui.winui_workflows.dispatch.2712805913"
+msgstr "Could not save interface language"
+
+msgid "watermark.save_timestamp"
+msgstr "Save timestamp"
+
+msgid "watermark.traffic_at"
+msgstr "Traffic at"

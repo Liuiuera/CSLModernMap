@@ -1,0 +1,5164 @@
+# Japanese translations for CSLModernMap.
+# Copyright (C) 2026 CSLModernMap contributors
+# This file is distributed under the same license as the CSLModernMap project.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: CSLModernMap 6.7.1\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-10-13 17:20+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: CSLModernMap contributors\n"
+"Language: ja\n"
+"Language-Team: ja\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "gui.about.body"
+msgstr ""
+"CSLModernMap レンダラー v{version}\n"
+"作者：Shaotang Shaoxiancao\n"
+"© 2026 Shaotang Shaoxiancao. All rights reserved\n"
+"\n"
+"Cities: Skylines のセーブデータ（.mmap / .cslmap）から現代風のマップを描画します。\n"
+"\n"
+"クレジット：\n"
+"  · CSLMapView（kkshoko）— エクスポート形式のベース\n"
+"  · TM:PE（Traffic Manager President Edition）— 交通データ\n"
+"  · Python / Pillow / numpy / PyYAML / Nuitka などのオープンソースプロジェクト\n"
+"\n"
+"一部のアイコン素材は第三者の提供によるもので、各権利者に帰属します。"
+
+msgid "gui.about.close"
+msgstr "閉じる"
+
+msgid "gui.about.copy_info"
+msgstr "バージョン情報をコピー"
+
+msgid "gui.about.mode_bundled"
+msgstr "同梱版"
+
+msgid "gui.about.mode_source"
+msgstr "ソース"
+
+msgid "gui.about.title"
+msgstr "概要"
+
+msgid "gui.action.about"
+msgstr "CSLModernMap について"
+
+msgid "gui.action.clear_selection"
+msgstr "選択をクリア"
+
+msgid "gui.action.close_metro"
+msgstr "地下鉄路線図を閉じる"
+
+msgid "gui.action.close_transit"
+msgstr "公共交通ビューを閉じる"
+
+msgid "gui.action.export"
+msgstr "マップをエクスポート…"
+
+msgid "gui.action.fit"
+msgstr "地図全体に合わせる"
+
+msgid "gui.action.layers"
+msgstr "レイヤー設定…"
+
+msgid "gui.action.lines"
+msgstr "路線一覧"
+
+msgid "gui.action.lines_layer"
+msgstr "路線を選択"
+
+msgid "gui.action.merge_settings"
+msgstr "統合とグループ化"
+
+msgid "gui.action.metro_editor"
+msgstr "路線網を手動で編集"
+
+msgid "gui.action.open"
+msgstr "都市を開く"
+
+msgid "gui.action.refresh"
+msgstr "ライブプレビューを更新"
+
+msgid "gui.action.regen_metro"
+msgstr "地下鉄路線図をエクスポート…"
+
+msgid "gui.action.regen_transit"
+msgstr "公共交通マップをエクスポート…"
+
+msgid "gui.action.render_selection"
+msgstr "選択範囲を描画"
+
+msgid "gui.advanced.built_area"
+msgstr "市街地"
+
+msgid "gui.advanced.built_preset.低"
+msgstr "低"
+
+msgid "gui.advanced.built_preset.强"
+msgstr "強い"
+
+msgid "gui.advanced.built_preset.极强"
+msgstr "非常に強い"
+
+msgid "gui.advanced.built_preset.标准"
+msgstr "標準"
+
+msgid "gui.advanced.font_preset.大"
+msgstr "大"
+
+msgid "gui.advanced.font_preset.小"
+msgstr "小"
+
+msgid "gui.advanced.font_preset.标准"
+msgstr "標準"
+
+msgid "gui.advanced.font_preset.特大"
+msgstr "特大"
+
+msgid "gui.advanced.merge_enable"
+msgstr "統合"
+
+msgid "gui.advanced.title"
+msgstr "詳細設定"
+
+msgid "gui.advanced.water"
+msgstr "水域"
+
+msgid "gui.advanced.water_preset.低"
+msgstr "低"
+
+msgid "gui.advanced.water_preset.强"
+msgstr "強い"
+
+msgid "gui.advanced.water_preset.极强"
+msgstr "非常に強い"
+
+msgid "gui.advanced.water_preset.标准"
+msgstr "標準"
+
+msgid "gui.appearance.dark"
+msgstr "ダーク"
+
+msgid "gui.appearance.follow_system"
+msgstr "システムに合わせる"
+
+msgid "gui.appearance.light"
+msgstr "ライト"
+
+msgid "gui.appearance.menu"
+msgstr "UI の外観"
+
+msgid "gui.appearance.save_failed"
+msgstr "外観を適用しましたが、保存できませんでした"
+
+msgid "gui.btn.save_png"
+msgstr "PNG を保存"
+
+msgid "gui.city.districts"
+msgstr "地区"
+
+msgid "gui.city.transports"
+msgstr "公共交通路線"
+
+msgid "gui.cmd.tab_layers"
+msgstr "レイヤー"
+
+msgid "gui.cmd.tab_map"
+msgstr "地図"
+
+msgid "gui.creator.bounds"
+msgstr "範囲：({bounds})"
+
+msgid "gui.creator.bounds_none"
+msgstr "まだ範囲がランダム選択されていません"
+
+msgid "gui.creator.current_spot"
+msgstr "現在の拡大箇所"
+
+msgid "gui.creator.hint.aa"
+msgstr "高解像度で描画してから縮小することで、道路や文字の縁を滑らかにします。有効にすると処理時間とメモリ使用量が増えます。"
+
+msgid "gui.creator.hint.interchange_count"
+msgstr "コレクションに含める高架交差点の最大数です。規模の大きいものから選びます。"
+
+msgid "gui.creator.hint.layers"
+msgstr "インターチェンジのタイル内に表示するレイヤーを選びます。"
+
+msgid "gui.creator.hint.tile_size"
+msgstr "各インターチェンジタイルの出力辺の長さ（ピクセル）。値が大きいほど鮮明になりますが、出力は遅くなります。"
+
+msgid "gui.creator.interchange.auto"
+msgstr "自動選択"
+
+msgid "gui.creator.interchange.count"
+msgstr "インターチェンジの数"
+
+msgid "gui.creator.interchange.hint"
+msgstr "下の設定を指定してコレクションを生成すると、中央のプレビューに表示されます。正式なエクスポートにはエクスポートウィンドウを使用してください。"
+
+msgid "gui.creator.interchange.hint2"
+msgstr "セーブデータからインターチェンジを自動検出します。手動で選択しない場合は、規模の大きいものが使われます。"
+
+msgid "gui.creator.interchange.layers"
+msgstr "コレクションのレイヤー"
+
+msgid "gui.creator.interchange.run"
+msgstr "インターチェンジのコレクションを生成"
+
+msgid "gui.creator.interchange.section"
+msgstr "コレクションのパラメーター"
+
+msgid "gui.creator.interchange.tile_size"
+msgstr "タイルサイズ"
+
+msgid "gui.creator.interchange.title"
+msgstr "インターチェンジギャラリー"
+
+msgid "gui.creator.placeholder.seed"
+msgstr "空欄の場合、毎回ランダムに選びます。"
+
+msgid "gui.creator.placeholder.theme_title"
+msgstr "空欄の場合、テーマの既定タイトルを使用します。"
+
+msgid "gui.creator.preference.balanced"
+msgstr "バランス"
+
+msgid "gui.creator.preference.buildings"
+msgstr "建物が密集"
+
+msgid "gui.creator.preference.congestion"
+msgstr "渋滞した道路"
+
+msgid "gui.creator.preference.park"
+msgstr "公園と緑地"
+
+msgid "gui.creator.preference.transit"
+msgstr "公共交通"
+
+msgid "gui.creator.preference.water"
+msgstr "水辺"
+
+msgid "gui.creator.preference_label"
+msgstr "画角の優先設定"
+
+msgid "gui.creator.random.hint"
+msgstr "ランダム選択ではプレビュー範囲のみ変更し、描画は行いません。中央のプレビューで引き続き範囲を調整できます。"
+
+msgid "gui.creator.random.pick"
+msgstr "ランダムに選択"
+
+msgid "gui.creator.random.preference_section"
+msgstr "ランダム設定"
+
+msgid "gui.creator.random.save"
+msgstr "このクローズアップを保存…"
+
+msgid "gui.creator.random.steps"
+msgstr "優先設定 → ランダムに選択 → プレビューを調整 → 保存"
+
+msgid "gui.creator.random.title"
+msgstr "ランダムな拡大表示"
+
+msgid "gui.creator.seed"
+msgstr "乱数シード"
+
+msgid "gui.creator.show_labels"
+msgstr "道路名と施設名のラベルを表示"
+
+msgid "gui.creator.show_place_names"
+msgstr "場所名を表示"
+
+msgid "gui.creator.webmap.hint"
+msgstr "HTML 出力は共通のエクスポート画面で選択してください。"
+
+msgid "gui.creator.webmap.title"
+msgstr "Webマップ"
+
+msgid "gui.diagnostics.auto"
+msgstr "自動"
+
+msgid "gui.diagnostics.clear_errors"
+msgstr "セッションエラーをクリア"
+
+msgid "gui.diagnostics.context_label"
+msgstr "プレビューのコンテキスト"
+
+msgid "gui.diagnostics.error_prefix"
+msgstr "プレビュー：{error}"
+
+msgid "gui.diagnostics.no_errors"
+msgstr "今回の実行ではエラーはありませんでした。"
+
+msgid "gui.diagnostics.not_opened"
+msgstr "未開封"
+
+msgid "gui.diagnostics.not_ready"
+msgstr "準備未完了"
+
+msgid "gui.diagnostics.open_logs"
+msgstr "パフォーマンスログのフォルダーを開く"
+
+msgid "gui.diagnostics.opened"
+msgstr "開きました"
+
+msgid "gui.diagnostics.preview_state"
+msgstr "プレビューの状態"
+
+msgid "gui.diagnostics.purpose"
+msgstr "セーブデータ、プレビュー、交通データが準備できているか確認します。詳しいエラーは下の「エラーメッセージ」を参照してください。"
+
+msgid "gui.diagnostics.ready"
+msgstr "準備完了"
+
+msgid "gui.diagnostics.refresh_preview"
+msgstr "マップを更新"
+
+msgid "gui.diagnostics.save_label"
+msgstr "セーブデータ"
+
+msgid "gui.diagnostics.subtitle"
+msgstr "地図の状態、エラー情報、パフォーマンスログをここにまとめています"
+
+msgid "gui.diagnostics.tab_errors"
+msgstr "エラーメッセージ"
+
+msgid "gui.diagnostics.tab_map"
+msgstr "地図診断"
+
+msgid "gui.diagnostics.title"
+msgstr "診断センター"
+
+msgid "gui.diagnostics.transit_lines_label"
+msgstr "公共交通路線"
+
+msgid "gui.dialog.cancel"
+msgstr "キャンセル"
+
+msgid "gui.dialog.close"
+msgstr "閉じる"
+
+msgid "gui.dialog.custom_resolution"
+msgstr "カスタム解像度"
+
+msgid "gui.dialog.custom_resolution.prompt"
+msgstr "出力サイズ（ピクセル）"
+
+msgid "gui.dialog.layer_settings"
+msgstr "レイヤーの設定"
+
+msgid "gui.dialog.open_city"
+msgstr "都市データを開く"
+
+msgid "gui.dialog.open_city.filter"
+msgstr "都市マップ (*.mmap.gz *.mmap *.cmm.gz *.cmm *.cmm.json)"
+
+msgid "gui.dialog.save"
+msgstr "保存"
+
+msgid "gui.dialog.save_png_filter"
+msgstr "PNG 画像 (*.png)"
+
+msgid "gui.editor.airport"
+msgstr "空港"
+
+msgid "gui.editor.annotation"
+msgstr "注釈"
+
+msgid "gui.editor.bus"
+msgstr "バス"
+
+msgid "gui.editor.display"
+msgstr "表示"
+
+msgid "gui.editor.hospital"
+msgstr "病院"
+
+msgid "gui.editor.kind"
+msgstr "種類"
+
+msgid "gui.editor.language"
+msgstr "言語"
+
+msgid "gui.editor.metro"
+msgstr "地下鉄"
+
+msgid "gui.editor.outline"
+msgstr "アウトライン"
+
+msgid "gui.editor.output"
+msgstr "出力"
+
+msgid "gui.editor.park"
+msgstr "公園"
+
+msgid "gui.editor.right"
+msgstr "右側"
+
+msgid "gui.editor.school"
+msgstr "学校"
+
+msgid "gui.editor.spacing"
+msgstr "駅間隔"
+
+msgid "gui.editor.stations"
+msgstr "駅を表示"
+
+msgid "gui.editor.style"
+msgstr "スタイル"
+
+msgid "gui.error.clipboard_alloc"
+msgstr "メモリの確保に失敗しました"
+
+msgid "gui.error.clipboard_api"
+msgstr "システム API を利用できません"
+
+msgid "gui.error.clipboard_busy"
+msgstr "クリップボードが使用中です"
+
+msgid "gui.error.clipboard_error"
+msgstr "コピー中に問題が発生しました"
+
+msgid "gui.error.clipboard_lock"
+msgstr "メモリのロックに失敗しました"
+
+msgid "gui.error.clipboard_windows_only"
+msgstr "Windows のみ対応"
+
+msgid "gui.error.clipboard_write"
+msgstr "クリップボードに書き込めませんでした"
+
+msgid "gui.error.copy_details"
+msgstr "詳細をコピー"
+
+msgid "gui.error.copy_no_image"
+msgstr "コピーする画像がありません"
+
+msgid "gui.error.export_cancelled"
+msgstr "エクスポートをキャンセルしました"
+
+msgid "gui.error.no_congestion"
+msgstr "混雑したエリアが見つかりません（混雑度 ≥ {pct} の道路区間）"
+
+msgid "gui.error.no_interchange"
+msgstr "生成できるインターチェンジがありません"
+
+msgid "gui.error.no_mosaic_tiles"
+msgstr "モザイクを作成できるタイルがありません"
+
+msgid "gui.error.no_spot_region"
+msgstr "使用できるクローズアップ範囲がありません"
+
+msgid "gui.error.operation_failed"
+msgstr "操作を完了できませんでした。もう一度お試しください。"
+
+msgid "gui.error.poi_mapping_no_section"
+msgstr "poi_mapping.yaml に poi_kinds: セクションがありません"
+
+msgid "gui.error.poi_mapping_parse"
+msgstr "保存データを解析できませんでした：{error}"
+
+msgid "gui.error.poi_mapping_save_no_kind"
+msgstr "保存結果にカテゴリ {kind} がありません"
+
+msgid "gui.error.poi_mapping_save_no_section"
+msgstr "保存結果に poi_kinds セクションがありません"
+
+msgid "gui.error.preview_body"
+msgstr "中央地図のプレビューを生成できませんでした。"
+
+msgid "gui.error.preview_host_timeout"
+msgstr ""
+"マッププレビューの起動がタイムアウトしました（{seconds}秒）。\n"
+"\n"
+"アプリを閉じて再度起動してください。それでも解決しない場合は、次の診断ログを開発者に送信してください：\n"
+"{path}"
+
+msgid "gui.error.preview_live_body"
+msgstr "中央地図のプレビューでエラーが発生しました。"
+
+msgid "gui.error.preview_live_title"
+msgstr "ライブプレビューのエラー"
+
+msgid "gui.error.preview_navigate"
+msgstr "地図プレビューページを読み込めませんでした（エラーコード {code}）。"
+
+msgid "gui.error.preview_need_map"
+msgstr "先にマップをインポートしてください"
+
+msgid "gui.error.preview_title"
+msgstr "ライブプレビューに失敗しました"
+
+msgid "gui.error.preview_unavailable"
+msgstr ""
+"地図プレビューを表示できません。\n"
+"\n"
+"{error}\n"
+"\n"
+"WebView2 Runtime がインストールされ、地図プレビューのリソースがビルドされていることを確認してください。"
+
+msgid "gui.error.pypinyin_missing"
+msgstr "バイリンガルの地下鉄路線図には pypinyin が必要です。実行環境にインストールしてください。"
+
+msgid "gui.error.pyyaml_missing"
+msgstr "PyYAML をインストールしてください：pip install pyyaml"
+
+msgid "gui.error.range_n_number"
+msgstr "範囲のサイズは数値で指定してください"
+
+msgid "gui.error.range_n_range"
+msgstr "範囲サイズは {min}～{max} の間で指定してください"
+
+msgid "gui.error.task_submit_failed"
+msgstr "レンダリングタスクを送信できませんでした：{error}"
+
+msgid "gui.error.theme_save_failed"
+msgstr "テーマを保存できませんでした：{error}"
+
+msgid "gui.error.webview2_assembly"
+msgstr "pywebview に WebView2 アセンブリが含まれていません：{path}"
+
+msgid "gui.error.webview2_missing"
+msgstr "Windows WebView2 ランタイムが見つかりません"
+
+msgid "gui.error.worker_start_failed"
+msgstr "レンダリングプロセスを開始できませんでした"
+
+msgid "gui.export.actual_dimensions"
+msgstr "長辺の解像度 · 出力サイズ：{width} × {height} px"
+
+msgid "gui.export.auto_open"
+msgstr "エクスポート完了後に結果を自動で開く"
+
+msgid "gui.export.auto_open_hint"
+msgstr "チェックを入れると、エクスポート成功後に生成ファイルを自動で開きます。"
+
+msgid "gui.export.browse"
+msgstr "参照…"
+
+msgid "gui.export.busy"
+msgstr "別のタスクが実行中です"
+
+msgid "gui.export.cancel"
+msgstr "キャンセル"
+
+msgid "gui.export.choose_dir"
+msgstr "出力フォルダーを選択"
+
+msgid "gui.export.context.map.desc"
+msgstr "現在のテーマ、レイヤー表示、地図範囲を使って地図画像をエクスポートします。"
+
+msgid "gui.export.context.map.title"
+msgstr "通常のマップ"
+
+msgid "gui.export.context.metro.desc"
+msgstr "現在の路線図のレイアウト、路線、駅の設定をエクスポートします。"
+
+msgid "gui.export.context.metro.theme"
+msgstr "地下鉄路線図のスタイル"
+
+msgid "gui.export.context.metro.title"
+msgstr "地下鉄路線図"
+
+msgid "gui.export.context.selection.desc"
+msgstr "現在選択している範囲をエクスポートします。"
+
+msgid "gui.export.context.selection.title"
+msgstr "マップ上の範囲選択"
+
+msgid "gui.export.context.spot.desc"
+msgstr "現在のランダムなクローズアップ範囲をエクスポートします。"
+
+msgid "gui.export.context.spot.title"
+msgstr "マップのクローズアップ"
+
+msgid "gui.export.context.transit.desc"
+msgstr "現在の路線、停留所、公共交通のスタイルをエクスポートします。"
+
+msgid "gui.export.context.transit.title"
+msgstr "公共交通マップ"
+
+msgid "gui.export.done"
+msgstr "エクスポート完了：{path}"
+
+msgid "gui.export.done_no_open"
+msgstr "エクスポートが完了しました（自動で開けませんでした）：{path}"
+
+msgid "gui.export.failed"
+msgstr "エクスポートに失敗しました：{error}"
+
+msgid "gui.export.field.range"
+msgstr "範囲"
+
+msgid "gui.export.field.size"
+msgstr "画像サイズ"
+
+msgid "gui.export.field.theme"
+msgstr "テーマ"
+
+msgid "gui.export.fields_note"
+msgstr "今回のエクスポートで使用する設定："
+
+msgid "gui.export.filename"
+msgstr "ファイル名"
+
+msgid "gui.export.filename_bad_chars"
+msgstr "ファイル名に使用できない文字（\\ / : * ? \" < > |）が含まれています。変更してください"
+
+msgid "gui.export.filename_has_path"
+msgstr "ファイル名にパスは指定できません。ファイル名のみを入力してください"
+
+msgid "gui.export.filename_hint"
+msgstr "ファイル名は下の「出力フォルダー」に保存されます。拡張子は出力形式に合わせて自動で変更されます。"
+
+msgid "gui.export.filename_placeholder"
+msgstr "ファイル名を入力"
+
+msgid "gui.export.format"
+msgstr "出力形式"
+
+msgid "gui.export.format_hint"
+msgstr "PNG は静止画像です。HTML はオフラインで開ける単一ファイルのインタラクティブ地図で、拡大縮小、移動、レイヤー切り替えができます。"
+
+msgid "gui.export.not_started"
+msgstr "未開始"
+
+msgid "gui.export.open_dir_failed"
+msgstr "フォルダーを開けません：{target}"
+
+msgid "gui.export.open_folder"
+msgstr "出力フォルダーを開く"
+
+msgid "gui.export.output_dir"
+msgstr "出力フォルダー"
+
+msgid "gui.export.png_only"
+msgstr "現在のビューは PNG のみエクスポートできます"
+
+msgid "gui.export.poi.collision_hint"
+msgstr "アイコンが重なる場合は、施設アイコンと重要な場所を優先します。"
+
+msgid "gui.export.poi.custom"
+msgstr "詳細設定…"
+
+msgid "gui.export.poi.custom.hint"
+msgstr "このPNGの建物アイコン表示ルールを個別に調整します。"
+
+msgid "gui.export.poi.density"
+msgstr "アイコン密度"
+
+msgid "gui.export.poi.detail"
+msgstr "詳細"
+
+msgid "gui.export.poi.detail.hint"
+msgstr "より多くの場所と施設内の建物アイコンを表示し、近くにある重複した同種アイコンをまとめます。今回の PNG のみに適用されます。"
+
+msgid "gui.export.poi.internal"
+msgstr "施設内の建物アイコンを表示"
+
+msgid "gui.export.poi.internal.tip"
+msgstr "キャンパス、公園、空港などの施設内にある建物アイコンを個別に表示します。付属施設は引き続き本体の建物に含まれます。"
+
+msgid "gui.export.poi.major"
+msgstr "主要な場所"
+
+msgid "gui.export.poi.major.hint"
+msgstr "主要施設のアイコンを残し、施設内の建物アイコンを非表示にして、近くにある同種の建物アイコンを統合します。今回の PNG のみに適用されます。"
+
+msgid "gui.export.poi.merge"
+msgstr "近くにある同種の建物アイコンをまとめる"
+
+msgid "gui.export.poi.merge.tip"
+msgstr "近くの同種建物から代表アイコンを選び、建物の輪郭は変更しません。無効にすると建物ごとのアイコンを維持します。重なるアイコンは引き続き調整されます。"
+
+msgid "gui.export.poi.off"
+msgstr "オフ"
+
+msgid "gui.export.poi.off.hint"
+msgstr "施設アイコンと付随する名称を表示しません。建物の輪郭、道路名、交通路線の設定は変わりません。"
+
+msgid "gui.export.range.all_metro_lines"
+msgstr "すべての地下鉄路線"
+
+msgid "gui.export.range.all_transit_lines"
+msgstr "すべての公共交通路線"
+
+msgid "gui.export.range.auto_fit"
+msgstr "路線網に合わせて自動調整"
+
+msgid "gui.export.range.selected_lines"
+msgstr "路線を {count} 本選択"
+
+msgid "gui.export.start"
+msgstr "エクスポートを開始"
+
+msgid "gui.export.svg_unavailable"
+msgstr "SVGエクスポートは一時的に利用できません。PNGまたはHTMLを使用してください。"
+
+msgid "gui.export.title"
+msgstr "エクスポート"
+
+msgid "gui.export.title_format"
+msgstr "エクスポート · {title}"
+
+msgid "gui.external.done"
+msgstr "外部プロジェクトを作成しました：{path}"
+
+msgid "gui.external.preparing"
+msgstr "都市データを準備中…"
+
+msgid "gui.external.rmg"
+msgstr "RMG プロジェクトをエクスポート"
+
+msgid "gui.external.rmg_layout_note"
+msgstr "RMG が駅を自動配置し直すため、CMM でドラッグした駅の位置は引き継がれません。"
+
+msgid "gui.external.rmp"
+msgstr "RMP の全市路線網をエクスポート"
+
+msgid "gui.external.use_selection"
+msgstr "現在の選択範囲をエクスポートしますか？「いいえ」を選ぶと都市全体をエクスポートします。"
+
+msgid "gui.external.writing"
+msgstr "外部プロジェクトを書き込み中…"
+
+msgid "gui.field.line_color"
+msgstr "路線の色"
+
+msgid "gui.field.palette"
+msgstr "配色"
+
+msgid "gui.field.range"
+msgstr "出力範囲"
+
+msgid "gui.field.range_anchor"
+msgstr "位置"
+
+msgid "gui.field.rotation"
+msgstr "回転"
+
+msgid "gui.field.theme"
+msgstr "テーマ"
+
+msgid "gui.field.transport.station.label"
+msgstr "駅の円"
+
+msgid "gui.field.transport.station_names.label"
+msgstr "駅名"
+
+msgid "gui.file.all"
+msgstr "すべてのファイル"
+
+msgid "gui.font_tier.large"
+msgstr "大"
+
+msgid "gui.font_tier.small"
+msgstr "小"
+
+msgid "gui.font_tier.standard"
+msgstr "標準"
+
+msgid "gui.font_tier.xlarge"
+msgstr "特大"
+
+msgid "gui.game_running.title"
+msgstr "ゲームはまだ実行中です"
+
+msgid "gui.game_running.warning"
+msgstr "ゲームがまだ起動しています。メモリが不足すると高解像度画像や大都市の描画に失敗することがあります。描画前にゲームを終了することをおすすめします。"
+
+msgid "gui.help.layout"
+msgstr "リボンにはよく使う操作があり、左のパネルでは現在の機能を編集できます。右のパネルには地図で選択した項目が表示されます。"
+
+msgid "gui.help.shortcuts"
+msgstr ""
+"Ctrl+O  都市を開く\n"
+"Ctrl+S  PNG を保存\n"
+"Ctrl+Shift+S  地図をエクスポート\n"
+"Ctrl+P  ライブプレビューを更新\n"
+"Esc  現在のタスクをキャンセル"
+
+msgid "gui.help.title"
+msgstr "ヘルプとショートカット"
+
+msgid "gui.inspector.explore"
+msgstr "探索"
+
+msgid "gui.inspector.export_hint"
+msgstr "エクスポートウィンドウで形式、範囲、保存先を選択してください。"
+
+msgid "gui.inspector.export_section"
+msgstr "マップをエクスポート"
+
+msgid "gui.inspector.hint"
+msgstr "中央のマップで道路、建物、場所、路線、または停留所をクリックすると詳細を確認できます。"
+
+msgid "gui.inspector.object_fallback"
+msgstr "オブジェクト"
+
+msgid "gui.inspector.object_info"
+msgstr "オブジェクト情報"
+
+msgid "gui.inspector.object_properties"
+msgstr "オブジェクトのプロパティ"
+
+msgid "gui.inspector.title"
+msgstr "詳細設定"
+
+msgid "gui.json_editor.invalid"
+msgstr "無効なコンテンツ"
+
+msgid "gui.label.attr.tip"
+msgstr "{heading}の{attr}"
+
+msgid "gui.label.place_text"
+msgstr "エリア名"
+
+msgid "gui.label_child.building_icon"
+msgstr "一般建物アイコン"
+
+msgid "gui.label_child.building_icon_text"
+msgstr "建物アイコンの文字"
+
+msgid "gui.label_child.district_text"
+msgstr "地区ラベル"
+
+msgid "gui.label_child.road_text"
+msgstr "道路名のテキスト"
+
+msgid "gui.label_child.transit_icon"
+msgstr "公共交通アイコン"
+
+msgid "gui.label_child.transit_icon_text"
+msgstr "交通アイコンの文字"
+
+msgid "gui.label_detail.hint"
+msgstr "文字とアイコン：ここで変更した内容は地図のラベルに反映されます"
+
+msgid "gui.label_detail.reset"
+msgstr "文字とアイコンを既定値に戻す"
+
+msgid "gui.label_detail.text.hint"
+msgstr "フォント、サイズ、色、縁取りは文字の種類ごとに設定します。「建物／公園ラベル」は場所名、「地区ラベル」は地域名です。"
+
+msgid "gui.label_detail.title"
+msgstr "ラベルの詳細設定"
+
+msgid "gui.language.contribute"
+msgstr "GitHub で各言語への翻訳を投稿して、改善にご協力ください。翻訳の貢献を歓迎します。"
+
+msgid "gui.language.notice"
+msgstr "簡体字中国語が原文で、他の言語は ChatGPT による自動翻訳です。不正確または分かりにくい表現が含まれる場合があります。"
+
+msgid "gui.layer.building"
+msgstr "建物"
+
+msgid "gui.layer.building_desc"
+msgstr "住宅、設備など都市内の建物の輪郭です。建物が多い都市では、このレイヤーをオフにすると描画が大幅に速くなります。"
+
+msgid "gui.layer.built_area"
+msgstr "市街地"
+
+msgid "gui.layer.built_area_desc"
+msgstr "連続した都市部にベースカラーを塗り、市街地と郊外を区別します。"
+
+msgid "gui.layer.district"
+msgstr "地区の境界線"
+
+msgid "gui.layer.district_desc"
+msgstr "自分で描画した行政区画の境界です。"
+
+msgid "gui.layer.hint.params"
+msgstr "レイヤーの表示状態と現在のテーマ設定"
+
+msgid "gui.layer.label"
+msgstr "地区名・道路名"
+
+msgid "gui.layer.label_desc"
+msgstr "マップ上の道路名、地区名、場所名などのラベルです。混み合う場合は「ラベルの詳細設定…」で種類ごとにオフにできます。"
+
+msgid "gui.layer.land_use"
+msgstr "土地利用"
+
+msgid "gui.layer.land_use_desc"
+msgstr "地区タイプ（住宅／商業／工業）ごとに色分け"
+
+msgid "gui.layer.metro"
+msgstr "地下鉄"
+
+msgid "gui.layer.metro_desc"
+msgstr "通常のマップにバス、トラム、地下鉄の路線と停留所を表示します。独立した路線図を作成するには「公共交通ビュー」を使用してください。"
+
+msgid "gui.layer.po"
+msgstr "PO オブジェクト"
+
+msgid "gui.layer.po_desc"
+msgstr "Procedural Objects Mod のカスタムオブジェクト"
+
+msgid "gui.layer.poi"
+msgstr "施設アイコン"
+
+msgid "gui.layer.poi_area"
+msgstr "建物の領域を塗る"
+
+msgid "gui.layer.poi_area_desc"
+msgstr "建物の形状と色を再利用し、輪郭線なしで内部のみを塗ります。建物レイヤーとは独立して表示できます。"
+
+msgid "gui.layer.poi_desc"
+msgstr "病院、学校、駅などのアイコンです。アイコン上の文字は「テキストラベル」で個別に設定します。"
+
+msgid "gui.layer.procedural_objects"
+msgstr "PO のオブジェクト"
+
+msgid "gui.layer.railway"
+msgstr "鉄道"
+
+msgid "gui.layer.railway_desc"
+msgstr "鉄道、地下鉄などの軌道線です。軌道そのものだけを描画します。地図上に路線色や停留所を表示するには「公共交通」を使ってください。"
+
+msgid "gui.layer.reset"
+msgstr "このレイヤーの既定値に戻す"
+
+msgid "gui.layer.road"
+msgstr "道路"
+
+msgid "gui.layer.road_desc"
+msgstr "高架道路やトンネルを含む、すべての道路クラスです。「設定…」でクラスごとに塗り、アウトライン、幅を調整できます。"
+
+msgid "gui.layer.row.district"
+msgstr "地区の範囲"
+
+msgid "gui.layer.row.district_settings"
+msgstr "地区を選択"
+
+msgid "gui.layer.row.poi"
+msgstr "アイコン"
+
+msgid "gui.layer.row.zone"
+msgstr "用途地域の範囲"
+
+msgid "gui.layer.row.zone_settings"
+msgstr "用途地域を選択"
+
+msgid "gui.layer.settings.water"
+msgstr "水域の表示設定"
+
+msgid "gui.layer.show_this"
+msgstr "このレイヤーを表示"
+
+msgid "gui.layer.terrain"
+msgstr "地形"
+
+msgid "gui.layer.terrain_desc"
+msgstr "標高に応じて色を付け、山や谷の起伏を表示します。"
+
+msgid "gui.layer.title.building"
+msgstr "建物"
+
+msgid "gui.layer.title.built_area"
+msgstr "市街地"
+
+msgid "gui.layer.title.district"
+msgstr "地区"
+
+msgid "gui.layer.title.label"
+msgstr "テキストラベル"
+
+msgid "gui.layer.title.land_use"
+msgstr "用途地域グリッド"
+
+msgid "gui.layer.title.metro"
+msgstr "公共交通"
+
+msgid "gui.layer.title.poi"
+msgstr "施設アイコン"
+
+msgid "gui.layer.title.poi_area"
+msgstr "建物用途別の色分け"
+
+msgid "gui.layer.title.procedural_objects"
+msgstr "カスタムオブジェクト"
+
+msgid "gui.layer.title.railway"
+msgstr "鉄道"
+
+msgid "gui.layer.title.road"
+msgstr "道路"
+
+msgid "gui.layer.title.terrain"
+msgstr "地形"
+
+msgid "gui.layer.title.traffic"
+msgstr "交通量"
+
+msgid "gui.layer.title.water"
+msgstr "水域"
+
+msgid "gui.layer.title.watermark"
+msgstr "透かし"
+
+msgid "gui.layer.title.zone"
+msgstr "用途地域の範囲"
+
+msgid "gui.layer.traffic"
+msgstr "交通情報"
+
+msgid "gui.layer.traffic_desc"
+msgstr "エクスポート時に保存した道路の混雑状況を表示します。Cities: Skylines では TM:PE の統計、Cities: Skylines II ではゲーム標準の交通統計を使用します。"
+
+msgid "gui.layer.transit"
+msgstr "公共交通"
+
+msgid "gui.layer.transit_desc"
+msgstr "セーブデータにあるすべての種類の公共交通路線です。"
+
+msgid "gui.layer.water"
+msgstr "水域"
+
+msgid "gui.layer.water_desc"
+msgstr "湖、川、その他の水域を塗りつぶします。"
+
+msgid "gui.layer.watermark"
+msgstr "透かし"
+
+msgid "gui.layer.watermark_desc"
+msgstr "左下に透かしを表示します。"
+
+msgid "gui.layer.zone"
+msgstr "用途地域の境界"
+
+msgid "gui.layer.zone_desc"
+msgstr "公園、工業地区、キャンパス、空港、歩行者エリアなど、用途地域を分類した色ブロックです。「行政区画の範囲」とは別に設定されます。"
+
+msgid "gui.layers.detail_settings_title"
+msgstr "{name} の詳細設定"
+
+msgid "gui.layers.hint"
+msgstr "マップに表示する内容を設定します。"
+
+msgid "gui.layers.settings.appearance"
+msgstr "表示設定…"
+
+msgid "gui.layers.settings.detail"
+msgstr "詳細設定…"
+
+msgid "gui.layers.settings.generic"
+msgstr "設定…"
+
+msgid "gui.layers.settings.labels"
+msgstr "ラベルの詳細設定…"
+
+msgid "gui.layers.settings_title"
+msgstr "{name} の設定"
+
+msgid "gui.layers.style_title"
+msgstr "{name} のスタイル"
+
+msgid "gui.map.hint.overview"
+msgstr "全体設定、クイック操作、現在の地図の概要"
+
+msgid "gui.map.hint.range"
+msgstr "エクスポートする地形の範囲を設定します。この設定はエクスポート内容にのみ適用されます。"
+
+msgid "gui.map.hint.resolution"
+msgstr "出力画像の長辺のピクセル数です。大きいほど鮮明になりますが、出力時間とメモリ使用量が増えます。"
+
+msgid "gui.map.hint.rotation"
+msgstr "時計回りに回転"
+
+msgid "gui.map.hint.theme"
+msgstr "マップの配色と線のスタイルを選択します。項目ごとに調整するには、リボンの「テーマを編集…」を選択してください。"
+
+msgid "gui.menu.button"
+msgstr "メニュー"
+
+msgid "gui.menu.language"
+msgstr "言語"
+
+msgid "gui.menu.no_recent"
+msgstr "最近使ったファイルはありません"
+
+msgid "gui.menu.quick_preview"
+msgstr "プレビュー"
+
+msgid "gui.menu.quit"
+msgstr "終了"
+
+msgid "gui.menu.recent"
+msgstr "最近使ったファイルを開く"
+
+msgid "gui.menu.tooltip"
+msgstr "アプリケーションメニュー"
+
+msgid "gui.merge.block_distance"
+msgstr "建物のまとまりとみなす距離"
+
+msgid "gui.merge.building"
+msgstr "建物を統合"
+
+msgid "gui.merge.category.commercial"
+msgstr "商業施設と店舗"
+
+msgid "gui.merge.category.hospital"
+msgstr "病院"
+
+msgid "gui.merge.category.park"
+msgstr "公園と緑地"
+
+msgid "gui.merge.category.school"
+msgstr "学校"
+
+msgid "gui.merge.category.transit"
+msgstr "公共交通施設"
+
+msgid "gui.merge.enable"
+msgstr "統合とグループ化を有効にする"
+
+msgid "gui.merge.enable.tip"
+msgstr "オフにすると以下の設定はすべて無効になり、POIアイコンの統合設定もここで管理されます"
+
+msgid "gui.merge.entry"
+msgstr "統合とグループ化の設定…"
+
+msgid "gui.merge.entry.tip"
+msgstr "統合とグループ化を開きます。ここでは全体のオン／オフ、建物・同一施設・停留所の統合、各距離を設定できます"
+
+msgid "gui.merge.facility"
+msgstr "同じ施設を統合"
+
+msgid "gui.merge.facility.hint"
+msgstr "実際の建物の関係と ParkGrid エリアに基づいて施設をまとめます。工業地区と歩行者エリアでは建物を個別に表示します。"
+
+msgid "gui.merge.facility_area_labels"
+msgstr "施設エリアの重複ラベルを抑制"
+
+msgid "gui.merge.facility_area_labels.tip"
+msgstr "空港、キャンパス、公園など、親施設 POI と重複するエリア名を非表示にします。工業地区と歩行者エリアのラベルには影響しません。"
+
+msgid "gui.merge.facility_children"
+msgstr "施設内の子POIを表示"
+
+msgid "gui.merge.facility_children.tip"
+msgstr "オフにすると、空港・キャンパス・公園などの親POIだけを表示し、施設グループの関係は保持します。"
+
+msgid "gui.merge.facility_list.tip"
+msgstr "施設と内部のPOIを表示します。建物、道路、用途地域の塗りはそれぞれ個別に設定できます。"
+
+msgid "gui.merge.facility_zoom"
+msgstr "子POIを表示する最小ズーム"
+
+msgid "gui.merge.facility_zoom.tip"
+msgstr "子POIを表示する最小ズームです。値が大きいほど、より拡大してから表示されます。既定値は1.0です。"
+
+msgid "gui.merge.hint.intro"
+msgstr "まず全体のスイッチをオンにしてから、各機能と距離を調整してください"
+
+msgid "gui.merge.hub_distance"
+msgstr "交通ハブの中心距離"
+
+msgid "gui.merge.override.use"
+msgstr "個別ルール"
+
+msgid "gui.merge.overrides.hint"
+msgstr "独自ルールが設定されていない種類には、全体の統合設定と距離が適用されます。"
+
+msgid "gui.merge.poi_distance"
+msgstr "POI の統合距離"
+
+msgid "gui.merge.stops"
+msgstr "公共交通の停留所を統合"
+
+msgid "gui.metro.adaptive"
+msgstr "適応縮尺"
+
+msgid "gui.metro.adaptive_hint"
+msgstr "長い直線区間を縮め、混雑した区間を広げて、路線網がキャンバス上に均等に広がるようにします。オフにすると実際の駅間隔を比例して配置します。"
+
+msgid "gui.metro.adjust_network"
+msgstr "路線網を手動で調整…"
+
+msgid "gui.metro.annotation_hint"
+msgstr "チェックを入れると、対応する注記を地図上に印刷します。"
+
+msgid "gui.metro.bad_edit_doc"
+msgstr "{name} を読み込めません。このツールでエクスポートした編集ファイルではありません。"
+
+msgid "gui.metro.bilingual_names"
+msgstr "停留所名を二言語で表示"
+
+msgid "gui.metro.debug_band"
+msgstr "縮尺の色帯を表示"
+
+msgid "gui.metro.debug_band_hint"
+msgstr "圧縮された区間（青）と広げられた区間（オレンジ）を色で示し、動的な縮尺の効果を確認できます。最終出力の前にオフにすることをおすすめします。"
+
+msgid "gui.metro.display_size"
+msgstr "表示サイズ"
+
+msgid "gui.metro.draw_default"
+msgstr "既定では地下鉄、列車、モノレールを描画します。都市の状況に合わせて変更してください。"
+
+msgid "gui.metro.facility_density_hint"
+msgstr "マップを拡大すると施設が順次表示されます。「段階的に間引く」を選ぶと1段階遅れて表示され、間隔も広くなります。"
+
+msgid "gui.metro.facility_icon_hint"
+msgstr "空港、駅、港などの接続施設アイコンを表示します。このスイッチとサイズ設定は駅アイコンには影響しません。"
+
+msgid "gui.metro.facility_icons"
+msgstr "接続アイコン"
+
+msgid "gui.metro.follow_theme_bg"
+msgstr "テーマの背景に合わせる"
+
+msgid "gui.metro.font_size"
+msgstr "フォントサイズ"
+
+msgid "gui.metro.generate_preview"
+msgstr "プレビューを生成"
+
+msgid "gui.metro.import_edits_button"
+msgstr "編集ファイルをインポート…"
+
+msgid "gui.metro.import_edits_failed"
+msgstr "編集用ドキュメントをインポートできませんでした"
+
+msgid "gui.metro.import_edits_filter"
+msgstr "路線網の編集ファイル (*.json);;すべてのファイル (*.*)"
+
+msgid "gui.metro.import_edits_hint"
+msgstr "「編集ファイルをインポート」は、以前保存した JSON の調整データ（路線経路／停留所位置／共用区間）を読み込み、すぐに再描画します。"
+
+msgid "gui.metro.import_edits_title"
+msgstr "編集用ドキュメントをインポート"
+
+msgid "gui.metro.imported_doc"
+msgstr "{name} を読み込みました。再描画中…"
+
+msgid "gui.metro.label_position"
+msgstr "ラベルの位置"
+
+msgid "gui.metro.label_position.auto"
+msgstr "自動"
+
+msgid "gui.metro.label_position.left"
+msgstr "左側"
+
+msgid "gui.metro.label_position.right"
+msgstr "右側"
+
+msgid "gui.metro.label_scale_hint"
+msgstr "既定サイズを基準に拡大縮小します。100% が既定サイズです。"
+
+msgid "gui.metro.layer_scope_hint"
+msgstr "ここでのレイヤー切り替えは公共交通ビューにのみ適用され、都市マップのレイヤー表示には影響しません。"
+
+msgid "gui.metro.legend_label"
+msgstr "路線ラベル／凡例"
+
+msgid "gui.metro.legend_position"
+msgstr "凡例の位置"
+
+msgid "gui.metro.legend_section"
+msgstr "凡例とタイトル"
+
+msgid "gui.metro.line_count"
+msgstr "{name} · {count} 路線"
+
+msgid "gui.metro.line_gap"
+msgstr "並行路線の間隔"
+
+msgid "gui.metro.line_gap_hint"
+msgstr "並行する路線の間隔を線幅の倍率で指定します。範囲：1.05～3.00。"
+
+msgid "gui.metro.line_outline"
+msgstr "路線の縁取り"
+
+msgid "gui.metro.line_type_hint"
+msgstr "「路線の種類」は交通手段で一括して絞り込みます。1つの路線だけ表示するには、上の「路線を選択…」を使ってください。"
+
+msgid "gui.metro.manual_section"
+msgstr "手動調整"
+
+msgid "gui.metro.output.auto"
+msgstr "自動"
+
+msgid "gui.metro.output.tooltip"
+msgstr "出力画像の長辺のピクセル数です。「自動」では路線網の規模に応じたサイズを選びます。ここではすぐに描画されず、エクスポート画面を開くと適用されます。"
+
+msgid "gui.metro.result_broken"
+msgstr "生成結果を表示できません。"
+
+msgid "gui.metro.result_empty"
+msgstr ""
+"まだ生成されていません。\n"
+"\n"
+"上の「{button}」をクリックして開始してください。"
+
+msgid "gui.metro.result_note"
+msgstr "路線図は現在の設定で一度に生成されます。「路線の太さ／停留所間隔」を変更した後、上の「{button}」をクリックしてエクスポートウィンドウを開いてください。"
+
+msgid "gui.metro.scale_section"
+msgstr "縮尺と解像度"
+
+msgid "gui.metro.scale_strength"
+msgstr "縮尺の強さ"
+
+msgid "gui.metro.settings_title"
+msgstr "地下鉄路線図の設定"
+
+msgid "gui.metro.show_facility_icons"
+msgstr "接続アイコンを表示"
+
+msgid "gui.metro.show_stations"
+msgstr "駅を表示"
+
+msgid "gui.metro.show_water"
+msgstr "水域を表示"
+
+msgid "gui.metro.spacing_hint"
+msgstr "路線図で隣接する駅の間隔です。値を大きくすると路線網が広がり、長い路線がより多くのキャンバスを使います。"
+
+msgid "gui.metro.station_diameter"
+msgstr "有効にすると、建物と施設にゲームが生成したランダムな名前を使用します。カスタム名には影響しません。"
+
+msgid "gui.metro.station_form"
+msgstr "駅のスタイル"
+
+msgid "gui.metro.station_name_hint"
+msgstr "「カスタム駅名のみ」を選ぶと、手入力した駅名だけが表示され、残りは自動命名されます。"
+
+msgid "gui.metro.station_names.all"
+msgstr "すべての駅名"
+
+msgid "gui.metro.station_names.custom"
+msgstr "カスタム駅名のみ"
+
+msgid "gui.metro.station_names.none"
+msgstr "駅名を表示しない"
+
+msgid "gui.metro.station_style.rmg"
+msgstr "クラシック鉄道"
+
+msgid "gui.metro.station_style.standard"
+msgstr "標準円形"
+
+msgid "gui.metro.station_style_hint"
+msgstr "「レールクラシック」は鉄道スタイルの駅アイコンを使用し、「標準円形」は通常の点を使用します。"
+
+msgid "gui.metro.title"
+msgstr "地下鉄路線図"
+
+msgid "gui.metro.title_template"
+msgstr "タイトルのテンプレート"
+
+msgid "gui.metro_editor.apply"
+msgstr "適用してプレビューを更新"
+
+msgid "gui.metro_editor.diagnostics"
+msgstr "レイアウト診断"
+
+msgid "gui.metro_editor.display"
+msgstr "キャンバス表示"
+
+msgid "gui.metro_editor.empty"
+msgstr "駅または路線を選択して編集を開始してください。"
+
+msgid "gui.metro_editor.hint"
+msgstr "駅をドラッグすると整数グリッドにスナップします。編集を確定するとプレビューが自動的に再描画されます。"
+
+msgid "gui.metro_editor.labels.all"
+msgstr "すべての駅名を表示"
+
+msgid "gui.metro_editor.labels.named"
+msgstr "名称のある駅のみ"
+
+msgid "gui.metro_editor.labels.none"
+msgstr "すべての駅名を非表示"
+
+msgid "gui.metro_editor.line"
+msgstr "路線"
+
+msgid "gui.metro_editor.line_outline"
+msgstr "路線に濃い色のアウトラインを表示"
+
+msgid "gui.metro_editor.loop"
+msgstr "ループとして描画"
+
+msgid "gui.metro_editor.no_diagnostics"
+msgstr "レイアウト診断はありません。"
+
+msgid "gui.metro_editor.plan_saved"
+msgstr "編集プランを保存しました。"
+
+msgid "gui.metro_editor.position"
+msgstr "停留所の位置：({x}, {y})"
+
+msgid "gui.metro_editor.save_plan"
+msgstr "編集プランを保存…"
+
+msgid "gui.metro_editor.shared"
+msgstr "共用区間"
+
+msgid "gui.metro_editor.shared_applied"
+msgstr "共用区間の設定を記録しました。"
+
+msgid "gui.metro_editor.shared_apply"
+msgstr "共用区間を適用"
+
+msgid "gui.metro_editor.shared_need_two"
+msgstr "共用区間を作成するには、2つ以上の路線を選択してください。"
+
+msgid "gui.metro_editor.shared_pick_end"
+msgstr "共用区間の終点駅を選択してください。"
+
+msgid "gui.metro_editor.shared_start"
+msgstr "この駅を共用区間の始点にする"
+
+msgid "gui.metro_editor.shared_unavailable"
+msgstr "この2つの駅間には、隣接する路線が少なくとも2本ありません。"
+
+msgid "gui.metro_editor.shared_waiting"
+msgstr "始点を選択しました。終点の駅を選択してください"
+
+msgid "gui.metro_editor.station"
+msgstr "駅"
+
+msgid "gui.metro_editor.station_labels"
+msgstr "駅名の表示"
+
+msgid "gui.metro_editor.station_type"
+msgstr "駅の種類"
+
+msgid "gui.metro_editor.title"
+msgstr "簡易地下鉄エディター"
+
+msgid "gui.metro_editor.type.auto"
+msgstr "自動"
+
+msgid "gui.metro_editor.type.interchange"
+msgstr "乗換駅"
+
+msgid "gui.metro_editor.type.normal"
+msgstr "通常の駅"
+
+msgid "gui.metro_editor.type.terminal"
+msgstr "終点駅"
+
+msgid "gui.msg.no_congestion"
+msgstr "渋滞エリアが見つかりません"
+
+msgid "gui.msg.no_spot_region"
+msgstr "使用できるクローズアップ範囲が見つかりません。件数またはテーマを変更して再試行してください。"
+
+msgid "gui.msg.no_traffic_spot"
+msgstr "このセーブデータには交通スナップショットがないため、渋滞箇所を生成できません。もう一度お試しください。"
+
+msgid "gui.msg.open_first"
+msgstr "先に都市データを開いてください"
+
+msgid "gui.msg.open_or_wait"
+msgstr "先に都市データを開くか、現在のタスクが終わるまでお待ちください"
+
+msgid "gui.msg.select_map_area"
+msgstr "先にマップ上で範囲を選択してください"
+
+msgid "gui.msg.title"
+msgstr "お知らせ"
+
+msgid "gui.msg.title_error"
+msgstr "操作に失敗しました"
+
+msgid "gui.nav.back"
+msgstr "← 戻る"
+
+msgid "gui.nav.back_home"
+msgstr "← ホームに戻る"
+
+msgid "gui.nav.back_home.tip"
+msgstr "マップのホームに戻る"
+
+msgid "gui.nav.back_properties"
+msgstr "オブジェクトのプロパティに戻る"
+
+msgid "gui.panel.base"
+msgstr "ベースマップ"
+
+msgid "gui.panel.city"
+msgstr "都市"
+
+msgid "gui.panel.close"
+msgstr "閉じる"
+
+msgid "gui.panel.color_strength"
+msgstr "色の濃さ"
+
+msgid "gui.panel.create"
+msgstr "かんたん作成"
+
+msgid "gui.panel.distance"
+msgstr "距離"
+
+msgid "gui.panel.export"
+msgstr "エクスポート"
+
+msgid "gui.panel.facility_tiers"
+msgstr "施設の段階"
+
+msgid "gui.panel.functions"
+msgstr "機能"
+
+msgid "gui.panel.icon_text"
+msgstr "アイコンとテキスト"
+
+msgid "gui.panel.labels"
+msgstr "ラベル"
+
+msgid "gui.panel.line_and_station"
+msgstr "路線と停留所"
+
+msgid "gui.panel.line_station"
+msgstr "路線と停留所"
+
+msgid "gui.panel.line_style"
+msgstr "路線スタイル"
+
+msgid "gui.panel.lines"
+msgstr "路線"
+
+msgid "gui.panel.map"
+msgstr "地図"
+
+msgid "gui.panel.merge"
+msgstr "統合とグループ化"
+
+msgid "gui.panel.output"
+msgstr "出力"
+
+msgid "gui.panel.overrides"
+msgstr "種類ごとの上書き"
+
+msgid "gui.panel.poi_style"
+msgstr "施設アイコンのスタイル"
+
+msgid "gui.panel.preview"
+msgstr "プレビュー"
+
+msgid "gui.panel.programs"
+msgstr "アプリケーション"
+
+msgid "gui.panel.regions"
+msgstr "地域と地区"
+
+msgid "gui.panel.road_overall"
+msgstr "道路全体"
+
+msgid "gui.panel.scale"
+msgstr "縮尺"
+
+msgid "gui.panel.share"
+msgstr "共有とエクスポート"
+
+msgid "gui.panel.showcase"
+msgstr "都市の紹介"
+
+msgid "gui.panel.statistics"
+msgstr "統計情報"
+
+msgid "gui.panel.style"
+msgstr "スタイル"
+
+msgid "gui.panel.theme_pick"
+msgstr "テーマをすばやく選択"
+
+msgid "gui.panel.transit"
+msgstr "交通"
+
+msgid "gui.poi.building_icon"
+msgstr "建物アイコン"
+
+msgid "gui.poi_category.airport"
+msgstr "空港"
+
+msgid "gui.poi_category.bus"
+msgstr "バス停"
+
+msgid "gui.poi_category.highway_exit"
+msgstr "高速道路の出口"
+
+msgid "gui.poi_category.hospital"
+msgstr "病院"
+
+msgid "gui.poi_category.metro"
+msgstr "地下鉄駅"
+
+msgid "gui.poi_category.park"
+msgstr "公園"
+
+msgid "gui.poi_category.residential"
+msgstr "住宅"
+
+msgid "gui.poi_category.school"
+msgstr "学校"
+
+msgid "gui.poi_category.ship"
+msgstr "港"
+
+msgid "gui.poi_category.traffic_light"
+msgstr "信号機"
+
+msgid "gui.poi_category.train"
+msgstr "鉄道駅"
+
+msgid "gui.poi_editor.advanced_yaml"
+msgstr "上級者向け：YAML を編集"
+
+msgid "gui.poi_editor.advanced_yaml_help"
+msgstr "上級者向け：POI マッピング YAML を直接編集します。保存後、マッピング設定が再読み込みされます。設定形式を理解しているユーザー向けです。"
+
+msgid "gui.poi_editor.col.category"
+msgstr "カテゴリ"
+
+msgid "gui.poi_editor.col.message"
+msgstr "説明"
+
+msgid "gui.poi_editor.col.rule"
+msgstr "ルール"
+
+msgid "gui.poi_editor.delete_confirm"
+msgstr "poi_mapping.yaml からカテゴリ「{kind}」を削除しますか？"
+
+msgid "gui.poi_editor.delete_failed"
+msgstr "削除に失敗しました"
+
+msgid "gui.poi_editor.delete_kind"
+msgstr "カテゴリを削除"
+
+msgid "gui.poi_editor.deleted_kind"
+msgstr "カテゴリ「{kind}」を削除しました"
+
+msgid "gui.poi_editor.display.hidden"
+msgstr "非表示"
+
+msgid "gui.poi_editor.display.inherit"
+msgstr "親建物から継承"
+
+msgid "gui.poi_editor.display.visible"
+msgstr "表示"
+
+msgid "gui.poi_editor.field.current_icon"
+msgstr "現在のアイコン"
+
+msgid "gui.poi_editor.field.display"
+msgstr "表示方法"
+
+msgid "gui.poi_editor.field.icon_key"
+msgstr "アイコンキー"
+
+msgid "gui.poi_editor.field.label"
+msgstr "名称"
+
+msgid "gui.poi_editor.field.min_zoom"
+msgstr "最小ズーム"
+
+msgid "gui.poi_editor.field.priority"
+msgstr "優先度"
+
+msgid "gui.poi_editor.filter.all"
+msgstr "すべて"
+
+msgid "gui.poi_editor.filter.dup_icon"
+msgstr "重複アイコン"
+
+msgid "gui.poi_editor.filter.hidden"
+msgstr "ポリシーにより非表示"
+
+msgid "gui.poi_editor.filter.missing_icon"
+msgstr "アイコンがありません"
+
+msgid "gui.poi_editor.filter.orphan"
+msgstr "孤立カテゴリ"
+
+msgid "gui.poi_editor.filter.unmapped"
+msgstr "未マッピング"
+
+msgid "gui.poi_editor.group.enum"
+msgstr "サービス一覧"
+
+msgid "gui.poi_editor.group.facility"
+msgstr "施設の種類"
+
+msgid "gui.poi_editor.group.general"
+msgstr "一般"
+
+msgid "gui.poi_editor.group.service"
+msgstr "サービス"
+
+msgid "gui.poi_editor.icon_filter_placeholder"
+msgstr "名前 / id で絞り込み、クリックして icon_key に入力"
+
+msgid "gui.poi_editor.icon_library_info"
+msgstr "アイコンライブラリ：{name}（{count} 個のアイコン）"
+
+msgid "gui.poi_editor.icon_load_failed"
+msgstr "アイコンライブラリを読み込めませんでした：{exc}"
+
+msgid "gui.poi_editor.icon_manifest_missing"
+msgstr "アイコンマニフェストが見つかりません：{path}"
+
+msgid "gui.poi_editor.icon_pick_hint"
+msgstr "中央のアイコンを選ぶか、アイコン ID を直接入力"
+
+msgid "gui.poi_editor.info_display"
+msgstr "表示方法：{display}"
+
+msgid "gui.poi_editor.info_refs"
+msgstr "マッピング参照：{count} 件"
+
+msgid "gui.poi_editor.issue_count"
+msgstr "全 {total} 件、{shown} 件を表示"
+
+msgid "gui.poi_editor.missing_icon"
+msgstr "アイコンがありません"
+
+msgid "gui.poi_editor.nothing_to_save"
+msgstr "保存する変更はありません"
+
+msgid "gui.poi_editor.ready"
+msgstr "準備完了"
+
+msgid "gui.poi_editor.refs_body_none"
+msgstr "カテゴリ {kind} はどのAI種別からも参照されていません。"
+
+msgid "gui.poi_editor.refs_body_some"
+msgstr ""
+"カテゴリ {kind} は {count} 個の AI 種別から参照されています：\n"
+"\n"
+"{list}"
+
+msgid "gui.poi_editor.refs_title"
+msgstr "マッピング参照"
+
+msgid "gui.poi_editor.save"
+msgstr "保存"
+
+msgid "gui.poi_editor.save_error_body"
+msgstr "poi_mapping.yaml は変更されていません：{exc}"
+
+msgid "gui.poi_editor.save_failed"
+msgstr "保存に失敗しました"
+
+msgid "gui.poi_editor.save_kind"
+msgstr "カテゴリを保存"
+
+msgid "gui.poi_editor.saved_count"
+msgstr "{count} カテゴリを保存しました"
+
+msgid "gui.poi_editor.search_label"
+msgstr "カテゴリ検索"
+
+msgid "gui.poi_editor.search_placeholder"
+msgstr "カテゴリ名またはキーで絞り込む"
+
+msgid "gui.poi_editor.section.categories"
+msgstr "カテゴリ"
+
+msgid "gui.poi_editor.section.icons"
+msgstr "アイコンライブラリ"
+
+msgid "gui.poi_editor.section.properties"
+msgstr "プロパティ"
+
+msgid "gui.poi_editor.show_refs"
+msgstr "マッピングの参照を表示…"
+
+msgid "gui.poi_editor.title"
+msgstr "POI マッピング管理"
+
+msgid "gui.poi_editor.unsaved_body"
+msgstr "未保存の変更があります。保存して閉じますか？"
+
+msgid "gui.poi_editor.unsaved_count"
+msgstr "未保存の変更：{count} カテゴリ"
+
+msgid "gui.poi_editor.unsaved_title"
+msgstr "未保存の変更"
+
+msgid "gui.poi_editor.validate"
+msgstr "検証"
+
+msgid "gui.poi_editor.yaml_title"
+msgstr "POIマッピングの管理"
+
+msgid "gui.poi_shared.all_games"
+msgstr "すべてのゲーム"
+
+msgid "gui.poi_shared.close"
+msgstr "閉じる"
+
+msgid "gui.poi_shared.display"
+msgstr "アイコンを表示"
+
+msgid "gui.poi_shared.external_change"
+msgstr "マッピングが外部で変更されました。このウィンドウを閉じて開き直してください。"
+
+msgid "gui.poi_shared.image_search"
+msgstr "アイコンを検索"
+
+msgid "gui.poi_shared.no_image"
+msgstr "アイコンなし"
+
+msgid "gui.poi_shared.restore"
+msgstr "既定値に戻す"
+
+msgid "gui.poi_shared.save"
+msgstr "保存"
+
+msgid "gui.poi_shared.saved"
+msgstr "保存しました。すべての地図でこの設定を共有します。"
+
+msgid "gui.poi_shared.search"
+msgstr "名前またはネイティブ ID を検索"
+
+msgid "gui.poi_shared.unsaved"
+msgstr "未保存の変更を保存しますか？"
+
+msgid "gui.poi_style.color"
+msgstr "カラー"
+
+msgid "gui.poi_style.simple"
+msgstr "シンプル"
+
+msgid "gui.poi_style.switch.tip"
+msgstr "アイコンのスタイルを切り替え：{name}"
+
+msgid "gui.preview.busy"
+msgstr ""
+"地図を生成中…\n"
+"\n"
+"都市のセーブデータを読み込んでいます。都市が大きいほど時間がかかります。"
+
+msgid "gui.preview.host_unavailable"
+msgstr "このプラットフォームでは埋め込み地図プレビューを利用できません。画像のエクスポートは引き続き使えます。"
+
+msgid "gui.preview.map_hint"
+msgstr "ドラッグで移動 · スクロールで拡大縮小"
+
+msgid "gui.preview.no_map"
+msgstr ""
+"都市がまだ開かれていません\n"
+"\n"
+"都市データを開くと、ここに地図がリアルタイムで表示されます。"
+
+msgid "gui.progress.built_area.done"
+msgstr "市街地の処理が完了しました"
+
+msgid "gui.progress.built_area.fill"
+msgstr "市街地を塗りつぶし中 {i}/{n}"
+
+msgid "gui.progress.built_area.outline"
+msgstr "市街地の輪郭を抽出中"
+
+msgid "gui.progress.built_area.surface"
+msgstr "市街地の合成が完了しました"
+
+msgid "gui.progress.interchange"
+msgstr "インターチェンジを描画中 {i}/{n}"
+
+msgid "gui.progress.layer_detail"
+msgstr "{layer}：{msg}"
+
+msgid "gui.progress.load.buildings"
+msgstr "建物を作成中"
+
+msgid "gui.progress.load.document"
+msgstr "マップドキュメントを作成中"
+
+msgid "gui.progress.load.done"
+msgstr "読み込み完了"
+
+msgid "gui.progress.load.meta"
+msgstr "メタデータを読み込み中"
+
+msgid "gui.progress.load.nodes"
+msgstr "建物ノードを構築中"
+
+msgid "gui.progress.load.props"
+msgstr "森林と Procedural Objects を構築中"
+
+msgid "gui.progress.load.road_types"
+msgstr "道路の種類を構築中"
+
+msgid "gui.progress.load.segments"
+msgstr "線分を構築中"
+
+msgid "gui.progress.load.terrain"
+msgstr "地形を構築中"
+
+msgid "gui.progress.load.traffic"
+msgstr "埋め込み交通スナップショットを読み込み中（{count} 区間）"
+
+msgid "gui.progress.load.transit"
+msgstr "交通路線を構築中"
+
+msgid "gui.progress.load.xml"
+msgstr "XML を読み込み中"
+
+msgid "gui.progress.load.zones"
+msgstr "地区と用途地域を構築中"
+
+msgid "gui.progress.merge_tile"
+msgstr "タイルを統合中 {i}/{n}（{col},{row}）"
+
+msgid "gui.progress.mosaic"
+msgstr "モザイクを合成中…"
+
+msgid "gui.progress.preview"
+msgstr "地図プレビューを生成中…"
+
+msgid "gui.progress.render_base_layer"
+msgstr "ベースマップの {layer} レイヤーを描画中"
+
+msgid "gui.progress.render_layer"
+msgstr "{layer} レイヤーを描画中"
+
+msgid "gui.progress.render_tiles"
+msgstr "タイルを描画中（合計 {n} 枚）"
+
+msgid "gui.progress.scene.data"
+msgstr "地図データを準備中…"
+
+msgid "gui.progress.scene.draw_layer"
+msgstr "{label} を描画中…"
+
+msgid "gui.progress.scene.draw_roads"
+msgstr "道路を描画中…"
+
+msgid "gui.progress.scene.layers"
+msgstr "マップのレイヤーを描画中…"
+
+msgid "gui.progress.scene.ready"
+msgstr "地図の生成が完了しました"
+
+msgid "gui.progress.scene.roads"
+msgstr "道路を準備中…"
+
+msgid "gui.progress.scene.write"
+msgstr "地図ファイルを書き込み中…"
+
+msgid "gui.progress.spot"
+msgstr "クローズアップを描画中 {i}/{n}"
+
+msgid "gui.progress.svg_done"
+msgstr "SVG のエクスポートが完了しました"
+
+msgid "gui.progress.svg_write"
+msgstr "SVG を書き込み中…"
+
+msgid "gui.progress.terrain.color"
+msgstr "地形の色付け {i}/{n} ブロック"
+
+msgid "gui.progress.terrain.colored"
+msgstr "地形の色付けが完了しました"
+
+msgid "gui.progress.terrain.done"
+msgstr "地形の処理が完了しました"
+
+msgid "gui.progress.terrain.interpolate"
+msgstr "地形の標高を補間中"
+
+msgid "gui.progress.terrain.relief"
+msgstr "地形の陰影を合成中"
+
+msgid "gui.progress.tile_detail"
+msgstr "[{i}/{n}] {msg}"
+
+msgid "gui.progress.water.contours"
+msgstr "水面の等高線を生成しました"
+
+msgid "gui.progress.water.done"
+msgstr "水域の処理が完了しました"
+
+msgid "gui.progress.water.fill"
+msgstr "水面を塗りつぶし中 {i}/{n}"
+
+msgid "gui.progress.water.mask"
+msgstr "水面マスク完了"
+
+msgid "gui.range.anchor.busiest"
+msgstr "最も混雑したエリア"
+
+msgid "gui.range.anchor.center"
+msgstr "マップの中心"
+
+msgid "gui.range.custom"
+msgstr "カスタム…"
+
+msgid "gui.range.dialog.apply"
+msgstr "適用する範囲"
+
+msgid "gui.range.dialog.by_tiles"
+msgstr "n × n の土地タイルを選択"
+
+msgid "gui.range.dialog.cancel"
+msgstr "キャンセル"
+
+msgid "gui.range.dialog.diagram"
+msgstr "ドラッグして範囲を選択 · 範囲内をドラッグして移動"
+
+msgid "gui.range.dialog.draw"
+msgstr "範囲を描画"
+
+msgid "gui.range.dialog.full_tiles"
+msgstr "全タイル · {n} × {n}（{total} タイル）"
+
+msgid "gui.range.dialog.legacy"
+msgstr "範囲は {side} × {side} km です。適用すると上のタイル範囲に切り替わり、キャンセルすると現在の範囲を維持します。"
+
+msgid "gui.range.dialog.note"
+msgstr "ここでエクスポート範囲を選びます。画像のピクセルサイズはエクスポートウィンドウで設定してください。"
+
+msgid "gui.range.dialog.open"
+msgstr "範囲を設定…"
+
+msgid "gui.range.dialog.outside"
+msgstr "すべての土地タイル + 周辺地形"
+
+msgid "gui.range.dialog.outside_missing"
+msgstr "このファイルには周辺の地形がありません。ゲームの MOD を更新して再エクスポートしてください。"
+
+msgid "gui.range.dialog.redraw"
+msgstr "範囲を選び直す"
+
+msgid "gui.range.dialog.side"
+msgstr "1辺あたりのタイル数"
+
+msgid "gui.range.dialog.small"
+msgstr "このファイルは土地タイル1枚分に満たないため、「地図全体」または範囲選択を使用してください。"
+
+msgid "gui.range.dialog.square"
+msgstr "→ {n} × {n}"
+
+msgid "gui.range.dialog.summary"
+msgstr ""
+"{n} × {n} タイル · 合計 {total} タイル\n"
+"約 {side} × {side} km をカバー"
+
+msgid "gui.range.dialog.title"
+msgstr "マップ範囲を設定"
+
+msgid "gui.range.dimensions_km"
+msgstr "{width} × {height} km"
+
+msgid "gui.range.entire_city"
+msgstr "マップ全体"
+
+msgid "gui.range.game.cs1"
+msgstr "Cities: Skylines · 初代"
+
+msgid "gui.range.game.cs2"
+msgstr "Cities: Skylines II"
+
+msgid "gui.range.tiles"
+msgstr "{n} × {n} の土地タイル"
+
+msgid "gui.region.hint"
+msgstr "範囲を表示・選択し、色の濃さを調整"
+
+msgid "gui.region.no_items"
+msgstr "このセーブデータには選択できる範囲がありません。"
+
+msgid "gui.result.empty"
+msgstr "まだ生成されていません。"
+
+msgid "gui.ribbon.group.output"
+msgstr "出力"
+
+msgid "gui.ribbon.group.style"
+msgstr "スタイル"
+
+msgid "gui.ribbon.tab.create"
+msgstr "作成"
+
+msgid "gui.ribbon.tab.icons"
+msgstr "アイコン"
+
+msgid "gui.ribbon.tab.layers"
+msgstr "レイヤー"
+
+msgid "gui.ribbon.tab.metro"
+msgstr "地下鉄"
+
+msgid "gui.ribbon.tab.start"
+msgstr "ホーム"
+
+msgid "gui.ribbon.tab.style"
+msgstr "スタイル"
+
+msgid "gui.ribbon.tab.tools"
+msgstr "ツール"
+
+msgid "gui.ribbon.tab.transit"
+msgstr "公共交通"
+
+msgid "gui.road.fill"
+msgstr "塗りつぶし"
+
+msgid "gui.road.width.tip"
+msgstr "このレベルで描画する最小幅です。細い道路や縮小表示で違いが分かります。"
+
+msgid "gui.sidebar.edit_style"
+msgstr "テーマを編集…"
+
+msgid "gui.sidebar.group.map"
+msgstr "地図"
+
+msgid "gui.sidebar.group.map_layers"
+msgstr "地図"
+
+msgid "gui.sidebar.group.output"
+msgstr "出力"
+
+msgid "gui.sidebar.group.render"
+msgstr "地図"
+
+msgid "gui.sidebar.group.text"
+msgstr "テキスト"
+
+msgid "gui.sidebar.group.theme"
+msgstr "テーマ"
+
+msgid "gui.sidebar.group.transit"
+msgstr "公共交通"
+
+msgid "gui.sidebar.group.transit_layers"
+msgstr "公共交通"
+
+msgid "gui.sidebar.label.quality"
+msgstr "画質"
+
+msgid "gui.sidebar.label.style"
+msgstr "スタイル"
+
+msgid "gui.sidebar.label.theme"
+msgstr "スタイル"
+
+msgid "gui.sidebar.spot_transit"
+msgstr "公共交通ビュー"
+
+msgid "gui.sidebar.terrain_settings"
+msgstr "地形の表示設定"
+
+msgid "gui.sidebar.transit_types_title"
+msgstr "路線の種類"
+
+msgid "gui.smooth.extreme"
+msgstr "非常に強い"
+
+msgid "gui.smooth.high"
+msgstr "高"
+
+msgid "gui.smooth.low"
+msgstr "低"
+
+msgid "gui.smooth.standard"
+msgstr "標準"
+
+msgid "gui.smooth.strong"
+msgstr "強い"
+
+msgid "gui.stats.buildings"
+msgstr "建物"
+
+msgid "gui.stats.built_area"
+msgstr "市街地の面積"
+
+msgid "gui.stats.districts"
+msgstr "区画数"
+
+msgid "gui.stats.regions"
+msgstr "エリア数"
+
+msgid "gui.stats.road_length"
+msgstr "道路の長さ"
+
+msgid "gui.stats.transit_length"
+msgstr "公共交通の運行距離"
+
+msgid "gui.status.back_to_city_map"
+msgstr "都市地図に戻りました"
+
+msgid "gui.status.cache_cleared"
+msgstr "レンダリングプロセスと解析キャッシュを消去しました"
+
+msgid "gui.status.canvas_moved"
+msgstr "マップが移動したため、選択範囲を解除しました"
+
+msgid "gui.status.city_loaded"
+msgstr "都市を読み込みました。ライブプレビューを生成中です"
+
+msgid "gui.status.city_unknown"
+msgstr "都市が不明です"
+
+msgid "gui.status.copied_scaled"
+msgstr "（{w}×{h} に拡大縮小済み）"
+
+msgid "gui.status.entered_metro"
+msgstr "地下鉄路線図に切り替えました。生成中…"
+
+msgid "gui.status.entered_metro_no_city"
+msgstr "地下鉄路線図に切り替えました · まず都市のセーブデータを開いてください"
+
+msgid "gui.status.entered_transit"
+msgstr "公共交通ビューに切り替えました。生成中…"
+
+msgid "gui.status.entered_transit_no_city"
+msgstr "公共交通ビューに切り替えました · 先に都市データを開いてください"
+
+msgid "gui.status.file_moved"
+msgstr "{name} は元の場所にありません。「最近使った項目」から削除しました。"
+
+msgid "gui.status.image_copied"
+msgstr "画像をコピーしました"
+
+msgid "gui.status.lang_save_failed"
+msgstr "言語設定を保存できませんでした"
+
+msgid "gui.status.log_dir_failed"
+msgstr "ログフォルダーを開けません：{detail}"
+
+msgid "gui.status.map_area_selected"
+msgstr "地図範囲を選択しました"
+
+msgid "gui.status.map_failed_detail"
+msgstr "マップを生成できませんでした：{error}"
+
+msgid "gui.status.metro_cannot_start"
+msgstr "生成できません。都市のセーブデータを開くか、現在のタスクが完了するまでお待ちください。"
+
+msgid "gui.status.metro_failed"
+msgstr "生成に失敗しました。"
+
+msgid "gui.status.metro_preview_first"
+msgstr "先に地下鉄路線図を一度生成してください"
+
+msgid "gui.status.metro_progress"
+msgstr "路線図を生成中… {pct}%"
+
+msgid "gui.status.metro_rendering"
+msgstr "路線図を生成中…"
+
+msgid "gui.status.no_city"
+msgstr "都市が開かれていません"
+
+msgid "gui.status.no_render_result"
+msgstr "地図はまだ生成されていません。「地図を描画」をクリックしてください。"
+
+msgid "gui.status.no_traffic"
+msgstr "交通量なし"
+
+msgid "gui.status.parsing"
+msgstr "解析中：{msg}"
+
+msgid "gui.status.parsing_save"
+msgstr "セーブデータを解析中…"
+
+msgid "gui.status.pick_region_first"
+msgstr "先にクローズアップ範囲をランダムに選択してください"
+
+msgid "gui.status.preview_failed"
+msgstr "中央のプレビューを生成できませんでした"
+
+msgid "gui.status.preview_prefix"
+msgstr "プレビュー：{msg}"
+
+msgid "gui.status.random_spot_picked"
+msgstr "拡大表示する範囲をランダムに選択しました。プレビューを調整してから保存してください"
+
+msgid "gui.status.render_short"
+msgstr "地図を生成しました · {size}px · {elapsed}s"
+
+msgid "gui.status.rendering_stall"
+msgstr "レンダリング中…{sec}秒以上進捗が更新されていません。大きな画像や高画質の出力では通常の動作です。"
+
+msgid "gui.status.save_missing_or_parsing"
+msgstr "ファイルが見つからないか、別のセーブデータを解析中です"
+
+msgid "gui.status.saved"
+msgstr "保存しました：{path}"
+
+msgid "gui.status.select_mode"
+msgstr "選択モード：地図上をドラッグして範囲を選択"
+
+msgid "gui.status.traffic_embedded"
+msgstr "埋め込み交通データ：{n}"
+
+msgid "gui.status.traffic_ext"
+msgstr "外部 JSON：{n}"
+
+msgid "gui.status.web_done"
+msgstr "ウェブ地図のエクスポートが完了しました"
+
+msgid "gui.status.writing_png"
+msgstr "PNG を書き込み中…"
+
+msgid "gui.style.hint.redirect"
+msgstr "マップのスタイルはテーマエディターで編集します。ここには別の簡易設定ページはありません"
+
+msgid "gui.style.hint.theme_editor"
+msgstr "地形、道路、建物、水域、ラベル、アイコンはすべて同じテーマエディターで管理します。"
+
+msgid "gui.style_editor.add_step"
+msgstr "+ 段階を追加"
+
+msgid "gui.style_editor.advanced"
+msgstr "詳細設定"
+
+msgid "gui.style_editor.advanced_json_tip"
+msgstr "詳細設定：テーマ JSON を直接編集"
+
+msgid "gui.style_editor.applied_no_file"
+msgstr "適用済み（ファイル未変更）"
+
+msgid "gui.style_editor.apply"
+msgstr "適用"
+
+msgid "gui.style_editor.apply_tip"
+msgstr "このセッション中のみ適用し、ファイルには保存しません"
+
+msgid "gui.style_editor.auto_preview"
+msgstr "自動プレビュー"
+
+msgid "gui.style_editor.basic.aa.desc"
+msgstr "高解像度で描画してから縮小することで、道路や文字の縁を滑らかにします。有効にすると処理時間とメモリ使用量が増えます。"
+
+msgid "gui.style_editor.basic.aa.label"
+msgstr "エッジを滑らかにする"
+
+msgid "gui.style_editor.basic.contrast.label"
+msgstr "コントラスト"
+
+msgid "gui.style_editor.basic.contrast.value.enhanced"
+msgstr "強化"
+
+msgid "gui.style_editor.basic.contrast.value.social"
+msgstr "ソーシャル"
+
+msgid "gui.style_editor.basic.contrast.value.standard"
+msgstr "標準"
+
+msgid "gui.style_editor.basic.font_tier.label"
+msgstr "文字サイズ"
+
+msgid "gui.style_editor.basic.font_tier.value.large"
+msgstr "大"
+
+msgid "gui.style_editor.basic.font_tier.value.small"
+msgstr "小"
+
+msgid "gui.style_editor.basic.font_tier.value.standard"
+msgstr "標準"
+
+msgid "gui.style_editor.basic.font_tier.value.xlarge"
+msgstr "特大"
+
+msgid "gui.style_editor.basic.theme.label"
+msgstr "地図テーマ"
+
+msgid "gui.style_editor.cannot_save"
+msgstr "保存できません"
+
+msgid "gui.style_editor.category_modified"
+msgstr "{label} · {count} 項目を変更"
+
+msgid "gui.style_editor.choose_color"
+msgstr "色を選択"
+
+msgid "gui.style_editor.comma_separated"
+msgstr "カンマ区切り"
+
+msgid "gui.style_editor.compare_before"
+msgstr "変更前"
+
+msgid "gui.style_editor.desc.buildings.border"
+msgstr "建物の縁取り色"
+
+msgid "gui.style_editor.desc.buildings.border_width"
+msgstr "建物の輪郭線の太さです。値が大きいほど目立ちます。"
+
+msgid "gui.style_editor.desc.buildings.default"
+msgstr "建物本体の塗り色です。建物の種類別に色分けする場合の既定色として使われます。"
+
+msgid "gui.style_editor.desc.buildings.poi_tint.enabled"
+msgstr "建物を用途に応じて少し色付けするかどうか"
+
+msgid "gui.style_editor.desc.buildings.shadow"
+msgstr "建物に影を付けて街区に立体感を加えます。出力には少し時間がかかります。"
+
+msgid "gui.style_editor.desc.buildings.shadow.enabled"
+msgstr "建物に影を付けるかどうか"
+
+msgid "gui.style_editor.desc.built_area.buffer_meters"
+msgstr "市街地の境界を外側に広げる距離"
+
+msgid "gui.style_editor.desc.built_area.color"
+msgstr "市街地全体の色"
+
+msgid "gui.style_editor.desc.built_area.enabled"
+msgstr "都市の市街地を描画するかどうか"
+
+msgid "gui.style_editor.desc.built_area.exclude_services"
+msgstr "市街地に含めないサービス施設"
+
+msgid "gui.style_editor.desc.built_area.include_parks"
+msgstr "公園を市街地に含める"
+
+msgid "gui.style_editor.desc.canvas"
+msgstr "キャンバスのサイズ（ピクセル）。最終的な出力サイズはエクスポートウィンドウの設定に従います。"
+
+msgid "gui.style_editor.desc.canvas.background"
+msgstr "マップ全体の背景色"
+
+msgid "gui.style_editor.desc.district.border"
+msgstr "行政区画の境界色"
+
+msgid "gui.style_editor.desc.district.border_width"
+msgstr "地区境界線の太さ。"
+
+msgid "gui.style_editor.desc.district.enabled"
+msgstr "行政区画を描画するかどうか"
+
+msgid "gui.style_editor.desc.district.fill_alpha"
+msgstr "地区の塗りの不透明度"
+
+msgid "gui.style_editor.desc.district.fill_colors"
+msgstr "行政区画に使う繰り返しカラーパレット"
+
+msgid "gui.style_editor.desc.forest.color"
+msgstr "森林被覆の色"
+
+msgid "gui.style_editor.desc.labels.building"
+msgstr "建物名のフォント、サイズ、色、縁取りを設定します。"
+
+msgid "gui.style_editor.desc.labels.district"
+msgstr "行政区画名の文字設定：フォント、サイズ、色、アウトライン。"
+
+msgid "gui.style_editor.desc.labels.district.color"
+msgstr "地区名の色"
+
+msgid "gui.style_editor.desc.labels.park"
+msgstr "公園名のフォント、サイズ、色、縁取りを設定します。"
+
+msgid "gui.style_editor.desc.labels.road"
+msgstr "道路名のフォント、サイズ、色、縁取りを設定します。"
+
+msgid "gui.style_editor.desc.labels.road.color"
+msgstr "道路名の色"
+
+msgid "gui.style_editor.desc.labels.road_repeat"
+msgstr "道路名を繰り返す間隔"
+
+msgid "gui.style_editor.desc.labels.stop"
+msgstr "停留所名のフォント、サイズ、色、縁取りを設定します。"
+
+msgid "gui.style_editor.desc.land_use.alpha"
+msgstr "用途地域の色の不透明度"
+
+msgid "gui.style_editor.desc.land_use.colors"
+msgstr "用途地域の配色"
+
+msgid "gui.style_editor.desc.land_use.detail"
+msgstr "用途分類の細かさ"
+
+msgid "gui.style_editor.desc.land_use.enabled"
+msgstr "用途地域ごとに色付きのブロックを表示するかどうか"
+
+msgid "gui.style_editor.desc.poi_icons.bg_circle"
+msgstr "アイコンの下に白い円を付けるかどうか"
+
+msgid "gui.style_editor.desc.poi_icons.bg_circle_size"
+msgstr "アイコンの背面にある白い円の直径（ピクセル）。アイコンが地図に埋もれる場合は大きくしてください。"
+
+msgid "gui.style_editor.desc.poi_icons.enabled"
+msgstr "場所アイコンを表示するかどうか"
+
+msgid "gui.style_editor.desc.poi_icons.grid_size"
+msgstr "アイコン密度を調整するクラスタリンググリッドのサイズ"
+
+msgid "gui.style_editor.desc.poi_icons.hidden_categories"
+msgstr "表示しない施設カテゴリ"
+
+msgid "gui.style_editor.desc.poi_icons.icon_size"
+msgstr "アイコンのサイズ"
+
+msgid "gui.style_editor.desc.poi_icons.icons_dir"
+msgstr "使用するアイコンライブラリ"
+
+msgid "gui.style_editor.desc.poi_icons.merge_distance"
+msgstr "2つの場所アイコンの距離がこの値未満の場合、1つにまとめられます。単位はゲーム内の距離（m）です。"
+
+msgid "gui.style_editor.desc.poi_icons.name_size"
+msgstr "アイコン名のフォントサイズ（ピクセル）。"
+
+msgid "gui.style_editor.desc.poi_icons.show_name"
+msgstr "アイコンの横に場所名を表示する"
+
+msgid "gui.style_editor.desc.procedural_objects.border"
+msgstr "カスタムオブジェクトの縁取り色"
+
+msgid "gui.style_editor.desc.procedural_objects.custom_color_alpha"
+msgstr "カスタムオブジェクトの色付けの強さ"
+
+msgid "gui.style_editor.desc.roads.highway.fill"
+msgstr "高速道路と自動車専用道路の色"
+
+msgid "gui.style_editor.desc.roads.width_scale"
+msgstr "道路全体の太さを調整"
+
+msgid "gui.style_editor.desc.terrain.elevation_colors"
+msgstr "標高帯ごとに色分けします。しきい値を下げると、より低い場所に色が付きます"
+
+msgid "gui.style_editor.desc.terrain.elevation_mode"
+msgstr "continuous＝連続グラデーション；stepped＝段階的な色分け"
+
+msgid "gui.style_editor.desc.terrain.ground.enabled"
+msgstr "地面のベースカラーを描画するかどうか"
+
+msgid "gui.style_editor.desc.terrain.ground.far_green"
+msgstr "高地の地面色"
+
+msgid "gui.style_editor.desc.terrain.ground.mountain_colors"
+msgstr "山地を標高ごとに色分け"
+
+msgid "gui.style_editor.desc.terrain.ground.mountain_threshold"
+msgstr "この高さを超える地形を山地として扱う"
+
+msgid "gui.style_editor.desc.terrain.ground.near_green"
+msgstr "低地の地面の色"
+
+msgid "gui.style_editor.desc.terrain.ground.ramp_meters"
+msgstr "2色の地面色が混ざり合う標高の幅"
+
+msgid "gui.style_editor.desc.terrain.hillshade.altitude"
+msgstr "光と地面の角度です。値が小さいほど影が長くなり、地形の起伏が強調されます。"
+
+msgid "gui.style_editor.desc.terrain.hillshade.azimuth"
+msgstr "北を0°として時計回りに測った、地形に当たる光の方位角です。"
+
+msgid "gui.style_editor.desc.terrain.hillshade.enabled"
+msgstr "山地に陰影を付けて立体感を出す"
+
+msgid "gui.style_editor.desc.terrain.hillshade.intensity"
+msgstr "日なたと日陰の斜面の明るさの差です。値が高すぎると道路や建物が見えにくくなります。"
+
+msgid "gui.style_editor.desc.terrain.hillshade.large_scale_meters"
+msgstr "山脈全体の方向を表す平滑化の尺度（メートル）。"
+
+msgid "gui.style_editor.desc.terrain.hillshade.large_scale_weight"
+msgstr "ブレンド結果における広域の山影の比率です。値が大きいほど大きな山並みの表現になり、通常は2つの比率の合計を1.0にします。"
+
+msgid "gui.style_editor.desc.terrain.hillshade.small_scale_meters"
+msgstr "谷や褶曲などの細部を表す尺度（メートル）。"
+
+msgid "gui.style_editor.desc.terrain.hillshade.small_scale_weight"
+msgstr "ブレンド結果における小規模な起伏陰影の比率です。値が大きいほど細かな質感になり、通常は2つの比率の合計を1.0にします。"
+
+msgid "gui.style_editor.desc.transports.auto_color"
+msgstr "配色のない路線に自動で色を割り当てるかどうか"
+
+msgid "gui.style_editor.desc.transports.label"
+msgstr "路線名のバッジ：フォント、サイズ、余白、枠線、路線上で繰り返す間隔を設定します。"
+
+msgid "gui.style_editor.desc.transports.label.bg"
+msgstr "名称バッジの背景色"
+
+msgid "gui.style_editor.desc.transports.label.enabled"
+msgstr "路線名のバッジを表示するかどうか"
+
+msgid "gui.style_editor.desc.transports.label.repeat_interval"
+msgstr "路線に沿ってバッジを繰り返す間隔"
+
+msgid "gui.style_editor.desc.transports.label.size"
+msgstr "路線名のフォントサイズ"
+
+msgid "gui.style_editor.desc.transports.octilinear"
+msgstr "路線を整然とした直線的な配置にするかどうか"
+
+msgid "gui.style_editor.desc.transports.schematic.parallel_gap"
+msgstr "平行する路線間の間隔"
+
+msgid "gui.style_editor.desc.transports.schematic.spacing"
+msgstr "停留所間の距離です。値が大きいほどレイアウトが広がります。"
+
+msgid "gui.style_editor.desc.transports.smooth"
+msgstr "路線の曲がり具合"
+
+msgid "gui.style_editor.desc.transports.station.enabled"
+msgstr "駅の点を表示するかどうか"
+
+msgid "gui.style_editor.desc.transports.station.merge_enabled"
+msgstr "近くの停留所を1つにまとめるかどうか"
+
+msgid "gui.style_editor.desc.transports.station.merge_range"
+msgstr "停留所を同じ駅とみなす距離"
+
+msgid "gui.style_editor.desc.transports.station.size"
+msgstr "駅の丸印のサイズ"
+
+msgid "gui.style_editor.desc.transports.station.transfer_scale"
+msgstr "乗換駅を通常の駅よりどれだけ大きくするか"
+
+msgid "gui.style_editor.desc.transports.transit_view.mask_intensity"
+msgstr "公共交通ビューでベースマップを薄くする度合い"
+
+msgid "gui.style_editor.desc.water.border"
+msgstr "水辺の縁取り色"
+
+msgid "gui.style_editor.desc.water.border_width"
+msgstr "水辺の縁取り幅"
+
+msgid "gui.style_editor.desc.water.color"
+msgstr "水面の色"
+
+msgid "gui.style_editor.desc.watermark.content"
+msgstr "透かしに含める情報"
+
+msgid "gui.style_editor.desc.watermark.enabled"
+msgstr "地図に透かしを追加するかどうか"
+
+msgid "gui.style_editor.desc.watermark.margin"
+msgstr "透かしとキャンバス端との距離（ピクセル）。"
+
+msgid "gui.style_editor.desc.watermark.mod_name"
+msgstr "透かしに表示するテキスト"
+
+msgid "gui.style_editor.desc.watermark.padding"
+msgstr "透かし文字と背景の端との間隔（ピクセル）。"
+
+msgid "gui.style_editor.desc.watermark.position"
+msgstr "透かしを配置するマップの角"
+
+msgid "gui.style_editor.desc.zone.border"
+msgstr "用途地域の境界色"
+
+msgid "gui.style_editor.desc.zone.border_width"
+msgstr "地区境界線の太さ。"
+
+msgid "gui.style_editor.desc.zone.enabled"
+msgstr "公園や工業地区の用途地域を描画するかどうか"
+
+msgid "gui.style_editor.desc.zone.fill"
+msgstr "用途地域の基本塗りつぶし色"
+
+msgid "gui.style_editor.desc.zone.fill_alpha"
+msgstr "用途地域の塗りの不透明度"
+
+msgid "gui.style_editor.edit_help"
+msgstr "テーマデータを直接編集します。保存するとプレビューにすぐ反映されます。"
+
+msgid "gui.style_editor.edit_title"
+msgstr "テーマを編集"
+
+msgid "gui.style_editor.elevation_threshold_tip"
+msgstr "標高のしきい値（m）"
+
+msgid "gui.style_editor.field.adaptive"
+msgstr "自動"
+
+msgid "gui.style_editor.field.alpha"
+msgstr "不透明度"
+
+msgid "gui.style_editor.field.altitude"
+msgstr "光の仰角"
+
+msgid "gui.style_editor.field.auto_color"
+msgstr "自動配色"
+
+msgid "gui.style_editor.field.azimuth"
+msgstr "光の方位角"
+
+msgid "gui.style_editor.field.background"
+msgstr "背景色"
+
+msgid "gui.style_editor.field.beautification"
+msgstr "歩道／自転車道"
+
+msgid "gui.style_editor.field.beautification_elevated"
+msgstr "高架歩道"
+
+msgid "gui.style_editor.field.beautification_tunnel"
+msgstr "トンネル付き歩道"
+
+msgid "gui.style_editor.field.bg"
+msgstr "背景"
+
+msgid "gui.style_editor.field.bg_circle"
+msgstr "白い背景円を描画"
+
+msgid "gui.style_editor.field.bg_circle_size"
+msgstr "白い背景円の直径"
+
+msgid "gui.style_editor.field.bold"
+msgstr "太字"
+
+msgid "gui.style_editor.field.border"
+msgstr "枠線の色"
+
+msgid "gui.style_editor.field.border_radius"
+msgstr "角の半径"
+
+msgid "gui.style_editor.field.border_width"
+msgstr "枠線の幅"
+
+msgid "gui.style_editor.field.branch"
+msgstr "支線"
+
+msgid "gui.style_editor.field.bridge"
+msgstr "橋"
+
+msgid "gui.style_editor.field.buffer_meters"
+msgstr "範囲の余白"
+
+msgid "gui.style_editor.field.building"
+msgstr "建物名"
+
+msgid "gui.style_editor.field.categories"
+msgstr "カテゴリの絞り込み（半角カンマ区切り）"
+
+msgid "gui.style_editor.field.categories_palette"
+msgstr "カテゴリの配色"
+
+msgid "gui.style_editor.field.cell_meters"
+msgstr "境界の詳細度"
+
+msgid "gui.style_editor.field.city_color"
+msgstr "都市名の文字色"
+
+msgid "gui.style_editor.field.city_name"
+msgstr "都市名"
+
+msgid "gui.style_editor.field.color"
+msgstr "色"
+
+msgid "gui.style_editor.field.colors"
+msgstr "配色"
+
+msgid "gui.style_editor.field.column_gap"
+msgstr "列の間隔"
+
+msgid "gui.style_editor.field.commercial"
+msgstr "商業"
+
+msgid "gui.style_editor.field.content"
+msgstr "コンテンツ設定"
+
+msgid "gui.style_editor.field.contour_upscale"
+msgstr "輪郭の詳細度"
+
+msgid "gui.style_editor.field.corridor"
+msgstr "コリドー"
+
+msgid "gui.style_editor.field.custom_color_alpha"
+msgstr "色の濃さ"
+
+msgid "gui.style_editor.field.custom_text"
+msgstr "カスタムテキスト"
+
+msgid "gui.style_editor.field.dash"
+msgstr "破線パターン（線／間隔）"
+
+msgid "gui.style_editor.field.dash_width"
+msgstr "破線の幅"
+
+msgid "gui.style_editor.field.debug"
+msgstr "デバッグ"
+
+msgid "gui.style_editor.field.decoration_length"
+msgstr "装飾の長さ"
+
+msgid "gui.style_editor.field.decoration_span"
+msgstr "装飾の間隔"
+
+msgid "gui.style_editor.field.decoration_width"
+msgstr "装飾の幅"
+
+msgid "gui.style_editor.field.default"
+msgstr "既定"
+
+msgid "gui.style_editor.field.dense_gap"
+msgstr "密集区間の間隔"
+
+msgid "gui.style_editor.field.description"
+msgstr "テーマの説明"
+
+msgid "gui.style_editor.field.detail"
+msgstr "詳細度"
+
+msgid "gui.style_editor.field.district"
+msgstr "地区名"
+
+msgid "gui.style_editor.field.elevation_colors"
+msgstr "標高の色分け（しきい値が低いほど低地）"
+
+msgid "gui.style_editor.field.elevation_mode"
+msgstr "標高カラー方式"
+
+msgid "gui.style_editor.field.enabled"
+msgstr "有効"
+
+msgid "gui.style_editor.field.exclude_services"
+msgstr "対象外のサービス"
+
+msgid "gui.style_editor.field.far_green"
+msgstr "高標高の色"
+
+msgid "gui.style_editor.field.fill"
+msgstr "塗りの色"
+
+msgid "gui.style_editor.field.fill_alpha"
+msgstr "塗りの不透明度"
+
+msgid "gui.style_editor.field.fill_colors"
+msgstr "地区の配色"
+
+msgid "gui.style_editor.field.fixed"
+msgstr "固定値（ピクセル）"
+
+msgid "gui.style_editor.field.font"
+msgstr "フォント"
+
+msgid "gui.style_editor.field.font_size"
+msgstr "フォントサイズ"
+
+msgid "gui.style_editor.field.gap"
+msgstr "間隔"
+
+msgid "gui.style_editor.field.geometry"
+msgstr "ジオメトリ"
+
+msgid "gui.style_editor.field.green"
+msgstr "緑地"
+
+msgid "gui.style_editor.field.grid_size"
+msgstr "クラスタリンググリッドのサイズ"
+
+msgid "gui.style_editor.field.height"
+msgstr "高さ"
+
+msgid "gui.style_editor.field.hidden_categories"
+msgstr "非表示カテゴリ（カンマ区切り）"
+
+msgid "gui.style_editor.field.highway"
+msgstr "高速道路／自動車専用道路"
+
+msgid "gui.style_editor.field.highway_elevated"
+msgstr "高架高速道路"
+
+msgid "gui.style_editor.field.highway_tunnel"
+msgstr "トンネル付き高速道路"
+
+msgid "gui.style_editor.field.hillshade"
+msgstr "地形の陰影"
+
+msgid "gui.style_editor.field.icon_size"
+msgstr "アイコンサイズ"
+
+msgid "gui.style_editor.field.icons_dir"
+msgstr "アイコンライブラリのフォルダー"
+
+msgid "gui.style_editor.field.include_parks"
+msgstr "公園を含める"
+
+msgid "gui.style_editor.field.industrial"
+msgstr "工業"
+
+msgid "gui.style_editor.field.info_color"
+msgstr "情報テキストの色"
+
+msgid "gui.style_editor.field.intensity"
+msgstr "影の強さ"
+
+msgid "gui.style_editor.field.label"
+msgstr "路線名バッジ"
+
+msgid "gui.style_editor.field.large_scale_meters"
+msgstr "大規模な陰影の半径"
+
+msgid "gui.style_editor.field.large_scale_weight"
+msgstr "大規模な陰影の比率"
+
+msgid "gui.style_editor.field.line"
+msgstr "線の色"
+
+msgid "gui.style_editor.field.link_meters"
+msgstr "接続距離"
+
+msgid "gui.style_editor.field.main"
+msgstr "幹線道路"
+
+msgid "gui.style_editor.field.margin"
+msgstr "外側の余白"
+
+msgid "gui.style_editor.field.mask_intensity"
+msgstr "地図の背景を暗くする"
+
+msgid "gui.style_editor.field.max_cells"
+msgstr "最大セル数"
+
+msgid "gui.style_editor.field.max_per_cell"
+msgstr "セルあたりの最大アイコン数"
+
+msgid "gui.style_editor.field.max_per_line"
+msgstr "路線ごとの最大バッジ数"
+
+msgid "gui.style_editor.field.merge_bus_tram"
+msgstr "バス／トラムを統合"
+
+msgid "gui.style_editor.field.merge_distance"
+msgstr "統合距離"
+
+msgid "gui.style_editor.field.merge_enabled"
+msgstr "近接地物を統合"
+
+msgid "gui.style_editor.field.merge_range"
+msgstr "統合半径"
+
+msgid "gui.style_editor.field.merge_train_metro"
+msgstr "鉄道／地下鉄を統合"
+
+msgid "gui.style_editor.field.meta_color"
+msgstr "メタデータの文字色"
+
+msgid "gui.style_editor.field.min_fill_px"
+msgstr "道路の最小幅"
+
+msgid "gui.style_editor.field.min_gap"
+msgstr "最小間隔"
+
+msgid "gui.style_editor.field.min_priority"
+msgstr "表示優先度の下限"
+
+msgid "gui.style_editor.field.min_zoom"
+msgstr "最小ズーム"
+
+msgid "gui.style_editor.field.mix_white"
+msgstr "白を混ぜる割合"
+
+msgid "gui.style_editor.field.mod_name"
+msgstr "透かし文字"
+
+msgid "gui.style_editor.field.mode"
+msgstr "地形の表示モード"
+
+msgid "gui.style_editor.field.mountain_colors"
+msgstr "山地の色分け"
+
+msgid "gui.style_editor.field.mountain_threshold"
+msgstr "山地のしきい値"
+
+msgid "gui.style_editor.field.name"
+msgstr "テーマ名"
+
+msgid "gui.style_editor.field.name_offset"
+msgstr "名称のオフセット"
+
+msgid "gui.style_editor.field.name_size"
+msgstr "名称のサイズ"
+
+msgid "gui.style_editor.field.name_z"
+msgstr "描画優先度"
+
+msgid "gui.style_editor.field.names"
+msgstr "駅名"
+
+msgid "gui.style_editor.field.near_green"
+msgstr "低標高の色"
+
+msgid "gui.style_editor.field.octilinear"
+msgstr "整然としたレイアウト"
+
+msgid "gui.style_editor.field.office"
+msgstr "オフィス"
+
+msgid "gui.style_editor.field.offset"
+msgstr "オフセット"
+
+msgid "gui.style_editor.field.outline"
+msgstr "アウトライン色"
+
+msgid "gui.style_editor.field.padding"
+msgstr "余白"
+
+msgid "gui.style_editor.field.parallel_gap"
+msgstr "並行間隔"
+
+msgid "gui.style_editor.field.park"
+msgstr "公園名"
+
+msgid "gui.style_editor.field.pattern"
+msgstr "破線の間隔"
+
+msgid "gui.style_editor.field.pedestrian"
+msgstr "歩道"
+
+msgid "gui.style_editor.field.poi_tint"
+msgstr "施設の色付け"
+
+msgid "gui.style_editor.field.position"
+msgstr "位置"
+
+msgid "gui.style_editor.field.primary"
+msgstr "幹線道路"
+
+msgid "gui.style_editor.field.prop"
+msgstr "プロップ"
+
+msgid "gui.style_editor.field.public"
+msgstr "公共"
+
+msgid "gui.style_editor.field.publictransport"
+msgstr "公共交通"
+
+msgid "gui.style_editor.field.ramp_meters"
+msgstr "標高カラーランプの高さ"
+
+msgid "gui.style_editor.field.render_time"
+msgstr "生成時刻"
+
+msgid "gui.style_editor.field.repeat_interval"
+msgstr "繰り返し間隔"
+
+msgid "gui.style_editor.field.residential"
+msgstr "住宅"
+
+msgid "gui.style_editor.field.resolution"
+msgstr "解像度"
+
+msgid "gui.style_editor.field.road"
+msgstr "地上道路"
+
+msgid "gui.style_editor.field.road_barrier_extra"
+msgstr "道路障壁の余白"
+
+msgid "gui.style_editor.field.road_elevated"
+msgstr "高架道路"
+
+msgid "gui.style_editor.field.road_min_gap"
+msgstr "道路名の最小間隔"
+
+msgid "gui.style_editor.field.road_repeat"
+msgstr "道路名の繰り返し間隔"
+
+msgid "gui.style_editor.field.road_repeat_ratio"
+msgstr "道路名の繰り返し間隔"
+
+msgid "gui.style_editor.field.road_tunnel"
+msgstr "トンネル道路"
+
+msgid "gui.style_editor.field.road_wide"
+msgstr "広い道路"
+
+msgid "gui.style_editor.field.road_width_scale"
+msgstr "道路幅の倍率"
+
+msgid "gui.style_editor.field.scaled"
+msgstr "解像度に合わせて拡大縮小"
+
+msgid "gui.style_editor.field.schematic"
+msgstr "路線図レイアウト"
+
+msgid "gui.style_editor.field.secondary"
+msgstr "準幹線道路"
+
+msgid "gui.style_editor.field.separator"
+msgstr "区切り文字"
+
+msgid "gui.style_editor.field.shadow"
+msgstr "影"
+
+msgid "gui.style_editor.field.show_name"
+msgstr "名称を表示"
+
+msgid "gui.style_editor.field.sign"
+msgstr "標識"
+
+msgid "gui.style_editor.field.size"
+msgstr "文字サイズ"
+
+msgid "gui.style_editor.field.size_z"
+msgstr "道路名のサイズ段階"
+
+msgid "gui.style_editor.field.small_scale_meters"
+msgstr "小規模な陰影の半径"
+
+msgid "gui.style_editor.field.small_scale_weight"
+msgstr "小規模な陰影の比率"
+
+msgid "gui.style_editor.field.smooth"
+msgstr "曲線の滑らかさ（サンプル数）"
+
+msgid "gui.style_editor.field.smooth_blur"
+msgstr "ぼかし半径"
+
+msgid "gui.style_editor.field.smooth_iters"
+msgstr "平滑化の反復回数"
+
+msgid "gui.style_editor.field.spacing"
+msgstr "駅間距離"
+
+msgid "gui.style_editor.field.special"
+msgstr "特殊道路"
+
+msgid "gui.style_editor.field.sprite"
+msgstr "スプライト画像"
+
+msgid "gui.style_editor.field.station"
+msgstr "駅"
+
+msgid "gui.style_editor.field.station_width"
+msgstr "駅区間の線幅"
+
+msgid "gui.style_editor.field.stop"
+msgstr "停留所名"
+
+msgid "gui.style_editor.field.street_furn"
+msgstr "街路設備"
+
+msgid "gui.style_editor.field.stroke"
+msgstr "線の色"
+
+msgid "gui.style_editor.field.stroke_width"
+msgstr "縁取り幅"
+
+msgid "gui.style_editor.field.style_name"
+msgstr "テーマ名"
+
+msgid "gui.style_editor.field.sub"
+msgstr "サブカラー"
+
+msgid "gui.style_editor.field.tertiary"
+msgstr "支線"
+
+msgid "gui.style_editor.field.threshold"
+msgstr "標高のしきい値"
+
+msgid "gui.style_editor.field.time_format"
+msgstr "時刻の書式"
+
+msgid "gui.style_editor.field.traffic_time"
+msgstr "交通状況の時刻"
+
+msgid "gui.style_editor.field.transfer_scale"
+msgstr "乗換駅のサイズ"
+
+msgid "gui.style_editor.field.transit_view"
+msgstr "公共交通ビュー"
+
+msgid "gui.style_editor.field.transit_view_scale"
+msgstr "公共交通ビューの拡大率"
+
+msgid "gui.style_editor.field.tree"
+msgstr "樹木"
+
+msgid "gui.style_editor.field.tunnel"
+msgstr "トンネル"
+
+msgid "gui.style_editor.field.types"
+msgstr "路線スタイル"
+
+msgid "gui.style_editor.field.unknown"
+msgstr "不明"
+
+msgid "gui.style_editor.field.walk"
+msgstr "歩道"
+
+msgid "gui.style_editor.field.width"
+msgstr "幅"
+
+msgid "gui.style_editor.field.width_scale"
+msgstr "幅の倍率（メートル → ピクセル）"
+
+msgid "gui.style_editor.field.x"
+msgstr "横方向"
+
+msgid "gui.style_editor.field.y"
+msgstr "縦方向"
+
+msgid "gui.style_editor.file_filter"
+msgstr "テーマファイル (*.yaml)"
+
+msgid "gui.style_editor.fixed"
+msgstr "固定"
+
+msgid "gui.style_editor.font_current"
+msgstr "現在のフォント（{value}）"
+
+msgid "gui.style_editor.footer_hint"
+msgstr "編集内容はプレビューにすぐ反映されます。テーマファイルへの書き込みは保存後に行われます"
+
+msgid "gui.style_editor.group_basic"
+msgstr "基本設定"
+
+msgid "gui.style_editor.invalid_colors"
+msgstr ""
+"次の色形式が無効です（#RRGGBB または #RRGGBBAA が必要です）：\n"
+"{list}"
+
+msgid "gui.style_editor.preview"
+msgstr "ライブプレビュー"
+
+msgid "gui.style_editor.preview_need_map"
+msgstr ""
+"インラインプレビューを使うには、まず都市のセーブデータをインポートしてください。\n"
+"インポートすると、ここで部分的な表示を確認できます。"
+
+msgid "gui.style_editor.preview_scene_auto"
+msgstr "現在のカテゴリに合わせる"
+
+msgid "gui.style_editor.preview_scene_buildings"
+msgstr "建物"
+
+msgid "gui.style_editor.preview_scene_overall"
+msgstr "全体"
+
+msgid "gui.style_editor.preview_scene_railway"
+msgstr "鉄道"
+
+msgid "gui.style_editor.preview_scene_roads"
+msgstr "道路"
+
+msgid "gui.style_editor.preview_scene_terrain"
+msgstr "地形"
+
+msgid "gui.style_editor.preview_scene_transports"
+msgstr "公共交通"
+
+msgid "gui.style_editor.preview_scene_water"
+msgstr "水域"
+
+msgid "gui.style_editor.preview_scene_zones"
+msgstr "区画／用途地域"
+
+msgid "gui.style_editor.range"
+msgstr "範囲 {lo}～{hi}{unit}"
+
+msgid "gui.style_editor.redo"
+msgstr "やり直し"
+
+msgid "gui.style_editor.refresh_preview"
+msgstr "プレビューを更新"
+
+msgid "gui.style_editor.remove_step"
+msgstr "この段階を削除"
+
+msgid "gui.style_editor.reset"
+msgstr "元に戻す"
+
+msgid "gui.style_editor.restore_group"
+msgstr "このグループを元に戻す"
+
+msgid "gui.style_editor.restore_group_tip"
+msgstr "このグループの値をウィンドウを開いた時点の状態に戻します"
+
+msgid "gui.style_editor.save"
+msgstr "テーマファイルに保存"
+
+msgid "gui.style_editor.save_as"
+msgstr "別名で保存…"
+
+msgid "gui.style_editor.save_as_title"
+msgstr "新しいテーマとして保存"
+
+msgid "gui.style_editor.save_failed_body"
+msgstr "テーマを適用または保存できませんでした。"
+
+msgid "gui.style_editor.save_failed_title"
+msgstr "保存に失敗しました"
+
+msgid "gui.style_editor.scaled"
+msgstr "拡大縮小"
+
+msgid "gui.style_editor.search"
+msgstr "パラメーターを検索"
+
+msgid "gui.style_editor.search_placeholder"
+msgstr "パラメーター名／パスで絞り込む"
+
+msgid "gui.style_editor.section.basic"
+msgstr "基本情報"
+
+msgid "gui.style_editor.section.buildings"
+msgstr "建物"
+
+msgid "gui.style_editor.section.built_area"
+msgstr "市街地"
+
+msgid "gui.style_editor.section.canvas"
+msgstr "キャンバス"
+
+msgid "gui.style_editor.section.district"
+msgstr "区画"
+
+msgid "gui.style_editor.section.forest"
+msgstr "森林"
+
+msgid "gui.style_editor.section.labels"
+msgstr "ラベル／テキスト"
+
+msgid "gui.style_editor.section.land_use"
+msgstr "土地利用"
+
+msgid "gui.style_editor.section.poi_icons"
+msgstr "施設アイコン"
+
+msgid "gui.style_editor.section.procedural_objects"
+msgstr "PO オブジェクト"
+
+msgid "gui.style_editor.section.railway"
+msgstr "鉄道"
+
+msgid "gui.style_editor.section.roads"
+msgstr "道路"
+
+msgid "gui.style_editor.section.terrain"
+msgstr "地形"
+
+msgid "gui.style_editor.section.transports"
+msgstr "交通路線"
+
+msgid "gui.style_editor.section.water"
+msgstr "水域"
+
+msgid "gui.style_editor.section.watermark"
+msgstr "透かし"
+
+msgid "gui.style_editor.section.zone"
+msgstr "用途地域"
+
+msgid "gui.style_editor.status.auto_paused"
+msgstr "自動プレビューを一時停止しました。「プレビューを更新」をクリックしてください"
+
+msgid "gui.style_editor.status.modified"
+msgstr "変更済み"
+
+msgid "gui.style_editor.status.rendering"
+msgstr "プレビューを生成中…"
+
+msgid "gui.style_editor.status.saved"
+msgstr "保存済み"
+
+msgid "gui.style_editor.status.updated"
+msgstr "プレビューを更新しました"
+
+msgid "gui.style_editor.status.waiting"
+msgstr "プレビュー待ち"
+
+msgid "gui.style_editor.title"
+msgstr "テーマエディター"
+
+msgid "gui.style_editor.undo"
+msgstr "元に戻す"
+
+msgid "gui.style_editor.unit.alpha255"
+msgstr "(0-255)"
+
+msgid "gui.style_editor.unit.count"
+msgstr "項目"
+
+msgid "gui.style_editor.unit.degree"
+msgstr "度"
+
+msgid "gui.style_editor.unit.meter"
+msgstr "m"
+
+msgid "gui.style_editor.unit.meter_to_pixel"
+msgstr "m→px"
+
+msgid "gui.style_editor.unit.priority"
+msgstr "優先度"
+
+msgid "gui.style_editor.unit.px"
+msgstr "px"
+
+msgid "gui.style_editor.unit.ratio"
+msgstr "倍率"
+
+msgid "gui.style_editor.unit.samples"
+msgstr "サンプル数"
+
+msgid "gui.style_editor.unsaved_body"
+msgstr "テーマに未保存の変更があります。保存してから閉じますか？"
+
+msgid "gui.style_editor.unsaved_title"
+msgstr "未保存の変更"
+
+msgid "gui.style_editor.value.base"
+msgstr "基本カテゴリ"
+
+msgid "gui.style_editor.value.continuous"
+msgstr "連続グラデーション"
+
+msgid "gui.style_editor.value.detailed"
+msgstr "詳細カテゴリ"
+
+msgid "gui.style_editor.value.left_bottom"
+msgstr "左下"
+
+msgid "gui.style_editor.value.left_top"
+msgstr "左上"
+
+msgid "gui.style_editor.value.poi"
+msgstr "POI カテゴリで色分け"
+
+msgid "gui.style_editor.value.right_bottom"
+msgstr "右下"
+
+msgid "gui.style_editor.value.right_top"
+msgstr "右上"
+
+msgid "gui.style_editor.value.standard"
+msgstr "標準"
+
+msgid "gui.style_editor.value.stepped"
+msgstr "段階ごとに色分け"
+
+msgid "gui.style_editor.value.uniform"
+msgstr "均一に塗る"
+
+msgid "gui.style_editor.view_label"
+msgstr "シーン"
+
+msgid "gui.task.preview"
+msgstr "プレビュー"
+
+msgid "gui.task.transit"
+msgstr "公共交通ビュー"
+
+msgid "gui.terrain_relief.unit.degree"
+msgstr "°"
+
+msgid "gui.theme.choice.amap"
+msgstr "明るい地図"
+
+msgid "gui.theme.choice.apple_maps"
+msgstr "ミニマルモダン"
+
+msgid "gui.theme.choice.dark"
+msgstr "ダークスタイル"
+
+msgid "gui.theme.choice.google"
+msgstr "暖色系ナチュラル"
+
+msgid "gui.theme.choice.vintage"
+msgstr "レトロスタイル"
+
+msgid "gui.theme.switch.tip"
+msgstr "テーマを切り替え：{name}"
+
+msgid "gui.title.toolbar"
+msgstr "CSLModernMap"
+
+msgid "gui.title.window"
+msgstr "CSLModernMap"
+
+msgid "gui.tools.clear_cache"
+msgstr "メモリキャッシュを解放"
+
+msgid "gui.tools.clear_cache.tip"
+msgstr "バックグラウンドの描画プロセスを閉じ、解析キャッシュを消去してメモリを解放します。次回の都市読み込みでは再解析が必要になり、時間がかかります。"
+
+msgid "gui.tools.copy_image"
+msgstr "画像をコピー"
+
+msgid "gui.tools.diagnostics.tip"
+msgstr "セーブデータ、プレビュー、交通データの読み込み状態、エラー、所要時間を確認します。"
+
+msgid "gui.tools.layers.tip"
+msgstr "描画するレイヤーを選び、それぞれの設定を調整します。"
+
+msgid "gui.tools.lines_layer.tip"
+msgstr "チェックを入れると路線が表示されます。路線を選択すると、その路線だけにスタイル変更が適用されます。"
+
+msgid "gui.tools.merge_settings.tip"
+msgstr "建物、同じ施設の場所、交通停留所の統合設定と距離を調整します。"
+
+msgid "gui.tools.metro"
+msgstr "地下鉄路線図"
+
+msgid "gui.tools.metro.short"
+msgstr "地下鉄路線図"
+
+msgid "gui.tools.metro_editor.tip"
+msgstr "地下鉄路線図エディターを開きます。駅をドラッグし、乗換駅や共用区間を設定します。確定すると自動で再描画します。"
+
+msgid "gui.tools.poi_editor"
+msgstr "場所アイコンのマッピングを管理"
+
+msgid "gui.tools.poi_editor.tip"
+msgstr "ゲーム内の建物に場所アイコンを割り当て、マップ上での表示を指定します。"
+
+msgid "gui.tools.refresh.tip"
+msgstr "中央のプレビューを再生成します。レイヤーやスタイルを変更すると通常は自動で更新されますが、反応がない場合はこちらを使ってください。"
+
+msgid "gui.tools.select_short"
+msgstr "範囲選択"
+
+msgid "gui.tools.theme.tip"
+msgstr "色、線幅、文字などの地図スタイルを項目ごとに調整できます。右側にリアルタイムプレビューが表示されます。"
+
+msgid "gui.tools.transit"
+msgstr "公共交通ビュー"
+
+msgid "gui.tools.transit.short"
+msgstr "公共交通マップ"
+
+msgid "gui.transit.ann.credit"
+msgstr "クレジット情報"
+
+msgid "gui.transit.ann.data_notice"
+msgstr "データソースに関する注意"
+
+msgid "gui.transit.ann.disclaimer"
+msgstr "免責事項"
+
+msgid "gui.transit.ann.generated_at"
+msgstr "生成時刻"
+
+msgid "gui.transit.ann.north_arrow"
+msgstr "北向き表示（上が北）"
+
+msgid "gui.transit.ann.scale_info"
+msgstr "縮尺の説明"
+
+msgid "gui.transit.annotations"
+msgstr "注記"
+
+msgid "gui.transit.back_to_line_select"
+msgstr "路線選択に戻る"
+
+msgid "gui.transit.clear_line_selection"
+msgstr "路線選択をクリア"
+
+msgid "gui.transit.edit_file"
+msgstr "地下鉄マップ編集オーバーレイ"
+
+msgid "gui.transit.edit_line_style"
+msgstr "路線スタイルを編集"
+
+msgid "gui.transit.facilities"
+msgstr "接続施設"
+
+msgid "gui.transit.layout_draft"
+msgstr "地理配置の下書き：配置の調整が必要です。交差は乗換を意味しません"
+
+msgid "gui.transit.layout_fallback"
+msgstr "代替レイアウトを使用中です。路線と駅はすべて保持されます"
+
+msgid "gui.transit.legend_enabled"
+msgstr "凡例を表示"
+
+msgid "gui.transit.legend_size"
+msgstr "凡例のサイズ"
+
+msgid "gui.transit.line_select_hint"
+msgstr "チェックを入れると路線が表示されます。路線を選択すると、下のスタイル設定はその路線だけに適用されます。"
+
+msgid "gui.transit.line_select_title"
+msgstr "路線の選択"
+
+msgid "gui.transit.merge_stations"
+msgstr "停留所を統合"
+
+msgid "gui.transit.no_lines"
+msgstr "このセーブデータには公共交通路線がありません。別のデータを開いてください。"
+
+msgid "gui.transit.no_lines_selected"
+msgstr "路線が選択されていません。先に少なくとも1本の路線を選択してください。"
+
+msgid "gui.transit.no_transport"
+msgstr "このセーブデータに公共交通路線がありません"
+
+msgid "gui.transit.preview"
+msgstr "プレビュー"
+
+msgid "gui.transit.preview_btn"
+msgstr "プレビュー"
+
+msgid "gui.transit.result_broken"
+msgstr "公共交通マップの結果を表示できません。"
+
+msgid "gui.transit.result_empty"
+msgstr ""
+"まだ生成されていません。\n"
+"\n"
+"上の「{button}」をクリックして開始してください。"
+
+msgid "gui.transit.result_note"
+msgstr "現在の設定で公共交通マップを一括生成します。「路線／路線スタイル」を変更した後、上の「{button}」をクリックしてエクスポートウィンドウを開いてください。"
+
+msgid "gui.transit.settings_title"
+msgstr "公共交通の設定"
+
+msgid "gui.transit.title_enabled"
+msgstr "タイトルを表示"
+
+msgid "gui.transit.title_size"
+msgstr "タイトルのサイズ"
+
+msgid "gui.transit.type.Airplane"
+msgstr "飛行船"
+
+msgid "gui.transit.type.Bus"
+msgstr "バス"
+
+msgid "gui.transit.type.CableCar"
+msgstr "ケーブルカー"
+
+msgid "gui.transit.type.Ferry"
+msgstr "フェリー"
+
+msgid "gui.transit.type.Helicopter"
+msgstr "ヘリコプター"
+
+msgid "gui.transit.type.Metro"
+msgstr "地下鉄"
+
+msgid "gui.transit.type.Monorail"
+msgstr "モノレール"
+
+msgid "gui.transit.type.Ship"
+msgstr "フェリー"
+
+msgid "gui.transit.type.Train"
+msgstr "列車"
+
+msgid "gui.transit.type.Tram"
+msgstr "トラム"
+
+msgid "gui.transit.type.Trolleybus"
+msgstr "トロリーバス"
+
+msgid "gui.transit.view_state.hidden"
+msgstr "路線、停留所、停留所名は非表示です"
+
+msgid "gui.transit.view_state.synced"
+msgstr "停留所と停留所名は路線の選択に連動します"
+
+msgid "gui.transit.view_summary"
+msgstr "公共交通ビュー：{count} 路線を選択；{state}"
+
+msgid "gui.transit.water_unverified"
+msgstr "水域が検証されていないため、水面なしの路線図を生成しました。"
+
+msgid "gui.transit_line.color.note"
+msgstr "路線の色はセーブデータで定義されています。ここで色を確認するには路線を選択してください。"
+
+msgid "gui.transit_line.default.hint"
+msgstr "路線が選択されていません。値は既定の路線スタイルに適用されます"
+
+msgid "gui.transit_line.style.hint"
+msgstr "路線のスタイル：色と幅"
+
+msgid "gui.transit_type.Airplane"
+msgstr "飛行機"
+
+msgid "gui.transit_type.Blimp"
+msgstr "飛行船"
+
+msgid "gui.transit_type.Bus"
+msgstr "バス"
+
+msgid "gui.transit_type.CableCar"
+msgstr "ケーブルカー"
+
+msgid "gui.transit_type.Ferry"
+msgstr "フェリー"
+
+msgid "gui.transit_type.Helicopter"
+msgstr "ヘリコプター"
+
+msgid "gui.transit_type.Metro"
+msgstr "地下鉄"
+
+msgid "gui.transit_type.Monorail"
+msgstr "モノレール"
+
+msgid "gui.transit_type.Ship"
+msgstr "フェリー"
+
+msgid "gui.transit_type.Train"
+msgstr "列車"
+
+msgid "gui.transit_type.Tram"
+msgstr "トラム"
+
+msgid "gui.transit_type.Trolleybus"
+msgstr "トロリーバス"
+
+msgid "gui.transit_view.choose_lines"
+msgstr "路線を選択…"
+
+msgid "gui.transit_view.density.sparse"
+msgstr "段階的な間引き"
+
+msgid "gui.transit_view.density.tiered"
+msgstr "段階表示"
+
+msgid "gui.transit_view.hint.fade"
+msgstr "公共交通ビューでマップを白くする度合いです。0%は元の色、100%は完全な白です。まずは60%がおすすめです。"
+
+msgid "gui.transit_view.hint.labels"
+msgstr "「名称の間隔」は路線名を表示する間隔で、値が大きいほど少なくなります。「名称のサイズ」はバッジ文字の大きさ（ピクセル）です。"
+
+msgid "gui.transit_view.hint.stations"
+msgstr "「駅のサイズ」は駅を示す円の直径（ピクセル）です。乗換駅はテーマで設定した比率に応じて自動的に大きくなります。「近くの停留所を統合」を有効にすると、「統合距離」より近い停留所は1つのラベルにまとまります。ラベルのみに適用され、路線の経路は変わりません。"
+
+msgid "gui.transit_view.independent_layers"
+msgstr "独立したレイヤー"
+
+msgid "gui.transit_view.label_interval"
+msgstr "名称の間隔"
+
+msgid "gui.transit_view.layer.base_district"
+msgstr "行政区画のベースマップ"
+
+msgid "gui.transit_view.layer.base_road"
+msgstr "道路ベースマップ"
+
+msgid "gui.transit_view.layer.base_water"
+msgstr "水域のベースマップ"
+
+msgid "gui.transit_view.layer.facilities"
+msgstr "交通施設"
+
+msgid "gui.transit_view.layer.facility_names"
+msgstr "アイコン名"
+
+msgid "gui.transit_view.layer.line_labels"
+msgstr "路線名"
+
+msgid "gui.transit_view.layer.lines"
+msgstr "路線"
+
+msgid "gui.transit_view.layer.stations"
+msgstr "駅"
+
+msgid "gui.transit_view.section.view_layers"
+msgstr "表示とレイヤー"
+
+msgid "gui.tree.length"
+msgstr "長さ"
+
+msgid "gui.view.city_map"
+msgstr "都市マップ"
+
+msgid "gui.view.open_to_start"
+msgstr "都市のセーブデータを開いて開始"
+
+msgid "gui.viewer.unavailable"
+msgstr ""
+"中央プレビューを利用できません\n"
+"\n"
+"{detail}"
+
+msgid "gui.workspace.view"
+msgstr "表示"
+
+msgid "gui.zone.district_fallback"
+msgstr "地区 #{id}"
+
+msgid "gui.zone.park_fallback"
+msgstr "用途地域 #{id}"
+
+msgid "gui.zoom.city"
+msgstr "都市"
+
+msgid "gui.zoom.district"
+msgstr "地区"
+
+msgid "gui.zoom.region"
+msgstr "エリア"
+
+msgid "lang.en"
+msgstr "English"
+
+msgid "lang.zh-CN"
+msgstr "簡体字中国語"
+
+msgid "metro.annotation.credit"
+msgstr "地図制作：CSLModernMap"
+
+msgid "metro.annotation.data_notice"
+msgstr "駅、路線、運行情報はゲームのセーブデータをエクスポートした時点の状態です"
+
+msgid "metro.annotation.disclaimer"
+msgstr "路線の形状を示す模式図です。実際の距離や方位は表しません"
+
+msgid "metro.annotation.generated"
+msgstr "生成日時：{time}"
+
+msgid "metro.annotation.north"
+msgstr "↑ 北"
+
+msgid "metro.annotation.scale_adaptive"
+msgstr "模式図の縮尺：1マス≈{spacing}m；局所倍率 {low}–{high}×；強さ {strength}%；キャンバス倍率 {zoom}×"
+
+msgid "metro.annotation.scale_fixed"
+msgstr "路線図の縮尺：1グリッド≈{spacing}m；適応縮尺オフ；キャンバスの拡大率 {zoom}×"
+
+msgid "metro.legend.airport"
+msgstr "空港アクセス"
+
+msgid "metro.legend.port"
+msgstr "旅客港"
+
+msgid "metro.legend.rail"
+msgstr "鉄道乗換駅"
+
+msgid "metro.legend.title"
+msgstr "路線図の凡例"
+
+msgid "style.aa.label"
+msgstr "エッジを滑らかにする"
+
+msgid "style.building.border.label"
+msgstr "建物のアウトライン"
+
+msgid "style.building.color.label"
+msgstr "建物の塗りつぶし"
+
+msgid "style.building.color_mode.label"
+msgstr "建物の塗りつぶし方式"
+
+msgid "style.building.color_mode.value.poi"
+msgstr "場所別に色を付ける"
+
+msgid "style.building.color_mode.value.uniform"
+msgstr "均一な色"
+
+msgid "style.building.default.label"
+msgstr "建物の色を統一"
+
+msgid "style.building.poi_tint.contrast.label"
+msgstr "場所の色合いのコントラスト"
+
+msgid "style.building.scheme.label"
+msgstr "建物の配色"
+
+msgid "style.building.scheme.value.dark"
+msgstr "ダークグレー"
+
+msgid "style.building.scheme.value.light"
+msgstr "薄いグレーで統一"
+
+msgid "style.building.scheme.value.original"
+msgstr "種類別"
+
+msgid "style.building.shadow.label"
+msgstr "建物の影"
+
+msgid "style.built_area.color.label"
+msgstr "市街地の塗りつぶし"
+
+msgid "style.built_area.smooth.label"
+msgstr "輪郭の平滑化"
+
+msgid "style.detail.label"
+msgstr "地図の詳細度"
+
+msgid "style.detail.value.auto"
+msgstr "自動"
+
+msgid "style.detail.value.full"
+msgstr "詳細"
+
+msgid "style.detail.value.simple"
+msgstr "シンプル"
+
+msgid "style.district.color.label"
+msgstr "境界線の色"
+
+msgid "style.district.opacity.label"
+msgstr "エリアの塗りつぶし"
+
+msgid "style.district.width.label"
+msgstr "境界線の幅"
+
+msgid "style.edit.color.label"
+msgstr "オブジェクトの色"
+
+msgid "style.edit.connected.label"
+msgstr "道路の接続を維持"
+
+msgid "style.edit.filter.label"
+msgstr "オブジェクトを選択"
+
+msgid "style.edit.filter.value.all"
+msgstr "すべてのオブジェクト"
+
+msgid "style.edit.filter.value.building"
+msgstr "建物"
+
+msgid "style.edit.filter.value.icon"
+msgstr "施設アイコン"
+
+msgid "style.edit.filter.value.label"
+msgstr "テキストラベル"
+
+msgid "style.edit.filter.value.road"
+msgstr "道路"
+
+msgid "style.edit.lock.label"
+msgstr "オブジェクトをロック"
+
+msgid "style.edit.name.label"
+msgstr "表示名"
+
+msgid "style.edit.offset_x.label"
+msgstr "水平オフセット (px)"
+
+msgid "style.edit.offset_y.label"
+msgstr "垂直オフセット (px)"
+
+msgid "style.edit.snap.label"
+msgstr "近くのオブジェクトにスナップ"
+
+msgid "style.edit.width.label"
+msgstr "オブジェクトの幅"
+
+msgid "style.label.color.building.label"
+msgstr "建物名の文字色"
+
+msgid "style.label.color.district.label"
+msgstr "区画の文字色"
+
+msgid "style.label.color.label"
+msgstr "文字色"
+
+msgid "style.label.color.park.label"
+msgstr "公園ラベルの色"
+
+msgid "style.label.color.road.label"
+msgstr "道路名の文字色"
+
+msgid "style.label.color.stop.label"
+msgstr "駅名ラベルの色"
+
+msgid "style.label.districts.label"
+msgstr "行政区画名"
+
+msgid "style.label.font.building.label"
+msgstr "建物のフォント"
+
+msgid "style.label.font.district.label"
+msgstr "行政区画のフォント"
+
+msgid "style.label.font.park.label"
+msgstr "公園のフォント"
+
+msgid "style.label.font.road.label"
+msgstr "道路のフォント"
+
+msgid "style.label.font.stop.label"
+msgstr "停留所のフォント"
+
+msgid "style.label.outline.building.label"
+msgstr "建物ラベルの縁取り"
+
+msgid "style.label.outline.district.label"
+msgstr "地区ラベルの縁取り"
+
+msgid "style.label.outline.label"
+msgstr "文字の縁取り"
+
+msgid "style.label.outline.park.label"
+msgstr "公園名の文字の縁取り"
+
+msgid "style.label.outline.road.label"
+msgstr "道路名の縁取り"
+
+msgid "style.label.outline.stop.label"
+msgstr "駅ラベルの縁取り"
+
+msgid "style.label.places.label"
+msgstr "場所名"
+
+msgid "style.label.roads.label"
+msgstr "道路名"
+
+msgid "style.label.size.building.label"
+msgstr "建物名の文字サイズ"
+
+msgid "style.label.size.district.label"
+msgstr "区画名の文字サイズ"
+
+msgid "style.label.size.label"
+msgstr "文字サイズ"
+
+msgid "style.label.size.park.label"
+msgstr "公園ラベルのサイズ"
+
+msgid "style.label.size.road.label"
+msgstr "道路名の文字サイズ"
+
+msgid "style.label.size.stop.label"
+msgstr "停留所名の文字サイズ"
+
+msgid "style.label.stroke_color.building.label"
+msgstr "建物名のアウトライン色"
+
+msgid "style.label.stroke_color.district.label"
+msgstr "地区ラベルの縁取り色"
+
+msgid "style.label.stroke_color.park.label"
+msgstr "用途地域ラベルの縁取り色"
+
+msgid "style.label.stroke_color.road.label"
+msgstr "道路ラベルの縁取り色"
+
+msgid "style.label.stroke_color.stop.label"
+msgstr "停留所名のアウトライン色"
+
+msgid "style.label.stroke_width.building.label"
+msgstr "建物名のアウトライン幅"
+
+msgid "style.label.stroke_width.district.label"
+msgstr "行政区画名のアウトライン幅"
+
+msgid "style.label.stroke_width.park.label"
+msgstr "用途地域ラベルの縁取り幅"
+
+msgid "style.label.stroke_width.road.label"
+msgstr "道路ラベルの縁取り幅"
+
+msgid "style.label.stroke_width.stop.label"
+msgstr "停留所名のアウトライン幅"
+
+msgid "style.land_use.grid.label"
+msgstr "用途地域グリッドを表示"
+
+msgid "style.land_use.opacity.label"
+msgstr "用途地域グリッドの不透明度"
+
+msgid "style.metro.language.label"
+msgstr "駅名の言語"
+
+msgid "style.metro.language.value.bilingual"
+msgstr "中英バイリンガル"
+
+msgid "style.metro.language.value.zh"
+msgstr "中国語"
+
+msgid "style.metro.names.label"
+msgstr "駅名表示"
+
+msgid "style.metro.names.value.all"
+msgstr "すべての駅"
+
+msgid "style.metro.names.value.custom"
+msgstr "駅名をカスタマイズ"
+
+msgid "style.metro.names.value.none"
+msgstr "駅名を非表示"
+
+msgid "style.metro.palette.label"
+msgstr "路線の配色"
+
+msgid "style.metro.palette.value.classic"
+msgstr "クラシック配色"
+
+msgid "style.metro.palette.value.game"
+msgstr "ゲームの色"
+
+msgid "style.metro.palette.value.soft"
+msgstr "ソフト"
+
+msgid "style.metro.title.label"
+msgstr "マップタイトル"
+
+msgid "style.poi.density.label"
+msgstr "表示密度"
+
+msgid "style.poi.density.value.auto"
+msgstr "自動回避"
+
+msgid "style.poi.density.value.full"
+msgstr "アイコンを多めに表示"
+
+msgid "style.poi.density.value.sparse"
+msgstr "少なめ"
+
+msgid "style.poi.distance.label"
+msgstr "統合距離 (m)"
+
+msgid "style.poi.font.label"
+msgstr "場所名のフォント"
+
+msgid "style.poi.game_names.label"
+msgstr "ゲームが自動生成した建物名を使用"
+
+msgid "style.poi.merge.label"
+msgstr "同種の場所を統合"
+
+msgid "style.poi.name_size.label"
+msgstr "施設名のサイズ"
+
+msgid "style.poi.name_stroke.label"
+msgstr "場所名の縁取り色"
+
+msgid "style.poi.name_stroke_ratio.label"
+msgstr "施設名のアウトライン幅"
+
+msgid "style.poi.names.label"
+msgstr "施設名を表示"
+
+msgid "style.poi.set.label"
+msgstr "アイコンのスタイル"
+
+msgid "style.poi.set.value.color"
+msgstr "カラーアイコン"
+
+msgid "style.poi.set.value.modern"
+msgstr "CSLModernMap"
+
+msgid "style.poi.set.value.modern-dark"
+msgstr "ダーク"
+
+msgid "style.poi.set.value.simple"
+msgstr "シンプルなアイコン"
+
+msgid "style.poi.size.label"
+msgstr "アイコンサイズ"
+
+msgid "style.procedural_objects.border.label"
+msgstr "輪郭を表示"
+
+msgid "style.procedural_objects.color.label"
+msgstr "オブジェクトの塗り"
+
+msgid "style.quality.label"
+msgstr "画質"
+
+msgid "style.quality.value.best"
+msgstr "高品質"
+
+msgid "style.quality.value.high"
+msgstr "高画質"
+
+msgid "style.quality.value.standard"
+msgstr "標準"
+
+msgid "style.railway.color.label"
+msgstr "線路の色"
+
+msgid "style.railway.sleepers.label"
+msgstr "枕木を表示"
+
+msgid "style.railway.width.label"
+msgstr "線路の太さ"
+
+msgid "style.range.label"
+msgstr "地図の範囲"
+
+msgid "style.range.value.center"
+msgstr "都市中心部"
+
+msgid "style.range.value.city"
+msgstr "都市全体"
+
+msgid "style.range.value.custom"
+msgstr "カスタム…"
+
+msgid "style.range.value.selection"
+msgstr "選択中の範囲"
+
+msgid "style.road.accurate_intersections.desc"
+msgstr "道路の重なり、高架やトンネルによる遮蔽、継ぎ目を正確に計算します。複雑な都市では時間がかかります。"
+
+msgid "style.road.accurate_intersections.label"
+msgstr "正確な交差点"
+
+msgid "style.road.border.label"
+msgstr "道路の縁取り"
+
+msgid "style.road.bridge.label"
+msgstr "橋を表示"
+
+msgid "style.road.color.label"
+msgstr "一般道路"
+
+msgid "style.road.game_names.label"
+msgstr "ゲームが自動生成した道路名を使用"
+
+msgid "style.road.highway.label"
+msgstr "高速道路"
+
+msgid "style.road.level.beautification.border.label"
+msgstr "歩道／自転車道のアウトライン"
+
+msgid "style.road.level.beautification.fill.label"
+msgstr "歩道／自転車道の塗り"
+
+msgid "style.road.level.beautification.width.label"
+msgstr "歩道／自転車道の幅"
+
+msgid "style.road.level.branch.border.label"
+msgstr "支線のアウトライン"
+
+msgid "style.road.level.branch.fill.label"
+msgstr "支線の塗りつぶし"
+
+msgid "style.road.level.branch.width.label"
+msgstr "支線の幅"
+
+msgid "style.road.level.highway.border.label"
+msgstr "高速道路／自動車専用道路のアウトライン"
+
+msgid "style.road.level.highway.fill.label"
+msgstr "高速道路／自動車専用道路の塗りつぶし"
+
+msgid "style.road.level.highway.width.label"
+msgstr "高速道路／自動車専用道路の幅"
+
+msgid "style.road.level.main.border.label"
+msgstr "幹線道路のアウトライン"
+
+msgid "style.road.level.main.fill.label"
+msgstr "幹線道路の塗り"
+
+msgid "style.road.level.main.width.label"
+msgstr "幹線道路の幅"
+
+msgid "style.road.level.special.border.label"
+msgstr "特殊道路の縁取り"
+
+msgid "style.road.level.special.fill.label"
+msgstr "特殊道路の塗りつぶし"
+
+msgid "style.road.level.special.width.label"
+msgstr "特殊道路の幅"
+
+msgid "style.road.names.label"
+msgstr "道路名を表示"
+
+msgid "style.road.tunnel.label"
+msgstr "トンネルを表示"
+
+msgid "style.road.width.label"
+msgstr "道路の太さ"
+
+msgid "style.rotation.label"
+msgstr "回転"
+
+msgid "style.rotation.value.0"
+msgstr "0°"
+
+msgid "style.rotation.value.180"
+msgstr "180°"
+
+msgid "style.rotation.value.270"
+msgstr "270°"
+
+msgid "style.rotation.value.90"
+msgstr "90°"
+
+msgid "style.size.label"
+msgstr "画像サイズ"
+
+msgid "style.size.value.2k"
+msgstr "2K · 2048"
+
+msgid "style.size.value.4k"
+msgstr "4K · 4096"
+
+msgid "style.size.value.8k"
+msgstr "8K · 7680"
+
+msgid "style.size.value.custom"
+msgstr "カスタム…"
+
+msgid "style.terrain.color.label"
+msgstr "陸地の色"
+
+msgid "style.terrain.forest.label"
+msgstr "植生"
+
+msgid "style.terrain.mode.label"
+msgstr "地形の表示"
+
+msgid "style.terrain.mode.value.shade"
+msgstr "標高帯＋陰影"
+
+msgid "style.terrain.mode.value.simple"
+msgstr "標高帯"
+
+msgid "style.terrain.shade.label"
+msgstr "陰影"
+
+msgid "style.terrain.sun.label"
+msgstr "光の向き"
+
+msgid "style.theme.label"
+msgstr "地図テーマ"
+
+msgid "style.theme.value.amap"
+msgstr "明るい地図"
+
+msgid "style.theme.value.dark"
+msgstr "ダークスタイル"
+
+msgid "style.theme.value.google"
+msgstr "暖色系ナチュラル"
+
+msgid "style.theme.value.modern"
+msgstr "ミニマルモダン"
+
+msgid "style.theme.value.paper"
+msgstr "レトロスタイル"
+
+msgid "style.traffic.busy.label"
+msgstr "混雑"
+
+msgid "style.traffic.free.label"
+msgstr "円滑"
+
+msgid "style.traffic.slow.label"
+msgstr "渋滞"
+
+msgid "style.transport.distance.label"
+msgstr "統合距離 (m)"
+
+msgid "style.transport.font.label"
+msgstr "駅名の文字サイズ"
+
+msgid "style.transport.legend.label"
+msgstr "凡例の位置"
+
+msgid "style.transport.legend.value.bl"
+msgstr "左下"
+
+msgid "style.transport.legend.value.br"
+msgstr "右下"
+
+msgid "style.transport.legend.value.none"
+msgstr "非表示"
+
+msgid "style.transport.mask.label"
+msgstr "ベースマップのフェード"
+
+msgid "style.transport.merge.label"
+msgstr "近くの停留所を統合"
+
+msgid "style.transport.names.label"
+msgstr "駅名を表示"
+
+msgid "style.transport.size.label"
+msgstr "駅のサイズ"
+
+msgid "style.transport.station_names.label"
+msgstr "駅名"
+
+msgid "style.transport.stations.label"
+msgstr "駅の円"
+
+msgid "style.transport.width.label"
+msgstr "路線の太さ"
+
+msgid "style.view.grid.label"
+msgstr "グリッド"
+
+msgid "style.view.info.label"
+msgstr "情報バー"
+
+msgid "style.view.rulers.label"
+msgstr "ルーラー"
+
+msgid "style.view.sidebar.label"
+msgstr "ナビゲーションバー"
+
+msgid "style.view.status.label"
+msgstr "ステータスバー"
+
+msgid "style.water.border.label"
+msgstr "海岸線の色"
+
+msgid "style.water.color.label"
+msgstr "水域の塗りつぶし"
+
+msgid "style.water.smooth.label"
+msgstr "水辺を滑らかにする（エクスポートのみ）"
+
+msgid "style.water.width.label"
+msgstr "海岸線の幅"
+
+msgid "style.watermark.opacity.label"
+msgstr "透かしの不透明度"
+
+msgid "style.watermark.position.label"
+msgstr "透かしの位置"
+
+msgid "style.watermark.position.value.bl"
+msgstr "左下"
+
+msgid "style.watermark.position.value.br"
+msgstr "右下"
+
+msgid "style.watermark.text.label"
+msgstr "透かし文字"
+
+msgid "style.zone.color.label"
+msgstr "境界線の色"
+
+msgid "style.zone.opacity.label"
+msgstr "エリアの塗りつぶし"
+
+msgid "transport.station_prefix"
+msgstr "駅"
+
+msgid "ui.guir_backend.__init__.6bea77acef"
+msgstr "標準"
+
+msgid "ui.guir_backend._extract_city_info.ec7227d6cd"
+msgstr "都市が不明です"
+
+msgid "ui.guir_backend._handler_water_smooth.6bea77acef"
+msgstr "標準"
+
+msgid "ui.guir_backend._handler_water_smooth.f038053bed"
+msgstr "強い"
+
+msgid "ui.guir_backend._load_persisted_state.6bea77acef"
+msgstr "標準"
+
+msgid "ui.guir_backend._poll.28e5fa4dbd"
+msgstr "レンダリング結果を読み込めませんでした"
+
+msgid "ui.guir_backend._poll.528c98ff25"
+msgstr "レンダリングプロセスが予期せず終了しました（終了コード {p0}）"
+
+msgid "ui.guir_backend._poll.effd01f5d1"
+msgstr "レンダリング結果を読み取れませんでした：{p0}"
+
+msgid "ui.guir_backend.check_cancel.e4267bce68"
+msgstr "PNG エクスポートをキャンセルしました"
+
+msgid "ui.guir_backend.discard_png_result.850166ad36"
+msgstr "PNG の一時フォルダーを削除できませんでした：%s"
+
+msgid "ui.guir_backend.facility_poi_catalog.0fd9e19000"
+msgstr "動物園"
+
+msgid "ui.guir_backend.facility_poi_catalog.163ee5a292"
+msgstr "貨物港"
+
+msgid "ui.guir_backend.facility_poi_catalog.4513bba543"
+msgstr "大学"
+
+msgid "ui.guir_backend.facility_poi_catalog.6a5347ac5f"
+msgstr "空港"
+
+msgid "ui.guir_backend.facility_poi_catalog.82be57d9af"
+msgstr "遊園地"
+
+msgid "ui.guir_backend.facility_poi_catalog.a0cc394994"
+msgstr "旅客港"
+
+msgid "ui.guir_backend.facility_poi_catalog.b2c3ea6ae5"
+msgstr "自然保護区"
+
+msgid "ui.guir_backend.facility_poi_catalog.cf3e1046a3"
+msgstr "キャンパス"
+
+msgid "ui.guir_backend.facility_poi_catalog.e852dca995"
+msgstr "公園"
+
+msgid "ui.guir_backend.field_value.6bea77acef"
+msgstr "標準"
+
+msgid "ui.guir_backend.progress.ab09202a2b"
+msgstr "地下鉄路線図の生成をキャンセルしました"
+
+msgid "ui.guir_backend.region_catalog.06f15683dd"
+msgstr "用途地域"
+
+msgid "ui.guir_backend.region_catalog.4f56683e73"
+msgstr "地区"
+
+msgid "ui.object_inspector.catalog.06f15683dd"
+msgstr "用途地域"
+
+msgid "ui.object_inspector.catalog.0711877f34"
+msgstr "バス"
+
+msgid "ui.object_inspector.catalog.109688e695"
+msgstr "支線道路"
+
+msgid "ui.object_inspector.catalog.10b329e9a6"
+msgstr "鉄道線路"
+
+msgid "ui.object_inspector.catalog.170c9b910c"
+msgstr "トラム"
+
+msgid "ui.object_inspector.catalog.1f6835c0d8"
+msgstr "病院"
+
+msgid "ui.object_inspector.catalog.2a8548b84f"
+msgstr "住宅"
+
+msgid "ui.object_inspector.catalog.341394deda"
+msgstr "ヘリコプター"
+
+msgid "ui.object_inspector.catalog.358023d968"
+msgstr "トロリーバス"
+
+msgid "ui.object_inspector.catalog.35cde54ceb"
+msgstr "景観歩道"
+
+msgid "ui.object_inspector.catalog.3cb53b9c23"
+msgstr "公園エリア"
+
+msgid "ui.object_inspector.catalog.3fb4ae5556"
+msgstr "交通路線"
+
+msgid "ui.object_inspector.catalog.4513bba543"
+msgstr "大学"
+
+msgid "ui.object_inspector.catalog.4a91350aa5"
+msgstr "消防署"
+
+msgid "ui.object_inspector.catalog.4f56683e73"
+msgstr "地区"
+
+msgid "ui.object_inspector.catalog.534c553126"
+msgstr "高速道路"
+
+msgid "ui.object_inspector.catalog.55d2d31f2a"
+msgstr "トンネル"
+
+msgid "ui.object_inspector.catalog.5b46860a8e"
+msgstr "建物"
+
+msgid "ui.object_inspector.catalog.666dd3886c"
+msgstr "交通施設以外"
+
+msgid "ui.object_inspector.catalog.674ddf7793"
+msgstr "消防署"
+
+msgid "ui.object_inspector.catalog.6a5347ac5f"
+msgstr "空港"
+
+msgid "ui.object_inspector.catalog.70b41c7440"
+msgstr "ケーブルカー"
+
+msgid "ui.object_inspector.catalog.7823428e45"
+msgstr "オフィス"
+
+msgid "ui.object_inspector.catalog.7f2e47390d"
+msgstr "航空機"
+
+msgid "ui.object_inspector.catalog.7f48b47270"
+msgstr "フェリー"
+
+msgid "ui.object_inspector.catalog.85155a34a5"
+msgstr "一般的な場所"
+
+msgid "ui.object_inspector.catalog.85f71ec8da"
+msgstr "幹線道路"
+
+msgid "ui.object_inspector.catalog.92f0b57fd4"
+msgstr "船舶"
+
+msgid "ui.object_inspector.catalog.97492a0e5d"
+msgstr "列車"
+
+msgid "ui.object_inspector.catalog.9fc7d0cf1d"
+msgstr "場所アイコン"
+
+msgid "ui.object_inspector.catalog.a44c7ba211"
+msgstr "道路"
+
+msgid "ui.object_inspector.catalog.a59fe62777"
+msgstr "駅"
+
+msgid "ui.object_inspector.catalog.af5a323677"
+msgstr "工業"
+
+msgid "ui.object_inspector.catalog.b1c0532855"
+msgstr "商業"
+
+msgid "ui.object_inspector.catalog.b76daf0239"
+msgstr "警察施設"
+
+msgid "ui.object_inspector.catalog.b8466cd555"
+msgstr "地下鉄"
+
+msgid "ui.object_inspector.catalog.c9a0955518"
+msgstr "地面"
+
+msgid "ui.object_inspector.catalog.cf7a18690f"
+msgstr "モノレール"
+
+msgid "ui.object_inspector.catalog.d2909f1647"
+msgstr "その他"
+
+msgid "ui.object_inspector.catalog.dc6e2aafeb"
+msgstr "学校"
+
+msgid "ui.object_inspector.catalog.e852dca995"
+msgstr "公園"
+
+msgid "ui.object_inspector.catalog.ed867ccbf0"
+msgstr "交通の駅"
+
+msgid "ui.object_inspector.catalog.ede0519a4c"
+msgstr "特殊道路"
+
+msgid "ui.object_inspector.catalog.f543a15123"
+msgstr "高架"
+
+msgid "ui.object_inspector.catalog.f7ccd76bf8"
+msgstr "交通施設"
+
+msgid "ui.object_inspector.describe.047fa9d803"
+msgstr "道路全体の表示"
+
+msgid "ui.object_inspector.describe.0af02ac692"
+msgstr "レイアウトと統合（プレビュー）"
+
+msgid "ui.object_inspector.describe.0af2dc2f96"
+msgstr "現在のモデル内の停留所数"
+
+msgid "ui.object_inspector.describe.0c70665b6e"
+msgstr "いいえ"
+
+msgid "ui.object_inspector.describe.145219e726"
+msgstr "非表示"
+
+msgid "ui.object_inspector.describe.1712bbea62"
+msgstr "すべての建物に適用されます。"
+
+msgid "ui.object_inspector.describe.18202c5a9d"
+msgstr "線路の種類"
+
+msgid "ui.object_inspector.describe.198dd9da2d"
+msgstr "名称の表示対象"
+
+msgid "ui.object_inspector.describe.1a1ef51c8d"
+msgstr "用途／施設カテゴリ"
+
+msgid "ui.object_inspector.describe.1c786295e3"
+msgstr "密度と重なり回避はプレビュー内のすべての施設に適用されます。グループ統合は次に適用されます："
+
+msgid "ui.object_inspector.describe.1d4da9cc30"
+msgstr "施設内の建物数"
+
+msgid "ui.object_inspector.describe.1efb861668"
+msgstr "路線の外観"
+
+msgid "ui.object_inspector.describe.23fb29e3a5"
+msgstr "含まれる道路区間"
+
+msgid "ui.object_inspector.describe.29941bc99d"
+msgstr "選択した区間の長さ"
+
+msgid "ui.object_inspector.describe.2abba61725"
+msgstr "線路の色"
+
+msgid "ui.object_inspector.describe.2b42dd52ee"
+msgstr "建物の外観"
+
+msgid "ui.object_inspector.describe.2cb3f5a066"
+msgstr "線路の表示"
+
+msgid "ui.object_inspector.describe.34cf4e5507"
+msgstr "アイコンリソースがないか、種類が登録されていません。場所のマッピングを確認してください。"
+
+msgid "ui.object_inspector.describe.395ee8e80b"
+msgstr "少なめ"
+
+msgid "ui.object_inspector.describe.3c18993515"
+msgstr "すべての施設で統合を有効にする"
+
+msgid "ui.object_inspector.describe.3fbdb548d1"
+msgstr "名称サイズ（すべての場所）"
+
+msgid "ui.object_inspector.describe.4247a9c3ad"
+msgstr "交通施設の表示"
+
+msgid "ui.object_inspector.describe.42a2766d08"
+msgstr "線路装飾の色"
+
+msgid "ui.object_inspector.describe.4317d9a490"
+msgstr "未登録の種類"
+
+msgid "ui.object_inspector.describe.43f6aa3376"
+msgstr "代替色"
+
+msgid "ui.object_inspector.describe.44c9e48874"
+msgstr "道路の形状"
+
+msgid "ui.object_inspector.describe.492aa3d50c"
+msgstr "用途カテゴリ"
+
+msgid "ui.object_inspector.describe.4a0788a10b"
+msgstr "表示優先度"
+
+msgid "ui.object_inspector.describe.4c93e617e4"
+msgstr "すべての道路に適用されます。"
+
+msgid "ui.object_inspector.describe.4d99c976be"
+msgstr "利用可能"
+
+msgid "ui.object_inspector.describe.4ff1d894c3"
+msgstr "現在の用途色"
+
+msgid "ui.object_inspector.describe.54f5431ad3"
+msgstr "塗りつぶし色"
+
+msgid "ui.object_inspector.describe.57baf59886"
+msgstr "運行路線数"
+
+msgid "ui.object_inspector.describe.5807d1dc81"
+msgstr "全路線の線幅"
+
+msgid "ui.object_inspector.describe.5910b70e80"
+msgstr "すべての場所ラベルのサイズ"
+
+msgid "ui.object_inspector.describe.5d2232b103"
+msgstr "境界線と塗りつぶし"
+
+msgid "ui.object_inspector.describe.5e3f198ad9"
+msgstr "境界線の色"
+
+msgid "ui.object_inspector.describe.5e85b1c73c"
+msgstr "アイコンの種類"
+
+msgid "ui.object_inspector.describe.614eb9e832"
+msgstr "プレビュー内の路線距離"
+
+msgid "ui.object_inspector.describe.638668bac9"
+msgstr "高密度"
+
+msgid "ui.object_inspector.describe.67bee6acfc"
+msgstr "名前なし"
+
+msgid "ui.object_inspector.describe.6bea77acef"
+msgstr "標準"
+
+msgid "ui.object_inspector.describe.6efd17aac1"
+msgstr "表示グループ"
+
+msgid "ui.object_inspector.describe.6fb3f1e4e4"
+msgstr "塗りつぶしの不透明度"
+
+msgid "ui.object_inspector.describe.711617512b"
+msgstr "均一な塗りつぶし"
+
+msgid "ui.object_inspector.describe.72c55cb5e7"
+msgstr "建物の用途"
+
+msgid "ui.object_inspector.describe.747c2ffdcb"
+msgstr "接続用の路面または不明なクラスです。道路テーマ全体で調整してください。"
+
+msgid "ui.object_inspector.describe.756762e293"
+msgstr "未指定"
+
+msgid "ui.object_inspector.describe.77007520ba"
+msgstr "線のスタイルはこの交通手段に適用され、ラベル設定はこのビューのすべての路線に適用されます。"
+
+msgid "ui.object_inspector.describe.7aeb540769"
+msgstr "アイコンサイズ"
+
+msgid "ui.object_inspector.describe.81a3bdaa03"
+msgstr "実際の幅"
+
+msgid "ui.object_inspector.describe.836cbed510"
+msgstr "色分け方法"
+
+msgid "ui.object_inspector.describe.86a200764b"
+msgstr "すべての用途地域に適用されます。"
+
+msgid "ui.object_inspector.describe.876c0c149d"
+msgstr "元エリア数"
+
+msgid "ui.object_inspector.describe.8b301292a2"
+msgstr "路線名のサイズ"
+
+msgid "ui.object_inspector.describe.9035e1788e"
+msgstr "密度による絞り込み"
+
+msgid "ui.object_inspector.describe.9659c81207"
+msgstr "均一な色"
+
+msgid "ui.object_inspector.describe.995f11ecdc"
+msgstr "運行路線"
+
+msgid "ui.object_inspector.describe.9a6361d604"
+msgstr "最小表示幅"
+
+msgid "ui.object_inspector.describe.9c41525ce4"
+msgstr "オブジェクトの役割"
+
+msgid "ui.object_inspector.describe.9f1de8eaf7"
+msgstr "施設の本体数"
+
+msgid "ui.object_inspector.describe.9fe74bef39"
+msgstr "。PNG の設定は変更されません。"
+
+msgid "ui.object_inspector.describe.a54fa2904e"
+msgstr "サイズと外観はすべての場所に適用され、名称の切り替えは下に表示されるグループにだけ適用されます。"
+
+msgid "ui.object_inspector.describe.a76488cf50"
+msgstr "路線色（ソースデータ）"
+
+msgid "ui.object_inspector.describe.a8a9631df4"
+msgstr "路線名を表示"
+
+msgid "ui.object_inspector.describe.a8e3637209"
+msgstr "境界線の幅"
+
+msgid "ui.object_inspector.describe.a9f595ad22"
+msgstr "統合を許可"
+
+msgid "ui.object_inspector.describe.aa3955f916"
+msgstr "場所の密度"
+
+msgid "ui.object_inspector.describe.abd181271c"
+msgstr "平均標高（m）"
+
+msgid "ui.object_inspector.describe.ac0bf8c3b7"
+msgstr "すべての交通関連施設に適用されます。"
+
+msgid "ui.object_inspector.describe.ac41b1adda"
+msgstr "駅名のアウトラインとフォント"
+
+msgid "ui.object_inspector.describe.ae299c3aef"
+msgstr "このスタイルを使うすべての道路に適用されます。選択中の道路は効果の参考として表示されます。"
+
+msgid "ui.object_inspector.describe.b05f246ac9"
+msgstr "現在のビューのすべての駅に適用されます。"
+
+msgid "ui.object_inspector.describe.b1349d2cb4"
+msgstr "施設レベル"
+
+msgid "ui.object_inspector.describe.b5141d3d19"
+msgstr "はい"
+
+msgid "ui.object_inspector.describe.b6d3e078db"
+msgstr "このオブジェクトで使用できるスタイル設定はありません。"
+
+msgid "ui.object_inspector.describe.b842da00b0"
+msgstr "リソースがありません"
+
+msgid "ui.object_inspector.describe.b87011f842"
+msgstr "路線名を表示（全路線）"
+
+msgid "ui.object_inspector.describe.b874b614a7"
+msgstr "選択した経路の長さ"
+
+msgid "ui.object_inspector.describe.bc8600a16e"
+msgstr "アイコンと名称"
+
+msgid "ui.object_inspector.describe.bf21786b6a"
+msgstr "名称の縁取りとフォント"
+
+msgid "ui.object_inspector.describe.c122178ce4"
+msgstr "交通手段"
+
+msgid "ui.object_inspector.describe.c2ced2decf"
+msgstr "グループの統合距離"
+
+msgid "ui.object_inspector.describe.c3b7111911"
+msgstr "構成建物数"
+
+msgid "ui.object_inspector.describe.c3cdf137f2"
+msgstr "施設名は施設アイコンの表示チャンネルで描画されることがあります。建物の文字スタイルは施設に付属する名前には適用されません。"
+
+msgid "ui.object_inspector.describe.c6c54bf846"
+msgstr "すべての場所ラベルに適用されます。"
+
+msgid "ui.object_inspector.describe.c8a2d11ead"
+msgstr "アイコンのスタイル（すべての施設）"
+
+msgid "ui.object_inspector.describe.c97044edbe"
+msgstr "平均実幅"
+
+msgid "ui.object_inspector.describe.cfcef8fa7d"
+msgstr "路線経路のソース"
+
+msgid "ui.object_inspector.describe.d211657dd1"
+msgstr "駅のサイズ"
+
+msgid "ui.object_inspector.describe.dcbc3f5adb"
+msgstr "色のソース"
+
+msgid "ui.object_inspector.describe.df6859de66"
+msgstr "用途色が一致しない建物にのみ適用されます。"
+
+msgid "ui.object_inspector.describe.e1cfcbb06d"
+msgstr "読み込み待ち"
+
+msgid "ui.object_inspector.describe.e211926d3a"
+msgstr "現在のビューの線幅"
+
+msgid "ui.object_inspector.describe.e3b04e065c"
+msgstr "グループごとに表示を切り替える"
+
+msgid "ui.object_inspector.describe.e4a79af431"
+msgstr "路線 "
+
+msgid "ui.object_inspector.describe.e4f5889abd"
+msgstr "交通手段ごとの線幅"
+
+msgid "ui.object_inspector.describe.e522761331"
+msgstr "名称のソース"
+
+msgid "ui.object_inspector.describe.e55e6f2bac"
+msgstr "色の濃さ"
+
+msgid "ui.object_inspector.describe.e58ee3c2db"
+msgstr "表示幅"
+
+msgid "ui.object_inspector.describe.e5bd2eef37"
+msgstr "駅と駅名"
+
+msgid "ui.object_inspector.describe.ea3973e49b"
+msgstr "アイコンの状態"
+
+msgid "ui.object_inspector.describe.ead247ca08"
+msgstr "アイコンと名称の重なりを防ぐ"
+
+msgid "ui.object_inspector.describe.eccafde326"
+msgstr "駅区間"
+
+msgid "ui.object_inspector.describe.ef34af6177"
+msgstr "駅区間の線幅"
+
+msgid "ui.object_inspector.describe.efc9ada2bd"
+msgstr "地図オブジェクト"
+
+msgid "ui.object_inspector.describe.f2c5395498"
+msgstr "駅名は場所アイコンに付属する名称レイヤーに描画されます。設定はすべての付属名称に適用されます。"
+
+msgid "ui.object_inspector.describe.f38d46b4f4"
+msgstr "施設用途の色"
+
+msgid "ui.object_inspector.describe.f4017deede"
+msgstr "この種類のベースマップ軌道に適用されます。"
+
+msgid "ui.object_inspector.describe.f7ec5c27de"
+msgstr "このアイコングループは非表示です。「グループの表示」で再度有効にできます。"
+
+msgid "ui.object_inspector.describe.f8ddaae464"
+msgstr "エリアの種類"
+
+msgid "ui.object_inspector.describe.f8febafe49"
+msgstr "施設カテゴリ"
+
+msgid "ui.object_inspector.describe.fa715dea69"
+msgstr "アイコンリソースの状態"
+
+msgid "ui.object_inspector.describe.fbd529d0c7"
+msgstr "すべての地区に適用されます。"
+
+msgid "ui.object_inspector.describe.fbe0108a42"
+msgstr "塗りつぶしの代替色"
+
+msgid "ui.object_inspector.describe.fbe666f1e0"
+msgstr "道路ランク"
+
+msgid "ui.object_inspector.fact.0c70665b6e"
+msgstr "いいえ"
+
+msgid "ui.object_inspector.fact.b5141d3d19"
+msgstr "はい"
+
+msgid "ui.object_inspector.names.078838da42"
+msgstr "フォント"
+
+msgid "ui.object_inspector.names.2f66a7f608"
+msgstr "この描画チャンネルの同種ラベルすべてに適用されます。"
+
+msgid "ui.object_inspector.names.3cc1ba50ed"
+msgstr "文字のアウトライン"
+
+msgid "ui.object_inspector.names.a98585871c"
+msgstr "名前を表示"
+
+msgid "ui.object_inspector.names.c86c040c4c"
+msgstr "名称のスタイル"
+
+msgid "ui.object_inspector.names.f21ef4aba5"
+msgstr "文字色"
+
+msgid "ui.object_inspector.names.f71561b5af"
+msgstr "フォントサイズ"
+
+msgid "ui.object_inspector.visibility_field.39e0705286"
+msgstr "アイコンを表示"
+
+msgid "ui.object_inspector.visibility_field.a98585871c"
+msgstr "名前を表示"
+
+#: csmodernmap/object_inspector.py
+msgid "ui.poi_density.extremely_dense"
+msgstr "最も多い"
+
+#: csmodernmap/object_inspector.py
+msgid "ui.poi_density.extremely_sparse"
+msgstr "最も少ない"
+
+#: csmodernmap/object_inspector.py
+msgid "ui.poi_density.very_dense"
+msgstr "とても多い"
+
+#: csmodernmap/object_inspector.py
+msgid "ui.poi_density.very_sparse"
+msgstr "とても少ない"
+
+msgid "ui.web_export_v2._payload_from_bundle.cea7853717"
+msgstr "シーンデータをパッケージ化"
+
+msgid "ui.web_export_v2._viewer_assets.1669cd8574"
+msgstr ""
+"Viewer フロントエンド {p0} が見つかりません\n"
+"tools/build_preview_viewer.py を実行してください"
+
+msgid "ui.web_export_v2._viewer_assets.28040ea0ef"
+msgstr "{p0} に index-*.js / index-*.css のアセット参照が見つかりません"
+
+msgid "ui.web_export_v2._viewer_assets.3c4c241c6f"
+msgstr ""
+"Viewer のアセットがありません：{p0}\n"
+"tools/build_preview_viewer.py を再実行してください"
+
+msgid "ui.web_export_v2.build_scene_payload.6084dd902b"
+msgstr "シーンのコンパイルを準備中"
+
+msgid "ui.web_export_v2.export_web.29024b3e04"
+msgstr "Webエクスポートを準備中…"
+
+msgid "ui.web_export_v2.export_web.b99e3597ca"
+msgstr "ウェブ地図のエクスポートが完了しました"
+
+msgid "ui.web_export_v2.export_web.eae840aba7"
+msgstr "単一ファイル HTML を作成中…"
+
+msgid "ui.web_export_v2.render_export_html.0fe5c970b8"
+msgstr "CSL 都市マップ"
+
+msgid "ui.web_export_v2.render_export_html.cee2179528"
+msgstr "CSL 都市地図 · {p0}"
+
+msgid "ui.winui_engine._capture_output_snapshot.9e411d9c27"
+msgstr "長辺のピクセル数を整数で入力してください。"
+
+msgid "ui.winui_engine._export_completed.bcd13e5ccc"
+msgstr "都市を切り替えたため、前のドキュメントのエクスポート結果を破棄しました"
+
+msgid "ui.winui_engine._render_done.0cdaea5eb6"
+msgstr "地下鉄プレビューを保存できませんでした：{p0}"
+
+msgid "ui.winui_engine._render_done.bcd13e5ccc"
+msgstr "都市を切り替えたため、前のドキュメントのエクスポート結果を破棄しました"
+
+msgid "ui.winui_engine._require_document_epoch.8e11490207"
+msgstr "都市が切り替わりました。現在のページを更新してから再試行してください。"
+
+msgid "ui.winui_engine._start_external_project_export.ae3f8c8a07"
+msgstr "先に都市を開いてください"
+
+msgid "ui.winui_engine._start_external_project_export.fd1e2dca12"
+msgstr "エクスポート先のフォルダーを選択してください"
+
+msgid "ui.winui_engine.dispatch.19bb4eb8a9"
+msgstr "外部プロジェクトの書き込みは途中でキャンセルできません"
+
+msgid "ui.winui_engine.dispatch.43f245906a"
+msgstr "テーマが切り替わりました。エディターを開き直してください"
+
+msgid "ui.winui_engine.dispatch.5f67276ac1"
+msgstr "元に戻す／やり直しできる操作はありません"
+
+msgid "ui.winui_engine.dispatch.69d8708938"
+msgstr "別のページでテーマ設定が変更されました。再読み込みしてから適用してください"
+
+msgid "ui.winui_engine.dispatch.6f6dff2c57"
+msgstr "POI マッピングが外部で変更されました。再読み込みしてください。"
+
+msgid "ui.winui_engine.dispatch.73db60d7fc"
+msgstr "テーマファイルは YAML 形式である必要があります"
+
+msgid "ui.winui_engine.dispatch.7ddd21b8bf"
+msgstr "現在のテーマが変更されました。設定を開き直してください"
+
+msgid "ui.winui_engine.dispatch.80bd243ed5"
+msgstr "設定が変更されました。オブジェクトのプロパティを更新してから再試行してください"
+
+msgid "ui.winui_engine.dispatch.837a5ba76c"
+msgstr "テーマの保存に失敗しました"
+
+msgid "ui.winui_engine.dispatch.8d612deac2"
+msgstr "別の操作で設定が変更されたため、以前の記録を元に戻せません"
+
+msgid "ui.winui_engine.dispatch.96b57316e5"
+msgstr "テキストとアイコンの全体スイッチはブール値である必要があります"
+
+msgid "ui.winui_engine.dispatch.9c2202a4e4"
+msgstr "地下鉄路線図の路線を少なくとも1つ選択してください"
+
+msgid "ui.winui_engine.dispatch.ae3f8c8a07"
+msgstr "先に都市を開いてください"
+
+msgid "ui.winui_engine.dispatch.b3dbf7b21a"
+msgstr "POI編集セッションは無効です。開き直してください"
+
+msgid "ui.winui_engine.dispatch.c2952a0254"
+msgstr "地下鉄路線のアウトライン設定に失敗しました"
+
+msgid "ui.winui_engine.dispatch.c9a482b2c3"
+msgstr "不明な文字またはアイコン設定"
+
+msgid "ui.winui_engine.dispatch.dd98f132f7"
+msgstr "不明な交通表示設定"
+
+msgid "ui.winui_engine.dispatch.dfeec4838c"
+msgstr "エクスポートファイルの書き込み中です"
+
+msgid "ui.winui_engine.dispatch.e668d01e2c"
+msgstr "PNG を書き込み中です。完了までお待ちください"
+
+msgid "ui.winui_engine.dispatch.e8e08b0f61"
+msgstr "キャンセル中…"
+
+msgid "ui.winui_engine.dispatch.f7297a7ae6"
+msgstr "無効な設定：{p0}"
+
+msgid "ui.winui_engine.dispatch.fd1e2dca12"
+msgstr "エクスポート先のフォルダーを選択してください"
+
+msgid "ui.winui_engine.queue_theme_preview.ae3f8c8a07"
+msgstr "先に都市を開いてください"
+
+msgid "ui.winui_engine.theme_text_sample.c1fff780e0"
+msgstr "人民広場 · Central Avenue"
+
+msgid "ui.winui_engine.worker.bcd13e5ccc"
+msgstr "都市を切り替えたため、前のドキュメントのエクスポート結果を破棄しました"
+
+msgid "ui.winui_workflows.dispatch.155590bba2"
+msgstr "乗換駅コレクションの数またはサイズが範囲外です"
+
+msgid "ui.winui_workflows.dispatch.2712805913"
+msgstr "インターフェース言語を保存できませんでした"
+
+msgid "watermark.save_timestamp"
+msgstr "保存時刻"
+
+msgid "watermark.traffic_at"
+msgstr "交通状況"

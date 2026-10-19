@@ -1,0 +1,19 @@
+{
+  "name": "cslmodernmap-preview-viewer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "i18next": "26.4.4",
+    "maplibre-gl": "6.4.1"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "vite": "8.2.2"
+  },
+  "license": "GPL-3.0-only"
+}

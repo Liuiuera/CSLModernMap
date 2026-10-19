@@ -1,0 +1,70 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>CSLModernMapRenderer</AssemblyName>
+    <ApplicationIcon>..\resources\app.ico</ApplicationIcon>
+    <ApplicationManifest>$(MSBuildProjectDirectory)\app.manifest</ApplicationManifest>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <UseWinUI>true</UseWinUI>
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <SelfContained>true</SelfContained>
+    <Nullable>enable</Nullable>
+    <DefaultLanguage>zh-CN</DefaultLanguage>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="..\resources\i18n\languages.json" Link="Assets\languages.json" CopyToOutputDirectory="PreserveNewest" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.WinUI" Version="1.8.260803003" />
+    <PackageReference Include="RibbonSpace.WinUI" Version="1.1.0" />
+    <!-- RibbonSpace 带入总元包；所需组件由上面的 WinUI 引用提供。 -->
+    <PrunePackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260921001" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\resources\app.ico" Link="app.ico" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\resources\fonts\tabler-icons.ttf" Link="Assets\Fonts\tabler-icons.ttf" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Assets\Themes\*.png" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Assets\ribbon-icons.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Assets\Ribbon\**\*.png" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\resources\fonts\tabler-icons.css" Link="Assets\Fonts\tabler-icons.css" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\resources\fonts\Tabler-LICENSE.txt" Link="Assets\Licenses\Tabler-LICENSE.txt" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\resources\icons\fluent\LICENSE.txt" Link="Assets\Licenses\Fluent-LICENSE.txt" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
+    <RmpSource Include="..\..\third_party\rmp\src\**\*;..\..\third_party\rmp\public\images\facilities\**\*;..\..\third_party\rmp\public\logo.svg;..\..\third_party\rmp\LICENCE;..\..\third_party\rmp\package*.json;..\..\third_party\rmp\embed.html;..\..\third_party\rmp\vite.embed.config.ts;..\..\third_party\rmp\CSLMM-UPSTREAM.md;..\..\..\tools\renderer\build_rmp_editor.py" />
+    <RmpSource Include="..\..\third_party\rmp\RMP-IMAGE-TERMS.txt" />
+    <Content Include="..\..\..\LICENSES\RibbonSpace-MIT.txt" Link="Assets\Licenses\RibbonSpace-MIT.txt" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\..\LICENSE" Link="Assets\Licenses\LICENSE" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\..\LICENSING.md" Link="Assets\Licenses\LICENSING.md" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\..\THIRD_PARTY_NOTICES.md" Link="Assets\Licenses\THIRD_PARTY_NOTICES.md" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\..\assets\map_icons_source\*" Link="Assets\Licenses\MapIcons\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
+    <PreviewViewerSource Include="..\viewer\src\**\*;..\viewer\public\**\*;..\viewer\package*.json;..\viewer\index.html;..\viewer\tsconfig.json;..\viewer\vite.config.ts;..\..\..\tools\renderer\build_preview_viewer.py" />
+    <PreviewViewerOutput Include="..\viewer\dist\index.html;..\viewer\dist\assets\maplibre-gl-csp-worker.js;..\viewer\dist\THIRD_PARTY_LICENSES.txt" />
+    <UpToDateCheckInput Include="@(PreviewViewerSource)" />
+    <UpToDateCheckOutput Include="@(PreviewViewerOutput)" />
+  </ItemGroup>
+  <Target Name="BuildPreviewViewer" BeforeTargets="PrepareForBuild" Condition="'$(DesignTimeBuild)' != 'true'" Inputs="@(PreviewViewerSource)" Outputs="@(PreviewViewerOutput)">
+    <Exec Command="python &quot;$(MSBuildProjectDirectory)\..\..\..\tools\renderer\build_preview_viewer.py&quot;" />
+  </Target>
+  <Target Name="BuildRmpEditor" BeforeTargets="PrepareForBuild" Condition="'$(DesignTimeBuild)' != 'true'" Inputs="@(RmpSource)" Outputs="..\..\third_party\rmp\dist-embed\build-info.json">
+    <Exec Command="python &quot;$(MSBuildProjectDirectory)\..\..\..\tools\renderer\build_rmp_editor.py&quot;" />
+  </Target>
+  <Target Name="CollectRmpEditor" BeforeTargets="AssignTargetPaths" DependsOnTargets="BuildRmpEditor">
+    <ItemGroup>
+      <!-- 限定元数据来源，避免按已有 Content 逐项重复收集整个 RMP 目录。 -->
+      <_RmpEditorContent Include="..\..\third_party\rmp\dist-embed\**\*" />
+      <Content Include="@(_RmpEditorContent)" Link="Assets\Rmp\%(_RmpEditorContent.RecursiveDir)%(_RmpEditorContent.Filename)%(_RmpEditorContent.Extension)" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+  </Target>
+  <Target Name="PublishLocalizationResources" AfterTargets="ComputeFilesToPublish">
+    <ItemGroup>
+      <!-- unpackaged publish 不会自动收集生成的应用 PRI。 -->
+      <ResolvedFileToPublish Include="$(TargetDir)$(AssemblyName).pri" RelativePath="$(AssemblyName).pri" CopyToPublishDirectory="PreserveNewest" />
+    </ItemGroup>
+  </Target>
+</Project>

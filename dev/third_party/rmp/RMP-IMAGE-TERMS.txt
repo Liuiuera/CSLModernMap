@@ -1,0 +1,39 @@
+Rail Map Painter: upstream image terms
+Version: rmp-6.0.18 / 401ddafeb869255d10a5b51e3fae1acb34322d57
+Source: src/components/page-header/terms-and-conditions.tsx
+The original bilingual text is reproduced below with JSX markup removed.
+These image terms are separate from the GPL-3.0 software license.
+
+1. The layout of the elements on the signage or rail map, is designed by Shanghai Shentong Metro Group , Guangzhou Metro Group or MTR Corporation , depending on your selection. You shall grant appropriate permit or license from the relevant company above before using the generated images for commercial purposes, if it is required to do so.
+
+标志版或路线图的元素或布局，基于你所选择的风格，为 上海申通地铁集团 ， 广州地铁集团公司 或 港铁公司 所设计。在产生的图像用作商业用途前，你应向相关公司取得适当之许可证或授权。
+
+2. The elements including shapes and lines on the image are drawn by thekingofcity and Chito Wong , based on the design standards or rules of the companies listed above. You may use them for any purposes, but it is recommended to state the name and the link of software alongside.
+
+图像的元素，包括图形及线条，均由 thekingofcity 及 Chito Wong 基于上述公司设计标准或准则绘制。你可将其用于任何目的，但我们建议你于使用同时附以我们的名字以及本网站地址。
+
+3. Due to copyright, licensing and other legal restrictions, Rail Map Painter uses GenYoMin provided by ButTaiwan , and Vegur instead of MTRSung and Myriad Pro respectively to display and generate MTR-style signage. You shall grant appropriate permit or license from the manufacturers before using those generated images for commercial purposes.
+
+由于著作权及其他法律限制，铁路路线图绘制器使用由 ButTaiwan提供的源樣明體 ，以及Vegur，以代替港铁样式标志牌所使用的地铁宋及Myriad Pro。在产生之图像用作商业用途前，你应向字型生产厂商取得适当之许可证或授权。
+
+4. The exported images in PNG or SVG format may be modified, published, or used for other purposes except commercial use, under the conditions above.
+
+输出的PNG或SVG图像可基于上述条款，在非商业使用时，用于修改、发行或其他用途。
+
+5. All flag emojis shown on Windows platforms are designed by OpenMoji – the open-source emoji and icon project. License: CC BY-SA 4.0
+
+于Windows作业系统上显示的国旗Emoji为 OpenMoji 所设计。许可证： CC BY-SA 4.0
+
+6. We reserve the rights, without prior notice, to modify, add, or remove these terms. The Chinese translation is for reference only. In case of any discrepancy between the English version and the Chinese version, the English version shall prevail.
+
+我们保留修改、新增或移除上述条款之权利，而无需另行通知。中文译本仅供参考，文义如与英文有歧异，概以英文本为准。
+
+Links in the original terms:
+https://www.shmetro.com/
+https://www.gzmtr.com/
+https://www.mtr.com.hk/
+https://www.github.com/thekingofcity
+https://www.github.com/wongchito
+https://github.com/ButTaiwan/genyo-font
+https://openmoji.org/
+https://creativecommons.org/licenses/by-sa/4.0/

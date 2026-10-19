@@ -1,0 +1,316 @@
+# 复古风格主题
+name: 复古风格
+description: 复古纸质地图风格（泛黄底色、棕褐线条）
+
+canvas:
+  width: 4096
+  height: 4096
+  background: "#F1E8D0"
+
+terrain:
+  elevation_colors:
+    - { threshold: 0, color: "#F1E8D0" }
+    - { threshold: 80, color: "#F1E8D0" }
+    - { threshold: 120, color: "#E9DFC2" }
+    - { threshold: 250, color: "#E0D3AF" }
+    - { threshold: 600, color: "#D2C094" }
+    - { threshold: 1200, color: "#BFAA7A" }
+  elevation_mode: continuous
+  hillshade:
+    enabled: true
+    intensity: 0.3
+    azimuth: 315
+    altitude: 45
+    large_scale_meters: 320.0
+    small_scale_meters: 0.0
+    large_scale_weight: 0.35
+    small_scale_weight: 0.65
+
+water:
+  color: "#BBD3D6"
+  border: "#8FAFB4"
+  border_width: 1
+
+forest:
+  color: "#D3D9A8"
+
+# 用地类型图层（独立功能，默认关闭，GUI/CLI 显式启用时生效）
+land_use:
+  enabled: true
+  detail: base
+  cell_meters: 16.0
+  smooth_blur: 1.5
+  smooth_iters: 3
+  contour_upscale: 2
+  alpha: 90
+  colors:
+    green: "#D3D9A8"
+    public: "#D8D2C0"
+    residential: "#E8C98A"
+    industrial: "#C8B0CC"
+    office: "#A8C0D8"
+    publictransport: "#A8CCB0"
+    commercial: "#E0A88A"
+
+# 区划边界图层（独立功能，默认关闭，GUI/CLI 显式启用时生效）
+district:
+  enabled: true
+  border: "#9C8A62"
+  border_width: { fixed: 1.0, scaled: 0.5 }
+  fill_alpha: 105
+  fill_colors:
+    - "#D8D8C0"
+    - "#D8CCB8"
+    - "#BCC8D8"
+    - "#D8C0D8"
+    - "#D8D8B8"
+    - "#B8D8D8"
+    - "#D8C0B8"
+    - "#C4B8D8"
+  smooth_blur: 1.0
+  smooth_iters: 3
+  contour_upscale: 2
+
+# 功能区图层（独立功能，默认关闭）
+zone:
+  enabled: true
+  border: "#9C8A62"
+  border_width: { fixed: 1.0, scaled: 0.5 }
+  fill_alpha: 90
+  fill: "#B8B8B8"
+  smooth_blur: 1.0
+  smooth_iters: 3
+  contour_upscale: 2
+
+roads:
+  width_scale: 0.15
+  highway:
+    fill: "#E8C170"
+    border: "#B98F3E"
+    min_fill_px: 1.8
+    border_width: 1.5
+  main:
+    fill: "#F0DFA8"
+    border: "#B8A062"
+    min_fill_px: 1.4
+    border_width: 1.2
+  special:
+    fill: "#F4E9C8"
+    border: "#BFAF82"
+    min_fill_px: 0.8
+    border_width: 1
+  branch:
+    fill: "#F6EDD2"
+    border: "#C8B894"
+    min_fill_px: 0.8
+    border_width: 0.8
+  beautification:
+    fill: "#F2E9D0"
+    border: "#CDBE9C"
+    min_fill_px: 0.5
+    border_width: 0.5
+
+buildings:
+  default: "#E8DEC0"
+  border: "#A8946A"
+  border_width: 1
+  shadow:
+    enabled: true
+    offset: [2, 2]
+    color: "#00000014"
+
+procedural_objects:
+  colors:
+    geometry:     "#D8CB9F"     # 几何体：米黄
+    building:     "#E9DEB8"     # 建筑：兼容建筑底色
+    prop:         "#DCD0A8"     # 摆件
+    tree:         "#C2CFA2"     # 植物：橄榄绿（vintage 风格）
+    street_furn:  "#CFBF90"     # 街道设施
+    sign:         "#C79B4A"     # 招牌：赭金色
+    unknown:      "#D8CBA0"     # 兜底
+  border: "#9A8554"
+  border_width: 0.9
+  custom_color_alpha: 0.85
+
+railway:
+  train:
+    line: "#C8BCA0"
+    dash: "#5C4F38"
+
+transports:
+  # 常规图默认启用的线路类型（公共交通视图 view_all 会按 default_enabled 全开）
+  enabled:
+  - Metro
+  - Train
+  - Monorail
+  - Tram
+  - CableCar
+  - Ship
+  - Ferry
+  - Bus
+  - Trolleybus
+  - Airplane
+  - Helicopter
+  # 自动配色开关：true=对无用户色（纯白）的线路自动配色（transit.assign_auto_colors）
+  auto_color: false
+  # 兜底线宽（未在 types 里配置时）
+  width:
+    fixed: 0.5
+    scaled: 2.05
+  smooth: 10
+  # 公共交通视图：底图淡白遮罩强度（0=不遮罩，1=纯白；默认0.5）
+  transit_view:
+    mask_intensity: 0.6
+    # 公共交通视图专用标签密度（覆盖通用 label 配置）
+    label_repeat_interval: 300
+    label_min_gap: 180
+    label_max_per_line: 12
+    label_size:
+      fixed: 18
+      scaled: 12
+    label_padding:
+      fixed: 10
+      scaled: 6
+    label_border_width: 2.2
+  # 类型级样式（键 = transit 注册表类型；dash: [] = 实线）
+  types:
+    Metro:
+      width:
+        fixed: 0.5
+        scaled: 2.05
+      dash: []
+    Train:
+      width:
+        fixed: 0.5
+        scaled: 2.2
+      dash: []
+    Monorail:
+      width:
+        fixed: 0.4
+        scaled: 1.85
+      dash: []
+    Tram:
+      width:
+        fixed: 0.4
+        scaled: 1.7
+      dash: []
+    CableCar:
+      width:
+        fixed: 0.4
+        scaled: 1.7
+      dash: []
+    Ship:
+      width:
+        fixed: 0.45
+        scaled: 1.875
+      dash:
+      - 8
+      - 6
+      color: '#2E86AB'
+    Ferry:
+      width:
+        fixed: 0.45
+        scaled: 1.875
+      dash:
+      - 8
+      - 6
+      color: '#2E86AB'
+    Bus:
+      width:
+        fixed: 0.35
+        scaled: 1.525
+      dash: []
+      color: '#5A6472'
+    Trolleybus:
+      width:
+        fixed: 0.35
+        scaled: 1.525
+      dash:
+      - 4
+      - 4
+      color: '#7A8391'
+    Airplane:
+      width:
+        fixed: 0.4
+        scaled: 1.7
+      dash:
+      - 10
+      - 8
+      color: '#8A94A6'
+    Helicopter:
+      width:
+        fixed: 0.3
+        scaled: 1.35
+      dash:
+      - 6
+      - 6
+      color: '#8A94A6'
+  label:
+    enabled: true
+    font: SimHei
+    min_zoom: 0.5
+    size:
+      fixed: 8.0
+      scaled: 6.0
+    padding:
+      fixed: 5.0
+      scaled: 3.5
+    border_width:
+      fixed: 0.9
+      scaled: 0.6
+    bg: '#FFFFFF'
+    repeat_interval: 600
+    min_gap: 350
+    max_per_line: 4
+
+labels:
+  district:
+    font: "SimHei"
+    size: 28
+    color: "#6B5A3A"
+    stroke: "#F1E8D0"
+    stroke_width: 1.5
+  road:
+    font: "SimHei"
+    size: 7
+    color: "#7A6A48"
+    stroke: "#F1E8D0"
+    stroke_width: 1.0
+  building:
+    font: "SimHei"
+    size: 16
+    color: "#8A7A58"
+  park:
+    font: "SimHei"
+    size: 14
+    color: "#6E8A4A"
+    stroke: '#FFFFFF'
+    stroke_width: 1.5
+  stop:
+    font: "SimHei"
+    size: 20
+    color: "#4A6A9A"
+
+# 水印：左下角单行紧凑水印（宋体小字，横排）
+watermark:
+  enabled: true
+  mod_name: "CSLModernMap"
+  position: left_bottom
+  font_size: { fixed: 11, scaled: 1.5 }
+  separator: " · "
+  margin: { x: 20, y: 20 }
+  padding: { x: 12, y: 6 }
+  border_radius: 6
+  background: transparent
+  time_format: "%Y-%m-%d %H:%M:%S"
+  city_color: "#4A3E28"
+  info_color: "#6B5A3A"
+  meta_color: "#8A7A58"
+  content:
+    mod_name: true
+    city_name: true
+    render_time: true
+    style_name: true
+    resolution: true
+    traffic_time: true
+    custom_text: false

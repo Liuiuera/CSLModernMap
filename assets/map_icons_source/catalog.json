@@ -1,0 +1,2849 @@
+{
+  "upstream_commit": "dbf6fd7caedd60d11b5bfb5f267a114a6847d012",
+  "palette": {
+    "basis": "Retired Apple-style assets/poi_icons palette; new Map-Icons glyphs only",
+    "sampling": "Median background RGB in annulus radius 0.20–0.31 of source size; omit white glyph pixels",
+    "references": {
+      "landmark_1": {
+        "file": "assets/poi_icons/landmark_1.png",
+        "color": "#7B96E8",
+        "sha256": "425ab1654bdca2cc1f7f2efff93f876b83f99fe77785720b0fb84e142b42c179"
+      },
+      "star": {
+        "file": "assets/poi_icons/star.png",
+        "color": "#F35486",
+        "sha256": "67d7e436f80405b4099efbaabbd4e3f9af7959633b0bb44416b83b39e76dd70c"
+      },
+      "police": {
+        "file": "assets/poi_icons/police.png",
+        "color": "#9BA0AC",
+        "sha256": "ca93bdce2b589f95e6ff19deb228a2ddb31520aae27c3b91d0453dc8d757558b"
+      },
+      "hospital": {
+        "file": "assets/poi_icons/hospital.png",
+        "color": "#F35486",
+        "sha256": "fb760894e9c87c38f08c240f50bc6b47cadfe27877597cdf2a708926de2d3e60"
+      },
+      "office": {
+        "file": "assets/poi_icons/office.png",
+        "color": "#999FAB",
+        "sha256": "57898a88c70d1ba0cc8fa742be3b6f139b501bbd280f4d6700dd791687d00ebd"
+      },
+      "school": {
+        "file": "assets/poi_icons/school.png",
+        "color": "#A4785C",
+        "sha256": "169ef49b036a550ee9cd72cb4ed9ce3df0c346c2444f193d685f8a07f714133a"
+      },
+      "cemetery_1": {
+        "file": "assets/poi_icons/cemetery_1.png",
+        "color": "#999FAB",
+        "sha256": "fdb902cde4aab4b5042fcdb167a0c5ee8a2269eb5a668a97c2e4cc713c188e33"
+      },
+      "airport": {
+        "file": "assets/poi_icons/airport.png",
+        "color": "#4794F6",
+        "sha256": "8748e44e3e340aedd564305df329159602996eddc27747a27e6ad46b408f4b54"
+      },
+      "commercial": {
+        "file": "assets/poi_icons/commercial.png",
+        "color": "#FACA14",
+        "sha256": "ebbc40ff3fb091270ba0960b46d32e0b6e86ca04e25f11cace5a1c27cbb440b4"
+      },
+      "hotel": {
+        "file": "assets/poi_icons/hotel.png",
+        "color": "#B57BEF",
+        "sha256": "2879b04e6246679676a256ea3a9fa1d8c9ecb1ec94b17dda68967848852a5202"
+      },
+      "football": {
+        "file": "assets/poi_icons/football.png",
+        "color": "#52D163",
+        "sha256": "570016299a7fb4b64dbfe3e766a694a51bb4809934cdd96d0b1592406c68c54e"
+      },
+      "restaurant_1": {
+        "file": "assets/poi_icons/restaurant_1.png",
+        "color": "#FE9B3D",
+        "sha256": "0ae07e485acc832cae22c266b423a4b35141ca4f1307faeb94ead52988d1da06"
+      },
+      "cinema": {
+        "file": "assets/poi_icons/cinema.png",
+        "color": "#EE7ACE",
+        "sha256": "6cd53239dec943f31bcfe7b61f03a45f1f5fb2266ac5a46db79dbf4bf39608b9"
+      },
+      "fishing": {
+        "file": "assets/poi_icons/fishing.png",
+        "color": "#26CEEB",
+        "sha256": "c9014cd18a9fa0d6cc2da3df048235dd3261701cdec9b9f5c3ce07d22d31f3a3"
+      },
+      "park": {
+        "file": "assets/poi_icons/park.png",
+        "color": "#FACB14",
+        "sha256": "26fb1e7dd38424fe30dde23ac3ace5e6c842cc10ec92ddb2c8bcf4e12c91e418"
+      },
+      "swimming": {
+        "file": "assets/poi_icons/swimming.png",
+        "color": "#A4785C",
+        "sha256": "1452c18e0c49ca57011f82677de110707877213727e98f8b18ea86e76363b284"
+      },
+      "info": {
+        "file": "assets/poi_icons/info.png",
+        "color": "#999FAB",
+        "sha256": "afeb166d05d582bf2dc3e3d2ec6d2c51c56934967ea644f6b3658739583cf319"
+      },
+      "project-pin4": {
+        "file": "assets/cn_icons/pin4.png",
+        "color": "#8A94AE",
+        "sha256": "fa5fbfdca862d4c6fad983035b2591ad03dbe9ac9e49baecfa531e29e7b03211"
+      },
+      "project-park-green": {
+        "color": "#52B85C",
+        "basis": "User requested a green tree park icon on 2026-10-17"
+      }
+    },
+    "assignments": {
+      "school": "school",
+      "university": "school",
+      "library": "school",
+      "museum": "school",
+      "art-gallery": "school",
+      "church": "school",
+      "hindu-temple": "school",
+      "mosque": "school",
+      "place-of-worship": "school",
+      "synagogue": "school",
+      "natural-feature": "school",
+      "viewing": "school",
+      "hospital": "hospital",
+      "doctor": "hospital",
+      "dentist": "hospital",
+      "health": "hospital",
+      "pharmacy": "hospital",
+      "physiotherapist": "hospital",
+      "veterinary-care": "hospital",
+      "fire-station": "star",
+      "police": "police",
+      "city-hall": "landmark_1",
+      "courthouse": "landmark_1",
+      "embassy": "landmark_1",
+      "local-government": "landmark_1",
+      "political": "landmark_1",
+      "post-box": "office",
+      "post-office": "office",
+      "toilet": "office",
+      "storage": "office",
+      "accounting": "office",
+      "insurance-agency": "office",
+      "lawyer": "office",
+      "general-contractor": "office",
+      "electrician": "office",
+      "plumber": "office",
+      "painter": "office",
+      "roofing-contractor": "office",
+      "moving-company": "office",
+      "car-repair": "office",
+      "car-wash": "office",
+      "car-dealer": "office",
+      "motobike-trail": "office",
+      "cemetery": "cemetery_1",
+      "funeral-home": "cemetery_1",
+      "airport": "airport",
+      "bus-station": "airport",
+      "subway-station": "airport",
+      "train-station": "airport",
+      "transit-station": "airport",
+      "taxi-stand": "airport",
+      "parking": "airport",
+      "gas-station": "airport",
+      "marina": "airport",
+      "boat-ramp": "airport",
+      "chairlift": "airport",
+      "car-rental": "airport",
+      "lodging": "hotel",
+      "travel-agency": "hotel",
+      "bank": "commercial",
+      "finance": "commercial",
+      "atm": "commercial",
+      "beauty-salon": "commercial",
+      "book-store": "commercial",
+      "clothing-store": "commercial",
+      "convenience-store": "commercial",
+      "department-store": "commercial",
+      "electronics-store": "commercial",
+      "florist": "commercial",
+      "furniture-store": "commercial",
+      "grocery-or-supermarket": "commercial",
+      "hair-care": "commercial",
+      "hardware-store": "commercial",
+      "jewelry-store": "commercial",
+      "laundry": "commercial",
+      "locksmith": "commercial",
+      "pet-store": "commercial",
+      "real-estate-agency": "commercial",
+      "shopping-mall": "commercial",
+      "store": "commercial",
+      "bicycle-store": "commercial",
+      "bicycling": "commercial",
+      "bakery": "restaurant_1",
+      "bar": "restaurant_1",
+      "cafe": "restaurant_1",
+      "food": "restaurant_1",
+      "liquor-store": "restaurant_1",
+      "restaurant": "restaurant_1",
+      "movie-rental": "cinema",
+      "night-club": "cinema",
+      "movie-theater": "cinema",
+      "casino": "cinema",
+      "amusement-park": "cinema",
+      "zoo": "cinema",
+      "park": "project-park-green",
+      "playground": "park",
+      "rv-park": "football",
+      "campground": "football",
+      "archery": "football",
+      "baseball": "football",
+      "bowling-alley": "football",
+      "golf": "football",
+      "gym": "football",
+      "horse-riding": "football",
+      "ice-skating": "football",
+      "inline-skating": "football",
+      "stadium": "football",
+      "tennis": "football",
+      "abseiling": "football",
+      "climbing": "football",
+      "cross-country-skiing": "football",
+      "hang-gliding": "football",
+      "skateboarding": "football",
+      "ski-jumping": "football",
+      "skiing": "football",
+      "sledding": "football",
+      "snow-shoeing": "football",
+      "snowboarding": "football",
+      "snowmobile": "football",
+      "trail-walking": "football",
+      "walking": "football",
+      "aquarium": "fishing",
+      "spa": "fishing",
+      "boat-tour": "fishing",
+      "boating": "fishing",
+      "canoe": "fishing",
+      "diving": "fishing",
+      "fish-cleaning": "fishing",
+      "fishing-pier": "fishing",
+      "fishing": "fishing",
+      "ice-fishing": "fishing",
+      "jet-skiing": "fishing",
+      "kayaking": "fishing",
+      "rafting": "fishing",
+      "sailing": "fishing",
+      "scuba-diving": "fishing",
+      "surfing": "fishing",
+      "waterskiing": "fishing",
+      "whale-watching": "fishing",
+      "wind-surfing": "fishing",
+      "swimming": "swimming",
+      "assistive-listening-system": "info",
+      "audio-description": "info",
+      "braille": "info",
+      "closed-captioning": "info",
+      "open-captioning": "info",
+      "low-vision-access": "info",
+      "sign-language": "info",
+      "volume-control-telephone": "info",
+      "wheelchair": "info",
+      "female": "info",
+      "male": "info",
+      "unisex": "info",
+      "residential-low": "project-pin4",
+      "residential-high": "project-pin4",
+      "office": "office",
+      "industrial": "office"
+    },
+    "default": "Preserve approved pin4-based gray gradient and white dot"
+  },
+  "source_hashes": {
+    "map-icons.ttf": "d3687a79b3f3159baa08f3f4f40afe0a9429e8d5ae63bb13ed3c2b5ce6ad0051",
+    "map-icons.css": "d9d8cabac5fc2a1d61c54f5075ac9e0a2fbbc869cf08079619f828adbdc68165"
+  },
+  "custom_glyphs": {
+    "traffic-light": [],
+    "park": [
+      [
+        "rect",
+        [
+          43,
+          46,
+          53,
+          76
+        ],
+        255
+      ],
+      [
+        "ellipse",
+        [
+          31,
+          22,
+          61,
+          53
+        ],
+        255
+      ],
+      [
+        "ellipse",
+        [
+          21,
+          35,
+          52,
+          64
+        ],
+        255
+      ],
+      [
+        "ellipse",
+        [
+          43,
+          33,
+          75,
+          64
+        ],
+        255
+      ],
+      [
+        "rect",
+        [
+          34,
+          74,
+          62,
+          78
+        ],
+        255
+      ]
+    ],
+    "school": [
+      [
+        "rect",
+        [
+          47,
+          17,
+          50,
+          29
+        ],
+        255
+      ],
+      [
+        "polygon",
+        [
+          [
+            50,
+            17
+          ],
+          [
+            62,
+            21
+          ],
+          [
+            50,
+            25
+          ]
+        ],
+        255
+      ],
+      [
+        "polygon",
+        [
+          [
+            24,
+            44
+          ],
+          [
+            48,
+            25
+          ],
+          [
+            72,
+            44
+          ]
+        ],
+        255
+      ],
+      [
+        "rect",
+        [
+          28,
+          43,
+          68,
+          73
+        ],
+        255
+      ],
+      [
+        "rect",
+        [
+          21,
+          51,
+          29,
+          73
+        ],
+        255
+      ],
+      [
+        "rect",
+        [
+          67,
+          51,
+          75,
+          73
+        ],
+        255
+      ],
+      [
+        "ellipse",
+        [
+          43,
+          33,
+          53,
+          43
+        ],
+        0
+      ],
+      [
+        "rect",
+        [
+          47,
+          34,
+          49,
+          39
+        ],
+        255
+      ],
+      [
+        "rect",
+        [
+          48,
+          38,
+          52,
+          40
+        ],
+        255
+      ],
+      [
+        "rect",
+        [
+          33,
+          49,
+          39,
+          55
+        ],
+        0
+      ],
+      [
+        "rect",
+        [
+          33,
+          61,
+          39,
+          67
+        ],
+        0
+      ],
+      [
+        "rect",
+        [
+          57,
+          49,
+          63,
+          55
+        ],
+        0
+      ],
+      [
+        "rect",
+        [
+          57,
+          61,
+          63,
+          67
+        ],
+        0
+      ],
+      [
+        "rect",
+        [
+          44,
+          57,
+          52,
+          73
+        ],
+        0
+      ]
+    ],
+    "university": [
+      [
+        "polygon",
+        [
+          [
+            20,
+            39
+          ],
+          [
+            48,
+            25
+          ],
+          [
+            76,
+            39
+          ],
+          [
+            48,
+            53
+          ]
+        ],
+        255
+      ],
+      [
+        "polygon",
+        [
+          [
+            30,
+            48
+          ],
+          [
+            48,
+            57
+          ],
+          [
+            66,
+            48
+          ],
+          [
+            66,
+            64
+          ],
+          [
+            48,
+            72
+          ],
+          [
+            30,
+            64
+          ]
+        ],
+        255
+      ],
+      [
+        "rect",
+        [
+          73,
+          39,
+          76,
+          65
+        ],
+        255
+      ],
+      [
+        "polygon",
+        [
+          [
+            74,
+            60
+          ],
+          [
+            79,
+            69
+          ],
+          [
+            69,
+            69
+          ]
+        ],
+        255
+      ]
+    ],
+    "residential-low": [
+      [
+        "polygon",
+        [
+          [
+            22,
+            44
+          ],
+          [
+            48,
+            23
+          ],
+          [
+            74,
+            44
+          ]
+        ],
+        255
+      ],
+      [
+        "rect",
+        [
+          31,
+          42,
+          65,
+          72
+        ],
+        255
+      ],
+      [
+        "rect",
+        [
+          45,
+          55,
+          53,
+          72
+        ],
+        0
+      ],
+      [
+        "rect",
+        [
+          36,
+          49,
+          41,
+          55
+        ],
+        0
+      ],
+      [
+        "rect",
+        [
+          57,
+          49,
+          61,
+          55
+        ],
+        0
+      ]
+    ],
+    "residential-high": [
+      [
+        "rect",
+        [
+          23,
+          38,
+          45,
+          72
+        ],
+        255
+      ],
+      [
+        "rect",
+        [
+          45,
+          24,
+          73,
+          72
+        ],
+        255
+      ],
+      [
+        "rect",
+        [
+          28,
+          44,
+          32,
+          49
+        ],
+        0
+      ],
+      [
+        "rect",
+        [
+          28,
+          54,
+          32,
+          59
+        ],
+        0
+      ],
+      [
+        "rect",
+        [
+          28,
+          64,
+          32,
+          69
+        ],
+        0
+      ],
+      [
+        "rect",
+        [
+          36,
+          44,
+          40,
+          49
+        ],
+        0
+      ],
+      [
+        "rect",
+        [
+          36,
+          54,
+          40,
+          59
+        ],
+        0
+      ],
+      [
+        "rect",
+        [
+          36,
+          64,
+          40,
+          69
+        ],
+        0
+      ],
+      [
+        "rect",
+        [
+          50,
+          30,
+          55,
+          35
+        ],
+        0
+      ],
+      [
+        "rect",
+        [
+          50,
+          41,
+          55,
+          46
+        ],
+        0
+      ],
+      [
+        "rect",
+        [
+          50,
+          52,
+          55,
+          57
+        ],
+        0
+      ],
+      [
+        "rect",
+        [
+          50,
+          63,
+          55,
+          68
+        ],
+        0
+      ],
+      [
+        "rect",
+        [
+          61,
+          30,
+          66,
+          35
+        ],
+        0
+      ],
+      [
+        "rect",
+        [
+          61,
+          41,
+          66,
+          46
+        ],
+        0
+      ],
+      [
+        "rect",
+        [
+          61,
+          52,
+          66,
+          57
+        ],
+        0
+      ],
+      [
+        "rect",
+        [
+          61,
+          63,
+          66,
+          68
+        ],
+        0
+      ]
+    ],
+    "office": [
+      [
+        "rect",
+        [
+          37,
+          25,
+          59,
+          38
+        ],
+        255
+      ],
+      [
+        "rect",
+        [
+          42,
+          30,
+          54,
+          36
+        ],
+        0
+      ],
+      [
+        "rect",
+        [
+          22,
+          35,
+          74,
+          70
+        ],
+        255
+      ],
+      [
+        "rect",
+        [
+          22,
+          48,
+          74,
+          51
+        ],
+        0
+      ],
+      [
+        "rect",
+        [
+          44,
+          46,
+          52,
+          54
+        ],
+        255
+      ]
+    ],
+    "industrial": [
+      [
+        "polygon",
+        [
+          [
+            22,
+            72
+          ],
+          [
+            22,
+            45
+          ],
+          [
+            38,
+            54
+          ],
+          [
+            38,
+            44
+          ],
+          [
+            55,
+            53
+          ],
+          [
+            55,
+            39
+          ],
+          [
+            65,
+            39
+          ],
+          [
+            65,
+            25
+          ],
+          [
+            73,
+            25
+          ],
+          [
+            73,
+            72
+          ]
+        ],
+        255
+      ],
+      [
+        "rect",
+        [
+          28,
+          61,
+          34,
+          67
+        ],
+        0
+      ],
+      [
+        "rect",
+        [
+          42,
+          61,
+          48,
+          67
+        ],
+        0
+      ],
+      [
+        "rect",
+        [
+          57,
+          61,
+          63,
+          67
+        ],
+        0
+      ]
+    ]
+  },
+  "icons": [
+    {
+      "id": "mi_city_hall",
+      "name": "市政厅（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-city-hall.png",
+      "upstream_id": "city-hall",
+      "batch": "01-public-services",
+      "background": "#7B96E8",
+      "gradient_top": "#a2b5ef",
+      "gradient_bottom": "#5073e0",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_courthouse",
+      "name": "法院（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-courthouse.png",
+      "upstream_id": "courthouse",
+      "batch": "01-public-services",
+      "background": "#7B96E8",
+      "gradient_top": "#a2b5ef",
+      "gradient_bottom": "#5073e0",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_embassy",
+      "name": "使馆（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-embassy.png",
+      "upstream_id": "embassy",
+      "batch": "01-public-services",
+      "background": "#7B96E8",
+      "gradient_top": "#a2b5ef",
+      "gradient_bottom": "#5073e0",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_fire_station",
+      "name": "消防站（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-fire-station.png",
+      "upstream_id": "fire-station",
+      "batch": "01-public-services",
+      "background": "#F35486",
+      "gradient_top": "#f67fa4",
+      "gradient_bottom": "#f02464",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_police",
+      "name": "警察局（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-police.png",
+      "upstream_id": "police",
+      "batch": "01-public-services",
+      "background": "#9BA0AC",
+      "gradient_top": "#b4b8c1",
+      "gradient_bottom": "#7f8695",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_hospital",
+      "name": "医院（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-hospital.png",
+      "upstream_id": "hospital",
+      "batch": "01-public-services",
+      "background": "#F35486",
+      "gradient_top": "#f67fa4",
+      "gradient_bottom": "#f02464",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_doctor",
+      "name": "诊所（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-doctor.png",
+      "upstream_id": "doctor",
+      "batch": "01-public-services",
+      "background": "#F35486",
+      "gradient_top": "#f67fa4",
+      "gradient_bottom": "#f02464",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_dentist",
+      "name": "牙科（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-dentist.png",
+      "upstream_id": "dentist",
+      "batch": "01-public-services",
+      "background": "#F35486",
+      "gradient_top": "#f67fa4",
+      "gradient_bottom": "#f02464",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_health",
+      "name": "医疗服务（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-health.png",
+      "upstream_id": "health",
+      "batch": "01-public-services",
+      "background": "#F35486",
+      "gradient_top": "#f67fa4",
+      "gradient_bottom": "#f02464",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_pharmacy",
+      "name": "药房（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-pharmacy.png",
+      "upstream_id": "pharmacy",
+      "batch": "01-public-services",
+      "background": "#F35486",
+      "gradient_top": "#f67fa4",
+      "gradient_bottom": "#f02464",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_physiotherapist",
+      "name": "物理治疗（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-physiotherapist.png",
+      "upstream_id": "physiotherapist",
+      "batch": "01-public-services",
+      "background": "#F35486",
+      "gradient_top": "#f67fa4",
+      "gradient_bottom": "#f02464",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_veterinary_care",
+      "name": "兽医（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-veterinary-care.png",
+      "upstream_id": "veterinary-care",
+      "batch": "01-public-services",
+      "background": "#F35486",
+      "gradient_top": "#f67fa4",
+      "gradient_bottom": "#f02464",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_post_box",
+      "name": "邮筒（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-post-box.png",
+      "upstream_id": "post-box",
+      "batch": "01-public-services",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_post_office",
+      "name": "邮局（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-post-office.png",
+      "upstream_id": "post-office",
+      "batch": "01-public-services",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_local_government",
+      "name": "地方政府（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-local-government.png",
+      "upstream_id": "local-government",
+      "batch": "01-public-services",
+      "background": "#7B96E8",
+      "gradient_top": "#a2b5ef",
+      "gradient_bottom": "#5073e0",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_political",
+      "name": "行政机构（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-political.png",
+      "upstream_id": "political",
+      "batch": "01-public-services",
+      "background": "#7B96E8",
+      "gradient_top": "#a2b5ef",
+      "gradient_bottom": "#5073e0",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_school",
+      "name": "学校（自绘）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-school.png",
+      "upstream_id": "school",
+      "batch": "01-public-services",
+      "background": "#A4785C",
+      "gradient_top": "#b49079",
+      "gradient_bottom": "#846049",
+      "origin": "project-custom"
+    },
+    {
+      "id": "mi_university",
+      "name": "大学（自绘）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-university.png",
+      "upstream_id": "university",
+      "batch": "01-public-services",
+      "background": "#A4785C",
+      "gradient_top": "#b49079",
+      "gradient_bottom": "#846049",
+      "origin": "project-custom"
+    },
+    {
+      "id": "mi_library",
+      "name": "图书馆（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-library.png",
+      "upstream_id": "library",
+      "batch": "01-public-services",
+      "background": "#A4785C",
+      "gradient_top": "#b49079",
+      "gradient_bottom": "#846049",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_museum",
+      "name": "博物馆（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-museum.png",
+      "upstream_id": "museum",
+      "batch": "01-public-services",
+      "background": "#A4785C",
+      "gradient_top": "#b49079",
+      "gradient_bottom": "#846049",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_art_gallery",
+      "name": "美术馆（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-art-gallery.png",
+      "upstream_id": "art-gallery",
+      "batch": "01-public-services",
+      "background": "#A4785C",
+      "gradient_top": "#b49079",
+      "gradient_bottom": "#846049",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_cemetery",
+      "name": "墓园（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-cemetery.png",
+      "upstream_id": "cemetery",
+      "batch": "01-public-services",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_funeral_home",
+      "name": "殡仪馆（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-funeral-home.png",
+      "upstream_id": "funeral-home",
+      "batch": "01-public-services",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_toilet",
+      "name": "公共厕所（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-toilet.png",
+      "upstream_id": "toilet",
+      "batch": "01-public-services",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_storage",
+      "name": "仓储（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-storage.png",
+      "upstream_id": "storage",
+      "batch": "01-public-services",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_default_gray",
+      "name": "默认灰圈（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-default-gray.png",
+      "upstream_id": "default-gray",
+      "batch": "01-public-services",
+      "background": "#8A94AE",
+      "gradient_top": "#a5adc3",
+      "gradient_bottom": "#6f7a98",
+      "origin": "project-default"
+    },
+    {
+      "id": "mi_airport",
+      "name": "机场（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-airport.png",
+      "upstream_id": "airport",
+      "batch": "02-transport-travel",
+      "background": "#4794F6",
+      "gradient_top": "#73adf8",
+      "gradient_bottom": "#1678f4",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_bus_station",
+      "name": "公交车站（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-bus-station.png",
+      "upstream_id": "bus-station",
+      "batch": "02-transport-travel",
+      "background": "#4794F6",
+      "gradient_top": "#73adf8",
+      "gradient_bottom": "#1678f4",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_subway_station",
+      "name": "地铁站（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-subway-station.png",
+      "upstream_id": "subway-station",
+      "batch": "02-transport-travel",
+      "background": "#4794F6",
+      "gradient_top": "#73adf8",
+      "gradient_bottom": "#1678f4",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_train_station",
+      "name": "火车站（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-train-station.png",
+      "upstream_id": "train-station",
+      "batch": "02-transport-travel",
+      "background": "#4794F6",
+      "gradient_top": "#73adf8",
+      "gradient_bottom": "#1678f4",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_transit_station",
+      "name": "公共交通枢纽（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-transit-station.png",
+      "upstream_id": "transit-station",
+      "batch": "02-transport-travel",
+      "background": "#4794F6",
+      "gradient_top": "#73adf8",
+      "gradient_bottom": "#1678f4",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_taxi_stand",
+      "name": "出租车站（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-taxi-stand.png",
+      "upstream_id": "taxi-stand",
+      "batch": "02-transport-travel",
+      "background": "#4794F6",
+      "gradient_top": "#73adf8",
+      "gradient_bottom": "#1678f4",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_parking",
+      "name": "停车场（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-parking.png",
+      "upstream_id": "parking",
+      "batch": "02-transport-travel",
+      "background": "#4794F6",
+      "gradient_top": "#73adf8",
+      "gradient_bottom": "#1678f4",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_gas_station",
+      "name": "加油站（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-gas-station.png",
+      "upstream_id": "gas-station",
+      "batch": "02-transport-travel",
+      "background": "#4794F6",
+      "gradient_top": "#73adf8",
+      "gradient_bottom": "#1678f4",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_car_rental",
+      "name": "汽车租赁（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-car-rental.png",
+      "upstream_id": "car-rental",
+      "batch": "02-transport-travel",
+      "background": "#4794F6",
+      "gradient_top": "#73adf8",
+      "gradient_bottom": "#1678f4",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_car_repair",
+      "name": "汽车维修（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-car-repair.png",
+      "upstream_id": "car-repair",
+      "batch": "02-transport-travel",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_car_wash",
+      "name": "洗车（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-car-wash.png",
+      "upstream_id": "car-wash",
+      "batch": "02-transport-travel",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_car_dealer",
+      "name": "汽车销售（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-car-dealer.png",
+      "upstream_id": "car-dealer",
+      "batch": "02-transport-travel",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_bicycle_store",
+      "name": "自行车商店（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-bicycle-store.png",
+      "upstream_id": "bicycle-store",
+      "batch": "02-transport-travel",
+      "background": "#FACA14",
+      "gradient_top": "#fbd441",
+      "gradient_bottom": "#d6ab05",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_marina",
+      "name": "游艇码头（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-marina.png",
+      "upstream_id": "marina",
+      "batch": "02-transport-travel",
+      "background": "#4794F6",
+      "gradient_top": "#73adf8",
+      "gradient_bottom": "#1678f4",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_boat_ramp",
+      "name": "下水坡道（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-boat-ramp.png",
+      "upstream_id": "boat-ramp",
+      "batch": "02-transport-travel",
+      "background": "#4794F6",
+      "gradient_top": "#73adf8",
+      "gradient_bottom": "#1678f4",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_chairlift",
+      "name": "吊椅缆车（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-chairlift.png",
+      "upstream_id": "chairlift",
+      "batch": "02-transport-travel",
+      "background": "#4794F6",
+      "gradient_top": "#73adf8",
+      "gradient_bottom": "#1678f4",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_lodging",
+      "name": "酒店住宿（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-lodging.png",
+      "upstream_id": "lodging",
+      "batch": "02-transport-travel",
+      "background": "#B57BEF",
+      "gradient_top": "#cca4f4",
+      "gradient_bottom": "#9b4ee9",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_travel_agency",
+      "name": "旅行社（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-travel-agency.png",
+      "upstream_id": "travel-agency",
+      "batch": "02-transport-travel",
+      "background": "#B57BEF",
+      "gradient_top": "#cca4f4",
+      "gradient_bottom": "#9b4ee9",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_rv_park",
+      "name": "房车营地（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-rv-park.png",
+      "upstream_id": "rv-park",
+      "batch": "02-transport-travel",
+      "background": "#52D163",
+      "gradient_top": "#76db84",
+      "gradient_bottom": "#32be45",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_campground",
+      "name": "露营地（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-campground.png",
+      "upstream_id": "campground",
+      "batch": "02-transport-travel",
+      "background": "#52D163",
+      "gradient_top": "#76db84",
+      "gradient_bottom": "#32be45",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_traffic_light",
+      "name": "红绿灯（自绘）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-traffic-light.png",
+      "upstream_id": "traffic-light",
+      "batch": "02-transport-travel",
+      "background": "transparent",
+      "gradient_top": null,
+      "gradient_bottom": null,
+      "origin": "project-custom",
+      "borderless": true
+    },
+    {
+      "id": "mi_accounting",
+      "name": "会计服务（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-accounting.png",
+      "upstream_id": "accounting",
+      "batch": "03-shops-services",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_atm",
+      "name": "自动取款机（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-atm.png",
+      "upstream_id": "atm",
+      "batch": "03-shops-services",
+      "background": "#FACA14",
+      "gradient_top": "#fbd441",
+      "gradient_bottom": "#d6ab05",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_bank",
+      "name": "银行（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-bank.png",
+      "upstream_id": "bank",
+      "batch": "03-shops-services",
+      "background": "#FACA14",
+      "gradient_top": "#fbd441",
+      "gradient_bottom": "#d6ab05",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_bakery",
+      "name": "面包店（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-bakery.png",
+      "upstream_id": "bakery",
+      "batch": "03-shops-services",
+      "background": "#FE9B3D",
+      "gradient_top": "#feb36b",
+      "gradient_bottom": "#fe810a",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_bar",
+      "name": "酒吧（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-bar.png",
+      "upstream_id": "bar",
+      "batch": "03-shops-services",
+      "background": "#FE9B3D",
+      "gradient_top": "#feb36b",
+      "gradient_bottom": "#fe810a",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_cafe",
+      "name": "咖啡店（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-cafe.png",
+      "upstream_id": "cafe",
+      "batch": "03-shops-services",
+      "background": "#FE9B3D",
+      "gradient_top": "#feb36b",
+      "gradient_bottom": "#fe810a",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_beauty_salon",
+      "name": "美容院（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-beauty-salon.png",
+      "upstream_id": "beauty-salon",
+      "batch": "03-shops-services",
+      "background": "#FACA14",
+      "gradient_top": "#fbd441",
+      "gradient_bottom": "#d6ab05",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_book_store",
+      "name": "书店（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-book-store.png",
+      "upstream_id": "book-store",
+      "batch": "03-shops-services",
+      "background": "#FACA14",
+      "gradient_top": "#fbd441",
+      "gradient_bottom": "#d6ab05",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_clothing_store",
+      "name": "服装店（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-clothing-store.png",
+      "upstream_id": "clothing-store",
+      "batch": "03-shops-services",
+      "background": "#FACA14",
+      "gradient_top": "#fbd441",
+      "gradient_bottom": "#d6ab05",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_convenience_store",
+      "name": "便利店（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-convenience-store.png",
+      "upstream_id": "convenience-store",
+      "batch": "03-shops-services",
+      "background": "#FACA14",
+      "gradient_top": "#fbd441",
+      "gradient_bottom": "#d6ab05",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_department_store",
+      "name": "百货商场（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-department-store.png",
+      "upstream_id": "department-store",
+      "batch": "03-shops-services",
+      "background": "#FACA14",
+      "gradient_top": "#fbd441",
+      "gradient_bottom": "#d6ab05",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_electrician",
+      "name": "电工服务（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-electrician.png",
+      "upstream_id": "electrician",
+      "batch": "03-shops-services",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_electronics_store",
+      "name": "电子产品商店（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-electronics-store.png",
+      "upstream_id": "electronics-store",
+      "batch": "03-shops-services",
+      "background": "#FACA14",
+      "gradient_top": "#fbd441",
+      "gradient_bottom": "#d6ab05",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_finance",
+      "name": "金融服务（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-finance.png",
+      "upstream_id": "finance",
+      "batch": "03-shops-services",
+      "background": "#FACA14",
+      "gradient_top": "#fbd441",
+      "gradient_bottom": "#d6ab05",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_florist",
+      "name": "花店（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-florist.png",
+      "upstream_id": "florist",
+      "batch": "03-shops-services",
+      "background": "#FACA14",
+      "gradient_top": "#fbd441",
+      "gradient_bottom": "#d6ab05",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_food",
+      "name": "食品服务（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-food.png",
+      "upstream_id": "food",
+      "batch": "03-shops-services",
+      "background": "#FE9B3D",
+      "gradient_top": "#feb36b",
+      "gradient_bottom": "#fe810a",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_furniture_store",
+      "name": "家具店（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-furniture-store.png",
+      "upstream_id": "furniture-store",
+      "batch": "03-shops-services",
+      "background": "#FACA14",
+      "gradient_top": "#fbd441",
+      "gradient_bottom": "#d6ab05",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_general_contractor",
+      "name": "建筑承包商（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-general-contractor.png",
+      "upstream_id": "general-contractor",
+      "batch": "03-shops-services",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_grocery_or_supermarket",
+      "name": "食品杂货与超市（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-grocery-or-supermarket.png",
+      "upstream_id": "grocery-or-supermarket",
+      "batch": "03-shops-services",
+      "background": "#FACA14",
+      "gradient_top": "#fbd441",
+      "gradient_bottom": "#d6ab05",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_hair_care",
+      "name": "美发（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-hair-care.png",
+      "upstream_id": "hair-care",
+      "batch": "03-shops-services",
+      "background": "#FACA14",
+      "gradient_top": "#fbd441",
+      "gradient_bottom": "#d6ab05",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_hardware_store",
+      "name": "五金店（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-hardware-store.png",
+      "upstream_id": "hardware-store",
+      "batch": "03-shops-services",
+      "background": "#FACA14",
+      "gradient_top": "#fbd441",
+      "gradient_bottom": "#d6ab05",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_insurance_agency",
+      "name": "保险服务（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-insurance-agency.png",
+      "upstream_id": "insurance-agency",
+      "batch": "03-shops-services",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_jewelry_store",
+      "name": "珠宝店（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-jewelry-store.png",
+      "upstream_id": "jewelry-store",
+      "batch": "03-shops-services",
+      "background": "#FACA14",
+      "gradient_top": "#fbd441",
+      "gradient_bottom": "#d6ab05",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_laundry",
+      "name": "洗衣店（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-laundry.png",
+      "upstream_id": "laundry",
+      "batch": "03-shops-services",
+      "background": "#FACA14",
+      "gradient_top": "#fbd441",
+      "gradient_bottom": "#d6ab05",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_lawyer",
+      "name": "法律服务（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-lawyer.png",
+      "upstream_id": "lawyer",
+      "batch": "03-shops-services",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_liquor_store",
+      "name": "酒类商店（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-liquor-store.png",
+      "upstream_id": "liquor-store",
+      "batch": "03-shops-services",
+      "background": "#FE9B3D",
+      "gradient_top": "#feb36b",
+      "gradient_bottom": "#fe810a",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_locksmith",
+      "name": "锁匠（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-locksmith.png",
+      "upstream_id": "locksmith",
+      "batch": "03-shops-services",
+      "background": "#FACA14",
+      "gradient_top": "#fbd441",
+      "gradient_bottom": "#d6ab05",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_movie_rental",
+      "name": "影碟租赁（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-movie-rental.png",
+      "upstream_id": "movie-rental",
+      "batch": "03-shops-services",
+      "background": "#EE7ACE",
+      "gradient_top": "#f3a3dd",
+      "gradient_bottom": "#e84dbd",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_moving_company",
+      "name": "搬家公司（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-moving-company.png",
+      "upstream_id": "moving-company",
+      "batch": "03-shops-services",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_night_club",
+      "name": "夜总会（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-night-club.png",
+      "upstream_id": "night-club",
+      "batch": "03-shops-services",
+      "background": "#EE7ACE",
+      "gradient_top": "#f3a3dd",
+      "gradient_bottom": "#e84dbd",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_painter",
+      "name": "油漆服务（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-painter.png",
+      "upstream_id": "painter",
+      "batch": "03-shops-services",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_pet_store",
+      "name": "宠物店（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-pet-store.png",
+      "upstream_id": "pet-store",
+      "batch": "03-shops-services",
+      "background": "#FACA14",
+      "gradient_top": "#fbd441",
+      "gradient_bottom": "#d6ab05",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_plumber",
+      "name": "水管维修（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-plumber.png",
+      "upstream_id": "plumber",
+      "batch": "03-shops-services",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_real_estate_agency",
+      "name": "房地产中介（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-real-estate-agency.png",
+      "upstream_id": "real-estate-agency",
+      "batch": "03-shops-services",
+      "background": "#FACA14",
+      "gradient_top": "#fbd441",
+      "gradient_bottom": "#d6ab05",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_restaurant",
+      "name": "餐厅（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-restaurant.png",
+      "upstream_id": "restaurant",
+      "batch": "03-shops-services",
+      "background": "#FE9B3D",
+      "gradient_top": "#feb36b",
+      "gradient_bottom": "#fe810a",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_roofing_contractor",
+      "name": "屋顶施工（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-roofing-contractor.png",
+      "upstream_id": "roofing-contractor",
+      "batch": "03-shops-services",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_shopping_mall",
+      "name": "购物中心（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-shopping-mall.png",
+      "upstream_id": "shopping-mall",
+      "batch": "03-shops-services",
+      "background": "#FACA14",
+      "gradient_top": "#fbd441",
+      "gradient_bottom": "#d6ab05",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_store",
+      "name": "商店（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-store.png",
+      "upstream_id": "store",
+      "batch": "03-shops-services",
+      "background": "#FACA14",
+      "gradient_top": "#fbd441",
+      "gradient_bottom": "#d6ab05",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_amusement_park",
+      "name": "游乐园（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-amusement-park.png",
+      "upstream_id": "amusement-park",
+      "batch": "04-parks-sports",
+      "background": "#EE7ACE",
+      "gradient_top": "#f3a3dd",
+      "gradient_bottom": "#e84dbd",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_aquarium",
+      "name": "水族馆（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-aquarium.png",
+      "upstream_id": "aquarium",
+      "batch": "04-parks-sports",
+      "background": "#26CEEB",
+      "gradient_top": "#50d7ef",
+      "gradient_bottom": "#13b0cb",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_archery",
+      "name": "射箭（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-archery.png",
+      "upstream_id": "archery",
+      "batch": "04-parks-sports",
+      "background": "#52D163",
+      "gradient_top": "#76db84",
+      "gradient_bottom": "#32be45",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_baseball",
+      "name": "棒球（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-baseball.png",
+      "upstream_id": "baseball",
+      "batch": "04-parks-sports",
+      "background": "#52D163",
+      "gradient_top": "#76db84",
+      "gradient_bottom": "#32be45",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_bowling_alley",
+      "name": "保龄球馆（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-bowling-alley.png",
+      "upstream_id": "bowling-alley",
+      "batch": "04-parks-sports",
+      "background": "#52D163",
+      "gradient_top": "#76db84",
+      "gradient_bottom": "#32be45",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_casino",
+      "name": "赌场（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-casino.png",
+      "upstream_id": "casino",
+      "batch": "04-parks-sports",
+      "background": "#EE7ACE",
+      "gradient_top": "#f3a3dd",
+      "gradient_bottom": "#e84dbd",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_golf",
+      "name": "高尔夫（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-golf.png",
+      "upstream_id": "golf",
+      "batch": "04-parks-sports",
+      "background": "#52D163",
+      "gradient_top": "#76db84",
+      "gradient_bottom": "#32be45",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_gym",
+      "name": "健身房（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-gym.png",
+      "upstream_id": "gym",
+      "batch": "04-parks-sports",
+      "background": "#52D163",
+      "gradient_top": "#76db84",
+      "gradient_bottom": "#32be45",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_horse_riding",
+      "name": "骑马（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-horse-riding.png",
+      "upstream_id": "horse-riding",
+      "batch": "04-parks-sports",
+      "background": "#52D163",
+      "gradient_top": "#76db84",
+      "gradient_bottom": "#32be45",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_ice_skating",
+      "name": "滑冰（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-ice-skating.png",
+      "upstream_id": "ice-skating",
+      "batch": "04-parks-sports",
+      "background": "#52D163",
+      "gradient_top": "#76db84",
+      "gradient_bottom": "#32be45",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_inline_skating",
+      "name": "轮滑（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-inline-skating.png",
+      "upstream_id": "inline-skating",
+      "batch": "04-parks-sports",
+      "background": "#52D163",
+      "gradient_top": "#76db84",
+      "gradient_bottom": "#32be45",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_movie_theater",
+      "name": "电影院（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-movie-theater.png",
+      "upstream_id": "movie-theater",
+      "batch": "04-parks-sports",
+      "background": "#EE7ACE",
+      "gradient_top": "#f3a3dd",
+      "gradient_bottom": "#e84dbd",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_natural_feature",
+      "name": "自然景观（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-natural-feature.png",
+      "upstream_id": "natural-feature",
+      "batch": "04-parks-sports",
+      "background": "#A4785C",
+      "gradient_top": "#b49079",
+      "gradient_bottom": "#846049",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_park",
+      "name": "公园（自绘）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-park.png",
+      "upstream_id": "park",
+      "batch": "04-parks-sports",
+      "background": "#52B85C",
+      "gradient_top": "#73c57b",
+      "gradient_bottom": "#3f9847",
+      "origin": "project-custom"
+    },
+    {
+      "id": "mi_playground",
+      "name": "游乐场（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-playground.png",
+      "upstream_id": "playground",
+      "batch": "04-parks-sports",
+      "background": "#FACB14",
+      "gradient_top": "#fbd541",
+      "gradient_bottom": "#d6ac05",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_stadium",
+      "name": "体育场（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-stadium.png",
+      "upstream_id": "stadium",
+      "batch": "04-parks-sports",
+      "background": "#52D163",
+      "gradient_top": "#76db84",
+      "gradient_bottom": "#32be45",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_tennis",
+      "name": "网球（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-tennis.png",
+      "upstream_id": "tennis",
+      "batch": "04-parks-sports",
+      "background": "#52D163",
+      "gradient_top": "#76db84",
+      "gradient_bottom": "#32be45",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_viewing",
+      "name": "观景点（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-viewing.png",
+      "upstream_id": "viewing",
+      "batch": "04-parks-sports",
+      "background": "#A4785C",
+      "gradient_top": "#b49079",
+      "gradient_bottom": "#846049",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_zoo",
+      "name": "动物园（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-zoo.png",
+      "upstream_id": "zoo",
+      "batch": "04-parks-sports",
+      "background": "#EE7ACE",
+      "gradient_top": "#f3a3dd",
+      "gradient_bottom": "#e84dbd",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_abseiling",
+      "name": "绳降（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-abseiling.png",
+      "upstream_id": "abseiling",
+      "batch": "04-parks-sports",
+      "background": "#52D163",
+      "gradient_top": "#76db84",
+      "gradient_bottom": "#32be45",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_bicycling",
+      "name": "骑行（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-bicycling.png",
+      "upstream_id": "bicycling",
+      "batch": "04-parks-sports",
+      "background": "#FACA14",
+      "gradient_top": "#fbd441",
+      "gradient_bottom": "#d6ab05",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_climbing",
+      "name": "攀岩（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-climbing.png",
+      "upstream_id": "climbing",
+      "batch": "04-parks-sports",
+      "background": "#52D163",
+      "gradient_top": "#76db84",
+      "gradient_bottom": "#32be45",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_cross_country_skiing",
+      "name": "越野滑雪（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-cross-country-skiing.png",
+      "upstream_id": "cross-country-skiing",
+      "batch": "04-parks-sports",
+      "background": "#52D163",
+      "gradient_top": "#76db84",
+      "gradient_bottom": "#32be45",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_hang_gliding",
+      "name": "悬挂式滑翔（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-hang-gliding.png",
+      "upstream_id": "hang-gliding",
+      "batch": "04-parks-sports",
+      "background": "#52D163",
+      "gradient_top": "#76db84",
+      "gradient_bottom": "#32be45",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_motobike_trail",
+      "name": "越野摩托（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-motobike-trail.png",
+      "upstream_id": "motobike-trail",
+      "batch": "04-parks-sports",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_skateboarding",
+      "name": "滑板（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-skateboarding.png",
+      "upstream_id": "skateboarding",
+      "batch": "04-parks-sports",
+      "background": "#52D163",
+      "gradient_top": "#76db84",
+      "gradient_bottom": "#32be45",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_ski_jumping",
+      "name": "跳台滑雪（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-ski-jumping.png",
+      "upstream_id": "ski-jumping",
+      "batch": "04-parks-sports",
+      "background": "#52D163",
+      "gradient_top": "#76db84",
+      "gradient_bottom": "#32be45",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_skiing",
+      "name": "滑雪（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-skiing.png",
+      "upstream_id": "skiing",
+      "batch": "04-parks-sports",
+      "background": "#52D163",
+      "gradient_top": "#76db84",
+      "gradient_bottom": "#32be45",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_sledding",
+      "name": "雪橇（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-sledding.png",
+      "upstream_id": "sledding",
+      "batch": "04-parks-sports",
+      "background": "#52D163",
+      "gradient_top": "#76db84",
+      "gradient_bottom": "#32be45",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_snow_shoeing",
+      "name": "雪鞋徒步（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-snow-shoeing.png",
+      "upstream_id": "snow-shoeing",
+      "batch": "04-parks-sports",
+      "background": "#52D163",
+      "gradient_top": "#76db84",
+      "gradient_bottom": "#32be45",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_snowboarding",
+      "name": "单板滑雪（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-snowboarding.png",
+      "upstream_id": "snowboarding",
+      "batch": "04-parks-sports",
+      "background": "#52D163",
+      "gradient_top": "#76db84",
+      "gradient_bottom": "#32be45",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_snowmobile",
+      "name": "雪地摩托（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-snowmobile.png",
+      "upstream_id": "snowmobile",
+      "batch": "04-parks-sports",
+      "background": "#52D163",
+      "gradient_top": "#76db84",
+      "gradient_bottom": "#32be45",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_trail_walking",
+      "name": "步道徒步（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-trail-walking.png",
+      "upstream_id": "trail-walking",
+      "batch": "04-parks-sports",
+      "background": "#52D163",
+      "gradient_top": "#76db84",
+      "gradient_bottom": "#32be45",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_walking",
+      "name": "步行（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-walking.png",
+      "upstream_id": "walking",
+      "batch": "04-parks-sports",
+      "background": "#52D163",
+      "gradient_top": "#76db84",
+      "gradient_bottom": "#32be45",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_spa",
+      "name": "水疗（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-spa.png",
+      "upstream_id": "spa",
+      "batch": "04-parks-sports",
+      "background": "#26CEEB",
+      "gradient_top": "#50d7ef",
+      "gradient_bottom": "#13b0cb",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_boat_tour",
+      "name": "游船观光（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-boat-tour.png",
+      "upstream_id": "boat-tour",
+      "batch": "05-water-accessibility",
+      "background": "#26CEEB",
+      "gradient_top": "#50d7ef",
+      "gradient_bottom": "#13b0cb",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_boating",
+      "name": "划船（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-boating.png",
+      "upstream_id": "boating",
+      "batch": "05-water-accessibility",
+      "background": "#26CEEB",
+      "gradient_top": "#50d7ef",
+      "gradient_bottom": "#13b0cb",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_canoe",
+      "name": "独木舟（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-canoe.png",
+      "upstream_id": "canoe",
+      "batch": "05-water-accessibility",
+      "background": "#26CEEB",
+      "gradient_top": "#50d7ef",
+      "gradient_bottom": "#13b0cb",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_diving",
+      "name": "跳水（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-diving.png",
+      "upstream_id": "diving",
+      "batch": "05-water-accessibility",
+      "background": "#26CEEB",
+      "gradient_top": "#50d7ef",
+      "gradient_bottom": "#13b0cb",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_fish_cleaning",
+      "name": "鱼类清理设施（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-fish-cleaning.png",
+      "upstream_id": "fish-cleaning",
+      "batch": "05-water-accessibility",
+      "background": "#26CEEB",
+      "gradient_top": "#50d7ef",
+      "gradient_bottom": "#13b0cb",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_fishing_pier",
+      "name": "垂钓码头（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-fishing-pier.png",
+      "upstream_id": "fishing-pier",
+      "batch": "05-water-accessibility",
+      "background": "#26CEEB",
+      "gradient_top": "#50d7ef",
+      "gradient_bottom": "#13b0cb",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_fishing",
+      "name": "垂钓（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-fishing.png",
+      "upstream_id": "fishing",
+      "batch": "05-water-accessibility",
+      "background": "#26CEEB",
+      "gradient_top": "#50d7ef",
+      "gradient_bottom": "#13b0cb",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_ice_fishing",
+      "name": "冰钓（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-ice-fishing.png",
+      "upstream_id": "ice-fishing",
+      "batch": "05-water-accessibility",
+      "background": "#26CEEB",
+      "gradient_top": "#50d7ef",
+      "gradient_bottom": "#13b0cb",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_jet_skiing",
+      "name": "水上摩托（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-jet-skiing.png",
+      "upstream_id": "jet-skiing",
+      "batch": "05-water-accessibility",
+      "background": "#26CEEB",
+      "gradient_top": "#50d7ef",
+      "gradient_bottom": "#13b0cb",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_kayaking",
+      "name": "皮划艇（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-kayaking.png",
+      "upstream_id": "kayaking",
+      "batch": "05-water-accessibility",
+      "background": "#26CEEB",
+      "gradient_top": "#50d7ef",
+      "gradient_bottom": "#13b0cb",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_rafting",
+      "name": "漂流（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-rafting.png",
+      "upstream_id": "rafting",
+      "batch": "05-water-accessibility",
+      "background": "#26CEEB",
+      "gradient_top": "#50d7ef",
+      "gradient_bottom": "#13b0cb",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_sailing",
+      "name": "帆船（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-sailing.png",
+      "upstream_id": "sailing",
+      "batch": "05-water-accessibility",
+      "background": "#26CEEB",
+      "gradient_top": "#50d7ef",
+      "gradient_bottom": "#13b0cb",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_scuba_diving",
+      "name": "水肺潜水（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-scuba-diving.png",
+      "upstream_id": "scuba-diving",
+      "batch": "05-water-accessibility",
+      "background": "#26CEEB",
+      "gradient_top": "#50d7ef",
+      "gradient_bottom": "#13b0cb",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_surfing",
+      "name": "冲浪（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-surfing.png",
+      "upstream_id": "surfing",
+      "batch": "05-water-accessibility",
+      "background": "#26CEEB",
+      "gradient_top": "#50d7ef",
+      "gradient_bottom": "#13b0cb",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_swimming",
+      "name": "游泳（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-swimming.png",
+      "upstream_id": "swimming",
+      "batch": "05-water-accessibility",
+      "background": "#A4785C",
+      "gradient_top": "#b49079",
+      "gradient_bottom": "#846049",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_waterskiing",
+      "name": "滑水（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-waterskiing.png",
+      "upstream_id": "waterskiing",
+      "batch": "05-water-accessibility",
+      "background": "#26CEEB",
+      "gradient_top": "#50d7ef",
+      "gradient_bottom": "#13b0cb",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_whale_watching",
+      "name": "观鲸（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-whale-watching.png",
+      "upstream_id": "whale-watching",
+      "batch": "05-water-accessibility",
+      "background": "#26CEEB",
+      "gradient_top": "#50d7ef",
+      "gradient_bottom": "#13b0cb",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_wind_surfing",
+      "name": "帆板（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-wind-surfing.png",
+      "upstream_id": "wind-surfing",
+      "batch": "05-water-accessibility",
+      "background": "#26CEEB",
+      "gradient_top": "#50d7ef",
+      "gradient_bottom": "#13b0cb",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_church",
+      "name": "教堂（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-church.png",
+      "upstream_id": "church",
+      "batch": "05-water-accessibility",
+      "background": "#A4785C",
+      "gradient_top": "#b49079",
+      "gradient_bottom": "#846049",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_hindu_temple",
+      "name": "印度教寺庙（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-hindu-temple.png",
+      "upstream_id": "hindu-temple",
+      "batch": "05-water-accessibility",
+      "background": "#A4785C",
+      "gradient_top": "#b49079",
+      "gradient_bottom": "#846049",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_mosque",
+      "name": "清真寺（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-mosque.png",
+      "upstream_id": "mosque",
+      "batch": "05-water-accessibility",
+      "background": "#A4785C",
+      "gradient_top": "#b49079",
+      "gradient_bottom": "#846049",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_place_of_worship",
+      "name": "宗教场所（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-place-of-worship.png",
+      "upstream_id": "place-of-worship",
+      "batch": "05-water-accessibility",
+      "background": "#A4785C",
+      "gradient_top": "#b49079",
+      "gradient_bottom": "#846049",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_synagogue",
+      "name": "犹太教堂（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-synagogue.png",
+      "upstream_id": "synagogue",
+      "batch": "05-water-accessibility",
+      "background": "#A4785C",
+      "gradient_top": "#b49079",
+      "gradient_bottom": "#846049",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_assistive_listening_system",
+      "name": "辅助听力设施（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-assistive-listening-system.png",
+      "upstream_id": "assistive-listening-system",
+      "batch": "05-water-accessibility",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_audio_description",
+      "name": "音频描述设施（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-audio-description.png",
+      "upstream_id": "audio-description",
+      "batch": "05-water-accessibility",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_braille",
+      "name": "盲文设施（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-braille.png",
+      "upstream_id": "braille",
+      "batch": "05-water-accessibility",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_closed_captioning",
+      "name": "可选字幕设施（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-closed-captioning.png",
+      "upstream_id": "closed-captioning",
+      "batch": "05-water-accessibility",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_open_captioning",
+      "name": "开放字幕设施（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-open-captioning.png",
+      "upstream_id": "open-captioning",
+      "batch": "05-water-accessibility",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_low_vision_access",
+      "name": "低视力辅助设施（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-low-vision-access.png",
+      "upstream_id": "low-vision-access",
+      "batch": "05-water-accessibility",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_sign_language",
+      "name": "手语服务（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-sign-language.png",
+      "upstream_id": "sign-language",
+      "batch": "05-water-accessibility",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_volume_control_telephone",
+      "name": "可调音量电话（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-volume-control-telephone.png",
+      "upstream_id": "volume-control-telephone",
+      "batch": "05-water-accessibility",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_wheelchair",
+      "name": "轮椅无障碍（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-wheelchair.png",
+      "upstream_id": "wheelchair",
+      "batch": "05-water-accessibility",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_female",
+      "name": "女用设施（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-female.png",
+      "upstream_id": "female",
+      "batch": "05-water-accessibility",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_male",
+      "name": "男用设施（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-male.png",
+      "upstream_id": "male",
+      "batch": "05-water-accessibility",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_unisex",
+      "name": "通用设施（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-unisex.png",
+      "upstream_id": "unisex",
+      "batch": "05-water-accessibility",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "Map Icons"
+    },
+    {
+      "id": "mi_residential_low",
+      "name": "低密度住宅（自绘）",
+      "category": "住宅、办公与工业（自绘）",
+      "file": "mi-residential-low.png",
+      "upstream_id": "residential-low",
+      "batch": "06-core-buildings",
+      "background": "#8A94AE",
+      "gradient_top": "#a5adc1",
+      "gradient_bottom": "#6c7899",
+      "origin": "project-custom"
+    },
+    {
+      "id": "mi_residential_high",
+      "name": "集合住宅（自绘）",
+      "category": "住宅、办公与工业（自绘）",
+      "file": "mi-residential-high.png",
+      "upstream_id": "residential-high",
+      "batch": "06-core-buildings",
+      "background": "#8A94AE",
+      "gradient_top": "#a5adc1",
+      "gradient_bottom": "#6c7899",
+      "origin": "project-custom"
+    },
+    {
+      "id": "mi_office",
+      "name": "办公（自绘）",
+      "category": "住宅、办公与工业（自绘）",
+      "file": "mi-office.png",
+      "upstream_id": "office",
+      "batch": "06-core-buildings",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "project-custom"
+    },
+    {
+      "id": "mi_industrial",
+      "name": "工业（自绘）",
+      "category": "住宅、办公与工业（自绘）",
+      "file": "mi-industrial.png",
+      "upstream_id": "industrial",
+      "batch": "06-core-buildings",
+      "background": "#999FAB",
+      "gradient_top": "#b2b7c0",
+      "gradient_bottom": "#7d8594",
+      "origin": "project-custom"
+    }
+  ],
+  "excluded": {
+    "circle": "几何底板",
+    "compass": "地图工具",
+    "crosshairs": "定位工具",
+    "expand": "界面工具",
+    "fullscreen": "界面工具",
+    "location-arrow": "地图工具",
+    "map-pin": "地图标记外形",
+    "point-of-interest": "泛用标记，统一使用默认灰圈",
+    "postal-code-prefix": "地址编码",
+    "postal-code": "地址编码",
+    "route-pin": "地图标记外形",
+    "route": "路线标记",
+    "search": "搜索工具",
+    "shield": "标记底板",
+    "snow": "天气符号，不是地点",
+    "square-pin": "地图标记外形",
+    "square-rounded": "几何底板",
+    "square": "几何底板",
+    "zoom-in-alt": "缩放工具",
+    "zoom-in": "缩放工具",
+    "zoom-out-alt": "缩放工具",
+    "zoom-out": "缩放工具"
+  }
+}

@@ -1,0 +1,971 @@
+{
+  "meta": {
+    "storage": "files",
+    "name": "CSLModernMap POI"
+  },
+  "icons": [
+    {
+      "id": "mi_city_hall",
+      "name": "市政厅（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-city-hall.png"
+    },
+    {
+      "id": "mi_courthouse",
+      "name": "法院（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-courthouse.png"
+    },
+    {
+      "id": "mi_embassy",
+      "name": "使馆（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-embassy.png"
+    },
+    {
+      "id": "mi_fire_station",
+      "name": "消防站（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-fire-station.png"
+    },
+    {
+      "id": "mi_police",
+      "name": "警察局（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-police.png"
+    },
+    {
+      "id": "mi_hospital",
+      "name": "医院（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-hospital.png"
+    },
+    {
+      "id": "mi_doctor",
+      "name": "诊所（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-doctor.png"
+    },
+    {
+      "id": "mi_dentist",
+      "name": "牙科（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-dentist.png"
+    },
+    {
+      "id": "mi_health",
+      "name": "医疗服务（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-health.png"
+    },
+    {
+      "id": "mi_pharmacy",
+      "name": "药房（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-pharmacy.png"
+    },
+    {
+      "id": "mi_physiotherapist",
+      "name": "物理治疗（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-physiotherapist.png"
+    },
+    {
+      "id": "mi_veterinary_care",
+      "name": "兽医（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-veterinary-care.png"
+    },
+    {
+      "id": "mi_post_box",
+      "name": "邮筒（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-post-box.png"
+    },
+    {
+      "id": "mi_post_office",
+      "name": "邮局（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-post-office.png"
+    },
+    {
+      "id": "mi_local_government",
+      "name": "地方政府（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-local-government.png"
+    },
+    {
+      "id": "mi_political",
+      "name": "行政机构（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-political.png"
+    },
+    {
+      "id": "mi_school",
+      "name": "学校（自绘）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-school.png"
+    },
+    {
+      "id": "mi_university",
+      "name": "大学（自绘）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-university.png"
+    },
+    {
+      "id": "mi_library",
+      "name": "图书馆（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-library.png"
+    },
+    {
+      "id": "mi_museum",
+      "name": "博物馆（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-museum.png"
+    },
+    {
+      "id": "mi_art_gallery",
+      "name": "美术馆（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-art-gallery.png"
+    },
+    {
+      "id": "mi_cemetery",
+      "name": "墓园（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-cemetery.png"
+    },
+    {
+      "id": "mi_funeral_home",
+      "name": "殡仪馆（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-funeral-home.png"
+    },
+    {
+      "id": "mi_toilet",
+      "name": "公共厕所（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-toilet.png"
+    },
+    {
+      "id": "mi_storage",
+      "name": "仓储（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-storage.png"
+    },
+    {
+      "id": "mi_default_gray",
+      "name": "默认灰圈（Map Icons）",
+      "category": "公共服务、医疗与教育",
+      "file": "mi-default-gray.png"
+    },
+    {
+      "id": "mi_airport",
+      "name": "机场（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-airport.png"
+    },
+    {
+      "id": "mi_bus_station",
+      "name": "公交车站（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-bus-station.png"
+    },
+    {
+      "id": "mi_subway_station",
+      "name": "地铁站（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-subway-station.png"
+    },
+    {
+      "id": "mi_train_station",
+      "name": "火车站（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-train-station.png"
+    },
+    {
+      "id": "mi_transit_station",
+      "name": "公共交通枢纽（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-transit-station.png"
+    },
+    {
+      "id": "mi_taxi_stand",
+      "name": "出租车站（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-taxi-stand.png"
+    },
+    {
+      "id": "mi_parking",
+      "name": "停车场（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-parking.png"
+    },
+    {
+      "id": "mi_gas_station",
+      "name": "加油站（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-gas-station.png"
+    },
+    {
+      "id": "mi_car_rental",
+      "name": "汽车租赁（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-car-rental.png"
+    },
+    {
+      "id": "mi_car_repair",
+      "name": "汽车维修（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-car-repair.png"
+    },
+    {
+      "id": "mi_car_wash",
+      "name": "洗车（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-car-wash.png"
+    },
+    {
+      "id": "mi_car_dealer",
+      "name": "汽车销售（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-car-dealer.png"
+    },
+    {
+      "id": "mi_bicycle_store",
+      "name": "自行车商店（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-bicycle-store.png"
+    },
+    {
+      "id": "mi_marina",
+      "name": "游艇码头（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-marina.png"
+    },
+    {
+      "id": "mi_boat_ramp",
+      "name": "下水坡道（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-boat-ramp.png"
+    },
+    {
+      "id": "mi_chairlift",
+      "name": "吊椅缆车（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-chairlift.png"
+    },
+    {
+      "id": "mi_lodging",
+      "name": "酒店住宿（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-lodging.png"
+    },
+    {
+      "id": "mi_travel_agency",
+      "name": "旅行社（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-travel-agency.png"
+    },
+    {
+      "id": "mi_rv_park",
+      "name": "房车营地（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-rv-park.png"
+    },
+    {
+      "id": "mi_campground",
+      "name": "露营地（Map Icons）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-campground.png"
+    },
+    {
+      "id": "mi_accounting",
+      "name": "会计服务（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-accounting.png"
+    },
+    {
+      "id": "mi_atm",
+      "name": "自动取款机（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-atm.png"
+    },
+    {
+      "id": "mi_bank",
+      "name": "银行（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-bank.png"
+    },
+    {
+      "id": "mi_bakery",
+      "name": "面包店（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-bakery.png"
+    },
+    {
+      "id": "mi_bar",
+      "name": "酒吧（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-bar.png"
+    },
+    {
+      "id": "mi_cafe",
+      "name": "咖啡店（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-cafe.png"
+    },
+    {
+      "id": "mi_beauty_salon",
+      "name": "美容院（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-beauty-salon.png"
+    },
+    {
+      "id": "mi_book_store",
+      "name": "书店（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-book-store.png"
+    },
+    {
+      "id": "mi_clothing_store",
+      "name": "服装店（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-clothing-store.png"
+    },
+    {
+      "id": "mi_convenience_store",
+      "name": "便利店（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-convenience-store.png"
+    },
+    {
+      "id": "mi_department_store",
+      "name": "百货商场（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-department-store.png"
+    },
+    {
+      "id": "mi_electrician",
+      "name": "电工服务（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-electrician.png"
+    },
+    {
+      "id": "mi_electronics_store",
+      "name": "电子产品商店（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-electronics-store.png"
+    },
+    {
+      "id": "mi_finance",
+      "name": "金融服务（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-finance.png"
+    },
+    {
+      "id": "mi_florist",
+      "name": "花店（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-florist.png"
+    },
+    {
+      "id": "mi_food",
+      "name": "食品服务（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-food.png"
+    },
+    {
+      "id": "mi_furniture_store",
+      "name": "家具店（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-furniture-store.png"
+    },
+    {
+      "id": "mi_general_contractor",
+      "name": "建筑承包商（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-general-contractor.png"
+    },
+    {
+      "id": "mi_grocery_or_supermarket",
+      "name": "食品杂货与超市（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-grocery-or-supermarket.png"
+    },
+    {
+      "id": "mi_hair_care",
+      "name": "美发（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-hair-care.png"
+    },
+    {
+      "id": "mi_hardware_store",
+      "name": "五金店（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-hardware-store.png"
+    },
+    {
+      "id": "mi_insurance_agency",
+      "name": "保险服务（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-insurance-agency.png"
+    },
+    {
+      "id": "mi_jewelry_store",
+      "name": "珠宝店（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-jewelry-store.png"
+    },
+    {
+      "id": "mi_laundry",
+      "name": "洗衣店（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-laundry.png"
+    },
+    {
+      "id": "mi_lawyer",
+      "name": "法律服务（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-lawyer.png"
+    },
+    {
+      "id": "mi_liquor_store",
+      "name": "酒类商店（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-liquor-store.png"
+    },
+    {
+      "id": "mi_locksmith",
+      "name": "锁匠（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-locksmith.png"
+    },
+    {
+      "id": "mi_movie_rental",
+      "name": "影碟租赁（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-movie-rental.png"
+    },
+    {
+      "id": "mi_moving_company",
+      "name": "搬家公司（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-moving-company.png"
+    },
+    {
+      "id": "mi_night_club",
+      "name": "夜总会（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-night-club.png"
+    },
+    {
+      "id": "mi_painter",
+      "name": "油漆服务（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-painter.png"
+    },
+    {
+      "id": "mi_pet_store",
+      "name": "宠物店（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-pet-store.png"
+    },
+    {
+      "id": "mi_plumber",
+      "name": "水管维修（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-plumber.png"
+    },
+    {
+      "id": "mi_real_estate_agency",
+      "name": "房地产中介（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-real-estate-agency.png"
+    },
+    {
+      "id": "mi_restaurant",
+      "name": "餐厅（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-restaurant.png"
+    },
+    {
+      "id": "mi_roofing_contractor",
+      "name": "屋顶施工（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-roofing-contractor.png"
+    },
+    {
+      "id": "mi_shopping_mall",
+      "name": "购物中心（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-shopping-mall.png"
+    },
+    {
+      "id": "mi_store",
+      "name": "商店（Map Icons）",
+      "category": "购物、餐饮与生活服务",
+      "file": "mi-store.png"
+    },
+    {
+      "id": "mi_amusement_park",
+      "name": "游乐园（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-amusement-park.png"
+    },
+    {
+      "id": "mi_aquarium",
+      "name": "水族馆（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-aquarium.png"
+    },
+    {
+      "id": "mi_archery",
+      "name": "射箭（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-archery.png"
+    },
+    {
+      "id": "mi_baseball",
+      "name": "棒球（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-baseball.png"
+    },
+    {
+      "id": "mi_bowling_alley",
+      "name": "保龄球馆（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-bowling-alley.png"
+    },
+    {
+      "id": "mi_casino",
+      "name": "赌场（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-casino.png"
+    },
+    {
+      "id": "mi_golf",
+      "name": "高尔夫（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-golf.png"
+    },
+    {
+      "id": "mi_gym",
+      "name": "健身房（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-gym.png"
+    },
+    {
+      "id": "mi_horse_riding",
+      "name": "骑马（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-horse-riding.png"
+    },
+    {
+      "id": "mi_ice_skating",
+      "name": "滑冰（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-ice-skating.png"
+    },
+    {
+      "id": "mi_inline_skating",
+      "name": "轮滑（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-inline-skating.png"
+    },
+    {
+      "id": "mi_movie_theater",
+      "name": "电影院（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-movie-theater.png"
+    },
+    {
+      "id": "mi_natural_feature",
+      "name": "自然景观（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-natural-feature.png"
+    },
+    {
+      "id": "mi_park",
+      "name": "公园（自绘）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-park.png"
+    },
+    {
+      "id": "mi_playground",
+      "name": "游乐场（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-playground.png"
+    },
+    {
+      "id": "mi_stadium",
+      "name": "体育场（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-stadium.png"
+    },
+    {
+      "id": "mi_tennis",
+      "name": "网球（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-tennis.png"
+    },
+    {
+      "id": "mi_viewing",
+      "name": "观景点（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-viewing.png"
+    },
+    {
+      "id": "mi_zoo",
+      "name": "动物园（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-zoo.png"
+    },
+    {
+      "id": "mi_abseiling",
+      "name": "绳降（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-abseiling.png"
+    },
+    {
+      "id": "mi_bicycling",
+      "name": "骑行（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-bicycling.png"
+    },
+    {
+      "id": "mi_climbing",
+      "name": "攀岩（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-climbing.png"
+    },
+    {
+      "id": "mi_cross_country_skiing",
+      "name": "越野滑雪（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-cross-country-skiing.png"
+    },
+    {
+      "id": "mi_hang_gliding",
+      "name": "悬挂式滑翔（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-hang-gliding.png"
+    },
+    {
+      "id": "mi_motobike_trail",
+      "name": "越野摩托（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-motobike-trail.png"
+    },
+    {
+      "id": "mi_skateboarding",
+      "name": "滑板（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-skateboarding.png"
+    },
+    {
+      "id": "mi_ski_jumping",
+      "name": "跳台滑雪（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-ski-jumping.png"
+    },
+    {
+      "id": "mi_skiing",
+      "name": "滑雪（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-skiing.png"
+    },
+    {
+      "id": "mi_sledding",
+      "name": "雪橇（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-sledding.png"
+    },
+    {
+      "id": "mi_snow_shoeing",
+      "name": "雪鞋徒步（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-snow-shoeing.png"
+    },
+    {
+      "id": "mi_snowboarding",
+      "name": "单板滑雪（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-snowboarding.png"
+    },
+    {
+      "id": "mi_snowmobile",
+      "name": "雪地摩托（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-snowmobile.png"
+    },
+    {
+      "id": "mi_trail_walking",
+      "name": "步道徒步（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-trail-walking.png"
+    },
+    {
+      "id": "mi_walking",
+      "name": "步行（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-walking.png"
+    },
+    {
+      "id": "mi_spa",
+      "name": "水疗（Map Icons）",
+      "category": "公园、文化休闲与陆上运动",
+      "file": "mi-spa.png"
+    },
+    {
+      "id": "mi_boat_tour",
+      "name": "游船观光（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-boat-tour.png"
+    },
+    {
+      "id": "mi_boating",
+      "name": "划船（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-boating.png"
+    },
+    {
+      "id": "mi_canoe",
+      "name": "独木舟（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-canoe.png"
+    },
+    {
+      "id": "mi_diving",
+      "name": "跳水（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-diving.png"
+    },
+    {
+      "id": "mi_fish_cleaning",
+      "name": "鱼类清理设施（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-fish-cleaning.png"
+    },
+    {
+      "id": "mi_fishing_pier",
+      "name": "垂钓码头（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-fishing-pier.png"
+    },
+    {
+      "id": "mi_fishing",
+      "name": "垂钓（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-fishing.png"
+    },
+    {
+      "id": "mi_ice_fishing",
+      "name": "冰钓（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-ice-fishing.png"
+    },
+    {
+      "id": "mi_jet_skiing",
+      "name": "水上摩托（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-jet-skiing.png"
+    },
+    {
+      "id": "mi_kayaking",
+      "name": "皮划艇（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-kayaking.png"
+    },
+    {
+      "id": "mi_rafting",
+      "name": "漂流（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-rafting.png"
+    },
+    {
+      "id": "mi_sailing",
+      "name": "帆船（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-sailing.png"
+    },
+    {
+      "id": "mi_scuba_diving",
+      "name": "水肺潜水（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-scuba-diving.png"
+    },
+    {
+      "id": "mi_surfing",
+      "name": "冲浪（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-surfing.png"
+    },
+    {
+      "id": "mi_swimming",
+      "name": "游泳（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-swimming.png"
+    },
+    {
+      "id": "mi_waterskiing",
+      "name": "滑水（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-waterskiing.png"
+    },
+    {
+      "id": "mi_whale_watching",
+      "name": "观鲸（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-whale-watching.png"
+    },
+    {
+      "id": "mi_wind_surfing",
+      "name": "帆板（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-wind-surfing.png"
+    },
+    {
+      "id": "mi_church",
+      "name": "教堂（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-church.png"
+    },
+    {
+      "id": "mi_hindu_temple",
+      "name": "印度教寺庙（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-hindu-temple.png"
+    },
+    {
+      "id": "mi_mosque",
+      "name": "清真寺（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-mosque.png"
+    },
+    {
+      "id": "mi_place_of_worship",
+      "name": "宗教场所（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-place-of-worship.png"
+    },
+    {
+      "id": "mi_synagogue",
+      "name": "犹太教堂（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-synagogue.png"
+    },
+    {
+      "id": "mi_assistive_listening_system",
+      "name": "辅助听力设施（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-assistive-listening-system.png"
+    },
+    {
+      "id": "mi_audio_description",
+      "name": "音频描述设施（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-audio-description.png"
+    },
+    {
+      "id": "mi_braille",
+      "name": "盲文设施（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-braille.png"
+    },
+    {
+      "id": "mi_closed_captioning",
+      "name": "可选字幕设施（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-closed-captioning.png"
+    },
+    {
+      "id": "mi_open_captioning",
+      "name": "开放字幕设施（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-open-captioning.png"
+    },
+    {
+      "id": "mi_low_vision_access",
+      "name": "低视力辅助设施（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-low-vision-access.png"
+    },
+    {
+      "id": "mi_sign_language",
+      "name": "手语服务（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-sign-language.png"
+    },
+    {
+      "id": "mi_volume_control_telephone",
+      "name": "可调音量电话（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-volume-control-telephone.png"
+    },
+    {
+      "id": "mi_wheelchair",
+      "name": "轮椅无障碍（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-wheelchair.png"
+    },
+    {
+      "id": "mi_female",
+      "name": "女用设施（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-female.png"
+    },
+    {
+      "id": "mi_male",
+      "name": "男用设施（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-male.png"
+    },
+    {
+      "id": "mi_unisex",
+      "name": "通用设施（Map Icons）",
+      "category": "水上活动、宗教与无障碍设施",
+      "file": "mi-unisex.png"
+    },
+    {
+      "id": "mi_residential_low",
+      "name": "低密度住宅（自绘）",
+      "category": "住宅、办公与工业（自绘）",
+      "file": "mi-residential-low.png"
+    },
+    {
+      "id": "mi_residential_high",
+      "name": "集合住宅（自绘）",
+      "category": "住宅、办公与工业（自绘）",
+      "file": "mi-residential-high.png"
+    },
+    {
+      "id": "mi_office",
+      "name": "办公（自绘）",
+      "category": "住宅、办公与工业（自绘）",
+      "file": "mi-office.png"
+    },
+    {
+      "id": "mi_industrial",
+      "name": "工业（自绘）",
+      "category": "住宅、办公与工业（自绘）",
+      "file": "mi-industrial.png"
+    },
+    {
+      "id": "mi_traffic_light",
+      "name": "红绿灯（自绘）",
+      "category": "交通、住宿与旅行",
+      "file": "mi-traffic-light.png",
+      "borderless": true
+    }
+  ],
+  "categories": [
+    "公共服务、医疗与教育",
+    "交通、住宿与旅行",
+    "购物、餐饮与生活服务",
+    "公园、文化休闲与陆上运动",
+    "水上活动、宗教与无障碍设施",
+    "住宅、办公与工业（自绘）"
+  ]
+}

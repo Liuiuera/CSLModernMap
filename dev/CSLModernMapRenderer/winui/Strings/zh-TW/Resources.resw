@@ -1,0 +1,4429 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="AppearanceControls_Create_0BB1EFDA65" xml:space="preserve">
+    <value>{0}：請輸入介於 {1} 至 {2} 的數值。</value>
+    <comment>AppearanceControls.cs:81</comment>
+  </data>
+  <data name="AppearanceControls_Create_31F55AB9BD" xml:space="preserve">
+    <value>常用值</value>
+    <comment>AppearanceControls.cs:67</comment>
+  </data>
+  <data name="AppearanceControls_Create_C1FFF780E0" xml:space="preserve">
+    <value>人民廣場 · Central Avenue</value>
+    <comment>AppearanceControls.cs:98</comment>
+  </data>
+  <data name="AppearanceControls_Number_0BB1EFDA65" xml:space="preserve">
+    <value>{0}：請輸入介於 {1} 至 {2} 的數值。</value>
+    <comment>AppearanceControls.cs:153</comment>
+  </data>
+  <data name="AppearanceControls_Number_0DA36741DE" xml:space="preserve">
+    <value>固定部分（px）</value>
+    <comment>AppearanceControls.cs:136</comment>
+  </data>
+  <data name="AppearanceControls_Number_2C7E083699" xml:space="preserve">
+    <value>隨縮放部分（參考像素）</value>
+    <comment>AppearanceControls.cs:138</comment>
+  </data>
+  <data name="AppearanceControls_Number_9FC85F1C9F" xml:space="preserve">
+    <value>維持固定大小</value>
+    <comment>AppearanceControls.cs:198</comment>
+  </data>
+  <data name="AppearanceControls_Number_C42BC5D941" xml:space="preserve">
+    <value>{0}：請輸入有效數值。</value>
+    <comment>AppearanceControls.cs:148</comment>
+  </data>
+  <data name="AppearanceControls_Number_EE9964568E" xml:space="preserve">
+    <value>固定部分 + 隨縮放變化部分</value>
+    <comment>AppearanceControls.cs:198</comment>
+  </data>
+  <data name="AppearanceControls_Number_F1463D39A7" xml:space="preserve">
+    <value>隨地圖縮放</value>
+    <comment>AppearanceControls.cs:198</comment>
+  </data>
+  <data name="ContextRibbonToggle_Refresh_645432A5BF" xml:space="preserve">
+    <value>，已開啟</value>
+    <comment>ContextRibbonToggle.cs:31</comment>
+  </data>
+  <data name="ContextRibbonToggle_Refresh_96E5815C15" xml:space="preserve">
+    <value>，已關閉</value>
+    <comment>ContextRibbonToggle.cs:31</comment>
+  </data>
+  <data name="EngineClient_FindEngine_EED0A8F582" xml:space="preserve">
+    <value>找不到 CSLModernMap Python 引擎</value>
+    <comment>EngineClient.cs:84</comment>
+  </data>
+  <data name="EngineClient_ReadLoopAsync_4A90E34339" xml:space="preserve">
+    <value>地圖引擎通訊已結束</value>
+    <comment>EngineClient.cs:141</comment>
+  </data>
+  <data name="EngineClient_RequestAsync_1B3D323B4E" xml:space="preserve">
+    <value>地圖引擎未執行</value>
+    <comment>EngineClient.cs:94</comment>
+  </data>
+  <data name="EngineClient_StartAsync_641B4C254B" xml:space="preserve">
+    <value>地圖引擎未啟動</value>
+    <comment>EngineClient.cs:50</comment>
+  </data>
+  <data name="EngineClient_StartAsync_874DC8B84F" xml:space="preserve">
+    <value>地圖引擎已啟動</value>
+    <comment>EngineClient.cs:49</comment>
+  </data>
+  <data name="ExportWindow_CancelAsync_A37778F17C" xml:space="preserve">
+    <value>已取消</value>
+    <comment>ExportWindow.cs:787</comment>
+  </data>
+  <data name="ExportWindow_CancelAsync_BD768D3131" xml:space="preserve">
+    <value>請等候目前操作完成</value>
+    <comment>ExportWindow.cs:788</comment>
+  </data>
+  <data name="ExportWindow_CommitOutputOptionAsync_F4E15E33A6" xml:space="preserve">
+    <value>無法儲存輸出設定：</value>
+    <comment>ExportWindow.cs:752</comment>
+  </data>
+  <data name="ExportWindow_CopyResultAsync_02F9E1FA9F" xml:space="preserve">
+    <value>複製 PNG 失敗：</value>
+    <comment>ExportWindow.cs:1087</comment>
+  </data>
+  <data name="ExportWindow_CopyResultAsync_5DD07B5878" xml:space="preserve">
+    <value>已複製此視窗最近一次成功的 PNG。</value>
+    <comment>ExportWindow.cs:1085</comment>
+  </data>
+  <data name="ExportWindow_FileExtension_32CAD75E83" xml:space="preserve">
+    <value>匯出前請選擇資料夾</value>
+    <comment>ExportWindow.cs:672</comment>
+  </data>
+  <data name="ExportWindow_HandleEngineFailure_4C92803985" xml:space="preserve">
+    <value>。請重新啟動程式後再匯出。</value>
+    <comment>ExportWindow.cs:930</comment>
+  </data>
+  <data name="ExportWindow_HandleEngineFailure_969E2FF3CB" xml:space="preserve">
+    <value>地圖引擎通訊失敗：</value>
+    <comment>ExportWindow.cs:930</comment>
+  </data>
+  <data name="ExportWindow_HandleEventAsync_1DDF09A6A1" xml:space="preserve">
+    <value>匯出完成事件的資料夾與本次要求不符，因此未接收結果。</value>
+    <comment>ExportWindow.cs:963</comment>
+  </data>
+  <data name="ExportWindow_HandleEventAsync_518A6808EA" xml:space="preserve">
+    <value>
+無法開啟資料夾：</value>
+    <comment>ExportWindow.cs:985; ExportWindow.cs:1010</comment>
+  </data>
+  <data name="ExportWindow_HandleEventAsync_62731D95BC" xml:space="preserve">
+    <value>正在匯出…</value>
+    <comment>ExportWindow.cs:942</comment>
+  </data>
+  <data name="ExportWindow_HandleEventAsync_64A2BC1A37" xml:space="preserve">
+    <value>
+請在 Rail Map Painter 的開啟選單中匯入此資料夾的 .rmp.json 檔案。</value>
+    <comment>ExportWindow.cs:974</comment>
+  </data>
+  <data name="ExportWindow_HandleEventAsync_76AA0EDA7A" xml:space="preserve">
+    <value>匯出完成：</value>
+    <comment>ExportWindow.cs:1006</comment>
+  </data>
+  <data name="ExportWindow_HandleEventAsync_A37778F17C" xml:space="preserve">
+    <value>已取消</value>
+    <comment>ExportWindow.cs:954</comment>
+  </data>
+  <data name="ExportWindow_HandleEventAsync_B462F65DA8" xml:space="preserve">
+    <value>
+無法自動開啟網頁。若要繼續編輯，請前往 https://railmapgen.github.io/rmp/。</value>
+    <comment>ExportWindow.cs:978</comment>
+  </data>
+  <data name="ExportWindow_HandleEventAsync_BC69D07A28" xml:space="preserve">
+    <value>
+無法開啟網頁：</value>
+    <comment>ExportWindow.cs:980</comment>
+  </data>
+  <data name="ExportWindow_HandleEventAsync_C55E9D64E5" xml:space="preserve">
+    <value>匯出失敗：</value>
+    <comment>ExportWindow.cs:948</comment>
+  </data>
+  <data name="ExportWindow_HandleEventAsync_C92A908F84" xml:space="preserve">
+    <value>匯出完成事件的檔案路徑與本次要求不符，因此未接收結果。</value>
+    <comment>ExportWindow.cs:995</comment>
+  </data>
+  <data name="ExportWindow_HandleEventAsync_E050BB2FC4" xml:space="preserve">
+    <value>專案匯出完成：</value>
+    <comment>ExportWindow.cs:969</comment>
+  </data>
+  <data name="ExportWindow_OpenResultFolderAsync_E49A46DADE" xml:space="preserve">
+    <value>無法開啟資料夾：</value>
+    <comment>ExportWindow.cs:1094</comment>
+  </data>
+  <data name="ExportWindow_Preview_BuildDestination_0B7E287692" xml:space="preserve">
+    <value>儲存位置</value>
+    <comment>ExportWindow.Preview.cs:294</comment>
+  </data>
+  <data name="ExportWindow_Preview_BuildDestination_A6E48ADC26" xml:space="preserve">
+    <value>檔名</value>
+    <comment>ExportWindow.Preview.cs:297; ExportWindow.Preview.cs:311</comment>
+  </data>
+  <data name="ExportWindow_Preview_BuildFormatChoices_7A1260E05E" xml:space="preserve">
+    <value>匯出格式</value>
+    <comment>ExportWindow.Preview.cs:64</comment>
+  </data>
+  <data name="ExportWindow_Preview_BuildRangeControls_647B8C0BCB" xml:space="preserve">
+    <value>藍色代表匯出範圍</value>
+    <comment>ExportWindow.Preview.cs:165</comment>
+  </data>
+  <data name="ExportWindow_Preview_BuildSizePresets_4EAFA9E925" xml:space="preserve">
+    <value>自訂</value>
+    <comment>ExportWindow.Preview.cs:228</comment>
+  </data>
+  <data name="ExportWindow_Preview_BuildSizePresets_ED705D3508" xml:space="preserve">
+    <value>自動適配</value>
+    <comment>ExportWindow.Preview.cs:225</comment>
+  </data>
+  <data name="ExportWindow_Preview_BuildStatePane_2584921CF7" xml:space="preserve">
+    <value>匯出內容</value>
+    <comment>ExportWindow.Preview.cs:280</comment>
+  </data>
+  <data name="ExportWindow_Preview_BuildStatePane_6FB4C5C8E4" xml:space="preserve">
+    <value>範圍參照</value>
+    <comment>ExportWindow.Preview.cs:273</comment>
+  </data>
+  <data name="ExportWindow_Preview_BuildStatePane_A41EB6B5A2" xml:space="preserve">
+    <value>檢視完整內容</value>
+    <comment>ExportWindow.Preview.cs:285</comment>
+  </data>
+  <data name="ExportWindow_Preview_FormatDescription_95E163193C" xml:space="preserve">
+    <value>網頁 · 可縮放與瀏覽的互動地圖</value>
+    <comment>ExportWindow.Preview.cs:90</comment>
+  </data>
+  <data name="ExportWindow_Preview_FormatDescription_9962B1348A" xml:space="preserve">
+    <value>圖片 · 分享、列印或後製</value>
+    <comment>ExportWindow.Preview.cs:89</comment>
+  </data>
+  <data name="ExportWindow_Preview_FormatDescription_C04E46FB03" xml:space="preserve">
+    <value>路線專案 · 在 Rail Map Generator 中編輯</value>
+    <comment>ExportWindow.Preview.cs:92</comment>
+  </data>
+  <data name="ExportWindow_Preview_FormatDescription_D1B9C29526" xml:space="preserve">
+    <value>路網專案 · 在 Rail Map Painter 中編輯</value>
+    <comment>ExportWindow.Preview.cs:93</comment>
+  </data>
+  <data name="ExportWindow_Preview_InitializeResults_0A07FEF6ED" xml:space="preserve">
+    <value>重試匯出</value>
+    <comment>ExportWindow.Preview.cs:375</comment>
+  </data>
+  <data name="ExportWindow_Preview_InitializeResults_1559A0A78F" xml:space="preserve">
+    <value>無效</value>
+    <comment>ExportWindow.Preview.cs:372</comment>
+  </data>
+  <data name="ExportWindow_Preview_InitializeResults_28384D7AFD" xml:space="preserve">
+    <value>失敗</value>
+    <comment>ExportWindow.Preview.cs:372</comment>
+  </data>
+  <data name="ExportWindow_Preview_InitializeResults_3E6886D17A" xml:space="preserve">
+    <value>匯出完成</value>
+    <comment>ExportWindow.Preview.cs:373</comment>
+  </data>
+  <data name="ExportWindow_Preview_InitializeResults_402590868F" xml:space="preserve">
+    <value>無法</value>
+    <comment>ExportWindow.Preview.cs:372</comment>
+  </data>
+  <data name="ExportWindow_Preview_InitializeResults_60120FF05F" xml:space="preserve">
+    <value>請輸入</value>
+    <comment>ExportWindow.Preview.cs:372</comment>
+  </data>
+  <data name="ExportWindow_Preview_InitializeResults_B7D961B0C1" xml:space="preserve">
+    <value>不相符</value>
+    <comment>ExportWindow.Preview.cs:372</comment>
+  </data>
+  <data name="ExportWindow_Preview_InitializeResults_F9D19345A0" xml:space="preserve">
+    <value>中斷</value>
+    <comment>ExportWindow.Preview.cs:372</comment>
+  </data>
+  <data name="ExportWindow_Preview_InitializeResults_FA7DE3D933" xml:space="preserve">
+    <value>專案匯出完成</value>
+    <comment>ExportWindow.Preview.cs:373</comment>
+  </data>
+  <data name="ExportWindow_Preview_LayerPresentation_2035432E8A" xml:space="preserve">
+    <value>路線名稱</value>
+    <comment>ExportWindow.Preview.cs:101</comment>
+  </data>
+  <data name="ExportWindow_Preview_LayerPresentation_223B24B821" xml:space="preserve">
+    <value>路線</value>
+    <comment>ExportWindow.Preview.cs:98</comment>
+  </data>
+  <data name="ExportWindow_Preview_LayerPresentation_22CD02F940" xml:space="preserve">
+    <value>設施地點</value>
+    <comment>ExportWindow.Preview.cs:102</comment>
+  </data>
+  <data name="ExportWindow_Preview_LayerPresentation_4AA668A329" xml:space="preserve">
+    <value>設施名稱</value>
+    <comment>ExportWindow.Preview.cs:100</comment>
+  </data>
+  <data name="ExportWindow_Preview_LayerPresentation_4C2772DFEA" xml:space="preserve">
+    <value>大眾運輸圖示</value>
+    <comment>ExportWindow.Preview.cs:102</comment>
+  </data>
+  <data name="ExportWindow_Preview_LayerPresentation_53E88DD68F" xml:space="preserve">
+    <value>站點圓圈</value>
+    <comment>ExportWindow.Preview.cs:99</comment>
+  </data>
+  <data name="ExportWindow_Preview_LayerPresentation_784E7FAA7F" xml:space="preserve">
+    <value>水域底圖</value>
+    <comment>ExportWindow.Preview.cs:104</comment>
+  </data>
+  <data name="ExportWindow_Preview_LayerPresentation_A3883FE83C" xml:space="preserve">
+    <value>行政區底圖</value>
+    <comment>ExportWindow.Preview.cs:106</comment>
+  </data>
+  <data name="ExportWindow_Preview_LayerPresentation_BB06598E0D" xml:space="preserve">
+    <value>道路底圖</value>
+    <comment>ExportWindow.Preview.cs:105</comment>
+  </data>
+  <data name="ExportWindow_Preview_LayerPresentation_CF2382056B" xml:space="preserve">
+    <value>站名標註</value>
+    <comment>ExportWindow.Preview.cs:100</comment>
+  </data>
+  <data name="ExportWindow_Preview_LoadRangeOverviewAsync_0109D8D4CE" xml:space="preserve">
+    <value>無法載入匯出範圍預覽：</value>
+    <comment>ExportWindow.Preview.cs:438</comment>
+  </data>
+  <data name="ExportWindow_Preview_RefreshSharedSnapshotAsync_5681D752E1" xml:space="preserve">
+    <value>無法更新目前地圖狀態：</value>
+    <comment>ExportWindow.Preview.cs:411</comment>
+  </data>
+  <data name="ExportWindow_Preview_SyncSizePreset_4787583E64" xml:space="preserve">
+    <value>旋轉可調整地圖方向。</value>
+    <comment>ExportWindow.Preview.cs:266; ExportWindow.Preview.cs:267</comment>
+  </data>
+  <data name="ExportWindow_Preview__directoryLabel_E31CCCD7BB" xml:space="preserve">
+    <value>儲存至</value>
+    <comment>ExportWindow.Preview.cs:21</comment>
+  </data>
+  <data name="ExportWindow_Preview__rangeCustom_4EAFA9E925" xml:space="preserve">
+    <value>自訂</value>
+    <comment>ExportWindow.Preview.cs:29</comment>
+  </data>
+  <data name="ExportWindow_Preview__rangeEntry_157A8D388F" xml:space="preserve">
+    <value>作用範圍</value>
+    <comment>ExportWindow.Preview.cs:28</comment>
+  </data>
+  <data name="ExportWindow_Preview__rangeFull_653AEA4D67" xml:space="preserve">
+    <value>全市</value>
+    <comment>ExportWindow.Preview.cs:27</comment>
+  </data>
+  <data name="ExportWindow_Preview__rotationHelp_4787583E64" xml:space="preserve">
+    <value>旋轉可調整地圖方向。</value>
+    <comment>ExportWindow.Preview.cs:40</comment>
+  </data>
+  <data name="ExportWindow_Preview__sizeHelp_A073C771CC" xml:space="preserve">
+    <value>圖片尺寸越大越清晰，但匯出速度越慢。</value>
+    <comment>ExportWindow.Preview.cs:39</comment>
+  </data>
+  <data name="ExportWindow_Preview__sizePreset_C08C3589C7" xml:space="preserve">
+    <value>圖片尺寸</value>
+    <comment>ExportWindow.Preview.cs:30</comment>
+  </data>
+  <data name="ExportWindow_RefreshControlStates_2CD0F3BE87" xml:space="preserve">
+    <value>取消</value>
+    <comment>ExportWindow.cs:771</comment>
+  </data>
+  <data name="ExportWindow_RefreshControlStates_537D17F1C5" xml:space="preserve">
+    <value>取消工作</value>
+    <comment>ExportWindow.cs:771</comment>
+  </data>
+  <data name="ExportWindow_RefreshSnapshotSummary_0A6C1B2384" xml:space="preserve">
+    <value>跟隨圖示</value>
+    <comment>ExportWindow.cs:507</comment>
+  </data>
+  <data name="ExportWindow_RefreshSnapshotSummary_145219E726" xml:space="preserve">
+    <value>隱藏</value>
+    <comment>ExportWindow.cs:501; ExportWindow.cs:506; ExportWindow.cs:526; ExportWindow.cs:527</comment>
+  </data>
+  <data name="ExportWindow_RefreshSnapshotSummary_223B24B821" xml:space="preserve">
+    <value>路線</value>
+    <comment>ExportWindow.cs:540; ExportWindow.cs:541</comment>
+  </data>
+  <data name="ExportWindow_RefreshSnapshotSummary_22CD02F940" xml:space="preserve">
+    <value>設施地點</value>
+    <comment>ExportWindow.cs:521</comment>
+  </data>
+  <data name="ExportWindow_RefreshSnapshotSummary_3E1BD838DD" xml:space="preserve">
+    <value>沿用主視窗設定；圖層與路線請在主視窗修改。</value>
+    <comment>ExportWindow.cs:487</comment>
+  </data>
+  <data name="ExportWindow_RefreshSnapshotSummary_484D556139" xml:space="preserve">
+    <value>無</value>
+    <comment>ExportWindow.cs:513</comment>
+  </data>
+  <data name="ExportWindow_RefreshSnapshotSummary_4E1449E7D5" xml:space="preserve">
+    <value>顯示</value>
+    <comment>ExportWindow.cs:501; ExportWindow.cs:506; ExportWindow.cs:526; ExportWindow.cs:527</comment>
+  </data>
+  <data name="ExportWindow_RefreshSnapshotSummary_5BA40AB50B" xml:space="preserve">
+    <value> · 名稱 </value>
+    <comment>ExportWindow.cs:527</comment>
+  </data>
+  <data name="ExportWindow_RefreshSnapshotSummary_66E80E45EF" xml:space="preserve">
+    <value>站點旁</value>
+    <comment>ExportWindow.cs:507</comment>
+  </data>
+  <data name="ExportWindow_RefreshSnapshotSummary_8499E380DF" xml:space="preserve">
+    <value>顯示圖層</value>
+    <comment>ExportWindow.cs:513</comment>
+  </data>
+  <data name="ExportWindow_RefreshSnapshotSummary_85155A34A5" xml:space="preserve">
+    <value>一般地點</value>
+    <comment>ExportWindow.cs:521</comment>
+  </data>
+  <data name="ExportWindow_RefreshSnapshotSummary_9DDE733D10" xml:space="preserve">
+    <value>已選取 {0} / {1} 條路線</value>
+    <comment>ExportWindow.cs:538</comment>
+  </data>
+  <data name="ExportWindow_RefreshSnapshotSummary_D929FD1353" xml:space="preserve">
+    <value>全部 {0} 條</value>
+    <comment>ExportWindow.cs:539</comment>
+  </data>
+  <data name="ExportWindow_RefreshSnapshotSummary_EA3DB27869" xml:space="preserve">
+    <value>圖示 </value>
+    <comment>ExportWindow.cs:526</comment>
+  </data>
+  <data name="ExportWindow_RefreshSnapshotSummary_ED867CCBF0" xml:space="preserve">
+    <value>交通站點</value>
+    <comment>ExportWindow.cs:521</comment>
+  </data>
+  <data name="ExportWindow_ResetOutputProfileAsync_23EE320097" xml:space="preserve">
+    <value>已還原本頁參數</value>
+    <comment>ExportWindow.cs:713</comment>
+  </data>
+  <data name="ExportWindow_ResetOutputProfileAsync_288BFB28A8" xml:space="preserve">
+    <value>還原失敗：</value>
+    <comment>ExportWindow.cs:715</comment>
+  </data>
+  <data name="ExportWindow_StartAsync_30C6241E99" xml:space="preserve">
+    <value>請輸入有效檔名；檔名不能包含路徑或無效字元。請在「儲存位置」設定資料夾。</value>
+    <comment>ExportWindow.cs:814</comment>
+  </data>
+  <data name="ExportWindow_StartAsync_62731D95BC" xml:space="preserve">
+    <value>正在匯出…</value>
+    <comment>ExportWindow.cs:909</comment>
+  </data>
+  <data name="ExportWindow_StartAsync_71F2754B3A" xml:space="preserve">
+    <value>請輸入有效的整數尺寸</value>
+    <comment>ExportWindow.cs:805</comment>
+  </data>
+  <data name="ExportWindow_StartAsync_BD768D3131" xml:space="preserve">
+    <value>請等候目前操作完成</value>
+    <comment>ExportWindow.cs:907</comment>
+  </data>
+  <data name="ExportWindow_StartAsync_C55E9D64E5" xml:space="preserve">
+    <value>匯出失敗：</value>
+    <comment>ExportWindow.cs:914</comment>
+  </data>
+  <data name="ExportWindow_StartAsync_CA9814424E" xml:space="preserve">
+    <value>請輸入有效的整數旋轉角度</value>
+    <comment>ExportWindow.cs:808</comment>
+  </data>
+  <data name="ExportWindow_SuggestedFileNameFor_41AB2E0ECB" xml:space="preserve">
+    <value>地圖</value>
+    <comment>ExportWindow.cs:679</comment>
+  </data>
+  <data name="ExportWindow_SuggestedFileNameFor_5A85707DE5" xml:space="preserve">
+    <value>大眾運輸地圖</value>
+    <comment>ExportWindow.cs:679</comment>
+  </data>
+  <data name="ExportWindow_SuggestedFileNameFor_FA5D23884E" xml:space="preserve">
+    <value>地鐵示意圖</value>
+    <comment>ExportWindow.cs:679</comment>
+  </data>
+  <data name="ExportWindow_UpdateContextCopy_2F52FBFF32" xml:space="preserve">
+    <value>依目前的地鐵路網與路線選取匯出輔助專案。</value>
+    <comment>ExportWindow.cs:357</comment>
+  </data>
+  <data name="ExportWindow_UpdateContextCopy_3749B13C38" xml:space="preserve">
+    <value>依自訂的框選範圍匯出。</value>
+    <comment>ExportWindow.cs:374</comment>
+  </data>
+  <data name="ExportWindow_UpdateContextCopy_43C05A6D01" xml:space="preserve">
+    <value> 個專案</value>
+    <comment>ExportWindow.cs:354</comment>
+  </data>
+  <data name="ExportWindow_UpdateContextCopy_485DDBB48A" xml:space="preserve">
+    <value>隨機特寫</value>
+    <comment>ExportWindow.cs:375</comment>
+  </data>
+  <data name="ExportWindow_UpdateContextCopy_5A85707DE5" xml:space="preserve">
+    <value>大眾運輸地圖</value>
+    <comment>ExportWindow.cs:373</comment>
+  </data>
+  <data name="ExportWindow_UpdateContextCopy_6339D3A748" xml:space="preserve">
+    <value>依目前的主題、圖層與選取範圍匯出地圖。</value>
+    <comment>ExportWindow.cs:376</comment>
+  </data>
+  <data name="ExportWindow_UpdateContextCopy_7BE47589C1" xml:space="preserve">
+    <value>匯出 .rmp.json 後，匯入 Rail Map Painter 編輯路線。</value>
+    <comment>ExportWindow.cs:356</comment>
+  </data>
+  <data name="ExportWindow_UpdateContextCopy_82BA1293BA" xml:space="preserve">
+    <value>依自訂的隨機取景範圍匯出。</value>
+    <comment>ExportWindow.cs:375</comment>
+  </data>
+  <data name="ExportWindow_UpdateContextCopy_A164782976" xml:space="preserve">
+    <value>匯出目前的路線、站點與大眾運輸樣式。</value>
+    <comment>ExportWindow.cs:373</comment>
+  </data>
+  <data name="ExportWindow_UpdateContextCopy_A5E8039E52" xml:space="preserve">
+    <value>一般地圖</value>
+    <comment>ExportWindow.cs:376</comment>
+  </data>
+  <data name="ExportWindow_UpdateContextCopy_C25AEFA0CD" xml:space="preserve">
+    <value>匯出目前的示意圖配置、路線與站點設定。</value>
+    <comment>ExportWindow.cs:372</comment>
+  </data>
+  <data name="ExportWindow_UpdateContextCopy_E0961BFB18" xml:space="preserve">
+    <value>地圖選取範圍</value>
+    <comment>ExportWindow.cs:374</comment>
+  </data>
+  <data name="ExportWindow_UpdateContextCopy_FA5D23884E" xml:space="preserve">
+    <value>地鐵示意圖</value>
+    <comment>ExportWindow.cs:372</comment>
+  </data>
+  <data name="ExportWindow_UpdateDimensions_0820C7D712" xml:space="preserve">
+    <value>解析度：自動調整</value>
+    <comment>ExportWindow.cs:403</comment>
+  </data>
+  <data name="ExportWindow_UpdateDimensions_149E2A7ED9" xml:space="preserve">
+    <value>目前選取範圍</value>
+    <comment>ExportWindow.cs:424</comment>
+  </data>
+  <data name="ExportWindow_UpdateDimensions_432581CED0" xml:space="preserve">
+    <value>範圍：目前地鐵路網</value>
+    <comment>ExportWindow.cs:404</comment>
+  </data>
+  <data name="ExportWindow_UpdateDimensions_49C485EFFB" xml:space="preserve">
+    <value>範圍來源：{0} · {1:0.###} × {2:0.###} km</value>
+    <comment>ExportWindow.cs:429</comment>
+  </data>
+  <data name="ExportWindow_UpdateDimensions_5C5EC61CE8" xml:space="preserve">
+    <value>實際解析度：尚未設定</value>
+    <comment>ExportWindow.cs:419</comment>
+  </data>
+  <data name="ExportWindow_UpdateDimensions_653AEA4D67" xml:space="preserve">
+    <value>全市</value>
+    <comment>ExportWindow.cs:427</comment>
+  </data>
+  <data name="ExportWindow_UpdateDimensions_97DFD85740" xml:space="preserve">
+    <value>解析度：長邊 {0} px</value>
+    <comment>ExportWindow.cs:403</comment>
+  </data>
+  <data name="ExportWindow_UpdateDimensions_AEFAC3869B" xml:space="preserve">
+    <value>自訂範圍</value>
+    <comment>ExportWindow.cs:426</comment>
+  </data>
+  <data name="ExportWindow_UpdateDimensions_B4AD227A3F" xml:space="preserve">
+    <value>隨機城市特寫</value>
+    <comment>ExportWindow.cs:425</comment>
+  </data>
+  <data name="ExportWindow_UpdateDimensions_DAC5591541" xml:space="preserve">
+    <value>實際解析度：{0} × {1} px</value>
+    <comment>ExportWindow.cs:418</comment>
+  </data>
+  <data name="ExportWindow_UpdateFormat_388A187B43" xml:space="preserve">
+    <value>目標資料夾</value>
+    <comment>ExportWindow.cs:454</comment>
+  </data>
+  <data name="ExportWindow_UpdateFormat_E31CCCD7BB" xml:space="preserve">
+    <value>儲存至</value>
+    <comment>ExportWindow.cs:454</comment>
+  </data>
+  <data name="ExportWindow_UpdateResultActions_4A45AD491A" xml:space="preserve">
+    <value>開啟輸出資料夾</value>
+    <comment>ExportWindow.cs:479</comment>
+  </data>
+  <data name="ExportWindow_UpdateResultActions_D06BC6EFDD" xml:space="preserve">
+    <value>查看結果</value>
+    <comment>ExportWindow.cs:479</comment>
+  </data>
+  <data name="ExportWindow_ViewResultAsync_B2B91741A7" xml:space="preserve">
+    <value>無法開啟本次結果：</value>
+    <comment>ExportWindow.cs:1072</comment>
+  </data>
+  <data name="ExportWindow_View_000E18C870" xml:space="preserve">
+    <value>地圖範圍</value>
+    <comment>ExportWindow.cs:146</comment>
+  </data>
+  <data name="ExportWindow_View_0617557E7B" xml:space="preserve">
+    <value>瀏覽…</value>
+    <comment>ExportWindow.cs:198</comment>
+  </data>
+  <data name="ExportWindow_View_2A8B67BFE6" xml:space="preserve">
+    <value>使用目前設定匯出。</value>
+    <comment>ExportWindow.cs:171</comment>
+  </data>
+  <data name="ExportWindow_View_2CD0F3BE87" xml:space="preserve">
+    <value>取消</value>
+    <comment>ExportWindow.cs:236</comment>
+  </data>
+  <data name="ExportWindow_View_349F3DEF65" xml:space="preserve">
+    <value>圖片設定</value>
+    <comment>ExportWindow.cs:150</comment>
+  </data>
+  <data name="ExportWindow_View_41A0338CF7" xml:space="preserve">
+    <value>請先取消工作，或等候匯出完成</value>
+    <comment>ExportWindow.cs:261</comment>
+  </data>
+  <data name="ExportWindow_View_456F962F93" xml:space="preserve">
+    <value>匯出地圖</value>
+    <comment>ExportWindow.cs:71</comment>
+  </data>
+  <data name="ExportWindow_View_54B91E5C45" xml:space="preserve">
+    <value>還原圖片設定</value>
+    <comment>ExportWindow.cs:153</comment>
+  </data>
+  <data name="ExportWindow_View_76420433F2" xml:space="preserve">
+    <value>匯出</value>
+    <comment>ExportWindow.cs:241</comment>
+  </data>
+  <data name="ExportWindow_View_95170F6894" xml:space="preserve">
+    <value>調整文字與圖示設定</value>
+    <comment>ExportWindow.cs:177</comment>
+  </data>
+  <data name="ExportWindow_View_9E411D9C27" xml:space="preserve">
+    <value>請輸入有效的長邊像素整數。</value>
+    <comment>ExportWindow.cs:111</comment>
+  </data>
+  <data name="ExportWindow_View_BD768D3131" xml:space="preserve">
+    <value>請等候目前操作完成</value>
+    <comment>ExportWindow.cs:260</comment>
+  </data>
+  <data name="ExportWindow_View_BF0671FEA7" xml:space="preserve">
+    <value>請輸入有效的整數旋轉角度。</value>
+    <comment>ExportWindow.cs:123</comment>
+  </data>
+  <data name="ExportWindow__autoOpen_4986B00E95" xml:space="preserve">
+    <value>完成後開啟輸出資料夾</value>
+    <comment>ExportWindow.cs:32</comment>
+  </data>
+  <data name="ExportWindow__chooseRange_A2BF7686B7" xml:space="preserve">
+    <value>選取範圍…</value>
+    <comment>ExportWindow.cs:42</comment>
+  </data>
+  <data name="ExportWindow__copyResult_189B772103" xml:space="preserve">
+    <value>複製本次 PNG</value>
+    <comment>ExportWindow.cs:44</comment>
+  </data>
+  <data name="ExportWindow__directoryBox_AACE273A84" xml:space="preserve">
+    <value>選擇匯出資料夾</value>
+    <comment>ExportWindow.cs:39</comment>
+  </data>
+  <data name="ExportWindow__fileNameBox_59C3073D13" xml:space="preserve">
+    <value>輸入檔名</value>
+    <comment>ExportWindow.cs:38</comment>
+  </data>
+  <data name="ExportWindow__format_7A1260E05E" xml:space="preserve">
+    <value>匯出格式</value>
+    <comment>ExportWindow.cs:27</comment>
+  </data>
+  <data name="ExportWindow__openResultFolder_4A45AD491A" xml:space="preserve">
+    <value>開啟輸出資料夾</value>
+    <comment>ExportWindow.cs:45</comment>
+  </data>
+  <data name="ExportWindow__rotation_144514527B" xml:space="preserve">
+    <value>地圖旋轉（°）</value>
+    <comment>ExportWindow.cs:29</comment>
+  </data>
+  <data name="ExportWindow__size_0FE38504DD" xml:space="preserve">
+    <value>自訂長邊（像素）</value>
+    <comment>ExportWindow.cs:28</comment>
+  </data>
+  <data name="ExportWindow__useActionRegion_061399F78D" xml:space="preserve">
+    <value>使用入口指定範圍</value>
+    <comment>ExportWindow.cs:31</comment>
+  </data>
+  <data name="ExportWindow__viewResult_D06BC6EFDD" xml:space="preserve">
+    <value>查看結果</value>
+    <comment>ExportWindow.cs:43</comment>
+  </data>
+  <data name="FilteredMultiSelector_ClearResults_E0B5912AA9" xml:space="preserve">
+    <value>取消選取搜尋結果</value>
+    <comment>FilteredMultiSelector.cs:52</comment>
+  </data>
+  <data name="FilteredMultiSelector_CreateDialog_2CD0F3BE87" xml:space="preserve">
+    <value>取消</value>
+    <comment>FilteredMultiSelector.cs:208</comment>
+  </data>
+  <data name="FilteredMultiSelector_CreateDialog_63C73C4730" xml:space="preserve">
+    <value>套用</value>
+    <comment>FilteredMultiSelector.cs:208</comment>
+  </data>
+  <data name="FilteredMultiSelector_GroupFilter_BA40014FF4" xml:space="preserve">
+    <value>類型</value>
+    <comment>FilteredMultiSelector.cs:42</comment>
+  </data>
+  <data name="FilteredMultiSelector_Reset_7C815CCCB5" xml:space="preserve">
+    <value>還原預設選取</value>
+    <comment>FilteredMultiSelector.cs:53</comment>
+  </data>
+  <data name="FilteredMultiSelector_Search_F2BAED7171" xml:space="preserve">
+    <value>搜尋名稱、類型或 ID</value>
+    <comment>FilteredMultiSelector.cs:41</comment>
+  </data>
+  <data name="FilteredMultiSelector_SelectResults_F3BF69BF3D" xml:space="preserve">
+    <value>選取篩選結果</value>
+    <comment>FilteredMultiSelector.cs:51</comment>
+  </data>
+  <data name="FilteredMultiSelector_StateFilter_49EC97BF6E" xml:space="preserve">
+    <value>選取狀態</value>
+    <comment>FilteredMultiSelector.cs:43</comment>
+  </data>
+  <data name="FilteredMultiSelector_UpdateSummary_2A6350DD2E" xml:space="preserve">
+    <value>目前城市沒有可用項目</value>
+    <comment>FilteredMultiSelector.cs:195</comment>
+  </data>
+  <data name="FilteredMultiSelector_UpdateSummary_E9B3A9174B" xml:space="preserve">
+    <value>沒有相符項目，請調整篩選條件</value>
+    <comment>FilteredMultiSelector.cs:195</comment>
+  </data>
+  <data name="FilteredMultiSelector_UpdateSummary_F4ADCBD976" xml:space="preserve">
+    <value>顯示 {0} / {1} 項 · 已選 {2} 項 · 篩選外已選 {3} 項</value>
+    <comment>FilteredMultiSelector.cs:193</comment>
+  </data>
+  <data name="FilteredMultiSelector_View_1182C5454F" xml:space="preserve">
+    <value>未選取</value>
+    <comment>FilteredMultiSelector.cs:77</comment>
+  </data>
+  <data name="FilteredMultiSelector_View_267C4A7A86" xml:space="preserve">
+    <value>所有類型</value>
+    <comment>FilteredMultiSelector.cs:74</comment>
+  </data>
+  <data name="FilteredMultiSelector_View_3F4EBC4AAD" xml:space="preserve">
+    <value>已選取</value>
+    <comment>FilteredMultiSelector.cs:77</comment>
+  </data>
+  <data name="FilteredMultiSelector_View_49EC97BF6E" xml:space="preserve">
+    <value>選取狀態</value>
+    <comment>FilteredMultiSelector.cs:69</comment>
+  </data>
+  <data name="FilteredMultiSelector_View_BA40014FF4" xml:space="preserve">
+    <value>類型</value>
+    <comment>FilteredMultiSelector.cs:68</comment>
+  </data>
+  <data name="FilteredMultiSelector_View_D107C0A063" xml:space="preserve">
+    <value>可選取項目</value>
+    <comment>FilteredMultiSelector.cs:70</comment>
+  </data>
+  <data name="FilteredMultiSelector_View_E3040DFD6B" xml:space="preserve">
+    <value>所有項目</value>
+    <comment>FilteredMultiSelector.cs:77</comment>
+  </data>
+  <data name="FilteredMultiSelector_View_F2BAED7171" xml:space="preserve">
+    <value>搜尋名稱、類型或 ID</value>
+    <comment>FilteredMultiSelector.cs:67</comment>
+  </data>
+  <data name="MainWindow_5.Text" xml:space="preserve">
+    <value>取消工作</value>
+    <comment>dev\CSLModernMapRenderer\winui\MainWindow.xaml:82</comment>
+  </data>
+  <data name="MainWindow_7.Text" xml:space="preserve">
+    <value>物件資訊</value>
+    <comment>dev\CSLModernMapRenderer\winui\MainWindow.xaml:91</comment>
+  </data>
+  <data name="MainWindow_Commands_BuildWorkspaceCommands_643E7408E6" xml:space="preserve">
+    <value>匯出…</value>
+    <comment>MainWindow.Commands.cs:190</comment>
+  </data>
+  <data name="MainWindow_Commands_BuildWorkspaceCommands_840A04872A" xml:space="preserve">
+    <value>選取區域</value>
+    <comment>MainWindow.Commands.cs:178</comment>
+  </data>
+  <data name="MainWindow_Commands_BuildWorkspaceCommands_9B8845539A" xml:space="preserve">
+    <value>匯出選取範圍</value>
+    <comment>MainWindow.Commands.cs:179</comment>
+  </data>
+  <data name="MainWindow_Commands_BuildWorkspaceCommands_AEE8874341" xml:space="preserve">
+    <value>重新整理</value>
+    <comment>MainWindow.Commands.cs:181</comment>
+  </data>
+  <data name="MainWindow_Commands_BuildWorkspaceCommands_BCE2377283" xml:space="preserve">
+    <value>清除</value>
+    <comment>MainWindow.Commands.cs:180</comment>
+  </data>
+  <data name="MainWindow_Commands_CloseEditorsAndWindowAsync_663E1A1ED3" xml:space="preserve">
+    <value>正在關閉</value>
+    <comment>MainWindow.Commands.cs:43</comment>
+  </data>
+  <data name="MainWindow_ContextText.Text" xml:space="preserve">
+    <value>城市地圖 / 開啟城市以開始</value>
+    <comment>dev\CSLModernMapRenderer\winui\MainWindow.xaml:62</comment>
+  </data>
+  <data name="MainWindow_File_BuildFileMenu_02E61DEAD2" xml:space="preserve">
+    <value>選擇語言…</value>
+    <comment>MainWindow.File.cs:38</comment>
+  </data>
+  <data name="MainWindow_File_BuildFileMenu_27C1CD1929" xml:space="preserve">
+    <value>匯出 RMG 專案…</value>
+    <comment>MainWindow.File.cs:35</comment>
+  </data>
+  <data name="MainWindow_File_BuildFileMenu_39932F24FE" xml:space="preserve">
+    <value>檔案</value>
+    <comment>MainWindow.File.cs:13</comment>
+  </data>
+  <data name="MainWindow_File_BuildFileMenu_498E1D59B4" xml:space="preserve">
+    <value>結束</value>
+    <comment>MainWindow.File.cs:49</comment>
+  </data>
+  <data name="MainWindow_File_BuildFileMenu_4C7291B847" xml:space="preserve">
+    <value>匯出 RMP 專案…</value>
+    <comment>MainWindow.File.cs:36</comment>
+  </data>
+  <data name="MainWindow_File_BuildFileMenu_52D25A9E30" xml:space="preserve">
+    <value>關於</value>
+    <comment>MainWindow.File.cs:48</comment>
+  </data>
+  <data name="MainWindow_File_BuildFileMenu_5B50D7C4B5" xml:space="preserve">
+    <value>系統</value>
+    <comment>MainWindow.File.cs:40</comment>
+  </data>
+  <data name="MainWindow_File_BuildFileMenu_86A63F23A0" xml:space="preserve">
+    <value>外觀</value>
+    <comment>MainWindow.File.cs:39</comment>
+  </data>
+  <data name="MainWindow_File_BuildFileMenu_A2D5FCA330" xml:space="preserve">
+    <value>匯出網頁地圖…</value>
+    <comment>MainWindow.File.cs:33</comment>
+  </data>
+  <data name="MainWindow_File_BuildFileMenu_A6B75D0680" xml:space="preserve">
+    <value>深色</value>
+    <comment>MainWindow.File.cs:40</comment>
+  </data>
+  <data name="MainWindow_File_BuildFileMenu_AA0819DFC4" xml:space="preserve">
+    <value>淺色</value>
+    <comment>MainWindow.File.cs:40</comment>
+  </data>
+  <data name="MainWindow_File_BuildFileMenu_CF2A3F856E" xml:space="preserve">
+    <value>開啟城市…</value>
+    <comment>MainWindow.File.cs:29</comment>
+  </data>
+  <data name="MainWindow_File_BuildFileMenu_D5962F4266" xml:space="preserve">
+    <value>儲存 PNG…</value>
+    <comment>MainWindow.File.cs:32</comment>
+  </data>
+  <data name="MainWindow_File_RefreshFileRecent_95D7E39D01" xml:space="preserve">
+    <value>檔案已移動或不存在：</value>
+    <comment>MainWindow.File.cs:63</comment>
+  </data>
+  <data name="MainWindow_File_RefreshFileRecent_C3FE933AA4" xml:space="preserve">
+    <value>沒有最近開啟的城市</value>
+    <comment>MainWindow.File.cs:68</comment>
+  </data>
+  <data name="MainWindow_File__fileRecentMenu_B6D7CBC94D" xml:space="preserve">
+    <value>最近開啟</value>
+    <comment>MainWindow.File.cs:8</comment>
+  </data>
+  <data name="MainWindow_InspectorClose.Content" xml:space="preserve">
+    <value>關閉面板</value>
+    <comment>dev\CSLModernMapRenderer\winui\MainWindow.xaml:90</comment>
+  </data>
+  <data name="MainWindow_InspectorText.Text" xml:space="preserve">
+    <value>在地圖上選取物件</value>
+    <comment>dev\CSLModernMapRenderer\winui\MainWindow.xaml:92</comment>
+  </data>
+  <data name="MainWindow_InspectorToggle.Content" xml:space="preserve">
+    <value>物件屬性</value>
+    <comment>dev\CSLModernMapRenderer\winui\MainWindow.xaml:65</comment>
+  </data>
+  <data name="MainWindow_Inspector_ShowObjectInspectorAsync_2175C1B4DC" xml:space="preserve">
+    <value>物件選取狀態已變更</value>
+    <comment>MainWindow.Inspector.cs:37; MainWindow.Inspector.cs:44</comment>
+  </data>
+  <data name="MainWindow_Inspector_ShowObjectInspectorAsync_49DC129433" xml:space="preserve">
+    <value>正在讀取物件…</value>
+    <comment>MainWindow.Inspector.cs:25</comment>
+  </data>
+  <data name="MainWindow_Layers_AddGameNamesButton_6277518C5B" xml:space="preserve">
+    <value>使用遊戲自動產生的名稱</value>
+    <comment>MainWindow.Layers.cs:221</comment>
+  </data>
+  <data name="MainWindow_Layers_AddGameNamesButton_E3E38800EE" xml:space="preserve">
+    <value>車站直徑</value>
+    <comment>MainWindow.Layers.cs:225</comment>
+  </data>
+  <data name="MainWindow_Layers_AddLayerField_06A7DF7914" xml:space="preserve">
+    <value>需要有效的 JSON 值</value>
+    <comment>MainWindow.Layers.cs:553</comment>
+  </data>
+  <data name="MainWindow_Layers_AddLayerField_6A2DEA0DF7" xml:space="preserve">
+    <value>需要有效數字</value>
+    <comment>MainWindow.Layers.cs:490</comment>
+  </data>
+  <data name="MainWindow_Layers_AddLayerVisibility_6A23362BFF" xml:space="preserve">
+    <value>顯示此圖層</value>
+    <comment>MainWindow.Layers.cs:172</comment>
+  </data>
+  <data name="MainWindow_Layers_AddMapTransitTypes_8124770B3F" xml:space="preserve">
+    <value>地圖路線類型</value>
+    <comment>MainWindow.Layers.cs:430</comment>
+  </data>
+  <data name="MainWindow_Layers_AddPoiVisibilitySettings_0D720EEEA2" xml:space="preserve">
+    <value>圖示</value>
+    <comment>MainWindow.Layers.cs:371</comment>
+  </data>
+  <data name="MainWindow_Layers_AddPoiVisibilitySettings_1A6C5F368B" xml:space="preserve">
+    <value>選取功能分區（Cities: Skylines II）…</value>
+    <comment>MainWindow.Layers.cs:359</comment>
+  </data>
+  <data name="MainWindow_Layers_AddPoiVisibilitySettings_478CCC95A5" xml:space="preserve">
+    <value>交通圖示包含地鐵站、火車站、公車站、碼頭、機場等交通設施。其他地點請用「設施」和「一般地點」開關控制。</value>
+    <comment>MainWindow.Layers.cs:366</comment>
+  </data>
+  <data name="MainWindow_Layers_AddPoiVisibilitySettings_666DD3886C" xml:space="preserve">
+    <value>非交通設施</value>
+    <comment>MainWindow.Layers.cs:369</comment>
+  </data>
+  <data name="MainWindow_Layers_AddPoiVisibilitySettings_85155A34A5" xml:space="preserve">
+    <value>一般地點</value>
+    <comment>MainWindow.Layers.cs:369</comment>
+  </data>
+  <data name="MainWindow_Layers_AddPoiVisibilitySettings_BAB0CA718D" xml:space="preserve">
+    <value>地點圖示與名稱可見性</value>
+    <comment>MainWindow.Layers.cs:356</comment>
+  </data>
+  <data name="MainWindow_Layers_AddPoiVisibilitySettings_D44E9B3D3B" xml:space="preserve">
+    <value>名稱</value>
+    <comment>MainWindow.Layers.cs:372</comment>
+  </data>
+  <data name="MainWindow_Layers_AddPoiVisibilitySettings_F7CCD76BF8" xml:space="preserve">
+    <value>交通地點</value>
+    <comment>MainWindow.Layers.cs:369</comment>
+  </data>
+  <data name="MainWindow_Layers_AddRibbonLabelChildren_530FC28542" xml:space="preserve">
+    <value>大眾運輸設施圖示對應的名稱。</value>
+    <comment>MainWindow.Layers.cs:210</comment>
+  </data>
+  <data name="MainWindow_Layers_AddRibbonLabelChildren_621D762E4D" xml:space="preserve">
+    <value>捷運站、火車站、公車站、港口、機場等交通設施圖示；若要顯示對應路線，請啟用大眾運輸圖層。</value>
+    <comment>MainWindow.Layers.cs:209</comment>
+  </data>
+  <data name="MainWindow_Layers_AddRibbonLabelChildren_7D658F8419" xml:space="preserve">
+    <value>：點擊切換顯示</value>
+    <comment>MainWindow.Layers.cs:211</comment>
+  </data>
+  <data name="MainWindow_Layers_AddRibbonLabelChildren_86AD8E73C0" xml:space="preserve">
+    <value>顯示或隱藏文字與圖示。</value>
+    <comment>MainWindow.Layers.cs:216</comment>
+  </data>
+  <data name="MainWindow_Layers_AddStylePageReset_47356E84FC" xml:space="preserve">
+    <value>目前快照缺少文件版本，無法安全還原參數</value>
+    <comment>MainWindow.Layers.cs:418</comment>
+  </data>
+  <data name="MainWindow_Layers_AddStylePageReset_7F54C9658B" xml:space="preserve">
+    <value>還原本頁參數</value>
+    <comment>MainWindow.Layers.cs:413</comment>
+  </data>
+  <data name="MainWindow_Layers_BuildLabelSettings_14B69BD6EE" xml:space="preserve">
+    <value>文字</value>
+    <comment>MainWindow.Layers.cs:334</comment>
+  </data>
+  <data name="MainWindow_Layers_BuildLabelSettings_6570FEB07C" xml:space="preserve">
+    <value>行政區文字</value>
+    <comment>MainWindow.Layers.cs:337</comment>
+  </data>
+  <data name="MainWindow_Layers_BuildLabelSettings_6E51C695FB" xml:space="preserve">
+    <value>目前檢視的地點設定…</value>
+    <comment>MainWindow.Layers.cs:348</comment>
+  </data>
+  <data name="MainWindow_Layers_BuildLabelSettings_72C2901572" xml:space="preserve">
+    <value>圖示與附屬名稱外觀</value>
+    <comment>MainWindow.Layers.cs:343</comment>
+  </data>
+  <data name="MainWindow_Layers_BuildLabelSettings_89B0B5C5FE" xml:space="preserve">
+    <value>建築文字</value>
+    <comment>MainWindow.Layers.cs:337</comment>
+  </data>
+  <data name="MainWindow_Layers_BuildLabelSettings_9CD48244BA" xml:space="preserve">
+    <value>道路文字</value>
+    <comment>MainWindow.Layers.cs:337</comment>
+  </data>
+  <data name="MainWindow_Layers_BuildLabelSettings_ACE021620F" xml:space="preserve">
+    <value>站點文字</value>
+    <comment>MainWindow.Layers.cs:338</comment>
+  </data>
+  <data name="MainWindow_Layers_BuildLabelSettings_C8F4DEC827" xml:space="preserve">
+    <value>預覽設定…</value>
+    <comment>MainWindow.Layers.cs:346</comment>
+  </data>
+  <data name="MainWindow_Layers_BuildLabelSettings_F705D32DBC" xml:space="preserve">
+    <value>區域文字</value>
+    <comment>MainWindow.Layers.cs:338</comment>
+  </data>
+  <data name="MainWindow_Layers_LabelChildren_4AA668A329" xml:space="preserve">
+    <value>設施名稱</value>
+    <comment>MainWindow.Layers.cs:44</comment>
+  </data>
+  <data name="MainWindow_Layers_LabelChildren_4C2772DFEA" xml:space="preserve">
+    <value>大眾運輸圖示</value>
+    <comment>MainWindow.Layers.cs:41</comment>
+  </data>
+  <data name="MainWindow_Layers_LabelChildren_559301786F" xml:space="preserve">
+    <value>區域名稱</value>
+    <comment>MainWindow.Layers.cs:40</comment>
+  </data>
+  <data name="MainWindow_Layers_LabelChildren_5939962905" xml:space="preserve">
+    <value>行政區名稱</value>
+    <comment>MainWindow.Layers.cs:39</comment>
+  </data>
+  <data name="MainWindow_Layers_LabelChildren_5D8DBF6BD5" xml:space="preserve">
+    <value>一般地點圖示</value>
+    <comment>MainWindow.Layers.cs:45</comment>
+  </data>
+  <data name="MainWindow_Layers_LabelChildren_8C919EE4A4" xml:space="preserve">
+    <value>道路名稱</value>
+    <comment>MainWindow.Layers.cs:38</comment>
+  </data>
+  <data name="MainWindow_Layers_LabelChildren_905692C294" xml:space="preserve">
+    <value>設施圖示</value>
+    <comment>MainWindow.Layers.cs:43</comment>
+  </data>
+  <data name="MainWindow_Layers_LabelChildren_9239670615" xml:space="preserve">
+    <value>大眾運輸圖示名稱</value>
+    <comment>MainWindow.Layers.cs:42</comment>
+  </data>
+  <data name="MainWindow_Layers_LabelChildren_F82CD9C67B" xml:space="preserve">
+    <value>一般地點名稱</value>
+    <comment>MainWindow.Layers.cs:46</comment>
+  </data>
+  <data name="MainWindow_Layers_RefreshLayerBinding_736346CBCE" xml:space="preserve">
+    <value>無法讀取圖層欄位 {0}：{1}</value>
+    <comment>MainWindow.Layers.cs:98</comment>
+  </data>
+  <data name="MainWindow_Layers_RefreshLayerBindings_2FB7BF248F" xml:space="preserve">
+    <value>使用遊戲自動名稱，</value>
+    <comment>MainWindow.Layers.cs:119</comment>
+  </data>
+  <data name="MainWindow_Layers_RefreshLayerBindings_645432A5BF" xml:space="preserve">
+    <value>，已開啟</value>
+    <comment>MainWindow.Layers.cs:113</comment>
+  </data>
+  <data name="MainWindow_Layers_RefreshLayerBindings_6744B4C6A9" xml:space="preserve">
+    <value>已關閉</value>
+    <comment>MainWindow.Layers.cs:119</comment>
+  </data>
+  <data name="MainWindow_Layers_RefreshLayerBindings_8A4EF3E48E" xml:space="preserve">
+    <value>已開啟</value>
+    <comment>MainWindow.Layers.cs:119</comment>
+  </data>
+  <data name="MainWindow_Layers_RefreshLayerBindings_96E5815C15" xml:space="preserve">
+    <value>，已關閉</value>
+    <comment>MainWindow.Layers.cs:113</comment>
+  </data>
+  <data name="MainWindow_Layers_ShowLayerSettings_0155C1B620" xml:space="preserve">
+    <value>整體設定</value>
+    <comment>MainWindow.Layers.cs:287</comment>
+  </data>
+  <data name="MainWindow_Layers_ShowLayerSettings_109688E695" xml:space="preserve">
+    <value>支線</value>
+    <comment>MainWindow.Layers.cs:295</comment>
+  </data>
+  <data name="MainWindow_Layers_ShowLayerSettings_236E3F737A" xml:space="preserve">
+    <value>標籤與圖示設定</value>
+    <comment>MainWindow.Layers.cs:280</comment>
+  </data>
+  <data name="MainWindow_Layers_ShowLayerSettings_35CDE54CEB" xml:space="preserve">
+    <value>景觀道路</value>
+    <comment>MainWindow.Layers.cs:296</comment>
+  </data>
+  <data name="MainWindow_Layers_ShowLayerSettings_534C553126" xml:space="preserve">
+    <value>高速公路</value>
+    <comment>MainWindow.Layers.cs:295</comment>
+  </data>
+  <data name="MainWindow_Layers_ShowLayerSettings_77EDD4A8FC" xml:space="preserve">
+    <value>圖層顯示</value>
+    <comment>MainWindow.Layers.cs:283</comment>
+  </data>
+  <data name="MainWindow_Layers_ShowLayerSettings_7B451F077B" xml:space="preserve">
+    <value>精確計算道路重疊、橋隧遮擋與接縫；關閉後，複雜交叉處可能仍有接縫。</value>
+    <comment>MainWindow.Layers.cs:292</comment>
+  </data>
+  <data name="MainWindow_Layers_ShowLayerSettings_85F71EC8DA" xml:space="preserve">
+    <value>主要道路</value>
+    <comment>MainWindow.Layers.cs:295</comment>
+  </data>
+  <data name="MainWindow_Layers_ShowLayerSettings_B693F5603C" xml:space="preserve">
+    <value>樣式與參數</value>
+    <comment>MainWindow.Layers.cs:305</comment>
+  </data>
+  <data name="MainWindow_Layers_ShowLayerSettings_C8FFBDF157" xml:space="preserve">
+    <value>樣式</value>
+    <comment>MainWindow.Layers.cs:315</comment>
+  </data>
+  <data name="MainWindow_Layers_ShowLayerSettings_DF3D58C7D8" xml:space="preserve">
+    <value>設定</value>
+    <comment>MainWindow.Layers.cs:280</comment>
+  </data>
+  <data name="MainWindow_Layers_ShowLayerSettings_EDE0519A4C" xml:space="preserve">
+    <value>特殊道路</value>
+    <comment>MainWindow.Layers.cs:296</comment>
+  </data>
+  <data name="MainWindow_Layers_ShowLayerSettings_FF45B08D51" xml:space="preserve">
+    <value>管理地點圖示與名稱的顯示狀態；圖示外觀可在樣式頁編輯。</value>
+    <comment>MainWindow.Layers.cs:318</comment>
+  </data>
+  <data name="MainWindow_MapOverlayText.Text" xml:space="preserve">
+    <value>開啟城市以顯示地圖</value>
+    <comment>dev\CSLModernMapRenderer\winui\MainWindow.xaml:75</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_03646B63FA" xml:space="preserve">
+    <value>人民大道</value>
+    <comment>MainWindow.MapSettings.cs:258</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_078838DA42" xml:space="preserve">
+    <value>字型</value>
+    <comment>MainWindow.MapSettings.cs:343; MainWindow.MapSettings.cs:372</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_0A6C1B2384" xml:space="preserve">
+    <value>跟隨圖示</value>
+    <comment>MainWindow.MapSettings.cs:291</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_106F7928FF" xml:space="preserve">
+    <value>關閉總開關仍會保留各項選擇。</value>
+    <comment>MainWindow.MapSettings.cs:219</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_145219E726" xml:space="preserve">
+    <value>隱藏</value>
+    <comment>MainWindow.MapSettings.cs:291</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_15D45E8CB2" xml:space="preserve">
+    <value>外觀會儲存至目前主題；地點合併則套用於目前檢視。</value>
+    <comment>MainWindow.MapSettings.cs:74</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_20F4B27E8B" xml:space="preserve">
+    <value>醫院、學校、公園等</value>
+    <comment>MainWindow.MapSettings.cs:267</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_2BA76F2344" xml:space="preserve">
+    <value>公園、工業區等</value>
+    <comment>MainWindow.MapSettings.cs:260</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_2BCCB49F29" xml:space="preserve">
+    <value>圖示樣式</value>
+    <comment>MainWindow.MapSettings.cs:358</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_2CD0F3BE87" xml:space="preserve">
+    <value>取消</value>
+    <comment>MainWindow.MapSettings.cs:412</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_316B8B9770" xml:space="preserve">
+    <value>城市或檢視已變更，請重新開啟設定。</value>
+    <comment>MainWindow.MapSettings.cs:415</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_385A7FE267" xml:space="preserve">
+    <value>商店、住宅等</value>
+    <comment>MainWindow.MapSettings.cs:268</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_3DF5010859" xml:space="preserve">
+    <value>站點圓圈直徑（參考像素）</value>
+    <comment>MainWindow.MapSettings.cs:374</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_46730D6460" xml:space="preserve">
+    <value>地點類型名稱，例如「圖書館」</value>
+    <comment>MainWindow.MapSettings.cs:311</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_4BA9B35503" xml:space="preserve">
+    <value>若名稱跟隨圖示，隱藏圖示時名稱也會隱藏。</value>
+    <comment>MainWindow.MapSettings.cs:303</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_4C2772DFEA" xml:space="preserve">
+    <value>大眾運輸圖示</value>
+    <comment>MainWindow.MapSettings.cs:278</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_4D2A6ECC62" xml:space="preserve">
+    <value>參考尺寸以全城 4096 像素為基準。</value>
+    <comment>MainWindow.MapSettings.cs:350; MainWindow.MapSettings.cs:365</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_4D8D19C70F" xml:space="preserve">
+    <value>設定類別</value>
+    <comment>MainWindow.MapSettings.cs:57; MainWindow.MapSettings.cs:58; MainWindow.MapSettings.cs:59</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_4E318B9011" xml:space="preserve">
+    <value>合併與避讓</value>
+    <comment>MainWindow.MapSettings.cs:377</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_4F0C1E4BF0" xml:space="preserve">
+    <value>文字與圖示</value>
+    <comment>MainWindow.MapSettings.cs:39</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_53E88DD68F" xml:space="preserve">
+    <value>站點圓圈</value>
+    <comment>MainWindow.MapSettings.cs:282; MainWindow.MapSettings.cs:282</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_559301786F" xml:space="preserve">
+    <value>區域名稱</value>
+    <comment>MainWindow.MapSettings.cs:260; MainWindow.MapSettings.cs:260; MainWindow.MapSettings.cs:338</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_58D54FC2B1" xml:space="preserve">
+    <value>減少重複與擁擠</value>
+    <comment>MainWindow.MapSettings.cs:377</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_5939962905" xml:space="preserve">
+    <value>行政區名稱</value>
+    <comment>MainWindow.MapSettings.cs:259; MainWindow.MapSettings.cs:259; MainWindow.MapSettings.cs:338</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_5A85707DE5" xml:space="preserve">
+    <value>大眾運輸地圖</value>
+    <comment>MainWindow.MapSettings.cs:37</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_5B818B9F10" xml:space="preserve">
+    <value>站名字體大小需在站名標示中設定。</value>
+    <comment>MainWindow.MapSettings.cs:364</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_63C73C4730" xml:space="preserve">
+    <value>套用</value>
+    <comment>MainWindow.MapSettings.cs:413</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_66E80E45EF" xml:space="preserve">
+    <value>站點旁</value>
+    <comment>MainWindow.MapSettings.cs:291</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_6882633176" xml:space="preserve">
+    <value>名稱字型</value>
+    <comment>MainWindow.MapSettings.cs:360</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_7457706051" xml:space="preserve">
+    <value>未被玩家命名的地點使用</value>
+    <comment>MainWindow.MapSettings.cs:310</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_76D41E4EC7" xml:space="preserve">
+    <value>大眾運輸、設施與一般地點名稱會跟隨對應圖示；隱藏圖示時仍保留名稱設定。</value>
+    <comment>MainWindow.MapSettings.cs:308</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_788576AD8B" xml:space="preserve">
+    <value>圓圈與站名</value>
+    <comment>MainWindow.MapSettings.cs:281</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_7F4BF2E908" xml:space="preserve">
+    <value>調整目前檢視中的地點合併與避讓。</value>
+    <comment>MainWindow.MapSettings.cs:377</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_8373A5D587" xml:space="preserve">
+    <value>外框寬度佔字型大小（%）</value>
+    <comment>MainWindow.MapSettings.cs:361</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_85155A34A5" xml:space="preserve">
+    <value>一般地點</value>
+    <comment>MainWindow.MapSettings.cs:268</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_895C96E443" xml:space="preserve">
+    <value>自訂名稱不受影響。</value>
+    <comment>MainWindow.MapSettings.cs:317</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_8C919EE4A4" xml:space="preserve">
+    <value>道路名稱</value>
+    <comment>MainWindow.MapSettings.cs:258; MainWindow.MapSettings.cs:258; MainWindow.MapSettings.cs:338</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_8CC740C6CC" xml:space="preserve">
+    <value>合併距離（公尺）</value>
+    <comment>MainWindow.MapSettings.cs:381</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_9343017EBD" xml:space="preserve">
+    <value>湖畔區</value>
+    <comment>MainWindow.MapSettings.cs:259</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_9AB9CE990C" xml:space="preserve">
+    <value>地點圖示與名稱</value>
+    <comment>MainWindow.MapSettings.cs:355; MainWindow.MapSettings.cs:355</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_9DE76207A3" xml:space="preserve">
+    <value>人民廣場 Central Park</value>
+    <comment>MainWindow.MapSettings.cs:145</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_A09EBD7631" xml:space="preserve">
+    <value>站名與圓圈</value>
+    <comment>MainWindow.MapSettings.cs:370; MainWindow.MapSettings.cs:370</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_A0DF88327C" xml:space="preserve">
+    <value>描邊寬度（參考像素）</value>
+    <comment>MainWindow.MapSettings.cs:346; MainWindow.MapSettings.cs:373</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_A15E0EC6D5" xml:space="preserve">
+    <value>地圖內容</value>
+    <comment>MainWindow.MapSettings.cs:227</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_A30C326C3B" xml:space="preserve">
+    <value>人民大道 Central Avenue</value>
+    <comment>MainWindow.MapSettings.cs:145</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_A5E8039E52" xml:space="preserve">
+    <value>一般地圖</value>
+    <comment>MainWindow.MapSettings.cs:37</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_A908E2D419" xml:space="preserve">
+    <value>樣式範例</value>
+    <comment>MainWindow.MapSettings.cs:164</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_A96C5858AE" xml:space="preserve">
+    <value>湖畔區 · Lakeside</value>
+    <comment>MainWindow.MapSettings.cs:146</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_AAE29EF00E" xml:space="preserve">
+    <value>公車站、車站等</value>
+    <comment>MainWindow.MapSettings.cs:266; MainWindow.MapSettings.cs:278</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_AB9506AB75" xml:space="preserve">
+    <value>大眾運輸、設施與一般地點共用樣式，名稱則沿用圖示顏色。</value>
+    <comment>MainWindow.MapSettings.cs:356</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_AE4D0CA688" xml:space="preserve">
+    <value>中央公園 · Central Park</value>
+    <comment>MainWindow.MapSettings.cs:146</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_B57E2D89DD" xml:space="preserve">
+    <value>站名</value>
+    <comment>MainWindow.MapSettings.cs:283; MainWindow.MapSettings.cs:284</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_BA2E93E730" xml:space="preserve">
+    <value>還原預設值</value>
+    <comment>MainWindow.MapSettings.cs:404</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_BFBFD61DB2" xml:space="preserve">
+    <value>路線站點</value>
+    <comment>MainWindow.MapSettings.cs:281</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_C07A256175" xml:space="preserve">
+    <value>設施</value>
+    <comment>MainWindow.MapSettings.cs:267</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_C1FAA9C244" xml:space="preserve">
+    <value>文字大小與圓圈直徑以短邊 1024 像素為基準，會隨輸出尺寸等比例放大。</value>
+    <comment>MainWindow.MapSettings.cs:371</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_C31627B8E1" xml:space="preserve">
+    <value>站名字號</value>
+    <comment>MainWindow.MapSettings.cs:302</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_C5F015E8F7" xml:space="preserve">
+    <value>合併鄰近停靠站</value>
+    <comment>MainWindow.MapSettings.cs:380</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_C60A74FB5E" xml:space="preserve">
+    <value>樣式示意；實際結果請查看地圖。</value>
+    <comment>MainWindow.MapSettings.cs:166</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_C8FB9E0A52" xml:space="preserve">
+    <value>市立圖書館</value>
+    <comment>MainWindow.MapSettings.cs:146</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_C8FFBDF157" xml:space="preserve">
+    <value>樣式</value>
+    <comment>MainWindow.MapSettings.cs:248; MainWindow.MapSettings.cs:250</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_CA8C4DBB64" xml:space="preserve">
+    <value>依地圖上的實際距離計算。</value>
+    <comment>MainWindow.MapSettings.cs:383</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_CC7213031E" xml:space="preserve">
+    <value>圖示大小（參考 px）</value>
+    <comment>MainWindow.MapSettings.cs:359</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_CCF2142845" xml:space="preserve">
+    <value>圖示／圓圈</value>
+    <comment>MainWindow.MapSettings.cs:227</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_CF2382056B" xml:space="preserve">
+    <value>站名標註</value>
+    <comment>MainWindow.MapSettings.cs:290</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_D44E9B3D3B" xml:space="preserve">
+    <value>名稱</value>
+    <comment>MainWindow.MapSettings.cs:227; MainWindow.MapSettings.cs:274</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_D86FD32B7C" xml:space="preserve">
+    <value>外框顏色</value>
+    <comment>MainWindow.MapSettings.cs:348; MainWindow.MapSettings.cs:361; MainWindow.MapSettings.cs:374</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_DE90186FC6" xml:space="preserve">
+    <value>選擇顯示內容</value>
+    <comment>MainWindow.MapSettings.cs:212; MainWindow.MapSettings.cs:212</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_DEA33AAC15" xml:space="preserve">
+    <value>調整此類名稱的字型、大小與顏色。</value>
+    <comment>MainWindow.MapSettings.cs:340</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_E9439034E1" xml:space="preserve">
+    <value>顯示文字與圖示</value>
+    <comment>MainWindow.MapSettings.cs:216</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_EC7FFA2896" xml:space="preserve">
+    <value>縮放時的尺寸變化</value>
+    <comment>MainWindow.MapSettings.cs:351; MainWindow.MapSettings.cs:366</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_ED236491A4" xml:space="preserve">
+    <value>遊戲自動名稱</value>
+    <comment>MainWindow.MapSettings.cs:311</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_F21EF4ABA5" xml:space="preserve">
+    <value>文字顏色</value>
+    <comment>MainWindow.MapSettings.cs:345; MainWindow.MapSettings.cs:373</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_F7CCD76BF8" xml:space="preserve">
+    <value>交通地點</value>
+    <comment>MainWindow.MapSettings.cs:266; MainWindow.MapSettings.cs:278</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_F9CCBFE15E" xml:space="preserve">
+    <value>字型大小（參考 px）</value>
+    <comment>MainWindow.MapSettings.cs:344; MainWindow.MapSettings.cs:360; MainWindow.MapSettings.cs:372</comment>
+  </data>
+  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_FA5D23884E" xml:space="preserve">
+    <value>地鐵示意圖</value>
+    <comment>MainWindow.MapSettings.cs:37</comment>
+  </data>
+  <data name="MainWindow_OverviewButton.Content" xml:space="preserve">
+    <value>地圖概況</value>
+    <comment>dev\CSLModernMapRenderer\winui\MainWindow.xaml:50</comment>
+  </data>
+  <data name="MainWindow_Overview_ShowInspectorHome_1CDED5B3FD" xml:space="preserve">
+    <value>物件屬性</value>
+    <comment>MainWindow.Overview.cs:111</comment>
+  </data>
+  <data name="MainWindow_Overview_ShowInspectorHome_5A85707DE5" xml:space="preserve">
+    <value>大眾運輸地圖</value>
+    <comment>MainWindow.Overview.cs:119</comment>
+  </data>
+  <data name="MainWindow_Overview_ShowInspectorHome_74F45217E6" xml:space="preserve">
+    <value>編輯主題</value>
+    <comment>MainWindow.Overview.cs:126</comment>
+  </data>
+  <data name="MainWindow_Overview_ShowInspectorHome_76420433F2" xml:space="preserve">
+    <value>匯出</value>
+    <comment>MainWindow.Overview.cs:128</comment>
+  </data>
+  <data name="MainWindow_Overview_ShowInspectorHome_98CEB57FD8" xml:space="preserve">
+    <value>探索</value>
+    <comment>MainWindow.Overview.cs:118</comment>
+  </data>
+  <data name="MainWindow_Overview_ShowInspectorHome_EC0E84A16C" xml:space="preserve">
+    <value>在 RMP 中繼續編輯</value>
+    <comment>MainWindow.Overview.cs:132</comment>
+  </data>
+  <data name="MainWindow_Overview_ShowInspectorHome_F2926EB3BB" xml:space="preserve">
+    <value>圖層</value>
+    <comment>MainWindow.Overview.cs:121</comment>
+  </data>
+  <data name="MainWindow_Overview_ShowInspectorHome_F3945D0F03" xml:space="preserve">
+    <value>選取地圖物件以查看重要資訊，並調整相關樣式。</value>
+    <comment>MainWindow.Overview.cs:115</comment>
+  </data>
+  <data name="MainWindow_Overview_ShowInspectorHome_FA5D23884E" xml:space="preserve">
+    <value>地鐵示意圖</value>
+    <comment>MainWindow.Overview.cs:120</comment>
+  </data>
+  <data name="MainWindow_Overview_ShowInspectorHome_FB04ADDB4C" xml:space="preserve">
+    <value>輸出</value>
+    <comment>MainWindow.Overview.cs:127</comment>
+  </data>
+  <data name="MainWindow_Overview_ShowMapOverview_24300AC2FE" xml:space="preserve">
+    <value>地圖主題與目前城市概況</value>
+    <comment>MainWindow.Overview.cs:39</comment>
+  </data>
+  <data name="MainWindow_Overview_ShowMapOverview_3595B7C819" xml:space="preserve">
+    <value>區域數量</value>
+    <comment>MainWindow.Overview.cs:53</comment>
+  </data>
+  <data name="MainWindow_Overview_ShowMapOverview_41AB2E0ECB" xml:space="preserve">
+    <value>地圖</value>
+    <comment>MainWindow.Overview.cs:38; MainWindow.Overview.cs:40</comment>
+  </data>
+  <data name="MainWindow_Overview_ShowMapOverview_5B46860A8E" xml:space="preserve">
+    <value>建築物</value>
+    <comment>MainWindow.Overview.cs:51</comment>
+  </data>
+  <data name="MainWindow_Overview_ShowMapOverview_66ED35BB59" xml:space="preserve">
+    <value>建成區面積</value>
+    <comment>MainWindow.Overview.cs:52</comment>
+  </data>
+  <data name="MainWindow_Overview_ShowMapOverview_6F1C3CB04A" xml:space="preserve">
+    <value>編輯主題…</value>
+    <comment>MainWindow.Overview.cs:48</comment>
+  </data>
+  <data name="MainWindow_Overview_ShowMapOverview_788DB1CFEC" xml:space="preserve">
+    <value>主題</value>
+    <comment>MainWindow.Overview.cs:41</comment>
+  </data>
+  <data name="MainWindow_Overview_ShowMapOverview_B553EA09A3" xml:space="preserve">
+    <value>大眾運輸營運里程</value>
+    <comment>MainWindow.Overview.cs:52</comment>
+  </data>
+  <data name="MainWindow_Overview_ShowMapOverview_BDA7B29CF3" xml:space="preserve">
+    <value>道路長度</value>
+    <comment>MainWindow.Overview.cs:51</comment>
+  </data>
+  <data name="MainWindow_Overview_ShowMapOverview_BE41515DE2" xml:space="preserve">
+    <value>行政區數量</value>
+    <comment>MainWindow.Overview.cs:53</comment>
+  </data>
+  <data name="MainWindow_Overview_ShowMapOverview_C8F4DEC827" xml:space="preserve">
+    <value>預覽設定…</value>
+    <comment>MainWindow.Overview.cs:49</comment>
+  </data>
+  <data name="MainWindow_Overview_ShowMapOverview_DCC3E7A6FA" xml:space="preserve">
+    <value>城市資訊</value>
+    <comment>MainWindow.Overview.cs:50</comment>
+  </data>
+  <data name="MainWindow_Overview_ShowMapOverview_ED84A1665F" xml:space="preserve">
+    <value>城市</value>
+    <comment>MainWindow.Overview.cs:51</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_07C030A101" xml:space="preserve">
+    <value>重複間距（公尺）</value>
+    <comment>MainWindow.PublicTransitSettings.cs:197</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_0A6C1B2384" xml:space="preserve">
+    <value>跟隨圖示</value>
+    <comment>MainWindow.PublicTransitSettings.cs:209</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_0BB1EFDA65" xml:space="preserve">
+    <value>{0}：請輸入介於 {1} 至 {2} 的數值。</value>
+    <comment>MainWindow.PublicTransitSettings.cs:78</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_0C42752747" xml:space="preserve">
+    <value>篩選交通類型</value>
+    <comment>MainWindow.PublicTransitSettings.cs:200</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_12CA9D6069" xml:space="preserve">
+    <value>提早顯示</value>
+    <comment>MainWindow.PublicTransitSettings.cs:222</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_145219E726" xml:space="preserve">
+    <value>隱藏</value>
+    <comment>MainWindow.PublicTransitSettings.cs:209; MainWindow.PublicTransitSettings.cs:241</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_1AB216CC0D" xml:space="preserve">
+    <value>大眾運輸</value>
+    <comment>MainWindow.PublicTransitSettings.cs:159</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_1C194CAECF" xml:space="preserve">
+    <value>預覽圖示顯示時機</value>
+    <comment>MainWindow.PublicTransitSettings.cs:227</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_1D1CCCE3EE" xml:space="preserve">
+    <value>底圖淡化（%）</value>
+    <comment>MainWindow.PublicTransitSettings.cs:238</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_2035432E8A" xml:space="preserve">
+    <value>路線名稱</value>
+    <comment>MainWindow.PublicTransitSettings.cs:191; MainWindow.PublicTransitSettings.cs:195</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_207E6D1CF5" xml:space="preserve">
+    <value>水域</value>
+    <comment>MainWindow.PublicTransitSettings.cs:236</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_223B24B821" xml:space="preserve">
+    <value>路線</value>
+    <comment>MainWindow.PublicTransitSettings.cs:171; MainWindow.PublicTransitSettings.cs:191</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_2E934D4999" xml:space="preserve">
+    <value>其他地點</value>
+    <comment>MainWindow.PublicTransitSettings.cs:240</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_306B1272E7" xml:space="preserve">
+    <value>圖示顯示時機</value>
+    <comment>MainWindow.PublicTransitSettings.cs:222</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_34DDE01FDF" xml:space="preserve">
+    <value>車站符號</value>
+    <comment>MainWindow.PublicTransitSettings.cs:203</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_38974C8097" xml:space="preserve">
+    <value>0% 保留原色，100% 會將底圖淡化為白色。</value>
+    <comment>MainWindow.PublicTransitSettings.cs:239</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_3D44BCC3EC" xml:space="preserve">
+    <value>圖示旁名稱的文字樣式…</value>
+    <comment>MainWindow.PublicTransitSettings.cs:228</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_4BA9B35503" xml:space="preserve">
+    <value>若名稱跟隨圖示，隱藏圖示時名稱也會隱藏。</value>
+    <comment>MainWindow.PublicTransitSettings.cs:214</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_4BD5559194" xml:space="preserve">
+    <value>放大後顯示，以減少雜亂</value>
+    <comment>MainWindow.PublicTransitSettings.cs:222</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_4C2772DFEA" xml:space="preserve">
+    <value>大眾運輸圖示</value>
+    <comment>MainWindow.PublicTransitSettings.cs:204</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_4D805272C6" xml:space="preserve">
+    <value>地圖概況</value>
+    <comment>MainWindow.PublicTransitSettings.cs:162</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_4E162D443D" xml:space="preserve">
+    <value>底圖</value>
+    <comment>MainWindow.PublicTransitSettings.cs:171</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_4E94217596" xml:space="preserve">
+    <value>開始顯示圖示的縮放級別</value>
+    <comment>MainWindow.PublicTransitSettings.cs:225</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_528766B879" xml:space="preserve">
+    <value>此字型大小僅影響大眾運輸地圖，並以 1024 像素畫布為基準。</value>
+    <comment>MainWindow.PublicTransitSettings.cs:215</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_53E88DD68F" xml:space="preserve">
+    <value>站點圓圈</value>
+    <comment>MainWindow.PublicTransitSettings.cs:204</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_55F4EFF3C2" xml:space="preserve">
+    <value>正常顯示</value>
+    <comment>MainWindow.PublicTransitSettings.cs:241</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_607FF5AA08" xml:space="preserve">
+    <value>地圖背景</value>
+    <comment>MainWindow.PublicTransitSettings.cs:235</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_61F8F663B0" xml:space="preserve">
+    <value>隨底圖淡化</value>
+    <comment>MainWindow.PublicTransitSettings.cs:241</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_66E80E45EF" xml:space="preserve">
+    <value>站點旁</value>
+    <comment>MainWindow.PublicTransitSettings.cs:209</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_6A58CC1963" xml:space="preserve">
+    <value>文字與圖示設定…</value>
+    <comment>MainWindow.PublicTransitSettings.cs:244</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_7AEB540769" xml:space="preserve">
+    <value>圖示大小</value>
+    <comment>MainWindow.PublicTransitSettings.cs:206</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_7D37BDEA69" xml:space="preserve">
+    <value>圖示表示交通方式；圓圈標示車站位置。</value>
+    <comment>MainWindow.PublicTransitSettings.cs:205</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_8CC740C6CC" xml:space="preserve">
+    <value>合併距離（公尺）</value>
+    <comment>MainWindow.PublicTransitSettings.cs:218</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_8FB38E6289" xml:space="preserve">
+    <value>路線顏色</value>
+    <comment>MainWindow.PublicTransitSettings.cs:193</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_9127985776" xml:space="preserve">
+    <value>路線粗細</value>
+    <comment>MainWindow.PublicTransitSettings.cs:192</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_9472A9046A" xml:space="preserve">
+    <value>行政區邊界</value>
+    <comment>MainWindow.PublicTransitSettings.cs:237</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_9B5EF0621D" xml:space="preserve">
+    <value>路線顯示</value>
+    <comment>MainWindow.PublicTransitSettings.cs:190</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_9FC7D0CF1D" xml:space="preserve">
+    <value>地點圖示</value>
+    <comment>MainWindow.PublicTransitSettings.cs:241</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_A0B055E1E7" xml:space="preserve">
+    <value>醫院、學校、商店等建築。</value>
+    <comment>MainWindow.PublicTransitSettings.cs:243</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_A44C7BA211" xml:space="preserve">
+    <value>道路</value>
+    <comment>MainWindow.PublicTransitSettings.cs:236</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_A59FE62777" xml:space="preserve">
+    <value>站點</value>
+    <comment>MainWindow.PublicTransitSettings.cs:171</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_AB6B7CE9E1" xml:space="preserve">
+    <value>將距離範圍內的站點圓圈合併為一個標記，但不會變更路線與站點資料。</value>
+    <comment>MainWindow.PublicTransitSettings.cs:219</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_AE7AD41B8A" xml:space="preserve">
+    <value>經典配色</value>
+    <comment>MainWindow.PublicTransitSettings.cs:193</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_B0A8E4535B" xml:space="preserve">
+    <value>選擇路線…</value>
+    <comment>MainWindow.PublicTransitSettings.cs:165</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_B26912E11B" xml:space="preserve">
+    <value>柔和</value>
+    <comment>MainWindow.PublicTransitSettings.cs:193</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_C31627B8E1" xml:space="preserve">
+    <value>站名字號</value>
+    <comment>MainWindow.PublicTransitSettings.cs:212</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_C5F015E8F7" xml:space="preserve">
+    <value>合併鄰近停靠站</value>
+    <comment>MainWindow.PublicTransitSettings.cs:217</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_CF2382056B" xml:space="preserve">
+    <value>站名標註</value>
+    <comment>MainWindow.PublicTransitSettings.cs:208; MainWindow.PublicTransitSettings.cs:211</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_CF587BF248" xml:space="preserve">
+    <value>圓圈直徑</value>
+    <comment>MainWindow.PublicTransitSettings.cs:207</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_DC263CCCA0" xml:space="preserve">
+    <value>鄰近車站圓圈</value>
+    <comment>MainWindow.PublicTransitSettings.cs:220</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_E8A2BF34A8" xml:space="preserve">
+    <value>路線標籤大小</value>
+    <comment>MainWindow.PublicTransitSettings.cs:196</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_F5748AF1D4" xml:space="preserve">
+    <value>等級越高，需要放大更多才會顯示圖示；僅影響互動預覽。</value>
+    <comment>MainWindow.PublicTransitSettings.cs:226</comment>
+  </data>
+  <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_F6FDD989E6" xml:space="preserve">
+    <value>遊戲色彩</value>
+    <comment>MainWindow.PublicTransitSettings.cs:193</comment>
+  </data>
+  <data name="MainWindow_Selectors_SelectRegionsAsync_12EDC1EE80" xml:space="preserve">
+    <value>功能區域</value>
+    <comment>MainWindow.Selectors.cs:105</comment>
+  </data>
+  <data name="MainWindow_Selectors_SelectRegionsAsync_173BE63FFD" xml:space="preserve">
+    <value>選取功能分區</value>
+    <comment>MainWindow.Selectors.cs:112</comment>
+  </data>
+  <data name="MainWindow_Selectors_SelectRegionsAsync_2168C5F581" xml:space="preserve">
+    <value>行政區</value>
+    <comment>MainWindow.Selectors.cs:105</comment>
+  </data>
+  <data name="MainWindow_Selectors_SelectRegionsAsync_D00BB06803" xml:space="preserve">
+    <value>選擇行政區</value>
+    <comment>MainWindow.Selectors.cs:112</comment>
+  </data>
+  <data name="MainWindow_Selectors_SelectRegionsAsync_E3294F8722" xml:space="preserve">
+    <value>沒有可用的邊界</value>
+    <comment>MainWindow.Selectors.cs:107</comment>
+  </data>
+  <data name="MainWindow_Selectors_ShowFacilitiesAsync_803AA8753F" xml:space="preserve">
+    <value>選取設施（天際線 2）</value>
+    <comment>MainWindow.Selectors.cs:80</comment>
+  </data>
+  <data name="MainWindow_Selectors_ShowTransitLinesAsync_2418A38642" xml:space="preserve">
+    <value>選取大眾運輸路線</value>
+    <comment>MainWindow.Selectors.cs:44</comment>
+  </data>
+  <data name="MainWindow_Selectors_ShowTransitLinesAsync_CCABA1884B" xml:space="preserve">
+    <value>{0} · {1} 個站點 · {2:0.0} km · 編號 {3}</value>
+    <comment>MainWindow.Selectors.cs:36</comment>
+  </data>
+  <data name="MainWindow_Selectors_ShowTransitLinesAsync_DD96AB6C0D" xml:space="preserve">
+    <value>選擇地鐵示意圖路線</value>
+    <comment>MainWindow.Selectors.cs:44</comment>
+  </data>
+  <data name="MainWindow_StatusText.Text" xml:space="preserve">
+    <value>載入中</value>
+    <comment>dev\CSLModernMapRenderer\winui\MainWindow.xaml:100</comment>
+  </data>
+  <data name="MainWindow_Status_ApplyMapTaskState_75306678A9" xml:space="preserve">
+    <value>預覽尚未完成</value>
+    <comment>MainWindow.Status.cs:33</comment>
+  </data>
+  <data name="MainWindow_Status_ApplyMapTaskState_851B0B5075" xml:space="preserve">
+    <value>仍在載入，請稍候…</value>
+    <comment>MainWindow.Status.cs:34</comment>
+  </data>
+  <data name="MainWindow_Status_ApplyMapTaskState_C8921F1516" xml:space="preserve">
+    <value>匯出中</value>
+    <comment>MainWindow.Status.cs:25</comment>
+  </data>
+  <data name="MainWindow_Status_CompilePreviewAsync_058E698B71" xml:space="preserve">
+    <value>正在產生大眾運輸地圖…</value>
+    <comment>MainWindow.Status.cs:76</comment>
+  </data>
+  <data name="MainWindow_Status_CompilePreviewAsync_2A55669135" xml:space="preserve">
+    <value>請等待目前工作結束</value>
+    <comment>MainWindow.Status.cs:75</comment>
+  </data>
+  <data name="MainWindow_Status_CompilePreviewAsync_A8A3F1C48A" xml:space="preserve">
+    <value>正在重新整理地圖…</value>
+    <comment>MainWindow.Status.cs:76</comment>
+  </data>
+  <data name="MainWindow_Status_CompilePreviewAsync_BA6C957739" xml:space="preserve">
+    <value>目前無法重新整理地圖</value>
+    <comment>MainWindow.Status.cs:80</comment>
+  </data>
+  <data name="MainWindow_Status_CompilePreviewAsync_C264241DEE" xml:space="preserve">
+    <value>地圖編譯逾時，請重試或查看記錄</value>
+    <comment>MainWindow.Status.cs:77</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_BuildTransitRibbonAsync_1AB216CC0D" xml:space="preserve">
+    <value>大眾運輸</value>
+    <comment>MainWindow.TransitRibbon.cs:51; MainWindow.TransitRibbon.cs:53; MainWindow.TransitRibbon.cs:54; MainWindow.TransitRibbon.cs:58</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_BuildTransitRibbonAsync_23C662D4EA" xml:space="preserve">
+    <value>顯示比例診斷</value>
+    <comment>MainWindow.TransitRibbon.cs:92</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_BuildTransitRibbonAsync_26A0369483" xml:space="preserve">
+    <value>路線清單</value>
+    <comment>MainWindow.TransitRibbon.cs:58</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_BuildTransitRibbonAsync_49FF3A9981" xml:space="preserve">
+    <value>站點與設施</value>
+    <comment>MainWindow.TransitRibbon.cs:75</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_BuildTransitRibbonAsync_4E10E29DA7" xml:space="preserve">
+    <value>自適應比例</value>
+    <comment>MainWindow.TransitRibbon.cs:92</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_BuildTransitRibbonAsync_4E1449E7D5" xml:space="preserve">
+    <value>顯示</value>
+    <comment>MainWindow.TransitRibbon.cs:75; MainWindow.TransitRibbon.cs:99; MainWindow.TransitRibbon.cs:104</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_BuildTransitRibbonAsync_4E162D443D" xml:space="preserve">
+    <value>底圖</value>
+    <comment>MainWindow.TransitRibbon.cs:72</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_BuildTransitRibbonAsync_661499ED97" xml:space="preserve">
+    <value>自動配色</value>
+    <comment>MainWindow.TransitRibbon.cs:56</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_BuildTransitRibbonAsync_6EDFD8773A" xml:space="preserve">
+    <value>重新整理預覽</value>
+    <comment>MainWindow.TransitRibbon.cs:60</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_BuildTransitRibbonAsync_7EE5D33BF1" xml:space="preserve">
+    <value>顯示站點</value>
+    <comment>MainWindow.TransitRibbon.cs:51</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_BuildTransitRibbonAsync_8019E91690" xml:space="preserve">
+    <value>顯示轉乘設施</value>
+    <comment>MainWindow.TransitRibbon.cs:79</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_BuildTransitRibbonAsync_82A59F3D1C" xml:space="preserve">
+    <value>比例</value>
+    <comment>MainWindow.TransitRibbon.cs:92</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_BuildTransitRibbonAsync_8FB38E6289" xml:space="preserve">
+    <value>路線顏色</value>
+    <comment>MainWindow.TransitRibbon.cs:59</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_BuildTransitRibbonAsync_B81B14943D" xml:space="preserve">
+    <value>顯示路線</value>
+    <comment>MainWindow.TransitRibbon.cs:99</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_BuildTransitRibbonAsync_BE08AAA035" xml:space="preserve">
+    <value>附註</value>
+    <comment>MainWindow.TransitRibbon.cs:73</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_BuildTransitRibbonAsync_C1399D6D07" xml:space="preserve">
+    <value>路線外框</value>
+    <comment>MainWindow.TransitRibbon.cs:104</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_BuildTransitRibbonAsync_C68E32A939" xml:space="preserve">
+    <value>匯出大眾運輸地圖</value>
+    <comment>MainWindow.TransitRibbon.cs:62</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_BuildTransitRibbonAsync_C8FFBDF157" xml:space="preserve">
+    <value>樣式</value>
+    <comment>MainWindow.TransitRibbon.cs:56; MainWindow.TransitRibbon.cs:59</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_BuildTransitRibbonAsync_CB8F15F475" xml:space="preserve">
+    <value>保留水域</value>
+    <comment>MainWindow.TransitRibbon.cs:80</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_BuildTransitRibbonAsync_CF2382056B" xml:space="preserve">
+    <value>站名標註</value>
+    <comment>MainWindow.TransitRibbon.cs:53</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_BuildTransitRibbonAsync_ED178EDA0E" xml:space="preserve">
+    <value>合併站點</value>
+    <comment>MainWindow.TransitRibbon.cs:54</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_BuildTransitRibbonAsync_ED31FBB483" xml:space="preserve">
+    <value>操作</value>
+    <comment>MainWindow.TransitRibbon.cs:60; MainWindow.TransitRibbon.cs:62</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_BuildTransitRibbonAsync_FF48E2FFEB" xml:space="preserve">
+    <value>顯示站名</value>
+    <comment>MainWindow.TransitRibbon.cs:78</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_LineSelectionText_07BC73C987" xml:space="preserve">
+    <value>已選取 {0} / {1} 條路線 · {2}</value>
+    <comment>MainWindow.TransitRibbon.cs:138</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_LineSelectionText_8609728302" xml:space="preserve">
+    <value>沒有路線</value>
+    <comment>MainWindow.TransitRibbon.cs:139</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_ShowContextParametersAsync_223B24B821" xml:space="preserve">
+    <value>路線</value>
+    <comment>MainWindow.TransitRibbon.cs:289</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_ShowContextParametersAsync_2A252F0B76" xml:space="preserve">
+    <value>自訂間距（版面單位）</value>
+    <comment>MainWindow.TransitRibbon.cs:219</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_ShowContextParametersAsync_36C83962FB" xml:space="preserve">
+    <value>沿用主題背景</value>
+    <comment>MainWindow.TransitRibbon.cs:248</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_ShowContextParametersAsync_4EAFA9E925" xml:space="preserve">
+    <value>自訂</value>
+    <comment>MainWindow.TransitRibbon.cs:220</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_ShowContextParametersAsync_5060977906" xml:space="preserve">
+    <value>選擇路線</value>
+    <comment>MainWindow.TransitRibbon.cs:287</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_ShowContextParametersAsync_5A85707DE5" xml:space="preserve">
+    <value>大眾運輸地圖</value>
+    <comment>MainWindow.TransitRibbon.cs:194</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_ShowContextParametersAsync_61D2B7B9FA" xml:space="preserve">
+    <value>背景顏色…</value>
+    <comment>MainWindow.TransitRibbon.cs:245</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_ShowContextParametersAsync_6A7339BB75" xml:space="preserve">
+    <value>小</value>
+    <comment>MainWindow.TransitRibbon.cs:220</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_ShowContextParametersAsync_7D4CA7F48E" xml:space="preserve">
+    <value>大</value>
+    <comment>MainWindow.TransitRibbon.cs:220</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_ShowContextParametersAsync_7EB336E42C" xml:space="preserve">
+    <value>自動</value>
+    <comment>MainWindow.TransitRibbon.cs:267</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_ShowContextParametersAsync_854BDA9053" xml:space="preserve">
+    <value>目前檢視沒有其他設定</value>
+    <comment>MainWindow.TransitRibbon.cs:285</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_ShowContextParametersAsync_8C1E3EA756" xml:space="preserve">
+    <value>輸出尺寸</value>
+    <comment>MainWindow.TransitRibbon.cs:264</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_ShowContextParametersAsync_9634FB0832" xml:space="preserve">
+    <value>參數</value>
+    <comment>MainWindow.TransitRibbon.cs:195</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_ShowContextParametersAsync_98D59678BF" xml:space="preserve">
+    <value>路線類型</value>
+    <comment>MainWindow.TransitRibbon.cs:306</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_ShowContextParametersAsync_9AE0879051" xml:space="preserve">
+    <value>解析度已儲存，點選「產生預覽」以更新</value>
+    <comment>MainWindow.TransitRibbon.cs:276</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_ShowContextParametersAsync_A42C8D6A89" xml:space="preserve">
+    <value>進階設定</value>
+    <comment>MainWindow.TransitRibbon.cs:195</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_ShowContextParametersAsync_A567BDAA11" xml:space="preserve">
+    <value>中</value>
+    <comment>MainWindow.TransitRibbon.cs:220</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_ShowContextParametersAsync_A9E0B85953" xml:space="preserve">
+    <value> · 進階設定</value>
+    <comment>MainWindow.TransitRibbon.cs:194</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_ShowContextParametersAsync_B98ED32732" xml:space="preserve">
+    <value>自適應強度</value>
+    <comment>MainWindow.TransitRibbon.cs:210</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_ShowContextParametersAsync_BAEE24142A" xml:space="preserve">
+    <value>字型大小與圓圈直徑以短邊 1024 像素為基準，並隨輸出尺寸等比例放大。</value>
+    <comment>MainWindow.TransitRibbon.cs:286</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_ShowContextParametersAsync_CB8F15F475" xml:space="preserve">
+    <value>保留水域</value>
+    <comment>MainWindow.TransitRibbon.cs:294</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_ShowContextParametersAsync_DB990F939F" xml:space="preserve">
+    <value>站間距</value>
+    <comment>MainWindow.TransitRibbon.cs:218</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_ShowContextParametersAsync_F5327D408A" xml:space="preserve">
+    <value>檢視與圖層</value>
+    <comment>MainWindow.TransitRibbon.cs:293</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_ShowContextParametersAsync_F6B358F770" xml:space="preserve">
+    <value> · 參數</value>
+    <comment>MainWindow.TransitRibbon.cs:194</comment>
+  </data>
+  <data name="MainWindow_TransitRibbon_ShowContextParametersAsync_FA5D23884E" xml:space="preserve">
+    <value>地鐵示意圖</value>
+    <comment>MainWindow.TransitRibbon.cs:194</comment>
+  </data>
+  <data name="MainWindow_Workflows_AddOptionControl_6A2DEA0DF7" xml:space="preserve">
+    <value>需要有效數字</value>
+    <comment>MainWindow.Workflows.cs:105</comment>
+  </data>
+  <data name="MainWindow_Workflows_ChangeLanguageAsync_0647047FC1" xml:space="preserve">
+    <value>套用 / Apply</value>
+    <comment>MainWindow.Workflows.cs:69</comment>
+  </data>
+  <data name="MainWindow_Workflows_ChangeLanguageAsync_6545AF163B" xml:space="preserve">
+    <value>介面語言 / Language</value>
+    <comment>MainWindow.Workflows.cs:68</comment>
+  </data>
+  <data name="MainWindow_Workflows_ChangeLanguageAsync_72726D8818" xml:space="preserve">
+    <value>中文</value>
+    <comment>MainWindow.Workflows.cs:66</comment>
+  </data>
+  <data name="MainWindow_Workflows_ChangeLanguageAsync_EEA063A21A" xml:space="preserve">
+    <value>取消 / Cancel</value>
+    <comment>MainWindow.Workflows.cs:69</comment>
+  </data>
+  <data name="MainWindow_Workflows_LoadMetroPreviewAsync_B289DFDD53" xml:space="preserve">
+    <value>地鐵預覽載入失敗：</value>
+    <comment>MainWindow.Workflows.cs:29</comment>
+  </data>
+  <data name="MainWindow_Workflows_PickRandomRegionAsync_06BEF4021D" xml:space="preserve">
+    <value>均衡隨機</value>
+    <comment>MainWindow.Workflows.cs:39</comment>
+  </data>
+  <data name="MainWindow_Workflows_PickRandomRegionAsync_1AB216CC0D" xml:space="preserve">
+    <value>大眾運輸</value>
+    <comment>MainWindow.Workflows.cs:39</comment>
+  </data>
+  <data name="MainWindow_Workflows_PickRandomRegionAsync_1D48993136" xml:space="preserve">
+    <value>區域選取</value>
+    <comment>MainWindow.Workflows.cs:37</comment>
+  </data>
+  <data name="MainWindow_Workflows_PickRandomRegionAsync_485DDBB48A" xml:space="preserve">
+    <value>隨機特寫</value>
+    <comment>MainWindow.Workflows.cs:36</comment>
+  </data>
+  <data name="MainWindow_Workflows_PickRandomRegionAsync_58CC643C3C" xml:space="preserve">
+    <value>偏好設定</value>
+    <comment>MainWindow.Workflows.cs:38</comment>
+  </data>
+  <data name="MainWindow_Workflows_PickRandomRegionAsync_808A219E24" xml:space="preserve">
+    <value>建築密集</value>
+    <comment>MainWindow.Workflows.cs:39</comment>
+  </data>
+  <data name="MainWindow_Workflows_PickRandomRegionAsync_92C194237A" xml:space="preserve">
+    <value>公園與綠地</value>
+    <comment>MainWindow.Workflows.cs:39</comment>
+  </data>
+  <data name="MainWindow_Workflows_PickRandomRegionAsync_9AFF286573" xml:space="preserve">
+    <value>已選取隨機區域，可在地圖上調整後再匯出。</value>
+    <comment>MainWindow.Workflows.cs:56</comment>
+  </data>
+  <data name="MainWindow_Workflows_PickRandomRegionAsync_9B8845539A" xml:space="preserve">
+    <value>匯出選取範圍</value>
+    <comment>MainWindow.Workflows.cs:58</comment>
+  </data>
+  <data name="MainWindow_Workflows_PickRandomRegionAsync_A44C7BA211" xml:space="preserve">
+    <value>道路</value>
+    <comment>MainWindow.Workflows.cs:39</comment>
+  </data>
+  <data name="MainWindow_Workflows_PickRandomRegionAsync_AE3F8C8A07" xml:space="preserve">
+    <value>請先開啟城市</value>
+    <comment>MainWindow.Workflows.cs:50</comment>
+  </data>
+  <data name="MainWindow_Workflows_PickRandomRegionAsync_C14BE6C40C" xml:space="preserve">
+    <value>水岸</value>
+    <comment>MainWindow.Workflows.cs:39</comment>
+  </data>
+  <data name="MainWindow_Workflows_PickRandomRegionAsync_E9B45A8940" xml:space="preserve">
+    <value>選取隨機區域</value>
+    <comment>MainWindow.Workflows.cs:46</comment>
+  </data>
+  <data name="MainWindow_Workflows_PickRandomRegionAsync_E9F2425B02" xml:space="preserve">
+    <value>隨機種子（可留空）</value>
+    <comment>MainWindow.Workflows.cs:44</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_0BC1FB72AE" xml:space="preserve">
+    <value>錯誤</value>
+    <comment>MainWindow.Workflows.cs:213</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_1EB5F39D42" xml:space="preserve">
+    <value>檢視：{0}
+預覽：{1}</value>
+    <comment>MainWindow.Workflows.cs:202</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_2E765B0E76" xml:space="preserve">
+    <value>開啟記錄資料夾</value>
+    <comment>MainWindow.Workflows.cs:197</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_41AB2E0ECB" xml:space="preserve">
+    <value>地圖</value>
+    <comment>MainWindow.Workflows.cs:213</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_6EDFD8773A" xml:space="preserve">
+    <value>重新整理預覽</value>
+    <comment>MainWindow.Workflows.cs:205</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_8E32E45D05" xml:space="preserve">
+    <value>沒有錯誤</value>
+    <comment>MainWindow.Workflows.cs:208; MainWindow.Workflows.cs:210</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_B073DB9C0B" xml:space="preserve">
+    <value>就緒</value>
+    <comment>MainWindow.Workflows.cs:202</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_C569EEBE8E" xml:space="preserve">
+    <value>清除錯誤記錄</value>
+    <comment>MainWindow.Workflows.cs:209</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_D04FCBDA73" xml:space="preserve">
+    <value>載入中</value>
+    <comment>MainWindow.Workflows.cs:202</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_E5C84C9AA7" xml:space="preserve">
+    <value>尚未就緒</value>
+    <comment>MainWindow.Workflows.cs:202</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowHelpAsync_06D721E478" xml:space="preserve">
+    <value>開啟城市後，請在圖層頁選擇地圖內容，並在樣式頁選擇或編輯主題。</value>
+    <comment>MainWindow.Workflows.cs:181</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowHelpAsync_08D4511AE5" xml:space="preserve">
+    <value>使用 Rail Map Painter 編輯路線：選擇「在 RMP 中編輯」，匯出 .rmp.json，再匯入 RMP。</value>
+    <comment>MainWindow.Workflows.cs:184</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowHelpAsync_22944584D4" xml:space="preserve">
+    <value>在地圖上點選物件可查看屬性；屬性下方的設定會修改所屬圖層樣式。視窗較窄時，展開「物件屬性」以檢視面板。</value>
+    <comment>MainWindow.Workflows.cs:182</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowHelpAsync_4B61589458" xml:space="preserve">
+    <value>Ctrl+O  開啟城市
+Ctrl+S  儲存 PNG
+Ctrl+Shift+S  匯出地圖
+Ctrl+P  重新整理即時預覽
+Esc  取消目前工作</value>
+    <comment>MainWindow.Workflows.cs:185</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowHelpAsync_A15A32B360" xml:space="preserve">
+    <value>框選區域後選擇「匯出選取範圍」；統一匯出視窗可設定格式、尺寸及 PNG 圖示策略。公車與捷運示意圖僅能匯出 PNG。</value>
+    <comment>MainWindow.Workflows.cs:183</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowHelpAsync_B6BEA3CC3D" xml:space="preserve">
+    <value>說明與快速鍵</value>
+    <comment>MainWindow.Workflows.cs:181</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowHelpAsync_E96FF21AC3" xml:space="preserve">
+    <value>遇到問題時，可在診斷面板查看統計資料與記錄。</value>
+    <comment>MainWindow.Workflows.cs:186</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowInterchanges_0074BFB973" xml:space="preserve">
+    <value>匯出交流道合集</value>
+    <comment>MainWindow.Workflows.cs:166</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowInterchanges_1D0FD5F933" xml:space="preserve">
+    <value>標籤</value>
+    <comment>MainWindow.Workflows.cs:162</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowInterchanges_207E6D1CF5" xml:space="preserve">
+    <value>水域</value>
+    <comment>MainWindow.Workflows.cs:162</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowInterchanges_2A55669135" xml:space="preserve">
+    <value>請等待目前工作結束</value>
+    <comment>MainWindow.Workflows.cs:174</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowInterchanges_3FCAF620E9" xml:space="preserve">
+    <value>尺寸（像素）</value>
+    <comment>MainWindow.Workflows.cs:152</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowInterchanges_51695AD45A" xml:space="preserve">
+    <value>地形</value>
+    <comment>MainWindow.Workflows.cs:162</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowInterchanges_5B46860A8E" xml:space="preserve">
+    <value>建築物</value>
+    <comment>MainWindow.Workflows.cs:162</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowInterchanges_5E29D121DD" xml:space="preserve">
+    <value>數量</value>
+    <comment>MainWindow.Workflows.cs:151</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowInterchanges_655D4E9C75" xml:space="preserve">
+    <value>文字標籤</value>
+    <comment>MainWindow.Workflows.cs:156</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowInterchanges_7A68830642" xml:space="preserve">
+    <value>內容</value>
+    <comment>MainWindow.Workflows.cs:155</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowInterchanges_7BF97D3A48" xml:space="preserve">
+    <value>地點名稱</value>
+    <comment>MainWindow.Workflows.cs:156</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowInterchanges_8BB46E9B58" xml:space="preserve">
+    <value>交流道圖集</value>
+    <comment>MainWindow.Workflows.cs:149</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowInterchanges_9FC7D0CF1D" xml:space="preserve">
+    <value>地點圖示</value>
+    <comment>MainWindow.Workflows.cs:162</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowInterchanges_A44C7BA211" xml:space="preserve">
+    <value>道路</value>
+    <comment>MainWindow.Workflows.cs:162</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowInterchanges_F2926EB3BB" xml:space="preserve">
+    <value>圖層</value>
+    <comment>MainWindow.Workflows.cs:161</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowInterchanges_FAA2F2ED67" xml:space="preserve">
+    <value>配置</value>
+    <comment>MainWindow.Workflows.cs:150</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowInterchanges_FEE4029EC6" xml:space="preserve">
+    <value>請輸入數量和尺寸</value>
+    <comment>MainWindow.Workflows.cs:169</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowRegionsAsync_382B8E281A" xml:space="preserve">
+    <value>選取功能分區…</value>
+    <comment>MainWindow.Workflows.cs:140</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowRegionsAsync_AD75C5DFE5" xml:space="preserve">
+    <value>區域清單</value>
+    <comment>MainWindow.Workflows.cs:139</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowRegionsAsync_DB722F226E" xml:space="preserve">
+    <value>選擇行政區…</value>
+    <comment>MainWindow.Workflows.cs:140</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowRegionsAsync_E55E6F2BAC" xml:space="preserve">
+    <value>顏色強度</value>
+    <comment>MainWindow.Workflows.cs:144</comment>
+  </data>
+  <data name="MainWindow_xaml_AddLayerGroup_4358ED3763" xml:space="preserve">
+    <value>詳細設定</value>
+    <comment>MainWindow.xaml.cs:294</comment>
+  </data>
+  <data name="MainWindow_xaml_AddLayerGroup_5060977906" xml:space="preserve">
+    <value>選擇路線</value>
+    <comment>MainWindow.xaml.cs:311</comment>
+  </data>
+  <data name="MainWindow_xaml_AddLayerGroup_9AE3E30C84" xml:space="preserve">
+    <value>：點擊切換顯示，箭頭可開啟詳細設定</value>
+    <comment>MainWindow.xaml.cs:306</comment>
+  </data>
+  <data name="MainWindow_xaml_ApplyContextAsync_2E9A956FC6" xml:space="preserve">
+    <value>城市地圖</value>
+    <comment>MainWindow.xaml.cs:525</comment>
+  </data>
+  <data name="MainWindow_xaml_ApplyContextAsync_5A85707DE5" xml:space="preserve">
+    <value>大眾運輸地圖</value>
+    <comment>MainWindow.xaml.cs:525</comment>
+  </data>
+  <data name="MainWindow_xaml_ApplyContextAsync_FA5D23884E" xml:space="preserve">
+    <value>地鐵示意圖</value>
+    <comment>MainWindow.xaml.cs:525</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_0983E2CCDD" xml:space="preserve">
+    <value>行政區</value>
+    <comment>MainWindow.xaml.cs:165</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_0BF8C392DA" xml:space="preserve">
+    <value>POI 設定</value>
+    <comment>MainWindow.xaml.cs:201</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_0F0D83A17D" xml:space="preserve">
+    <value>快取已清除</value>
+    <comment>MainWindow.xaml.cs:224</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_18B9E17D3D" xml:space="preserve">
+    <value>路況</value>
+    <comment>MainWindow.xaml.cs:159</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_1AB216CC0D" xml:space="preserve">
+    <value>大眾運輸</value>
+    <comment>MainWindow.xaml.cs:160; MainWindow.xaml.cs:209</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_1AD1463FE1" xml:space="preserve">
+    <value>產生</value>
+    <comment>MainWindow.xaml.cs:242</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_1C5C067138" xml:space="preserve">
+    <value>檢視</value>
+    <comment>MainWindow.xaml.cs:232; MainWindow.xaml.cs:237</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_207E6D1CF5" xml:space="preserve">
+    <value>水域</value>
+    <comment>MainWindow.xaml.cs:157</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_21138F1B06" xml:space="preserve">
+    <value>維護</value>
+    <comment>MainWindow.xaml.cs:221</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_3D13868593" xml:space="preserve">
+    <value>介面語言</value>
+    <comment>MainWindow.xaml.cs:229</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_433091EABE" xml:space="preserve">
+    <value>建成區</value>
+    <comment>MainWindow.xaml.cs:159</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_44455611B9" xml:space="preserve">
+    <value>進階設定</value>
+    <comment>MainWindow.xaml.cs:241</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_458B5F5678" xml:space="preserve">
+    <value>返回城市地圖調整圖層</value>
+    <comment>MainWindow.xaml.cs:147</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_4593C85D33" xml:space="preserve">
+    <value>功能分區選取</value>
+    <comment>MainWindow.xaml.cs:162</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_485DDBB48A" xml:space="preserve">
+    <value>隨機特寫</value>
+    <comment>MainWindow.xaml.cs:186; MainWindow.xaml.cs:212</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_498E1D59B4" xml:space="preserve">
+    <value>結束</value>
+    <comment>MainWindow.xaml.cs:227</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_4E162D443D" xml:space="preserve">
+    <value>底圖</value>
+    <comment>MainWindow.xaml.cs:157</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_4F0C1E4BF0" xml:space="preserve">
+    <value>文字與圖示</value>
+    <comment>MainWindow.xaml.cs:161; MainWindow.xaml.cs:161; MainWindow.xaml.cs:204</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_5060977906" xml:space="preserve">
+    <value>選擇路線</value>
+    <comment>MainWindow.xaml.cs:235; MainWindow.xaml.cs:240</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_51695AD45A" xml:space="preserve">
+    <value>地形</value>
+    <comment>MainWindow.xaml.cs:157</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_52D25A9E30" xml:space="preserve">
+    <value>關於</value>
+    <comment>MainWindow.xaml.cs:226</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_537D17F1C5" xml:space="preserve">
+    <value>取消工作</value>
+    <comment>MainWindow.xaml.cs:244</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_57F78BA1F9" xml:space="preserve">
+    <value>大眾運輸</value>
+    <comment>MainWindow.xaml.cs:160</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_59044824DA" xml:space="preserve">
+    <value>產生預覽</value>
+    <comment>MainWindow.xaml.cs:243</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_5A85707DE5" xml:space="preserve">
+    <value>大眾運輸地圖</value>
+    <comment>MainWindow.xaml.cs:184; MainWindow.xaml.cs:209; MainWindow.xaml.cs:231</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_5B46860A8E" xml:space="preserve">
+    <value>建築物</value>
+    <comment>MainWindow.xaml.cs:158</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_5DFB5B81F2" xml:space="preserve">
+    <value>地點圖示樣式</value>
+    <comment>MainWindow.xaml.cs:195</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_62AEEB8B65" xml:space="preserve">
+    <value>區域與行政區</value>
+    <comment>MainWindow.xaml.cs:165</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_6BEB3C5ED7" xml:space="preserve">
+    <value>地圖創作</value>
+    <comment>MainWindow.xaml.cs:211</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_706866330A" xml:space="preserve">
+    <value>開啟城市</value>
+    <comment>MainWindow.xaml.cs:130</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_71B67FAAD9" xml:space="preserve">
+    <value>返回城市地圖</value>
+    <comment>MainWindow.xaml.cs:233; MainWindow.xaml.cs:238</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_74F45217E6" xml:space="preserve">
+    <value>編輯主題</value>
+    <comment>MainWindow.xaml.cs:182; MainWindow.xaml.cs:190</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_76420433F2" xml:space="preserve">
+    <value>匯出</value>
+    <comment>MainWindow.xaml.cs:139</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_7D3F1EFCF2" xml:space="preserve">
+    <value>建立與工具</value>
+    <comment>MainWindow.xaml.cs:215</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_803AA8753F" xml:space="preserve">
+    <value>選取設施（天際線 2）</value>
+    <comment>MainWindow.xaml.cs:164</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_81B0834AA6" xml:space="preserve">
+    <value>檢視設定</value>
+    <comment>MainWindow.xaml.cs:234</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_8592878D7E" xml:space="preserve">
+    <value>功能分區</value>
+    <comment>MainWindow.xaml.cs:165</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_87FC97C6B8" xml:space="preserve">
+    <value>PO 物件</value>
+    <comment>MainWindow.xaml.cs:167</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_8A0BB16307" xml:space="preserve">
+    <value>地圖主題</value>
+    <comment>MainWindow.xaml.cs:181; MainWindow.xaml.cs:189</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_8BB46E9B58" xml:space="preserve">
+    <value>交流道圖集</value>
+    <comment>MainWindow.xaml.cs:213</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_8CA4689CF5" xml:space="preserve">
+    <value>圖示對應</value>
+    <comment>MainWindow.xaml.cs:203; MainWindow.xaml.cs:222</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_9167EE8B67" xml:space="preserve">
+    <value>診斷資訊</value>
+    <comment>MainWindow.xaml.cs:223</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_97492A0E5D" xml:space="preserve">
+    <value>火車</value>
+    <comment>MainWindow.xaml.cs:159</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_A01658F15D" xml:space="preserve">
+    <value>預覽設定</value>
+    <comment>MainWindow.xaml.cs:205</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_A0709CF187" xml:space="preserve">
+    <value>快速建立</value>
+    <comment>MainWindow.xaml.cs:183</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_A44C7BA211" xml:space="preserve">
+    <value>道路</value>
+    <comment>MainWindow.xaml.cs:158</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_A57CFCB842" xml:space="preserve">
+    <value>說明</value>
+    <comment>MainWindow.xaml.cs:228</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_AA9F217C81" xml:space="preserve">
+    <value>浮水印</value>
+    <comment>MainWindow.xaml.cs:167</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_AB98197175" xml:space="preserve">
+    <value>主題設定</value>
+    <comment>MainWindow.xaml.cs:190</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_AD68267D54" xml:space="preserve">
+    <value>區域上色</value>
+    <comment>MainWindow.xaml.cs:159</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_B2FD2E2A88" xml:space="preserve">
+    <value>清除快取</value>
+    <comment>MainWindow.xaml.cs:224</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_B6D7CBC94D" xml:space="preserve">
+    <value>最近開啟</value>
+    <comment>MainWindow.xaml.cs:133</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_BF20955A8E" xml:space="preserve">
+    <value>RMG 專案</value>
+    <comment>MainWindow.xaml.cs:219</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_BFF8664A71" xml:space="preserve">
+    <value>一般地圖圖層</value>
+    <comment>MainWindow.xaml.cs:146</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_C4A846B549" xml:space="preserve">
+    <value>匯出網頁</value>
+    <comment>MainWindow.xaml.cs:140</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_C8FFBDF157" xml:space="preserve">
+    <value>樣式</value>
+    <comment>MainWindow.xaml.cs:170</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_CA556628F1" xml:space="preserve">
+    <value>主題編輯</value>
+    <comment>MainWindow.xaml.cs:182</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_CDE2CD071D" xml:space="preserve">
+    <value>建立</value>
+    <comment>MainWindow.xaml.cs:208</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_D2909F1647" xml:space="preserve">
+    <value>其他</value>
+    <comment>MainWindow.xaml.cs:167</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_D2BB025A2E" xml:space="preserve">
+    <value>首頁</value>
+    <comment>MainWindow.xaml.cs:128</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_D84EBADC9F" xml:space="preserve">
+    <value>土地使用網格</value>
+    <comment>MainWindow.xaml.cs:166</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_EC0E84A16C" xml:space="preserve">
+    <value>在 RMP 中繼續編輯</value>
+    <comment>MainWindow.xaml.cs:247</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_EC80D25F37" xml:space="preserve">
+    <value>RMP 專案</value>
+    <comment>MainWindow.xaml.cs:220</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_ED84A1665F" xml:space="preserve">
+    <value>城市</value>
+    <comment>MainWindow.xaml.cs:129; MainWindow.xaml.cs:158</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_F2926EB3BB" xml:space="preserve">
+    <value>圖層</value>
+    <comment>MainWindow.xaml.cs:144</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_F6848EA38A" xml:space="preserve">
+    <value>外部編輯</value>
+    <comment>MainWindow.xaml.cs:217</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_FA5D23884E" xml:space="preserve">
+    <value>地鐵示意圖</value>
+    <comment>MainWindow.xaml.cs:185; MainWindow.xaml.cs:210; MainWindow.xaml.cs:210; MainWindow.xaml.cs:236</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_FB04ADDB4C" xml:space="preserve">
+    <value>輸出</value>
+    <comment>MainWindow.xaml.cs:137; MainWindow.xaml.cs:245</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_FECC38C132" xml:space="preserve">
+    <value>示意圖設定</value>
+    <comment>MainWindow.xaml.cs:239</comment>
+  </data>
+  <data name="MainWindow_xaml_CancelCurrentTaskCoreAsync_BD768D3131" xml:space="preserve">
+    <value>請等候目前操作完成</value>
+    <comment>MainWindow.xaml.cs:625</comment>
+  </data>
+  <data name="MainWindow_xaml_CancelCurrentTaskCoreAsync_E8E08B0F61" xml:space="preserve">
+    <value>正在取消…</value>
+    <comment>MainWindow.xaml.cs:609</comment>
+  </data>
+  <data name="MainWindow_xaml_CreateThemeGallery_8C82CE6C56" xml:space="preserve">
+    <value>選取地圖主題</value>
+    <comment>MainWindow.xaml.cs:266</comment>
+  </data>
+  <data name="MainWindow_xaml_ExportSelectionAsync_A48B887C5C" xml:space="preserve">
+    <value>請先在地圖上框選區域</value>
+    <comment>MainWindow.xaml.cs:714</comment>
+  </data>
+  <data name="MainWindow_xaml_ExportSelectionAsync_CF3DE91DF4" xml:space="preserve">
+    <value>地鐵示意圖不使用地圖框選範圍</value>
+    <comment>MainWindow.xaml.cs:709</comment>
+  </data>
+  <data name="MainWindow_xaml_HandleEngineEvent_13A46616E1" xml:space="preserve">
+    <value>未知錯誤</value>
+    <comment>MainWindow.xaml.cs:797</comment>
+  </data>
+  <data name="MainWindow_xaml_HandleEngineEvent_284E5114E0" xml:space="preserve">
+    <value>正在繪製地圖…</value>
+    <comment>MainWindow.xaml.cs:766</comment>
+  </data>
+  <data name="MainWindow_xaml_HandleEngineEvent_507F381756" xml:space="preserve">
+    <value>已匯出：</value>
+    <comment>MainWindow.xaml.cs:787</comment>
+  </data>
+  <data name="MainWindow_xaml_HandleEngineEvent_A37778F17C" xml:space="preserve">
+    <value>已取消</value>
+    <comment>MainWindow.xaml.cs:775</comment>
+  </data>
+  <data name="MainWindow_xaml_HandleEngineEvent_B02EAEF59F" xml:space="preserve">
+    <value>正在準備地圖…</value>
+    <comment>MainWindow.xaml.cs:760</comment>
+  </data>
+  <data name="MainWindow_xaml_HandleEngineEvent_B2D4B15618" xml:space="preserve">
+    <value>地圖場景未能在 45 秒內完成繪製</value>
+    <comment>MainWindow.xaml.cs:767</comment>
+  </data>
+  <data name="MainWindow_xaml_HandleViewerEvent_4C810816D7" xml:space="preserve">
+    <value>正在完成預覽…</value>
+    <comment>MainWindow.xaml.cs:842</comment>
+  </data>
+  <data name="MainWindow_xaml_HandleViewerEvent_CD6D6D99D0" xml:space="preserve">
+    <value>地圖預覽顯示逾時，請重試或查看記錄</value>
+    <comment>MainWindow.xaml.cs:846</comment>
+  </data>
+  <data name="MainWindow_xaml_HandleViewerEvent_D71EC6FC43" xml:space="preserve">
+    <value>地圖繪製失敗</value>
+    <comment>MainWindow.xaml.cs:872</comment>
+  </data>
+  <data name="MainWindow_xaml_HandleViewerEvent_E38A717AE8" xml:space="preserve">
+    <value>地圖訊息錯誤：</value>
+    <comment>MainWindow.xaml.cs:876</comment>
+  </data>
+  <data name="MainWindow_xaml_InitializeAsync_1ACE87A3AA" xml:space="preserve">
+    <value>正在載入預覽頁面…</value>
+    <comment>MainWindow.xaml.cs:345</comment>
+  </data>
+  <data name="MainWindow_xaml_InitializeAsync_656C56EE98" xml:space="preserve">
+    <value>正在啟動地圖引擎…</value>
+    <comment>MainWindow.xaml.cs:326</comment>
+  </data>
+  <data name="MainWindow_xaml_InitializeAsync_946C4DFD41" xml:space="preserve">
+    <value>缺少地圖位址</value>
+    <comment>MainWindow.xaml.cs:331</comment>
+  </data>
+  <data name="MainWindow_xaml_InitializeAsync_A5C77EB8EB" xml:space="preserve">
+    <value>預覽頁面在 45 秒內未就緒</value>
+    <comment>MainWindow.xaml.cs:339</comment>
+  </data>
+  <data name="MainWindow_xaml_OpenPathAsync_3AD0FA9F8D" xml:space="preserve">
+    <value>正在載入城市並準備地圖…</value>
+    <comment>MainWindow.xaml.cs:454</comment>
+  </data>
+  <data name="MainWindow_xaml_OpenPathAsync_586EA02E44" xml:space="preserve">
+    <value>載入城市或編譯場景逾時，請查看記錄</value>
+    <comment>MainWindow.xaml.cs:455</comment>
+  </data>
+  <data name="MainWindow_xaml_OpenPathAsync_949301A19E" xml:space="preserve">
+    <value>無法開啟存檔，或已有開啟工作正在執行</value>
+    <comment>MainWindow.xaml.cs:461</comment>
+  </data>
+  <data name="MainWindow_xaml_RefreshLivePreviewAsync_058E698B71" xml:space="preserve">
+    <value>正在產生大眾運輸地圖…</value>
+    <comment>MainWindow.xaml.cs:697</comment>
+  </data>
+  <data name="MainWindow_xaml_RefreshLivePreviewAsync_8CDBE2C406" xml:space="preserve">
+    <value>正在更新道路交叉關係…</value>
+    <comment>MainWindow.xaml.cs:697</comment>
+  </data>
+  <data name="MainWindow_xaml_RefreshLivePreviewAsync_A8A3F1C48A" xml:space="preserve">
+    <value>正在重新整理地圖…</value>
+    <comment>MainWindow.xaml.cs:697</comment>
+  </data>
+  <data name="MainWindow_xaml_RefreshLivePreviewAsync_C264241DEE" xml:space="preserve">
+    <value>地圖編譯逾時，請重試或查看記錄</value>
+    <comment>MainWindow.xaml.cs:699</comment>
+  </data>
+  <data name="MainWindow_xaml_RefreshSnapshotAsync_645432A5BF" xml:space="preserve">
+    <value>，已開啟</value>
+    <comment>MainWindow.xaml.cs:378</comment>
+  </data>
+  <data name="MainWindow_xaml_RefreshSnapshotAsync_96E5815C15" xml:space="preserve">
+    <value>，已關閉</value>
+    <comment>MainWindow.xaml.cs:378</comment>
+  </data>
+  <data name="MainWindow_xaml_RefreshSnapshotAsync_C3FE933AA4" xml:space="preserve">
+    <value>沒有最近開啟的城市</value>
+    <comment>MainWindow.xaml.cs:371</comment>
+  </data>
+  <data name="MainWindow_xaml_RenderMetroAsync_0DE5C9EBE5" xml:space="preserve">
+    <value>正在產生地鐵示意圖…</value>
+    <comment>MainWindow.xaml.cs:643</comment>
+  </data>
+  <data name="MainWindow_xaml_RenderMetroAsync_2456E2637B" xml:space="preserve">
+    <value>目前無法產生捷運示意圖</value>
+    <comment>MainWindow.xaml.cs:657</comment>
+  </data>
+  <data name="MainWindow_xaml_RenderMetroAsync_F4A0FD3547" xml:space="preserve">
+    <value>捷運示意圖產生逾時，請查看記錄後再試一次。</value>
+    <comment>MainWindow.xaml.cs:644</comment>
+  </data>
+  <data name="MainWindow_xaml_SetDocumentEnabled_0E097C11F5" xml:space="preserve">
+    <value>地鐵示意圖使用獨立設定</value>
+    <comment>MainWindow.xaml.cs:418</comment>
+  </data>
+  <data name="MainWindow_xaml_SetDocumentEnabled_336CD8FA47" xml:space="preserve">
+    <value>大眾運輸圖使用獨立設定</value>
+    <comment>MainWindow.xaml.cs:418</comment>
+  </data>
+  <data name="MainWindow_xaml_ShowAboutAsync_3FD47EDCE4" xml:space="preserve">
+    <value>關閉</value>
+    <comment>MainWindow.xaml.cs:733</comment>
+  </data>
+  <data name="MainWindow_xaml_ShowAboutAsync_F5BEA9F4E5" xml:space="preserve">
+    <value>CSLModernMap
+城市地圖、大眾運輸圖與捷運示意圖。
+少糖烧仙草 Codex</value>
+    <comment>MainWindow.xaml.cs:732</comment>
+  </data>
+  <data name="MainWindow_xaml_View_526F5B284F" xml:space="preserve">
+    <value>地圖預覽初始化失敗：</value>
+    <comment>MainWindow.xaml.cs:84</comment>
+  </data>
+  <data name="MainWindow_xaml__poiChoices_AA55960E4B" xml:space="preserve">
+    <value>簡潔</value>
+    <comment>MainWindow.xaml.cs:36</comment>
+  </data>
+  <data name="MainWindow_xaml__poiChoices_DB57813F39" xml:space="preserve">
+    <value>彩色</value>
+    <comment>MainWindow.xaml.cs:36</comment>
+  </data>
+  <data name="MapRangeWindow_ApplyAsync_37E50EB5F4" xml:space="preserve">
+    <value>範圍寬度和高度必須大於 0。</value>
+    <comment>MapRangeWindow.cs:257</comment>
+  </data>
+  <data name="MapRangeWindow_PaintSelection_565323A1BB" xml:space="preserve">
+    <value>地塊</value>
+    <comment>MapRangeWindow.cs:184</comment>
+  </data>
+  <data name="MapRangeWindow_View_000E18C870" xml:space="preserve">
+    <value>地圖範圍</value>
+    <comment>MapRangeWindow.cs:78</comment>
+  </data>
+  <data name="MapRangeWindow_View_2CD0F3BE87" xml:space="preserve">
+    <value>取消</value>
+    <comment>MapRangeWindow.cs:106</comment>
+  </data>
+  <data name="MapRangeWindow_View_498A38978B" xml:space="preserve">
+    <value>套用範圍</value>
+    <comment>MapRangeWindow.cs:105</comment>
+  </data>
+  <data name="MapRangeWindow_View_615E061A2F" xml:space="preserve">
+    <value>在地圖上拖曳以繪製範圍</value>
+    <comment>MapRangeWindow.cs:69</comment>
+  </data>
+  <data name="MapRangeWindow_View_83BD870016" xml:space="preserve">
+    <value>重新框選</value>
+    <comment>MapRangeWindow.cs:68</comment>
+  </data>
+  <data name="MapRangeWindow_View_E00B2B4CBC" xml:space="preserve">
+    <value>輸出範圍</value>
+    <comment>MapRangeWindow.cs:37; MapRangeWindow.cs:52</comment>
+  </data>
+  <data name="MapRangeWindow_View_F3A8315894" xml:space="preserve">
+    <value>按住滑鼠左鍵並拖曳以選取範圍；在手動選取範圍內拖曳可移動範圍。</value>
+    <comment>MapRangeWindow.cs:81</comment>
+  </data>
+  <data name="MapRangeWindow__count_093CEEB552" xml:space="preserve">
+    <value>每邊地塊數</value>
+    <comment>MapRangeWindow.cs:20</comment>
+  </data>
+  <data name="MapRangeWindow__full_14425C91B0" xml:space="preserve">
+    <value>完整城市範圍</value>
+    <comment>MapRangeWindow.cs:16</comment>
+  </data>
+  <data name="MapRangeWindow__manual_20459B88AA" xml:space="preserve">
+    <value>手動繪製範圍</value>
+    <comment>MapRangeWindow.cs:19</comment>
+  </data>
+  <data name="MapRangeWindow__outside_4A992809A4" xml:space="preserve">
+    <value>包含周邊地形</value>
+    <comment>MapRangeWindow.cs:17</comment>
+  </data>
+  <data name="MapRangeWindow__tiles_96C67183D7" xml:space="preserve">
+    <value>依地塊選取</value>
+    <comment>MapRangeWindow.cs:18</comment>
+  </data>
+  <data name="MapTaskState_Cancel_F23F3D1996" xml:space="preserve">
+    <value>工作已取消；請開啟城市或重試以顯示地圖</value>
+    <comment>MapTaskState.cs:83</comment>
+  </data>
+  <data name="MapTaskState_Reset_3BFFE14F48" xml:space="preserve">
+    <value>開啟城市以顯示地圖</value>
+    <comment>MapTaskState.cs:92</comment>
+  </data>
+  <data name="MapTaskState_Status_01AD2BC5D2" xml:space="preserve">
+    <value>錯誤</value>
+    <comment>MapTaskState.cs:23</comment>
+  </data>
+  <data name="MapTaskState_Status_969EF41F7E" xml:space="preserve">
+    <value>產生中</value>
+    <comment>MapTaskState.cs:21</comment>
+  </data>
+  <data name="MapTaskState_Status_A37778F17C" xml:space="preserve">
+    <value>已取消</value>
+    <comment>MapTaskState.cs:22</comment>
+  </data>
+  <data name="MapTaskState_Status_B073DB9C0B" xml:space="preserve">
+    <value>就緒</value>
+    <comment>MapTaskState.cs:24</comment>
+  </data>
+  <data name="MapTaskState_Status_D04FCBDA73" xml:space="preserve">
+    <value>載入中</value>
+    <comment>MapTaskState.cs:20</comment>
+  </data>
+  <data name="MapTaskState_Title_3BFFE14F48" xml:space="preserve">
+    <value>開啟城市以顯示地圖</value>
+    <comment>MapTaskState.cs:12</comment>
+  </data>
+  <data name="ObjectInspectorPanel_AddField_44DEE0CA2E" xml:space="preserve">
+    <value>請輸入範圍內的有效數值</value>
+    <comment>ObjectInspectorPanel.cs:236</comment>
+  </data>
+  <data name="ObjectInspectorPanel_AddField_A6A4FC849E" xml:space="preserve">
+    <value>選擇顏色…</value>
+    <comment>ObjectInspectorPanel.cs:196</comment>
+  </data>
+  <data name="ObjectInspectorPanel_AddField_E804B20C40" xml:space="preserve">
+    <value>目前不支援此編輯項目</value>
+    <comment>ObjectInspectorPanel.cs:268</comment>
+  </data>
+  <data name="ObjectInspectorPanel_CommitAsync_7A3DBE6E2C" xml:space="preserve">
+    <value>預覽已更新</value>
+    <comment>ObjectInspectorPanel.cs:161</comment>
+  </data>
+  <data name="ObjectInspectorPanel_Render_03717B6F10" xml:space="preserve">
+    <value>重做</value>
+    <comment>ObjectInspectorPanel.cs:80</comment>
+  </data>
+  <data name="ObjectInspectorPanel_Render_2CCACDED44" xml:space="preserve">
+    <value>技術資訊</value>
+    <comment>ObjectInspectorPanel.cs:128</comment>
+  </data>
+  <data name="ObjectInspectorPanel_Render_33A982C362" xml:space="preserve">
+    <value>編輯完整主題…</value>
+    <comment>ObjectInspectorPanel.cs:123</comment>
+  </data>
+  <data name="ObjectInspectorPanel_Render_74966E20DF" xml:space="preserve">
+    <value>取消選取</value>
+    <comment>ObjectInspectorPanel.cs:76</comment>
+  </data>
+  <data name="ObjectInspectorPanel_Render_926A50B98E" xml:space="preserve">
+    <value>復原</value>
+    <comment>ObjectInspectorPanel.cs:80</comment>
+  </data>
+  <data name="ObjectInspectorPanel_Render_9576B834B5" xml:space="preserve">
+    <value>還原此群組的主題外觀，但保留可見性與檢視設定。</value>
+    <comment>ObjectInspectorPanel.cs:113</comment>
+  </data>
+  <data name="ObjectInspectorPanel_Render_A4B438D7DA" xml:space="preserve">
+    <value>還原群組外觀</value>
+    <comment>ObjectInspectorPanel.cs:112</comment>
+  </data>
+  <data name="ObjectInspectorPanel_Render_B931CFD44E" xml:space="preserve">
+    <value>更多物件資料</value>
+    <comment>ObjectInspectorPanel.cs:127</comment>
+  </data>
+  <data name="ObjectInspectorPanel_Render_EEF4D23EB3" xml:space="preserve">
+    <value>在地圖上定位物件</value>
+    <comment>ObjectInspectorPanel.cs:74</comment>
+  </data>
+  <data name="PoiMappingDialog_ApplyAdvancedAsync_0DAE64CD92" xml:space="preserve">
+    <value>需要 JSON 物件</value>
+    <comment>PoiMappingDialog.cs:461</comment>
+  </data>
+  <data name="PoiMappingDialog_ApplyAdvancedAsync_0FC0BA4B2E" xml:space="preserve">
+    <value>JSON 無效：</value>
+    <comment>PoiMappingDialog.cs:479</comment>
+  </data>
+  <data name="PoiMappingDialog_ApplyAdvancedAsync_308B48CF51" xml:space="preserve">
+    <value>尚未儲存的修改：{0} 個類別</value>
+    <comment>PoiMappingDialog.cs:476</comment>
+  </data>
+  <data name="PoiMappingDialog_ApplyAdvancedAsync_6CE495DD23" xml:space="preserve">
+    <value>只能修改現有類別：</value>
+    <comment>PoiMappingDialog.cs:466</comment>
+  </data>
+  <data name="PoiMappingDialog_ApplyAdvancedAsync_810B81EE86" xml:space="preserve">
+    <value>無法在進階編輯中刪除類別：</value>
+    <comment>PoiMappingDialog.cs:471</comment>
+  </data>
+  <data name="PoiMappingDialog_ConfirmCloseAsync_24BE71198C" xml:space="preserve">
+    <value>未儲存的 POI 修改</value>
+    <comment>PoiMappingDialog.cs:207</comment>
+  </data>
+  <data name="PoiMappingDialog_ConfirmCloseAsync_A3030BF8F1" xml:space="preserve">
+    <value>儲存</value>
+    <comment>PoiMappingDialog.cs:208</comment>
+  </data>
+  <data name="PoiMappingDialog_ConfirmCloseAsync_E7F51B070E" xml:space="preserve">
+    <value>放棄</value>
+    <comment>PoiMappingDialog.cs:208</comment>
+  </data>
+  <data name="PoiMappingDialog_ConfirmCloseAsync_FD4B9E3B6C" xml:space="preserve">
+    <value>繼續編輯</value>
+    <comment>PoiMappingDialog.cs:208</comment>
+  </data>
+  <data name="PoiMappingDialog_DeleteAsync_0580FCEE37" xml:space="preserve">
+    <value>刪除失敗：</value>
+    <comment>PoiMappingDialog.cs:454</comment>
+  </data>
+  <data name="PoiMappingDialog_DeleteAsync_4F616C9F96" xml:space="preserve">
+    <value>已刪除 </value>
+    <comment>PoiMappingDialog.cs:452</comment>
+  </data>
+  <data name="PoiMappingDialog_DeleteAsync_8E974CFC28" xml:space="preserve">
+    <value>刪除類別前，請先儲存目前的修改</value>
+    <comment>PoiMappingDialog.cs:441</comment>
+  </data>
+  <data name="PoiMappingDialog_Edit_308B48CF51" xml:space="preserve">
+    <value>尚未儲存的修改：{0} 個類別</value>
+    <comment>PoiMappingDialog.cs:365</comment>
+  </data>
+  <data name="PoiMappingDialog_LoadData_33F222A369" xml:space="preserve">
+    <value>所有類別</value>
+    <comment>PoiMappingDialog.cs:232</comment>
+  </data>
+  <data name="PoiMappingDialog_LoadData_B073DB9C0B" xml:space="preserve">
+    <value>就緒</value>
+    <comment>PoiMappingDialog.cs:240</comment>
+  </data>
+  <data name="PoiMappingDialog_SaveAsync_6ADE7BAF87" xml:space="preserve">
+    <value>儲存失敗：</value>
+    <comment>PoiMappingDialog.cs:432</comment>
+  </data>
+  <data name="PoiMappingDialog_SaveAsync_A2DC649608" xml:space="preserve">
+    <value>已儲存 {0} 個類別</value>
+    <comment>PoiMappingDialog.cs:429</comment>
+  </data>
+  <data name="PoiMappingDialog_SelectCategory_37A28DBB07" xml:space="preserve">
+    <value>對應參照：0</value>
+    <comment>PoiMappingDialog.cs:288</comment>
+  </data>
+  <data name="PoiMappingDialog_SelectCategory_E1917594C4" xml:space="preserve">
+    <value>對應參照：{0}
+{1}</value>
+    <comment>PoiMappingDialog.cs:287</comment>
+  </data>
+  <data name="PoiMappingDialog_SelectIconImage_17A3E2757D" xml:space="preserve">
+    <value>圖示載入失敗：</value>
+    <comment>PoiMappingDialog.cs:354</comment>
+  </data>
+  <data name="PoiMappingDialog_ShowReferencesAsync_1344BD2405" xml:space="preserve">
+    <value>類別 {0} 被 {1} 個類型對應引用：
+
+{2}</value>
+    <comment>PoiMappingDialog.cs:302</comment>
+  </data>
+  <data name="PoiMappingDialog_ShowReferencesAsync_3FD47EDCE4" xml:space="preserve">
+    <value>關閉</value>
+    <comment>PoiMappingDialog.cs:309</comment>
+  </data>
+  <data name="PoiMappingDialog_ShowReferencesAsync_8EE2B0A4A2" xml:space="preserve">
+    <value>對應參照 · </value>
+    <comment>PoiMappingDialog.cs:306</comment>
+  </data>
+  <data name="PoiMappingDialog_ShowReferencesAsync_D78F8BE6EA" xml:space="preserve">
+    <value>類別 {0} 未被任何 AI 類型對應引用。</value>
+    <comment>PoiMappingDialog.cs:301</comment>
+  </data>
+  <data name="PoiMappingDialog_ValidateAsync_94F000E467" xml:space="preserve">
+    <value>檢查完成：{0} 項</value>
+    <comment>PoiMappingDialog.cs:385</comment>
+  </data>
+  <data name="PoiMappingDialog_ValidateAsync_F7293A061E" xml:space="preserve">
+    <value>檢查失敗：</value>
+    <comment>PoiMappingDialog.cs:387</comment>
+  </data>
+  <data name="PoiMappingDialog_View_071089398B" xml:space="preserve">
+    <value>偵測</value>
+    <comment>PoiMappingDialog.cs:67</comment>
+  </data>
+  <data name="PoiMappingDialog_View_0D12CBD656" xml:space="preserve">
+    <value>類別</value>
+    <comment>PoiMappingDialog.cs:162</comment>
+  </data>
+  <data name="PoiMappingDialog_View_145219E726" xml:space="preserve">
+    <value>隱藏</value>
+    <comment>PoiMappingDialog.cs:56</comment>
+  </data>
+  <data name="PoiMappingDialog_View_2354C137CE" xml:space="preserve">
+    <value>套用至草稿</value>
+    <comment>PoiMappingDialog.cs:72</comment>
+  </data>
+  <data name="PoiMappingDialog_View_328AF35A09" xml:space="preserve">
+    <value>重新載入失敗：</value>
+    <comment>PoiMappingDialog.cs:53</comment>
+  </data>
+  <data name="PoiMappingDialog_View_33A8618CB6" xml:space="preserve">
+    <value>問題</value>
+    <comment>PoiMappingDialog.cs:156</comment>
+  </data>
+  <data name="PoiMappingDialog_View_369732D9EE" xml:space="preserve">
+    <value>顯示對應參照…</value>
+    <comment>PoiMappingDialog.cs:115</comment>
+  </data>
+  <data name="PoiMappingDialog_View_3FD47EDCE4" xml:space="preserve">
+    <value>關閉</value>
+    <comment>PoiMappingDialog.cs:55</comment>
+  </data>
+  <data name="PoiMappingDialog_View_4471A644BD" xml:space="preserve">
+    <value>確認刪除 </value>
+    <comment>PoiMappingDialog.cs:125</comment>
+  </data>
+  <data name="PoiMappingDialog_View_4E1449E7D5" xml:space="preserve">
+    <value>顯示</value>
+    <comment>PoiMappingDialog.cs:56</comment>
+  </data>
+  <data name="PoiMappingDialog_View_5629F3E794" xml:space="preserve">
+    <value>繼承父項</value>
+    <comment>PoiMappingDialog.cs:56</comment>
+  </data>
+  <data name="PoiMappingDialog_View_6D8ADAD124" xml:space="preserve">
+    <value>選擇圖示</value>
+    <comment>PoiMappingDialog.cs:108</comment>
+  </data>
+  <data name="PoiMappingDialog_View_6E814135AD" xml:space="preserve">
+    <value>進階 JSON</value>
+    <comment>PoiMappingDialog.cs:69</comment>
+  </data>
+  <data name="PoiMappingDialog_View_71453671E9" xml:space="preserve">
+    <value>未對應</value>
+    <comment>PoiMappingDialog.cs:58</comment>
+  </data>
+  <data name="PoiMappingDialog_View_7BDD5CE1E2" xml:space="preserve">
+    <value>重新載入</value>
+    <comment>PoiMappingDialog.cs:49</comment>
+  </data>
+  <data name="PoiMappingDialog_View_86AF7B1359" xml:space="preserve">
+    <value>孤立類別</value>
+    <comment>PoiMappingDialog.cs:60</comment>
+  </data>
+  <data name="PoiMappingDialog_View_86DE52D178" xml:space="preserve">
+    <value>屬性</value>
+    <comment>PoiMappingDialog.cs:162</comment>
+  </data>
+  <data name="PoiMappingDialog_View_8CA4689CF5" xml:space="preserve">
+    <value>圖示對應</value>
+    <comment>PoiMappingDialog.cs:46</comment>
+  </data>
+  <data name="PoiMappingDialog_View_92788680D9" xml:space="preserve">
+    <value>優先順序必須是 0 到 100 的整數</value>
+    <comment>PoiMappingDialog.cs:185</comment>
+  </data>
+  <data name="PoiMappingDialog_View_9EC080BD1F" xml:space="preserve">
+    <value>圖示與問題</value>
+    <comment>PoiMappingDialog.cs:162</comment>
+  </data>
+  <data name="PoiMappingDialog_View_A3030BF8F1" xml:space="preserve">
+    <value>儲存</value>
+    <comment>PoiMappingDialog.cs:65</comment>
+  </data>
+  <data name="PoiMappingDialog_View_AD615C133B" xml:space="preserve">
+    <value>隱藏類別</value>
+    <comment>PoiMappingDialog.cs:59</comment>
+  </data>
+  <data name="PoiMappingDialog_View_AFC8F822DD" xml:space="preserve">
+    <value>圖示庫</value>
+    <comment>PoiMappingDialog.cs:155</comment>
+  </data>
+  <data name="PoiMappingDialog_View_BB226448C5" xml:space="preserve">
+    <value>重複圖示</value>
+    <comment>PoiMappingDialog.cs:59</comment>
+  </data>
+  <data name="PoiMappingDialog_View_C4278FDDB8" xml:space="preserve">
+    <value>刪除類別</value>
+    <comment>PoiMappingDialog.cs:118; PoiMappingDialog.cs:128; PoiMappingDialog.cs:134</comment>
+  </data>
+  <data name="PoiMappingDialog_View_D6A6462F36" xml:space="preserve">
+    <value>缺少圖示</value>
+    <comment>PoiMappingDialog.cs:60</comment>
+  </data>
+  <data name="PoiMappingDialog_View_DECB3EBE48" xml:space="preserve">
+    <value>所有問題</value>
+    <comment>PoiMappingDialog.cs:58</comment>
+  </data>
+  <data name="PoiMappingDialog_View_E766B720D1" xml:space="preserve">
+    <value>最小縮放必須是 0 到 1 之間的數值</value>
+    <comment>PoiMappingDialog.cs:190</comment>
+  </data>
+  <data name="PoiMappingDialog_View_ED8BCD6D9E" xml:space="preserve">
+    <value>儲存並關閉</value>
+    <comment>PoiMappingDialog.cs:48</comment>
+  </data>
+  <data name="PoiMappingDialog__categorySearch_988CA706A2" xml:space="preserve">
+    <value>搜尋類別</value>
+    <comment>PoiMappingDialog.cs:14</comment>
+  </data>
+  <data name="PoiMappingDialog__display_8BA425D224" xml:space="preserve">
+    <value>顯示方式</value>
+    <comment>PoiMappingDialog.cs:22</comment>
+  </data>
+  <data name="PoiMappingDialog__iconKey_96C8054568" xml:space="preserve">
+    <value>圖示鍵值</value>
+    <comment>PoiMappingDialog.cs:19</comment>
+  </data>
+  <data name="PoiMappingDialog__iconSearch_338855193C" xml:space="preserve">
+    <value>搜尋圖示名稱或鍵值</value>
+    <comment>PoiMappingDialog.cs:16</comment>
+  </data>
+  <data name="PoiMappingDialog__label_D44E9B3D3B" xml:space="preserve">
+    <value>名稱</value>
+    <comment>PoiMappingDialog.cs:18</comment>
+  </data>
+  <data name="PoiMappingDialog__priority_565D64601D" xml:space="preserve">
+    <value>優先順序</value>
+    <comment>PoiMappingDialog.cs:20</comment>
+  </data>
+  <data name="PoiMappingDialog__zoom_AEC8C6699C" xml:space="preserve">
+    <value>最小縮放</value>
+    <comment>PoiMappingDialog.cs:21</comment>
+  </data>
+  <data name="PoiProfileEditorPanel_AddNumber_0BB1EFDA65" xml:space="preserve">
+    <value>{0}：請輸入介於 {1} 至 {2} 的數值。</value>
+    <comment>PoiProfileEditorPanel.cs:127</comment>
+  </data>
+  <data name="PoiProfileEditorPanel_Build_00AB0A0BBD" xml:space="preserve">
+    <value>數值越大，必須放大更多才會顯示設施內的地點。</value>
+    <comment>PoiProfileEditorPanel.cs:77</comment>
+  </data>
+  <data name="PoiProfileEditorPanel_Build_163850E3D5" xml:space="preserve">
+    <value>保留地點數量</value>
+    <comment>PoiProfileEditorPanel.cs:65</comment>
+  </data>
+  <data name="PoiProfileEditorPanel_Build_2480389050" xml:space="preserve">
+    <value>鄰近大眾運輸站點</value>
+    <comment>PoiProfileEditorPanel.cs:49</comment>
+  </data>
+  <data name="PoiProfileEditorPanel_Build_28D5C72226" xml:space="preserve">
+    <value>設施內地點的參考縮放倍率</value>
+    <comment>PoiProfileEditorPanel.cs:74</comment>
+  </data>
+  <data name="PoiProfileEditorPanel_Build_2BDBD22B8E" xml:space="preserve">
+    <value>同類建築；玩家自訂名稱的地點會分開處理。</value>
+    <comment>PoiProfileEditorPanel.cs:50</comment>
+  </data>
+  <data name="PoiProfileEditorPanel_Build_3C5D5EA4AB" xml:space="preserve">
+    <value>避免圖示與名稱重疊</value>
+    <comment>PoiProfileEditorPanel.cs:68</comment>
+  </data>
+  <data name="PoiProfileEditorPanel_Build_61AACC9FD8" xml:space="preserve">
+    <value>較多</value>
+    <comment>PoiProfileEditorPanel.cs:66</comment>
+  </data>
+  <data name="PoiProfileEditorPanel_Build_6BEA77ACEF" xml:space="preserve">
+    <value>標準</value>
+    <comment>PoiProfileEditorPanel.cs:66</comment>
+  </data>
+  <data name="PoiProfileEditorPanel_Build_881D1D8041" xml:space="preserve">
+    <value>顯示設施內的地點</value>
+    <comment>PoiProfileEditorPanel.cs:71</comment>
+  </data>
+  <data name="PoiProfileEditorPanel_Build_8A16E15823" xml:space="preserve">
+    <value>每個設施只顯示一次</value>
+    <comment>PoiProfileEditorPanel.cs:51</comment>
+  </data>
+  <data name="PoiProfileEditorPanel_Build_8CC740C6CC" xml:space="preserve">
+    <value>合併距離（公尺）</value>
+    <comment>PoiProfileEditorPanel.cs:58</comment>
+  </data>
+  <data name="PoiProfileEditorPanel_Build_9965945D5D" xml:space="preserve">
+    <value>鄰近的同類一般地點</value>
+    <comment>PoiProfileEditorPanel.cs:50</comment>
+  </data>
+  <data name="PoiProfileEditorPanel_Build_9FB9D886FD" xml:space="preserve">
+    <value>預設會保留名稱不同的停靠站。</value>
+    <comment>PoiProfileEditorPanel.cs:49</comment>
+  </data>
+  <data name="PoiProfileEditorPanel_Build_A2FBF72184" xml:space="preserve">
+    <value>允許合併名稱不同的交通站點</value>
+    <comment>PoiProfileEditorPanel.cs:70</comment>
+  </data>
+  <data name="PoiProfileEditorPanel_Build_C563296C44" xml:space="preserve">
+    <value>在人潮擁擠處減少地點圖示</value>
+    <comment>PoiProfileEditorPanel.cs:63</comment>
+  </data>
+  <data name="PoiProfileEditorPanel_Build_CBF9A18431" xml:space="preserve">
+    <value>設施細節與特殊合併</value>
+    <comment>PoiProfileEditorPanel.cs:78</comment>
+  </data>
+  <data name="PoiProfileEditorPanel_Build_E3521DB829" xml:space="preserve">
+    <value>較少</value>
+    <comment>PoiProfileEditorPanel.cs:66</comment>
+  </data>
+  <data name="PoiProfileEditorPanel_Build_FBA7C62AC0" xml:space="preserve">
+    <value>合併重複或鄰近地點</value>
+    <comment>PoiProfileEditorPanel.cs:44</comment>
+  </data>
+  <data name="PoiProfileEditorPanel_Build_FFA0A4B20C" xml:space="preserve">
+    <value>移除同一設施的重複記錄；不依距離合併設施。</value>
+    <comment>PoiProfileEditorPanel.cs:51</comment>
+  </data>
+  <data name="RibbonIcons_Context_20B638DD5D" xml:space="preserve">
+    <value>行政區底圖</value>
+    <comment>RibbonIcons.cs:64</comment>
+  </data>
+  <data name="RibbonIcons_Context_23C662D4EA" xml:space="preserve">
+    <value>顯示比例診斷</value>
+    <comment>RibbonIcons.cs:66</comment>
+  </data>
+  <data name="RibbonIcons_Context_3FD85C9C2E" xml:space="preserve">
+    <value>顯示圖例</value>
+    <comment>RibbonIcons.cs:69</comment>
+  </data>
+  <data name="RibbonIcons_Context_4E10E29DA7" xml:space="preserve">
+    <value>自適應比例</value>
+    <comment>RibbonIcons.cs:66</comment>
+  </data>
+  <data name="RibbonIcons_Context_5F6A03B217" xml:space="preserve">
+    <value>圖例</value>
+    <comment>RibbonIcons.cs:69</comment>
+  </data>
+  <data name="RibbonIcons_Context_661499ED97" xml:space="preserve">
+    <value>自動配色</value>
+    <comment>RibbonIcons.cs:61</comment>
+  </data>
+  <data name="RibbonIcons_Context_66A211F8F4" xml:space="preserve">
+    <value>大眾運輸圖示文字</value>
+    <comment>RibbonIcons.cs:59</comment>
+  </data>
+  <data name="RibbonIcons_Context_784E7FAA7F" xml:space="preserve">
+    <value>水域底圖</value>
+    <comment>RibbonIcons.cs:62</comment>
+  </data>
+  <data name="RibbonIcons_Context_7EE5D33BF1" xml:space="preserve">
+    <value>顯示站點</value>
+    <comment>RibbonIcons.cs:58</comment>
+  </data>
+  <data name="RibbonIcons_Context_8019E91690" xml:space="preserve">
+    <value>顯示轉乘設施</value>
+    <comment>RibbonIcons.cs:65</comment>
+  </data>
+  <data name="RibbonIcons_Context_A3883FE83C" xml:space="preserve">
+    <value>行政區底圖</value>
+    <comment>RibbonIcons.cs:64</comment>
+  </data>
+  <data name="RibbonIcons_Context_A8A9631DF4" xml:space="preserve">
+    <value>顯示路線名稱</value>
+    <comment>RibbonIcons.cs:59</comment>
+  </data>
+  <data name="RibbonIcons_Context_B81B14943D" xml:space="preserve">
+    <value>顯示路線</value>
+    <comment>RibbonIcons.cs:67</comment>
+  </data>
+  <data name="RibbonIcons_Context_BB06598E0D" xml:space="preserve">
+    <value>道路底圖</value>
+    <comment>RibbonIcons.cs:63</comment>
+  </data>
+  <data name="RibbonIcons_Context_C1399D6D07" xml:space="preserve">
+    <value>路線外框</value>
+    <comment>RibbonIcons.cs:68</comment>
+  </data>
+  <data name="RibbonIcons_Context_CB8F15F475" xml:space="preserve">
+    <value>保留水域</value>
+    <comment>RibbonIcons.cs:62</comment>
+  </data>
+  <data name="RibbonIcons_Context_CF2382056B" xml:space="preserve">
+    <value>站名標註</value>
+    <comment>RibbonIcons.cs:59</comment>
+  </data>
+  <data name="RibbonIcons_Context_ED178EDA0E" xml:space="preserve">
+    <value>合併站點</value>
+    <comment>RibbonIcons.cs:60</comment>
+  </data>
+  <data name="RibbonIcons_Context_FF48E2FFEB" xml:space="preserve">
+    <value>顯示站名</value>
+    <comment>RibbonIcons.cs:59</comment>
+  </data>
+  <data name="RibbonIcons_LayerTitle_0983E2CCDD" xml:space="preserve">
+    <value>行政區</value>
+    <comment>RibbonIcons.cs:41</comment>
+  </data>
+  <data name="RibbonIcons_LayerTitle_18B9E17D3D" xml:space="preserve">
+    <value>路況</value>
+    <comment>RibbonIcons.cs:40</comment>
+  </data>
+  <data name="RibbonIcons_LayerTitle_1AB216CC0D" xml:space="preserve">
+    <value>大眾運輸</value>
+    <comment>RibbonIcons.cs:41</comment>
+  </data>
+  <data name="RibbonIcons_LayerTitle_207E6D1CF5" xml:space="preserve">
+    <value>水域</value>
+    <comment>RibbonIcons.cs:39</comment>
+  </data>
+  <data name="RibbonIcons_LayerTitle_433091EABE" xml:space="preserve">
+    <value>建成區</value>
+    <comment>RibbonIcons.cs:40</comment>
+  </data>
+  <data name="RibbonIcons_LayerTitle_4F0C1E4BF0" xml:space="preserve">
+    <value>文字與圖示</value>
+    <comment>RibbonIcons.cs:41</comment>
+  </data>
+  <data name="RibbonIcons_LayerTitle_51695AD45A" xml:space="preserve">
+    <value>地形</value>
+    <comment>RibbonIcons.cs:39</comment>
+  </data>
+  <data name="RibbonIcons_LayerTitle_5B46860A8E" xml:space="preserve">
+    <value>建築物</value>
+    <comment>RibbonIcons.cs:39</comment>
+  </data>
+  <data name="RibbonIcons_LayerTitle_8592878D7E" xml:space="preserve">
+    <value>功能分區</value>
+    <comment>RibbonIcons.cs:42</comment>
+  </data>
+  <data name="RibbonIcons_LayerTitle_87FC97C6B8" xml:space="preserve">
+    <value>PO 物件</value>
+    <comment>RibbonIcons.cs:42</comment>
+  </data>
+  <data name="RibbonIcons_LayerTitle_97492A0E5D" xml:space="preserve">
+    <value>火車</value>
+    <comment>RibbonIcons.cs:40</comment>
+  </data>
+  <data name="RibbonIcons_LayerTitle_9FC7D0CF1D" xml:space="preserve">
+    <value>地點圖示</value>
+    <comment>RibbonIcons.cs:41</comment>
+  </data>
+  <data name="RibbonIcons_LayerTitle_A44C7BA211" xml:space="preserve">
+    <value>道路</value>
+    <comment>RibbonIcons.cs:39</comment>
+  </data>
+  <data name="RibbonIcons_LayerTitle_AA9F217C81" xml:space="preserve">
+    <value>浮水印</value>
+    <comment>RibbonIcons.cs:42</comment>
+  </data>
+  <data name="RibbonIcons_LayerTitle_AD68267D54" xml:space="preserve">
+    <value>區域上色</value>
+    <comment>RibbonIcons.cs:40</comment>
+  </data>
+  <data name="RibbonIcons_LayerTitle_D84EBADC9F" xml:space="preserve">
+    <value>土地使用網格</value>
+    <comment>RibbonIcons.cs:42</comment>
+  </data>
+  <data name="ThemeEditorDialog_Change_285A8966FE" xml:space="preserve">
+    <value>修改尚未套用</value>
+    <comment>ThemeEditorDialog.cs:122</comment>
+  </data>
+  <data name="ThemeEditorDialog_CommitAsync_0C8CCBB74C" xml:space="preserve">
+    <value>；地圖重新整理失敗：</value>
+    <comment>ThemeEditorDialog.cs:249</comment>
+  </data>
+  <data name="ThemeEditorDialog_CommitAsync_58AD70BDD1" xml:space="preserve">
+    <value>仍有未儲存的變更</value>
+    <comment>ThemeEditorDialog.cs:246</comment>
+  </data>
+  <data name="ThemeEditorDialog_CommitAsync_61D9FC644D" xml:space="preserve">
+    <value>主題已儲存</value>
+    <comment>ThemeEditorDialog.cs:246</comment>
+  </data>
+  <data name="ThemeEditorDialog_CommitAsync_757737699B" xml:space="preserve">
+    <value>無法套用主題：</value>
+    <comment>ThemeEditorDialog.cs:253</comment>
+  </data>
+  <data name="ThemeEditorDialog_CommitAsync_D40E2AA10B" xml:space="preserve">
+    <value>主題儲存失敗：</value>
+    <comment>ThemeEditorDialog.cs:253</comment>
+  </data>
+  <data name="ThemeEditorDialog_CommitAsync_DB576085E9" xml:space="preserve">
+    <value>已套用修改 · 尚未儲存</value>
+    <comment>ThemeEditorDialog.cs:246</comment>
+  </data>
+  <data name="ThemeEditorDialog_ConfirmCloseAsync_8BCC3E177F" xml:space="preserve">
+    <value>不儲存</value>
+    <comment>ThemeEditorDialog.cs:95</comment>
+  </data>
+  <data name="ThemeEditorDialog_ConfirmCloseAsync_A3030BF8F1" xml:space="preserve">
+    <value>儲存</value>
+    <comment>ThemeEditorDialog.cs:95</comment>
+  </data>
+  <data name="ThemeEditorDialog_ConfirmCloseAsync_E7ADF10792" xml:space="preserve">
+    <value>關閉前要儲存變更嗎？</value>
+    <comment>ThemeEditorDialog.cs:95</comment>
+  </data>
+  <data name="ThemeEditorDialog_ConfirmCloseAsync_FD4B9E3B6C" xml:space="preserve">
+    <value>繼續編輯</value>
+    <comment>ThemeEditorDialog.cs:95</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_BuildList_2CD0F3BE87" xml:space="preserve">
+    <value>取消</value>
+    <comment>ThemeEditorDialog.Fields.cs:328</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_BuildList_2F9DAA8289" xml:space="preserve">
+    <value>刪除</value>
+    <comment>ThemeEditorDialog.Fields.cs:316</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_BuildList_45CF7C95BF" xml:space="preserve">
+    <value>＋ 新增</value>
+    <comment>ThemeEditorDialog.Fields.cs:321</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_BuildList_7A8A11EAD5" xml:space="preserve">
+    <value>新增</value>
+    <comment>ThemeEditorDialog.Fields.cs:322; ThemeEditorDialog.Fields.cs:328; ThemeEditorDialog.Fields.cs:328</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_BuildList_AA2CA3DEE7" xml:space="preserve">
+    <value>顏色（HEX）</value>
+    <comment>ThemeEditorDialog.Fields.cs:326</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_BuildList_C5500A58E0" xml:space="preserve">
+    <value>數值</value>
+    <comment>ThemeEditorDialog.Fields.cs:326</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_BuildList_CDA1D55C52" xml:space="preserve">
+    <value>值</value>
+    <comment>ThemeEditorDialog.Fields.cs:326</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_BuildList_D1E6C6F018" xml:space="preserve">
+    <value>請輸入有效數字</value>
+    <comment>ThemeEditorDialog.Fields.cs:334</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_BuildList_ECFAA25904" xml:space="preserve">
+    <value>請輸入有效的 HEX 色碼</value>
+    <comment>ThemeEditorDialog.Fields.cs:332</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_BuildTypes_F2CF29F7F4" xml:space="preserve">
+    <value>（未識別，保留）</value>
+    <comment>ThemeEditorDialog.Fields.cs:292</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_ColorField_1E991AA480" xml:space="preserve">
+    <value>請輸入 #RRGGBB 或 #RRGGBBAA 色碼</value>
+    <comment>ThemeEditorDialog.Fields.cs:254</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_ColorField_B5827E9067" xml:space="preserve">
+    <value>精確色值</value>
+    <comment>ThemeEditorDialog.Fields.cs:250</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_ColorField_C11330B852" xml:space="preserve">
+    <value>選取</value>
+    <comment>ThemeEditorDialog.Fields.cs:250; ThemeEditorDialog.Fields.cs:250</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_InvalidateInputPreview_F0E4729FC1" xml:space="preserve">
+    <value>正在編輯輸入；提交有效值後會更新預覽</value>
+    <comment>ThemeEditorDialog.Fields.cs:348</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_Label_606D5B2CC1" xml:space="preserve">
+    <value>隨算圖比例增加部分</value>
+    <comment>ThemeEditorDialog.Fields.cs:23</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_Label_803A1B3A33" xml:space="preserve">
+    <value>固定部分</value>
+    <comment>ThemeEditorDialog.Fields.cs:22</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_MakeField_606D5B2CC1" xml:space="preserve">
+    <value>隨算圖比例增加部分</value>
+    <comment>ThemeEditorDialog.Fields.cs:134</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_MakeField_66FE53367D" xml:space="preserve">
+    <value>請輸入介於 {0} 至 {1} 之間的數值</value>
+    <comment>ThemeEditorDialog.Fields.cs:181</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_MakeField_6A2DEA0DF7" xml:space="preserve">
+    <value>需要有效數字</value>
+    <comment>ThemeEditorDialog.Fields.cs:189</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_MakeField_870D5FE5D4" xml:space="preserve">
+    <value>請輸入 JSON 陣列</value>
+    <comment>ThemeEditorDialog.Fields.cs:150</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_MakeField_986E6B84D7" xml:space="preserve">
+    <value>固定部分（px）</value>
+    <comment>ThemeEditorDialog.Fields.cs:133</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_MakeField_CF663DC217" xml:space="preserve">
+    <value>最終尺寸 = 固定部分 + 隨比例增加部分 × 算繪比例</value>
+    <comment>ThemeEditorDialog.Fields.cs:136</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_MakeField_D9E21007A0" xml:space="preserve">
+    <value>（目前值）</value>
+    <comment>ThemeEditorDialog.Fields.cs:219</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_MakeField_E381B63F7F" xml:space="preserve">
+    <value>進階結構資料</value>
+    <comment>ThemeEditorDialog.Fields.cs:148</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_PageDescription_388AAAEA79" xml:space="preserve">
+    <value>使用高度節點編輯地形色帶。</value>
+    <comment>ThemeEditorDialog.Fields.cs:83</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_PageDescription_3F6F438320" xml:space="preserve">
+    <value>請先選取標籤物件，再調整文字外觀。</value>
+    <comment>ThemeEditorDialog.Fields.cs:84</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_PageDescription_5986B685A1" xml:space="preserve">
+    <value>依道路等級調整填色、外框和最小顯示寬度。</value>
+    <comment>ThemeEditorDialog.Fields.cs:82</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_PageDescription_7245F659EA" xml:space="preserve">
+    <value>編輯主題名稱與說明，並儲存目前的主題設定。</value>
+    <comment>ThemeEditorDialog.Fields.cs:85</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_PageDescription_8714276423" xml:space="preserve">
+    <value>調整地圖外觀</value>
+    <comment>ThemeEditorDialog.Fields.cs:88</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_PageDescription_E4131EFDCA" xml:space="preserve">
+    <value>設定軌道外觀。</value>
+    <comment>ThemeEditorDialog.Fields.cs:86</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_RebuildFields_04016999A1" xml:space="preserve">
+    <value>只還原目前頁面中符合搜尋結果的可編輯項目</value>
+    <comment>ThemeEditorDialog.Fields.cs:68</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_RebuildFields_3B5E729BF4" xml:space="preserve">
+    <value>還原符合項目</value>
+    <comment>ThemeEditorDialog.Fields.cs:69</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_RebuildFields_9CB6C68C5F" xml:space="preserve">
+    <value>沒有相符的設定</value>
+    <comment>ThemeEditorDialog.Fields.cs:62</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_RebuildFields_AC9EA45E9D" xml:space="preserve">
+    <value>還原本頁</value>
+    <comment>ThemeEditorDialog.Fields.cs:69</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_RebuildFields_AFF535F598" xml:space="preserve">
+    <value>還原目前頁面的所有參數。</value>
+    <comment>ThemeEditorDialog.Fields.cs:68</comment>
+  </data>
+  <data name="ThemeEditorDialog_Fields_RebuildFields_EE32F25F70" xml:space="preserve">
+    <value>清除搜尋</value>
+    <comment>ThemeEditorDialog.Fields.cs:63</comment>
+  </data>
+  <data name="ThemeEditorDialog_LabelTypes_4F56683E73" xml:space="preserve">
+    <value>行政區</value>
+    <comment>ThemeEditorDialog.cs:19</comment>
+  </data>
+  <data name="ThemeEditorDialog_LabelTypes_5B46860A8E" xml:space="preserve">
+    <value>建築物</value>
+    <comment>ThemeEditorDialog.cs:19</comment>
+  </data>
+  <data name="ThemeEditorDialog_LabelTypes_A44C7BA211" xml:space="preserve">
+    <value>道路</value>
+    <comment>ThemeEditorDialog.cs:19</comment>
+  </data>
+  <data name="ThemeEditorDialog_LabelTypes_A59FE62777" xml:space="preserve">
+    <value>站點</value>
+    <comment>ThemeEditorDialog.cs:19</comment>
+  </data>
+  <data name="ThemeEditorDialog_LabelTypes_E852DCA995" xml:space="preserve">
+    <value>公園</value>
+    <comment>ThemeEditorDialog.cs:19</comment>
+  </data>
+  <data name="ThemeEditorDialog_Layout_BuildPreviewLayout_07C73EBABF" xml:space="preserve">
+    <value>局部預覽</value>
+    <comment>ThemeEditorDialog.Layout.cs:116</comment>
+  </data>
+  <data name="ThemeEditorDialog_Layout_BuildWorkbench_03717B6F10" xml:space="preserve">
+    <value>重做</value>
+    <comment>ThemeEditorDialog.Layout.cs:51</comment>
+  </data>
+  <data name="ThemeEditorDialog_Layout_BuildWorkbench_13381EB64C" xml:space="preserve">
+    <value>套用至地圖</value>
+    <comment>ThemeEditorDialog.Layout.cs:94; ThemeEditorDialog.Layout.cs:96</comment>
+  </data>
+  <data name="ThemeEditorDialog_Layout_BuildWorkbench_2874151BD3" xml:space="preserve">
+    <value>搜尋設定</value>
+    <comment>ThemeEditorDialog.Layout.cs:75</comment>
+  </data>
+  <data name="ThemeEditorDialog_Layout_BuildWorkbench_38844B135C" xml:space="preserve">
+    <value>更多</value>
+    <comment>ThemeEditorDialog.Layout.cs:56</comment>
+  </data>
+  <data name="ThemeEditorDialog_Layout_BuildWorkbench_5E92DE25E6" xml:space="preserve">
+    <value>選取設定頁面</value>
+    <comment>ThemeEditorDialog.Layout.cs:75</comment>
+  </data>
+  <data name="ThemeEditorDialog_Layout_BuildWorkbench_6997A520F0" xml:space="preserve">
+    <value>儲存主題</value>
+    <comment>ThemeEditorDialog.Layout.cs:95; ThemeEditorDialog.Layout.cs:96</comment>
+  </data>
+  <data name="ThemeEditorDialog_Layout_BuildWorkbench_7BB3396904" xml:space="preserve">
+    <value>另存主題…</value>
+    <comment>ThemeEditorDialog.Layout.cs:58</comment>
+  </data>
+  <data name="ThemeEditorDialog_Layout_BuildWorkbench_7BDD5CE1E2" xml:space="preserve">
+    <value>重新載入</value>
+    <comment>ThemeEditorDialog.Layout.cs:59</comment>
+  </data>
+  <data name="ThemeEditorDialog_Layout_BuildWorkbench_926A50B98E" xml:space="preserve">
+    <value>復原</value>
+    <comment>ThemeEditorDialog.Layout.cs:51</comment>
+  </data>
+  <data name="ThemeEditorDialog_Layout_BuildWorkbench_9DF1CDC60C" xml:space="preserve">
+    <value>更多主題操作</value>
+    <comment>ThemeEditorDialog.Layout.cs:56</comment>
+  </data>
+  <data name="ThemeEditorDialog_Layout_BuildWorkbench_A3041FFF31" xml:space="preserve">
+    <value>主題設定導覽</value>
+    <comment>ThemeEditorDialog.Layout.cs:81</comment>
+  </data>
+  <data name="ThemeEditorDialog_Layout_BuildWorkbench_AC9EA45E9D" xml:space="preserve">
+    <value>還原本頁</value>
+    <comment>ThemeEditorDialog.Layout.cs:51</comment>
+  </data>
+  <data name="ThemeEditorDialog_Layout_BuildWorkbench_B3A22B5C00" xml:space="preserve">
+    <value>地圖主題 / {0}</value>
+    <comment>ThemeEditorDialog.Layout.cs:43</comment>
+  </data>
+  <data name="ThemeEditorDialog_Layout_BuildWorkbench_BA1125B2AC" xml:space="preserve">
+    <value>編輯完整主題資料（JSON）…</value>
+    <comment>ThemeEditorDialog.Layout.cs:60</comment>
+  </data>
+  <data name="ThemeEditorDialog_Layout_BuildWorkbench_EC9A1CEB6D" xml:space="preserve">
+    <value>主題編輯器</value>
+    <comment>ThemeEditorDialog.Layout.cs:45</comment>
+  </data>
+  <data name="ThemeEditorDialog_Layout_EditJsonAsync_2142FD3F0D" xml:space="preserve">
+    <value>編輯完整主題資料（JSON）</value>
+    <comment>ThemeEditorDialog.Layout.cs:239</comment>
+  </data>
+  <data name="ThemeEditorDialog_Layout_EditJsonAsync_2CD0F3BE87" xml:space="preserve">
+    <value>取消</value>
+    <comment>ThemeEditorDialog.Layout.cs:240</comment>
+  </data>
+  <data name="ThemeEditorDialog_Layout_EditJsonAsync_9212C5565A" xml:space="preserve">
+    <value>更新草稿</value>
+    <comment>ThemeEditorDialog.Layout.cs:240</comment>
+  </data>
+  <data name="ThemeEditorDialog_Layout_RebuildNavigation_2BE8A26742" xml:space="preserve">
+    <value>城市元素</value>
+    <comment>ThemeEditorDialog.Layout.cs:195</comment>
+  </data>
+  <data name="ThemeEditorDialog_Layout_RebuildNavigation_4F0C1E4BF0" xml:space="preserve">
+    <value>文字與圖示</value>
+    <comment>ThemeEditorDialog.Layout.cs:197</comment>
+  </data>
+  <data name="ThemeEditorDialog_Layout_RebuildNavigation_57F78BA1F9" xml:space="preserve">
+    <value>大眾運輸</value>
+    <comment>ThemeEditorDialog.Layout.cs:196</comment>
+  </data>
+  <data name="ThemeEditorDialog_Layout_RebuildNavigation_9CB6C68C5F" xml:space="preserve">
+    <value>沒有相符的設定</value>
+    <comment>ThemeEditorDialog.Layout.cs:210</comment>
+  </data>
+  <data name="ThemeEditorDialog_Layout_RebuildNavigation_AA6507D6F0" xml:space="preserve">
+    <value>底圖與地形</value>
+    <comment>ThemeEditorDialog.Layout.cs:194</comment>
+  </data>
+  <data name="ThemeEditorDialog_Layout_RebuildNavigation_E2B12D8F0A" xml:space="preserve">
+    <value>其他資料</value>
+    <comment>ThemeEditorDialog.Layout.cs:198</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildBasicPage_63CC58D88D" xml:space="preserve">
+    <value>主題來源：</value>
+    <comment>ThemeEditorDialog.Pages.cs:15</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildBasicPage_7BB3396904" xml:space="preserve">
+    <value>另存主題…</value>
+    <comment>ThemeEditorDialog.Pages.cs:17</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildBasicPage_A1D94D780D" xml:space="preserve">
+    <value>儲存會記住目前的主題設定；另存主題可匯出主題檔案。</value>
+    <comment>ThemeEditorDialog.Pages.cs:16</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildLabelsPage_0518365699" xml:space="preserve">
+    <value>編輯</value>
+    <comment>ThemeEditorDialog.Pages.cs:205</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildLabelsPage_078838DA42" xml:space="preserve">
+    <value>字型</value>
+    <comment>ThemeEditorDialog.Pages.cs:223</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildLabelsPage_1D0FD5F933" xml:space="preserve">
+    <value>標籤</value>
+    <comment>ThemeEditorDialog.Pages.cs:205</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildLabelsPage_1EFBE6AAF4" xml:space="preserve">
+    <value>名稱顯示開關可在圖層頁調整。</value>
+    <comment>ThemeEditorDialog.Pages.cs:227</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildLabelsPage_3CC1BA50ED" xml:space="preserve">
+    <value>文字外框</value>
+    <comment>ThemeEditorDialog.Pages.cs:226</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildLabelsPage_52826B6A04" xml:space="preserve">
+    <value>文字大小</value>
+    <comment>ThemeEditorDialog.Pages.cs:224</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildLabelsPage_858D9AE639" xml:space="preserve">
+    <value>此選項用於相容舊版主題</value>
+    <comment>ThemeEditorDialog.Pages.cs:229</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildLabelsPage_AB402539D4" xml:space="preserve">
+    <value>標籤配置與其他設定</value>
+    <comment>ThemeEditorDialog.Pages.cs:233</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildLabelsPage_C0AA8919A8" xml:space="preserve">
+    <value>外框寬度</value>
+    <comment>ThemeEditorDialog.Pages.cs:226</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildLabelsPage_D86FD32B7C" xml:space="preserve">
+    <value>外框顏色</value>
+    <comment>ThemeEditorDialog.Pages.cs:226</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildLabelsPage_F21EF4ABA5" xml:space="preserve">
+    <value>文字顏色</value>
+    <comment>ThemeEditorDialog.Pages.cs:224</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildOtherPage_06CD245060" xml:space="preserve">
+    <value>字型、邊界與其他設定</value>
+    <comment>ThemeEditorDialog.Pages.cs:274</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildOtherPage_6A57028967" xml:space="preserve">
+    <value>浮水印文字</value>
+    <comment>ThemeEditorDialog.Pages.cs:261</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildOtherPage_72064D684F" xml:space="preserve">
+    <value>細節與其他設定</value>
+    <comment>ThemeEditorDialog.Pages.cs:274</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildOtherPage_D47A6B6A29" xml:space="preserve">
+    <value>軌道基線顏色</value>
+    <comment>ThemeEditorDialog.Pages.cs:270</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildOtherPage_FECDADDF86" xml:space="preserve">
+    <value>枕木顏色</value>
+    <comment>ThemeEditorDialog.Pages.cs:270</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildRamp_034F44D573" xml:space="preserve">
+    <value>高度 m</value>
+    <comment>ThemeEditorDialog.Pages.cs:162</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildRamp_070A8016FC" xml:space="preserve">
+    <value>顏色</value>
+    <comment>ThemeEditorDialog.Pages.cs:162</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildRamp_2CD0F3BE87" xml:space="preserve">
+    <value>取消</value>
+    <comment>ThemeEditorDialog.Pages.cs:182</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildRamp_6972FCEAB2" xml:space="preserve">
+    <value>＋ 新增高度節點</value>
+    <comment>ThemeEditorDialog.Pages.cs:175</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildRamp_6F12F4E988" xml:space="preserve">
+    <value>新增高度節點</value>
+    <comment>ThemeEditorDialog.Pages.cs:176; ThemeEditorDialog.Pages.cs:182</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildRamp_7A8A11EAD5" xml:space="preserve">
+    <value>新增</value>
+    <comment>ThemeEditorDialog.Pages.cs:182</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildRamp_81BE47F750" xml:space="preserve">
+    <value>高度（m）</value>
+    <comment>ThemeEditorDialog.Pages.cs:168; ThemeEditorDialog.Pages.cs:180</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildRamp_859A7D647B" xml:space="preserve">
+    <value>高度節點顏色</value>
+    <comment>ThemeEditorDialog.Pages.cs:169</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildRamp_8FF6AC7DDB" xml:space="preserve">
+    <value>刪除高度節點</value>
+    <comment>ThemeEditorDialog.Pages.cs:170</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildRamp_AA2CA3DEE7" xml:space="preserve">
+    <value>顏色（HEX）</value>
+    <comment>ThemeEditorDialog.Pages.cs:180</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildRamp_C217CD91ED" xml:space="preserve">
+    <value>請輸入 {0} 至 {1} m 的高度及有效的 HEX 色碼</value>
+    <comment>ThemeEditorDialog.Pages.cs:189</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_01EEE2E647" xml:space="preserve">
+    <value>係數越大，道路整體越粗。</value>
+    <comment>ThemeEditorDialog.Pages.cs:61</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_05FB7CBA47" xml:space="preserve">
+    <value>填滿</value>
+    <comment>ThemeEditorDialog.Pages.cs:29</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_13D61FEA9F" xml:space="preserve">
+    <value>預覽</value>
+    <comment>ThemeEditorDialog.Pages.cs:42</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_1D68EDF7EB" xml:space="preserve">
+    <value>最小 px</value>
+    <comment>ThemeEditorDialog.Pages.cs:29</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_3001DE3658" xml:space="preserve">
+    <value>各等級外觀</value>
+    <comment>ThemeEditorDialog.Pages.cs:24</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_37AE912BEC" xml:space="preserve">
+    <value>整體粗細</value>
+    <comment>ThemeEditorDialog.Pages.cs:59</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_512DF348F2" xml:space="preserve">
+    <value>最小寬度控制遠景可見性，實際寬度會隨道路尺寸變化；外框會包住填色。</value>
+    <comment>ThemeEditorDialog.Pages.cs:56</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_593A6AFD98" xml:space="preserve">
+    <value>各等級外框寬度</value>
+    <comment>ThemeEditorDialog.Pages.cs:63</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_80A57E03F0" xml:space="preserve">
+    <value>未設定</value>
+    <comment>ThemeEditorDialog.Pages.cs:48</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_A646E3934A" xml:space="preserve">
+    <value>其他道路設定</value>
+    <comment>ThemeEditorDialog.Pages.cs:72</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_ADCB808036" xml:space="preserve">
+    <value>描邊</value>
+    <comment>ThemeEditorDialog.Pages.cs:29</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_C0AA8919A8" xml:space="preserve">
+    <value>外框寬度</value>
+    <comment>ThemeEditorDialog.Pages.cs:51</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_C2AE96D4A6" xml:space="preserve">
+    <value>高架與隧道</value>
+    <comment>ThemeEditorDialog.Pages.cs:72</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_E9C68028D9" xml:space="preserve">
+    <value>道路寬度比例</value>
+    <comment>ThemeEditorDialog.Pages.cs:60</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_FBE666F1E0" xml:space="preserve">
+    <value>道路等級</value>
+    <comment>ThemeEditorDialog.Pages.cs:29</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildTerrainPage_4C204FB7E5" xml:space="preserve">
+    <value>低地</value>
+    <comment>ThemeEditorDialog.Pages.cs:119</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildTerrainPage_7A439491B8" xml:space="preserve">
+    <value>高度著色方式</value>
+    <comment>ThemeEditorDialog.Pages.cs:114</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildTerrainPage_8D2D98C22C" xml:space="preserve">
+    <value>啟用山影</value>
+    <comment>ThemeEditorDialog.Pages.cs:124</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildTerrainPage_99A62ED651" xml:space="preserve">
+    <value>高地</value>
+    <comment>ThemeEditorDialog.Pages.cs:119</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildTerrainPage_9D46E5EF25" xml:space="preserve">
+    <value>光影強度</value>
+    <comment>ThemeEditorDialog.Pages.cs:125</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildTerrainPage_BB3B667B97" xml:space="preserve">
+    <value>其他地形設定</value>
+    <comment>ThemeEditorDialog.Pages.cs:135</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_BuildTerrainPage_DC3967095C" xml:space="preserve">
+    <value>光照方向與細節</value>
+    <comment>ThemeEditorDialog.Pages.cs:129</comment>
+  </data>
+  <data name="ThemeEditorDialog_Pages_RampBand_727FCFB70E" xml:space="preserve">
+    <value>依高度值分佈的地形色帶</value>
+    <comment>ThemeEditorDialog.Pages.cs:140</comment>
+  </data>
+  <data name="ThemeEditorDialog_Preview_BuildSamples_1350C527B6" xml:space="preserve">
+    <value>顏色與尺寸變更會顯示在實際地圖預覽中。</value>
+    <comment>ThemeEditorDialog.Preview.cs:50</comment>
+  </data>
+  <data name="ThemeEditorDialog_Preview_BuildSamples_1A0787C40B" xml:space="preserve">
+    <value> · 最小 {0:0.##} px
+範例道路 16 m，算圖比例 1</value>
+    <comment>ThemeEditorDialog.Preview.cs:33</comment>
+  </data>
+  <data name="ThemeEditorDialog_Preview_BuildSamples_5BD3906590" xml:space="preserve">
+    <value>尚無高度節點</value>
+    <comment>ThemeEditorDialog.Preview.cs:43</comment>
+  </data>
+  <data name="ThemeEditorDialog_Preview_BuildSamples_EBD3615F5E" xml:space="preserve">
+    <value>樣式範例 · 即時更新</value>
+    <comment>ThemeEditorDialog.Preview.cs:17</comment>
+  </data>
+  <data name="ThemeEditorDialog_Preview_HandlePreviewEvent_61D83FB564" xml:space="preserve">
+    <value>預覽載入失敗：</value>
+    <comment>ThemeEditorDialog.Preview.cs:122</comment>
+  </data>
+  <data name="ThemeEditorDialog_Preview_HandlePreviewEvent_DCAB07490E" xml:space="preserve">
+    <value>草稿預覽已更新</value>
+    <comment>ThemeEditorDialog.Preview.cs:123</comment>
+  </data>
+  <data name="ThemeEditorDialog_Preview_HandlePreviewEvent_DE72B02080" xml:space="preserve">
+    <value>預覽失敗：</value>
+    <comment>ThemeEditorDialog.Preview.cs:118</comment>
+  </data>
+  <data name="ThemeEditorDialog_Preview_PreviewAfterDelayAsync_DE72B02080" xml:space="preserve">
+    <value>預覽失敗：</value>
+    <comment>ThemeEditorDialog.Preview.cs:113</comment>
+  </data>
+  <data name="ThemeEditorDialog_Preview_PreviewAfterDelayAsync_E04BCC3467" xml:space="preserve">
+    <value>輸入有誤。</value>
+    <comment>ThemeEditorDialog.Preview.cs:101</comment>
+  </data>
+  <data name="ThemeEditorDialog_Preview_SchedulePreview_A8EECC3509" xml:space="preserve">
+    <value>正在產生預覽…</value>
+    <comment>ThemeEditorDialog.Preview.cs:89</comment>
+  </data>
+  <data name="ThemeEditorDialog_Preview_UpdateTextSampleAsync_2964235EB9" xml:space="preserve">
+    <value>文字範例產生失敗：</value>
+    <comment>ThemeEditorDialog.Preview.cs:80</comment>
+  </data>
+  <data name="ThemeEditorDialog_Preview_UpdateTextSampleAsync_A3C0F4544E" xml:space="preserve">
+    <value>文字範例載入失敗：</value>
+    <comment>ThemeEditorDialog.Preview.cs:72</comment>
+  </data>
+  <data name="ThemeEditorDialog_Preview_UpdateTextSampleAsync_DC0A20DDA8" xml:space="preserve">
+    <value>指定字型無法使用，目前改用：</value>
+    <comment>ThemeEditorDialog.Preview.cs:76</comment>
+  </data>
+  <data name="ThemeEditorDialog_ReloadAsync_328AF35A09" xml:space="preserve">
+    <value>重新載入失敗：</value>
+    <comment>ThemeEditorDialog.cs:225</comment>
+  </data>
+  <data name="ThemeEditorDialog_ReloadAsync_B3A22B5C00" xml:space="preserve">
+    <value>地圖主題 / {0}</value>
+    <comment>ThemeEditorDialog.cs:222</comment>
+  </data>
+  <data name="ThemeEditorDialog_ReloadAsync_EC7E90FAA2" xml:space="preserve">
+    <value>主題已重新載入</value>
+    <comment>ThemeEditorDialog.cs:221</comment>
+  </data>
+  <data name="ThemeEditorDialog_ReplaceDraftAsync_285A8966FE" xml:space="preserve">
+    <value>修改尚未套用</value>
+    <comment>ThemeEditorDialog.cs:205</comment>
+  </data>
+  <data name="ThemeEditorDialog_ReplaceDraftAsync_F1DC302FE8" xml:space="preserve">
+    <value>主題無效</value>
+    <comment>ThemeEditorDialog.cs:197</comment>
+  </data>
+  <data name="ThemeEditorDialog_RestoreHistory_285A8966FE" xml:space="preserve">
+    <value>修改尚未套用</value>
+    <comment>ThemeEditorDialog.cs:129</comment>
+  </data>
+  <data name="ThemeEditorDialog_RestoreHistory_B502823A08" xml:space="preserve">
+    <value>沒有未套用或未儲存的修改</value>
+    <comment>ThemeEditorDialog.cs:129</comment>
+  </data>
+  <data name="ThemeEditorDialog_RestoreHistory_DB576085E9" xml:space="preserve">
+    <value>已套用修改 · 尚未儲存</value>
+    <comment>ThemeEditorDialog.cs:129</comment>
+  </data>
+  <data name="ThemeEditorDialog_RestoreSection_153601830D" xml:space="preserve">
+    <value>本頁參數已還原 · 尚未套用</value>
+    <comment>ThemeEditorDialog.cs:192</comment>
+  </data>
+  <data name="ThemeEditorDialog_RoadLevels_109688E695" xml:space="preserve">
+    <value>支線</value>
+    <comment>ThemeEditorDialog.cs:17</comment>
+  </data>
+  <data name="ThemeEditorDialog_RoadLevels_35CDE54CEB" xml:space="preserve">
+    <value>景觀道路</value>
+    <comment>ThemeEditorDialog.cs:17</comment>
+  </data>
+  <data name="ThemeEditorDialog_RoadLevels_534C553126" xml:space="preserve">
+    <value>高速公路</value>
+    <comment>ThemeEditorDialog.cs:17</comment>
+  </data>
+  <data name="ThemeEditorDialog_RoadLevels_EDE0519A4C" xml:space="preserve">
+    <value>特殊道路</value>
+    <comment>ThemeEditorDialog.cs:17</comment>
+  </data>
+  <data name="ThemeEditorDialog_RoadLevels_F5E3A1B5F2" xml:space="preserve">
+    <value>主要道路</value>
+    <comment>ThemeEditorDialog.cs:17</comment>
+  </data>
+  <data name="ThemeEditorDialog_SaveAsAsync_E8B51EFA46" xml:space="preserve">
+    <value>YAML 主題</value>
+    <comment>ThemeEditorDialog.cs:261</comment>
+  </data>
+  <data name="ThemeEditorDialog_SectionNames_0983E2CCDD" xml:space="preserve">
+    <value>行政區</value>
+    <comment>ThemeEditorDialog.cs:24</comment>
+  </data>
+  <data name="ThemeEditorDialog_SectionNames_1AB216CC0D" xml:space="preserve">
+    <value>大眾運輸</value>
+    <comment>ThemeEditorDialog.cs:26</comment>
+  </data>
+  <data name="ThemeEditorDialog_SectionNames_207E6D1CF5" xml:space="preserve">
+    <value>水域</value>
+    <comment>ThemeEditorDialog.cs:22</comment>
+  </data>
+  <data name="ThemeEditorDialog_SectionNames_3906276FD1" xml:space="preserve">
+    <value>畫布</value>
+    <comment>ThemeEditorDialog.cs:22</comment>
+  </data>
+  <data name="ThemeEditorDialog_SectionNames_3FDE320BE3" xml:space="preserve">
+    <value>植被</value>
+    <comment>ThemeEditorDialog.cs:23</comment>
+  </data>
+  <data name="ThemeEditorDialog_SectionNames_433091EABE" xml:space="preserve">
+    <value>建成區</value>
+    <comment>ThemeEditorDialog.cs:23</comment>
+  </data>
+  <data name="ThemeEditorDialog_SectionNames_51695AD45A" xml:space="preserve">
+    <value>地形</value>
+    <comment>ThemeEditorDialog.cs:22</comment>
+  </data>
+  <data name="ThemeEditorDialog_SectionNames_5B46860A8E" xml:space="preserve">
+    <value>建築物</value>
+    <comment>ThemeEditorDialog.cs:25</comment>
+  </data>
+  <data name="ThemeEditorDialog_SectionNames_655D4E9C75" xml:space="preserve">
+    <value>文字標籤</value>
+    <comment>ThemeEditorDialog.cs:27</comment>
+  </data>
+  <data name="ThemeEditorDialog_SectionNames_72F87EFABB" xml:space="preserve">
+    <value>主題資訊</value>
+    <comment>ThemeEditorDialog.cs:22</comment>
+  </data>
+  <data name="ThemeEditorDialog_SectionNames_8592878D7E" xml:space="preserve">
+    <value>功能分區</value>
+    <comment>ThemeEditorDialog.cs:24</comment>
+  </data>
+  <data name="ThemeEditorDialog_SectionNames_87FC97C6B8" xml:space="preserve">
+    <value>PO 物件</value>
+    <comment>ThemeEditorDialog.cs:25</comment>
+  </data>
+  <data name="ThemeEditorDialog_SectionNames_97492A0E5D" xml:space="preserve">
+    <value>火車</value>
+    <comment>ThemeEditorDialog.cs:26</comment>
+  </data>
+  <data name="ThemeEditorDialog_SectionNames_9FC7D0CF1D" xml:space="preserve">
+    <value>地點圖示</value>
+    <comment>ThemeEditorDialog.cs:26</comment>
+  </data>
+  <data name="ThemeEditorDialog_SectionNames_A44C7BA211" xml:space="preserve">
+    <value>道路</value>
+    <comment>ThemeEditorDialog.cs:25</comment>
+  </data>
+  <data name="ThemeEditorDialog_SectionNames_AA9F217C81" xml:space="preserve">
+    <value>浮水印</value>
+    <comment>ThemeEditorDialog.cs:27</comment>
+  </data>
+  <data name="ThemeEditorDialog_SectionNames_D84EBADC9F" xml:space="preserve">
+    <value>土地使用網格</value>
+    <comment>ThemeEditorDialog.cs:24</comment>
+  </data>
+  <data name="ThemeEditorDialog_UpdateStatus_94B3E39B5C" xml:space="preserve">
+    <value>輸入無效，請修正標示的設定</value>
+    <comment>ThemeEditorDialog.cs:268</comment>
+  </data>
+  <data name="ThemeEditorDialog_View_74F45217E6" xml:space="preserve">
+    <value>編輯主題</value>
+    <comment>ThemeEditorDialog.cs:68</comment>
+  </data>
+  <data name="ThemeEditorDialog__operationStatus_5B4A1BAE39" xml:space="preserve">
+    <value>主題已載入 · 沒有修改</value>
+    <comment>ThemeEditorDialog.cs:55</comment>
+  </data>
+  <data name="ThemeEditorDialog__restore_AC9EA45E9D" xml:space="preserve">
+    <value>還原本頁</value>
+    <comment>ThemeEditorDialog.cs:51</comment>
+  </data>
+  <data name="ThemeEditorDialog__search_2874151BD3" xml:space="preserve">
+    <value>搜尋設定</value>
+    <comment>ThemeEditorDialog.cs:45</comment>
+  </data>
+  <data name="MetroSettings_Title" xml:space="preserve">
+    <value>地鐵示意圖</value>
+  </data>
+  <data name="MetroSettings_Overview" xml:space="preserve">
+    <value>概覽</value>
+  </data>
+  <data name="MetroSettings_ChooseLines" xml:space="preserve">
+    <value>選擇路線…</value>
+  </data>
+  <data name="MetroSettings_Lines" xml:space="preserve">
+    <value>路線</value>
+  </data>
+  <data name="MetroSettings_Stations" xml:space="preserve">
+    <value>車站</value>
+  </data>
+  <data name="MetroSettings_Layout" xml:space="preserve">
+    <value>版面配置</value>
+  </data>
+  <data name="MetroSettings_LineAppearance" xml:space="preserve">
+    <value>路線外觀</value>
+  </data>
+  <data name="MetroSettings_LineWidth" xml:space="preserve">
+    <value>路線粗細</value>
+  </data>
+  <data name="MetroSettings_LineOutline" xml:space="preserve">
+    <value>路線外框</value>
+  </data>
+  <data name="MetroSettings_TransitTypes" xml:space="preserve">
+    <value>交通類型</value>
+  </data>
+  <data name="MetroSettings_ParallelLines" xml:space="preserve">
+    <value>共線路線</value>
+  </data>
+  <data name="MetroSettings_ParallelGap" xml:space="preserve">
+    <value>共線間距（%）</value>
+  </data>
+  <data name="MetroSettings_ParallelHelp" xml:space="preserve">
+    <value>同一走廊內平行路線中心的間距，以路線粗細為基準；數值越大，間隔越寬。</value>
+  </data>
+  <data name="MetroSettings_StationAppearance" xml:space="preserve">
+    <value>站點外觀</value>
+  </data>
+  <data name="MetroSettings_ShowStations" xml:space="preserve">
+    <value>顯示站點</value>
+  </data>
+  <data name="MetroSettings_ShowNames" xml:space="preserve">
+    <value>顯示站名</value>
+  </data>
+  <data name="MetroSettings_StationStyle" xml:space="preserve">
+    <value>車站樣式</value>
+  </data>
+  <data name="MetroSettings_StationClassic" xml:space="preserve">
+    <value>經典站點</value>
+  </data>
+  <data name="MetroSettings_StationStandard" xml:space="preserve">
+    <value>標準圓圈</value>
+  </data>
+  <data name="MetroSettings_CircleSize" xml:space="preserve">
+    <value>圓圈大小</value>
+  </data>
+  <data name="MetroSettings_NameSize" xml:space="preserve">
+    <value>站名字體大小</value>
+  </data>
+  <data name="MetroSettings_SizeHelp" xml:space="preserve">
+    <value>圓圈、文字與光暈大小以圖片短邊 1024 像素為基準，並隨圖片尺寸等比例放大。</value>
+  </data>
+  <data name="MetroSettings_StationNames" xml:space="preserve">
+    <value>站名標籤</value>
+  </data>
+  <data name="MetroSettings_NameContent" xml:space="preserve">
+    <value>站名內容</value>
+  </data>
+  <data name="MetroSettings_AllNames" xml:space="preserve">
+    <value>所有站名</value>
+  </data>
+  <data name="MetroSettings_CustomNames" xml:space="preserve">
+    <value>僅自訂站名</value>
+  </data>
+  <data name="MetroSettings_NameLanguage" xml:space="preserve">
+    <value>語言</value>
+  </data>
+  <data name="MetroSettings_Chinese" xml:space="preserve">
+    <value>中文</value>
+  </data>
+  <data name="MetroSettings_Bilingual" xml:space="preserve">
+    <value>雙語</value>
+  </data>
+  <data name="MetroSettings_NamePosition" xml:space="preserve">
+    <value>標註位置</value>
+  </data>
+  <data name="MetroSettings_Auto" xml:space="preserve">
+    <value>自動</value>
+  </data>
+  <data name="MetroSettings_Left" xml:space="preserve">
+    <value>左側</value>
+  </data>
+  <data name="MetroSettings_Right" xml:space="preserve">
+    <value>右側</value>
+  </data>
+  <data name="MetroSettings_Font" xml:space="preserve">
+    <value>字型</value>
+  </data>
+  <data name="MetroSettings_TextColor" xml:space="preserve">
+    <value>文字顏色</value>
+  </data>
+  <data name="MetroSettings_HaloColor" xml:space="preserve">
+    <value>外框顏色</value>
+  </data>
+  <data name="MetroSettings_HaloWidth" xml:space="preserve">
+    <value>外框寬度</value>
+  </data>
+  <data name="MetroSettings_NameAppearance" xml:space="preserve">
+    <value>站名外觀</value>
+  </data>
+  <data name="MetroSettings_MergeEnabled" xml:space="preserve">
+    <value>合併鄰近停靠站</value>
+  </data>
+  <data name="MetroSettings_MergeRange" xml:space="preserve">
+    <value>合併距離（公尺）</value>
+  </data>
+  <data name="MetroSettings_MergeHelp" xml:space="preserve">
+    <value>距離內的相鄰站點會合併為一個站點，並保留原有路線連接關係。</value>
+  </data>
+  <data name="MetroSettings_StationMerge" xml:space="preserve">
+    <value>站點合併</value>
+  </data>
+  <data name="MetroSettings_ShowFacilities" xml:space="preserve">
+    <value>顯示接駁設施</value>
+  </data>
+  <data name="MetroSettings_FacilitySize" xml:space="preserve">
+    <value>接駁設施大小（%）</value>
+  </data>
+  <data name="MetroSettings_Facilities" xml:space="preserve">
+    <value>接駁設施</value>
+  </data>
+  <data name="MetroSettings_Arrangement" xml:space="preserve">
+    <value>示意配置</value>
+  </data>
+  <data name="MetroSettings_CustomSpacing" xml:space="preserve">
+    <value>自訂間距</value>
+  </data>
+  <data name="MetroSettings_StationSpacing" xml:space="preserve">
+    <value>站間距</value>
+  </data>
+  <data name="MetroSettings_Small" xml:space="preserve">
+    <value>小</value>
+  </data>
+  <data name="MetroSettings_Medium" xml:space="preserve">
+    <value>中</value>
+  </data>
+  <data name="MetroSettings_Large" xml:space="preserve">
+    <value>大</value>
+  </data>
+  <data name="MetroSettings_Custom" xml:space="preserve">
+    <value>自訂</value>
+  </data>
+  <data name="MetroSettings_SpacingHelp" xml:space="preserve">
+    <value>調整示意配置的網格與站點間距，不代表實際站間距離。</value>
+  </data>
+  <data name="MetroSettings_AdaptiveLayout" xml:space="preserve">
+    <value>自動配置</value>
+  </data>
+  <data name="MetroSettings_Background" xml:space="preserve">
+    <value>背景</value>
+  </data>
+  <data name="MetroSettings_Water" xml:space="preserve">
+    <value>顯示水域</value>
+  </data>
+  <data name="MetroSettings_WaterSmoothing" xml:space="preserve">
+    <value>岸線平滑強度</value>
+  </data>
+  <data name="MetroSettings_WaterSmoothingHelp" xml:space="preserve">
+    <value>數值越大，岸線細節越少、轉彎越平滑。0 關閉預平滑，預設 8；細河和島嶼可能限制實際強度。</value>
+  </data>
+  <data name="MetroSettings_BackgroundColor" xml:space="preserve">
+    <value>背景顏色</value>
+  </data>
+  <data name="MetroSettings_FollowTheme" xml:space="preserve">
+    <value>跟隨主題</value>
+  </data>
+  <data name="MetroSettings_CustomColor" xml:space="preserve">
+    <value>自訂顏色</value>
+  </data>
+  <data name="MetroSettings_Decorations" xml:space="preserve">
+    <value>標題與圖例</value>
+  </data>
+  <data name="MetroSettings_ShowTitle" xml:space="preserve">
+    <value>顯示標題</value>
+  </data>
+  <data name="MetroSettings_ShowLegend" xml:space="preserve">
+    <value>顯示圖例</value>
+  </data>
+  <data name="MetroSettings_TitleContent" xml:space="preserve">
+    <value>標題內容</value>
+  </data>
+  <data name="MetroSettings_TitleHelp" xml:space="preserve">
+    <value>留白以使用主題標題；支援現有標題範本格式。</value>
+  </data>
+  <data name="MetroSettings_TitleSize" xml:space="preserve">
+    <value>標題大小（%）</value>
+  </data>
+  <data name="MetroSettings_TitleDetails" xml:space="preserve">
+    <value>標題設定</value>
+  </data>
+  <data name="MetroSettings_LegendPosition" xml:space="preserve">
+    <value>圖例位置</value>
+  </data>
+  <data name="MetroSettings_TopLeft" xml:space="preserve">
+    <value>左上角</value>
+  </data>
+  <data name="MetroSettings_TopRight" xml:space="preserve">
+    <value>右上角</value>
+  </data>
+  <data name="MetroSettings_BottomLeft" xml:space="preserve">
+    <value>左下角</value>
+  </data>
+  <data name="MetroSettings_BottomRight" xml:space="preserve">
+    <value>右下角</value>
+  </data>
+  <data name="MetroSettings_LegendSize" xml:space="preserve">
+    <value>圖例大小（%）</value>
+  </data>
+  <data name="MetroSettings_LegendDetails" xml:space="preserve">
+    <value>圖例設定</value>
+  </data>
+  <data name="MetroSettings_AdaptiveStrength" xml:space="preserve">
+    <value>版面調整強度（%）</value>
+  </data>
+  <data name="MetroSettings_AdaptiveHelp" xml:space="preserve">
+    <value>調整密集區域的展開程度；數值越大，配置調整越明顯。</value>
+  </data>
+  <data name="MetroSettings_ScaleDebug" xml:space="preserve">
+    <value>顯示比例診斷</value>
+  </data>
+  <data name="MetroSettings_LayoutDetails" xml:space="preserve">
+    <value>版面詳細設定</value>
+  </data>
+  <data name="MetroSettings_disclaimer" xml:space="preserve">
+    <value>免責聲明</value>
+  </data>
+  <data name="MetroSettings_scale_info" xml:space="preserve">
+    <value>比例說明</value>
+  </data>
+  <data name="MetroSettings_data_notice" xml:space="preserve">
+    <value>資料說明</value>
+  </data>
+  <data name="MetroSettings_generated_at" xml:space="preserve">
+    <value>產生時間</value>
+  </data>
+  <data name="MetroSettings_north_arrow" xml:space="preserve">
+    <value>指北針</value>
+  </data>
+  <data name="MetroSettings_credit" xml:space="preserve">
+    <value>署名</value>
+  </data>
+  <data name="MetroSettings_Annotations" xml:space="preserve">
+    <value>註記</value>
+  </data>
+  <data name="MetroSettings_OutputSize" xml:space="preserve">
+    <value>輸出邊長</value>
+  </data>
+  <data name="MetroSettings_OutputHelp" xml:space="preserve">
+    <value>只儲存輸出尺寸，不會重新繪製。按「產生預覽」或匯出時才會套用。</value>
+  </data>
+  <data name="MetroSettings_Output" xml:space="preserve">
+    <value>輸出尺寸</value>
+  </data>
+  <data name="MetroSettings_Pixels" xml:space="preserve">
+    <value>{0} 像素</value>
+  </data>
+  <data name="MetroSettings_NumberRange" xml:space="preserve">
+    <value>{0}：請輸入介於 {1} 至 {2} 的數值。</value>
+  </data>
+  <data name="ContextRibbon_Output" xml:space="preserve">
+    <value>輸出</value>
+  </data>
+  <data name="ContextRibbon_Export" xml:space="preserve">
+    <value>匯出</value>
+  </data>
+  <data name="ContextRibbon_Close" xml:space="preserve">
+    <value>關閉檢視</value>
+  </data>
+  <data name="AppearanceControls_Toggle_On" xml:space="preserve">
+    <value>開</value>
+    <comment>ToggleSwitch state label; follows the application language.</comment>
+  </data>
+  <data name="AppearanceControls_Toggle_Off" xml:space="preserve">
+    <value>關</value>
+    <comment>ToggleSwitch state label; follows the application language.</comment>
+  </data>
+  <data name="MainWindow_Workflows_ChangeLanguageAsync_TranslationNotice" xml:space="preserve">
+    <value>簡體中文為原文，其他語言由 ChatGPT 自動翻譯，可能有不準確或不清楚的表述。</value>
+    <comment>Language picker translation information.</comment>
+  </data>
+  <data name="MainWindow_Workflows_ChangeLanguageAsync_ContributeTranslation" xml:space="preserve">
+    <value>歡迎在 GitHub 提交各語言的在地化翻譯，協助改進。</value>
+    <comment>Language picker translation information.</comment>
+  </data>
+  <data name="LanguageNotice_Title" xml:space="preserve">
+    <value>翻譯說明</value>
+  </data>
+  <data name="LanguageNotice_Close" xml:space="preserve">
+    <value>知道了</value>
+  </data>
+  <data name="PoiDensity_ExtremelySparse" xml:space="preserve">
+    <value>極少</value>
+  </data>
+  <data name="PoiDensity_VerySparse" xml:space="preserve">
+    <value>很少</value>
+  </data>
+  <data name="PoiDensity_VeryDense" xml:space="preserve">
+    <value>很多</value>
+  </data>
+  <data name="PoiDensity_ExtremelyDense" xml:space="preserve">
+    <value>極多</value>
+  </data>
+  <data name="ExportWindow_DensityHelp" xml:space="preserve">
+    <value>圖示密度會隨著解析度提高，調整此設定以避免圖示過於密集。</value>
+  </data>
+  <data name="TextIcons_RoadGameNames" xml:space="preserve">
+    <value>使用遊戲自動道路名稱</value>
+  </data>
+  <data name="TextIcons_BuildingGameNames" xml:space="preserve">
+    <value>使用遊戲自動建築名稱</value>
+  </data>
+  <data name="MainWindow_File_OpenConfigurationFolder" xml:space="preserve">
+    <value>開啟設定資料夾</value>
+  </data>
+  <data name="RmpEditor_Title" xml:space="preserve"><value>Metro diagram editor</value></data>
+  <data name="RmpEditor_Edit" xml:space="preserve"><value>Edit</value></data>
+  <data name="RmpEditor_Save" xml:space="preserve"><value>Save project</value></data>
+  <data name="RmpEditor_SaveAs" xml:space="preserve"><value>Save as…</value></data>
+  <data name="RmpEditor_Open" xml:space="preserve"><value>Open project…</value></data>
+  <data name="RmpEditor_Svg" xml:space="preserve"><value>Export SVG…</value></data>
+  <data name="RmpEditor_Png" xml:space="preserve"><value>Export PNG…</value></data>
+  <data name="RmpEditor_Regenerate" xml:space="preserve"><value>Regenerate</value></data>
+  <data name="RmpEditor_Close" xml:space="preserve"><value>Close</value></data>
+  <data name="RmpEditor_Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="RmpEditor_Discard" xml:space="preserve"><value>Discard changes</value></data>
+  <data name="RmpEditor_Unsaved" xml:space="preserve"><value>Unsaved project</value></data>
+  <data name="RmpEditor_UnsavedPrompt" xml:space="preserve"><value>Save changes before continuing?</value></data>
+  <data name="RmpEditor_Independent" xml:space="preserve"><value>Changes belong to this editor only.</value></data>
+  <data name="RmpEditor_NativeAppearance" xml:space="preserve"><value>RMP uses native symbol sizes, Noto Sans SC and opaque water colours composed over the canvas background.</value></data>
+  <data name="RmpEditor_Detached" xml:space="preserve"><value>This project is not linked to the current source map.</value></data>
+  <data name="RmpEditor_MissingAssets" xml:space="preserve"><value>RMP assets are missing. Rebuild the WinUI application.</value></data>
+  <data name="RmpEditor_LoadFailed" xml:space="preserve"><value>Unable to load the RMP editor</value></data>
+  <data name="RmpEditor_ProcessFailed" xml:space="preserve"><value>The editor process stopped. Unsaved changes could not be recovered.</value></data>
+  <data name="RmpEditor_InvalidProject" xml:space="preserve"><value>Not a supported RMP project (save version 1–77).</value></data>
+  <data name="RmpEditor_BlockedResource" xml:space="preserve"><value>An external resource was blocked by the offline editor.</value></data>
+  <data name="RmpEditor_RegeneratePrompt" xml:space="preserve"><value>Replace this draft with the automatic diagram captured when this window opened? This does not change the main window.</value></data>
+  <data name="RmpEditor_Exported" xml:space="preserve"><value>Exported:</value></data>
+  <data name="RmpEditor_MismatchPrompt" xml:space="preserve"><value>The saved project does not match its source metadata. Open it independently, or create a new draft without overwriting it?</value></data>
+  <data name="RmpEditor_OpenExisting" xml:space="preserve"><value>Open existing project</value></data>
+  <data name="RmpEditor_NewDraft" xml:space="preserve"><value>Create new draft</value></data>
+  <data name="RmpEditor_Fit" xml:space="preserve"><value>Fit diagram</value></data>
+  <data name="RmpEditor_Undo" xml:space="preserve"><value>復原</value></data>
+  <data name="RmpEditor_Redo" xml:space="preserve"><value>重做</value></data>
+  <data name="RmpEditor_Starting" xml:space="preserve"><value>正在啟動 RMP，請稍候…</value></data>
+  <data name="RmpEditor_Project" xml:space="preserve"><value>專案</value></data>
+  <data name="RmpEditor_Generate" xml:space="preserve"><value>產生</value></data>
+  <data name="RmpEditor_GenerationSettings" xml:space="preserve"><value>產生設定</value></data>
+  <data name="RmpEditor_GenerateDraft" xml:space="preserve"><value>依目前設定產生新稿</value></data>
+  <data name="RmpEditor_History" xml:space="preserve"><value>歷程</value></data>
+  <data name="RmpEditor_Draw" xml:space="preserve"><value>繪製</value></data>
+  <data name="RmpEditor_Elements" xml:space="preserve"><value>元素</value></data>
+  <data name="RmpEditor_View" xml:space="preserve"><value>檢視</value></data>
+  <data name="RmpEditor_Export" xml:space="preserve"><value>匯出</value></data>
+  <data name="RmpEditor_Select" xml:space="preserve"><value>選取</value></data>
+  <data name="RmpEditor_stations" xml:space="preserve"><value>站型</value></data>
+  <data name="RmpEditor_paths" xml:space="preserve"><value>路徑</value></data>
+  <data name="RmpEditor_styles" xml:space="preserve"><value>路線樣式</value></data>
+  <data name="RmpEditor_detailsVisible" xml:space="preserve"><value>詳細資料</value></data>
+  <data name="RmpEditor_gridLines" xml:space="preserve"><value>格線</value></data>
+  <data name="RmpEditor_snapLines" xml:space="preserve"><value>吸附</value></data>
+  <data name="RmpEditor_showWaterControls" xml:space="preserve"><value>水域控制點</value></data>
+  <data name="RmpEditor_SettingsChanged" xml:space="preserve"><value>產生設定已變更；產生新稿後生效。</value></data>
+  <data name="RmpEditor_GenerationHelp" xml:space="preserve"><value>這些設定只影響下一份初稿。目前專案的外觀可透過右側屬性面板調整。</value></data>
+  <data name="RmpEditor_GenerateRmg" xml:space="preserve"><value>從城市資料產生 RMG…</value></data>
+  <data name="RmpEditor_EmptyWorkspace" xml:space="preserve"><value>開啟 RMP 專案，或依目前設定產生新稿。</value></data>
+  <data name="ExportWindow_RmpScale" xml:space="preserve"><value>縮放比例</value></data>
+  <data name="ExportWindow_RmpTransparent" xml:space="preserve"><value>透明背景</value></data>
+  <data name="ExportWindow_RmpSvgVersion" xml:space="preserve"><value>SVG 版本</value></data>
+  <data name="ExportWindow_RmpContent" xml:space="preserve"><value>匯出目前編輯中的地鐵示意圖，包含已修改的路線、車站及其他元素。字型隨檔案嵌入。</value></data>
+  <data name="ExportWindow_RmpSvgDescription" xml:space="preserve"><value>向量圖片，可縮放與繼續編輯</value></data>
+  <data name="RmpEditor_DefaultTitle" xml:space="preserve"><value>{cityName}地鐵圖</value></data>
+  <data name="RmpEditor_AddTitle" xml:space="preserve"><value>新增標題</value></data>
+  <data name="RmpEditor_AddLegend" xml:space="preserve"><value>新增圖例</value></data>
+  <data name="RmpEditor_AddIcon" xml:space="preserve"><value>新增圖示</value></data>
+  <data name="RmpEditor_MoreDrawing" xml:space="preserve"><value>更多繪圖</value></data>
+  <data name="RmpEditor_SearchIcons" xml:space="preserve"><value>搜尋設施圖示</value></data>
+  <data name="RmpEditor_PlainText" xml:space="preserve"><value>一般文字</value></data>
+  <data name="RmpEditor_HelperPoint" xml:space="preserve"><value>輔助連接點</value></data>
+  <data name="RmpEditor_FillArea" xml:space="preserve"><value>填色區域</value></data>
+  <data name="RmpEditor_PlainTextHelp" xml:space="preserve"><value>新增備註或說明，放置後在右側輸入內容。</value></data>
+  <data name="RmpEditor_HelperPointHelp" xml:space="preserve"><value>新增非車站連接點，用於連接路線或組成區域邊界；點標記不參與匯出。</value></data>
+  <data name="RmpEditor_FillAreaHelp" xml:space="preserve"><value>放置填色節點，再在右側建立形狀或連接封閉邊界；不會點選既有區域自動填色。</value></data>
+  <data name="RmpEditor_TitlePlacement" xml:space="preserve"><value>點選畫布放置標題，然後在右側輸入內容。按 Esc 取消。</value></data>
+  <data name="RmpEditor_LegendPlacement" xml:space="preserve"><value>點選畫布放置目前路線與符號的圖例。圖例只產生一次，不會自動更新。按 Esc 取消。</value></data>
+  <data name="RmpEditor_IconPlacement" xml:space="preserve"><value>點選畫布放置所選設施圖示。按 Esc 取消。</value></data>
+  <data name="RmpEditor_CancelPlacement" xml:space="preserve"><value>取消放置</value></data>
+  <data name="RmpEditor_Apply" xml:space="preserve"><value>依目前設定產生新稿</value></data>
+  <data name="RmpEditor_ApplyWarning" xml:space="preserve"><value>重新整理會重新產生示意圖並取代目前專案，所有未儲存的內容都會遺失。請先儲存目前專案；已儲存的檔案不會因此被刪除。</value></data>
+  <data name="RmpEditor_SaveAndApply" xml:space="preserve"><value>儲存後重新整理</value></data>
+  <data name="RmpEditor_DiscardAndApply" xml:space="preserve"><value>放棄後重新整理</value></data>
+  <data name="RmpEditor_LoadedHint" xml:space="preserve"><value>點選或拖曳站點可獲得最佳效果。</value></data>
+  <data name="RmpEditor_About" xml:space="preserve"><value>關於 RMP</value></data>
+  <data name="RmpEditor_AboutCredits" xml:space="preserve"><value>© Rail Map Painter 貢獻者：thekingofcity、langonginc、Chito Wong 等。</value></data>
+  <data name="RmpEditor_AboutLicense" xml:space="preserve"><value>開源授權：GNU GPL-3.0-only</value></data>
+  <data name="RmpEditor_AboutModified" xml:space="preserve"><value>CSLModernMap 基於 Rail Map Painter 開發，修改了原生介面、城市資料產生、元素編輯與匯出功能。</value></data>
+  <data name="RmpEditor_AboutLicenseText" xml:space="preserve"><value>GNU GPL 第 3 版全文</value></data>
+  <data name="RmpEditor_AboutImageTerms" xml:space="preserve"><value>原版影像使用條款（中英文原文）</value></data>
+  <data name="RmpEditor_AboutNotices" xml:space="preserve"><value>第三方聲明</value></data>
+  <data name="PoiDirect_Title" xml:space="preserve"><value>POI 直接對應</value></data>
+  <data name="PoiDirect_Search" xml:space="preserve"><value>搜尋遊戲項目名稱或原生 ID</value></data>
+  <data name="PoiDirect_Display" xml:space="preserve"><value>顯示</value></data>
+  <data name="PoiDirect_Visible" xml:space="preserve"><value>顯示圖示</value></data>
+  <data name="PoiDirect_Hidden" xml:space="preserve"><value>隱藏圖示</value></data>
+  <data name="PoiDirect_Save" xml:space="preserve"><value>儲存</value></data>
+  <data name="PoiDirect_Cancel" xml:space="preserve"><value>取消</value></data>
+  <data name="PoiDirect_Restore" xml:space="preserve"><value>還原預設值</value></data>
+  <data name="PoiDirect_AllGames" xml:space="preserve"><value>全部遊戲</value></data>
+  <data name="PoiDirect_AllMappings" xml:space="preserve"><value>全部對應</value></data>
+  <data name="PoiDirect_Mapped" xml:space="preserve"><value>已對應</value></data>
+  <data name="PoiDirect_Unmapped" xml:space="preserve"><value>未對應</value></data>
+  <data name="PoiDirect_EmptyHelp" xml:space="preserve"><value>點選圖片選擇對應圖庫中的 PNG。未選擇圖片的項目不繪製圖示。還原預設值只修改目前草稿，儲存後生效。</value></data>
+  <data name="PoiDirect_Mapping" xml:space="preserve"><value>對應</value></data>
+  <data name="PoiDirect_ImagesDisplay" xml:space="preserve"><value>圖示與顯示</value></data>
+  <data name="PoiDirect_ImageSearch" xml:space="preserve"><value>搜尋圖片名稱或檔案名稱</value></data>
+  <data name="PoiDirect_NoImage" xml:space="preserve"><value>不繪製圖示</value></data>
+  <data name="PoiDirect_Count" xml:space="preserve"><value>{0} 個項目，{1} 項未儲存修改</value></data>
+<data name="Poi_Area" xml:space="preserve"><value>功能區</value></data>
+  <data name="Poi_AreaIcons" xml:space="preserve"><value>功能區圖示</value></data>
+  <data name="Poi_AreaNames" xml:space="preserve"><value>功能區名稱</value></data>
+  <data name="Poi_AreaDescription" xml:space="preserve"><value>遊戲匯出的功能區域及其名稱。</value></data>
+  <data name="Poi_PngInternalBuildings" xml:space="preserve"><value>PNG 顯示功能區內部建築圖示</value></data>
+</root>

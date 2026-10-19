@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; worker-src 'self' blob:; connect-src 'self'" />
+    <title>CSLModernMap Preview</title>
+    <script type="module" src="/src/ui-appearance.ts"></script>
+  </head>
+  <body>
+    <div id="map"></div>
+    <div id="selection" aria-hidden="true"></div>
+    <!-- 只在预览出错时出现（见 main.ts 的 setError）。空且隐藏，免得开场
+         就在左下角压住比例尺。 -->
+    <div id="status" hidden></div>
+    <!-- 地图画出来后的一次性操作提示（见 main.ts 的 showHint）。文案由宿主
+         翻译好传进来；几秒后自己淡出，用户一动地图也立刻收。 -->
+    <div id="hint" hidden></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

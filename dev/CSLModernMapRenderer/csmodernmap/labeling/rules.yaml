@@ -1,0 +1,84 @@
+schema_version: label-rules-v1
+views: [normal, transit, metro, svg, web_tile]
+
+# Every row is a frozen legacy condition.  The implementation uses this file
+# as the only visibility source for registered label kinds.
+rules:
+  - view: normal
+    policy_source: auto
+    items:
+      - type: ROAD_NAME
+        levels:
+          - {value: AUTO, detail_min: 0, detail_max: 0, legacy_source: "label_layer.LabelLayer.render: _lvl<3 + detail_policy.show_road_names"}
+          - {value: OFF, detail_min: 1, detail_max: 3, legacy_source: "detail._legacy_auto_policy: L>=1 show_road_names=False"}
+      - type: PARK_NAME
+        levels:
+          - {value: AUTO, detail_min: 0, detail_max: 0, legacy_source: "label_layer.LabelLayer.render: _lvl<3 + detail_policy.show_park_names"}
+          - {value: OFF, detail_min: 1, detail_max: 3, legacy_source: "detail._legacy_auto_policy: L>=1 show_park_names=False"}
+      - type: DISTRICT_NAME
+        levels:
+          - {value: AUTO, detail_min: 0, detail_max: 2, legacy_source: "label_layer.LabelLayer.render: _lvl<3 (district has no show policy gate)"}
+          - {value: OFF, detail_min: 3, detail_max: 3, legacy_source: "label_layer.LabelLayer.render: _lvl<3"}
+  - view: normal
+    policy_source: manual
+    items:
+      - type: ROAD_NAME
+        levels:
+          - {value: AUTO, detail_min: 0, detail_max: 2, legacy_source: "detail._policy_for_level: manual L0..L2 show_road_names=True"}
+          - {value: OFF, detail_min: 3, detail_max: 3, legacy_source: "label_layer.LabelLayer.render: _lvl<3"}
+      - type: PARK_NAME
+        levels:
+          - {value: AUTO, detail_min: 0, detail_max: 1, legacy_source: "detail._policy_for_level: manual L0..L1 show_park_names=True"}
+          - {value: OFF, detail_min: 2, detail_max: 3, legacy_source: "detail._policy_for_level: manual L2 show_park_names=False / _lvl<3"}
+      - type: DISTRICT_NAME
+        levels:
+          - {value: AUTO, detail_min: 0, detail_max: 2, legacy_source: "label_layer.LabelLayer.render: _lvl<3 (district has no show policy gate)"}
+          - {value: OFF, detail_min: 3, detail_max: 3, legacy_source: "label_layer.LabelLayer.render: _lvl<3"}
+  - view: transit
+    policy_source: auto
+    items:
+      - {type: ROAD_NAME, value: OFF, legacy_source: "T06 migration keeps transit base on normal renderer; V1 transit-base cutover is T06 follow-up/M3"}
+      - {type: PARK_NAME, value: OFF, legacy_source: "T06 migration keeps transit base on normal renderer; V1 transit-base cutover is T06 follow-up/M3"}
+      - {type: DISTRICT_NAME, value: OFF, legacy_source: "T06 migration keeps transit base on normal renderer; V1 transit-base cutover is T06 follow-up/M3"}
+  - view: transit
+    policy_source: manual
+    items:
+      - {type: ROAD_NAME, value: OFF, legacy_source: "T06 migration keeps transit base on normal renderer; V1 transit-base cutover is T06 follow-up/M3"}
+      - {type: PARK_NAME, value: OFF, legacy_source: "T06 migration keeps transit base on normal renderer; V1 transit-base cutover is T06 follow-up/M3"}
+      - {type: DISTRICT_NAME, value: OFF, legacy_source: "T06 migration keeps transit base on normal renderer; V1 transit-base cutover is T06 follow-up/M3"}
+  - view: metro
+    policy_source: auto
+    items:
+      - {type: ROAD_NAME, value: OFF, legacy_source: "main.cmd_metro: LabelLayer is not assembled"}
+      - {type: PARK_NAME, value: OFF, legacy_source: "main.cmd_metro: LabelLayer is not assembled"}
+      - {type: DISTRICT_NAME, value: OFF, legacy_source: "main.cmd_metro: LabelLayer is not assembled"}
+  - view: metro
+    policy_source: manual
+    items:
+      - {type: ROAD_NAME, value: OFF, legacy_source: "main.cmd_metro: LabelLayer is not assembled"}
+      - {type: PARK_NAME, value: OFF, legacy_source: "main.cmd_metro: LabelLayer is not assembled"}
+      - {type: DISTRICT_NAME, value: OFF, legacy_source: "main.cmd_metro: LabelLayer is not assembled"}
+  - view: svg
+    policy_source: auto
+    items:
+      - {type: ROAD_NAME, value: AUTO, detail_min: 0, detail_max: 3, legacy_source: "svg_export.label_elements: lod_mask/data-name-z (M4 adapter)"}
+      - {type: PARK_NAME, value: AUTO, detail_min: 0, detail_max: 3, legacy_source: "svg_export.label_elements: park lod_mask (M4 adapter)"}
+      - {type: DISTRICT_NAME, value: AUTO, detail_min: 0, detail_max: 3, legacy_source: "svg_export.label_elements: district lod_mask (M4 adapter)"}
+  - view: svg
+    policy_source: manual
+    items:
+      - {type: ROAD_NAME, value: AUTO, detail_min: 0, detail_max: 3, legacy_source: "svg_export.label_elements: lod_mask/data-name-z (M4 adapter)"}
+      - {type: PARK_NAME, value: AUTO, detail_min: 0, detail_max: 3, legacy_source: "svg_export.label_elements: park lod_mask (M4 adapter)"}
+      - {type: DISTRICT_NAME, value: AUTO, detail_min: 0, detail_max: 3, legacy_source: "svg_export.label_elements: district lod_mask (M4 adapter)"}
+  - view: web_tile
+    policy_source: auto
+    items:
+      - {type: ROAD_NAME, value: AUTO, detail_min: 0, detail_max: 3, legacy_source: "label_layer/svg_export unified label pipeline"}
+      - {type: PARK_NAME, value: AUTO, detail_min: 0, detail_max: 3, legacy_source: "label_layer/svg_export unified label pipeline"}
+      - {type: DISTRICT_NAME, value: AUTO, detail_min: 0, detail_max: 3, legacy_source: "label_layer/svg_export unified label pipeline"}
+  - view: web_tile
+    policy_source: manual
+    items:
+      - {type: ROAD_NAME, value: AUTO, detail_min: 0, detail_max: 3, legacy_source: "label_layer/svg_export unified label pipeline"}
+      - {type: PARK_NAME, value: AUTO, detail_min: 0, detail_max: 3, legacy_source: "label_layer/svg_export unified label pipeline"}
+      - {type: DISTRICT_NAME, value: AUTO, detail_min: 0, detail_max: 3, legacy_source: "label_layer/svg_export unified label pipeline"}

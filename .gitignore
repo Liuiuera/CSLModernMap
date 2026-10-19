@@ -1,0 +1,91 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+*.egg-info/
+.coverage
+htmlcov/
+
+# 构建/发行产物（可再生，不入库）
+build/
+*.zip
+dev/CSLModernMapRenderer/dist/
+dev/CSLModernMapRenderer/build/
+dev/CSLModernMapRenderer/web_cache/
+dev/CSLModernMapRenderer/viewer/node_modules/
+dev/CSLModernMapRenderer/viewer/dist/
+dev/CSLModernMapRenderer/settings.json
+dev/CSLModernMapRenderer/cache/
+dev/CSLModernMapRenderer/artifacts/
+dev/CSLModernMapRenderer/performance_logs/
+
+# 运行时/临时产物
+*.log
+*.dmp
+settings.json
+release_gui_state.json
+dev/CSLModernMapRenderer/tmp_*
+dev/CSLModernMapRenderer/.tmp_csize/
+
+# 编辑器 / IDE 产物
+.vscode/
+.idea/
+.vs/
+*.csproj.user
+*.pubxml.user
+
+# macOS
+.DS_Store
+
+# 临时/可再生产物
+.codex_tmp/
+.pytest_cache/
+.tmp/
+
+# 历史资料与大体积样本（不入编译仓库）
+archive/
+assets/存档/
+
+# 工作区工具目录（会话记忆与临时探针产物，不入编译仓库）
+.workbuddy/
+
+# WinUI 构建与本地测试产物
+dev/CSLModernMapRenderer/winui/bin/
+dev/CSLModernMapRenderer/winui/obj/
+dev/CSLModernMapRenderer/winui/dist/
+_codex_tmp/
+syncfusion.license
+
+# 渲染器与测试产物
+dev/CSLModernMapRenderer/*_map.html
+dev/CSLModernMapRenderer/*_*.png
+dev/CSLModernMapRenderer/*.mmap.gz
+dev/CSLModernMapRenderer/resources/*.mmap.gz
+tools/renderer/nuitka-crash-report.xml
+tools/renderer/**/metro_real_out.png
+
+# Local dependencies, credentials and generated files
+bin/
+obj/
+node_modules/
+dist/
+dist-embed/
+*.pdb
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+*.snk
+*.license
+.codex/
+.dsh/
+.design/
+.qoder/
+.trae/
+AGENTS.local.md
+AI_CONTEXT.md
+dev/CSLModernMapRenderer/custom_fonts/

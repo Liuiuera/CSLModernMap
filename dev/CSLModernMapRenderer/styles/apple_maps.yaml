@@ -1,0 +1,389 @@
+name: 轻简现代
+description: 一种现代化、优雅美观的地图风格。
+canvas:
+  width: 4096
+  height: 4096
+  background: '#EBF0CF'
+terrain:
+  elevation_colors:
+  - threshold: 0
+    color: '#EBF0CF'
+  - threshold: 80
+    color: '#EBF0CF'
+  - threshold: 220
+    color: '#E0F0C2'
+  - threshold: 600
+    color: '#C9E8B3'
+  elevation_mode: continuous
+  hillshade:
+    enabled: false
+    intensity: 0.3
+    azimuth: 315.0
+    altitude: 45.0
+    large_scale_meters: 320.0
+    small_scale_meters: 0.0
+    large_scale_weight: 0.35
+    small_scale_weight: 0.65
+water:
+  color: '#8DDBF6'
+  border: '#72C3E2'
+  border_width: 1
+built_area:
+  enabled: true
+  cell_meters: 8.0
+  color: '#F1F0EB'
+  buffer_meters: 60.0
+  smooth_blur: 2.0
+  smooth_iters: 6
+  contour_upscale: 2
+forest:
+  color: '#BFE89D'
+land_use:
+  enabled: false
+  detail: base
+  cell_meters: 16.0
+  smooth_blur: 1.5
+  smooth_iters: 3
+  contour_upscale: 2
+  alpha: 110
+  colors:
+    green: '#D6ECB4'
+    public: '#EAEAE6'
+    residential: '#F1F0EB'
+    industrial: '#E4E3E9'
+    office: '#DFE6EF'
+    publictransport: '#D6E8DE'
+    commercial: '#EFE3D8'
+district:
+  enabled: false
+  border: '#A6A6AD'
+  border_width:
+    fixed: 1.0
+    scaled: 0.5
+  fill_alpha: 115
+  fill_colors:
+  - '#E0E9D6'
+  - '#EAE7DA'
+  - '#D9E1EB'
+  - '#E6DCE8'
+  - '#E8E6D2'
+  - '#D5E6E3'
+  - '#EADAD6'
+  - '#DDD7E8'
+  smooth_blur: 1.0
+  smooth_iters: 3
+  contour_upscale: 2
+zone:
+  enabled: true
+  border: '#A89880'
+  border_width: 0
+  fill_alpha: 255
+  fill: '#E0DFDA'
+  smooth_blur: 1.0
+  smooth_iters: 3
+  contour_upscale: 2
+roads:
+  highway:
+    fill: '#B3B7C3'
+    border: '#9BA0AD'
+    border_width:
+      fixed: 0.3
+      scaled: 1.2
+    min_fill_px: 1.8
+  primary:
+    fill: '#E0E3E6'
+    border: '#CBCECE'
+    border_width:
+      fixed: 0.25
+      scaled: 0.95
+  secondary:
+    fill: '#FEFEFE'
+    border: '#DCDCD8'
+    border_width:
+      fixed: 0.2
+      scaled: 0.8
+  tertiary:
+    fill: '#FFFFFF'
+    border: '#E3E3DE'
+    border_width:
+      fixed: 0.15
+      scaled: 0.65
+  pedestrian:
+    fill: '#E6E5DD'
+    border: '#D5D5CE'
+    border_width:
+      fixed: 0.1
+      scaled: 0.4
+  width_scale: 0.15
+  main:
+    fill: '#E0E3E6'
+    border: '#CBCECE'
+    border_width:
+      fixed: 0.25
+      scaled: 0.95
+    min_fill_px: 1.4
+  branch:
+    fill: '#FFFFFF'
+    border: '#E3E3DE'
+    border_width:
+      fixed: 0.15
+      scaled: 0.65
+    min_fill_px: 0.8
+  special:
+    fill: '#FFFFFF'
+    border: '#C3C8D2'
+    min_fill_px: 0.8
+    border_width: 1.0
+  beautification:
+    fill: '#E6E5DD'
+    border: '#D5D5CE'
+    border_width:
+      fixed: 0.1
+      scaled: 0.4
+    min_fill_px: 0.5
+buildings:
+  default: '#ECECE8'
+  border: '#CECEC8'
+  border_width:
+    fixed: 0.2
+    scaled: 0.8
+  shadow:
+    enabled: true
+    offset:
+    - 2
+    - 2
+    color: '#00000012'
+procedural_objects:
+  colors:
+    geometry: '#DEDED8'
+    building: '#EAEAE5'
+    prop: '#E0E0D9'
+    tree: '#AFDC8C'
+    street_furn: '#D8D8D1'
+    sign: '#D9BE8A'
+    unknown: '#DCDCD5'
+  border: '#BDBDB5'
+  border_width:
+    fixed: 0.2
+    scaled: 0.7
+  custom_color_alpha: 0.85
+railway:
+  train:
+    line: '#E1E1DE'
+    dash: '#87878C'
+transports:
+  enabled:
+  - Metro
+  - Train
+  - Monorail
+  - Tram
+  - CableCar
+  - Ship
+  - Ferry
+  - Bus
+  - Trolleybus
+  - Airplane
+  - Helicopter
+  auto_color: false
+  width:
+    fixed: 0.5
+    scaled: 2.05
+  smooth: 10
+  transit_view:
+    mask_intensity: 0.6
+  types:
+    Metro:
+      width:
+        fixed: 0.5
+        scaled: 2.05
+      dash: []
+    Train:
+      width:
+        fixed: 0.5
+        scaled: 2.2
+      dash: []
+    Monorail:
+      width:
+        fixed: 0.4
+        scaled: 1.85
+      dash: []
+    Tram:
+      width:
+        fixed: 0.4
+        scaled: 1.7
+      dash: []
+    CableCar:
+      width:
+        fixed: 0.4
+        scaled: 1.7
+      dash: []
+    Ship:
+      width:
+        fixed: 0.45
+        scaled: 1.875
+      dash:
+      - 8
+      - 6
+      color: '#3F7FBF'
+    Ferry:
+      width:
+        fixed: 0.45
+        scaled: 1.875
+      dash:
+      - 8
+      - 6
+      color: '#3F7FBF'
+    Bus:
+      width:
+        fixed: 0.35
+        scaled: 1.525
+      dash: []
+      color: '#5C6670'
+    Trolleybus:
+      width:
+        fixed: 0.35
+        scaled: 1.525
+      dash:
+      - 4
+      - 4
+      color: '#7C8590'
+    Airplane:
+      width:
+        fixed: 0.4
+        scaled: 1.7
+      dash:
+      - 10
+      - 8
+      color: '#8F98A6'
+    Helicopter:
+      width:
+        fixed: 0.3
+        scaled: 1.35
+      dash:
+      - 6
+      - 6
+      color: '#8F98A6'
+  label:
+    enabled: true
+    font: SimHei
+    min_zoom: 0.5
+    size:
+      fixed: 8.0
+      scaled: 6.0
+    padding:
+      fixed: 5.0
+      scaled: 3.5
+    border_width:
+      fixed: 0.9
+      scaled: 0.6
+    bg: '#FFFFFF'
+    repeat_interval: 600
+    min_gap: 350
+    max_per_line: 4
+poi_icons:
+  enabled: true
+  icons_dir: cn_icons
+  icon_size:
+    # 对齐 amap 的 fixed+scaled 配比：4096 基准仍在 24px，但高分辨率下放缓增长，
+    # 避免区域放大/高分辨率时图标涨得比文字快（POI 过大、名称相对过小）。
+    fixed: 20.0
+    scaled: 4.0
+  grid_size:
+    fixed: 100.0
+    scaled: 20.0
+  max_per_cell: 2
+  min_priority: 10
+  bg_circle: false
+  bg_circle_size:
+    fixed: 28.0
+    scaled: 6.0
+  show_name: true
+  name_size:
+    fixed: 11.0
+    scaled: 2.0
+  name_offset: 3
+  merge_enabled: true
+  merge_distance: 48.0
+  # Derived from real building footprints and absolute ParkGrid coordinates.
+  # ``same_facility_merge`` remains a GUI compatibility alias.
+  facility_hierarchy:
+    enabled: true
+    children_enabled: true
+    child_min_zoom: 1.0
+    area_labels_enabled: true
+  transit_view_scale: 1.15
+  categories: []
+  # 当前道路标记图标不适合本主题，默认不绘制。
+  hidden_categories: [traffic_light, highway_entrance, highway_exit]
+labels:
+  district:
+    font: PingFang SC
+    size:
+      # 对齐 amap 的区划字号：fixed/scaled 略大于原值，保证高分辨率下名称不显小。
+      fixed: 2.4
+      scaled: 18.0
+    color: '#344054'
+    stroke: '#FFFFFF'
+    stroke_width:
+      fixed: 0.8
+      scaled: 2.4
+    bold: true
+  road:
+    font: PingFang SC
+    size:
+      fixed: 1.0
+      scaled: 6.0
+    color: '#667085'
+    stroke: '#FFFFFF'
+    stroke_width:
+      fixed: 0.2
+      scaled: 0.8
+  building:
+    font: PingFang SC
+    size:
+      fixed: 2.0
+      scaled: 14.0
+    color: '#7B8490'
+  park:
+    font: PingFang SC
+    size:
+      fixed: 2.0
+      scaled: 12.0
+    color: '#557D52'
+    stroke: '#FFFFFF'
+    stroke_width: 1.5
+  stop:
+    font: PingFang SC
+    size:
+      fixed: 2.0
+      scaled: 18.0
+    color: '#2F6FA3'
+watermark:
+  enabled: true
+  mod_name: CSLModernMap
+  font: PingFang SC
+  position: left_bottom
+  font_size:
+    fixed: 11
+    scaled: 1.5
+  separator: ' · '
+  margin:
+    x: 20
+    y: 20
+  padding:
+    x: 12
+    y: 6
+  border_radius: 6
+  background: transparent
+  time_format: '%Y-%m-%d %H:%M:%S'
+  city_color: '#1D1D1F'
+  info_color: '#3A3A3C'
+  meta_color: '#8E8E93'
+  content:
+    mod_name: true
+    city_name: true
+    render_time: true
+    style_name: true
+    resolution: true
+    traffic_time: true
+    custom_text: false

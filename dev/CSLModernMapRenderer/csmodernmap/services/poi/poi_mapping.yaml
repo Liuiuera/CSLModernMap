@@ -1,0 +1,1346 @@
+# POI 映射注册表
+#
+# 这是 POI 编辑器的核心数据文件。每个 BuildingAI 类型都有显式映射记录，
+# 定义其对应的 POI 语义类型和图标。按建筑族分组，便于维护。
+#
+# 使用方式：
+# 1. 游戏更新后运行 TypeInventoryExtractor 更新 building_type_inventory.yaml
+# 2. 在此文件中添加新类型的映射
+# 3. 新增图标时在 poi_kinds 中添加定义，并在对应图标库的
+#    将新 icon_key 映射到精灵图坐标
+#
+# 显示策略：
+#   visible       - 正常显示 POI
+#   hidden        - 已识别但不显示（如系统性建筑）
+#   inherit_parent - 附属建筑不单独显示，继承主建筑 POI
+#
+# 父建筑策略：
+#   standalone    - 独立显示
+#   inherit       - 有父建筑时继承，无父建筑时独立显示
+#   sub_only      - 仅作为子建筑出现时才显示
+
+schema_version: 1
+
+# 当前导出器 icls=info.m_class.name，不是 m_buildingAI 的类型名。
+# 按真实存档字段精确匹配；不使用名字子串、正则或全局默认分类。
+item_classes:
+  HealthCare Facility: hospital
+  Hospital Facility: hospital
+  Medical Clinic: clinic
+  Childcare Facility: childcare
+  Eldercare Facility: eldercare
+  Cemetery Facility: cemetery
+  Crematorium Facility: cemetery
+  Sauna Facility: sauna
+  Fire Department Facility: fire_station
+  Firewatch: fire_watch
+  Fire Helicopter: helicopter
+  Police Department Facility: police
+  Police Helicopter: police
+  Prison Facility: prison
+  Elementary School: school
+  High School: middle_school
+  University: university
+  Library: library
+  Metro Facility: metro
+  Train Facility: train
+  Train Cargo Facility: cargo_train
+  Ship Facility: ship
+  Ship Cargo Facility: cargo_harbor
+  Airplane Facility: airport
+  Airplane Cargo Facility: airport
+  Airplane Facility Small Gate: airport
+  Airplane Facility Large Gate: airport
+  Bus Facility: bus
+  Intercity Bus: bus
+  Monorail Facility: monorail
+  Tram Facility: tram
+  Cable Car Facility: cable_car
+  Taxi Facility: taxi
+  Post Facility: post
+  Electricity Wind Turbine: wind_turbine
+  Electricity Facility: power_plant
+  Water Facility: water_supply
+  Garbage Facility: garbage
+  Snow Facility: snow_dump
+  Warehouses: warehouse
+  Parks Item: park_building
+  Monument Facility: monument
+  Aviation Club: private_airport
+  Space Elevator: space_elevator
+  Service Point: road_maintenance
+  Hotel: hotel
+  Beautification Item: null
+  Beautification Marker: null
+  Airplane Decoration: null
+  Ship Path: null
+  Airplane Path: null
+  Metro Track: null
+  Train Track: null
+  Monorail Track: null
+
+# srv/subsrv 是游戏导出的语义枚举，可直接分类普通分区建筑与模组设施。
+sub_services:
+  PublicTransportConcourse: concourse
+  PoliceDepartmentBank: police_bank
+  PlayerEducationTradeSchool: trade_school
+  PlayerEducationUniversity: university
+  OfficeFinancial: office
+  IndustrialForestry: forestry
+  IndustrialFarming: farming
+  IndustrialOre: mining
+  IndustrialOil: oil
+  PlayerIndustryForestry: forestry
+  PlayerIndustryFarming: farming
+  PlayerIndustryOre: mining
+  PlayerIndustryOil: oil
+  PublicTransportMetro: metro
+  PublicTransportTrain: train
+  PublicTransportShip: ship
+  PublicTransportPlane: airport
+  PublicTransportBus: bus
+  PublicTransportMonorail: monorail
+  PublicTransportTram: tram
+  PublicTransportCableCar: cable_car
+  PublicTransportTaxi: taxi
+  PublicTransportPost: post
+  PublicTransportTrolleybus: trolleybus
+  PublicTransportTours: tours
+  BeautificationParks: park_building
+services:
+  Residential: residential
+  Commercial: commercial
+  Office: office
+  Industrial: industry
+  PlayerIndustry: industry
+  HealthCare: healthcare_generic
+  FireDepartment: fire_generic
+  PoliceDepartment: police_generic
+  Education: education_generic
+  PlayerEducation: campus_building
+  Electricity: power_generic
+  Water: water_generic
+  Garbage: garbage_generic
+  Monument: monument_generic
+  Museums: museum
+  VarsitySports: stadium
+  Disaster: disaster_generic
+  Fishing: fishing_harbor
+  ServicePoint: road_maintenance
+  Hotel: hotel
+  Race: race
+
+# 仅在真实 ParkGrid 归属已经确定后生效的窄范围兼容规则。
+# 不得把同名对象在机场外的 Electricity Facility 全局改类。
+area_overrides:
+  - area_kind: airport
+    name_exact: "Concourse Node Building"
+    poi_kind: airport
+    display: hidden
+    parent: inherit
+
+# ====================================================================
+# POI 语义类型定义
+# ====================================================================
+# 每个类型对应一个图标键（icon_key），由 icons_map.json 映射到精灵图。
+# 优先顺序由 priority 控制（高 = 优先显示）。
+# 数值表达地图显著性而非游戏服务重要性：城市锚点 80–96、重要公共
+# 设施 65–88、玩家规划产业/基础设施 45–68、普通城市肌理 30–50。
+# 玩家自定义名称在密度选择器中独立置顶，不依赖这里的基础数值。
+# ====================================================================
+poi_kinds:
+  # ---- 医疗 ----
+  hospital:
+    label_zh: "医院"
+    icon_key: "hospital"
+    priority: 88
+    min_zoom: 0.20
+  clinic:
+    label_zh: "诊所/医疗中心"
+    icon_key: "clinic"
+    priority: 76
+    min_zoom: 0.20
+  childcare:
+    label_zh: "儿童保健"
+    icon_key: "childcare"
+    priority: 64
+    min_zoom: 0.20
+  eldercare:
+    label_zh: "老年保健"
+    icon_key: "eldercare"
+    priority: 62
+    min_zoom: 0.20
+  cemetery:
+    label_zh: "墓园"
+    icon_key: "cemetery"
+    priority: 56
+    min_zoom: 0.20
+  sauna:
+    label_zh: "桑拿"
+    icon_key: "sauna"
+    priority: 40
+    min_zoom: 0.80
+
+  # ---- 应急 ----
+  fire_station:
+    label_zh: "消防站"
+    icon_key: "fire_station"
+    priority: 68
+    min_zoom: 0.20
+  fire_watch:
+    label_zh: "消防瞭望塔"
+    icon_key: "fire_watch"
+    priority: 54
+    min_zoom: 0.20
+  police:
+    label_zh: "警局"
+    icon_key: "police"
+    priority: 72
+    min_zoom: 0.20
+  police_bank:
+    label_zh: "银行警务"
+    icon_key: "police_bank"
+    priority: 60
+    min_zoom: 0.20
+  disaster_response:
+    label_zh: "灾害响应"
+    icon_key: "disaster_response"
+    priority: 84
+    min_zoom: 0.20
+  shelter:
+    label_zh: "避难所"
+    icon_key: "shelter"
+    priority: 74
+    min_zoom: 0.20
+
+  # ---- 教育 ----
+  school:
+    label_zh: "学校"
+    icon_key: "school"
+    priority: 70
+    min_zoom: 0.20
+  middle_school:
+    label_zh: "中学"
+    icon_key: "middle_school"
+    priority: 68
+    min_zoom: 0.20
+  library:
+    label_zh: "图书馆"
+    icon_key: "library"
+    priority: 66
+    min_zoom: 0.20
+  university:
+    label_zh: "大学"
+    icon_key: "university"
+    priority: 82
+    min_zoom: 0.20
+  campus_building:
+    label_zh: "校园建筑"
+    icon_key: "campus_building"
+    priority: 55
+    min_zoom: 0.20
+  trade_school:
+    label_zh: "职业学校"
+    icon_key: "trade_school"
+    priority: 64
+    min_zoom: 0.20
+  research:
+    label_zh: "研究设施"
+    icon_key: "research"
+    priority: 70
+    min_zoom: 0.20
+
+  # ---- 交通 ----
+  bus:
+    label_zh: "公交站"
+    icon_key: "bus"
+    priority: 62
+    min_zoom: 0.80
+  metro:
+    label_zh: "地铁站"
+    icon_key: "metro"
+    priority: 84
+    min_zoom: 0.20
+  train:
+    label_zh: "火车站"
+    icon_key: "train"
+    priority: 94
+    min_zoom: 0.10
+  ship:
+    label_zh: "码头"
+    icon_key: "ship"
+    priority: 82
+    min_zoom: 0.10
+  airport:
+    label_zh: "机场"
+    icon_key: "airport"
+    priority: 96
+    min_zoom: 0.10
+  monorail:
+    label_zh: "单轨"
+    icon_key: "monorail"
+    priority: 76
+    min_zoom: 0.20
+  tram:
+    label_zh: "有轨电车"
+    icon_key: "tram"
+    priority: 72
+    min_zoom: 0.40
+  cable_car:
+    label_zh: "缆车"
+    icon_key: "cable_car"
+    priority: 68
+    min_zoom: 0.40
+  taxi:
+    label_zh: "出租车"
+    icon_key: "taxi"
+    priority: 42
+    min_zoom: 0.80
+  helicopter:
+    label_zh: "直升机"
+    icon_key: "helicopter"
+    priority: 70
+    min_zoom: 0.40
+  post:
+    label_zh: "邮局"
+    icon_key: "post"
+    priority: 48
+    min_zoom: 0.80
+  trolleybus:
+    label_zh: "无轨电车"
+    icon_key: "trolleybus"
+    priority: 60
+    min_zoom: 0.80
+  tours:
+    label_zh: "观光交通"
+    icon_key: "tours"
+    priority: 56
+    min_zoom: 0.80
+  concourse:
+    label_zh: "换乘大厅"
+    icon_key: "concourse"
+    priority: 80
+    min_zoom: 0.20
+  cargo_harbor:
+    label_zh: "货运港口"
+    icon_key: "cargo_harbor"
+    priority: 78
+    min_zoom: 0.20
+  cargo_train:
+    label_zh: "货运火车站"
+    icon_key: "cargo_train"
+    priority: 84
+    min_zoom: 0.20
+
+  # ---- 市政公用 ----
+  power_plant:
+    label_zh: "发电厂"
+    icon_key: "power_plant"
+    priority: 60
+    min_zoom: 0.80
+  wind_turbine:
+    label_zh: "风力发电"
+    icon_key: "wind_turbine"
+    priority: 50
+    min_zoom: 0.80
+  water_supply:
+    label_zh: "供水"
+    icon_key: "water_supply"
+    priority: 58
+    min_zoom: 0.80
+  sewage:
+    label_zh: "污水处理"
+    icon_key: "sewage"
+    priority: 56
+    min_zoom: 0.80
+  garbage:
+    label_zh: "垃圾处理"
+    icon_key: "garbage"
+    priority: 54
+    min_zoom: 0.80
+  recycling:
+    label_zh: "回收站"
+    icon_key: "recycling"
+    priority: 50
+    min_zoom: 0.80
+  heating:
+    label_zh: "供热"
+    icon_key: "heating"
+    priority: 52
+    min_zoom: 0.80
+  road_maintenance:
+    label_zh: "道路养护"
+    icon_key: "road_maintenance"
+    priority: 48
+    min_zoom: 0.80
+  snow_dump:
+    label_zh: "堆雪场"
+    icon_key: "snow_dump"
+    priority: 44
+    min_zoom: 0.80
+  tsunami_buoy:
+    label_zh: "海啸浮标"
+    icon_key: "tsunami_buoy"
+    priority: 46
+    min_zoom: 0.80
+  weather_radar:
+    label_zh: "气象雷达"
+    icon_key: "weather_radar"
+    priority: 46
+    min_zoom: 0.80
+  earthquake_sensor:
+    label_zh: "地震传感器"
+    icon_key: "earthquake_sensor"
+    priority: 46
+    min_zoom: 0.80
+  space_radar:
+    label_zh: "太空雷达"
+    icon_key: "space_radar"
+    priority: 45
+    min_zoom: 0.80
+  space_elevator:
+    label_zh: "太空电梯"
+    icon_key: "space_elevator"
+    priority: 64
+    min_zoom: 0.80
+  doomsday_vault:
+    label_zh: "末日地堡"
+    icon_key: "doomsday_vault"
+    priority: 58
+    min_zoom: 0.80
+  fusion_power:
+    label_zh: "核聚变发电"
+    icon_key: "fusion_power"
+    priority: 68
+    min_zoom: 0.80
+  radio_mast:
+    label_zh: "无线电塔"
+    icon_key: "radio_mast"
+    priority: 45
+    min_zoom: 0.80
+
+  # ---- 产业 ----
+  industry:
+    label_zh: "工业"
+    icon_key: "industry"
+    priority: 56
+    min_zoom: 0.80
+  farming:
+    label_zh: "农业"
+    icon_key: "farming"
+    priority: 52
+    min_zoom: 0.80
+  forestry:
+    label_zh: "林业"
+    icon_key: "forestry"
+    priority: 52
+    min_zoom: 0.80
+  mining:
+    label_zh: "矿业"
+    icon_key: "mining"
+    priority: 54
+    min_zoom: 0.80
+  oil:
+    label_zh: "石油"
+    icon_key: "oil"
+    priority: 54
+    min_zoom: 0.80
+  warehouse:
+    label_zh: "仓库"
+    icon_key: "warehouse"
+    priority: 48
+    min_zoom: 0.80
+  processing:
+    label_zh: "加工厂"
+    icon_key: "processing"
+    priority: 58
+    min_zoom: 0.80
+  unique_factory:
+    label_zh: "独特工厂"
+    icon_key: "unique_factory"
+    priority: 66
+    min_zoom: 0.80
+  fishing_harbor:
+    label_zh: "渔港"
+    icon_key: "fishing_harbor"
+    priority: 60
+    min_zoom: 0.40
+  fish_farm:
+    label_zh: "渔场"
+    icon_key: "fish_farm"
+    priority: 46
+    min_zoom: 0.80
+  livestock:
+    label_zh: "畜牧场"
+    icon_key: "livestock"
+    priority: 46
+    min_zoom: 0.80
+  extraction_dummy:
+    label_zh: "采集点"
+    icon_key: "extraction_dummy"
+    priority: 40
+    min_zoom: 0.80
+
+  # ---- 商业办公 ----
+  commercial:
+    label_zh: "商业"
+    icon_key: "commercial"
+    priority: 46
+    min_zoom: 0.80
+  office:
+    label_zh: "办公"
+    icon_key: "office"
+    priority: 42
+    min_zoom: 0.80
+  hotel:
+    label_zh: "酒店"
+    icon_key: "hotel"
+    priority: 50
+    min_zoom: 0.80
+  bank:
+    label_zh: "银行"
+    icon_key: "bank"
+    priority: 48
+    min_zoom: 0.80
+  game_store:
+    label_zh: "游戏店"
+    icon_key: "game_store"
+    priority: 38
+    min_zoom: 0.80
+  ice_cream:
+    label_zh: "冰淇淋摊"
+    icon_key: "ice_cream"
+    priority: 32
+    min_zoom: 0.80
+
+  # ---- 住宅 ----
+  residential:
+    label_zh: "住宅"
+    icon_key: "residential"
+    priority: 34
+    min_zoom: 0.80
+
+  # ---- 公园文化 ----
+  park:
+    label_zh: "公园"
+    icon_key: "park"
+    priority: 82
+    min_zoom: 0.12
+  amusement:
+    label_zh: "游乐园"
+    icon_key: "amusement"
+    priority: 86
+    min_zoom: 0.12
+  park_building:
+    label_zh: "公园建筑"
+    icon_key: "park_building"
+    priority: 42
+    min_zoom: 0.20
+  park_gate:
+    label_zh: "公园入口"
+    icon_key: "park_gate"
+    priority: 50
+    min_zoom: 0.40
+  zoo:
+    label_zh: "动物园"
+    icon_key: "zoo"
+    priority: 84
+    min_zoom: 0.20
+  museum:
+    label_zh: "博物馆"
+    icon_key: "museum"
+    priority: 84
+    min_zoom: 0.12
+  monument:
+    label_zh: "纪念建筑"
+    icon_key: "monument"
+    priority: 78
+    min_zoom: 0.12
+  exhibition:
+    label_zh: "展馆"
+    icon_key: "exhibition"
+    priority: 72
+    min_zoom: 0.20
+  stadium:
+    label_zh: "体育场"
+    icon_key: "stadium"
+    priority: 80
+    min_zoom: 0.20
+  festival:
+    label_zh: "节庆场地"
+    icon_key: "festival"
+    priority: 65
+    min_zoom: 0.20
+  viewpoint:
+    label_zh: "观景台"
+    icon_key: "viewpoint"
+    priority: 62
+    min_zoom: 0.40
+  race:
+    label_zh: "赛道"
+    icon_key: "race"
+    priority: 64
+    min_zoom: 0.40
+  eden_project:
+    label_zh: "伊甸园"
+    icon_key: "eden_project"
+    priority: 90
+    min_zoom: 0.20
+  chirpwick_castle:
+    label_zh: "城堡"
+    icon_key: "chirpwick_castle"
+    priority: 82
+    min_zoom: 0.20
+  countdown:
+    label_zh: "倒计时"
+    icon_key: "countdown"
+    priority: 76
+    min_zoom: 0.20
+  private_airport:
+    label_zh: "私人机场"
+    icon_key: "private_airport"
+    priority: 86
+    min_zoom: 0.20
+  airline_hq:
+    label_zh: "航空公司总部"
+    icon_key: "airline_hq"
+    priority: 78
+    min_zoom: 0.20
+  international_trade:
+    label_zh: "国际贸易中心"
+    icon_key: "international_trade"
+    priority: 78
+    min_zoom: 0.20
+  stock_exchange:
+    label_zh: "证券交易所"
+    icon_key: "stock_exchange"
+    priority: 78
+    min_zoom: 0.20
+  varsity_sports:
+    label_zh: "大学体育场"
+    icon_key: "varsity_sports"
+    priority: 74
+    min_zoom: 0.20
+  animal_monument:
+    label_zh: "动物纪念碑"
+    icon_key: "animal_monument"
+    priority: 68
+    min_zoom: 0.20
+  chirper_tour:
+    label_zh: "观光点"
+    icon_key: "chirper_tour"
+    priority: 56
+    min_zoom: 0.40
+
+  # ---- 系统对象 ----
+  pylon:
+    label_zh: "塔架/桥墩"
+    icon_key: "pylon"
+    priority: 0
+    min_zoom: 0.0
+  intersection:
+    label_zh: "路口"
+    icon_key: "intersection"
+    priority: 0
+    min_zoom: 0.0
+  outside_connection:
+    label_zh: "城外连接"
+    icon_key: "outside_connection"
+    priority: 0
+    min_zoom: 0.0
+  dummy:
+    label_zh: "占位建筑"
+    icon_key: "dummy"
+    priority: 0
+    min_zoom: 0.0
+  wildlife:
+    label_zh: "野生动物点"
+    icon_key: "wildlife"
+    priority: 0
+    min_zoom: 0.0
+  utility_structure:
+    label_zh: "公用结构"
+    icon_key: "utility_structure"
+    priority: 0
+    min_zoom: 0.0
+  toll_booth:
+    label_zh: "收费站"
+    icon_key: "toll_booth"
+    priority: 60
+    min_zoom: 0.40
+  parking:
+    label_zh: "停车场"
+    icon_key: "parking"
+    priority: 30
+    min_zoom: 0.80
+
+  # ---- 渲染器派生点 ----
+  highway_exit:
+    label_zh: "高速出口"
+    icon_key: "highway_exit"
+    priority: 72
+    min_zoom: 0.20
+  highway_entrance:
+    label_zh: "高速入口"
+    icon_key: "highway_entrance"
+    priority: 72
+    min_zoom: 0.20
+  traffic_light:
+    label_zh: "红绿灯"
+    icon_key: "traffic_light"
+    priority: 35
+    min_zoom: 0.80
+
+  # ---- 未映射类型 ----
+  other:
+    label_zh: "其他地点"
+    icon_key: "other"
+    priority: 10
+    min_zoom: 0.80
+
+# ====================================================================
+# 建筑类型映射
+# ====================================================================
+# 按 BuildingAI 类型精确匹配。每条记录定义：
+#   ai_type     - BuildingAI 完整类型名（必填）
+#   poi_kind    - 对应的 POI 语义类型（必填）
+#   display     - 显示策略：visible / hidden
+#   parent      - 父建筑策略：standalone / inherit / sub_only
+# ====================================================================
+  healthcare_generic:
+    label_zh: "医疗设施"
+    icon_key: "healthcare_generic"
+    priority: 28
+    min_zoom: 0.8
+  fire_generic:
+    label_zh: "消防设施"
+    icon_key: "fire_generic"
+    priority: 28
+    min_zoom: 0.8
+  police_generic:
+    label_zh: "警务设施"
+    icon_key: "police_generic"
+    priority: 28
+    min_zoom: 0.8
+  education_generic:
+    label_zh: "教育设施"
+    icon_key: "education_generic"
+    priority: 28
+    min_zoom: 0.8
+  power_generic:
+    label_zh: "电力设施"
+    icon_key: "power_generic"
+    priority: 28
+    min_zoom: 0.8
+  water_generic:
+    label_zh: "水务设施"
+    icon_key: "water_generic"
+    priority: 28
+    min_zoom: 0.8
+  garbage_generic:
+    label_zh: "废弃物处理设施"
+    icon_key: "garbage_generic"
+    priority: 28
+    min_zoom: 0.8
+  monument_generic:
+    label_zh: "地标设施"
+    icon_key: "monument_generic"
+    priority: 28
+    min_zoom: 0.8
+  disaster_generic:
+    label_zh: "防灾设施"
+    icon_key: "disaster_generic"
+    priority: 28
+    min_zoom: 0.8
+  prison:
+    label_zh: "监狱"
+    icon_key: "prison"
+    priority: 78
+    min_zoom: 0.2
+mappings:
+
+  # ==================================================================
+  # 1. 分区建筑（分区生成的建筑，非玩家手动放置）
+  # ==================================================================
+  - ai_type: "ResidentialBuildingAI"
+    poi_kind: "residential"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "CommercialBuildingAI"
+    poi_kind: "commercial"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "IndustrialBuildingAI"
+    poi_kind: "industry"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "OfficeBuildingAI"
+    poi_kind: "office"
+    display: "visible"
+    parent: "standalone"
+
+  # ==================================================================
+  # 2. 医疗
+  # ==================================================================
+  - ai_type: "HospitalAI"
+    poi_kind: "hospital"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "MedicalCenterAI"
+    poi_kind: "clinic"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "CemeteryAI"
+    poi_kind: "cemetery"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "ChildcareAI"
+    poi_kind: "childcare"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "EldercareAI"
+    poi_kind: "eldercare"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "SaunaAI"
+    poi_kind: "sauna"
+    display: "visible"
+    parent: "standalone"
+
+  # ==================================================================
+  # 3. 应急
+  # ==================================================================
+  - ai_type: "FireStationAI"
+    poi_kind: "fire_station"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "FirewatchTowerAI"
+    poi_kind: "fire_watch"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "PoliceStationAI"
+    poi_kind: "police"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "DisasterResponseBuildingAI"
+    poi_kind: "disaster_response"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "ShelterAI"
+    poi_kind: "shelter"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "SnowDumpAI"
+    poi_kind: "snow_dump"
+    display: "visible"
+    parent: "standalone"
+
+  # ==================================================================
+  # 4. 教育
+  # ==================================================================
+  - ai_type: "SchoolAI"
+    poi_kind: "school"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "LibraryAI"
+    poi_kind: "library"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "MainCampusBuildingAI"
+    poi_kind: "campus_building"
+    display: "visible"
+    parent: "inherit"
+
+  - ai_type: "CampusBuildingAI"
+    poi_kind: "campus_building"
+    display: "visible"
+    parent: "inherit"
+
+  - ai_type: "UniqueFacultyAI"
+    poi_kind: "university"
+    display: "visible"
+    parent: "inherit"
+
+  - ai_type: "HadronColliderAI"
+    poi_kind: "research"
+    display: "visible"
+    parent: "standalone"
+
+  # ==================================================================
+  # 5. 交通枢纽
+  # ==================================================================
+  - ai_type: "TransportStationAI"
+    poi_kind: "bus"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "DepotAI"
+    poi_kind: "bus"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "TaxiStandAI"
+    poi_kind: "taxi"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "CableCarStationAI"
+    poi_kind: "cable_car"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "CargoStationAI"
+    poi_kind: "cargo_train"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "CargoHarborAI"
+    poi_kind: "cargo_harbor"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "WarehouseStationAI"
+    poi_kind: "cargo_train"
+    display: "visible"
+    parent: "inherit"
+
+  - ai_type: "HarborAI"
+    poi_kind: "ship"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "HelicopterDepotAI"
+    poi_kind: "helicopter"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "AirportBuildingAI"
+    poi_kind: "airport"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "AirportGateAI"
+    poi_kind: "airport"
+    display: "visible"
+    parent: "inherit"
+
+  - ai_type: "AirportAuxBuildingAI"
+    poi_kind: "airport"
+    display: "hidden"
+    parent: "inherit"
+
+  - ai_type: "AirportEntranceAI"
+    poi_kind: "airport"
+    display: "hidden"
+    parent: "inherit"
+
+  - ai_type: "AirportCargoGateAI"
+    poi_kind: "cargo_harbor"
+    display: "visible"
+    parent: "inherit"
+
+  - ai_type: "FishingHarborAI"
+    poi_kind: "fishing_harbor"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "FishFarmAI"
+    poi_kind: "fish_farm"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "PostOfficeAI"
+    poi_kind: "post"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "MarketAI"
+    poi_kind: "commercial"
+    display: "visible"
+    parent: "standalone"
+
+  # ==================================================================
+  # 6. 公用设施
+  # ==================================================================
+  - ai_type: "PowerPlantAI"
+    poi_kind: "power_plant"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "SolarPowerPlantAI"
+    poi_kind: "power_plant"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "WindTurbineAI"
+    poi_kind: "wind_turbine"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "DamPowerHouseAI"
+    poi_kind: "power_plant"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "FusionPowerPlantAI"
+    poi_kind: "fusion_power"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "WaterFacilityAI"
+    poi_kind: "water_supply"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "WaterCleanerAI"
+    poi_kind: "sewage"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "LandfillSiteAI"
+    poi_kind: "garbage"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "UltimateRecyclingPlantAI"
+    poi_kind: "recycling"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "HeatingPlantAI"
+    poi_kind: "heating"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "MaintenanceDepotAI"
+    poi_kind: "road_maintenance"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "TsunamiBuoyAI"
+    poi_kind: "tsunami_buoy"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "WeatherRadarAI"
+    poi_kind: "weather_radar"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "EarthquakeSensorAI"
+    poi_kind: "earthquake_sensor"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "SpaceRadarAI"
+    poi_kind: "space_radar"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "SpaceElevatorAI"
+    poi_kind: "space_elevator"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "DoomsdayVaultAI"
+    poi_kind: "doomsday_vault"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "RadioMastAI"
+    poi_kind: "radio_mast"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "TollBoothAI"
+    poi_kind: "toll_booth"
+    display: "visible"
+    parent: "standalone"
+
+  # ==================================================================
+  # 7. 产业
+  # ==================================================================
+  - ai_type: "IndustryBuildingAI"
+    poi_kind: "processing"
+    display: "visible"
+    parent: "inherit"
+
+  - ai_type: "MainIndustryBuildingAI"
+    poi_kind: "industry"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "ProcessingFacilityAI"
+    poi_kind: "processing"
+    display: "visible"
+    parent: "inherit"
+
+  - ai_type: "ExtractingFacilityAI"
+    poi_kind: "mining"
+    display: "visible"
+    parent: "inherit"
+
+  - ai_type: "AuxiliaryBuildingAI"
+    poi_kind: "industry"
+    display: "hidden"
+    parent: "inherit"
+
+  - ai_type: "UniqueFactoryAI"
+    poi_kind: "unique_factory"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "WarehouseAI"
+    poi_kind: "warehouse"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "IndustrialExtractorAI"
+    poi_kind: "mining"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "LivestockExtractorAI"
+    poi_kind: "livestock"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "ExtractingDummyAI"
+    poi_kind: "extraction_dummy"
+    display: "visible"
+    parent: "inherit"
+
+  # ==================================================================
+  # 8. 商业办公与酒店
+  # ==================================================================
+  - ai_type: "HotelAI"
+    poi_kind: "hotel"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "BankOfficeAI"
+    poi_kind: "bank"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "GameStoreAI"
+    poi_kind: "game_store"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "IceCreamStandAI"
+    poi_kind: "ice_cream"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "ServicePointAI"
+    poi_kind: "other"
+    display: "visible"
+    parent: "standalone"
+
+  # ==================================================================
+  # 9. 公园与地标
+  # ==================================================================
+  - ai_type: "ParkAI"
+    poi_kind: "park"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "ParkBuildingAI"
+    poi_kind: "park_building"
+    display: "visible"
+    parent: "inherit"
+
+  - ai_type: "ParkGateAI"
+    poi_kind: "park_gate"
+    display: "visible"
+    parent: "inherit"
+
+  - ai_type: "MonumentAI"
+    poi_kind: "monument"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "MuseumAI"
+    poi_kind: "museum"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "TourBuildingAI"
+    poi_kind: "viewpoint"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "ChirperTourAI"
+    poi_kind: "chirper_tour"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "FestivalAreaAI"
+    poi_kind: "festival"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "VarsitySportsArenaAI"
+    poi_kind: "varsity_sports"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "EdenProjectAI"
+    poi_kind: "eden_project"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "ChirpwickCastleAI"
+    poi_kind: "chirpwick_castle"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "CountdownAI"
+    poi_kind: "countdown"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "PrivateAirportAI"
+    poi_kind: "private_airport"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "AirlineHeadquartersAI"
+    poi_kind: "airline_hq"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "InternationalTradeBuildingAI"
+    poi_kind: "international_trade"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "StockExchangeAI"
+    poi_kind: "stock_exchange"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "AnimalMonumentAI"
+    poi_kind: "animal_monument"
+    display: "visible"
+    parent: "standalone"
+
+  # ==================================================================
+  # 10. 赛道/赛事
+  # ==================================================================
+  - ai_type: "RaceBuildingAI"
+    poi_kind: "race"
+    display: "visible"
+    parent: "standalone"
+
+  - ai_type: "RaceStartBuildingAI"
+    poi_kind: "race"
+    display: "visible"
+    parent: "inherit"
+
+  - ai_type: "RaceEndBuildingAI"
+    poi_kind: "race"
+    display: "visible"
+    parent: "inherit"
+
+  - ai_type: "RaceStartGantryAI"
+    poi_kind: "race"
+    display: "visible"
+    parent: "inherit"
+
+  - ai_type: "RaceStandAI"
+    poi_kind: "race"
+    display: "visible"
+    parent: "inherit"
+
+  - ai_type: "RaceObserverPostAI"
+    poi_kind: "race"
+    display: "visible"
+    parent: "inherit"
+
+  - ai_type: "PitStopAI"
+    poi_kind: "race"
+    display: "visible"
+    parent: "inherit"
+
+  # ==================================================================
+  # 11. 系统对象（不显示）
+  # ==================================================================
+  - ai_type: "CommonBuildingAI"
+    poi_kind: "dummy"
+    display: "hidden"
+    parent: "standalone"
+
+  - ai_type: "PrivateBuildingAI"
+    poi_kind: "dummy"
+    display: "hidden"
+    parent: "standalone"
+
+  - ai_type: "PlayerBuildingAI"
+    poi_kind: "dummy"
+    display: "hidden"
+    parent: "standalone"
+
+  - ai_type: "DummyBuildingAI"
+    poi_kind: "dummy"
+    display: "hidden"
+    parent: "standalone"
+
+  - ai_type: "IntersectionAI"
+    poi_kind: "intersection"
+    display: "hidden"
+    parent: "standalone"
+
+  - ai_type: "OutsideConnectionAI"
+    poi_kind: "outside_connection"
+    display: "hidden"
+    parent: "standalone"
+
+  - ai_type: "DecorationBuildingAI"
+    poi_kind: "dummy"
+    display: "hidden"
+    parent: "standalone"
+
+  - ai_type: "WildlifeSpawnPointAI"
+    poi_kind: "wildlife"
+    display: "hidden"
+    parent: "standalone"
+
+  # ==================================================================
+  # 12. 塔架/桥墩（不显示）
+  # ==================================================================
+  - ai_type: "MonorailPylonAI"
+    poi_kind: "pylon"
+    display: "hidden"
+    parent: "standalone"
+
+  - ai_type: "CableCarPylonAI"
+    poi_kind: "pylon"
+    display: "hidden"
+    parent: "standalone"
+
+  - ai_type: "PowerPoleAI"
+    poi_kind: "pylon"
+    display: "hidden"
+    parent: "standalone"
+
+  - ai_type: "WaterJunctionAI"
+    poi_kind: "utility_structure"
+    display: "hidden"
+    parent: "standalone"

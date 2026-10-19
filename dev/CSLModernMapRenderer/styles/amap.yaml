@@ -1,0 +1,599 @@
+name: 明亮地图
+description: 干净明亮的浅色底图配色，适合中国城市与日常浏览
+canvas:
+  width: 4096
+  height: 4096
+  background: '#F6F7F9'
+terrain:
+  elevation_colors:
+  - threshold: 0
+    color: '#F6F7F9'
+  - threshold: 80
+    color: '#AADD90'
+  - threshold: 200
+    color: '#8CC978'
+  - threshold: 400
+    color: '#6AB055'
+  - threshold: 850
+    color: '#417837'
+  # 独立的立体山体图开关；开启后在原始高度网格上生成多尺度山影。
+  elevation_mode: continuous
+  hillshade:
+    enabled: true
+    intensity: 0.35
+    azimuth: 315
+    altitude: 45
+    large_scale_meters: 320.0
+    small_scale_meters: 0.0
+    large_scale_weight: 0.35
+    small_scale_weight: 0.65
+built_area:
+  enabled: true
+  cell_meters: 8.0
+  buffer_meters: 60.0
+  smooth_blur: 2.0
+  smooth_iters: 6
+  contour_upscale: 4
+  color: '#F6F7F9'
+  exclude_services:
+  - Electricity
+  - Water
+  - Road
+  - Beautification
+  include_parks: false
+# 用地类型图层（独立功能，默认关闭，GUI/CLI 显式启用时生效）
+# 按建筑功能区铺半透明分类色块（类似城市规划用地图）
+land_use:
+  enabled: true
+  detail: base            # base=7 大类；sub=按 sub_service 细分（高/低密度、矿区/农场等）
+  cell_meters: 16.0
+  smooth_blur: 1.5
+  smooth_iters: 3
+  contour_upscale: 2
+  alpha: 110              # 填充透明度（0~255）
+  colors:
+    green: '#B8DCA0'            # 绿地/公园
+    public: '#D8D0C8'           # 公共服务
+    residential: '#F2C97E'      # 住宅
+    industrial: '#C9A7CC'       # 工业
+    office: '#8FB8E0'           # 办公
+    publictransport: '#A0D4B0'  # 公共交通
+    commercial: '#F2A07E'       # 商业
+  sub:                     # detail=sub 时的细分色（缺省回退到大类色）
+    res_low: '#F5D9A8'
+    res_high: '#E8B65C'
+    com_low: '#F5B08C'
+    com_high: '#E88A5E'
+    off_generic: '#8FB8E0'
+    off_hightech: '#6FA0D0'
+    ind_generic: '#C9A7CC'
+    ind_ore: '#B89BC4'
+    ind_forestry: '#A8C49B'
+    ind_farming: '#C4D89B'
+    ind_oil: '#8FA8C4'
+
+water:
+  color: '#80D4FE'
+  border: '#60C0E8'
+  border_width: 1
+forest:
+  color: '#B8DCA0'
+# 区划边界图层（独立功能，默认关闭，GUI/CLI 显式启用时生效）
+# 数据来自 Mod v6.5+ 导出的 <DistrictGrid>；旧存档无数据时自动跳过
+district:
+  enabled: true
+  border: '#C9A45C'        # 边界线颜色（高德区划金棕系）
+  border_width: { fixed: 1.0, scaled: 0.5 }
+  fill_alpha: 115           # 半透明填充透明度（0~255，0=只画边界不填充）
+  fill_colors:             # 每区划按序取色（循环）
+    - '#D9E8CC'
+    - '#E8DCC8'
+    - '#CCD8E8'
+    - '#E8D4E8'
+    - '#E8E8CC'
+    - '#CCE8E8'
+    - '#E8CCCC'
+    - '#D4CCE8'
+  smooth_blur: 1.0
+  smooth_iters: 3
+  contour_upscale: 2
+
+# 功能区图层（独立功能，默认关闭，GUI/CLI 显式启用时生效）
+# 渲染游戏"公园区/产业区"（DistrictPark），使用统一基础色
+# 数据来自 Mod v6.5+ 导出的 <ParkGrid>；旧存档无数据时自动跳过
+zone:
+  enabled: true
+  border: '#B08A5C'        # 边界线颜色（金棕系，与行政区区分）
+  border_width: { fixed: 1.0, scaled: 0.5 }
+  fill_alpha: 100          # 半透明填充透明度
+  fill: '#C8C8C8'          # 所有功能区共用的基础填充色
+  smooth_blur: 1.0
+  smooth_iters: 3
+  contour_upscale: 2
+roads:
+  width_scale: 0.15
+  highway:
+    fill: '#CDCFD5'
+    border: '#AFB1B7'
+    min_fill_px: 1.8
+    border_width:
+      fixed: 2.5
+      scaled: 0.8
+  main:
+    fill: '#ECEEF2'
+    border: '#BAC0CA'
+    min_fill_px: 1.4
+    border_width:
+      fixed: 2.2
+      scaled: 0.7
+  branch:
+    fill: '#FFFFFF'
+    border: '#C3C8D2'
+    min_fill_px: 0.8
+    border_width:
+      fixed: 2.0
+      scaled: 0.6
+  special:
+    fill: '#F0F2F5'
+    border: '#E1E3E9'
+    min_fill_px: 0.8
+    border_width:
+      fixed: 1.2
+      scaled: 0.4
+  beautification:
+    fill: '#F0F2F5'
+    border: '#E1E3E9'
+    min_fill_px: 0.5
+    border_width:
+      fixed: 1.2
+      scaled: 0.4
+  main_elevated:
+    fill: '#ECEEF2'
+    border: '#B5BBC5'
+    border_width:
+      fixed: 2.8
+      scaled: 0.9
+  branch_elevated:
+    fill: '#FFFFFF'
+    border: '#B9BEC8'
+    border_width:
+      fixed: 2.6
+      scaled: 0.8
+  highway_elevated:
+    fill: '#CDCFD5'
+    border: '#AFB1B7'
+    border_width:
+      fixed: 3.0
+      scaled: 1.0
+  beautification_elevated:
+    fill: '#F2F4F7'
+    border: '#E1E3E9'
+    border_width:
+      fixed: 1.5
+      scaled: 0.5
+  main_tunnel:
+    fill: '#F0F1F4'
+    border: '#BAC0CA'
+    border_width:
+      fixed: 2.2
+      scaled: 0.7
+    dash:
+    - 1.5
+    - 2
+  branch_tunnel:
+    fill: '#FAFAFC'
+    border: '#C3C8D2'
+    border_width:
+      fixed: 2.0
+      scaled: 0.6
+    dash:
+    - 1.5
+    - 2
+  highway_tunnel:
+    fill: '#D2D4D9'
+    border: '#AFB1B7'
+    border_width:
+      fixed: 2.5
+      scaled: 0.8
+    dash:
+    - 1.5
+    - 2
+  beautification_tunnel:
+    fill: '#EEF0F3'
+    border: '#E1E3E9'
+    border_width:
+      fixed: 1.2
+      scaled: 0.4
+    dash:
+    - 1.5
+    - 2
+transports:
+  # 常规图默认启用的线路类型（公共交通视图 view_all 会按 default_enabled 全开）
+  enabled:
+  - Metro
+  - Train
+  - Monorail
+  - Tram
+  - CableCar
+  - Ship
+  - Ferry
+  - Bus
+  - Trolleybus
+  - Airplane
+  - Helicopter
+  # 自动配色开关：true=对无用户色（纯白）的线路自动配色（transit.assign_auto_colors）
+  auto_color: false
+  # 兜底线宽（未在 types 里配置时）
+  width:
+    fixed: 0.5
+    scaled: 2.05
+  smooth: 10
+  # 抽象模式（transports.abstract=true）下的八方向走线：
+  # octilinear=true  → Bast 网格 A* 布局（EuroVis 2020 近似算法）：
+  #   站点合并组 snap 到站距网格 → 逐线 A* 路由（拐弯最少 + 拥堵分离 +
+  #   禁穿站），换乘站同格对齐，布局不可行直接失败（无低质量兜底）
+  # octilinear=false → 站点直连 + Catmull-Rom 平滑（旧示意图风格）
+  octilinear: true
+  schematic:
+    spacing: 400          # 站距（米/格；少站线路不被 fit 拉得过大）
+    parallel_gap: 1.8     # 共线走线束并行间距（× 线宽，>1 防叠）
+  # 公共交通视图：底图淡白遮罩强度（0=不遮罩，1=纯白；默认0.5）
+  transit_view:
+    mask_intensity: 0.6
+    composite_corridors: true    # 共廊合成单外框多色色带，避免白边互相切割
+    composite_stripe_ratio: 0.46 # 单色带宽度 × 基准线宽
+    composite_min_stripe: 1.15   # 低分辨率的单色带最小输出像素
+    label_candidate_interval: 110  # 密集采样后按周边净空择优，而非固定位置直贴
+    label_candidate_limit: 72
+    label_clearance_padding: 14
+    # ---- 线路标签视觉规范（导出与预览共用同一组值）----
+    # 尺寸基准 = 长边 1024px 的成图；换算系数 k = 输出长边 / 1024。
+    # render_scale = 输出宽 / 4096 = k / 4，故 scaled 填「期望值(@1024) × 4」。
+    # 预览侧读同一组值（preview_scene 下发 transit.labelStyle），改这里要同时重建 viewer。
+    label_size:                    # 字号 15px @1024
+      fixed: 0.0
+      scaled: 60.0
+    label_padding:                 # 水平内边距 9px @1024
+      fixed: 0.0
+      scaled: 36.0
+    label_border_width:            # 胶囊轮廓 2px @1024（深色半透明，保证浅色线路也有边界）
+      fixed: 0.0
+      scaled: 8.0
+    label_seam_width:              # 重合线路拼接时色块之间的缝 3px @1024
+      fixed: 0.0
+      scaled: 12.0
+    # 注：旧的 label_text_stroke_width 已按统一规范取消（文字不再描边，靠字重 700）
+    # 轮廓用「深色 + 中透明度」：0.55 在白底上合成约 #7C8085，浅色线路块
+    # （黄 / 亮绿）与白底之间才有清楚的分界；深色线路块上等于描了一圈更深的同色。
+    label_outer_border_color: '#101828'
+    label_outer_border_alpha: 0.55
+    label_text_on_light: '#101828'   # Rec.709 亮度 ≥ label_luminance_threshold 用深字
+    label_text_on_dark: '#FFFFFF'
+    label_luminance_threshold: 165.0
+  # 类型级样式（键 = transit 注册表类型；dash: [] = 实线）
+  types:
+    Metro:
+      width:
+        fixed: 0.5
+        scaled: 2.05
+      dash: []
+    Train:
+      width:
+        fixed: 0.5
+        scaled: 2.2
+      dash: []
+    Monorail:
+      width:
+        fixed: 0.4
+        scaled: 1.85
+      dash: []
+    Tram:
+      width:
+        fixed: 0.4
+        scaled: 1.7
+      dash: []
+    CableCar:
+      width:
+        fixed: 0.4
+        scaled: 1.7
+      dash: []
+    Ship:
+      width:
+        fixed: 0.45
+        scaled: 1.875
+      dash:
+      - 8
+      - 6
+      color: '#2E86AB'
+    Ferry:
+      width:
+        fixed: 0.45
+        scaled: 1.875
+      dash:
+      - 8
+      - 6
+      color: '#2E86AB'
+    Bus:
+      width:
+        fixed: 0.35
+        scaled: 1.525
+      dash: []
+      color: '#5A6472'
+    Trolleybus:
+      width:
+        fixed: 0.35
+        scaled: 1.525
+      dash:
+      - 4
+      - 4
+      color: '#7A8391'
+    Airplane:
+      width:
+        fixed: 0.4
+        scaled: 1.7
+      dash:
+      - 10
+      - 8
+      color: '#8A94A6'
+    Helicopter:
+      width:
+        fixed: 0.3
+        scaled: 1.35
+      dash:
+      - 6
+      - 6
+      color: '#8A94A6'
+  label:
+    enabled: true
+    font: Microsoft YaHei      # 线路标签字体：导出与预览统一读这一项
+    min_zoom: 0.5
+    size:
+      fixed: 8.0
+      scaled: 6.0
+    padding:
+      fixed: 5.0
+      scaled: 3.5
+    border_width:
+      fixed: 0.9
+      scaled: 0.6
+    bg: '#FFFFFF'
+    repeat_interval: 600
+    min_gap: 350
+    max_per_line: 4
+  # 站点绘制（常规图默认关闭，公共交通视图下 transports.station.enabled=true 时生效）
+  station:
+    enabled: false      # 常规图默认不画站点圆点；在公共交通视图中 GUI 选项会覆盖为 true
+    merge_enabled: true
+    min_zoom: 0.5       # 低于该缩放（如 1024 全图）时不画
+    merge_range: 48.0   # 站点合并半径（米）：小于该距离视为同站合并
+    merge_bus_tram: true
+    merge_train_metro: false
+    size:
+      fixed: 2.5
+      scaled: 5.0       # 复用 fixed+scaled 缩放：4K 基准附近约为旧站点的 1.5 倍
+    outline: '#3A3F4A'
+    fill: '#FFFFFF'
+    border_width:
+      fixed: 0.5
+      scaled: 0.5
+    # 换乘站（胶囊形）宽度系数：相对普通站直径 2r 的倍数
+    # 2.0 = 换乘站长 4r，高 2r（两端半圆的胶囊）
+    transfer_scale: 2.0
+buildings:
+  border: '#D7DAE1'
+  border_width:
+    fixed: 0.25
+    scaled: 0.1
+procedural_objects:
+  colors:
+    geometry: '#C9D1DD'
+    building: '#E4E6EC'
+    prop: '#D5D9E1'
+    tree: '#D2EBC8'
+    street_furn: '#CFD3DB'
+    sign: '#F5D58B'
+    unknown: '#D0D4DD'
+  border: '#C6CAD3'
+  border_width:
+    fixed: 0.2
+    scaled: 0.08
+  custom_color_alpha: 0.85
+railway:
+  enabled: true
+  train:
+    line: '#3A3A3A'        # 火车铁路：经典黑白配色（深灰黑主线）
+    dash: '#FFFFFF'        # 白色虚线（道碴感）
+    width:
+      fixed: 2.5
+      scaled: 1.5
+    dash_width:
+      fixed: 0.8
+      scaled: 1.5
+    pattern: [2, 4]        # 虚线间隔 = pattern × 虚线笔宽（WPF DashStyle 语义，同 CSLMapView）
+    station_width:
+      fixed: 4.5
+      scaled: 2.7
+  tram:
+    line: '#A08CA0'        # 有轨电车：灰紫
+    dash: '#FFFFFF'
+    width:
+      fixed: 2.0
+      scaled: 1.0
+    dash_width:
+      fixed: 0.8
+      scaled: 1.0
+    pattern: [2, 4]
+    station_width:
+      fixed: 3.5
+      scaled: 2.2
+  metro:
+    line:
+      color: '#AA82AA'     # 地铁轨道：半透明紫
+      alpha: 180
+    dash: '#FFFFFF'
+    width:
+      fixed: 2.5
+      scaled: 1.2
+    dash_width:
+      fixed: 0.8
+      scaled: 1.2
+    pattern: [2, 4]
+    station_width:
+      fixed: 4.5
+      scaled: 2.7
+  monorail:
+    line: '#A08C9B'        # 单轨：灰紫
+    width:
+      fixed: 1.0
+      scaled: 1.0
+    decoration_span:
+      fixed: 2.0
+      scaled: 25.0
+    decoration_length:
+      fixed: 1.0
+      scaled: 1.0
+    decoration_width:
+      fixed: 0.6
+      scaled: 0.6
+  cablecar:
+    line: '#8C8C96'        # 缆车：中灰
+    width:
+      fixed: 0.5
+      scaled: 0.2
+    decoration_span:
+      fixed: 1.0
+      scaled: 15.0
+    decoration_length:
+      fixed: 0.5
+      scaled: 0.2
+    decoration_width:
+      fixed: 0.2
+      scaled: 0.15
+labels:
+  district:
+    font: SimHei
+    size:
+      fixed: 2.4
+      scaled: 18.0
+    color: '#32415A'
+    stroke: '#FFFFFF'
+    stroke_width:
+      fixed: 0.8
+      scaled: 2.4
+  road:
+    font: SimHei
+    size:
+      fixed: 2.8
+      scaled: 3.0
+    color: '#505564'
+    stroke: '#FFFFFF'
+    stroke_width:
+      fixed: 1.0
+      scaled: 0.2
+    # 道路名分级字号：按等级对 size 做倍数缩放（高速字大、普通路字小）
+    size_z:
+      highway: 1.6
+      main: 1.25
+      branch: 1.0
+      special: 0.75
+      beautification: 0.75
+    name_z:
+      highway: 0.8
+      main: 1.2
+      branch: 1.6
+      special: 2.4
+      beautification: 2.4
+  road_repeat: 420
+  road_repeat_ratio: 3
+  road_min_gap: 240
+  park:
+    font: SimHei
+    size:
+      fixed: 7.0
+      scaled: 8.0
+    color: '#328246'
+    stroke: '#FFFFFF'
+    stroke_width:
+      fixed: 2.4
+      scaled: 0.8
+  building:
+    font: SimHei
+    size:
+      fixed: 7.6
+      scaled: 8.0
+    color: '#50505A'
+    stroke: '#FFFFFF'
+    stroke_width:
+      fixed: 2.4
+      scaled: 0.0
+  stop:
+    font: SimHei
+    size:
+      fixed: 10.0
+      scaled: 14.0
+    color: '#1E6EC8'
+    stroke: '#FFFFFF'
+    stroke_width:
+      fixed: 2.4
+      scaled: 0.6
+poi_icons:
+  enabled: true
+  transit_view_scale: 1.15  # 公共交通视图的交通 POI 相对常规地图略大
+  merge_enabled: true
+  merge_distance: 48.0
+  facility_hierarchy:
+    enabled: true
+    children_enabled: true
+    child_min_zoom: 1.0
+    area_labels_enabled: true
+  icon_size:
+    fixed: 20.0
+    scaled: 4.0
+  grid_size:
+    fixed: 100.0
+    scaled: 20.0
+  max_per_cell: 2
+  min_priority: 10
+  categories: []
+  bg_circle: false
+  bg_circle_size:
+    fixed: 28.0
+    scaled: 6.0
+  show_name: true
+  name_size:
+    fixed: 11.0
+    scaled: 2.0
+  name_offset: 3
+  # 名字描边：导出侧 poi_icon_layer 与预览侧 halos['poi'] 共用这一组键，
+  # 缺省（不写）等价于白色 + 字号 × 0.12。name_stroke 设成 '' 即关闭描边。
+  name_stroke: '#FFFFFF'
+  name_stroke_ratio: 0.12
+  sprite: icons_1.png
+watermark:
+  enabled: true
+  mod_name: 'CSLModernMap'
+  position: left_bottom
+  font_size:
+    fixed: 11.0
+    scaled: 1.5
+  separator: ' · '
+  margin:
+    x: 20
+    y: 20
+  padding:
+    x: 12
+    y: 6
+  border_radius: 6
+  background: transparent
+  time_format: '%Y-%m-%d %H:%M:%S'
+  city_color: '#1A1A1A'
+  info_color: '#3A3A3A'
+  meta_color: '#6A6A6A'
+  content:
+    mod_name: true
+    city_name: true
+    render_time: true
+    style_name: true
+    resolution: true
+    traffic_time: true
+    custom_text: false

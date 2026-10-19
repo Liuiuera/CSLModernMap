@@ -1,0 +1,74 @@
+[
+  {
+    "code": "zh-CN",
+    "resourceLanguage": "zh-CN",
+    "nativeName": "简体中文",
+    "automaticAnnotation": ""
+  },
+  {
+    "code": "en",
+    "resourceLanguage": "en-US",
+    "nativeName": "English",
+    "automaticAnnotation": "Automatic translation"
+  },
+  {
+    "code": "fr",
+    "resourceLanguage": "fr-FR",
+    "nativeName": "Français",
+    "automaticAnnotation": "Traduction automatique"
+  },
+  {
+    "code": "de",
+    "resourceLanguage": "de-DE",
+    "nativeName": "Deutsch",
+    "automaticAnnotation": "Automatisch übersetzen"
+  },
+  {
+    "code": "es",
+    "resourceLanguage": "es-ES",
+    "nativeName": "Español",
+    "automaticAnnotation": "Traducción automática"
+  },
+  {
+    "code": "pl",
+    "resourceLanguage": "pl-PL",
+    "nativeName": "Polski",
+    "automaticAnnotation": "Automatyczne tłumaczenie"
+  },
+  {
+    "code": "pt-BR",
+    "resourceLanguage": "pt-BR",
+    "nativeName": "Português (Brasil)",
+    "automaticAnnotation": "Tradução automática"
+  },
+  {
+    "code": "ru",
+    "resourceLanguage": "ru-RU",
+    "nativeName": "Русский",
+    "automaticAnnotation": "Автоматический перевод"
+  },
+  {
+    "code": "ko",
+    "resourceLanguage": "ko-KR",
+    "nativeName": "한국어",
+    "automaticAnnotation": "자동 번역"
+  },
+  {
+    "code": "ja",
+    "resourceLanguage": "ja-JP",
+    "nativeName": "日本語",
+    "automaticAnnotation": "自動翻訳"
+  },
+  {
+    "code": "it",
+    "resourceLanguage": "it-IT",
+    "nativeName": "Italiano",
+    "automaticAnnotation": "Traduzione automatica"
+  },
+  {
+    "code": "zh-TW",
+    "resourceLanguage": "zh-TW",
+    "nativeName": "繁體中文",
+    "automaticAnnotation": "自動翻譯"
+  }
+]

@@ -1,0 +1,276 @@
+# ============================================================
+# 地铁图专用配置（metro_map.yaml）
+# ============================================================
+# 仅供「地铁示意图」纯图入口使用，与 amap/dark/google/vintage
+# 四套地图主题完全独立：主题选择器不枚举本文件，普通渲染不读本文件。
+#
+# 风格参考 railmapgen（RMG/RMP）：统一线宽体系、白底线路色描边站点、
+# 重庆式圆形换乘标记、水平站名白色 halo、线路色胶囊徽章。
+name: 地铁图
+
+# 画布（纯图底色）
+canvas:
+  background: '#FAFAF8'
+
+transports:
+  # 默认启用类型（GUI 对话框会用用户勾选覆盖此列表）
+  enabled:
+  - Metro
+  - Train
+  - Monorail
+  - Tram
+  - CableCar
+  - Ship
+  - Ferry
+  - Bus
+  - Trolleybus
+  # 自动配色：按逻辑线路组分配（一组一色，双向线天然同色）
+  auto_color: true
+  # 统一线宽体系（RMG 式：全类型同宽，分辨率自适应 fixed + scaled*zoom）
+  # 4096 画布下约 15px，接近 RMP LINE_WIDTH=5 的比例感
+  width:
+    fixed: 9.0
+    scaled: 6.0
+  smooth: 10
+  # 八方向抽象线网（Bast 网格 A* 布局）
+  abstract: true
+  octilinear: true
+  schematic:
+    spacing: 400          # 站距（米/格）
+    parallel_gap: 1.55    # 严格平行的紧凑走线束间距（× 线宽）
+    # 动态比例尺：密集站区舒展，现实长区段按对数比例压缩。
+    # 最终仍使用八方向网格布局；scale_mode=fixed 可恢复旧行为。
+    scale_mode: adaptive
+    adaptive:
+      strength: 0.40      # A 方案：顺直优先，仅对密集区域作适度舒展
+      max_compress: 0.60  # 长区段的权重下限（相对基础站距）
+      max_expand: 2.0     # 密集区的权重上限（相对基础站距）
+      dense_gap: 1       # 密集站点之间额外预留的网格缓冲（格）
+      dense_threshold: 0.45  # 达到此压力才启用密集区缓冲
+
+  # 示意水系（只提取主连通水域；不改变普通地图的 water 图层）
+  schematic_water:
+    enabled: true
+    smoothing: 8.0  # 以 1024 px 为基准的岸线概括和平滑强度；0 关闭预平滑
+    color_rgb: [156, 205, 232]
+    alpha: 66
+    min_component_cells: 18
+    max_components: 5
+
+  # 方向归并（transit grouping）：同名同类型优先，站序回退判定；
+  # 站序判据在合并站空间比较（游戏给每个方向的站台分配独立节点）
+  grouping:
+    by_name: true
+    sequence_fallback: true
+    # 保守关闭：仅共享半数站点不足以证明是同一物理线路，容易把支线、
+    # 区间车或不同线路误并。跨 Transport 身份将在物理边拓扑层用多证据判断。
+    share_ratio: 0.0
+    # 部分共线线路保持独立；精确共享站间段仍由 share_corridors 复用几何。
+    merge_partial_overlap: false
+    share_corridors: true # 共享段几何复用：共站相邻段复用同一格路径
+
+  # 线路绘制参数
+  line:
+    halo_color: '#FFFFFF'   # 描边底色（深色底主题可改深色）
+    halo_ratio: 1.6         # 描边宽度 = 线宽 × 该倍率
+    round_factor: 2.4       # 连续 R 角半径 = max(线宽 × 该系数, 8px)
+    # 仅地铁图生效：浅色线使用白色隔离带+深色中框+线路色三层绘制
+    light_outline:
+      enabled: true
+      luminance_threshold: 170
+      color: '#344054'
+      width:
+        fixed: 1.2
+        scaled: 1.2
+
+  # 标题只在地铁示意图中绘制，模板中的 {cityname} 使用存档城市名替换
+  title:
+    enabled: true
+    template: '{cityname}地铁图'
+    language: zh
+    size:
+      fixed: 21
+      scaled: 9
+    secondary_size:
+      fixed: 12
+      scaled: 5
+    color: '#101828'
+    stroke_width:
+      fixed: 1.5
+      scaled: 0.5
+    stroke_fill: '#FAFAF8'
+    margin:
+      fixed: 9
+      scaled: 6
+
+  # 自动配色色板（RMG 式高对比；玩家用户色优先，此色板兜底）
+  palette:
+  - '#E4002B'   # 红
+  - '#024FA2'   # 蓝
+  - '#009943'   # 绿
+  - '#F39800'   # 橙
+  - '#8F76D6'   # 紫
+  - '#00A0E9'   # 青
+  - '#E60079'   # 品红
+  - '#00A497'   # 湖绿
+  - '#6B4F2A'   # 棕
+  - '#C8A200'   # 黄（深）
+
+  # 地铁图模式线宽不再二次放大（统一线宽体系）
+  transit_view:
+    width_scale: 1.0
+    composite_corridors: true    # 共享网格边使用单外框多色色带
+    composite_stripe_ratio: 0.46
+    composite_min_stripe: 1.15
+
+  # 图例作为独立侧栏扩展最终画布；GUI 可覆盖开关与方位。
+  legend:
+    enabled: true
+    position: right_top
+
+  # 类型级样式：统一线宽下仅水路线保留虚线区分
+  types:
+    Ship:
+      dash: [8, 6]
+    Ferry:
+      dash: [8, 6]
+
+  # 站点（design: rmg = railmapgen 经典式；尺寸随线宽等比放大）
+  station:
+    enabled: true
+    merge_enabled: true
+    design: rmg
+    size:                   # 普通站半径
+      fixed: 11.0
+      scaled: 7.0
+    fill: '#FFFFFF'
+    outline: '#1A1D24'      # 无线路色时的描边兜底色
+    border_width: 1.4       # 放大后的站点仍保持清晰深色描边
+    transfer_design: chongqing  # 重庆轨道交通式圆形换乘标记
+    transfer_arrow: '#26313D'   # 圆内双向箭头颜色
+    # 以下参数仅供 transfer_design: capsule 的兼容样式使用。
+    transfer_scale: 2.0
+    transfer_per_line: 0.3
+    transfer_max_scale: 3.2
+    transfer_height_scale: 0.9
+    transfer_halo: 2.0          # 换乘标记外白色隔离带
+    transfer_outline: '#26313D'   # 换乘站描边色
+    ticks: false                 # 兼容旧胶囊样式的分色刻度
+    icon_antialias: 4             # 图标局部超采样倍率，再 Lanczos 缩回成品
+    merge_range: 48.0
+    merge_bus_tram: true
+    merge_train_metro: false
+    # 设施语义只作为站点邻近标识，换乘圆形标记仍承担线路换乘信息。
+    facilities:
+      enabled: true
+      distances:
+        airport: 1000
+        rail: 600
+        port: 600
+      # 同一机场通常会拆成多个航站楼/附属建筑，先合并为一个机场候选。
+      merge_distances:
+        airport: 1200
+        rail: 300
+        port: 400
+      size:
+        # 放大设施标记，避免与站点和线路缩在一起。
+        fixed: 36
+        scaled: 10
+      offset:
+        fixed: 24
+        scaled: 9
+    # 站名标注
+    names:
+      enabled: true
+      size:
+        fixed: 12
+        scaled: 6
+      bilingual_english_scale: 0.72  # 双语副标题略小，突出中文主站名
+      adaptive_font: true    # 无空位时才逐级缩小单个站名，不影响空旷站点
+      adaptive_min_scale: 0.60  # 自动缩小下限（相对用户设置字号）
+      min_readable_size_per_1k: 10  # 每 1024px 长边的主站名可读下限
+      transfer_size_scale: 1.25  # 换乘站始终比普通站大一级
+      color: '#4A4F5A'
+      transfer_color: '#1A1D24'
+      halo: true            # 白色描边 halo（压线可读）
+      stroke_width: 1.25
+      stroke_fill: '#FFFFFF'
+      transfer_bold: true   # 换乘站名加粗
+      gap: 4.0              # 站名与站芯/线路的最小可读间距（像素）
+      mode: all
+      strip_player_station_suffix: true  # 玩家命名“人民广场站”显示为“人民广场”
+
+  # 网格模式标签 = 图例框（legend 参数）；badge_style 用于非网格回退路径
+  label:
+    enabled: true
+    badge_style: color_fill   # 线路色底白字胶囊（RMG 式）
+    bg: '#FFFFFF'
+    background_alpha: 246
+    border_color: '#D0D5DD'
+    text_color: '#344054'
+    title: '线路图例'
+    title_key: 'metro.legend.title'
+    position: right_top
+    title_color: '#101828'
+    title_size:
+      fixed: 12
+      scaled: 7
+    size:
+      fixed: 11
+      scaled: 7
+    padding:
+      fixed: 7
+      scaled: 5
+    gap:
+      fixed: 3
+      scaled: 2
+    column_gap:
+      fixed: 9
+      scaled: 6
+    swatch_width:
+      fixed: 14
+      scaled: 10
+    swatch_height:
+      fixed: 5
+      scaled: 4
+    border_width:
+      fixed: 0.8
+      scaled: 0.8
+    radius:
+      fixed: 6
+      scaled: 3
+    margin:
+      fixed: 7
+      scaled: 7
+    max_height_ratio: 0.42
+    # 右侧图例栏按实际文本宽度水平扩展；极端超长名称可用像素宽度截断。
+    max_name_width: 0
+    shadow: true
+    shadow_color: '#101828'
+    shadow_blur:
+      fixed: 2
+      scaled: 2.5
+    shadow_offset:
+      fixed: 1
+      scaled: 1
+
+  # 地图附注：作为独立布局组件，可按发布用途关闭生成时间。
+  annotations:
+    enabled: true
+    position: left_bottom
+    disclaimer: true
+    scale_info: true
+    data_notice: true
+    generated_at: true
+    north_arrow: false
+    # 留空时从资源翻译表读取 CSLModernMap 制图/Cartography 文案。
+    credit: ''
+    size:
+      fixed: 6
+      scaled: 4
+    padding:
+      fixed: 4
+      scaled: 3
+    margin:
+      fixed: 8
+      scaled: 6

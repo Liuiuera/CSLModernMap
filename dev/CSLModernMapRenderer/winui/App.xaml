@@ -1,0 +1,52 @@
+<Application
+    x:Class="CSLModernMapWinUI.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:rs="using:RibbonSpace.Controls">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <Color x:Key="WorkspaceOutputHeaderColor">#E3EEE6</Color>
+                    <SolidColorBrush x:Key="WorkspaceWindowSurfaceBrush" Color="#33F7F8FA" />
+                    <SolidColorBrush x:Key="WorkspaceRibbonSurfaceBrush" Color="#E8F7F8FA" />
+                    <SolidColorBrush x:Key="WorkspaceSidebarSurfaceBrush" Color="#B3F7F8FA" />
+                    <!-- 功能区沿用原有的透明材质：命令区半透明，标签行与分组标题透明。 -->
+                    <StaticResource x:Key="RibbonCommandBarBackgroundBrush" ResourceKey="WorkspaceRibbonSurfaceBrush" />
+                    <SolidColorBrush x:Key="RibbonChromeBackgroundBrush" Color="Transparent" />
+                    <SolidColorBrush x:Key="RibbonGroupCaptionBackgroundBrush" Color="Transparent" />
+                    <SolidColorBrush x:Key="RibbonWindowBackgroundBrush" Color="Transparent" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <Color x:Key="WorkspaceOutputHeaderColor">#32433A</Color>
+                    <SolidColorBrush x:Key="WorkspaceWindowSurfaceBrush" Color="#33242629" />
+                    <SolidColorBrush x:Key="WorkspaceRibbonSurfaceBrush" Color="#E8242629" />
+                    <SolidColorBrush x:Key="WorkspaceSidebarSurfaceBrush" Color="#B3242629" />
+                    <StaticResource x:Key="RibbonCommandBarBackgroundBrush" ResourceKey="WorkspaceRibbonSurfaceBrush" />
+                    <SolidColorBrush x:Key="RibbonChromeBackgroundBrush" Color="Transparent" />
+                    <SolidColorBrush x:Key="RibbonGroupCaptionBackgroundBrush" Color="Transparent" />
+                    <SolidColorBrush x:Key="RibbonWindowBackgroundBrush" Color="Transparent" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="HighContrast">
+                    <StaticResource x:Key="WorkspaceOutputHeaderColor" ResourceKey="SystemColorButtonFaceColor" />
+                    <SolidColorBrush x:Key="WorkspaceWindowSurfaceBrush" Color="{ThemeResource SystemColorWindowColor}" />
+                    <SolidColorBrush x:Key="WorkspaceRibbonSurfaceBrush" Color="{ThemeResource SystemColorWindowColor}" />
+                    <SolidColorBrush x:Key="WorkspaceSidebarSurfaceBrush" Color="{ThemeResource SystemColorWindowColor}" />
+                    <StaticResource x:Key="RibbonCommandBarBackgroundBrush" ResourceKey="WorkspaceRibbonSurfaceBrush" />
+                    <SolidColorBrush x:Key="RibbonChromeBackgroundBrush" Color="Transparent" />
+                    <SolidColorBrush x:Key="RibbonGroupCaptionBackgroundBrush" Color="Transparent" />
+                    <SolidColorBrush x:Key="RibbonWindowBackgroundBrush" Color="Transparent" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+            <ResourceDictionary.MergedDictionaries>
+                <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+                <rs:RibbonThemeResources />
+            </ResourceDictionary.MergedDictionaries>
+            <Style x:Key="WorkspaceSectionStyle" TargetType="Expander">
+                <Setter Property="HorizontalAlignment" Value="Stretch" />
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            </Style>
+            <SolidColorBrush x:Key="WorkspaceOutputHeaderBrush" Color="{ThemeResource WorkspaceOutputHeaderColor}" />
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
