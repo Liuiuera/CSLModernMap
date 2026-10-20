@@ -199,6 +199,7 @@ internal sealed partial class ExportWindow
             _resultActions.Orientation = _resultActions.ActualWidth >= 480 ? Orientation.Horizontal : Orientation.Vertical;
 
         var footer = new StackPanel { Spacing = 8 };
+        footer.Children.Add(_gameRunningNotice);
         footer.Children.Add(_progress);
         footer.Children.Add(_feedback);
         footer.Children.Add(_resultActions);

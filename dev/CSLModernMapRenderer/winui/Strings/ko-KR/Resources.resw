@@ -4422,4 +4422,7 @@ Esc  현재 작업 취소</value>
   <data name="Poi_AreaNames" xml:space="preserve"><value>기능 구역 이름</value></data>
   <data name="Poi_AreaDescription" xml:space="preserve"><value>게임에서 내보낸 기능 구역과 이름입니다.</value></data>
   <data name="Poi_PngInternalBuildings" xml:space="preserve"><value>PNG에 구역 내부 건물 아이콘 표시</value></data>
+  <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
+    <value>게임이 실행 중이며 많은 메모리를 사용할 수 있습니다. 도시를 저장하고 게임을 종료한 후 내보내는 것을 권장합니다. 그대로 계속할 수도 있습니다.</value>
+  </data>
 </root>

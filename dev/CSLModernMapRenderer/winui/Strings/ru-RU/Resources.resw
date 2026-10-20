@@ -4422,4 +4422,7 @@ Shaotang Shaoxiancao Codex</value>
   <data name="Poi_AreaNames" xml:space="preserve"><value>Названия функциональных зон</value></data>
   <data name="Poi_AreaDescription" xml:space="preserve"><value>Функциональные зоны и названия, экспортированные из игры.</value></data>
   <data name="Poi_PngInternalBuildings" xml:space="preserve"><value>Показывать значки зданий внутри зон в PNG</value></data>
+  <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
+    <value>Игра ещё запущена и может занимать много памяти. Рекомендуется сохранить город и выйти из игры перед экспортом. Также можно продолжить.</value>
+  </data>
 </root>

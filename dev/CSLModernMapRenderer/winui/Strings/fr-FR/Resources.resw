@@ -4422,4 +4422,7 @@ Route de référence : 16 m, échelle de rendu : 1</value>
   <data name="Poi_AreaNames" xml:space="preserve"><value>Noms des zones fonctionnelles</value></data>
   <data name="Poi_AreaDescription" xml:space="preserve"><value>Zones fonctionnelles et noms exportés par le jeu.</value></data>
   <data name="Poi_PngInternalBuildings" xml:space="preserve"><value>Afficher les icônes des bâtiments internes des zones dans le PNG</value></data>
+  <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
+    <value>Le jeu est encore ouvert et peut utiliser beaucoup de mémoire. Il est conseillé d’enregistrer la ville et de quitter le jeu avant l’exportation. Vous pouvez aussi continuer.</value>
+  </data>
 </root>

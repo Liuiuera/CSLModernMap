@@ -5344,3 +5344,9 @@ msgstr "Zeitpunkt des Spielstands"
 
 msgid "watermark.traffic_at"
 msgstr "Verkehr um"
+
+msgid "ui.export.possible_memory_exhaustion"
+msgstr ""
+"Der Renderprozess wurde unerwartet beendet, möglicherweise wegen zu wenig Arbeitsspeicher. Falls "
+"das Spiel noch läuft, schließen Sie es und andere speicherintensive Programme oder verringern Sie"
+" die Exportgröße und versuchen Sie es erneut."

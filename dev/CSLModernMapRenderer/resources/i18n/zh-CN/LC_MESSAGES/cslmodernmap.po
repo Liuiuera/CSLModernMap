@@ -5416,3 +5416,6 @@ msgstr "存档"
 
 msgid "watermark.traffic_at"
 msgstr "路况"
+
+msgid "ui.export.possible_memory_exhaustion"
+msgstr "可能是内存不足，渲染进程已意外退出。如果游戏仍在运行，请先关闭游戏，并关闭其他占用内存较多的程序，或减小导出尺寸后重试。"

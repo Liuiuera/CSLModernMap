@@ -1,8 +1,10 @@
 <Project>
   <PropertyGroup>
-    <Version>$([System.Text.RegularExpressions.Regex]::Match($([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)version.json')), '"version"\s*:\s*"([^"]+)"').Groups[1].Value)</Version>
-    <AssemblyVersion>$(Version).0</AssemblyVersion>
-    <FileVersion>$(Version).0</FileVersion>
-    <InformationalVersion>$(Version)</InformationalVersion>
+    <ReleaseVersion>$([System.Text.RegularExpressions.Regex]::Match($([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)version.json')), '&quot;version&quot;\s*:\s*&quot;([^&quot;]+)&quot;').Groups[1].Value)</ReleaseVersion>
+    <AssemblyVersion>$([System.Text.RegularExpressions.Regex]::Match($([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)version.json')), '&quot;assembly_version&quot;\s*:\s*&quot;([^&quot;]+)&quot;').Groups[1].Value)</AssemblyVersion>
+    <AssemblyVersion Condition="'$(AssemblyVersion)' == ''">$(ReleaseVersion).0</AssemblyVersion>
+    <Version>$(AssemblyVersion)</Version>
+    <FileVersion>$(AssemblyVersion)</FileVersion>
+    <InformationalVersion>$(ReleaseVersion)</InformationalVersion>
   </PropertyGroup>
 </Project>

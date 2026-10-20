@@ -4422,4 +4422,7 @@ Via de amostra com 16 m, escala de renderização 1</value>
   <data name="Poi_AreaNames" xml:space="preserve"><value>Nomes das áreas funcionais</value></data>
   <data name="Poi_AreaDescription" xml:space="preserve"><value>Áreas funcionais e nomes exportados pelo jogo.</value></data>
   <data name="Poi_PngInternalBuildings" xml:space="preserve"><value>Mostrar ícones dos edifícios internos das áreas no PNG</value></data>
+  <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
+    <value>O jogo ainda está aberto e pode consumir muita memória. Recomendamos salvar a cidade e sair do jogo antes de exportar. Você também pode continuar.</value>
+  </data>
 </root>

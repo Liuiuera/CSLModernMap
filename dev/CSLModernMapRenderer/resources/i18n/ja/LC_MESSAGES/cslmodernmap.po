@@ -5162,3 +5162,6 @@ msgstr "保存時刻"
 
 msgid "watermark.traffic_at"
 msgstr "交通状況"
+
+msgid "ui.export.possible_memory_exhaustion"
+msgstr "メモリ不足の可能性があり、描画プロセスが予期せず終了しました。ゲームが起動中の場合は、ゲームやメモリを多く使用するアプリを終了するか、出力サイズを小さくして再試行してください。"

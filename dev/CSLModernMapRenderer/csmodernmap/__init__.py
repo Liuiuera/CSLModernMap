@@ -14,7 +14,7 @@
 """
 
 # 导入附属模块时保持包版本信息可用。
-__version__ = "6.7.1"
+__version__ = "6.7.2f"
 
 from .detail import DetailMode
 

@@ -4426,4 +4426,7 @@ Esc  取消目前工作</value>
   <data name="Poi_AreaNames" xml:space="preserve"><value>功能區名稱</value></data>
   <data name="Poi_AreaDescription" xml:space="preserve"><value>遊戲匯出的功能區域及其名稱。</value></data>
   <data name="Poi_PngInternalBuildings" xml:space="preserve"><value>PNG 顯示功能區內部建築圖示</value></data>
+  <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
+    <value>偵測到遊戲仍在執行，會佔用較多記憶體。建議儲存城市並退出遊戲後再匯出；也可以繼續嘗試。</value>
+  </data>
 </root>

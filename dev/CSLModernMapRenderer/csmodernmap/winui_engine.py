@@ -9,6 +9,7 @@ from . import i18n
 import heapq
 import hashlib
 import copy
+import errno
 import json
 import math
 import re
@@ -193,6 +194,7 @@ class EngineServer:
         self.backend.preview_waits_for_presentation = True
         self.requests: queue.Queue[dict | None] = queue.Queue()
         self.write_lock = threading.Lock()
+        self._output_failed = False
         self.running = True
         self._clear_export()
         self._saving_export = False
@@ -223,8 +225,19 @@ class EngineServer:
 
     def send(self, frame: dict) -> None:
         with self.write_lock:
-            self.output.write(json.dumps(frame, ensure_ascii=False, separators=(",", ":")) + "\n")
-            self.output.flush()
+            if self._output_failed:
+                return
+            try:
+                self.output.write(json.dumps(frame, ensure_ascii=False, separators=(",", ":")) + "\n")
+                self.output.flush()
+            except OSError as error:
+                # Windows 的已断开重定向管道也可能返回 EINVAL。
+                if error.errno not in (errno.EPIPE, errno.EINVAL):
+                    raise
+                self._output_failed = True
+                self.running = False
+                self.scheduler.wakeup.set()
+                print(f"WinUI protocol output disconnected: {error}", file=sys.stderr)
 
     def event(self, name: str, payload: dict) -> None:
         self.send({"event": name, "payload": payload})
@@ -327,7 +340,13 @@ class EngineServer:
         self._clear_export()
         self._render_mode = None
         self._metro_request_id = None
-        self.event("error", {**metadata, "message": str(error)})
+        message = str(error)
+        if (isinstance(error, MemoryError)
+                or "A process in the process pool was terminated abruptly" in message
+                or re.search(r"(?:^|\n)(?:[\w.]+\.)?MemoryError(?::|$)", message)):
+            print(message, file=sys.stderr)
+            message = i18n.tr("ui.export.possible_memory_exhaustion")
+        self.event("error", {**metadata, "message": message})
         self.event("busy", {"value": bool(getattr(self.backend, "busy", False))})
 
     def _render_progress(self, percent, message) -> None:
@@ -1847,7 +1866,7 @@ class EngineServer:
                 if frame is None:
                     break
                 self.handle(frame)
-            return 0
+            return 1 if self._output_failed else 0
         finally:
             with self._theme_preview_lock:
                 self._theme_preview_request_id = None

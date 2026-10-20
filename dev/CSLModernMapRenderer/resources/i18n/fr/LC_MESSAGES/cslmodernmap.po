@@ -5371,3 +5371,9 @@ msgstr "Horodatage de la sauvegarde"
 
 msgid "watermark.traffic_at"
 msgstr "Trafic à"
+
+msgid "ui.export.possible_memory_exhaustion"
+msgstr ""
+"Le processus de rendu s’est arrêté de manière inattendue, peut-être par manque de mémoire. Si le "
+"jeu est encore ouvert, fermez-le ainsi que les autres applications gourmandes en mémoire, ou "
+"réduisez la taille d’exportation, puis réessayez."

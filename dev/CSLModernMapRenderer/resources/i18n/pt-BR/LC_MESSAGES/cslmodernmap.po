@@ -5334,3 +5334,9 @@ msgstr "Horário do arquivo de cidade"
 
 msgid "watermark.traffic_at"
 msgstr "Tráfego em"
+
+msgid "ui.export.possible_memory_exhaustion"
+msgstr ""
+"O processo de renderização foi encerrado inesperadamente, possivelmente por falta de memória. Se "
+"o jogo ainda estiver aberto, feche-o e outros aplicativos que consomem muita memória ou reduza o "
+"tamanho da exportação e tente novamente."

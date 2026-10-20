@@ -4422,4 +4422,7 @@ Przykładowa droga: 16 m, skala renderowania: 1</value>
   <data name="Poi_AreaNames" xml:space="preserve"><value>Nazwy obszarów funkcjonalnych</value></data>
   <data name="Poi_AreaDescription" xml:space="preserve"><value>Obszary funkcjonalne i nazwy wyeksportowane z gry.</value></data>
   <data name="Poi_PngInternalBuildings" xml:space="preserve"><value>Pokazuj ikony budynków wewnątrz obszarów w PNG</value></data>
+  <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
+    <value>Gra nadal działa i może zużywać dużo pamięci. Zalecamy zapisanie miasta i zamknięcie gry przed eksportem. Możesz też kontynuować.</value>
+  </data>
 </root>

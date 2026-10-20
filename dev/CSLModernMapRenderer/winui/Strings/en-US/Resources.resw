@@ -4427,4 +4427,7 @@ Do you want to save your current changes?</value></data>
   <data name="Poi_AreaNames" xml:space="preserve"><value>Functional area names</value></data>
   <data name="Poi_AreaDescription" xml:space="preserve"><value>Functional areas and names exported by the game.</value></data>
   <data name="Poi_PngInternalBuildings" xml:space="preserve"><value>Show internal area building icons in PNG</value></data>
+  <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
+    <value>The game is still running and may use a large amount of memory. Consider saving your city and exiting the game before exporting. You can also continue.</value>
+  </data>
 </root>

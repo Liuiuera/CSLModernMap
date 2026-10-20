@@ -4422,4 +4422,7 @@ Carretera de muestra de 16 m, escala de renderizado 1</value>
   <data name="Poi_AreaNames" xml:space="preserve"><value>Nombres de áreas funcionales</value></data>
   <data name="Poi_AreaDescription" xml:space="preserve"><value>Áreas funcionales y nombres exportados por el juego.</value></data>
   <data name="Poi_PngInternalBuildings" xml:space="preserve"><value>Mostrar iconos de edificios internos de las áreas en PNG</value></data>
+  <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
+    <value>El juego sigue abierto y puede consumir mucha memoria. Se recomienda guardar la ciudad y salir del juego antes de exportar. También puede continuar.</value>
+  </data>
 </root>

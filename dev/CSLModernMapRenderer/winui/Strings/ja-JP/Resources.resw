@@ -4422,4 +4422,7 @@ Esc  現在のタスクをキャンセル</value>
   <data name="Poi_AreaNames" xml:space="preserve"><value>機能エリア名</value></data>
   <data name="Poi_AreaDescription" xml:space="preserve"><value>ゲームから出力された機能エリアとその名前。</value></data>
   <data name="Poi_PngInternalBuildings" xml:space="preserve"><value>PNG にエリア内部の建物アイコンを表示</value></data>
+  <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
+    <value>ゲームが起動中のため、多くのメモリを使用している可能性があります。都市を保存してゲームを終了してからの出力をおすすめします。そのまま続行することもできます。</value>
+  </data>
 </root>

@@ -5325,3 +5325,9 @@ msgstr "Czas zapisu"
 
 msgid "watermark.traffic_at"
 msgstr "Ruch drogowy"
+
+msgid "ui.export.possible_memory_exhaustion"
+msgstr ""
+"Proces renderowania zakończył się nieoczekiwanie, prawdopodobnie z powodu braku pamięci. Jeśli "
+"gra nadal działa, zamknij ją i inne programy zużywające dużo pamięci albo zmniejsz rozmiar "
+"eksportu i spróbuj ponownie."

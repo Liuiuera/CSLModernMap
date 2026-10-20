@@ -4422,4 +4422,7 @@ Strada di prova 16 m, scala di rendering 1</value>
   <data name="Poi_AreaNames" xml:space="preserve"><value>Nomi delle aree funzionali</value></data>
   <data name="Poi_AreaDescription" xml:space="preserve"><value>Aree funzionali e nomi esportati dal gioco.</value></data>
   <data name="Poi_PngInternalBuildings" xml:space="preserve"><value>Mostra le icone degli edifici interni alle aree nel PNG</value></data>
+  <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
+    <value>Il gioco è ancora aperto e può usare molta memoria. È consigliabile salvare la città e uscire dal gioco prima di esportare. Puoi anche continuare.</value>
+  </data>
 </root>

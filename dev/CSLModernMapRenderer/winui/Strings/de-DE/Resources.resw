@@ -4422,4 +4422,7 @@ Beispielstraße: 16 m, Rendermultiplikator 1</value>
   <data name="Poi_AreaNames" xml:space="preserve"><value>Namen der Funktionsbereiche</value></data>
   <data name="Poi_AreaDescription" xml:space="preserve"><value>Vom Spiel exportierte Funktionsbereiche und Namen.</value></data>
   <data name="Poi_PngInternalBuildings" xml:space="preserve"><value>Interne Gebäudesymbole der Bereiche in PNG anzeigen</value></data>
+  <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
+    <value>Das Spiel läuft noch und kann viel Arbeitsspeicher belegen. Speichern Sie Ihre Stadt und beenden Sie möglichst das Spiel vor dem Export. Sie können auch fortfahren.</value>
+  </data>
 </root>

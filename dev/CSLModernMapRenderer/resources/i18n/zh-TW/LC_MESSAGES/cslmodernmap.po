@@ -5162,3 +5162,6 @@ msgstr "儲存時間"
 
 msgid "watermark.traffic_at"
 msgstr "路況"
+
+msgid "ui.export.possible_memory_exhaustion"
+msgstr "可能是記憶體不足，繪製程序已意外結束。如果遊戲仍在執行，請先關閉遊戲，並關閉其他佔用記憶體較多的程式，或縮小匯出尺寸後重試。"

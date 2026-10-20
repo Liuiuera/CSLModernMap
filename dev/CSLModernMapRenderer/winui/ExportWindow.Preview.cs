@@ -23,6 +23,9 @@ internal sealed partial class ExportWindow
     private readonly TextBlock _themeTitle = ExportDesign.Text("");
     private readonly Image _themeImage = new() { Width = 56, Height = 44, Stretch = Stretch.UniformToFill };
     private readonly InfoBar _feedback = new() { IsOpen = false, IsClosable = true, Visibility = Visibility.Collapsed };
+    private readonly InfoBar _gameRunningNotice = new() { IsOpen = false, IsClosable = false,
+        Severity = InfoBarSeverity.Warning, Visibility = Visibility.Collapsed,
+        Message = UiLanguage.Text("ExportWindow_GameRunningNotice") };
     private readonly RadioButton _rangeFull = new() { Content = UiLanguage.Text("ExportWindow_Preview__rangeFull_653AEA4D67") };
     private readonly RadioButton _rangeEntry = new() { Content = UiLanguage.Text("ExportWindow_Preview__rangeEntry_157A8D388F") };
     private readonly RadioButton _rangeCustom = new() { Content = UiLanguage.Text("ExportWindow_Preview__rangeCustom_4EAFA9E925") };
@@ -407,6 +410,10 @@ internal sealed partial class ExportWindow
 
     private void InitializeResults()
     {
+        _window.Activated += (_, args) =>
+        {
+            if (args.WindowActivationState != WindowActivationState.Deactivated) UpdateGameRunningNotice();
+        };
         _feedback.RegisterPropertyChangedCallback(InfoBar.IsOpenProperty, (_, _) =>
             _feedback.Visibility = _feedback.IsOpen ? Visibility.Visible : Visibility.Collapsed);
         _window.Closed += (_, _) => _closed = true;
@@ -431,6 +438,19 @@ internal sealed partial class ExportWindow
         retry.Visibility = Visibility.Collapsed;
         _editable.Add(retry);
         _ready = true;
+    }
+
+    private void UpdateGameRunningNotice()
+    {
+        var running = false;
+        foreach (var name in new[] { "Cities", "Cities2" })
+        {
+            var processes = System.Diagnostics.Process.GetProcessesByName(name);
+            running |= processes.Length != 0;
+            foreach (var process in processes) process.Dispose();
+        }
+        _gameRunningNotice.IsOpen = running;
+        _gameRunningNotice.Visibility = running ? Visibility.Visible : Visibility.Collapsed;
     }
 
     internal async Task RefreshSharedSnapshotAsync()
