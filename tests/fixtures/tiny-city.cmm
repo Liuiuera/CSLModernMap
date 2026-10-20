@@ -1,0 +1,30 @@
+{
+  "schema_version": "cmm-v1",
+  "metadata": {
+    "origin": {"game": "cs2", "exporter": "CMM synthetic test fixture", "source_name": "测试城 Test City"},
+    "exported_at": "2026-10-19T00:00:00Z",
+    "anonymized": true
+  },
+  "sea_level": 0,
+  "nodes": [
+    {"id": 1, "pos": [-120, 0, 0]},
+    {"id": 2, "pos": [120, 0, 0]},
+    {"id": 3, "pos": [0, 12, -120]},
+    {"id": 4, "pos": [0, 12, 120]}
+  ],
+  "networks": [
+    {"id": 10, "kind": "ROAD", "start_id": 1, "end_id": 2, "geometry": [[-120,0,0],[120,0,0]], "mode": "GROUND", "width": 20, "level": "MAIN", "display_name": "东西路"},
+    {"id": 20, "kind": "ROAD", "start_id": 3, "end_id": 4, "geometry": [[0,12,-120],[0,12,120]], "mode": "ELEVATED", "width": 14, "level": "HIGHWAY", "display_name": "南北桥"}
+  ],
+  "buildings": [
+    {"id": 100, "name": "Test Home", "display_name": {"text": "测试住宅", "source": "custom"}, "role": "RESIDENTIAL", "service": "Residential", "footprint": [[30,0,30],[70,0,30],[70,0,65],[30,0,65]]}
+  ],
+  "districts": [],
+  "stops": [
+    {"id": 11,"network_node_id": 1,"kind": "BUS","name": {"text":"西站","source":"custom"},"position":[-120,0,0],"serving_line_ids":[1]},
+    {"id": 12,"network_node_id": 2,"kind": "BUS","name": {"text":"东站","source":"custom"},"position":[120,0,0],"serving_line_ids":[1]}
+  ],
+  "transit_lines": [{"id": 1,"name":"测试公交 1","kind":"BUS","user_color":[220,40,30,255]}],
+  "routes": [{"id":1,"line_id":1,"direction":"OUTBOUND","stop_ids":[11,12],"is_closed":false,"geometry_kind":"STOP_DIRECT"}],
+  "terrain": {}
+}

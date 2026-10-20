@@ -89,3 +89,6 @@ dist-embed/
 AGENTS.local.md
 AI_CONTEXT.md
 dev/CSLModernMapRenderer/custom_fonts/
+
+# Local CI and release output
+/artifacts/

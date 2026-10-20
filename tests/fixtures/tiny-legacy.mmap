@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Map version="4.1">
+  <City>旧格式测试城</City>
+  <Generated>2026-10-19</Generated>
+  <SeaLevel>0</SeaLevel>
+  <Nodes>
+    <Node id="1" og="true"><Pos x="-100" y="0" z="0" /></Node>
+    <Node id="2" og="true"><Pos x="100" y="0" z="0" /></Node>
+  </Nodes>
+  <Segments>
+    <Seg id="10" sn="1" en="2" icls="Road" width="16" CustomName="测试路" />
+  </Segments>
+</Map>

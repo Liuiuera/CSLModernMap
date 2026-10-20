@@ -1,0 +1,17 @@
+{
+  "description": "City map viewer and renderer for Cities: Skylines and Cities: Skylines II. PNG, HTML and transit diagrams.",
+  "homepage": "https://github.com/Liuiuera/CSLModernMap/wiki",
+  "has_wiki": true,
+  "topics": [
+    "cities-skylines",
+    "cities-skylines-2",
+    "city-map",
+    "map-rendering",
+    "transit-map",
+    "winui3",
+    "python",
+    "typescript",
+    "maplibre",
+    "game-mod"
+  ]
+}

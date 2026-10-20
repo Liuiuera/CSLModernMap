@@ -1,0 +1,42 @@
+[
+  {
+    "name": "bug",
+    "color": "d73a4a",
+    "description": "功能异常或错误 / Something is not working"
+  },
+  {
+    "name": "enhancement",
+    "color": "a2eeef",
+    "description": "功能建议与改进 / Feature suggestions and improvements"
+  },
+  {
+    "name": "documentation",
+    "color": "0075ca",
+    "description": "使用说明与文档 / Guides and documentation"
+  },
+  {
+    "name": "question",
+    "color": "d876e3",
+    "description": "使用问题 / Usage questions"
+  },
+  {
+    "name": "cs1",
+    "color": "1d76db",
+    "description": "Cities: Skylines 相关 / Related to Cities: Skylines"
+  },
+  {
+    "name": "cs2",
+    "color": "5319e7",
+    "description": "Cities: Skylines II 相关 / Related to Cities: Skylines II"
+  },
+  {
+    "name": "renderer",
+    "color": "0e8a16",
+    "description": "查看器、地图与线路图 / Viewer, maps and diagrams"
+  },
+  {
+    "name": "packaging",
+    "color": "fbca04",
+    "description": "构建、安装与发行包 / Builds, installation and packages"
+  }
+]

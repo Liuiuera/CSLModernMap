@@ -16,6 +16,8 @@ Windows 查看器使用 WinUI，支持 `.cmm`、`.cmm.gz` 及历史 `.mmap`、`.
 2. 在 Mod 的设置页面选择导出城市数据，或选择“导出并打开”。
 3. 在查看器中打开导出的文件，调整主题、图层和显示范围，再选择所需的导出格式。
 
+使用说明见[入门指南](docs/wiki/Home.md)。
+
 自行编译请参阅[构建说明](docs/构建说明.md)。Windows 查看器支持 x64、Windows 10 19041 及以上版本。
 
 ### 项目构造与构建
@@ -56,6 +58,8 @@ The Windows viewer uses WinUI and reads `.cmm`, `.cmm.gz`, and legacy `.mmap` an
 1. Install and enable the CSLModernMap mod for your game, then load a city.
 2. Open the mod's settings and export the city data, or choose the export-and-open action.
 3. Open the exported file in the viewer, adjust the theme, layers and map extent, then choose an output format.
+
+See the [user guide](docs/wiki/Getting-Started.md) for everyday use.
 
 See [Build instructions](docs/构建说明.md) (Chinese) to compile the application. The Windows viewer supports x64 Windows 10 build 19041 or later.
 
