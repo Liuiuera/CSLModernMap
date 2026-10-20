@@ -61,6 +61,7 @@ internal sealed class PoiProfileEditorPanel
             ("transit", UiLanguage.Text("PoiProfileEditorPanel_Build_2480389050"), UiLanguage.Text("PoiProfileEditorPanel_Build_9FB9D886FD")),
             ("ordinary", UiLanguage.Text("PoiProfileEditorPanel_Build_9965945D5D"), UiLanguage.Text("PoiProfileEditorPanel_Build_2BDBD22B8E")),
             ("facility", UiLanguage.Text("PoiProfileEditorPanel_Build_8A16E15823"), UiLanguage.Text("PoiProfileEditorPanel_Build_FFA0A4B20C")),
+            ("area", UiLanguage.Text("Poi_AreaMerge"), UiLanguage.Text("Poi_AreaMergeDescription")),
         })
         {
             var toggle = AddToggle($"groups.{group}.merge_enabled", title);

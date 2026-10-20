@@ -59,6 +59,7 @@ public partial class App : Application
             handedOff = true;
             allowClose = true;
             startup.Close();
+            _ = Task.Run(() => RendererCleanup.Run(AppContext.BaseDirectory, StartupTrace.Write));
         }
         catch (OperationCanceledException) when (closing) { }
         catch (Exception error)

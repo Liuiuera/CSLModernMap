@@ -4430,4 +4430,13 @@ Esc  取消当前任务</value>
   <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
     <value>检测到游戏仍在运行，会占用较多内存。建议保存城市并退出游戏后再导出；也可以继续尝试。</value>
   </data>
+  <data name="ExportWindow_BeforeExportNotice" xml:space="preserve">
+    <value>导出前建议保存城市并退出游戏，关闭其他占用内存较多的程序。大尺寸导出会占用更多内存。</value>
+  </data>
+  <data name="Poi_AreaMerge" xml:space="preserve">
+    <value>功能区近邻合并（二代）</value>
+  </data>
+  <data name="Poi_AreaMergeDescription" xml:space="preserve">
+    <value>同原生类型、同名的二代功能区在指定距离内共用一个标注；保留各自区域边界。</value>
+  </data>
 </root>

@@ -510,6 +510,10 @@ class POIIconLayer(Layer):
             self._draw_icon(poi, icon_size, bg_circle, bg_circle_size)
         for poi in pois:
             if poi.poi_id not in selected_ids:
+                # 二代区域的图标和名称共用密度结果；显式空图标仍可独立标注。
+                if (poi.poi_group == "area" and poi.icon_id.startswith("cs2::")
+                        and not self.icon_map.is_hidden(poi.icon_id)):
+                    continue
                 self._queue_unpainted_name(poi, icon_size)
         if not defer_to_parent:
             for args in self._pending_names:

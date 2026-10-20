@@ -4425,4 +4425,13 @@ Strada di prova 16 m, scala di rendering 1</value>
   <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
     <value>Il gioco è ancora aperto e può usare molta memoria. È consigliabile salvare la città e uscire dal gioco prima di esportare. Puoi anche continuare.</value>
   </data>
+  <data name="ExportWindow_BeforeExportNotice" xml:space="preserve">
+    <value>Prima di esportare, valuta di salvare la città, uscire dal gioco e chiudere altri programmi che usano molta memoria. Le esportazioni più grandi richiedono più memoria.</value>
+  </data>
+  <data name="Poi_AreaMerge" xml:space="preserve">
+    <value>Etichette delle aree vicine (CS2)</value>
+  </data>
+  <data name="Poi_AreaMergeDescription" xml:space="preserve">
+    <value>Le aree CS2 vicine con lo stesso tipo nativo e nome condividono una sola etichetta. I confini restano separati.</value>
+  </data>
 </root>

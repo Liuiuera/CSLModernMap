@@ -176,11 +176,13 @@ def select_pois(items, *, grid_size, max_per_cell, origin=(0, 0),
                 pixels_per_world=1.0):
     """先按类别网格选择，再限制各子图层合并后的网格数量；坐标以最终输出像素计。"""
     items = list(items)
-    # 区域主体不参与密度淘汰，也不占用普通 POI 的网格配额。
-    areas = [item for item in items
-             if str(getattr(item, "semantic_level", "")).upper() == "AREA"]
-    items = [item for item in items
-             if str(getattr(item, "semantic_level", "")).upper() != "AREA"]
+    # 一代区域保留原有豁免；二代大量子区域需随缩放遵守同一显示配额。
+    areas, candidates = [], []
+    for item in items:
+        exempt = (str(getattr(item, "semantic_level", "")).upper() == "AREA"
+                  and not str(getattr(item, "icon_id", "")).startswith("cs2::"))
+        (areas if exempt else candidates).append(item)
+    items = candidates
     if grid_size <= 0:
         return [*areas, *items]
     if max_per_cell <= 0:

@@ -4425,4 +4425,13 @@ Shaotang Shaoxiancao Codex</value>
   <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
     <value>Игра ещё запущена и может занимать много памяти. Рекомендуется сохранить город и выйти из игры перед экспортом. Также можно продолжить.</value>
   </data>
+  <data name="ExportWindow_BeforeExportNotice" xml:space="preserve">
+    <value>Перед экспортом рекомендуется сохранить город, выйти из игры и закрыть другие программы, использующие много памяти. Чем больше размер экспорта, тем больше памяти требуется.</value>
+  </data>
+  <data name="Poi_AreaMerge" xml:space="preserve">
+    <value>Подписи соседних областей (CS2)</value>
+  </data>
+  <data name="Poi_AreaMergeDescription" xml:space="preserve">
+    <value>Близкие области CS2 одного исходного типа с одинаковым названием используют общую подпись. Их границы остаются отдельными.</value>
+  </data>
 </root>

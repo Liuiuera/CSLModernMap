@@ -144,6 +144,7 @@ internal sealed partial class ExportWindow
         ExportDesign.Secondary(_contextDesc);
         var header = new StackPanel { Spacing = 12 };
         header.Children.Add(title);
+        header.Children.Add(_gameRunningNotice);
         header.Children.Add(BuildFormatChoices());
         var settings = new StackPanel { Spacing = 12 };
 
@@ -199,7 +200,7 @@ internal sealed partial class ExportWindow
             _resultActions.Orientation = _resultActions.ActualWidth >= 480 ? Orientation.Horizontal : Orientation.Vertical;
 
         var footer = new StackPanel { Spacing = 8 };
-        footer.Children.Add(_gameRunningNotice);
+        footer.Children.Add(_beforeExportNotice);
         footer.Children.Add(_progress);
         footer.Children.Add(_feedback);
         footer.Children.Add(_resultActions);
@@ -678,6 +679,7 @@ internal sealed partial class ExportWindow
     private async Task StartAsync()
     {
         if (_busy || _choosing || _savingDensity) return;
+        UpdateGameRunningNotice();
         _choosing = true;
         RefreshControlStates();
         string? target;
@@ -691,6 +693,7 @@ internal sealed partial class ExportWindow
     private async Task StartExportAsync(string target)
     {
         if (_busy || _choosing || _savingDensity) return;
+        UpdateGameRunningNotice();
         _choosing = true;
         RefreshControlStates();
         string? previousSuccessfulPng = null;

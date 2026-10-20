@@ -23,6 +23,9 @@ internal sealed partial class ExportWindow
     private readonly TextBlock _themeTitle = ExportDesign.Text("");
     private readonly Image _themeImage = new() { Width = 56, Height = 44, Stretch = Stretch.UniformToFill };
     private readonly InfoBar _feedback = new() { IsOpen = false, IsClosable = true, Visibility = Visibility.Collapsed };
+    private readonly InfoBar _beforeExportNotice = new() { IsOpen = true, IsClosable = false,
+        Severity = InfoBarSeverity.Informational,
+        Message = UiLanguage.Text("ExportWindow_BeforeExportNotice") };
     private readonly InfoBar _gameRunningNotice = new() { IsOpen = false, IsClosable = false,
         Severity = InfoBarSeverity.Warning, Visibility = Visibility.Collapsed,
         Message = UiLanguage.Text("ExportWindow_GameRunningNotice") };
@@ -438,6 +441,7 @@ internal sealed partial class ExportWindow
         retry.Visibility = Visibility.Collapsed;
         _editable.Add(retry);
         _ready = true;
+        UpdateGameRunningNotice();
     }
 
     private void UpdateGameRunningNotice()

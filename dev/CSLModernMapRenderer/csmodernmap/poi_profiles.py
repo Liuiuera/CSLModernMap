@@ -40,6 +40,7 @@ def default_poi_profile(target: str) -> dict[str, Any]:
             "transit": {"merge_enabled": True, "distance_m": 80.0},
             "facility": {"merge_enabled": True},
             "ordinary": {"merge_enabled": True, "distance_m": 24.0},
+            "area": {"merge_enabled": True, "distance_m": 100.0},
         },
         "allow_different_station_names": False,
         "density_enabled": True,

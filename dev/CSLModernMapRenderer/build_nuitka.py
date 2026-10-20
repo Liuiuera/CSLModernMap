@@ -50,6 +50,8 @@ def _build_command(mode: str, console: bool = False,
     rmp_icons = ROOT / "resources" / "icons" / "rmp"
     command = _nuitka_command() + [
         f"--mode={mode}",
+        # 运行时不读取 Python 文档字符串；保留界面文案与错误消息。
+        "--python-flag=no_docstrings",
         "--enable-plugin=pyside6",
         # Qt 只用于 QtCore/QtGui 路径几何，不创建窗口或用 Qt 解码图片。
         *[f"--noinclude-qt-plugins={family}" for family in (
@@ -67,7 +69,7 @@ def _build_command(mode: str, console: bool = False,
         # main.py 通过延迟导入和 CLI 子命令访问这些模块，显式收集避免漏包。
         "--include-package=csmodernmap",
         "--include-package=shapely",
-        "--nofollow-import-to=shapely.tests,shapely.conftest",
+        "--nofollow-import-to=shapely.tests,shapely.conftest,shapely.testing,numpy.testing,numpy.f2py",
         "--noinclude-pytest-mode=nofollow",
         "--include-distribution-metadata=shapely",
         "--nofollow-import-to=webview,pythonnet",

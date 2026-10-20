@@ -4425,4 +4425,13 @@ Przykładowa droga: 16 m, skala renderowania: 1</value>
   <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
     <value>Gra nadal działa i może zużywać dużo pamięci. Zalecamy zapisanie miasta i zamknięcie gry przed eksportem. Możesz też kontynuować.</value>
   </data>
+  <data name="ExportWindow_BeforeExportNotice" xml:space="preserve">
+    <value>Przed eksportem warto zapisać miasto, zamknąć grę i inne programy zużywające dużo pamięci. Większe eksporty wymagają więcej pamięci.</value>
+  </data>
+  <data name="Poi_AreaMerge" xml:space="preserve">
+    <value>Etykiety pobliskich obszarów (CS2)</value>
+  </data>
+  <data name="Poi_AreaMergeDescription" xml:space="preserve">
+    <value>Pobliskie obszary CS2 o tym samym typie źródłowym i nazwie mają wspólną etykietę. Ich granice pozostają oddzielne.</value>
+  </data>
 </root>

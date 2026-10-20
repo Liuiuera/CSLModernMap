@@ -4425,4 +4425,13 @@ Carretera de muestra de 16 m, escala de renderizado 1</value>
   <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
     <value>El juego sigue abierto y puede consumir mucha memoria. Se recomienda guardar la ciudad y salir del juego antes de exportar. También puede continuar.</value>
   </data>
+  <data name="ExportWindow_BeforeExportNotice" xml:space="preserve">
+    <value>Antes de exportar, considera guardar la ciudad, salir del juego y cerrar otros programas que consuman mucha memoria. Las exportaciones más grandes usan más memoria.</value>
+  </data>
+  <data name="Poi_AreaMerge" xml:space="preserve">
+    <value>Etiquetas de áreas cercanas (CS2)</value>
+  </data>
+  <data name="Poi_AreaMergeDescription" xml:space="preserve">
+    <value>Las áreas cercanas de CS2 con el mismo tipo nativo y nombre comparten una etiqueta. Sus límites se mantienen separados.</value>
+  </data>
 </root>

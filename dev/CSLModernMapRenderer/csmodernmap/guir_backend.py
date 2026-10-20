@@ -2688,7 +2688,7 @@ class GuirBackend:
             job["region_source"] = source
             job["output_size"] = output_dimensions(bounds, size, rotation)
         elif full_city_default:
-            bounds = self.world_rect()
+            bounds = document_city_bounds(self.document)
             job["region"] = bounds
             job["region_policy"] = None
             job.pop("auto_size", None)

@@ -1,7 +1,7 @@
 {
-  "version": "6.7.2f",
-  "changenote": "v6.7.2f Fixed city export failures caused by missing road outlines. Added an in-window warning when the game is still running. Added clearer guidance for rendering failures that may be caused by insufficient memory. Fixed a misleading “startup failed” message when communication between the renderer and its window is interrupted.",
-  "changenote_en": "v6.7.2f Fixed city export failures caused by missing road outlines. Added an in-window warning when the game is still running. Added clearer guidance for rendering failures that may be caused by insufficient memory. Fixed a misleading “startup failed” message when communication between the renderer and its window is interrupted.",
-  "changenote_zh": "v6.7.2f 修复部分道路轮廓缺失导致城市无法导出的问题。在导出窗口内增加游戏仍在运行的提示。为可能由内存不足引起的渲染失败补充处理建议。修复渲染器与界面通信断开时误报“启动失败”的问题。",
-  "assembly_version": "6.7.2.1"
+  "version": "6.7.2f2",
+  "changenote": "v6.7.2f2 Improved renderer performance and visual output. Added an advanced metro schematic editor powered by RMP, including support for water features in metro maps. Improved POI icons and text display, added support for exporting native in-game names, and fixed some area and district recognition issues. Reduced repeated functional-area icons and labels in Cities: Skylines II. Map exports now default to the standard city area, with outer terrain available as an explicit selection.",
+  "changenote_en": "v6.7.2f2 Improved renderer performance and visual output. Added an advanced metro schematic editor powered by RMP, including support for water features in metro maps. Improved POI icons and text display, added support for exporting native in-game names, and fixed some area and district recognition issues. Reduced repeated functional-area icons and labels in Cities: Skylines II. Map exports now default to the standard city area, with outer terrain available as an explicit selection.",
+  "changenote_zh": "v6.7.2f2 优化了渲染器的性能和绘制表现，添加了由RMP支持的高级地铁示意图编辑器，同时支持了地铁图的水域功能。优化了POI图标和各种文字的显示，现在支持游戏原生名称导出，同时解决了一些区域区划识别的问题。 减少了二代功能区图标和文字的重复显示。地图默认导出标准城市区域，外围地形可手动选择。",
+  "assembly_version": "6.7.2.2"
 }

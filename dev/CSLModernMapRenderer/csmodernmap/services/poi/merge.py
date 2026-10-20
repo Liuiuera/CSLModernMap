@@ -1,10 +1,8 @@
-"""合并来源不同但属于同一对象的 POI。
-
-先解析实体身份，再按语义执行邻近合并：普通地点使用占地间隙，实际交通站点使用站点半径，设施身份记录不按距离合并。显示密度筛选不得回写目录。"""
+"""按实体身份及近邻显示规则合并 POI，不修改源数据。"""
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any, Mapping, Sequence
 
 from ...cmm import POI, Vec3
@@ -101,6 +99,8 @@ def _group_enabled(profile: MergeProfile, group: str) -> bool:
     if group == "facility":
         # 旧建筑邻近开关不表示设施身份分组，只有显式设施设置才选单个代表对象。
         return False
+    if group == "area":
+        return True
     return bool(profile.building_merge_enabled)
 
 
@@ -124,12 +124,13 @@ def merge(
     blocks: list[POI] = []
     hubs: list[POI] = []
     facilities: list[POI] = []
+    areas: list[POI] = []
     passthrough: list[POI] = []
     for item in items:
         group = poi_group_for(item)
         # 设施身份先于邻近合并解析；父子记录仍是独立目录项，邻近的独立设施不按距离合并。
         if group == "area":
-            passthrough.append(item)
+            areas.append(item)
         elif group == "facility":
             facilities.append(item)
         elif group == "transit":
@@ -140,6 +141,7 @@ def merge(
             passthrough.append(item)
 
     result = list(passthrough)
+    result.extend(_merge_areas(areas, profile) if _group_enabled(profile, "area") else areas)
     if _group_enabled(profile, "facility"):
         result.extend(_merge_facilities_by_identity(facilities))
     else:
@@ -326,6 +328,29 @@ def _radius_cluster(members: Sequence[POI], radius: float) -> list[list[POI]]:
         inside_ids = {id(item) for item in inside}
         remaining = [item for item in remaining if id(item) not in inside_ids]
     return clusters
+
+
+def _merge_areas(items: Sequence[POI], profile: MergeProfile) -> list[POI]:
+    """二代同类型同名区域共用近邻标注，保持固定代表及原始区域身份。"""
+    groups: dict[tuple[str, str, str], list[POI]] = {}
+    result: list[POI] = []
+    for item in items:
+        name = " ".join(item.name.text.split())
+        if (item.source.kind != "park" or not item.icon_key.startswith("cs2::")
+                or not name):
+            result.append(item)
+            continue
+        groups.setdefault((item.icon_key, name, item.parent_poi_id), []).append(item)
+    distance = _group_distance(profile, "area", "area", 100.0)
+    for members in groups.values():
+        for cluster in _radius_cluster(members, distance):
+            if len(cluster) == 1:
+                result.append(cluster[0])
+                continue
+            sources = sorted({ref for item in cluster for ref in item.derived_from})
+            result.append(replace(cluster[0], dedupe_group="area_nearby",
+                                  derived_from=sources))
+    return result
 
 
 def _cluster_hubs(members: Sequence[POI], radius: float, *,

@@ -1476,6 +1476,9 @@ function layoutLabels(): void {
     labelSeen.add(id);
     const group = String(properties.visibilityGroup ?? properties.poiGroup ?? 'ordinary');
     if (iconGroups[group] === false) return false;
+    if (group === 'area' && String(properties.iconKey ?? '').startsWith('cs2::')
+        && properties.iconStatus === 'visible' && Array.isArray(properties.visibleZooms)
+        && !properties.visibleZooms.includes(Math.floor(map.getZoom()))) return false;
     const independent = group === 'area' || properties.nameSource === 'custom';
     if (!independent && !iconById.has(id)) return false;
     if (map.getZoom() < Number(properties.minZoom ?? 0)) return false;

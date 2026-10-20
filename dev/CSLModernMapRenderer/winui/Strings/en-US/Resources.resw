@@ -4430,4 +4430,13 @@ Do you want to save your current changes?</value></data>
   <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
     <value>The game is still running and may use a large amount of memory. Consider saving your city and exiting the game before exporting. You can also continue.</value>
   </data>
+  <data name="ExportWindow_BeforeExportNotice" xml:space="preserve">
+    <value>Before exporting, consider saving your city, exiting the game, and closing other memory-intensive programs. Larger exports use more memory.</value>
+  </data>
+  <data name="Poi_AreaMerge" xml:space="preserve">
+    <value>Nearby area labels (CS2)</value>
+  </data>
+  <data name="Poi_AreaMergeDescription" xml:space="preserve">
+    <value>Nearby CS2 areas with the same native type and name share one label. Their boundaries remain separate.</value>
+  </data>
 </root>

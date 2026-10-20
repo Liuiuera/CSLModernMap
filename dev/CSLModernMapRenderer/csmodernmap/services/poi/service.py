@@ -479,7 +479,14 @@ def _collect_parks(
     buildings = {_source_id(item): item for item in getattr(mapdata, "buildings", ())}
     for park in _park_values(mapdata):
         park_id = _source_id(park)
-        owner = buildings.get(getattr(park, "owner_building_id", None))
+        owner_id = getattr(park, "owner_building_id", None)
+        owner = buildings.get(owner_id)
+        group_id = facility_catalog.zone_to_group.get(park_id, "")
+        group = facility_catalog.by_id.get(group_id)
+        # CS2 SubArea 是主建筑的几何片段；按既有设施身份选主体，不受邻近合并开关影响。
+        cs2_owned_area = game == "cs2" and owner_id is not None and group is not None
+        if cs2_owned_area and park_id != group.source_zone_id:
+            continue
         native_id = _value_text(getattr(owner, "category_id", ""))
         if game == "cs1":
             icon_key = entry_key(game, f"park:{_park_type(park)}")
@@ -496,9 +503,12 @@ def _collect_parks(
             anchor=_center((), fallback=position), explicit_name=_park_name(park),
             semantic_level=SemanticLevel.AREA, area_id=park_id,
             source_raw=_park_type(park), icon_key=icon_key,
-            group_id=facility_catalog.zone_to_group.get(park_id, ""),
-            derived_from=((f"park:{park_id}", f"building:{_source_id(owner)}")
-                          if owner is not None else (f"park:{park_id}",)),
+            group_id=group_id,
+            parent_poi_id=group.parent_group_id if cs2_owned_area else "",
+            derived_from=tuple(
+                [f"park:{ident}" for ident in
+                 (group.source_zone_ids if cs2_owned_area else (park_id,))]
+                + ([f"building:{_source_id(owner)}"] if owner is not None else [])),
         )
         if poi is not None:
             result.append(poi)

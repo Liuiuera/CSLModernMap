@@ -16,6 +16,20 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>partial</TrimMode>
+    <!-- 引擎协议和编辑器使用动态 JSON 对象，保留反射序列化。 -->
+    <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <!-- 保留动态 JSON、XAML 和 WinRT 激活所需的类型及成员。 -->
+    <TrimmerRootAssembly Include="CSLModernMapRenderer" />
+    <TrimmerRootAssembly Include="RibbonSpace.WinUI" />
+    <TrimmerRootAssembly Include="Microsoft.WinUI" />
+    <TrimmerRootAssembly Include="Microsoft.Windows.SDK.NET" />
+    <TrimmerRootAssembly Include="WinRT.Runtime" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="..\resources\i18n\languages.json" Link="Assets\languages.json" CopyToOutputDirectory="PreserveNewest" />
     <PackageReference Include="Microsoft.WindowsAppSDK.WinUI" Version="1.8.260803003" />

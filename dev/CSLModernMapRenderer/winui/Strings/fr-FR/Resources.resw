@@ -4425,4 +4425,13 @@ Route de référence : 16 m, échelle de rendu : 1</value>
   <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
     <value>Le jeu est encore ouvert et peut utiliser beaucoup de mémoire. Il est conseillé d’enregistrer la ville et de quitter le jeu avant l’exportation. Vous pouvez aussi continuer.</value>
   </data>
+  <data name="ExportWindow_BeforeExportNotice" xml:space="preserve">
+    <value>Avant l’exportation, pensez à sauvegarder votre ville, à quitter le jeu et à fermer les autres programmes gourmands en mémoire. Les exports de grande taille utilisent davantage de mémoire.</value>
+  </data>
+  <data name="Poi_AreaMerge" xml:space="preserve">
+    <value>Libellés des zones proches (CS2)</value>
+  </data>
+  <data name="Poi_AreaMergeDescription" xml:space="preserve">
+    <value>Les zones CS2 proches de même type natif et de même nom partagent un libellé. Leurs limites restent distinctes.</value>
+  </data>
 </root>
