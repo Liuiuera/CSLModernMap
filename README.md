@@ -12,6 +12,8 @@ CSLModernMap 渲染器用于查看和绘制《城市：天际线》和《城市�
 
 Windows 查看器使用 WinUI，支持 `.cmm`、`.cmm.gz` 及历史 `.mmap`、`.mmap.gz` 文件。可以导出 PNG 图片、HTML 网页地图、RMG 和 RMP 线路项目；内嵌的 Rail Map Painter（RMP）用于编辑线路图。
 
+本项目包含由 OpenAI Codex 辅助生成的代码。
+
 ### 开始使用
 
 1. 安装并启用对应游戏的 CSLModernMap Mod，载入城市。
@@ -56,6 +58,8 @@ The CSLModernMap renderer displays and renders city maps exported from Cities: S
 The source for the Cities: Skylines II in-game export mod is maintained in [CSLModernMap-CodeMod](https://github.com/Liuiuera/CSLModernMap-CodeMod). The mod exports city data; the viewer and renderer in this repository read that data, display maps and export the results.
 
 The Windows viewer uses WinUI and reads `.cmm`, `.cmm.gz`, and legacy `.mmap` and `.mmap.gz` files. Outputs include PNG images, HTML web maps, and RMG and RMP transit projects. An embedded Rail Map Painter (RMP) editor lets you edit transit diagrams.
+
+This project contains code generated with assistance from OpenAI Codex.
 
 ### Getting started
 
