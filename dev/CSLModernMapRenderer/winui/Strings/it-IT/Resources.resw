@@ -321,7 +321,7 @@ Impossibile aprire la pagina web:</value>
     <comment>ExportWindow.Preview.cs:27</comment>
   </data>
   <data name="ExportWindow_Preview__rotationHelp_4787583E64" xml:space="preserve">
-    <value>La rotazione cambia l’orientamento della mappa. La pagina web usa la stessa direzione.</value>
+    <value>L’orientamento è condiviso con l’anteprima principale.</value>
     <comment>ExportWindow.Preview.cs:40</comment>
   </data>
   <data name="ExportWindow_Preview__sizeHelp_A073C771CC" xml:space="preserve">
@@ -813,7 +813,7 @@ Impossibile aprire la pagina web:</value>
     <comment>MainWindow.File.cs:29</comment>
   </data>
   <data name="MainWindow_File_BuildFileMenu_D5962F4266" xml:space="preserve">
-    <value>Salva PNG…</value>
+    <value>Esporta PNG…</value>
     <comment>MainWindow.File.cs:32</comment>
   </data>
   <data name="MainWindow_File_RefreshFileRecent_95D7E39D01" xml:space="preserve">
@@ -4433,5 +4433,11 @@ Strada di prova 16 m, scala di rendering 1</value>
   </data>
   <data name="Poi_AreaMergeDescription" xml:space="preserve">
     <value>Le aree CS2 vicine con lo stesso tipo nativo e nome condividono una sola etichetta. I confini restano separati.</value>
+  </data>
+  <data name="Map_RotateCounterclockwise" xml:space="preserve">
+    <value>90° in senso antiorario</value>
+  </data>
+  <data name="Map_RotateClockwise" xml:space="preserve">
+    <value>90° in senso orario</value>
   </data>
 </root>

@@ -338,8 +338,7 @@ internal sealed partial class ExportWindow
             ? Visibility.Visible : Visibility.Collapsed;
         _sizeHelp.Visibility = _sizeFields.Visibility;
         _rotationHelp.Visibility = _rotation.Visibility;
-        _rotationHelp.Text = SelectedFormat == "HTML" ? UiLanguage.Text("ExportWindow_Preview_SyncSizePreset_4787583E64")
-            : UiLanguage.Text("ExportWindow_Preview_SyncSizePreset_4787583E64");
+        _rotationHelp.Text = UiLanguage.Text("ExportWindow_Preview__rotationHelp_4787583E64");
     }
 
     private StackPanel BuildStatePane(JsonElement profile)

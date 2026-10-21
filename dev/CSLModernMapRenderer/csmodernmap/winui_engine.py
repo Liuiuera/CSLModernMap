@@ -998,6 +998,7 @@ class EngineServer:
                 raise ValueError("export profile target does not match the selected context")
             output = validate_output_profile({**backend.get_output_profile(target),
                 **{key: raw_output[key] for key in capability["outputFields"] if key in raw_output}}, target)
+            output["rotation"] = backend.rotation
             poi_target = "preview" if output_format == "HTML" else target
             poi = backend.get_poi_profile(poi_target)
             job = backend.capture_png_export_job(context, region,
@@ -1107,6 +1108,8 @@ class EngineServer:
             for key in ("adaptive_scale", "adaptive_strength")}
         options.update({"ann_" + key: False for key in defaults["annotations"]})
         job = self.backend.capture_png_export_job("metro", metro_options=options)
+        job["layers"] = []
+        job["ui"]["rotation"] = 0
         # 纯地铁渲染使用内置主题，不读取地图样式覆盖。
         job["ui"].pop("style_overrides", None)
         job["opts"]["capture_rmp"] = True

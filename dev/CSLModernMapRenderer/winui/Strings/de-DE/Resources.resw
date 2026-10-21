@@ -321,7 +321,7 @@ Webseite kann nicht geöffnet werden:</value>
     <comment>ExportWindow.Preview.cs:27</comment>
   </data>
   <data name="ExportWindow_Preview__rotationHelp_4787583E64" xml:space="preserve">
-    <value>Die Drehung ändert die Ausrichtung. Die Webseite verwendet dieselbe Richtung.</value>
+    <value>Die Ausrichtung wird mit der Hauptvorschau geteilt.</value>
     <comment>ExportWindow.Preview.cs:40</comment>
   </data>
   <data name="ExportWindow_Preview__sizeHelp_A073C771CC" xml:space="preserve">
@@ -813,7 +813,7 @@ Webseite kann nicht geöffnet werden:</value>
     <comment>MainWindow.File.cs:29</comment>
   </data>
   <data name="MainWindow_File_BuildFileMenu_D5962F4266" xml:space="preserve">
-    <value>PNG wird gespeichert…</value>
+    <value>PNG exportieren…</value>
     <comment>MainWindow.File.cs:32</comment>
   </data>
   <data name="MainWindow_File_RefreshFileRecent_95D7E39D01" xml:space="preserve">
@@ -4433,5 +4433,11 @@ Beispielstraße: 16 m, Rendermultiplikator 1</value>
   </data>
   <data name="Poi_AreaMergeDescription" xml:space="preserve">
     <value>Nahe CS2-Gebiete mit gleichem Originaltyp und Namen teilen eine Beschriftung. Ihre Grenzen bleiben getrennt.</value>
+  </data>
+  <data name="Map_RotateCounterclockwise" xml:space="preserve">
+    <value>90° gegen den Uhrzeigersinn</value>
+  </data>
+  <data name="Map_RotateClockwise" xml:space="preserve">
+    <value>90° im Uhrzeigersinn</value>
   </data>
 </root>

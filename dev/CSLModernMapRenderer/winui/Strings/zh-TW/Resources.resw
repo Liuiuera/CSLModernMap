@@ -321,7 +321,7 @@
     <comment>ExportWindow.Preview.cs:27</comment>
   </data>
   <data name="ExportWindow_Preview__rotationHelp_4787583E64" xml:space="preserve">
-    <value>旋轉可調整地圖方向。</value>
+    <value>方向與主預覽同步。</value>
     <comment>ExportWindow.Preview.cs:40</comment>
   </data>
   <data name="ExportWindow_Preview__sizeHelp_A073C771CC" xml:space="preserve">
@@ -813,7 +813,7 @@
     <comment>MainWindow.File.cs:29</comment>
   </data>
   <data name="MainWindow_File_BuildFileMenu_D5962F4266" xml:space="preserve">
-    <value>儲存 PNG…</value>
+    <value>匯出 PNG…</value>
     <comment>MainWindow.File.cs:32</comment>
   </data>
   <data name="MainWindow_File_RefreshFileRecent_95D7E39D01" xml:space="preserve">
@@ -4437,5 +4437,11 @@ Esc  取消目前工作</value>
   </data>
   <data name="Poi_AreaMergeDescription" xml:space="preserve">
     <value>相同原生類型、同名的二代功能區在指定距離內共用一個標註；保留各自區域邊界。</value>
+  </data>
+  <data name="Map_RotateCounterclockwise" xml:space="preserve">
+    <value>逆時針 90°</value>
+  </data>
+  <data name="Map_RotateClockwise" xml:space="preserve">
+    <value>順時針 90°</value>
   </data>
 </root>

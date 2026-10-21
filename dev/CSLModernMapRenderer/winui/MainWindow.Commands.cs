@@ -87,7 +87,7 @@ public sealed partial class MainWindow
         }
         var window = _exportWindow = new ExportWindow(_engine, profile, regionOverride, format,
             owner: this, editMapSettings: ShowMapPoiSettingsAsync, appearancePalettes: _appearancePalettes,
-            settingsChanged: ApplyEditorChangesAsync,
+            settingsChanged: ApplyEditorChangesAsync, rotationChanged: RefreshSnapshotAsync,
             exportRmp: rmp ? _rmpView!.ExportFileAsync : null);
         try { await window.ShowAsync(); }
         finally
@@ -110,7 +110,7 @@ public sealed partial class MainWindow
                 var accelerator = new KeyboardAccelerator { Key = shortcut, Modifiers = modifiers };
                 accelerator.Invoked += async (_, args) =>
                 {
-                    if (_context != "metro" && id is "rmp.undo" or "rmp.redo" or "workspace.export") return;
+                    if (_context != "metro" && id is "rmp.undo" or "rmp.redo") return;
                     if (!CommandEnabled(id, command)) return;
                     if (_context == "metro" && _rmpView?.HasWebFocus == true &&
                         id is "file.open" or "map.save_png" or "workspace.saveAs" or "workspace.export" or "rmp.undo" or "rmp.redo") return;
@@ -134,7 +134,9 @@ public sealed partial class MainWindow
             return _context == "metro" && _rmpView?.IsReady == true &&
                 (id != "rmp.undo" || RmpState("canUndo")) && (id != "rmp.redo" || RmpState("canRedo"));
         if (id == "app.language") return !busy && _pendingFieldWrites == 0 && !_closingEditors && !_changingLanguage;
-        if (id is "file.open" or "file.open_city" && busy) return false;
+        if (id is "map.rotate_counterclockwise" or "map.rotate_clockwise")
+            return _documentEnabled && _context != "metro" && !busy;
+        if (id is "file.open" or "file.open_city" or "map.save_png" or "workspace.saveAs" or "workspace.export" && busy) return false;
         if (command.Document && !_documentEnabled) return false;
         if (id is "view.transit.lines" or "layer.poi.facilities")
             return !busy && (id != "layer.poi.facilities" || _context == "map" && HasCs2Document);
@@ -196,17 +198,18 @@ public sealed partial class MainWindow
         InspectorPanel.LostFocus += (_, _) => Root.DispatcherQueue.TryEnqueue(ApplyPendingSettingsSnapshot);
         InspectorClose.Click += (_, _) => { _inspectorOpen = false; UpdateScaleAndLayout(); };
         InspectorToggle.Click += (_, _) => { _inspectorOpen = !_inspectorOpen; UpdateScaleAndLayout(); };
-        var mapActions = new (string Id, string Label, Symbol Icon, Func<Task> Run, VirtualKey? Shortcut)[]
+        var mapActions = new (string Id, string Label, IconElement Icon, Func<Task> Run, VirtualKey? Shortcut)[]
         {
-            ("map.select_region", UiLanguage.Text("MainWindow_Commands_BuildWorkspaceCommands_840A04872A"), Symbol.SelectAll, () => { _selectedRegionSource = "selection"; SendViewer(new { type = "beginSelection" }); return Task.CompletedTask; }, null),
-            ("map.clear_selection", UiLanguage.Text("MainWindow_Commands_BuildWorkspaceCommands_BCE2377283"), Symbol.Clear, () => { _selectedBounds = null; _selectedRegionSource = null; SendViewer(new { type = "clearSelection" }); return Task.CompletedTask; }, null),
-            ("map.render_selection", UiLanguage.Text("MainWindow_Commands_BuildWorkspaceCommands_9B8845539A"), Symbol.Save, ExportSelectionAsync, null),
-            ("map.refresh_preview", UiLanguage.Text("MainWindow_Commands_BuildWorkspaceCommands_AEE8874341"), Symbol.Refresh, CompilePreviewAsync, VirtualKey.P),
+            ("map.rotate_counterclockwise", UiLanguage.Text("Map_RotateCounterclockwise"), RibbonIcons.Named("rotate"), () => RotateMapAsync(-90), null),
+            ("map.rotate_clockwise", UiLanguage.Text("Map_RotateClockwise"), RibbonIcons.Named("rotate-clockwise"), () => RotateMapAsync(90), null),
+            ("map.select_region", UiLanguage.Text("MainWindow_Commands_BuildWorkspaceCommands_840A04872A"), new SymbolIcon(Symbol.SelectAll), () => { _selectedRegionSource = "selection"; SendViewer(new { type = "beginSelection" }); return Task.CompletedTask; }, null),
+            ("map.clear_selection", UiLanguage.Text("MainWindow_Commands_BuildWorkspaceCommands_BCE2377283"), new SymbolIcon(Symbol.Clear), () => { _selectedBounds = null; _selectedRegionSource = null; SendViewer(new { type = "clearSelection" }); return Task.CompletedTask; }, null),
+            ("map.render_selection", UiLanguage.Text("MainWindow_Commands_BuildWorkspaceCommands_9B8845539A"), new SymbolIcon(Symbol.Save), ExportSelectionAsync, null),
+            ("map.refresh_preview", UiLanguage.Text("MainWindow_Commands_BuildWorkspaceCommands_AEE8874341"), new SymbolIcon(Symbol.Refresh), CompilePreviewAsync, VirtualKey.P),
         };
-        foreach (var (id, label, symbol, run, shortcut) in mapActions)
+        foreach (var (id, label, icon, run, shortcut) in mapActions)
         {
             var content = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4 };
-            var icon = new SymbolIcon(symbol);
             Microsoft.UI.Xaml.Automation.AutomationProperties.SetAccessibilityView(icon,
                 Microsoft.UI.Xaml.Automation.Peers.AccessibilityView.Raw);
             content.Children.Add(new Viewbox { Child = icon, Width = 14, Height = 14 });
@@ -221,5 +224,21 @@ public sealed partial class MainWindow
         var export = new Button { Visibility = Visibility.Collapsed };
         RegisterCommand("map.export", () => ShowExportAsync(), true, export);
         UpdateCommandStates();
+    }
+
+    private async Task RotateMapAsync(int delta)
+    {
+        var state = await _engine.RequestAsync("getSnapshot");
+        var current = state.GetProperty("output").GetProperty("rotation").GetInt32();
+        var rotation = (current + delta + 360) % 360;
+        await _engine.RequestAsync("setOutputOption", new { key = "rotation", value = rotation });
+        await RefreshSnapshotAsync();
+    }
+
+    private void ApplySharedRotation()
+    {
+        var rotation = _snapshot.GetProperty("output").GetProperty("rotation").GetInt32();
+        SendViewer(new { type = "setOutputRotation", rotation });
+        _exportWindow?.SetSharedRotation(rotation);
     }
 }

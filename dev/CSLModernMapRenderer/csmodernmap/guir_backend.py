@@ -1125,7 +1125,7 @@ class GuirBackend:
         updated = validate_output_profile({**current, **profile}, target)
         values[OUTPUT_PROFILE_SETTING_KEY][target] = updated
         self._settings["values"] = values
-        self._schedule_settings_save()
+        self.set_rotation(updated["rotation"])
         return copy.deepcopy(updated)
 
     def poi_visibility_snapshot(self) -> dict:
@@ -1384,6 +1384,8 @@ class GuirBackend:
                 raise ValueError("rotation must be 0/90/180/270") from exc
             return
         self.rotation = rotation
+        self._settings.setdefault("values", {})["rotation_var"] = f"{rotation}°"
+        self._settings["values"] = normalize_output_profiles(self._settings["values"])
         if persist:
             self._schedule_settings_save()
 

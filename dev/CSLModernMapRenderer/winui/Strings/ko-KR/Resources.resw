@@ -321,7 +321,7 @@ Rail Map Painter의 열기 메뉴에서 이 폴더의 .rmp.json 파일을 가져
     <comment>ExportWindow.Preview.cs:27</comment>
   </data>
   <data name="ExportWindow_Preview__rotationHelp_4787583E64" xml:space="preserve">
-    <value>회전하면 지도의 방향이 바뀝니다.</value>
+    <value>방향은 기본 미리 보기와 동기화됩니다.</value>
     <comment>ExportWindow.Preview.cs:40</comment>
   </data>
   <data name="ExportWindow_Preview__sizeHelp_A073C771CC" xml:space="preserve">
@@ -813,7 +813,7 @@ Rail Map Painter의 열기 메뉴에서 이 폴더의 .rmp.json 파일을 가져
     <comment>MainWindow.File.cs:29</comment>
   </data>
   <data name="MainWindow_File_BuildFileMenu_D5962F4266" xml:space="preserve">
-    <value>PNG 저장…</value>
+    <value>PNG 내보내기…</value>
     <comment>MainWindow.File.cs:32</comment>
   </data>
   <data name="MainWindow_File_RefreshFileRecent_95D7E39D01" xml:space="preserve">
@@ -4433,5 +4433,11 @@ Esc  현재 작업 취소</value>
   </data>
   <data name="Poi_AreaMergeDescription" xml:space="preserve">
     <value>원본 유형과 이름이 같은 인접한 CS2 구역은 하나의 표식을 공유합니다. 각 구역의 경계는 유지됩니다.</value>
+  </data>
+  <data name="Map_RotateCounterclockwise" xml:space="preserve">
+    <value>반시계 방향 90°</value>
+  </data>
+  <data name="Map_RotateClockwise" xml:space="preserve">
+    <value>시계 방향 90°</value>
   </data>
 </root>

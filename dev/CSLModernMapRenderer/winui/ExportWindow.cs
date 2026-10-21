@@ -15,6 +15,7 @@ internal sealed partial class ExportWindow
     private readonly EngineClient _engine;
     private readonly Func<Task>? _editMapSettings;
     private readonly Func<Task>? _settingsChanged;
+    private readonly Func<Task>? _rotationChanged;
     private readonly Func<Uri, Task<bool>> _openUri;
     private readonly JsonElement _formatCapabilities;
     private readonly JsonElement? _appearancePalettes;
@@ -72,7 +73,7 @@ internal sealed partial class ExportWindow
         Window? owner = null,
         Func<Task>? editMapSettings = null, Func<Uri, Task<bool>>? openUri = null,
         JsonElement? appearancePalettes = null, Func<Task>? settingsChanged = null,
-        Func<string, string, RmpExportOptions, Task>? exportRmp = null)
+        Func<string, string, RmpExportOptions, Task>? exportRmp = null, Func<Task>? rotationChanged = null)
     {
         _window = new(UiLanguage.Text("ExportWindow_View_456F962F93"), 1000, 760, translucent: true, owner: owner, modal: owner is not null) { ActionsRightAligned = true };
         _engine = engine;
@@ -80,6 +81,7 @@ internal sealed partial class ExportWindow
         if (exportRmp is not null) profile = RmpExportProfile(profile);
         _editMapSettings = editMapSettings;
         _settingsChanged = settingsChanged;
+        _rotationChanged = rotationChanged;
         _openUri = openUri ?? (async uri => await Windows.System.Launcher.LaunchUriAsync(uri));
         _appearancePalettes = appearancePalettes;
         _formatCapabilities = profile.GetProperty("formatCapabilities").Clone();
@@ -596,6 +598,7 @@ internal sealed partial class ExportWindow
             UpdateDimensions();
             SyncSizePreset();
             _status.Text = UiLanguage.Text("ExportWindow_ResetOutputProfileAsync_23EE320097");
+            if (keys.Contains("rotation") && _rotationChanged is not null) await _rotationChanged();
         }
         catch (Exception error) { _status.Text = UiLanguage.Text("ExportWindow_ResetOutputProfileAsync_288BFB28A8") + error.Message; }
     }
@@ -632,9 +635,19 @@ internal sealed partial class ExportWindow
         try
         {
             await SaveOutputOptionAsync(key, value);
+            if (key == "rotation" && _rotationChanged is not null) await _rotationChanged();
             _status.Text = "";
         }
         catch (Exception error) { _status.Text = UiLanguage.Text("ExportWindow_CommitOutputOptionAsync_F4E15E33A6") + error.Message; }
+    }
+
+    internal void SetSharedRotation(int rotation)
+    {
+        if (_context == "metro" || _busy) return;
+        _savedRotation = rotation;
+        _output["rotation"] = rotation;
+        _rotation.SelectedItem = rotation;
+        UpdateDimensions();
     }
 
     public void Activate() => _window.Activate();
@@ -730,7 +743,7 @@ internal sealed partial class ExportWindow
                 latestOutput = JsonNode.Parse(outputSnapshot.GetRawText())!.AsObject();
                 latestOutput["format"] = format;
                 if (ShowsOutputField("size")) latestOutput["size"] = (int)_size.Value;
-                if (ShowsOutputField("rotation")) latestOutput["rotation"] = (int)(_rotation.SelectedItem ?? 0);
+                if (ShowsOutputField("rotation")) SetSharedRotation(latestOutput["rotation"]!.GetValue<int>());
                 _output = (JsonObject)latestOutput.DeepClone();
             }
 

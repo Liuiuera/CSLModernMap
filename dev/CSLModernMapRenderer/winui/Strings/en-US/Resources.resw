@@ -321,7 +321,7 @@ Could not open webpage: </value>
     <comment>ExportWindow.Preview.cs:27</comment>
   </data>
   <data name="ExportWindow_Preview__rotationHelp_4787583E64" xml:space="preserve">
-    <value>Rotation changes orientation; the web page uses the same direction.</value>
+    <value>Orientation is shared with the main preview.</value>
     <comment>ExportWindow.Preview.cs:40</comment>
   </data>
   <data name="ExportWindow_Preview__sizeHelp_A073C771CC" xml:space="preserve">
@@ -813,7 +813,7 @@ Could not open webpage: </value>
     <comment>MainWindow.File.cs:29</comment>
   </data>
   <data name="MainWindow_File_BuildFileMenu_D5962F4266" xml:space="preserve">
-    <value>Save PNG…</value>
+    <value>Export PNG…</value>
     <comment>MainWindow.File.cs:32</comment>
   </data>
   <data name="MainWindow_File_RefreshFileRecent_95D7E39D01" xml:space="preserve">
@@ -4438,5 +4438,11 @@ Do you want to save your current changes?</value></data>
   </data>
   <data name="Poi_AreaMergeDescription" xml:space="preserve">
     <value>Nearby CS2 areas with the same native type and name share one label. Their boundaries remain separate.</value>
+  </data>
+  <data name="Map_RotateCounterclockwise" xml:space="preserve">
+    <value>Counterclockwise 90°</value>
+  </data>
+  <data name="Map_RotateClockwise" xml:space="preserve">
+    <value>Clockwise 90°</value>
   </data>
 </root>

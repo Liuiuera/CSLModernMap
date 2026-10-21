@@ -109,7 +109,7 @@ def normalize_output_profiles(settings_values: Mapping[str, Any] | None) -> dict
         saved = raw_store.get(target)
         if not isinstance(saved, Mapping):
             saved = {}
-        seeded = {**legacy, **dict(saved)}
+        seeded = {**legacy, **dict(saved), "rotation": legacy["rotation"]}
         normalized[target] = normalize_output_profile(seeded, target)
     values[OUTPUT_PROFILE_SETTING_KEY] = normalized
     return values

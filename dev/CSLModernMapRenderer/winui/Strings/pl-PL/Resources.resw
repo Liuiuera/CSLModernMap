@@ -321,7 +321,7 @@ Nie można otworzyć strony:</value>
     <comment>ExportWindow.Preview.cs:27</comment>
   </data>
   <data name="ExportWindow_Preview__rotationHelp_4787583E64" xml:space="preserve">
-    <value>Obrót zmienia orientację mapy.</value>
+    <value>Orientacja jest wspólna z głównym podglądem.</value>
     <comment>ExportWindow.Preview.cs:40</comment>
   </data>
   <data name="ExportWindow_Preview__sizeHelp_A073C771CC" xml:space="preserve">
@@ -813,7 +813,7 @@ Nie można otworzyć strony:</value>
     <comment>MainWindow.File.cs:29</comment>
   </data>
   <data name="MainWindow_File_BuildFileMenu_D5962F4266" xml:space="preserve">
-    <value>Zapisywanie PNG…</value>
+    <value>Eksportuj PNG…</value>
     <comment>MainWindow.File.cs:32</comment>
   </data>
   <data name="MainWindow_File_RefreshFileRecent_95D7E39D01" xml:space="preserve">
@@ -4433,5 +4433,11 @@ Przykładowa droga: 16 m, skala renderowania: 1</value>
   </data>
   <data name="Poi_AreaMergeDescription" xml:space="preserve">
     <value>Pobliskie obszary CS2 o tym samym typie źródłowym i nazwie mają wspólną etykietę. Ich granice pozostają oddzielne.</value>
+  </data>
+  <data name="Map_RotateCounterclockwise" xml:space="preserve">
+    <value>90° przeciwnie do wskazówek zegara</value>
+  </data>
+  <data name="Map_RotateClockwise" xml:space="preserve">
+    <value>90° zgodnie ze wskazówkami zegara</value>
   </data>
 </root>

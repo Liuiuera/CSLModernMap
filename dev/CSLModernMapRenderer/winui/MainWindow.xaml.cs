@@ -378,6 +378,7 @@ public sealed partial class MainWindow : Window
     private async Task RefreshSnapshotAsync()
     {
         _snapshot = await _engine.RequestAsync("getSnapshot");
+        ApplySharedRotation();
         SetDocumentEnabled(_snapshot.GetProperty("hasDocument").GetBoolean() &&
             !_engineBusy);
         if (_recentMenu is not null)
@@ -546,6 +547,7 @@ public sealed partial class MainWindow : Window
     {
         var state = refresh ? await _engine.RequestAsync("getSnapshot") : _snapshot;
         _snapshot = state;
+        ApplySharedRotation();
         ContextText.Text = _context switch { "transit" => UiLanguage.Text("MainWindow_xaml_ApplyContextAsync_5A85707DE5"), "metro" => UiLanguage.Text("MainWindow_xaml_ApplyContextAsync_FA5D23884E") + " · RMP", _ => UiLanguage.Text("MainWindow_xaml_ApplyContextAsync_2E9A956FC6") };
         SetDocumentEnabled(state.GetProperty("hasDocument").GetBoolean() && !_engineBusy);
         UpdateScaleAndLayout();

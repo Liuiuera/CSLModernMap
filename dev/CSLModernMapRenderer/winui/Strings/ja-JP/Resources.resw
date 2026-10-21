@@ -321,7 +321,7 @@
     <comment>ExportWindow.Preview.cs:27</comment>
   </data>
   <data name="ExportWindow_Preview__rotationHelp_4787583E64" xml:space="preserve">
-    <value>回転すると地図の向きが変わります。</value>
+    <value>向きはメインプレビューと同期します。</value>
     <comment>ExportWindow.Preview.cs:40</comment>
   </data>
   <data name="ExportWindow_Preview__sizeHelp_A073C771CC" xml:space="preserve">
@@ -813,7 +813,7 @@
     <comment>MainWindow.File.cs:29</comment>
   </data>
   <data name="MainWindow_File_BuildFileMenu_D5962F4266" xml:space="preserve">
-    <value>PNG を保存…</value>
+    <value>PNG をエクスポート…</value>
     <comment>MainWindow.File.cs:32</comment>
   </data>
   <data name="MainWindow_File_RefreshFileRecent_95D7E39D01" xml:space="preserve">
@@ -4433,5 +4433,11 @@ Esc  現在のタスクをキャンセル</value>
   </data>
   <data name="Poi_AreaMergeDescription" xml:space="preserve">
     <value>同じネイティブタイプと名前を持つ近接したCS2エリアのラベルを統合します。各エリアの境界は保持されます。</value>
+  </data>
+  <data name="Map_RotateCounterclockwise" xml:space="preserve">
+    <value>反時計回りに90°</value>
+  </data>
+  <data name="Map_RotateClockwise" xml:space="preserve">
+    <value>時計回りに90°</value>
   </data>
 </root>
