@@ -1689,5 +1689,7 @@
   "ui.winui_workflows.dispatch.2712805913": "Nie można zapisać języka interfejsu",
   "watermark.save_timestamp": "Czas zapisu",
   "watermark.traffic_at": "Ruch drogowy",
-  "ui.export.possible_memory_exhaustion": "Proces renderowania zakończył się nieoczekiwanie, prawdopodobnie z powodu braku pamięci. Jeśli gra nadal działa, zamknij ją i inne programy zużywające dużo pamięci albo zmniejsz rozmiar eksportu i spróbuj ponownie."
+  "ui.export.possible_memory_exhaustion": "Proces renderowania zakończył się nieoczekiwanie, prawdopodobnie z powodu braku pamięci. Jeśli gra nadal działa, zamknij ją i inne programy zużywające dużo pamięci albo zmniejsz rozmiar eksportu i spróbuj ponownie.",
+  "gui.progress.convert_data": "Konwertowanie danych mapy…",
+  "gui.progress.transit_catalog": "Przygotowywanie linii transportowych: {done}/{total}"
 }

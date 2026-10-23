@@ -5313,3 +5313,9 @@ msgstr ""
 "Proces renderowania zakończył się nieoczekiwanie, prawdopodobnie z powodu braku pamięci. Jeśli "
 "gra nadal działa, zamknij ją i inne programy zużywające dużo pamięci albo zmniejsz rozmiar "
 "eksportu i spróbuj ponownie."
+
+msgid "gui.progress.convert_data"
+msgstr "Konwertowanie danych mapy…"
+
+msgid "gui.progress.transit_catalog"
+msgstr "Przygotowywanie linii transportowych: {done}/{total}"

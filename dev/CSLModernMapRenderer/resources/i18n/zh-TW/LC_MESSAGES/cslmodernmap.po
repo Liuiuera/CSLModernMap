@@ -5147,3 +5147,9 @@ msgstr "路況"
 
 msgid "ui.export.possible_memory_exhaustion"
 msgstr "可能是記憶體不足，繪製程序已意外結束。如果遊戲仍在執行，請先關閉遊戲，並關閉其他佔用記憶體較多的程式，或縮小匯出尺寸後重試。"
+
+msgid "gui.progress.convert_data"
+msgstr "正在轉換地圖資料…"
+
+msgid "gui.progress.transit_catalog"
+msgstr "正在整理公車路線：{done}/{total}"

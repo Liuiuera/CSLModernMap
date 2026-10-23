@@ -5332,3 +5332,9 @@ msgstr ""
 "Der Renderprozess wurde unerwartet beendet, möglicherweise wegen zu wenig Arbeitsspeicher. Falls "
 "das Spiel noch läuft, schließen Sie es und andere speicherintensive Programme oder verringern Sie"
 " die Exportgröße und versuchen Sie es erneut."
+
+msgid "gui.progress.convert_data"
+msgstr "Kartendaten werden konvertiert…"
+
+msgid "gui.progress.transit_catalog"
+msgstr "ÖPNV-Linien werden vorbereitet: {done}/{total}"

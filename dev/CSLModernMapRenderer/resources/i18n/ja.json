@@ -1689,5 +1689,7 @@
   "ui.winui_workflows.dispatch.2712805913": "インターフェース言語を保存できませんでした",
   "watermark.save_timestamp": "保存時刻",
   "watermark.traffic_at": "交通状況",
-  "ui.export.possible_memory_exhaustion": "メモリ不足の可能性があり、描画プロセスが予期せず終了しました。ゲームが起動中の場合は、ゲームやメモリを多く使用するアプリを終了するか、出力サイズを小さくして再試行してください。"
+  "ui.export.possible_memory_exhaustion": "メモリ不足の可能性があり、描画プロセスが予期せず終了しました。ゲームが起動中の場合は、ゲームやメモリを多く使用するアプリを終了するか、出力サイズを小さくして再試行してください。",
+  "gui.progress.convert_data": "マップデータを変換中…",
+  "gui.progress.transit_catalog": "交通路線を整理中：{done}/{total}"
 }

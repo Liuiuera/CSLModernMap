@@ -747,7 +747,9 @@ public sealed partial class MainWindow : Window
                 _revision = payload.GetProperty("revision").GetInt32();
                 if (payload.TryGetProperty("warnings", out var poiWarnings) && poiWarnings.GetArrayLength() > 0)
                     ShowNotice(string.Join("\n", poiWarnings.EnumerateArray().Select(warning => warning.GetString())));
-                _mapTask.Progress(null, UiLanguage.Text("MainWindow_xaml_HandleEngineEvent_284E5114E0")); ApplyMapTaskState();
+                if (payload.GetProperty("completion").GetString() != "base")
+                    _mapTask.Progress(95, UiLanguage.Text("MainWindow_xaml_HandleEngineEvent_284E5114E0"));
+                ApplyMapTaskState();
                 SendViewer(new { type = "loadScene", manifestUrl = payload.GetProperty("manifestUrl").GetString(),
                     sceneId = _sceneId, revision = _revision });
                 break;
@@ -809,7 +811,7 @@ public sealed partial class MainWindow : Window
             switch (name)
             {
                 case "sceneLoaded":
-                    if (_waitingSceneReady || _discardSceneResults) break;
+                    if (_waitingSceneReady || _discardSceneResults || !_mapTask.Active) break;
                     if (frame.TryGetProperty("bundleId", out var bundleId))
                         _ = RunAsync(() => _engine.RequestAsync("previewPresented", new { bundleId = bundleId.GetString(),
                             revision = frame.GetProperty("revision").GetInt32(),

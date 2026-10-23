@@ -1689,5 +1689,7 @@
   "ui.winui_workflows.dispatch.2712805913": "Could not save interface language",
   "watermark.save_timestamp": "Save timestamp",
   "watermark.traffic_at": "Traffic at",
-  "ui.export.possible_memory_exhaustion": "The rendering process stopped unexpectedly, possibly because there was not enough memory. If the game is still running, close it and other memory-intensive applications, or reduce the export size, then try again."
+  "ui.export.possible_memory_exhaustion": "The rendering process stopped unexpectedly, possibly because there was not enough memory. If the game is still running, close it and other memory-intensive applications, or reduce the export size, then try again.",
+  "gui.progress.convert_data": "Converting map data…",
+  "gui.progress.transit_catalog": "Preparing transit lines: {done}/{total}"
 }

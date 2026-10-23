@@ -23,21 +23,23 @@ public sealed partial class MainWindow
 
     private void ApplyMapTaskState()
     {
-        StatusText.Text = !_mapTask.Active && (_exportWindow?.IsBusy == true || _externalExporting) ? UiLanguage.Text("MainWindow_Status_ApplyMapTaskState_C8921F1516") : _mapTask.Status;
-        if (_mapTask.Background)
-            StatusText.Text = _mapTask.Title
-                + (string.IsNullOrWhiteSpace(_mapTask.Detail) ? "" : " " + _mapTask.Detail)
-                + (_mapTask.Percent is { } percent ? $" {percent:0}%" : "");
+        var detail = _mapTask.Detail;
+        MapOverlayDetail.Text = detail;
+        MapOverlayDetail.Visibility = string.IsNullOrWhiteSpace(detail) ? Visibility.Collapsed : Visibility.Visible;
+        var step = string.IsNullOrWhiteSpace(detail) ? _mapTask.Title : detail;
+        StatusText.Text = _mapTask.Active
+            ? (_mapTask.Background && !string.IsNullOrWhiteSpace(detail) ? _mapTask.Title + " · " : "") + step
+                + (_mapTask.Percent is { } percent ? $" {percent:0}%" : "")
+            : (_exportWindow?.IsBusy == true || _externalExporting)
+                ? UiLanguage.Text("MainWindow_Status_ApplyMapTaskState_C8921F1516") : _mapTask.Status;
+        PreviewLoadingNotice.Message = detail
+            + (_mapTask.Percent is { } loadingPercent ? $"（{loadingPercent:0}%）" : "");
         StatusSpinner.IsActive = _mapTask.Active;
         StatusSpinner.Visibility = _mapTask.Active ? Visibility.Visible : Visibility.Collapsed;
         PreviewLoadingNotice.IsOpen = _mapTask.Active && _mapTask.Background;
         PreviewLoadingNotice.Title = UiLanguage.Text("MainWindow_Status_ApplyMapTaskState_75306678A9");
-        PreviewLoadingNotice.Message = UiLanguage.Text("MainWindow_Status_ApplyMapTaskState_851B0B5075")
-            + (_mapTask.Percent is { } loadingPercent ? $"（{loadingPercent:0}%）" : "");
         MapOverlay.Visibility = _mapTask.ShowOverlay ? Visibility.Visible : Visibility.Collapsed;
         MapOverlayText.Text = _context == "metro" && !_mapTask.Active ? RmpText("EmptyWorkspace") : _mapTask.Title;
-        MapOverlayDetail.Text = _mapTask.Detail;
-        MapOverlayDetail.Visibility = string.IsNullOrWhiteSpace(_mapTask.Detail) ? Visibility.Collapsed : Visibility.Visible;
         MapOverlaySpinner.IsActive = _mapTask.Active && _mapTask.Percent is null;
         MapOverlaySpinner.Visibility = MapOverlaySpinner.IsActive ? Visibility.Visible : Visibility.Collapsed;
         Progress.Visibility = _mapTask.Active ? Visibility.Visible : Visibility.Collapsed;

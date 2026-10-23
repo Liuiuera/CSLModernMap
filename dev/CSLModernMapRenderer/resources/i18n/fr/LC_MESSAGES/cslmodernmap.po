@@ -5359,3 +5359,9 @@ msgstr ""
 "Le processus de rendu s’est arrêté de manière inattendue, peut-être par manque de mémoire. Si le "
 "jeu est encore ouvert, fermez-le ainsi que les autres applications gourmandes en mémoire, ou "
 "réduisez la taille d’exportation, puis réessayez."
+
+msgid "gui.progress.convert_data"
+msgstr "Conversion des données de la carte…"
+
+msgid "gui.progress.transit_catalog"
+msgstr "Préparation des lignes de transport : {done}/{total}"

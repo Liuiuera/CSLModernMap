@@ -562,18 +562,39 @@ def _extract_city_info(document) -> dict:
     }
 
 
-def _build_transit_line_catalog(session) -> list[dict]:
+def _build_transit_line_catalog(session, progress=None, check_cancel=None) -> list[dict]:
     """加载文档时在 Tk 线程之外推导界面线路信息。"""
     from .services.transit.geometry import resolve_route_geometry
     from .services.transit.native import cs2_document, source_transports
     from .transit import line_display_color, normalize_type
 
+    if check_cancel:
+        check_cancel()
+    if progress:
+        progress(0, tr("gui.progress.convert_data"))
     mapdata = session._legacy_view()
     document = cs2_document(mapdata)
     lines = source_transports(document) if document is not None else (getattr(mapdata, "transports", ()) or ())
+    total = len(lines)
+    last_report = time.monotonic()
+
+    def report_lines(done):
+        if progress:
+            progress(50 + 50 * done / total if total else 100,
+                     tr("gui.progress.transit_catalog", done=done, total=total))
+
+    if check_cancel:
+        check_cancel()
+    report_lines(0)
     geometry_cache = {}
     result = []
-    for source_line in lines:
+    for index, source_line in enumerate(lines):
+        if check_cancel:
+            check_cancel()
+        now = time.monotonic()
+        if now - last_report >= 0.3:
+            report_lines(index)
+            last_report = now
         type_key = normalize_type(getattr(source_line, "type", ""))
         if type_key not in TYPE_REGISTRY:
             continue
@@ -604,6 +625,10 @@ def _build_transit_line_catalog(session) -> list[dict]:
     result.sort(key=lambda item: (
         order.get(item["type"], len(order)),
         item["name"].casefold(), item["id"]))
+    if check_cancel:
+        check_cancel()
+    if total:
+        report_lines(total)
     return result
 
 
@@ -1518,30 +1543,54 @@ class GuirBackend:
         if callbacks is not None:
             self._callbacks = callbacks
         self.invalidate_preview_compile()
+        open_revision = self._preview_revision
+        callback_map = dict(self._callbacks or {})
         if not self._settings_dir_explicit and self.source_file is None:
             # 单独运行时，地图选定后将用户数据写在地图旁，而非渲染器版本目录。
             self._settings_dir = Path(path).resolve().parent
             self.poi_mapping_override = poi_mapping_override_path(self._settings_dir)
             self._reload_view_settings()
 
+        class OpenCancelled(Exception):
+            pass
+
+        def check_cancel():
+            if open_revision != self._preview_revision:
+                raise OpenCancelled()
+
+        def emit_current(name, *args):
+            def deliver():
+                if open_revision == self._preview_revision:
+                    fn = callback_map.get(name)
+                    if fn is not None:
+                        fn(*args)
+            self._post(deliver)
+
         def p_parse(pct: float, msg: str) -> None:
-            self._emit("progress", pct * 60, tr("gui.status.parsing", msg=msg))
+            check_cancel()
+            emit_current("progress", pct * 20, tr("gui.status.parsing", msg=msg))
+
+        def p_prepare(pct: float, msg: str) -> None:
+            emit_current("progress", 20 + pct * 0.1, msg)
 
         def worker() -> None:
             try:
-                document = load_document(
-                    path, progress=p_parse, validate=False)
+                document = load_document(path, progress=p_parse, validate=False)
+                check_cancel()
+                p_prepare(0, tr("gui.progress.convert_data"))
                 session = DocumentSession(document=document)
-                transit_catalog = _build_transit_line_catalog(session)
+                transit_catalog = _build_transit_line_catalog(
+                    session, progress=p_prepare, check_cancel=check_cancel)
+            except OpenCancelled:
+                return
             except Exception as exc:  # noqa: BLE001
                 traceback.print_exc()
-
-                def on_error(error=exc) -> None:
-                    self._emit("error", error)
-                self._post(on_error)
+                emit_current("error", exc)
                 return
 
             def on_parsed() -> None:
+                if open_revision != self._preview_revision:
+                    return
                 self._switch_settings_dir_for_city(path)
                 self.source_file = path
                 self._output_dir = str(Path(path).resolve().parent)
@@ -1564,11 +1613,8 @@ class GuirBackend:
                 self.reset_region_selection()
                 self._record_recent(path)
                 self._emit("meta", dict(self.city_info), "open")
-                # 解析与 WebGL 场景编译是两个独立作业，第二个作业开始前重置共享进度条。
-                # 状态栏也是给用户看的：这里不写 WebGL 之类的内部叫法。
-                self._emit("progress", 0, tr("gui.progress.preview"))
                 self.compile_preview_scene(
-                    callbacks, )
+                    callback_map, _opening=True)
             self._post(on_parsed)
 
         self._open_thread = threading.Thread(
@@ -2131,10 +2177,10 @@ class GuirBackend:
     def compile_preview_scene(self, callbacks: dict | None = None,
                               style_data: dict | None = None,
                               *, force: bool = False,
-                              ) -> bool:
+                              _opening: bool = False) -> bool:
         """从当前 DocumentSession 异步编译版本化完整 Scene。"""
         if self._local_png_active:
-            self._pending_preview = (callbacks, copy.deepcopy(style_data), force)
+            self._pending_preview = (callbacks, copy.deepcopy(style_data), force, _opening)
             return True
         if self.session is None:
             return False
@@ -2171,7 +2217,14 @@ class GuirBackend:
                        if revision == self._preview_revision
                        and session is self.session else None)
 
-        options["progress"] = report
+        base_start, base_end = (30, 55) if _opening else (0, 35)
+        full_start = base_end if previous is None else (30 if _opening else 0)
+
+        def phase_progress(start, end):
+            return lambda pct, message: report(start + (end - start) * pct / 100, message)
+
+        base_progress = phase_progress(base_start, base_end)
+        full_progress = phase_progress(full_start, 95)
         class CompileCancelled(Exception):
             pass
 
@@ -2204,15 +2257,19 @@ class GuirBackend:
             bundle = None
             try:
                 if previous is None:
+                    base_progress(0, tr("gui.progress.preview"))
                     base = PreviewSceneCompiler.compile_full(
                         session, style, revision, visibility=visibility,
-                        options={**options, "phase": "base"})
+                        options={**options, "phase": "base", "progress": base_progress})
+                    base_progress(100, tr("gui.progress.preview"))
                     base.retain()
                     self._post(lambda stage=base: publish(stage))
                     check_cancel()
+                full_progress(0, tr("gui.progress.preview"))
                 bundle = PreviewSceneCompiler.compile_full(
                     session, style, revision, visibility=visibility,
-                    options={**options, "phase": "full"}, previous=base or previous)
+                    options={**options, "phase": "full", "progress": full_progress}, previous=base or previous)
+                full_progress(100, tr("gui.progress.scene.ready"))
                 if base_presented is not None:
                     base_presented.wait()
                 check_cancel()
@@ -2797,8 +2854,8 @@ class GuirBackend:
                 self._emit("busy", False)
                 pending, self._pending_preview = self._pending_preview, None
                 if pending is not None:
-                    cb, style_data, force = pending
-                    self.compile_preview_scene(cb, style_data, force=force)
+                    cb, style_data, force, opening = pending
+                    self.compile_preview_scene(cb, style_data, force=force, _opening=opening)
 
             self._post(finish)
 

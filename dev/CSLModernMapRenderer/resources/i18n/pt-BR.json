@@ -1689,5 +1689,7 @@
   "ui.winui_workflows.dispatch.2712805913": "Não foi possível salvar o idioma da interface",
   "watermark.save_timestamp": "Horário do arquivo de cidade",
   "watermark.traffic_at": "Tráfego em",
-  "ui.export.possible_memory_exhaustion": "O processo de renderização foi encerrado inesperadamente, possivelmente por falta de memória. Se o jogo ainda estiver aberto, feche-o e outros aplicativos que consomem muita memória ou reduza o tamanho da exportação e tente novamente."
+  "ui.export.possible_memory_exhaustion": "O processo de renderização foi encerrado inesperadamente, possivelmente por falta de memória. Se o jogo ainda estiver aberto, feche-o e outros aplicativos que consomem muita memória ou reduza o tamanho da exportação e tente novamente.",
+  "gui.progress.convert_data": "Convertendo dados do mapa…",
+  "gui.progress.transit_catalog": "Preparando linhas de transporte: {done}/{total}"
 }

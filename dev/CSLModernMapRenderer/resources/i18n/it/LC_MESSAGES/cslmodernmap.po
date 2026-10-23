@@ -5343,3 +5343,9 @@ msgstr ""
 "Il processo di rendering si è interrotto in modo imprevisto, forse per memoria insufficiente. Se "
 "il gioco è ancora aperto, chiudilo insieme alle altre applicazioni che usano molta memoria, "
 "oppure riduci le dimensioni di esportazione e riprova."
+
+msgid "gui.progress.convert_data"
+msgstr "Conversione dei dati della mappa…"
+
+msgid "gui.progress.transit_catalog"
+msgstr "Preparazione delle linee di trasporto: {done}/{total}"

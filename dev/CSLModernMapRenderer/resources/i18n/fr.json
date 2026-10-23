@@ -1689,5 +1689,7 @@
   "ui.winui_workflows.dispatch.2712805913": "Impossible d’enregistrer la langue de l’interface",
   "watermark.save_timestamp": "Horodatage de la sauvegarde",
   "watermark.traffic_at": "Trafic à",
-  "ui.export.possible_memory_exhaustion": "Le processus de rendu s’est arrêté de manière inattendue, peut-être par manque de mémoire. Si le jeu est encore ouvert, fermez-le ainsi que les autres applications gourmandes en mémoire, ou réduisez la taille d’exportation, puis réessayez."
+  "ui.export.possible_memory_exhaustion": "Le processus de rendu s’est arrêté de manière inattendue, peut-être par manque de mémoire. Si le jeu est encore ouvert, fermez-le ainsi que les autres applications gourmandes en mémoire, ou réduisez la taille d’exportation, puis réessayez.",
+  "gui.progress.convert_data": "Conversion des données de la carte…",
+  "gui.progress.transit_catalog": "Préparation des lignes de transport : {done}/{total}"
 }

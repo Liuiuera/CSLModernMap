@@ -5355,3 +5355,9 @@ msgstr ""
 "El proceso de renderizado se cerró inesperadamente, posiblemente por falta de memoria. Si el "
 "juego sigue abierto, ciérrelo junto con otras aplicaciones que consuman mucha memoria, o reduzca "
 "el tamaño de exportación y vuelva a intentarlo."
+
+msgid "gui.progress.convert_data"
+msgstr "Convirtiendo datos del mapa…"
+
+msgid "gui.progress.transit_catalog"
+msgstr "Preparando líneas de transporte: {done}/{total}"

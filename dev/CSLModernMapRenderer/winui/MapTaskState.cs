@@ -15,7 +15,7 @@ internal sealed class MapTaskState
     internal string? RequestId { get; private set; }
     internal double? Percent { get; private set; }
     internal bool Active => Phase is MapTaskPhase.Loading or MapTaskPhase.Generating;
-    internal bool ShowOverlay => Active && !Background || !HasMap;
+    internal bool ShowOverlay => Active && !Background || !HasMap && Phase != MapTaskPhase.Error;
     internal string Status => Phase switch
     {
         MapTaskPhase.Loading => UiLanguage.Text("MapTaskState_Status_D04FCBDA73"),
@@ -49,12 +49,11 @@ internal sealed class MapTaskState
 
     internal void PresentBase(string title)
     {
+        if (!Active) return;
         HasMap = true;
         Phase = MapTaskPhase.Generating;
         Background = true;
         Title = title;
-        Detail = "";
-        Percent = null;
     }
 
     internal bool Complete(int generation)
@@ -63,6 +62,7 @@ internal sealed class MapTaskState
         HasMap = true;
         Phase = MapTaskPhase.Ready;
         ClearTask();
+        Percent = 100;
         Title = "";
         return true;
     }
