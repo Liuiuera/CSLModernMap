@@ -1710,8 +1710,7 @@ class PreviewSceneCompiler:
             geometry_cache = {}
             model = _preview_transit_model(
                 mapdata, options["style"], options, session=session)
-            raw_by_id = {int(item.id): item
-                         for item in getattr(mapdata, "transports", ()) or ()}
+            raw_by_id = model.source_lines
             stops_by_line = {}
             for route in model.routes:
                 stops_by_line[route.line_id] = max(
@@ -1723,9 +1722,9 @@ class PreviewSceneCompiler:
                 kind = line.kind
                 resolved = resolve_route_geometry(
                     mapdata, source_line, kind, cache=geometry_cache)
-                coordinates = [world_to_geo(point.x, point.z)
-                               for point in resolved.points]
-                if len(coordinates) < 2:
+                parts = [part for part in resolved.parts or (resolved.points,) if len(part) >= 2]
+                coordinates = [[world_to_geo(point.x, point.z) for point in part] for part in parts]
+                if not coordinates:
                     continue
                 rgb = line_display_color(source_line)
                 color = ("#%02X%02X%02X" % tuple(rgb)
@@ -1734,10 +1733,11 @@ class PreviewSceneCompiler:
                 route_length = sum(
                     ((float(a.x) - float(b.x)) ** 2
                      + (float(a.z) - float(b.z)) ** 2) ** .5
-                    for a, b in zip(resolved.points, resolved.points[1:]))
+                    for part in parts for a, b in zip(part, part[1:]))
                 transit.append(_feature(
                     f"route:{line_id}",
-                    {"type": "LineString", "coordinates": coordinates},
+                    ({"type": "LineString", "coordinates": coordinates[0]} if len(parts) == 1
+                     else {"type": "MultiLineString", "coordinates": coordinates}),
                     routeId=line_id, lineId=line_id,
                     groupId=(model.group_of.get(line_id).id
                              if model.group_of.get(line_id) is not None else None),

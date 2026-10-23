@@ -6,7 +6,7 @@ from __future__ import annotations
 import json
 import math
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
@@ -109,6 +109,7 @@ class MetroEditDocument:
     lines: dict[int, LineEdit] = field(default_factory=dict)
     shared_segments: list[SharedSegmentEdit] = field(default_factory=list)
     source: str = ""
+    identity_space: str = ""
 
     def move_station(self, source_nodes: Iterable[int], x: float, y: float) -> None:
         key = station_key(source_nodes)
@@ -142,7 +143,7 @@ class MetroEditDocument:
             self.shared_segments.append(replacement)
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        value = {
             "schema": SCHEMA,
             "version": VERSION,
             "source": self.source,
@@ -151,6 +152,9 @@ class MetroEditDocument:
             "lines": [self.lines[key].to_dict() for key in sorted(self.lines)],
             "shared_segments": [item.to_dict() for item in self.shared_segments],
         }
+        if self.identity_space:
+            value["identity_space"] = self.identity_space
+        return value
 
     @classmethod
     def from_dict(cls, value: Mapping[str, Any] | None) -> "MetroEditDocument":
@@ -159,7 +163,10 @@ class MetroEditDocument:
             raise ValueError("not a CSLModernMap metro edit document")
         if int(value.get("version", VERSION)) != VERSION:
             raise ValueError(f"unsupported metro edit version: {value.get('version')}")
-        result = cls(source=str(value.get("source", "") or ""))
+        identity_space = value.get("identity_space", "")
+        if identity_space not in {"", "cs2-stop"}:
+            raise ValueError(f"unsupported metro edit identity space: {identity_space!r}")
+        result = cls(source=str(value.get("source", "") or ""), identity_space=identity_space)
         for raw in value.get("stations", ()):
             nodes = tuple(sorted({int(item) for item in raw.get("source_nodes", ())}))
             key = station_key(nodes)
@@ -182,6 +189,38 @@ class MetroEditDocument:
             ))
         return result
 
+    def for_map(self, mapdata) -> "MetroEditDocument":
+        from .services.transit.native import cs2_document
+        document = cs2_document(mapdata)
+        if document is None or self.identity_space == "cs2-stop":
+            return self
+        if not (self.stations or self.lines or self.shared_segments):
+            return replace(self, identity_space="cs2-stop")
+        source = getattr(mapdata, "_source_path", None)
+        if not self.source or not source or Path(self.source).resolve() != Path(source).resolve():
+            raise ValueError("旧二代地铁编辑与源文件不匹配，请重新指定；原编辑已保留")
+        candidates = {}
+        for stop in document.stops:
+            if stop.kind.value == "METRO":
+                candidates.setdefault(stop.network_node_id, set()).add(stop.id)
+
+        def convert_nodes(nodes):
+            if any(len(candidates.get(node, ())) != 1 for node in nodes):
+                raise ValueError("旧二代地铁编辑对应多个或缺失站台，请重新指定；原编辑已保留")
+            return tuple(sorted({next(iter(candidates[node])) for node in nodes}))
+
+        def convert_key(key):
+            if not key.startswith("nodes:"):
+                raise ValueError(f"invalid station reference: {key!r}")
+            return station_key(convert_nodes(tuple(int(node) for node in key[6:].split(","))))
+
+        stations = [replace(edit, source_nodes=convert_nodes(edit.source_nodes))
+                    for edit in self.stations.values()]
+        return replace(self, identity_space="cs2-stop",
+            stations={edit.key: edit for edit in stations},
+            shared_segments=[replace(item, start=convert_key(item.start), end=convert_key(item.end))
+                             for item in self.shared_segments])
+
     def compile(self, merged_stations: Iterable[Any], transports: Iterable[Any]) -> CompiledEdits:
         """针对新加载的存档解析源引用；缺失或过期引用只报告问题，不阻止地图渲染。"""
         result = CompiledEdits()
@@ -190,7 +229,8 @@ class MetroEditDocument:
         for station in merged_stations:
             keys = getattr(station, "member_stop_keys", None) or ()
             if keys:
-                nodes = [int(str(key).split(":", 1)[0]) for key in keys]
+                from .cmm import StopKey
+                nodes = [StopKey.parse(str(key)).node_id for key in keys]
             else:
                 nodes = [int(stop.node_id) for stop in getattr(station, "stops", ())]
             if nodes:
@@ -277,7 +317,8 @@ def build_editor_scene(layout: Any, merged_stations: Iterable[Any],
     station_rows = []
     for station in stations:
         raw_keys = getattr(station, "member_stop_keys", None) or ()
-        nodes = ([int(str(key).split(":", 1)[0]) for key in raw_keys]
+        from .cmm import StopKey
+        nodes = ([StopKey.parse(str(key)).node_id for key in raw_keys]
                  if raw_keys else
                  [int(stop.node_id) for stop in getattr(station, "stops", ())])
         if not nodes or station.id not in layout.node_grid:

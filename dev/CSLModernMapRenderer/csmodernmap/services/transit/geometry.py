@@ -25,6 +25,7 @@ class GeometryResult:
     kind: GeomKind
     path_segment_ids: tuple[int, ...] = ()
     points: tuple[WorldPoint, ...] = ()
+    parts: tuple[tuple[WorldPoint, ...], ...] = ()
 
 
 def _same_xy(a: Point, b: Point) -> bool:
@@ -277,6 +278,25 @@ def _direct_points(mapdata: MapData, transport: Transport) -> tuple[WorldPoint, 
 def resolve_route_geometry(mapdata: MapData, transport: Transport,
                            kind: TransitKind | str | None = None,
                            *, cache=None) -> GeometryResult:
+    from .native import cs2_document
+    document = cs2_document(mapdata)
+    if document is not None:
+        parts, ids = [], []
+        for route in sorted(document.routes_of_line(transport.id), key=lambda item: item.id):
+            part = []
+            for ident in route.path_segment_ids:
+                leaf = document.network(ident)
+                if leaf is None or not leaf.geometry.points:
+                    if part:
+                        parts.append(tuple(part))
+                        part = []
+                    continue
+                part.extend(WorldPoint(p.x, p.y, p.z) for p in leaf.geometry.points)
+                ids.append(ident)
+            if part:
+                parts.append(tuple(part))
+        return GeometryResult(GeomKind.PATH_CHAIN if parts else GeomKind.STOP_DIRECT,
+                              tuple(ids), parts[0] if parts else (), tuple(parts))
     canonical = normalize_transit_kind(kind or transport.type)
     track_flags = {
         TransitKind.METRO: "metro", TransitKind.TRAIN: "rail",

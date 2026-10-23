@@ -62,10 +62,13 @@ def stable_group_id(line_ids: Sequence[int]) -> int:
 class StopKey:
     node_id: int
     kind: StopKind
+    namespace: str = ""
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "node_id", int(self.node_id))
         object.__setattr__(self, "kind", normalize_stop_kind(self.kind))
+        if self.namespace not in {"", "cs2-stop"}:
+            raise ValueError(f"invalid stop key namespace: {self.namespace!r}")
 
     def __str__(self) -> str:
         display = {
@@ -73,14 +76,20 @@ class StopKey:
             "TROLLEYBUS": "Trolleybus",
             "AIRPLANE": "Airplane",
         }.get(self.kind.value, self.kind.value.title())
-        return f"{self.node_id}:{display}"
+        prefix = f"{self.namespace}:" if self.namespace else ""
+        return f"{prefix}{self.node_id}:{display}"
 
     @classmethod
     def parse(cls, value: str) -> "StopKey":
-        node_id, _, kind = str(value).partition(":")
+        text = str(value)
+        namespace = "cs2-stop" if text.startswith("cs2-stop:") else ""
+        node_id, _, kind = text.removeprefix("cs2-stop:").partition(":")
         if not node_id or not kind:
             raise ValueError(f"invalid stop key: {value!r}")
-        return cls(int(node_id), normalize_stop_kind(kind))
+        normalized = normalize_stop_kind(kind)
+        if normalized is StopKind.OTHER:
+            raise ValueError(f"unknown stop kind: {kind!r}")
+        return cls(int(node_id), normalized, namespace)
 
 
 @dataclass(frozen=True)
@@ -243,6 +252,8 @@ class RouteView:
         return tuple(self.route.path_segment_ids)
 
     def reverse(self) -> "RouteView":
+        if self.route.legs is not None:
+            raise ValueError("directed route legs require reversed source geometry")
         return RouteView(replace(
             self.route,
             stop_ids=list(reversed(self.route.stop_ids)),
@@ -269,6 +280,7 @@ class TransitModel:
     station_fix_applied: bool = False
     physical_topologies: dict = field(default_factory=dict)
     physical_legs: dict = field(default_factory=dict)
+    source_lines: dict = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         self.lines = tuple(sorted(self.lines, key=lambda item: item.id))
@@ -326,10 +338,15 @@ class TransitModel:
 
         value = route.route if isinstance(route, RouteView) else route
         physical = self.physical_topologies.get(value.line_id)
+        if value.legs is not None or any(stop.key.namespace for stop in self.stops):
+            legs = [leg for leg in self.physical_legs.get(value.line_id, ()) if leg.route_id == value.id]
+            physical = normalize_station_sequence(
+                [station for leg in legs for station in leg.stations],
+                connections=[(a, b) for leg in legs for a, b in zip(leg.stations, leg.stations[1:])])
         if physical is not None:
             stations = {station.id: station for station in self.stations}
             by_key = {stop.stop_key: stop for stop in self.stops}
-            return tuple(next(by_key[key].network_node_id
+            return tuple(next(by_key[key].key.node_id
                               for key in stations[ident].member_stop_keys
                               if value.line_id in by_key[key].serving_line_ids)
                          for ident in (physical.simple_sequence or physical.sequence))

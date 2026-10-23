@@ -21,6 +21,9 @@ class PhysicalLeg:
     segment_ids: tuple[int, ...]
     stations: tuple[str, ...]
     fractions: tuple[float, ...]
+    route_id: int | None = None
+    from_stop_index: int | None = None
+    to_stop_index: int | None = None
 
 
 def _projections(point, points, radius):
@@ -50,19 +53,38 @@ def _projections(point, points, radius):
 
 
 def physical_legs(mapdata, transport, station_of, stops, cache):
+    from .native import cs2_document
+    document = cs2_document(mapdata)
     nodes = [stop.node_id for stop in transport.stops]
     keyword = transport.type.casefold()+" line"
-    index = track_path_index(mapdata, keyword, cache) if transport.type in RAIL_TYPES else {}
+    index = track_path_index(mapdata, keyword, cache) if document is None and transport.type in RAIL_TYPES else {}
     pairs = list(zip(nodes, nodes[1:]))
-    if (len(nodes) > 1 and nodes[0] != nodes[-1]
+    if (document is None and len(nodes) > 1 and nodes[0] != nodes[-1]
             and (any(c[1] == nodes[0] for c in index.get(nodes[-1], ()))
                  or has_stop_line_closure(mapdata, nodes, transport.type))):
         pairs.append((nodes[-1], nodes[0]))
-    key_of = {stop.network_node_id: stop.stop_key for stop in stops
+    key_of = {stop.key.node_id: stop.stop_key for stop in stops
               if transport.id in stop.serving_line_ids and stop.stop_key in station_of}
-    members = [(key, mapdata.node(node).pos) for node, key in key_of.items() if mapdata.node(node) is not None]
+    members = ([(stop.stop_key, stop.position) for stop in stops if stop.stop_key in key_of.values()]
+               if document is not None else
+               [(key, mapdata.node(node).pos) for node, key in key_of.items() if mapdata.node(node) is not None])
+    native = []
+    if document is not None:
+        for route in sorted(document.routes_of_line(transport.id), key=lambda item: item.id):
+            if route.legs is None:
+                pairs = list(zip(range(len(route.stop_ids) - 1), range(1, len(route.stop_ids))))
+                if (route.is_closed and len(route.stop_ids) > 1
+                        and route.stop_ids[-1] != route.stop_ids[0]):
+                    pairs.append((len(route.stop_ids) - 1, 0))
+                native.extend((route, start, end, None) for start, end in pairs)
+            for leg in route.legs or ():
+                if not (0 <= leg.from_stop_index < len(route.stop_ids)
+                        and 0 <= leg.to_stop_index < len(route.stop_ids)):
+                    continue
+                native.append((route, leg.from_stop_index, leg.to_stop_index, leg))
+        pairs = [(route.stop_ids[start], route.stop_ids[end]) for route, start, end, _leg in native]
     legs, issues = [], []
-    for start, end in pairs:
+    for pair_index, (start, end) in enumerate(pairs):
         if start not in key_of or end not in key_of:
             continue
         a, b = station_of[key_of[start]], station_of[key_of[end]]
@@ -70,7 +92,14 @@ def physical_legs(mapdata, transport, station_of, stops, cache):
         if not candidates:
             candidates = {tuple(reversed(c[2])) for c in index.get(end, ()) if c[1] == start}
         points, segments = (), ()
-        if len(candidates) == 1:
+        if document is not None:
+            route, from_index, to_index, leg = native[pair_index]
+            if leg is not None:
+                segments = tuple(leg.path_segment_ids)
+                leaves = [document.network(ident) for ident in segments]
+                points = tuple(WorldPoint(p.x, p.y, p.z)
+                               for leaf in leaves if leaf is not None for p in leaf.geometry.points)
+        elif len(candidates) == 1:
             segments = next(iter(candidates))
             if all(mapdata.segment(sid) is not None for sid in segments):
                 points = track_chain_points(mapdata, segments, mapdata.node(start).pos)
@@ -86,7 +115,7 @@ def physical_legs(mapdata, transport, station_of, stops, cache):
                 _, projections = _projections(position, points, 20)
                 visits.extend((distance, station) for distance, _error in projections
                               if 20 < distance < length-20)
-        elif transport.type in RAIL_TYPES:
+        elif document is None and transport.type in RAIL_TYPES:
             issues.append(f"Line {transport.id}, leg {start}->{end}: no verified exported track geometry")
         ordered = [(0.0, a), *sorted(set(visits)), (length, b)]
         station_ids, fractions = [], []
@@ -94,18 +123,21 @@ def physical_legs(mapdata, transport, station_of, stops, cache):
             if not station_ids or station_ids[-1] != station:
                 station_ids.append(station)
                 fractions.append(distance/length if length else (1.0 if station == b else 0.0))
-        legs.append(PhysicalLeg(start, end, points, segments, tuple(station_ids), tuple(fractions)))
+        legs.append(PhysicalLeg(start, end, points, segments, tuple(station_ids), tuple(fractions),
+                               route.id if document is not None else None,
+                               from_index if document is not None else None,
+                               to_index if document is not None else None))
     return tuple(legs), issues
 
 
 def _sequence(legs, transport, station_of, stops):
     if legs:
         return [station for leg in legs for station in leg.stations]
-    keys = {stop.network_node_id: stop.stop_key for stop in stops if transport.id in stop.serving_line_ids}
+    keys = {stop.key.node_id: stop.stop_key for stop in stops if transport.id in stop.serving_line_ids}
     return [station_of[keys[s.node_id]] for s in transport.stops if s.node_id in keys]
 
 
-def _platform_pairs(mapdata, transport, legs, sequence, stations, params):
+def _platform_pairs(mapdata, transport, legs, sequence, stations, params, stops=()):
     if transport.type not in RAIL_TYPES or not params.merge_enabled:
         return ()
     topology = normalize_station_sequence(sequence)
@@ -121,9 +153,12 @@ def _platform_pairs(mapdata, transport, legs, sequence, stations, params):
     by_id = {station.id: station for station in stations}
     served_nodes = {stop.node_id for stop in transport.stops}
     positions = {}
+    stop_positions = {stop.key.node_id: stop.position for stop in stops}
+    if not any(stop.key.namespace for stop in stops):
+        stop_positions = {node: mapdata.node(node).pos for node in served_nodes if mapdata.node(node) is not None}
     for station in stations:
-        members = [mapdata.node(node).pos for node in station.member_stop_ids
-                   if node in served_nodes and mapdata.node(node) is not None]
+        members = [stop_positions[node] for node in station.member_stop_ids
+                   if node in served_nodes and node in stop_positions]
         if members:
             positions[station.id] = WorldPoint(*(sum(getattr(p, axis) for p in members)/len(members)
                                                  for axis in ("x", "y", "z")))
@@ -184,6 +219,8 @@ def _platform_pairs(mapdata, transport, legs, sequence, stations, params):
 
 
 def build_physical_topologies(mapdata, source_lines, stops, stations, group_of, params):
+    from .native import cs2_document
+    native = cs2_document(mapdata) is not None
     cache = {}
     station_of = {key: station.id for station in stations for key in station.member_stop_keys}
     legs_by_line, issues, merges = {}, [], []
@@ -192,14 +229,18 @@ def build_physical_topologies(mapdata, source_lines, stops, stations, group_of, 
         legs_by_line[ident] = legs
         issues.extend(leg_issues)
         sequence = _sequence(legs, transport, station_of, stops)
-        merges.extend(_platform_pairs(mapdata, transport, legs, sequence, stations, params))
+
+        if not native or len({leg.route_id for leg in legs}) <= 1:
+            merges.extend(_platform_pairs(mapdata, transport, legs, sequence, stations, params, stops))
     if merges:
         effective = replace(params, forced_merges=tuple(dict.fromkeys((*params.forced_merges, *merges))))
         stations = group_stations(stops, group_of, effective)
         station_of = {key: station.id for station in stations for key in station.member_stop_keys}
         for ident, transport in sorted(source_lines.items()):
             legs_by_line[ident], _ = physical_legs(mapdata, transport, station_of, stops, cache)
-    topologies = {ident: normalize_station_sequence(_sequence(legs_by_line[ident], transport, station_of, stops))
+    topologies = {ident: normalize_station_sequence(_sequence(legs_by_line[ident], transport, station_of, stops),
+                     **({"connections": [(a, b) for leg in legs_by_line[ident]
+                                          for a, b in zip(leg.stations, leg.stations[1:])]} if native else {}))
                   for ident, transport in sorted(source_lines.items())}
     issues.extend(f"Line {ident}: physical branch retained ({len(topology.chains)} chains)"
                   for ident, topology in topologies.items() if topology.kind == "branch")

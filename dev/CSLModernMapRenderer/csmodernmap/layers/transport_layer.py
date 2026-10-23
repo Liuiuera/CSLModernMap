@@ -1000,7 +1000,6 @@ class TransportLayer(Layer):
         model = build_transit_model(
             mapdata, params, station_fix=station_fix,
         )
-
         # 设施匹配属于站点上下文，服务按 T02 站点标识返回关联而不修改源地图。
         if self.metro:
             facility_cfg = st_cfg.get("facilities") or {}
@@ -1020,7 +1019,7 @@ class TransportLayer(Layer):
                 model = replace(model, stations=tuple(
                     replace(station, facilities=[]) for station in model.stations))
 
-        raw_by_id = {int(item.id): item for item in mapdata.transports}
+        raw_by_id = model.source_lines
         render_lines = tuple(
             raw_by_id[line.id] for line in model.lines if line.id in raw_by_id
         )
@@ -1066,7 +1065,7 @@ class TransportLayer(Layer):
         if self._transit_model is None:
             return None
         for stop in self._transit_model.stops:
-            if (stop.network_node_id == int(node_id)
+            if (stop.key.node_id == int(node_id)
                     and line.id in stop.serving_line_ids):
                 # 反向查找必须经由模型，渲染器不能自行重建站点归属。
                 if self._transit_model.station_of_stop(stop.stop_key) is not None:
@@ -1216,7 +1215,7 @@ class TransportLayer(Layer):
             raw_edits = lay_cfg.get("edits")
             if isinstance(raw_edits, dict):
                 try:
-                    edit_document = MetroEditDocument.from_dict(raw_edits)
+                    edit_document = MetroEditDocument.from_dict(raw_edits).for_map(mapdata)
                     compiled_edits = edit_document.compile(
                         self._merged, self._render_lines)
                 except (KeyError, TypeError, ValueError) as exc:
@@ -1493,18 +1492,13 @@ class TransportLayer(Layer):
         world_pts = geometry.points if geometry is not None else ()
         if len(world_pts) < 2:
             return []
-        source_box = (
-            min(point.x for point in world_pts),
-            min(point.z for point in world_pts),
-            max(point.x for point in world_pts),
-            max(point.z for point in world_pts),
-        )
-        visible = _clip_world_polyline(
-            world_pts,
-            (self.ctx.world_x0, self.ctx.world_z0,
-             self.ctx.world_x1, self.ctx.world_z1),
-            source_box=source_box,
-        )
+        visible = []
+        for part in geometry.parts or (world_pts,):
+            source_box = (min(point.x for point in part), min(point.z for point in part),
+                          max(point.x for point in part), max(point.z for point in part))
+            visible.extend(_clip_world_polyline(
+                part, (self.ctx.world_x0, self.ctx.world_z0, self.ctx.world_x1, self.ctx.world_z1),
+                source_box=source_box))
         scale = abs(float(getattr(self.ctx.transform, "scale", 0.0)))
         if scale <= 0.0:
             scale = 1.0
@@ -1602,6 +1596,8 @@ class TransportLayer(Layer):
             stops = [stop.node_id for stop in tr.stops]
             geometry = self._geometry_by_line_id.get(int(tr.id))
             if geometry is None or str(geometry.kind) != "path_chain":
+                continue
+            if geometry.parts:
                 continue
             segment_ids = list(geometry.path_segment_ids)
             valid_ids = [segment_id for segment_id in segment_ids
@@ -1942,10 +1938,13 @@ class TransportLayer(Layer):
             elif self._schematic_pos and stop.node_id in self._schematic_pos:
                 px, py = self._schematic_pos[stop.node_id]
             else:
-                n = mapdata.node(stop.node_id)
-                if n is None:
+                semantic = self._transit_model.stop(stop_key) if self._transit_model is not None and stop_key else None
+                semantic = semantic if semantic is not None and semantic.key.namespace else None
+                n = mapdata.node(stop.node_id) if semantic is None else None
+                position = semantic.position if semantic is not None else n.pos if n is not None else None
+                if position is None:
                     continue
-                px, py = self.ctx.transform(n.pos.x, n.pos.z)
+                px, py = self.ctx.transform(position.x, position.z)
             if pts and abs(px - pts[-1][0]) < 0.5 and abs(py - pts[-1][1]) < 0.5:
                 continue
             pts.append((px, py))
@@ -2749,6 +2748,7 @@ class TransportLayer(Layer):
                  int(round(cy - icon.height / 2))),
                 icon,
             )
+
 
     def _draw_annotations(self, mapdata, cfg: dict) -> None:
         """信息附注卡：与标题/图例共用四角避让，不遮盖主要内容。"""
@@ -4016,10 +4016,14 @@ class TransportLayer(Layer):
             if ((transit.normalize_type(tr.type) or tr.type) not in enabled):
                 continue
             for stop in tr.stops:
-                node = mapdata.node(stop.node_id)
-                if node is None:
+                key = self._stop_key_for_line(tr, stop.node_id)
+                semantic = self._transit_model.stop(key) if self._transit_model is not None and key else None
+                semantic = semantic if semantic is not None and semantic.key.namespace else None
+                node = mapdata.node(stop.node_id) if semantic is None else None
+                position = semantic.position if semantic is not None else node.pos if node is not None else None
+                if position is None:
                     continue
-                px, py = self.ctx.transform(node.pos.x, node.pos.z)
+                px, py = self.ctx.transform(position.x, position.z)
                 key = (int(round(px)), int(round(py)))
                 if key not in seen_obstacles:
                     seen_obstacles.add(key)

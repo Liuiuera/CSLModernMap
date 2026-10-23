@@ -672,7 +672,7 @@ class TransitLine(_Serializable):
 @dataclass
 class Stop(_Serializable):
     id: int
-    network_node_id: int
+    network_node_id: int | None
     kind: StopKind
     name: DisplayName
     position: Vec3
@@ -681,10 +681,15 @@ class Stop(_Serializable):
     # 一个站点可属于多条源线路；迁移期间此字段保持独立，不改变 MapData 的权威地位。
     serving_line_ids: list[int] = field(default_factory=list)
     serving_group_ids: list[int] = field(default_factory=list)
+    station_group: dict | None = None
+    name_kind: str = "unknown"
+    name_entity_id: int | None = None
+    _identity_space: str = field(default="", repr=False, compare=False)
 
     def __post_init__(self) -> None:
         self.id = int(self.id)
-        self.network_node_id = int(self.network_node_id)
+        if self.network_node_id is not None:
+            self.network_node_id = int(self.network_node_id)
         raw_kind = self.kind
         self.kind = _enum_value(StopKind, raw_kind, StopKind.OTHER)
         if (self.kind is StopKind.OTHER and not self.source_raw and raw_kind
@@ -696,26 +701,36 @@ class Stop(_Serializable):
             self.position = Vec3.from_dict(self.position)
         self.serving_line_ids = [int(item) for item in self.serving_line_ids]
         self.serving_group_ids = [int(item) for item in self.serving_group_ids]
+        if self.station_group is not None:
+            self.station_group = dict(self.station_group)
+            self.station_group["entity_id"] = int(self.station_group["entity_id"])
+            if self.station_group.get("source") not in {"AccessRestriction", "Owner", "Parent"}:
+                raise ValueError("unknown station group source")
+        if self.name_kind not in {"station", "template", "unknown"}:
+            raise ValueError(f"invalid stop name_kind: {self.name_kind!r}")
+        if self.name_entity_id is not None:
+            self.name_entity_id = int(self.name_entity_id)
 
     @property
     def stop_key(self) -> str:
         """返回由节点标识和类型组成的稳定语义键。"""
         from .transit_domain import StopKey
 
-        return str(StopKey(self.network_node_id, self.kind))
+        return str(self.key)
 
     @property
     def key(self):
         """以 StopKey 类型视图暴露字段，同时保留旧版数字字段。"""
         from .transit_domain import StopKey
 
-        return StopKey(self.network_node_id, self.kind)
+        return StopKey(self.id if self._identity_space else self.network_node_id,
+                       self.kind, self._identity_space)
 
     @classmethod
     def from_dict(cls, value: Mapping[str, Any]) -> "Stop":
         return cls(
             id=value.get("id", 0),
-            network_node_id=value.get("network_node_id", 0),
+            network_node_id=value.get("network_node_id"),
             kind=value.get("kind", StopKind.OTHER),
             name=DisplayName.from_dict(value.get("name")),
             position=Vec3.from_dict(value.get("position", [0, 0, 0])),
@@ -723,7 +738,27 @@ class Stop(_Serializable):
             source_raw=value.get("source_raw", ""),
             serving_line_ids=value.get("serving_line_ids", []),
             serving_group_ids=value.get("serving_group_ids", []),
+            station_group=value.get("station_group"),
+            name_kind=value.get("name_kind", "unknown"),
+            name_entity_id=value.get("name_entity_id"),
         )
+
+
+@dataclass
+class RouteLeg(_Serializable):
+    from_stop_index: int
+    to_stop_index: int
+    path_segment_ids: list[int]
+
+    def __post_init__(self) -> None:
+        if type(self.from_stop_index) is not int or type(self.to_stop_index) is not int:
+            raise ValueError("route leg stop indices must be integers")
+        self.path_segment_ids = [int(item) for item in self.path_segment_ids]
+
+    @classmethod
+    def from_dict(cls, value: Mapping[str, Any]) -> "RouteLeg":
+        return cls(value["from_stop_index"], value["to_stop_index"],
+                   value["path_segment_ids"])
 
 
 @dataclass
@@ -737,6 +772,7 @@ class Route(_Serializable):
     path_segment_ids: list[int] = field(default_factory=list)
     source_raw: str = ""
     group_id: int | None = None
+    legs: list[RouteLeg] | None = None
 
     def __post_init__(self) -> None:
         self.id = int(self.id)
@@ -748,6 +784,9 @@ class Route(_Serializable):
         self.is_closed = bool(self.is_closed)
         if self.group_id is not None:
             self.group_id = int(self.group_id)
+        if self.legs is not None:
+            self.legs = [item if isinstance(item, RouteLeg) else RouteLeg.from_dict(item)
+                         for item in self.legs]
 
     @classmethod
     def from_dict(cls, value: Mapping[str, Any]) -> "Route":
@@ -761,6 +800,7 @@ class Route(_Serializable):
             path_segment_ids=value.get("path_segment_ids", []),
             source_raw=value.get("source_raw", ""),
             group_id=value.get("group_id"),
+            legs=value.get("legs"),
         )
 
 
@@ -1871,29 +1911,7 @@ class MapDocument(_Serializable):
                     self._append_issue(MapIssue("error", "PATH_NOT_TRACK", f"network path segment {path_id} is neither a supported road/track nor a matching route leaf",
                                                 [ObjectRef("network", segment.id), ObjectRef("network", path_id)]))
 
-        for stop in self.stops:
-            if self.node(stop.network_node_id) is None:
-                self._append_issue(MapIssue("error", "DANGLING_REF", f"stop {stop.id} node is missing",
-                                            [ObjectRef("stop", stop.id), ObjectRef("node", stop.network_node_id)]))
-
-        for route in self.routes:
-            if self.line(route.line_id) is None:
-                self._append_issue(MapIssue("error", "DANGLING_REF", f"route {route.id} line is missing",
-                                            [ObjectRef("route", route.id), ObjectRef("line", route.line_id)]))
-            for stop_id in route.stop_ids:
-                if self.stop(stop_id) is None:
-                    self._append_issue(MapIssue("error", "DANGLING_REF", f"route {route.id} stop is missing",
-                                                [ObjectRef("route", route.id), ObjectRef("stop", stop_id)]))
-            for segment_id in route.path_segment_ids:
-                if self.network(segment_id) is None:
-                    self._append_issue(MapIssue("error", "DANGLING_REF", f"route {route.id} path segment is missing",
-                                                [ObjectRef("route", route.id), ObjectRef("network", segment_id)]))
-            if route.geometry_kind is GeomKind.PATH_CHAIN and not route.path_segment_ids:
-                self._append_issue(MapIssue("error", "MISSING_GEOMETRY", f"route {route.id} has no path chain",
-                                            [ObjectRef("route", route.id)]))
-            if route.direction is Direction.LOOP and not route.is_closed:
-                self._append_issue(MapIssue("error", "ROUTE_DIRECTION", f"route {route.id} LOOP is not closed",
-                                            [ObjectRef("route", route.id)]))
+        self.validate_transit()
 
         enum_fields = (
             ((item.kind, item.source_raw), "UNKNOWN_KIND", "network", item.id)
@@ -1925,6 +1943,36 @@ class MapDocument(_Serializable):
                     or enum_value is ZoneKind.OTHER:
                 self._append_issue(MapIssue("warn", code, f"unknown value {raw!r} mapped to OTHER",
                                             [ObjectRef(kind, object_id)]))
+
+        return list(self.issues)
+
+    def validate_transit(self) -> list[MapIssue]:
+        for stop in self.stops:
+            if stop.network_node_id is None and self.metadata.origin.game.casefold() == "cs2":
+                continue
+            if self.node(stop.network_node_id) is None:
+                self._append_issue(MapIssue("error", "DANGLING_REF", f"stop {stop.id} node is missing",
+                                            [ObjectRef("stop", stop.id)]))
+
+        for route in self.routes:
+            if self.line(route.line_id) is None:
+                self._append_issue(MapIssue("error", "DANGLING_REF", f"route {route.id} line is missing",
+                                            [ObjectRef("route", route.id), ObjectRef("line", route.line_id)]))
+            for stop_id in route.stop_ids:
+                if self.stop(stop_id) is None:
+                    self._append_issue(MapIssue("error", "DANGLING_REF", f"route {route.id} stop is missing",
+                                                [ObjectRef("route", route.id), ObjectRef("stop", stop_id)]))
+            path_ids = set(route.path_segment_ids)
+            for leg in route.legs or ():
+                if not (0 <= leg.from_stop_index < len(route.stop_ids)
+                        and 0 <= leg.to_stop_index < len(route.stop_ids)):
+                    self._append_issue(MapIssue("error", "ROUTE_LEG_INDICES",
+                        f"route {route.id} leg references a missing stop visit", [ObjectRef("route", route.id)]))
+                path_ids.update(leg.path_segment_ids)
+            for segment_id in sorted(path_ids):
+                if self.network(segment_id) is None:
+                    self._append_issue(MapIssue("error", "DANGLING_REF", f"route {route.id} path segment is missing",
+                                                [ObjectRef("route", route.id), ObjectRef("network", segment_id)]))
 
         return list(self.issues)
 

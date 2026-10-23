@@ -23,6 +23,8 @@ def capture_layer(layer, water, water_cfg, station_cfg):
         })
     lines = []
     for line in layer._tr_by_id.values():
+        if id(line) in layout.route_alias:
+            continue
         chains = layout.source_chains.get(int(line.id))
         if not chains:
             continue

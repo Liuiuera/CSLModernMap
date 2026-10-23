@@ -65,7 +65,7 @@ def _name(item) -> str:
     if custom:
         return custom
     display = getattr(item, "display_name", None)
-    return str(getattr(display, "text", getattr(item, "name", "")) or "").strip()
+    return str(getattr(display, "text", display) or getattr(item, "name", "") or "").strip()
 
 
 def _merge_candidates(candidates, distances):

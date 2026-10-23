@@ -56,6 +56,12 @@ def resolve_stop_names(mapdata: MapData, stops: Iterable[Stop],
                        name_index: StationNameIndex | None = None) -> tuple[Stop, ...]:
     result: list[Stop] = []
     for stop in stops:
+        if stop.key.namespace:
+            name = stop.name
+            if stop.name_kind == "template" and name.source != "custom":
+                name = DisplayName()
+            result.append(replace(stop, name=name))
+            continue
         if stop.name.text.strip():
             result.append(replace(stop))
             continue

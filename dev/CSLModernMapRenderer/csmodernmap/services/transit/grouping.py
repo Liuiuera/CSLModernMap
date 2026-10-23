@@ -1,7 +1,7 @@
 """规范化并确定性分组 CMM 逻辑线路。"""
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Iterable
 
 from ...cmm import (
@@ -60,6 +60,29 @@ def _stop_kind(mapdata: MapData, transport: Transport, node_id: int):
 def normalize_transit(mapdata: MapData, params: JobParams | None = None) -> NormalizedTransit:
     """按节点和类型创建语义站点，并保留稳定路线。"""
     params = params or JobParams()
+    from .native import cs2_document, source_transports
+    document = cs2_document(mapdata)
+    if document is not None:
+        available = tuple(line.kind for line in document.transit_lines)
+        enabled = set(params.normalized_enabled(available))
+        lines = tuple(replace(line) for line in document.transit_lines
+                      if line.kind is not TransitKind.OTHER
+                      and (params.enabled_line_ids is None or line.id in params.enabled_line_ids)
+                      and (params.enabled_types is None and params.view_all or line.kind in enabled))
+        selected = {line.id for line in lines}
+        routes = tuple(replace(route, stop_ids=list(route.stop_ids),
+                               path_segment_ids=list(route.path_segment_ids))
+                       for route in document.routes if route.line_id in selected)
+        serving = {}
+        for route in routes:
+            for ident in route.stop_ids:
+                serving.setdefault(ident, set()).add(route.line_id)
+        stops = tuple(replace(stop, _identity_space="cs2-stop",
+                              serving_line_ids=sorted(serving[stop.id]))
+                      for stop in document.stops if stop.id in serving)
+        return NormalizedTransit(lines, stops, routes,
+            {line.id: line for line in source_transports(document) if line.id in selected},
+            {stop.stop_key: stop for stop in stops})
     transports = [item for item in mapdata.transports
                   if normalize_transit_kind(item.type) is not TransitKind.OTHER]
     if params.enabled_line_ids is not None:
@@ -130,7 +153,13 @@ def build_line_groups(mapdata: MapData, normalized: NormalizedTransit,
                       params: JobParams | None = None) -> tuple[LineGroup, ...]:
     """不调用旧渲染代码，确定性地构建 CMM 线路分组。"""
     params = params or JobParams()
-    del mapdata
+    station_of = {}
+    if any(stop.key.namespace for stop in normalized.stops):
+        from ...services.station import group_stations
+        from .native import station_constraints
+        stations = group_stations(normalized.stops, None,
+                                  station_constraints(normalized.stops, params.station_merge))
+        station_of = {ident: station.id for station in stations for ident in station.member_stop_ids}
     lines = sorted(
         normalized.lines,
         key=lambda item: (-len(normalized.source_lines[item.id].stops), item.id),
@@ -139,7 +168,7 @@ def build_line_groups(mapdata: MapData, normalized: NormalizedTransit,
     def sequence(line: TransitLine) -> list[int]:
         values: list[int] = []
         for stop in normalized.source_lines[line.id].stops:
-            value = int(stop.node_id)
+            value = station_of.get(stop.node_id, int(stop.node_id))
             if not values or values[-1] != value:
                 values.append(value)
         return values

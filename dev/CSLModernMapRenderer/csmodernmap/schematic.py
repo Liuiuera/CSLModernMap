@@ -1619,6 +1619,8 @@ def schematic_layout(
     group_pos: Dict[int, Tuple[float, float]] = {}
 
     def station_nodes(station) -> tuple[int, ...]:
+        if transit_model is not None:
+            return tuple(station.member_stop_ids)
         keys = getattr(station, "member_stop_keys", None)
         if keys:
             result = []
@@ -1648,7 +1650,7 @@ def schematic_layout(
     if transit_model is not None:
         for stop in getattr(transit_model, "stops", ()):
             for line_id in stop.serving_line_ids:
-                stop_key_by_line_node[(int(line_id), int(stop.network_node_id))] = (
+                stop_key_by_line_node[(int(line_id), int(stop.key.node_id))] = (
                     stop.stop_key)
 
     def group_for_node(node_id: int, line=None) -> int | None:
@@ -1662,7 +1664,7 @@ def schematic_layout(
         if transit_model is not None:
             wanted = str(line_type).casefold()
             for stop in getattr(transit_model, "stops", ()):
-                if (int(stop.network_node_id) == int(node_id)
+                if (int(stop.key.node_id) == int(node_id)
                         and str(stop.kind.value).casefold() == wanted):
                     value = node_group.get(stop.stop_key)
                     if value is not None:

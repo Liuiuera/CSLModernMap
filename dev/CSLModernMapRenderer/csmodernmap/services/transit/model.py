@@ -128,6 +128,8 @@ def build_transit_model(
     if station_fix_path is not None:
         station_fix = station_fix_path
     params = job_params or JobParams()
+    from .native import cs2_document, station_constraints, migrate_sidecar
+    document = cs2_document(mapdata)
     selected_ids = {line.id for line in normalize_transit(mapdata, params).lines}
     normalized = normalize_transit(mapdata, replace(
         params, enabled_line_ids=None, enabled_types=None, view_all=True))
@@ -154,6 +156,13 @@ def build_transit_model(
     elif isinstance(sidecar, Mapping):
         from ...services.station import parse_station_sidecar
         sidecar = parse_station_sidecar(sidecar)
+    sidecar_issues = []
+    if sidecar is not None and sidecar is not False and document is not None:
+        try:
+            sidecar = migrate_sidecar(sidecar, named_stops, source_map)
+        except StationSidecarError as exc:
+            sidecar_issues.append(str(exc))
+            sidecar = None
     if sidecar is not None and sidecar is not False:
         validate_station_sidecar(
             sidecar,
@@ -168,11 +177,12 @@ def build_transit_model(
             ),
         )
 
+    if document is not None:
+        params = replace(params, station_merge=station_constraints(named_stops, params.station_merge))
     stations = group_stations(named_stops, group_of, params.station_merge)
     stations, physical_topologies, physical_legs, topology_issues = build_physical_topologies(
         mapdata, normalized.source_lines, named_stops, stations, group_of, params.station_merge)
     stations = resolve_station_names(mapdata, stations, named_stops, names_resolved=True)
-    sidecar_issues = []
     if sidecar is not None and sidecar is not False:
         applied = apply_station_fixes(
             stations, sidecar, strict=True, return_issues=True
@@ -202,6 +212,11 @@ def build_transit_model(
     derived_routes: list[Route] = []
     geometry_cache: dict = {}
     for group in groups:
+        if document is not None:
+            derived_routes.extend(replace(route, group_id=group.id)
+                                  for route in normalized.routes
+                                  if route.line_id in {line.id for line in group.members})
+            continue
         primary_source = normalized.source_lines.get(group.primary.id)
         if primary_source is None:
             continue
@@ -260,6 +275,7 @@ def build_transit_model(
                     issue.startswith((f"Line {ident}:", f"Line {ident},")) for ident in selected_ids))),
         physical_topologies={ident: value for ident, value in physical_topologies.items() if ident in selected_ids},
         physical_legs={ident: value for ident, value in physical_legs.items() if ident in selected_ids},
+        source_lines={ident: line for ident, line in normalized.source_lines.items() if ident in selected_ids},
         station_fix_applied=bool(
             isinstance(sidecar, StationSidecar) and sidecar.edits
         ),

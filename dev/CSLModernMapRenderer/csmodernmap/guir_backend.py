@@ -565,26 +565,25 @@ def _extract_city_info(document) -> dict:
 def _build_transit_line_catalog(session) -> list[dict]:
     """加载文档时在 Tk 线程之外推导界面线路信息。"""
     from .services.transit.geometry import resolve_route_geometry
+    from .services.transit.native import cs2_document, source_transports
     from .transit import line_display_color, normalize_type
 
     mapdata = session._legacy_view()
+    document = cs2_document(mapdata)
+    lines = source_transports(document) if document is not None else (getattr(mapdata, "transports", ()) or ())
     geometry_cache = {}
     result = []
-    for source_line in getattr(mapdata, "transports", ()) or ():
+    for source_line in lines:
         type_key = normalize_type(getattr(source_line, "type", ""))
         if type_key not in TYPE_REGISTRY:
             continue
-        try:
-            geometry = resolve_route_geometry(
-                mapdata, source_line, type_key, cache=geometry_cache)
-            points = tuple(geometry.points or ())
-        except Exception:  # 元数据错误不应使原本有效的城市无法打开。
-            points = tuple(
-                node.pos for stop in (getattr(source_line, "stops", ()) or ())
-                for node in (mapdata.node(int(stop.node_id)),) if node is not None)
+        geometry = resolve_route_geometry(
+            mapdata, source_line, type_key, cache=geometry_cache)
+        parts = geometry.parts or (geometry.points,)
         length_m = sum(
             math.hypot(float(right.x) - float(left.x),
                        float(right.z) - float(left.z))
+            for points in parts
             for left, right in zip(points, points[1:])
         )
         rgb = line_display_color(source_line)

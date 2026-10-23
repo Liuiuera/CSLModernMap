@@ -218,26 +218,33 @@ class POIIconLayer(Layer):
         if not self._station_avoid or getattr(poi.source, "kind", "") != "stop":
             return None
         source_id = int(getattr(poi.source, "id", 0))
+        from ..services.transit.native import cs2_document, source_transports
+
+        document = cs2_document(mapdata)
+        transports = source_transports(document) if document is not None else mapdata.transports
         node_id = source_id
-        # 原生 CMM 站点标识是源实体标识，线路几何另按网络节点标识；旧投影则使用节点标识作为回退。
-        for source_stop in getattr(mapdata, "stops", ()) or ():
-            if int(getattr(source_stop, "id", -1)) == source_id:
-                node_id = int(getattr(source_stop, "network_node_id", source_id))
-                break
-        node = mapdata.node(node_id)
-        if node is None:
-            return None
+        if document is not None:
+            position = poi.anchor
+        else:
+            for source_stop in getattr(mapdata, "stops", ()) or ():
+                if int(getattr(source_stop, "id", -1)) == source_id:
+                    node_id = int(getattr(source_stop, "network_node_id", source_id))
+                    break
+            node = mapdata.node(node_id)
+            if node is None:
+                return None
+            position = node.pos
 
         line_candidates = []
         wanted_kind = str(getattr(poi, "kind", "")).casefold()
-        for tr in mapdata.transports:
+        for tr in transports:
             if not any(int(stop.node_id) == node_id for stop in tr.stops):
                 continue
             if normalize_transit_kind(tr.type).value.casefold() == wanted_kind:
                 line_candidates.append(tr)
         if not line_candidates:
             line_candidates = [
-                tr for tr in mapdata.transports
+                tr for tr in transports
                 if any(int(stop.node_id) == node_id for stop in tr.stops)
             ]
 
@@ -251,7 +258,7 @@ class POIIconLayer(Layer):
                 self._poi_line_geometry[tr.id] = points
             if not points:
                 continue
-            nx, nz = node.pos.x, node.pos.z
+            nx, nz = position.x, position.z
             best, best_distance = 0, float("inf")
             for index, point in enumerate(points):
                 distance = ((point.x - nx) ** 2 + (point.z - nz) ** 2)

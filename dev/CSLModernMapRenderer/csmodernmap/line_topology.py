@@ -172,6 +172,7 @@ def _maximal_chains(
 
 def normalize_station_sequence(
     station_ids: Iterable[StationId],
+    *, connections: Iterable[Edge] | None = None,
 ) -> NormalizedLineTopology:
     """把车辆运行站序折叠为唯一无向物理拓扑。
 
@@ -181,10 +182,11 @@ def normalize_station_sequence(
     """
     raw = tuple(station_ids)
     sequence = _dedupe_adjacent(raw)
-    raw_leg_count = max(len(sequence) - 1, 0)
+    pairs = list(zip(sequence, sequence[1:])) if connections is None else list(connections)
+    raw_leg_count = max(len(sequence) - 1, 0) if connections is None else sum(a != b for a, b in pairs)
     edge_set = {
         canonical_edge(a, b)
-        for a, b in zip(sequence, sequence[1:])
+        for a, b in pairs
         if a != b
     }
     edges = tuple(sorted(edge_set))
@@ -209,17 +211,19 @@ def normalize_station_sequence(
     if max(degrees) <= 2 and len(endpoints) == 2:
         start = min(endpoints, key=lambda v: (first_pos.get(v, 1 << 30), v))
         simple = _walk_path(start, adj, first_pos)
-        return NormalizedLineTopology(
-            raw, tuple(sequence), edges, (simple,), "path", simple,
-            raw_leg_count, collapsed,
-        )
+        if connections is None or len(simple) == len(adj):
+            return NormalizedLineTopology(
+                raw, tuple(sequence), edges, (simple,), "path", simple,
+                raw_leg_count, collapsed,
+            )
 
     if all(degree == 2 for degree in degrees):
         simple = _walk_cycle(sequence, adj)
-        return NormalizedLineTopology(
-            raw, tuple(sequence), edges, (simple,), "cycle", simple,
-            raw_leg_count, collapsed,
-        )
+        if connections is None or len(simple) == len(adj) + 1:
+            return NormalizedLineTopology(
+                raw, tuple(sequence), edges, (simple,), "cycle", simple,
+                raw_leg_count, collapsed,
+            )
 
     chains = _maximal_chains(adj, first_pos)
     return NormalizedLineTopology(

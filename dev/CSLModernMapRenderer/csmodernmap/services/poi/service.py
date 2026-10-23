@@ -255,23 +255,24 @@ def _transport_stops(mapdata: Any, params: POIJobParams, *, session=None) -> tup
         from ...cmm import normalize_stop_kind
 
         native_stops = tuple(getattr(mapdata, "stops", ()) or ())
+        identity_attr = "id" if game_for(mapdata) == "cs2" else "network_node_id"
         native_by_key = {}
         for native in native_stops:
-            node_id = int(getattr(native, "network_node_id", -1))
+            node_id = int(getattr(native, identity_attr, -1))
             native_kind = normalize_stop_kind(getattr(native, "kind", ""))
             native_by_key.setdefault(
                 (node_id, native_kind.value.casefold()), native)
         if native_stops and native_by_key:
             resolved_by_key = {}
             for stop in stops:
-                key = (int(getattr(stop, "network_node_id", -1)),
+                key = (int(getattr(stop, identity_attr, -1)),
                        normalize_stop_kind(
                            getattr(stop, "kind", "")).value.casefold())
                 resolved_by_key.setdefault(key, stop)
             enriched = []
             selected_lines = {line.id for line in transit_model.lines}
             for native in native_stops:
-                key = (int(getattr(native, "network_node_id", -1)),
+                key = (int(getattr(native, identity_attr, -1)),
                        normalize_stop_kind(
                            getattr(native, "kind", "")).value.casefold())
                 resolved = resolved_by_key.get(key)
@@ -376,12 +377,12 @@ def _collect_stops(
     mapdata: Any, catalog: PoiCatalog,
     params: POIJobParams, *, session=None,
 ) -> list[POI]:
-    by_source: dict[tuple[int, int, str], list[POI]] = {}
+    by_source: dict[tuple[int, int | None, str], list[POI]] = {}
     for stop in _transport_stops(mapdata, params, session=session):
         stop_id = _source_id(stop)
-        node_id = int(getattr(stop, "network_node_id", getattr(stop, "node_id", stop_id)))
+        node_id = getattr(stop, "network_node_id", getattr(stop, "node_id", stop_id))
         kind = _kind_value(getattr(stop, "kind", ""))
-        node = _mapdata_node(mapdata, node_id)
+        node = _mapdata_node(mapdata, node_id) if node_id is not None else None
         anchor = getattr(stop, "position", None)
         if anchor is None and node is not None:
             anchor = getattr(node, "pos", None)

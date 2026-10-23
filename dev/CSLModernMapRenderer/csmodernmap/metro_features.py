@@ -49,6 +49,11 @@ def metro_station_ids(mapdata: MapData, enabled_types) -> set:
     from . import transit
 
     enabled = set(enabled_types or ())
+    from .services.transit.native import cs2_document
+    document = cs2_document(mapdata)
+    if document is not None:
+        lines = {line.id for line in document.transit_lines if transit.normalize_type(str(line.kind).title()) in enabled}
+        return {ident for route in document.routes if route.line_id in lines for ident in route.stop_ids}
     station_ids = set()
     for transport in getattr(mapdata, "transports", ()):
         raw_type = getattr(transport, "type", None)
@@ -78,10 +83,13 @@ def metro_content_canvas_size(mapdata: MapData, enabled_types,
     long_edge = max(int(long_edge), 128)
     station_ids = metro_station_ids(mapdata, enabled_types)
     nodes = {node.id: node for node in getattr(mapdata, "nodes", ())}
+    from .services.transit.native import cs2_document
+    document = cs2_document(mapdata)
+    native_positions = {stop.id: stop.position for stop in document.stops} if document is not None else None
     points = []
     for node_id in station_ids:
         node = nodes.get(node_id)
-        pos = getattr(node, "pos", None)
+        pos = native_positions.get(node_id) if native_positions is not None else getattr(node, "pos", None)
         if pos is not None:
             points.append(orient_world(
                 float(pos.x), float(pos.z), rotation))

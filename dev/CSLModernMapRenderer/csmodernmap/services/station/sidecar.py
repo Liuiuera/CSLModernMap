@@ -126,6 +126,11 @@ def _canonical_stop_key(value: Any, *, edit_id: str = "") -> str:
             (_issue("INVALID_STOP_KEY", repr(value), edit_id),),
         )
     raw = value.strip()
+    if raw.startswith("cs2-stop:"):
+        try:
+            return str(StopKey.parse(raw))
+        except ValueError as exc:
+            raise StationSidecarError("无效的二代站台身份", (_issue("INVALID_STOP_KEY", str(exc), edit_id),)) from exc
     node_text, separator, kind_text = raw.partition(":")
     if not separator or not node_text.strip() or not kind_text.strip():
         raise StationSidecarError(
