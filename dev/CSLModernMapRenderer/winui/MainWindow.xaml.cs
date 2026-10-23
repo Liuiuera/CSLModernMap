@@ -1,5 +1,6 @@
 // 初始化主窗口并连接主要界面事件。
 using System.Collections.ObjectModel;
+using System.Reflection;
 using System.Text.Json;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -710,10 +711,12 @@ public sealed partial class MainWindow : Window
 
     private async Task ShowAboutAsync()
     {
+        var version = typeof(App).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!
+            .InformationalVersion.Split('+')[0];
         await new ContentDialog
         {
             XamlRoot = Root.XamlRoot,
-            Title = "CSLModernMap",
+            Title = $"CSLModernMap v{version}",
             Content = UiLanguage.Text("MainWindow_xaml_ShowAboutAsync_F5BEA9F4E5"),
             CloseButtonText = UiLanguage.Text("MainWindow_xaml_ShowAboutAsync_3FD47EDCE4"),
         }.ShowAsync();
