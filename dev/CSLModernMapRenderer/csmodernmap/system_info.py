@@ -20,17 +20,14 @@ TIER_RECOMMEND = {
     "低": {
         "aa": False,           # 关闭 2× 抗锯齿（最省 CPU/内存）
         "memfriendly": True,   # 低内存模式（超大图自动分块）
-        "water_smooth": "低",  # 水面平滑降档
     },
     "中": {
         "aa": True,
         "memfriendly": False,
-        "water_smooth": "标准",
     },
     "高": {
         "aa": True,
         "memfriendly": False,
-        "water_smooth": "标准",
     },
 }
 

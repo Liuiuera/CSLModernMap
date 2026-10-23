@@ -4552,9 +4552,6 @@ msgstr "Cor da margem"
 msgid "style.water.color.label"
 msgstr "Preenchimento da água"
 
-msgid "style.water.smooth.label"
-msgstr "Suavizar o contorno da margem (somente na exportação)"
-
 msgid "style.water.width.label"
 msgstr "Largura da margem"
 
@@ -4582,20 +4579,8 @@ msgstr "Preenchimento da área"
 msgid "transport.station_prefix"
 msgstr "Estação"
 
-msgid "ui.guir_backend.__init__.6bea77acef"
-msgstr "Padrão"
-
 msgid "ui.guir_backend._extract_city_info.ec7227d6cd"
 msgstr "Cidade desconhecida"
-
-msgid "ui.guir_backend._handler_water_smooth.6bea77acef"
-msgstr "Padrão"
-
-msgid "ui.guir_backend._handler_water_smooth.f038053bed"
-msgstr "Forte"
-
-msgid "ui.guir_backend._load_persisted_state.6bea77acef"
-msgstr "Padrão"
 
 msgid "ui.guir_backend._poll.28e5fa4dbd"
 msgstr "Falha ao ler o resultado da renderização"
@@ -4638,9 +4623,6 @@ msgstr "Campus"
 
 msgid "ui.guir_backend.facility_poi_catalog.e852dca995"
 msgstr "Parque"
-
-msgid "ui.guir_backend.field_value.6bea77acef"
-msgstr "Padrão"
 
 msgid "ui.guir_backend.progress.ab09202a2b"
 msgstr "Geração do mapa esquemático do metrô cancelada"

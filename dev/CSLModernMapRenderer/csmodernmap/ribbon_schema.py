@@ -101,7 +101,6 @@ FIELDS = {
  'water.color': color('water.color', '#8DDBF6'),
  'water.border': color('water.border', '#72C3E2'),
  'water.width': number('water.width', 1, 0, 8),
- 'water.smooth': toggle('water.smooth'),
  'road.width': number('road.width', 100, 25, 200),
  'road.color': color('road.color', '#FFFFFF'),
  'road.highway': color('road.highway', '#F4C77A'),
@@ -265,7 +264,7 @@ for _lvl in ROAD_LEVELS:
 
 LAYER_FIELDS = {
  'terrain':('terrain.mode','terrain.color','terrain.forest','terrain.shade','terrain.sun'),
- 'water':('water.color','water.border','water.width','water.smooth'),
+ 'water':('water.color','water.border','water.width'),
  # 整体项在前，再按等级排（每级 填色 / 描边 / 宽度 挨在一起）。
  # 旧的 road.color / road.highway / road.border 已被等级分项取代、从面板撤下，
  # 但 FIELDS 与 handler 保留：老配置写进的就是各等级自己的键，仍然生效。

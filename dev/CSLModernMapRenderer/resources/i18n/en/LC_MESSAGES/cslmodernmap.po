@@ -4521,9 +4521,6 @@ msgstr "Shoreline"
 msgid "style.water.color.label"
 msgstr "Water fill"
 
-msgid "style.water.smooth.label"
-msgstr "Smooth shoreline (export only)"
-
 msgid "style.water.width.label"
 msgstr "Shore width"
 
@@ -4551,20 +4548,8 @@ msgstr "Area fill"
 msgid "transport.station_prefix"
 msgstr "Station"
 
-msgid "ui.guir_backend.__init__.6bea77acef"
-msgstr "Standard"
-
 msgid "ui.guir_backend._extract_city_info.ec7227d6cd"
 msgstr "Unknown city"
-
-msgid "ui.guir_backend._handler_water_smooth.6bea77acef"
-msgstr "Standard"
-
-msgid "ui.guir_backend._handler_water_smooth.f038053bed"
-msgstr "Strong"
-
-msgid "ui.guir_backend._load_persisted_state.6bea77acef"
-msgstr "Standard"
 
 msgid "ui.guir_backend._poll.28e5fa4dbd"
 msgstr "Failed to read render result"
@@ -4607,9 +4592,6 @@ msgstr "Campus"
 
 msgid "ui.guir_backend.facility_poi_catalog.e852dca995"
 msgstr "Park"
-
-msgid "ui.guir_backend.field_value.6bea77acef"
-msgstr "Standard"
 
 msgid "ui.guir_backend.progress.ab09202a2b"
 msgstr "Metro diagram generation cancelled"

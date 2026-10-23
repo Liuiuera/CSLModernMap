@@ -52,13 +52,6 @@ from csmodernmap.style import (
 )
 from csmodernmap.system_info import available_memory_gb
 
-WATER_SMOOTH_PRESETS = {
-    "低": (2, 4, 2.0, 30),
-    "标准": (4, 6, 3.0, 45),
-    "强": (4, 8, 4.0, 60),
-    "极强": (4, 10, 5.0, 80),
-}
-
 from .export_region import output_dimensions, size_pair
 
 
@@ -248,7 +241,6 @@ def _build_normal_renderer(
     renderer.disk_backing = decision["disk_backing"]
     renderer.tile_size = decision["tile_size"]
     renderer._cslm_memory_decision = decision
-    preset = WATER_SMOOTH_PRESETS[ui["water_smooth"]]
     for name in layers:
         cls = _CLASS_BY_KEY[name]
         if preview and cls is BuiltAreaLayer:
@@ -261,10 +253,10 @@ def _build_normal_renderer(
             else:
                 renderer.add_layer(
                     WaterLayer(
-                        upscale=preset[0],
-                        smooth_iters=preset[1],
-                        rdp_epsilon=preset[2],
-                        min_area=preset[3],
+                        upscale=4,
+                        smooth_iters=6,
+                        rdp_epsilon=3.0,
+                        min_area=45,
                     )
                 )
         elif cls is DistrictLayer:

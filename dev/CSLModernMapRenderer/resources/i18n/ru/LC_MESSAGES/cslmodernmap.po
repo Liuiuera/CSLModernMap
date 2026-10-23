@@ -4535,9 +4535,6 @@ msgstr "Цвет берега"
 msgid "style.water.color.label"
 msgstr "Заливка воды"
 
-msgid "style.water.smooth.label"
-msgstr "Сглаживать береговую линию (только при экспорте)"
-
 msgid "style.water.width.label"
 msgstr "Ширина берега"
 
@@ -4565,20 +4562,8 @@ msgstr "Заливка области"
 msgid "transport.station_prefix"
 msgstr "Станция"
 
-msgid "ui.guir_backend.__init__.6bea77acef"
-msgstr "Стандартный"
-
 msgid "ui.guir_backend._extract_city_info.ec7227d6cd"
 msgstr "Неизвестный город"
-
-msgid "ui.guir_backend._handler_water_smooth.6bea77acef"
-msgstr "Стандартный"
-
-msgid "ui.guir_backend._handler_water_smooth.f038053bed"
-msgstr "Сильный"
-
-msgid "ui.guir_backend._load_persisted_state.6bea77acef"
-msgstr "Стандартный"
 
 msgid "ui.guir_backend._poll.28e5fa4dbd"
 msgstr "Не удалось прочитать результат рендеринга"
@@ -4621,9 +4606,6 @@ msgstr "Кампус"
 
 msgid "ui.guir_backend.facility_poi_catalog.e852dca995"
 msgstr "Парк"
-
-msgid "ui.guir_backend.field_value.6bea77acef"
-msgstr "Стандартный"
 
 msgid "ui.guir_backend.progress.ab09202a2b"
 msgstr "Создание схемы метро отменено"

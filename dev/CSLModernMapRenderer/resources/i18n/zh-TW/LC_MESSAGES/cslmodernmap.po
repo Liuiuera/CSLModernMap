@@ -4390,9 +4390,6 @@ msgstr "海岸線顏色"
 msgid "style.water.color.label"
 msgstr "水域填色"
 
-msgid "style.water.smooth.label"
-msgstr "平滑海岸線（僅匯出）"
-
 msgid "style.water.width.label"
 msgstr "岸線寬度"
 
@@ -4420,20 +4417,8 @@ msgstr "區域填色"
 msgid "transport.station_prefix"
 msgstr "車站"
 
-msgid "ui.guir_backend.__init__.6bea77acef"
-msgstr "標準"
-
 msgid "ui.guir_backend._extract_city_info.ec7227d6cd"
 msgstr "未知城市"
-
-msgid "ui.guir_backend._handler_water_smooth.6bea77acef"
-msgstr "標準"
-
-msgid "ui.guir_backend._handler_water_smooth.f038053bed"
-msgstr "強"
-
-msgid "ui.guir_backend._load_persisted_state.6bea77acef"
-msgstr "標準"
 
 msgid "ui.guir_backend._poll.28e5fa4dbd"
 msgstr "讀取算圖結果失敗"
@@ -4476,9 +4461,6 @@ msgstr "校園"
 
 msgid "ui.guir_backend.facility_poi_catalog.e852dca995"
 msgstr "公園"
-
-msgid "ui.guir_backend.field_value.6bea77acef"
-msgstr "標準"
 
 msgid "ui.guir_backend.progress.ab09202a2b"
 msgstr "地鐵示意圖產生已取消"

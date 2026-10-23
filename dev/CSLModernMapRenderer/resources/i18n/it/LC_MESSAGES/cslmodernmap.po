@@ -4569,9 +4569,6 @@ msgstr "Colore della riva"
 msgid "style.water.color.label"
 msgstr "Riempimento delle acque"
 
-msgid "style.water.smooth.label"
-msgstr "Smussa il contorno della riva (solo esportazione)"
-
 msgid "style.water.width.label"
 msgstr "Larghezza della costa"
 
@@ -4599,20 +4596,8 @@ msgstr "Colore di riempimento dell'area"
 msgid "transport.station_prefix"
 msgstr "Fermata"
 
-msgid "ui.guir_backend.__init__.6bea77acef"
-msgstr "Standard"
-
 msgid "ui.guir_backend._extract_city_info.ec7227d6cd"
 msgstr "Città sconosciuta"
-
-msgid "ui.guir_backend._handler_water_smooth.6bea77acef"
-msgstr "Standard"
-
-msgid "ui.guir_backend._handler_water_smooth.f038053bed"
-msgstr "Intenso"
-
-msgid "ui.guir_backend._load_persisted_state.6bea77acef"
-msgstr "Standard"
 
 msgid "ui.guir_backend._poll.28e5fa4dbd"
 msgstr "Impossibile leggere il risultato del rendering"
@@ -4655,9 +4640,6 @@ msgstr "Campus"
 
 msgid "ui.guir_backend.facility_poi_catalog.e852dca995"
 msgstr "Parco"
-
-msgid "ui.guir_backend.field_value.6bea77acef"
-msgstr "Standard"
 
 msgid "ui.guir_backend.progress.ab09202a2b"
 msgstr "Generazione della mappa schematica della metropolitana annullata"

@@ -4394,9 +4394,6 @@ msgstr "해안선 색상"
 msgid "style.water.color.label"
 msgstr "수역 채우기"
 
-msgid "style.water.smooth.label"
-msgstr "해안선 부드럽게(내보내기만)"
-
 msgid "style.water.width.label"
 msgstr "해안선 너비"
 
@@ -4424,20 +4421,8 @@ msgstr "지역 채우기"
 msgid "transport.station_prefix"
 msgstr "역"
 
-msgid "ui.guir_backend.__init__.6bea77acef"
-msgstr "표준"
-
 msgid "ui.guir_backend._extract_city_info.ec7227d6cd"
 msgstr "알 수 없는 도시"
-
-msgid "ui.guir_backend._handler_water_smooth.6bea77acef"
-msgstr "표준"
-
-msgid "ui.guir_backend._handler_water_smooth.f038053bed"
-msgstr "강함"
-
-msgid "ui.guir_backend._load_persisted_state.6bea77acef"
-msgstr "표준"
 
 msgid "ui.guir_backend._poll.28e5fa4dbd"
 msgstr "렌더링 결과를 읽지 못했습니다"
@@ -4480,9 +4465,6 @@ msgstr "캠퍼스"
 
 msgid "ui.guir_backend.facility_poi_catalog.e852dca995"
 msgstr "공원"
-
-msgid "ui.guir_backend.field_value.6bea77acef"
-msgstr "표준"
 
 msgid "ui.guir_backend.progress.ab09202a2b"
 msgstr "지하철 노선도 생성 취소됨"

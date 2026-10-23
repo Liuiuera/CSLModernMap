@@ -4391,9 +4391,6 @@ msgstr "岸线颜色"
 msgid "style.water.color.label"
 msgstr "水域填色"
 
-msgid "style.water.smooth.label"
-msgstr "平滑水域轮廓（仅导出）"
-
 msgid "style.water.width.label"
 msgstr "岸线宽度"
 
@@ -4421,28 +4418,9 @@ msgstr "区域填色"
 msgid "transport.station_prefix"
 msgstr "站点"
 
-#: dev/CSLModernMapRenderer/csmodernmap/guir_backend.py:691
-#: dev/CSLModernMapRenderer/csmodernmap/guir_backend.py:703
-#: dev/CSLModernMapRenderer/csmodernmap/guir_backend.py:741
-msgid "ui.guir_backend.__init__.6bea77acef"
-msgstr "标准"
-
 #: dev/CSLModernMapRenderer/csmodernmap/guir_backend.py:555
 msgid "ui.guir_backend._extract_city_info.ec7227d6cd"
 msgstr "未知城市"
-
-#: dev/CSLModernMapRenderer/csmodernmap/guir_backend.py:3871
-msgid "ui.guir_backend._handler_water_smooth.6bea77acef"
-msgstr "标准"
-
-#: dev/CSLModernMapRenderer/csmodernmap/guir_backend.py:3871
-msgid "ui.guir_backend._handler_water_smooth.f038053bed"
-msgstr "强"
-
-#: dev/CSLModernMapRenderer/csmodernmap/guir_backend.py:912
-#: dev/CSLModernMapRenderer/csmodernmap/guir_backend.py:913
-msgid "ui.guir_backend._load_persisted_state.6bea77acef"
-msgstr "标准"
 
 #: dev/CSLModernMapRenderer/csmodernmap/guir_backend.py:1848
 msgid "ui.guir_backend._poll.28e5fa4dbd"
@@ -4499,10 +4477,6 @@ msgstr "校园"
 #: dev/CSLModernMapRenderer/csmodernmap/guir_backend.py:1346
 msgid "ui.guir_backend.facility_poi_catalog.e852dca995"
 msgstr "公园"
-
-#: dev/CSLModernMapRenderer/csmodernmap/guir_backend.py:3601
-msgid "ui.guir_backend.field_value.6bea77acef"
-msgstr "标准"
 
 #: dev/CSLModernMapRenderer/csmodernmap/guir_backend.py:2768
 msgid "ui.guir_backend.progress.ab09202a2b"

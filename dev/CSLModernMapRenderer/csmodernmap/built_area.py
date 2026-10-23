@@ -40,21 +40,6 @@ CONTOUR_UPSCALE = 2
 # 道路设施、景观美化（岩石/巨石等装饰道具）都不是"房子"，不构成建成区。
 DEFAULT_EXCLUDE_SERVICES = ("Electricity", "Water", "Road", "Beautification")
 
-# 建成区轮廓平滑预设：(contour_upscale, smooth_iters, smooth_blur)
-# contour_upscale = 掩膜 BILINEAR 放大倍数（1=不放大，越大轮廓采样越密）
-# smooth_iters = Chaikin 圆润迭代次数（越大越圆润）
-# smooth_blur = 掩膜高斯模糊半径（格；把二值阶梯转成连续场，50% 等值线
-#               才真正变平滑——这是决定轮廓形状的关键参数）
-# 三档梯度："标准"为经过实测的可用基准（原"极强"档）；强/极强更圆润。
-BUILT_SMOOTH_PRESETS = {
-    "低": (2, 4, 1.5),
-    "标准": (4, 6, 2.0),
-    "强": (4, 8, 2.5),
-    "极强": (4, 10, 3.0),
-}
-
-# 建成区平滑档位的简短说明（用于 GUI Tooltip / 状态栏提示）
-
 
 def _poly_area(poly) -> float:
     """多边形面积（世界坐标 m²）。"""

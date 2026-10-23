@@ -680,7 +680,7 @@ class GuirBackend:
         self.theme_stem = "apple_maps"
         self.style_overrides: dict[str, dict] = {}
         self.font_scale = 1.0
-        self.contrast = i18n.tr('ui.guir_backend.__init__.6bea77acef')
+        self.contrast = "standard"
         self.rotation = 0
         # 「范围」= n（全图的 1/n 见方）+ 定位方式。早先是一组下拉模式
         # （full / center5 / best3 / custom），那套语言以 CS1 的 17280 米为
@@ -692,8 +692,6 @@ class GuirBackend:
         self.aa = False
         self.watermark_text = ""
         self.terrain = {"mode": "simple", "shade": 35.0, "sun": 315.0}
-        self.water_smooth = i18n.tr('ui.guir_backend.__init__.6bea77acef')
-        self.built_smooth = i18n.tr('ui.guir_backend.__init__.6bea77acef')
         self.road_names = True
         self.accurate_intersections = True
         self.road_player_names = True
@@ -890,8 +888,6 @@ class GuirBackend:
         self.tile_ranges = copy.deepcopy(self._setting("tile_ranges", {}))
         self.set_rotation(self._setting("rotation_var", "0°"), persist=False)
         self.aa = automatic_antialias()
-        self.water_smooth = str(self._setting("water_smooth_var", i18n.tr('ui.guir_backend._load_persisted_state.6bea77acef')))
-        self.built_smooth = str(self._setting("built_smooth_var", i18n.tr('ui.guir_backend._load_persisted_state.6bea77acef')))
         self.contrast = "standard"
         self.font_scale = 1.0
         self.poi_names = bool(self._setting("poi_names_var", False))
@@ -1000,6 +996,8 @@ class GuirBackend:
         # 已停用的产品选项不得继续写入 settings.json。
         values.pop("district_specialization_var", None)
         values.pop("detail_var", None)
+        values.pop("water_smooth_var", None)
+        values.pop("built_smooth_var", None)
         # 旧「范围」键同理：显示值不再作为存储口径，改存 n 与定位方式。
         values.pop("range_var", None)
         values.pop("font_tier_var", None)
@@ -1011,8 +1009,6 @@ class GuirBackend:
             "range_anchor": str(self.range_anchor),
             "tile_ranges": copy.deepcopy(self.tile_ranges),
             "rotation_var": f"{self.rotation}°",
-            "water_smooth_var": self.water_smooth,
-            "built_smooth_var": self.built_smooth,
             "poi_names_var": bool(self.poi_names),
             "poi_game_names_var": bool(self.poi_game_names),
             "road_game_names_var": bool(self.road_game_names),
@@ -1914,8 +1910,6 @@ class GuirBackend:
             "block_gap_m": float(self.block_gap_m),
             "hub_core_m": float(self.hub_core_m),
             "transit_types": list(self.transit_types),
-            "water_smooth": self.water_smooth,
-            "built_smooth": self.built_smooth,
             "district_ids": (None if self.district_ids is None
                              else sorted(self.district_ids)),
             "park_ids": (None if self.park_ids is None
@@ -2037,7 +2031,6 @@ class GuirBackend:
         return result
 
     def _preview_style(self, style_data=None):
-        from .built_area import BUILT_SMOOTH_PRESETS
         data = copy.deepcopy(style_data or self.current_style_data())
         data.setdefault("roads", {})["accurate_intersections"] = self.accurate_intersections
         data["roads"]["use_game_names"] = self.road_game_names
@@ -2066,11 +2059,10 @@ class GuirBackend:
         # 同一场景供普通/公交视图使用，运输模式由 Viewer 筛选。
         data.setdefault("transports", {})["enabled"] = list(TYPE_REGISTRY)
         data["_poi_mapping_override"] = str(self.poi_mapping_override)
-        up, iters, blur = BUILT_SMOOTH_PRESETS[self.built_smooth]
         built = data.setdefault("built_area", {})
-        built.setdefault("contour_upscale", up)
-        built.setdefault("smooth_iters", iters)
-        built.setdefault("smooth_blur", blur)
+        built.setdefault("contour_upscale", 4)
+        built.setdefault("smooth_iters", 6)
+        built.setdefault("smooth_blur", 2.0)
         return data
 
     def _preview_source_options(self) -> dict:
@@ -3331,7 +3323,6 @@ class GuirBackend:
             "terrain.mode": self.terrain["mode"],
             "terrain.shade": self.terrain["shade"],
             "terrain.sun": self.terrain["sun"],
-            "water.smooth": self.water_smooth != i18n.tr('ui.guir_backend.field_value.6bea77acef'),
             "road.names": self.road_names,
             "road.accurate_intersections": self.accurate_intersections,
             # 旧的「普通道路 / 道路描边」已被等级分项取代、从面板撤下，这里只作
@@ -3589,9 +3580,6 @@ class GuirBackend:
         except (TypeError, ValueError):
             pass
 
-    def _handler_water_smooth(self, value) -> None:
-        self.water_smooth = i18n.tr('ui.guir_backend._handler_water_smooth.f038053bed') if bool(value) else i18n.tr('ui.guir_backend._handler_water_smooth.6bea77acef')
-
     def _handler_road_names(self, value) -> None:
         self.road_names = bool(value)
 
@@ -3763,7 +3751,6 @@ class GuirBackend:
         "terrain.mode": _handler_terrain_mode,
         "terrain.shade": _handler_terrain_shade,
         "terrain.sun": _handler_terrain_sun,
-        "water.smooth": _handler_water_smooth,
         "road.names": _handler_road_names,
         "road.accurate_intersections": _handler_accurate_intersections,
         "road.width": _handler_road_width,

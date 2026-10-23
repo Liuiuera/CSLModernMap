@@ -4390,9 +4390,6 @@ msgstr "海岸線の色"
 msgid "style.water.color.label"
 msgstr "水域の塗りつぶし"
 
-msgid "style.water.smooth.label"
-msgstr "水辺を滑らかにする（エクスポートのみ）"
-
 msgid "style.water.width.label"
 msgstr "海岸線の幅"
 
@@ -4420,20 +4417,8 @@ msgstr "エリアの塗りつぶし"
 msgid "transport.station_prefix"
 msgstr "駅"
 
-msgid "ui.guir_backend.__init__.6bea77acef"
-msgstr "標準"
-
 msgid "ui.guir_backend._extract_city_info.ec7227d6cd"
 msgstr "都市が不明です"
-
-msgid "ui.guir_backend._handler_water_smooth.6bea77acef"
-msgstr "標準"
-
-msgid "ui.guir_backend._handler_water_smooth.f038053bed"
-msgstr "強い"
-
-msgid "ui.guir_backend._load_persisted_state.6bea77acef"
-msgstr "標準"
 
 msgid "ui.guir_backend._poll.28e5fa4dbd"
 msgstr "レンダリング結果を読み込めませんでした"
@@ -4476,9 +4461,6 @@ msgstr "キャンパス"
 
 msgid "ui.guir_backend.facility_poi_catalog.e852dca995"
 msgstr "公園"
-
-msgid "ui.guir_backend.field_value.6bea77acef"
-msgstr "標準"
 
 msgid "ui.guir_backend.progress.ab09202a2b"
 msgstr "地下鉄路線図の生成をキャンセルしました"
