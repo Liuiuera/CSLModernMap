@@ -39,7 +39,6 @@ dev/CSLModernMapRenderer/.tmp_csize/
 .DS_Store
 
 # 临时/可再生产物
-.codex_tmp/
 .pytest_cache/
 .tmp/
 
@@ -47,15 +46,10 @@ dev/CSLModernMapRenderer/.tmp_csize/
 archive/
 assets/存档/
 
-# 工作区工具目录（会话记忆与临时探针产物，不入编译仓库）
-.workbuddy/
-
 # WinUI 构建与本地测试产物
 dev/CSLModernMapRenderer/winui/bin/
 dev/CSLModernMapRenderer/winui/obj/
 dev/CSLModernMapRenderer/winui/dist/
-_codex_tmp/
-syncfusion.license
 
 # 渲染器与测试产物
 dev/CSLModernMapRenderer/*_map.html
@@ -81,13 +75,6 @@ dist-embed/
 *.p12
 *.snk
 *.license
-.codex/
-.dsh/
-.design/
-.qoder/
-.trae/
-AGENTS.local.md
-AI_CONTEXT.md
 dev/CSLModernMapRenderer/custom_fonts/
 
 # Local CI and release output

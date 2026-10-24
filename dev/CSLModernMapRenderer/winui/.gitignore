@@ -4,4 +4,3 @@ dist/
 .vs/
 __pycache__/
 *.WebView2/
-syncfusion.license

@@ -39,7 +39,7 @@ I18N_DIR = ROOT / "resources" / "i18n"
 # 代码引用扫描范围：根目录全部 .py（跳过归档/产物目录）
 CODE_SCAN = [ROOT]
 _SKIP_DIRS = {"archive", "build", "dist", "cache", "web_cache",
-              "__pycache__", ".pytest_cache", ".codex_tmp"}
+              "__pycache__", ".pytest_cache", ".tmp"}
 
 # 翻译函数名（ast 匹配 Name 调用）
 _TRANSLATE_FUNCS = {"tr", "_", "_T", "_TF"}
