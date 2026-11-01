@@ -1,5 +1,7 @@
 {
     "embed": {
+        "normalStation": "一般駅",
+        "interchangeStation": "乗換駅",
         "showWaterControls": "水域の制御点を表示",
         "ribbon": "リボン",
         "project": "プロジェクト",

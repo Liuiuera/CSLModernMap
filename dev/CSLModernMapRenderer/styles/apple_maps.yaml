@@ -9,11 +9,17 @@ terrain:
   - threshold: 0
     color: '#EBF0CF'
   - threshold: 80
-    color: '#EBF0CF'
+    color: '#DDE8BD'
   - threshold: 220
-    color: '#E0F0C2'
+    color: '#CADCAD'
+  - threshold: 400
+    color: '#B5CCA0'
   - threshold: 600
-    color: '#C9E8B3'
+    color: '#A4BC90'
+  - threshold: 900
+    color: '#91AA80'
+  - threshold: 1300
+    color: '#819875'
   elevation_mode: continuous
   hillshade:
     enabled: false
@@ -84,27 +90,27 @@ zone:
   contour_upscale: 2
 roads:
   highway:
-    fill: '#B3B7C3'
-    border: '#9BA0AD'
+    fill: '#A4ADBD'
+    border: '#8995A7'
     border_width:
       fixed: 0.3
       scaled: 1.2
     min_fill_px: 1.8
   primary:
-    fill: '#E0E3E6'
-    border: '#CBCECE'
+    fill: '#D1D7DF'
+    border: '#ADB6C2'
     border_width:
       fixed: 0.25
       scaled: 0.95
   secondary:
     fill: '#FEFEFE'
-    border: '#DCDCD8'
+    border: '#C4C8C0'
     border_width:
       fixed: 0.2
       scaled: 0.8
   tertiary:
     fill: '#FFFFFF'
-    border: '#E3E3DE'
+    border: '#C4C8C0'
     border_width:
       fixed: 0.15
       scaled: 0.65
@@ -116,15 +122,15 @@ roads:
       scaled: 0.4
   width_scale: 0.15
   main:
-    fill: '#E0E3E6'
-    border: '#CBCECE'
+    fill: '#D1D7DF'
+    border: '#ADB6C2'
     border_width:
       fixed: 0.25
       scaled: 0.95
     min_fill_px: 1.4
   branch:
     fill: '#FFFFFF'
-    border: '#E3E3DE'
+    border: '#C4C8C0'
     border_width:
       fixed: 0.15
       scaled: 0.65
@@ -142,8 +148,10 @@ roads:
       scaled: 0.4
     min_fill_px: 0.5
 buildings:
-  default: '#ECECE8'
-  border: '#CECEC8'
+  default: '#DADCD5'
+  border: '#B7BDB2'
+  poi_tint:
+    contrast: 0.38
   border_width:
     fixed: 0.2
     scaled: 0.8
@@ -333,7 +341,7 @@ labels:
     size:
       fixed: 1.0
       scaled: 6.0
-    color: '#667085'
+    color: '#566579'
     stroke: '#FFFFFF'
     stroke_width:
       fixed: 0.2
@@ -343,7 +351,7 @@ labels:
     size:
       fixed: 2.0
       scaled: 14.0
-    color: '#7B8490'
+    color: '#596574'
   park:
     font: PingFang SC
     size:

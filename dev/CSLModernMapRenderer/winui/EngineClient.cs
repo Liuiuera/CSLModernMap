@@ -62,9 +62,9 @@ internal sealed class EngineClient : IAsyncDisposable
         try
         {
             // 持续排空 stderr，避免子进程阻塞；请求错误由协议上报。
-            while (await reader.ReadLineAsync().ConfigureAwait(false) is not null) { }
+            while (await reader.ReadLineAsync().ConfigureAwait(false) is { } line) StartupTrace.Write("Engine stderr: " + line);
         }
-        catch (IOException error) { if (!_closing) FailAll(error.Message); }
+        catch (IOException error) { if (!_closing) FailAll(error.ToString()); }
     }
 
     private static (string executable, string arguments, string directory) FindEngine()
@@ -102,6 +102,12 @@ internal sealed class EngineClient : IAsyncDisposable
             await WriteLineAsync(process, line, token).ConfigureAwait(false);
             return await source.Task.WaitAsync(TimeSpan.FromSeconds(120), token).ConfigureAwait(false);
         }
+        catch (Exception error) when (error is not OperationCanceledException and not TaskError)
+        {
+            var failure = TaskError.FromException(error,
+                method is "prepareRmpProject" or "renderMetro" ? UiLanguage.Text("Failure_Metro") : UiLanguage.Text("Failure_Operation"), method);
+            throw new TaskError(failure.Message, failure.Details + $"\nRpcId: {id}");
+        }
         finally { _pending.TryRemove(id, out _); }
     }
 
@@ -134,20 +140,21 @@ internal sealed class EngineClient : IAsyncDisposable
                 else if (root.TryGetProperty("id", out var rawId) && rawId.TryGetInt64(out var id) && _pending.TryGetValue(id, out var source))
                 {
                     if (root.TryGetProperty("error", out var error))
-                        source.TrySetException(new InvalidOperationException(error.GetProperty("message").GetString()));
+                        source.TrySetException(TaskError.FromPayload(error));
                     else
                         source.TrySetResult(root.GetProperty("result").Clone());
                 }
             }
-            if (!_closing) FailAll(UiLanguage.Text("EngineClient_ReadLoopAsync_4A90E34339"));
+            if (!_closing) FailAll(UiLanguage.Text("EngineClient_ReadLoopAsync_4A90E34339") + (_process?.HasExited == true ? $" ExitCode: {_process.ExitCode}" : " ExitCode: unavailable") + "\nTraceback: unavailable (engine disconnected)");
         }
-        catch (Exception error) { if (!_closing) FailAll(error.Message); }
+        catch (Exception error) { if (!_closing) FailAll(error.ToString()); }
     }
 
     private void FailAll(string message)
     {
         foreach (var (_, source) in _pending)
-            source.TrySetException(new InvalidOperationException(message));
+            source.TrySetException(TaskError.EngineStopped(message));
+        StartupTrace.Write("Engine failure: " + message);
         Faulted?.Invoke(message);
     }
 

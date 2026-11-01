@@ -1,5 +1,5 @@
 import i18n from '../i18n/config';
-import stations from '../components/svgs/stations/stations';
+import { stationCatalog } from '../util/station-catalog';
 import miscNodes from '../components/svgs/nodes/misc-nodes';
 import { linePaths, lineStyles } from '../components/svgs/lines/lines';
 import { MiscNodeType } from '../constants/nodes';
@@ -8,10 +8,7 @@ import { getFacilityOptions } from '../components/svgs/nodes/facilities';
 
 const elements = [MiscNodeType.Virtual, MiscNodeType.Fill, MiscNodeType.Facilities, MiscNodeType.Text];
 export const toolCatalog = () => ({
-    stations: Object.entries(stations).map(([id, item]) => ({
-        id: `station-${id}`,
-        label: i18n.t(item.metadata.displayName),
-    })),
+    stations: stationCatalog(),
     paths: Object.entries(linePaths).map(([id, item]) => ({ id, label: i18n.t(item.metadata.displayName) })),
     styles: Object.entries(lineStyles).map(([id, item]) => ({
         id,

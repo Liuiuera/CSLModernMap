@@ -1,4 +1,5 @@
-import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
+import RmgFields, { StationField as RmgFieldsField } from '../../panels/details/station-fields';
+
 import { MonoColour } from '@railmapgen/rmg-palette-resources';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -76,7 +77,8 @@ const HzmetroBasicStation = (props: StationComponentProps) => {
     const { canDrag, dragHandlers, previewPreciseNameOffsets } = useDraggableStationName<StationAttributes>(
         id,
         StationType.HzmetroBasic,
-        defaultNameLayout
+        defaultNameLayout,
+        attrs
     );
     const nameLayout = previewPreciseNameOffsets ?? preciseNameOffsets ?? defaultNameLayout;
 
@@ -175,6 +177,7 @@ const hzmetroBasicAttrsComponent = (props: AttrsProps<HzmetroBasicStationAttribu
         {
             type: 'textarea',
             label: t('panel.details.stations.common.nameZh'),
+            cmmSection: 'name',
             value: attrs.names[0] ?? defaultHzmetroBasicStationAttributes.names[0],
             onChange: val => {
                 attrs.names[0] = val;
@@ -185,6 +188,7 @@ const hzmetroBasicAttrsComponent = (props: AttrsProps<HzmetroBasicStationAttribu
         {
             type: 'textarea',
             label: t('panel.details.stations.common.nameEn'),
+            cmmSection: 'name',
             value: attrs.names.at(1) ?? defaultHzmetroBasicStationAttributes.names[1],
             onChange: val => {
                 attrs.names[1] = val;
@@ -195,12 +199,14 @@ const hzmetroBasicAttrsComponent = (props: AttrsProps<HzmetroBasicStationAttribu
         {
             type: 'custom',
             label: '',
+            cmmSection: 'name',
             component: <StationNameTranslateButton id={id} attrs={attrs} handleAttrsUpdate={handleAttrsUpdate} />,
             minW: 'full',
         },
         {
             type: 'select',
             label: t('panel.details.stations.common.nameOffsetX'),
+            cmmSection: 'position',
             value: nameOffsetXSelect.value,
             options: nameOffsetXSelect.options,
             disabledOptions: nameOffsetXSelect.disabledOptions,
@@ -214,6 +220,7 @@ const hzmetroBasicAttrsComponent = (props: AttrsProps<HzmetroBasicStationAttribu
         {
             type: 'select',
             label: t('panel.details.stations.common.nameOffsetY'),
+            cmmSection: 'position',
             value: nameOffsetYSelect.value,
             options: nameOffsetYSelect.options,
             disabledOptions: nameOffsetYSelect.disabledOptions,
@@ -227,6 +234,7 @@ const hzmetroBasicAttrsComponent = (props: AttrsProps<HzmetroBasicStationAttribu
         {
             type: 'slider',
             label: t('panel.details.stations.hzmetroBasic.scale'),
+            cmmSection: 'appearance',
             value: attrs.scale ?? defaultHzmetroBasicStationAttributes.scale,
             onChange: val => {
                 attrs.scale = val;
@@ -240,6 +248,7 @@ const hzmetroBasicAttrsComponent = (props: AttrsProps<HzmetroBasicStationAttribu
         {
             type: 'custom',
             label: t('color'),
+            cmmSection: 'appearance',
             component: (
                 <ColorField type={StationType.HzmetroBasic} defaultTheme={defaultHzmetroBasicStationAttributes.color} />
             ),

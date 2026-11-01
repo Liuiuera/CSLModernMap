@@ -1,4 +1,5 @@
 import React from 'react';
+import { useRootSelector } from '../redux';
 import { Id, LineId, MiscNodeId, NodeId, StnId } from '../constants/constants';
 import { ExternalLineStyleAttributes, LineStyleComponentProps } from '../constants/lines';
 import { MiscNodeType } from '../constants/nodes';
@@ -36,6 +37,10 @@ const SvgLayer = React.memo(
             handleEdgePointerDown,
             handleEdgeDoubleClick,
         } = props;
+
+        const angle = useRootSelector(state => state.param.present.attributes?.cmmRotation?.angle ?? 0);
+        const nodeTransform = (attr: { x: number; y: number; type: string }) =>
+            `translate(${attr.x}, ${attr.y}) rotate(${attr.type === MiscNodeType.Fill ? 0 : -angle})`;
 
         const layers = Object.fromEntries(
             Array.from({ length: 21 }, (_, i) => [
@@ -130,7 +135,7 @@ const SvgLayer = React.memo(
                         <g
                             key={`${element.id}.pre`}
                             id={`${element.id}.pre`}
-                            transform={`translate(${attr.x}, ${attr.y})`}
+                            transform={nodeTransform(attr)}
                             {...wrapperProps}
                         >
                             <PreStationComponent
@@ -148,7 +153,7 @@ const SvgLayer = React.memo(
 
                 const StationComponent = allStations[type]?.component ?? UnknownNode;
                 layers[element.station!.zIndex].main.push(
-                    <g key={id} id={id} transform={`translate(${attr.x}, ${attr.y})`} {...wrapperProps}>
+                    <g key={id} id={id} transform={nodeTransform(attr)} {...wrapperProps}>
                         <StationComponent
                             id={id}
                             x={attr.x}
@@ -167,7 +172,7 @@ const SvgLayer = React.memo(
                         <g
                             key={`${id}.post`}
                             id={`${id}.post`}
-                            transform={`translate(${attr.x}, ${attr.y})`}
+                            transform={nodeTransform(attr)}
                             {...wrapperProps}
                         >
                             <PostStationComponent
@@ -198,7 +203,7 @@ const SvgLayer = React.memo(
                         <g
                             key={`${id}.pre`}
                             id={`${id}.pre`}
-                            transform={`translate(${attr.x}, ${attr.y})`}
+                            transform={nodeTransform(attr)}
                             {...wrapperProps}
                         >
                             <PreMiscNodeComponent
@@ -217,7 +222,7 @@ const SvgLayer = React.memo(
 
                 const MiscNodeComponent = miscNodes[type]?.component ?? UnknownNode;
                 layers[element.miscNode!.zIndex].main.push(
-                    <g key={id} id={id} transform={`translate(${attr.x}, ${attr.y})`} {...wrapperProps}>
+                    <g key={id} id={id} transform={nodeTransform(attr)} {...wrapperProps}>
                         <MiscNodeComponent
                             id={id}
                             x={attr.x}
@@ -237,7 +242,7 @@ const SvgLayer = React.memo(
                         <g
                             key={`${id}.post`}
                             id={`${id}.post`}
-                            transform={`translate(${attr.x}, ${attr.y})`}
+                            transform={nodeTransform(attr)}
                             {...wrapperProps}
                         >
                             <PostMiscNodeComponent

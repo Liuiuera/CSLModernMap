@@ -109,6 +109,11 @@ class DocumentSession:
 
     # 常用派生服务的便捷访问入口。
 
+    def navigation(self) -> dict:
+        from ..services.navigation import compile_navigation
+        return self.service_cache.get_or_compute(
+            "navigation", {"schema": 1}, lambda: compile_navigation(self.document))
+
     def road_scene(self, params: dict[str, Any] | None = None) -> Any:
         """返回当前文档缓存的 RoadScene。"""
         from ..road_geometry import build_road_scene

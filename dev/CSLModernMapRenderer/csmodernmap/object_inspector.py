@@ -211,20 +211,43 @@ def describe(backend, frame, context='map', options=None):
         for key in ('road.width', 'road.bridge', 'road.tunnel'):
             field(group, key, unit='%' if key == 'road.width' else '')
     elif kind == 'building':
+        fact('height_m', i18n.tr('building.height'), 'm')
+        fact('base_elevation_m', i18n.tr('building.base_elevation'), 'm')
+        fact('height_source', i18n.tr('building.height_source'))
+        from .building_categories import CATEGORIES, category_palette
+        color_category = props.get('colorCategory')
+        if color_category in CATEGORIES:
+            fact('colorCategory', i18n.tr('building.category.label'),
+                 value=i18n.tr('building.category.' + color_category))
         fact('category', i18n.tr('ui.object_inspector.describe.72c55cb5e7'), value=readable(props.get('category')))
         if props.get('groupMemberCount'):
             fact('groupMemberCount', i18n.tr('ui.object_inspector.describe.1d4da9cc30'))
         mode = backend.field_value('building.color_mode', 'poi', style_data=style)
-        fact('colorSource', i18n.tr('ui.object_inspector.describe.dcbc3f5adb'), value=i18n.tr('ui.object_inspector.describe.9659c81207') if mode == 'uniform' else i18n.tr('ui.object_inspector.describe.1a1ef51c8d'))
-        fact('poiColor', i18n.tr('ui.object_inspector.describe.4ff1d894c3'), value=backend.field_value('building.default', '#D8D2C6', style_data=style) if mode == 'uniform' else props.get('poiColor'))
+        override = category_palette(style.get('buildings', {})).get(color_category) if mode == 'category' else None
+        source = ('building.category.color' if override else
+                  'ui.object_inspector.describe.9659c81207' if mode == 'uniform' else
+                  'ui.object_inspector.describe.1a1ef51c8d' if props.get('poiColor') else 'building.category.fallback')
+        fact('colorSource', i18n.tr('ui.object_inspector.describe.dcbc3f5adb'), value=i18n.tr(source))
+        color = override or (props.get('poiColor') if mode != 'uniform' else None) or backend.field_value('building.default', '#D8D2C6', style_data=style)
+        fact('poiColor', i18n.tr('ui.object_inspector.describe.4ff1d894c3'), value=color)
         group = section('appearance', i18n.tr('ui.object_inspector.describe.2b42dd52ee'), i18n.tr('ui.object_inspector.describe.1712bbea62'))
         field(group, 'building.color_mode', i18n.tr('ui.object_inspector.describe.836cbed510'))
         field(group, 'building.default' if mode == 'uniform' else 'building.poi_tint.contrast',
               i18n.tr('ui.object_inspector.describe.711617512b') if mode == 'uniform' else i18n.tr('ui.object_inspector.describe.e55e6f2bac'), '' if mode == 'uniform' else '%')
         field(group, 'building.border', i18n.tr('ui.object_inspector.describe.5e3f198ad9'))
         if mode != 'uniform':
-            group = section('fallback', i18n.tr('ui.object_inspector.describe.43f6aa3376'), i18n.tr('ui.object_inspector.describe.df6859de66'), False)
+            group = section('fallback', i18n.tr('ui.object_inspector.describe.43f6aa3376'), i18n.tr('building.category.fallback_scope'), False)
             field(group, 'building.default', i18n.tr('ui.object_inspector.describe.fbe0108a42'))
+        if mode == 'category' and color_category in CATEGORIES:
+            group = section('building_category', i18n.tr('building.category.table'),
+                            i18n.tr('building.category.scope', category=i18n.tr('building.category.' + color_category)))
+            path = ('buildings', 'category_colors', color_category)
+            path_field(group, 'building.category.enabled', i18n.tr('building.category.enabled'),
+                       path + ('enabled',), False, 'toggle')
+            path_field(group, 'building.category.color', i18n.tr('building.category.color'),
+                       path + ('color',), style.get('buildings', {}).get('default', '#D8D2C6'))
+            if color_category == 'unclassified':
+                notice.append(i18n.tr('building.category.unknown_notice'))
         names('building', None)
         if props.get('parentPoiId') or props.get('groupId'):
             notice.append(i18n.tr('ui.object_inspector.describe.c3cdf137f2'))
@@ -417,6 +440,8 @@ def apply(backend, frame, context, options, key=None, value=None, reset_group=No
         if key not in fields or not fields[key]['enabled']:
             raise ValueError('Unavailable inspector field')
         validate(fields[key], value)
+        if key == 'building.category.color' and len(value) != 7:
+            raise ValueError('Category fill requires #RRGGBB')
         keys = [key]
     defaults = load_style(str(resource_dir('styles') / f'{backend.theme_stem}.yaml'))
     for field_key in keys:

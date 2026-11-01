@@ -1,4 +1,5 @@
-import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
+import RmgFields, { StationField as RmgFieldsField } from '../../panels/details/station-fields';
+
 import { MonoColour } from '@railmapgen/rmg-palette-resources';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -128,7 +129,8 @@ const MRTIntStationPost = (props: StationComponentProps) => {
     const { canDrag, dragHandlers, previewPreciseNameOffsets } = useDraggableStationName<StationAttributes>(
         id,
         StationType.MRTInt,
-        defaultNameLayout
+        defaultNameLayout,
+        attrs
     );
     const nameLayout = previewPreciseNameOffsets ?? preciseNameOffsets ?? defaultNameLayout;
 
@@ -293,6 +295,7 @@ const MRTIntAttrsComponent = (props: AttrsProps<MRTIntStationAttributes>) => {
         {
             type: 'textarea',
             label: t('panel.details.stations.common.nameEn'),
+            cmmSection: 'name',
             value: attrs.names[0],
             onChange: val => {
                 attrs.names[0] = val;
@@ -303,6 +306,7 @@ const MRTIntAttrsComponent = (props: AttrsProps<MRTIntStationAttributes>) => {
         {
             type: 'select',
             label: t('panel.details.stations.common.nameOffsetX'),
+            cmmSection: 'position',
             value: nameOffsetXSelect.value,
             options: nameOffsetXSelect.options,
             disabledOptions: nameOffsetXSelect.disabledOptions,
@@ -316,6 +320,7 @@ const MRTIntAttrsComponent = (props: AttrsProps<MRTIntStationAttributes>) => {
         {
             type: 'select',
             label: t('panel.details.stations.common.nameOffsetY'),
+            cmmSection: 'position',
             value: nameOffsetYSelect.value,
             options: nameOffsetYSelect.options,
             disabledOptions: nameOffsetYSelect.disabledOptions,

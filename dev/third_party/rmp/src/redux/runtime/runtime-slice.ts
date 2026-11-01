@@ -28,7 +28,7 @@ interface RuntimeState {
     active: NodeId | 'background' | undefined;
     /**
      * The state of the details panel.
-     * On desktop, it is either 'show' or 'close'.
+     * Standalone desktop uses 'show' or 'close'; embedded visibility also supports explicit 'hide'.
      * On mobile, it is either 'show', 'hide' or 'close'.
      * 'show' means the panel is open.
      * 'hide' means the panel is closed but can be opened by clicking the arrow button.
@@ -176,32 +176,40 @@ const getIsDetailsOpen = (state: Draft<RuntimeState>): RuntimeState['isDetailsOp
     return 'close';
 };
 
+const embedded = import.meta.env.MODE === 'embedded';
+
 const runtimeSlice = createSlice({
     name: 'runtime',
     initialState,
     reducers: {
         setSelected: (state, action: PayloadAction<Set<Id>>) => {
+            const changed = state.selected.size !== action.payload.size || [...action.payload].some(id => !state.selected.has(id));
             state.selected = action.payload;
-            state.isDetailsOpen = getIsDetailsOpen(state);
+            if (!embedded) state.isDetailsOpen = getIsDetailsOpen(state);
+            else if (changed && state.selected.size) state.isDetailsOpen = 'show';
         },
         addSelected: (state, action: PayloadAction<Id>) => {
+            const changed = !state.selected.has(action.payload);
             state.selected.add(action.payload);
-            state.isDetailsOpen = getIsDetailsOpen(state);
+            if (!embedded) state.isDetailsOpen = getIsDetailsOpen(state);
+            else if (changed && state.selected.size) state.isDetailsOpen = 'show';
         },
         removeSelected: (state, action: PayloadAction<Id>) => {
+            const changed = state.selected.has(action.payload);
             state.selected.delete(action.payload);
-            state.isDetailsOpen = getIsDetailsOpen(state);
+            if (!embedded) state.isDetailsOpen = getIsDetailsOpen(state);
+            else if (changed && state.selected.size) state.isDetailsOpen = 'show';
         },
         clearSelected: state => {
             state.selected = new Set<Id>();
-            state.isDetailsOpen = getIsDetailsOpen(state);
+            if (!embedded) state.isDetailsOpen = getIsDetailsOpen(state);
         },
         setPointerPosition: (state, action: PayloadAction<{ x: number; y: number } | undefined>) => {
             state.pointerPosition = action.payload;
         },
         setActive: (state, action: PayloadAction<NodeId | 'background' | undefined>) => {
             state.active = action.payload;
-            state.isDetailsOpen = getIsDetailsOpen(state);
+            if (!embedded) state.isDetailsOpen = getIsDetailsOpen(state);
         },
         showDetailsPanel: state => {
             state.isDetailsOpen = 'show';
@@ -221,7 +229,7 @@ const runtimeSlice = createSlice({
         setMode: (state, action: PayloadAction<RuntimeMode>) => {
             if (state.mode !== 'free' && !state.mode.startsWith('reconcile-')) state.lastTool = state.mode;
             state.mode = action.payload;
-            state.isDetailsOpen = getIsDetailsOpen(state);
+            if (!embedded) state.isDetailsOpen = getIsDetailsOpen(state);
         },
         setKeepLastPath: (state, action: PayloadAction<boolean>) => {
             state.keepLastPath = action.payload;

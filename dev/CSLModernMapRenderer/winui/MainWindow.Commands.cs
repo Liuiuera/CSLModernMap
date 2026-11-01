@@ -6,16 +6,210 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using RibbonSpace;
 using RibbonSpace.Controls;
+using RibbonSpace.State;
 using Windows.System;
 
 namespace CSLModernMapWinUI;
 
 public sealed partial class MainWindow
 {
+    private readonly List<(RibbonToggleButton Button, ToggleMenuFlyoutItem Item)> _ribbonLabelMenuItems = new();
+
+    private void AddRibbonLabelCommand(RibbonToggleButton button, RoutedEventHandler action)
+    {
+        button.Click += action;
+        var item = new ToggleMenuFlyoutItem
+        {
+            Text = button.Label,
+            Icon = button.Icon is FontIcon font
+                ? new FontIcon { Glyph = font.Glyph, FontFamily = font.FontFamily, FontSize = 16 }
+                : RibbonItemHelper.CreateMenuIcon(button.Icon),
+        };
+        // 上游 Toggle 的菜单副本不转发 Click；两处复用同一个现有处理器。
+        item.Click += action;
+        _ribbonLabelMenuItems.Add((button, item));
+    }
+
+    private void ConfigureSimplifiedLayers()
+    {
+        var tab = _layersTab!;
+        foreach (var item in tab.Groups.SelectMany(group => group.Items).OfType<IRibbonItemEditable>())
+        {
+            item.SimplifiedLabel = RibbonSimplifiedLabel.Show;
+            item.SimplifiedVisibility = RibbonSimplifiedVisibility.Overflow;
+        }
+        foreach (var key in new[] { "terrain", "water", "road", "building", "railway", "metro", "label" })
+            _layerButtons[key].SimplifiedVisibility = RibbonSimplifiedVisibility.Pinned;
+        _returnToMapLayers!.SimplifiedVisibility = RibbonSimplifiedVisibility.Pinned;
+
+        var labels = _layerButtons["label"];
+        var labelGroup = tab.Groups.Single(group => group.Items.Contains(labels));
+        foreach (var item in labelGroup.Items.OfType<IRibbonItemEditable>().Where(item => !ReferenceEquals(item, labels)))
+            item.SimplifiedVisibility = RibbonSimplifiedVisibility.Hidden;
+        // 1.1.0 的 GetOverflowItems 仍返回 Hidden 项，需要同时折叠其源控件。
+        void UpdateLabelChildren()
+        {
+            foreach (var item in labelGroup.Items.OfType<FrameworkElement>().Where(item => !ReferenceEquals(item, labels)))
+                item.Visibility = Ribbon.DisplayMode == RibbonDisplayMode.Simplified ? Visibility.Collapsed : Visibility.Visible;
+        }
+        Ribbon.RegisterPropertyChangedCallback(Ribbon.DisplayModeProperty, (_, _) => UpdateLabelChildren());
+        UpdateLabelChildren();
+        var menu = (MenuFlyout)labels.Flyout!;
+        var details = menu.Items.Single();
+        menu.Opening += (_, _) =>
+        {
+            menu.Items.Clear();
+            if (Ribbon.DisplayMode == RibbonDisplayMode.Simplified)
+            {
+                foreach (var (button, item) in _ribbonLabelMenuItems)
+                {
+                    item.IsChecked = button.IsChecked == true;
+                    item.IsEnabled = button.IsEnabled;
+                    menu.Items.Add(item);
+                }
+                menu.Items.Add(new MenuFlyoutSeparator());
+            }
+            menu.Items.Add(details);
+        };
+
+        var overflow = tab.OverflowButton;
+        overflow.Label = UiLanguage.Text("Ribbon_MoreLayers");
+        overflow.ShowLabel = true;
+        overflow.ActualShowLabel = true;
+        // 上游每次应用布局都会将溢出按钮设为仅图标，图层页保留可读名称。
+        overflow.RegisterPropertyChangedCallback(RibbonButton.ActualShowLabelProperty,
+            (_, _) => { if (!overflow.ActualShowLabel) overflow.ActualShowLabel = true; });
+        ToolTipService.SetToolTip(overflow, overflow.Label);
+    }
+
+    private void ConfigureRibbonDisplayMenu()
+    {
+        Ribbon.IsDisplayOptionsButtonVisible = false;
+        var menu = new MenuFlyout();
+        RadioMenuFlyoutItem AddOption(string key, string group, IconElement icon, Action select)
+        {
+            var item = new RadioMenuFlyoutItem
+            {
+                Text = UiLanguage.Text(key), GroupName = group, Icon = icon,
+            };
+            item.Click += (_, _) => select();
+            menu.Items.Add(item);
+            return item;
+        }
+        var simplified = AddOption("Ribbon_Simplified", "ribbonLayout", RibbonIcons.Named("layout-navbar"), () => Ribbon.DisplayMode = RibbonDisplayMode.Simplified);
+        var classic = AddOption("Ribbon_Classic", "ribbonLayout", RibbonIcons.Named("layout-rows"), () => Ribbon.DisplayMode = RibbonDisplayMode.Classic);
+        menu.Opening += (_, _) =>
+        {
+            simplified.IsChecked = Ribbon.DisplayMode == RibbonDisplayMode.Simplified;
+            classic.IsChecked = Ribbon.DisplayMode == RibbonDisplayMode.Classic;
+        };
+        var display = new Button
+        {
+            Flyout = menu,
+            Style = (Style)Application.Current.Resources["RibbonChromeButtonStyle"],
+        };
+        void UpdateMode()
+        {
+            var isSimplified = Ribbon.DisplayMode == RibbonDisplayMode.Simplified;
+            display.Content = UiLanguage.Text(isSimplified ? "Ribbon_Simplified" : "Ribbon_Classic");
+            _settingsOpen = _inspectorOpen = !isSimplified;
+            UpdateScaleAndLayout();
+        }
+        Ribbon.TabStripEndContent = display;
+        Ribbon.RegisterPropertyChangedCallback(Ribbon.DisplayModeProperty, (_, _) => UpdateMode());
+        UpdateMode();
+    }
+
+    private static void ConfigureRibbonGalleryLayout(RibbonGallery gallery)
+    {
+        var classicWidth = gallery.Width;
+        // 单行使用上游下拉图库，不保留经典预览条的固定宽度。
+        gallery.RegisterPropertyChangedCallback(RibbonControlBase.IsSimplifiedProperty,
+            (_, _) => gallery.Width = gallery.IsSimplified ? double.NaN : classicWidth);
+    }
+
+    private void ConfigureRibbonLayout()
+    {
+        ConfigureSimplifiedLayers();
+        ConfigureRibbonDisplayMenu();
+        _ribbonLayout = UserData.ReadRibbonLayout(_ribbonLayoutDirectory);
+        _mapInteractionGuideSeen = UserData.ReadMapInteractionGuideSeen(_ribbonLayoutDirectory);
+        // 仅恢复布局；选项卡、命令与地图参数仍由现有逻辑管理。
+        Ribbon.ApplyState(new RibbonState
+        {
+            DisplayMode = Enum.Parse<RibbonDisplayMode>(_ribbonLayout.DisplayMode),
+            VisibilityMode = Enum.Parse<RibbonVisibilityMode>(_ribbonLayout.VisibilityMode),
+            IsQuickAccessVisible = false,
+        });
+        Ribbon.StateChanged += (_, _) =>
+        {
+            var state = Ribbon.GetState();
+            SaveRibbonLayout(_ribbonLayout with { DisplayMode = state.DisplayMode.ToString(), VisibilityMode = state.VisibilityMode.ToString() });
+        };
+    }
+
+    private UserData.RibbonLayout _ribbonLayout = null!;
+    private bool _simplifiedIntroPending;
+    private TeachingTip? _simplifiedRibbonIntro;
+
+    private void SaveRibbonLayout(UserData.RibbonLayout layout)
+    {
+        if (layout == _ribbonLayout) return;
+        try
+        {
+            UserData.WriteRibbonLayout(_ribbonLayoutDirectory, layout);
+            _ribbonLayout = layout;
+        }
+        catch (Exception error) when (error is IOException or UnauthorizedAccessException)
+        {
+            SetError(error);
+        }
+    }
+
+    private void PrepareSimplifiedRibbonIntro(Version version)
+    {
+        _simplifiedIntroPending = UserData.ShouldOfferSimplifiedIntro(_ribbonLayout, version);
+        TryShowSimplifiedRibbonIntro();
+    }
+
+    private void TryShowSimplifiedRibbonIntro()
+    {
+        if (!_simplifiedIntroPending || _mapGuideOpen || _closing || !_viewerReady || _mapTask.Active || _mapTask.Phase == MapTaskPhase.Error || _engineBusy || OperationError.IsOpen ||
+            Ribbon.DisplayMode != RibbonDisplayMode.Classic || Root.XamlRoot is null) return;
+        _simplifiedIntroPending = false;
+        var tip = _simplifiedRibbonIntro = new TeachingTip
+        {
+            Target = (FrameworkElement)Ribbon.TabStripEndContent!,
+            Title = UiLanguage.Text("Ribbon_IntroTitle"),
+            Subtitle = UiLanguage.Text("Ribbon_IntroDescription"),
+            ActionButtonContent = UiLanguage.Text("Ribbon_IntroTry"),
+            CloseButtonContent = UiLanguage.Text("Ribbon_IntroLater"),
+            IsLightDismissEnabled = true,
+            PreferredPlacement = TeachingTipPlacementMode.BottomLeft,
+        };
+        tip.ActionButtonClick += (_, _) =>
+        {
+            Ribbon.DisplayMode = RibbonDisplayMode.Simplified;
+            tip.IsOpen = false;
+        };
+        tip.RegisterPropertyChangedCallback(TeachingTip.IsOpenProperty, (_, _) =>
+        {
+            if (!tip.IsOpen)
+            {
+                SaveRibbonLayout(_ribbonLayout with { SimplifiedIntroSeen = true });
+                SendPreviewUiState(); TryShowMapInteractionGuide();
+            }
+        });
+        Root.Children.Add(tip);
+        tip.IsOpen = true;
+        SendPreviewUiState();
+    }
+
     private sealed record UiCommand(Func<Task> Run, bool Document, List<Control> Controls);
     private readonly Dictionary<string, UiCommand> _commands = new();
     private readonly HashSet<string> _openingEditors = new();
     private bool _documentEnabled, _inspectorOpen, _allowMainClose, _closingEditors;
+    private bool _settingsOpen;
     private bool HasCs2Document => _snapshot.ValueKind == JsonValueKind.Object &&
         _snapshot.GetProperty("hasDocument").GetBoolean() && _snapshot.GetProperty("sourceGame").GetString() == "cs2";
     private int _documentGeneration, _pendingFieldWrites;
@@ -124,14 +318,15 @@ public sealed partial class MainWindow
     }
     private bool CommandEnabled(string id, UiCommand command)
     {
-        var busy = _engineBusy;
+        var busy = _engineBusy || _engineUnavailable;
         if (_closing) return false;
-        if (id == "app.cancel") return _generatingRmp ? _mapTask.CanCancel && !_cancellingRmp : busy;
+        if (id == "app.cancel") return !_engineUnavailable && (_generatingRmp ? _mapTask.CanCancel && !_cancellingRmp : busy);
         if (RmpBlocked) return false;
         if (id == "view.metro.refresh") return _context == "metro" && _documentEnabled && !busy;
         if (id == "rmp.open") return _context == "metro" && !busy;
         if (id.StartsWith("rmp.") || _context == "metro" && id is "map.save_png" or "workspace.saveAs" or "workspace.export")
             return _context == "metro" && _rmpView?.IsReady == true &&
+                (id != "rmp.showDefaultNames" || RmpState("showNames")) &&
                 (id != "rmp.undo" || RmpState("canUndo")) && (id != "rmp.redo" || RmpState("canRedo"));
         if (id == "app.language") return !busy && _pendingFieldWrites == 0 && !_closingEditors && !_changingLanguage;
         if (id is "map.rotate_counterclockwise" or "map.rotate_clockwise")
@@ -198,6 +393,7 @@ public sealed partial class MainWindow
         InspectorPanel.LostFocus += (_, _) => Root.DispatcherQueue.TryEnqueue(ApplyPendingSettingsSnapshot);
         InspectorClose.Click += (_, _) => { _inspectorOpen = false; UpdateScaleAndLayout(); };
         InspectorToggle.Click += (_, _) => { _inspectorOpen = !_inspectorOpen; UpdateScaleAndLayout(); };
+        SettingsToggle.Click += (_, _) => { _settingsOpen = !_settingsOpen; UpdateScaleAndLayout(); };
         var mapActions = new (string Id, string Label, IconElement Icon, Func<Task> Run, VirtualKey? Shortcut)[]
         {
             ("map.rotate_counterclockwise", UiLanguage.Text("Map_RotateCounterclockwise"), RibbonIcons.Named("rotate"), () => RotateMapAsync(-90), null),

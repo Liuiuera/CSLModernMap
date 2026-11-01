@@ -1,6 +1,7 @@
+import { stationNameVisible } from './station-label';
 import React from 'react';
-import { StnId } from '../constants/constants';
-import { StationAttributes, StationType } from '../constants/stations';
+import { NodeAttributes, StnId } from '../constants/constants';
+import { ExternalStationAttributes, StationAttributes, StationType } from '../constants/stations';
 import { useRootDispatch, useRootSelector } from '../redux';
 import { saveGraph } from '../redux/param/param-slice';
 import { refreshNodesThunk } from '../redux/runtime/runtime-slice';
@@ -59,15 +60,19 @@ const useStationAttrsUpdate = <T extends StationAttributes>(id: StnId, type: Sta
 export const useDraggableStationName = <T extends StationAttributes>(
     id: StnId,
     type: StationType,
-    fallbackLayout: NameLayout
+    fallbackLayout: NameLayout,
+    nodeAttrs: ExternalStationAttributes & Pick<NodeAttributes, 'cmmName'>
 ) => {
     const handleAttrsUpdate = useStationAttrsUpdate<T>(id, type);
     const selected = useRootSelector(state => state.runtime.selected);
     const mode = useRootSelector(state => state.runtime.mode);
     const svgViewBoxZoom = useRootSelector(state => state.param.svgViewBoxZoom);
+    const nameSettings = useRootSelector(state => state.param.present.attributes?.cmmNameDisplay);
+    const visible = stationNameVisible(nodeAttrs, nameSettings);
 
     const dragRef = React.useRef<DragState | null>(null);
     const [previewPreciseNameOffsets, setPreviewPreciseNameOffsets] = React.useState<NameLayout | null>(null);
+    const layout = previewPreciseNameOffsets ?? (nodeAttrs[type] as StationAttributes)?.preciseNameOffsets ?? fallbackLayout;
 
     const canDrag = mode === 'free' && selected.has(id);
     const getCurrentAttrs = React.useCallback(
@@ -163,6 +168,11 @@ export const useDraggableStationName = <T extends StationAttributes>(
     return {
         canDrag,
         dragHandlers: {
+            'data-cmm-name': id,
+            'data-cmm-name-x': layout.x,
+            'data-cmm-name-y': layout.y,
+            'data-cmm-name-anchor': layout.anchor === 'inherit' ? 'middle' : layout.anchor,
+            visibility: (visible ? undefined : 'hidden') as 'hidden' | undefined,
             onPointerDown,
             onPointerMove,
             onPointerUp,

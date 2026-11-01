@@ -219,13 +219,6 @@ public sealed partial class MainWindow
         merge.Children.Add(Number("merge_range", UiLanguage.Text("MainWindow_PublicTransitSettings_ShowPublicTransitSettings_8CC740C6CC"), () => ReadContextToggle(false, "merge_enabled")));
         merge.Children.Add(Help(UiLanguage.Text("MainWindow_PublicTransitSettings_ShowPublicTransitSettings_AB6B7CE9E1")));
         stations.Children.Add(WorkspaceSection.Create(UiLanguage.Text("MainWindow_PublicTransitSettings_ShowPublicTransitSettings_DC263CCCA0"), merge, expanded: false));
-        var density = new StackPanel { Spacing = 6 };
-        density.Children.Add(Choice(UiLanguage.Text("MainWindow_PublicTransitSettings_ShowPublicTransitSettings_306B1272E7"), new[] { ("all", UiLanguage.Text("MainWindow_PublicTransitSettings_ShowPublicTransitSettings_12CA9D6069")), ("auto", UiLanguage.Text("MainWindow_PublicTransitSettings_ShowPublicTransitSettings_4BD5559194")) },
-            () => ContextOptions(false).GetProperty("facility_density").GetString()!, value => Write("facility_density", value),
-            () => ReadContextToggle(false, "facilities_enabled")));
-        density.Children.Add(Number("facility_min_zoom", UiLanguage.Text("MainWindow_PublicTransitSettings_ShowPublicTransitSettings_4E94217596"), () => ReadContextToggle(false, "facilities_enabled")));
-        density.Children.Add(Help(UiLanguage.Text("MainWindow_PublicTransitSettings_ShowPublicTransitSettings_F5748AF1D4")));
-        stations.Children.Add(WorkspaceSection.Create(UiLanguage.Text("MainWindow_PublicTransitSettings_ShowPublicTransitSettings_1C194CAECF"), density, expanded: false));
         var appearance = new Button { Content = new TextBlock { Text = UiLanguage.Text("MainWindow_PublicTransitSettings_ShowPublicTransitSettings_3D44BCC3EC"), TextWrapping = TextWrapping.Wrap },
             HorizontalAlignment = HorizontalAlignment.Stretch };
         appearance.Click += async (_, _) => await RunAsync(ShowMapPoiSettingsAsync);

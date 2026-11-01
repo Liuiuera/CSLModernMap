@@ -18,7 +18,7 @@ import LineTypeSection from './line-type-section';
 import ReconcileSection from './reconcile-section';
 import StationTypeSection from './station-type-section';
 
-export default function InfoSection() {
+export default function InfoSection({ section = 'all' }: { section?: 'all' | 'appearance' | 'other' }) {
     const { t } = useTranslation();
     const dispatch = useRootDispatch();
 
@@ -145,14 +145,14 @@ export default function InfoSection() {
                 {t('panel.details.info.title')}
             </Heading>
 
-            <RmgFields fields={fields} minW={130} />
+            <RmgFields fields={section === 'appearance' ? fields.slice(3) : section === 'other' ? fields.slice(0, 3) : fields} minW={130} />
 
-            {selected.size === 1 &&
+            {import.meta.env.MODE !== 'embedded' && selected.size === 1 &&
                 selectedFirst!.startsWith('stn') &&
                 graph.current.hasNode(selectedFirst) &&
                 graph.current.getNodeAttribute(selectedFirst, 'type') in stations && <StationTypeSection />}
 
-            {selected.size === 1 &&
+            {section !== 'other' && selected.size === 1 &&
                 selectedFirst!.startsWith('line') &&
                 graph.current.hasEdge(selectedFirst) &&
                 graph.current.getEdgeAttribute(selectedFirst, 'type') in linePaths &&

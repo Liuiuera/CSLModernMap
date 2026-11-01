@@ -8,7 +8,7 @@ from .schematic_water_vector import _on_bounds, _split_at_bounds, same_water_top
 
 
 def round_water_shores(reference, surface, bounds, *, radius, minimum_radius, scale,
-                       minimum_area, protected=()):
+                       minimum_area, protected=(), fixed_points=()):
     """在八方向基准上构造圆弧，仅将其局部增减应用到当前水面。"""
     clip = box(*bounds)
     tolerance = .1*scale
@@ -19,7 +19,7 @@ def round_water_shores(reference, surface, bounds, *, radius, minimum_radius, sc
             continue
         for ring_index, ring in enumerate((part.exterior, *part.interiors)):
             points = _split_at_bounds(np.asarray(ring.coords)[:-1], bounds)
-            fixed = {tuple(point) for point in points[_on_bounds(points, bounds)]}
+            fixed = {tuple(point) for point in points[_on_bounds(points, bounds)]} | set(fixed_points)
             original = Polygon(points)
             line = LineString([*points, points[0]])
             baseline = result

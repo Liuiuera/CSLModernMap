@@ -12,6 +12,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
   </resheader>
+  <data name="RmpEditor_VisualAdjustmentHint" xml:space="preserve"><value>部分线路可能需要调整，以获得最佳视觉效果。</value></data>
   <data name="AppearanceControls_Create_0BB1EFDA65" xml:space="preserve">
     <value>{0}：请输入 {1} 至 {2} 之间的数值。</value>
     <comment>AppearanceControls.cs:81</comment>
@@ -2700,7 +2701,7 @@ Esc  取消当前任务</value>
     <comment>MapRangeWindow.cs:20</comment>
   </data>
   <data name="MapRangeWindow__full_14425C91B0" xml:space="preserve">
-    <value>完整城市范围</value>
+    <value>全城</value>
     <comment>MapRangeWindow.cs:16</comment>
   </data>
   <data name="MapRangeWindow__manual_20459B88AA" xml:space="preserve">
@@ -4445,4 +4446,34 @@ Esc  取消当前任务</value>
   <data name="Map_RotateClockwise" xml:space="preserve">
     <value>顺时针 90°</value>
   </data>
+  <data name="Failure_Internal" xml:space="preserve"><value>程序发生异常，可以将此错误反馈给作者</value></data>
+  <data name="Failure_Operation" xml:space="preserve"><value>操作失败</value></data>
+  <data name="Failure_Metro" xml:space="preserve"><value>地铁示意图生成失败</value></data>
+  <data name="Failure_Export" xml:space="preserve"><value>地图导出失败</value></data>
+  <data name="Failure_Permission" xml:space="preserve"><value>无法访问所需文件，请检查文件或文件夹的访问权限后重试</value></data>
+  <data name="Failure_MissingFile" xml:space="preserve"><value>找不到所需文件，请确认文件仍在原位置后重试</value></data>
+  <data name="Failure_Memory" xml:space="preserve"><value>内存分配失败，请减小输出尺寸或关闭占用内存的程序后重试</value></data>
+  <data name="Failure_EngineStopped" xml:space="preserve"><value>渲染引擎已停止，请重新打开查看器后重试</value></data>
+  <data name="Failure_ViewDetails" xml:space="preserve"><value>查看详情</value></data>
+  <data name="Failure_CopyDetails" xml:space="preserve"><value>复制错误详情</value></data>
+  <data name="Failure_Close" xml:space="preserve"><value>关闭</value></data>
+  <data name="Failure_Copied" xml:space="preserve"><value>已复制</value></data>
+  <data name="Failure_CopyFailed" xml:space="preserve"><value>复制失败，请稍后重试</value></data>
+  <data name="Ribbon_MoreLayers" xml:space="preserve"><value>更多图层</value></data>
+  <data name="Ribbon_Simplified" xml:space="preserve"><value>简洁</value></data>
+  <data name="Ribbon_Classic" xml:space="preserve"><value>经典</value></data>
+  <data name="Sidebar_ShowSettings" xml:space="preserve"><value>展开左栏</value></data>
+  <data name="Sidebar_HideSettings" xml:space="preserve"><value>收起左栏</value></data>
+  <data name="Sidebar_ShowInspector" xml:space="preserve"><value>展开右栏</value></data>
+  <data name="Sidebar_HideInspector" xml:space="preserve"><value>收起右栏</value></data>
+  <data name="Ribbon_IntroTitle" xml:space="preserve"><value>尝试新的简洁模式</value></data>
+  <data name="Ribbon_IntroDescription" xml:space="preserve"><value>简洁模式提供更舒适、更简单的地图浏览方式，你可以随时切换回经典模式。</value></data>
+  <data name="Ribbon_IntroTry" xml:space="preserve"><value>试用简洁模式</value></data>
+  <data name="Ribbon_IntroLater" xml:space="preserve"><value>暂不</value></data>
+  <data name="RmpEditor_showNames" xml:space="preserve"><value>显示站名</value></data>
+  <data name="RmpEditor_showDefaultNames" xml:space="preserve"><value>显示默认站名</value></data>
+  <data name="BuildingCategory_Help" xml:space="preserve"><value>选择“分类上色”后生效。开启“指定颜色”影响该类别的全部建筑；关闭可恢复自动 POI 取色。分类依据现有游戏字段，未分类对象不会按名称猜测。</value></data>
+  <data name="Poi_ShowDecorative" xml:space="preserve"><value>显示装饰物 POI</value></data>
+  <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>控制已收录装饰物的图标与名称，保留建筑和地物。</value></data>
+  <data name="MetroSettings_Reset" xml:space="preserve"><value>恢复默认</value></data>
 </root>

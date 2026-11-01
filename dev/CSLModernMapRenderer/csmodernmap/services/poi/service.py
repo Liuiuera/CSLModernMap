@@ -11,6 +11,7 @@ from ..transit.name import resolve_stop_names
 from .catalog import PoiCatalogDefinition, PoiKindSpec, load_catalog
 from .mapping_registry import load_mapping_registry
 from .direct_mapping import load_mapping, entry_key, game_for
+from .decorative import DECORATIVE_POI_KINDS
 from .merge import MergeProfile, merge, strong_name_key
 from .model import POIJobParams, PoiCatalog
 from .identity import resolve_identities
@@ -736,6 +737,12 @@ def produce(
     lights = _collect_lights(mapdata, definition, params)
     highway_gates = _collect_highway_gates(mapdata, definition, params)
     custom = _collect_custom(mapdata, definition, params)
+    if not params.show_decorative_pois:
+        # 合并只保留代表的身份和名称，必须先排除装饰候选，设施关系仍完整保留。
+        buildings = [poi for poi in buildings if poi.kind not in DECORATIVE_POI_KINDS]
+        parks = [poi for poi in parks if poi.kind not in DECORATIVE_POI_KINDS]
+        facility_parents = [poi for poi in facility_parents
+                            if poi.kind not in DECORATIVE_POI_KINDS]
     active_profile = params.active_profile
     if active_profile:
         profile = MergeProfile(
@@ -776,7 +783,7 @@ def produce(
         entry = direct.get(poi.icon_key)
         if str(poi.semantic_level) == "AREA":
             return entry is None or entry["display"]
-        return entry is not None and entry["display"] and any(entry["icons"].values())
+        return entry is not None and entry["display"]
 
     return PoiCatalog(
         pois=tuple(poi for poi in [*merged, *lights, *highway_gates, *custom]

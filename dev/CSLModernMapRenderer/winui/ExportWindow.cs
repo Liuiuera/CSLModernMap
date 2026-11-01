@@ -528,7 +528,7 @@ internal sealed partial class ExportWindow
             UpdateDimensions();
             UpdateContextCopy();
         }
-        catch (Exception error) { _status.Text = error.Message; }
+        catch (Exception error) { ShowFailure(error); }
         finally { _choosing = false; RefreshControlStates(); }
     }
 
@@ -600,7 +600,7 @@ internal sealed partial class ExportWindow
             _status.Text = UiLanguage.Text("ExportWindow_ResetOutputProfileAsync_23EE320097");
             if (keys.Contains("rotation") && _rotationChanged is not null) await _rotationChanged();
         }
-        catch (Exception error) { _status.Text = UiLanguage.Text("ExportWindow_ResetOutputProfileAsync_288BFB28A8") + error.Message; }
+        catch (Exception error) { ShowFailure(error); }
     }
 
     private async Task SaveOutputOptionAsync(string key, object value)
@@ -638,7 +638,7 @@ internal sealed partial class ExportWindow
             if (key == "rotation" && _rotationChanged is not null) await _rotationChanged();
             _status.Text = "";
         }
-        catch (Exception error) { _status.Text = UiLanguage.Text("ExportWindow_CommitOutputOptionAsync_F4E15E33A6") + error.Message; }
+        catch (Exception error) { ShowFailure(error); }
     }
 
     internal void SetSharedRotation(int rotation)
@@ -686,7 +686,7 @@ internal sealed partial class ExportWindow
             if (result.GetProperty("cancelled").GetBoolean()) { SetBusy(false); _status.Text = UiLanguage.Text("ExportWindow_CancelAsync_A37778F17C"); }
             else _status.Text = result.TryGetProperty("message", out var message) ? message.GetString() : UiLanguage.Text("ExportWindow_CancelAsync_BD768D3131");
         }
-        catch (Exception error) { _status.Text = error.Message; }
+        catch (Exception error) { ShowFailure(error); }
     }
 
     private async Task StartAsync()
@@ -697,7 +697,7 @@ internal sealed partial class ExportWindow
         RefreshControlStates();
         string? target;
         try { target = await ChooseTargetAsync(); }
-        catch (Exception error) { _status.Text = error.Message; return; }
+        catch (Exception error) { ShowFailure(error); return; }
         finally { _choosing = false; RefreshControlStates(); }
         if (target is not null) await StartExportAsync(target);
     }
@@ -814,13 +814,22 @@ internal sealed partial class ExportWindow
         catch (Exception error)
         {
             SetBusy(false);
-            _status.Text = UiLanguage.Text("ExportWindow_StartAsync_C55E9D64E5") + error.Message;
+            ShowFailure(error);
         }
         finally
         {
             _choosing = false;
             RefreshControlStates();
         }
+    }
+
+    private void ShowFailure(Exception error)
+    {
+        var failure = TaskError.FromException(error, UiLanguage.Text("Failure_Export"), "export");
+        _status.Text = failure.Message;
+        _feedback.Severity = InfoBarSeverity.Error;
+        _feedback.Content = ErrorFeedback.Actions(failure, _window.Root);
+        StartupTrace.Write(failure.Details);
     }
 
     public void HandleEngineFailure(string message)
@@ -830,7 +839,7 @@ internal sealed partial class ExportWindow
         _latestSuccessfulPng = null;
         _latestResultPath = null;
         SetBusy(false);
-        _status.Text = UiLanguage.Text("ExportWindow_HandleEngineFailure_969E2FF3CB") + message + UiLanguage.Text("ExportWindow_HandleEngineFailure_4C92803985");
+        ShowFailure(TaskError.EngineStopped(message));
     }
 
     public async Task HandleEventAsync(string name, JsonElement payload)
@@ -848,7 +857,7 @@ internal sealed partial class ExportWindow
         if (name == "error")
         {
             SetBusy(false);
-            _status.Text = UiLanguage.Text("ExportWindow_HandleEventAsync_C55E9D64E5") + payload.GetProperty("message").GetString();
+            ShowFailure(TaskError.FromPayload(payload));
             return;
         }
         if (name == "exportCancelled")
@@ -880,12 +889,12 @@ internal sealed partial class ExportWindow
                     if (!await _openUri(new Uri("https://railmapgen.github.io/rmp/")))
                         _status.Text += UiLanguage.Text("ExportWindow_HandleEventAsync_B462F65DA8");
                 }
-                catch (Exception error) { _status.Text += UiLanguage.Text("ExportWindow_HandleEventAsync_BC69D07A28") + error.Message; }
+                catch (Exception error) { ShowFailure(error); }
             }
             if (_autoOpen.IsChecked == true && directory is not null)
             {
                 try { await Windows.System.Launcher.LaunchFolderPathAsync(directory); }
-                catch (Exception error) { _status.Text += UiLanguage.Text("ExportWindow_HandleEventAsync_518A6808EA") + error.Message; }
+                catch (Exception error) { ShowFailure(error); }
             }
             return;
         }
@@ -912,7 +921,7 @@ internal sealed partial class ExportWindow
             if (_autoOpen.IsChecked == true && resultPath is not null)
             {
                 try { await Windows.System.Launcher.LaunchFolderPathAsync(Path.GetDirectoryName(resultPath)!); }
-                catch (Exception error) { _status.Text += UiLanguage.Text("ExportWindow_HandleEventAsync_518A6808EA") + error.Message; }
+                catch (Exception error) { ShowFailure(error); }
             }
         }
     }
@@ -974,7 +983,7 @@ internal sealed partial class ExportWindow
             else
                 await Windows.System.Launcher.LaunchFileAsync(await StorageFile.GetFileFromPathAsync(_latestResultPath));
         }
-        catch (Exception error) { _status.Text = UiLanguage.Text("ExportWindow_ViewResultAsync_B2B91741A7") + error.Message; }
+        catch (Exception error) { ShowFailure(error); }
     }
 
     private async Task CopyResultAsync()
@@ -989,13 +998,13 @@ internal sealed partial class ExportWindow
             Clipboard.Flush();
             _status.Text = UiLanguage.Text("ExportWindow_CopyResultAsync_5DD07B5878");
         }
-        catch (Exception error) { _status.Text = UiLanguage.Text("ExportWindow_CopyResultAsync_02F9E1FA9F") + error.Message; }
+        catch (Exception error) { ShowFailure(error); }
     }
 
     private async Task OpenResultFolderAsync()
     {
         if (_latestResultPath is null) return;
         try { await Windows.System.Launcher.LaunchFolderPathAsync(Path.GetDirectoryName(_latestResultPath)!); }
-        catch (Exception error) { _status.Text = UiLanguage.Text("ExportWindow_OpenResultFolderAsync_E49A46DADE") + error.Message; }
+        catch (Exception error) { ShowFailure(error); }
     }
 }

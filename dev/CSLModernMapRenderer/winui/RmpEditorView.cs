@@ -17,6 +17,7 @@ internal sealed class RmpEditorView : Grid, IDisposable
     private readonly Window _owner;
     private readonly FrameworkElement _root;
     private readonly WebView2 _web = new();
+    private readonly Microsoft.UI.System.ThemeSettings _themeSettings;
     private readonly TextBlock _status = new() { TextWrapping = TextWrapping.Wrap };
     private readonly Grid _placementPanel = new() { Visibility = Visibility.Collapsed, ColumnSpacing = 12 };
     private readonly TextBlock _placementText = new() { TextWrapping = TextWrapping.Wrap, VerticalAlignment = VerticalAlignment.Center };
@@ -29,6 +30,8 @@ internal sealed class RmpEditorView : Grid, IDisposable
     private Task? _initialization;
     public bool IsReady => _ready;
     public bool HasProject => _projectId.Length != 0;
+    public bool NeedsVisualAdjustment => _metadata is { } metadata
+        && metadata.TryGetProperty("needsVisualAdjustment", out var value) && value.ValueKind == JsonValueKind.True;
     public bool HasWebFocus => _web.FocusState != FocusState.Unfocused;
     public bool IsBusy => _busy || _suspended;
     public JsonElement State { get; private set; }
@@ -43,6 +46,9 @@ internal sealed class RmpEditorView : Grid, IDisposable
     public RmpEditorView(Window owner, FrameworkElement root)
     {
         _owner = owner; _root = root;
+        _root.ActualThemeChanged += RootThemeChanged;
+        _themeSettings = Microsoft.UI.System.ThemeSettings.CreateForWindowId(owner.AppWindow.Id);
+        _themeSettings.Changed += ContrastChanged;
         RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
         RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
         _placementPanel.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
@@ -80,8 +86,22 @@ internal sealed class RmpEditorView : Grid, IDisposable
         if (key is not null) _placementText.Text = T(key);
     }
 
+    private void RootThemeChanged(FrameworkElement sender, object args) => SendTheme();
+    private void ContrastChanged(Microsoft.UI.System.ThemeSettings sender, object args) =>
+        _root.DispatcherQueue.TryEnqueue(SendTheme);
+    private void SendTheme()
+    {
+        if (_closed || _web.CoreWebView2 is null || !_loaded.Task.IsCompletedSuccessfully) return;
+        _web.CoreWebView2.PostWebMessageAsJson(JsonSerializer.Serialize(new
+        {
+            protocolVersion = 1, type = "setTheme", projectId = _projectId,
+            theme = _root.ActualTheme == ElementTheme.Dark ? "dark" : "light", highContrast = _themeSettings.HighContrast
+        }));
+    }
     public void Dispose()
     {
+        _root.ActualThemeChanged -= RootThemeChanged;
+        _themeSettings.Changed -= ContrastChanged;
         _root.RemoveHandler(UIElement.KeyDownEvent, new KeyEventHandler(PlacementKeyDown));
         _closed = true; _ready = false;
         _loaded.TrySetCanceled();
@@ -147,6 +167,7 @@ internal sealed class RmpEditorView : Grid, IDisposable
         var language = UiLanguage.Language switch { "zh-CN" => "zh-Hans", "zh-TW" => "zh-Hant", var value => value.Split('-')[0] };
         _web.Source = new Uri($"https://{Host}/embed.html?language={Uri.EscapeDataString(language)}");
         await _loaded.Task.WaitAsync(TimeSpan.FromSeconds(60));
+        SendTheme();
         var catalog = await RequestAsync("getTools");
         Tools = catalog.GetProperty("tools").Clone();
         StateChanged?.Invoke();
@@ -184,6 +205,7 @@ internal sealed class RmpEditorView : Grid, IDisposable
             await LoadAsync(project, path, fit);
             _generatedMetadata = generatedMetadata; _metadata = metadata;
             _dirty = path.Length == 0; ShowPath(); applied = true;
+            ProjectLoaded?.Invoke();
         });
         return applied;
     }
@@ -249,12 +271,13 @@ internal sealed class RmpEditorView : Grid, IDisposable
         try { await RequestAsync("loadProject", new { project, fit }); }
         catch { _projectId = previous; throw; }
         _path = path; _revision = 0; _dirty = false; _ready = true; ShowPath();
-        ProjectLoaded?.Invoke();
     }
     private void ShowPath()
     {
         StateChanged?.Invoke();
         _status.Text = (string.IsNullOrEmpty(_path) ? T("Unsaved") : _path) + (_dirty ? " *" : "");
+        if (_metadata is { } metadata && metadata.TryGetProperty("warnings", out var warnings))
+            foreach (var warning in warnings.EnumerateArray()) _status.Text += "\n" + warning.GetString();
     }
     private static bool Matches(JsonElement a, JsonElement b) =>
         new[] { "sourceFingerprint", "settingsFingerprint", "layoutFingerprint", "generatorVersion", "rmpCommit" }
@@ -307,10 +330,9 @@ internal sealed class RmpEditorView : Grid, IDisposable
     {
         var name = ExportWindow.SuggestedFileNameFor(ProjectCityName(), "metro",
             extension == ".rmp.json" ? "RMP" : extension[1..].ToUpperInvariant(), DateTime.Now);
-        name = name.EndsWith(".rmp.json", StringComparison.OrdinalIgnoreCase)
-            ? name[..^9] : Path.GetFileNameWithoutExtension(name);
-        var picker = new FileSavePicker { SuggestedFileName = name };
-        picker.FileTypeChoices.Add(extension == ".rmp.json" ? "Rail Map Painter" : extension.ToUpperInvariant(), new List<string> { extension });
+        var pickerExtension = Path.GetExtension(extension);
+        var picker = new FileSavePicker { SuggestedFileName = Path.GetFileNameWithoutExtension(name), DefaultFileExtension = pickerExtension };
+        picker.FileTypeChoices.Add(extension == ".rmp.json" ? "Rail Map Painter" : extension.ToUpperInvariant(), new List<string> { pickerExtension });
         InitializePicker(picker); return (await picker.PickSaveFileAsync())?.Path;
     }
     private async Task<bool> SaveAsync(bool saveAs)
@@ -357,6 +379,7 @@ internal sealed class RmpEditorView : Grid, IDisposable
         await InitializeAsync();
         if (!await ConfirmReplaceAsync()) return;
         await LoadAsync(project, file.Path); _metadata = metadata;
+        ProjectLoaded?.Invoke();
         if (metadata is null || _generatedMetadata.ValueKind != JsonValueKind.Object || !Matches(metadata.Value, _generatedMetadata)) _status.Text = T("Detached");
     }
     public async Task ExecuteAsync(string command, object? payload = null)
@@ -374,7 +397,7 @@ internal sealed class RmpEditorView : Grid, IDisposable
                     if (insertion["insertion"]!["kind"]!.GetValue<string>() == "title")
                         insertion["insertion"]!["title"] = T("DefaultTitle").Replace("{cityName}", ProjectCityName());
                     await RequestAsync(command, insertion); break;
-                case "fit": case "undo": case "redo": case "setMode": case "setViewOptions": case "cancelInsert":
+                case "rotateMap": case "fit": case "undo": case "redo": case "setMode": case "setViewOptions": case "cancelInsert":
                     await RequestAsync(command, payload); break;
                 default: throw new ArgumentException("Unknown RMP command: " + command);
             }

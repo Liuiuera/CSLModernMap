@@ -506,8 +506,10 @@ class Renderer:
 
         # 后期图层（late=True）：如果有 AA（final_size != width
         # 或 aa_downsample > 1），最终在下采样后的尺寸画布上绘制。
-        late = [l for l in self._layers if getattr(l, "late", False)]
-        early = [l for l in self._layers if not getattr(l, "late", False)]
+        station_pois = bool(self.style.get("transports.station.enabled", False))
+        late = [layer for layer in self._layers if getattr(layer, "late", False)
+                or (station_pois and layer.name in {"poi", "poi_transit", "poi_building"})]
+        early = [layer for layer in self._layers if layer not in late]
 
         # 全图预处理只执行一次；后续整图/瓦片/late 上下文共享结果。
         t_total = time.time()
@@ -723,6 +725,8 @@ class Renderer:
                     (layer.name, 0.0),
                 )
                 layer.render(ctx, document)
+                if layer.name == 'road' and 'road_order_report' in ctx.shared:
+                    self.last_stats['road_order'] = ctx.shared['road_order_report']
                 self.last_stats[f"{stats_prefix}{layer.name}"] = time.time() - t0
                 if preset_transform is None:
                     self._publish_preview(image, layer.name)
@@ -1282,10 +1286,7 @@ class Renderer:
                     tr("gui.progress.render_layer", layer=_cn(layer.name)),
                     (layer.name, 0.0),
                 )
-                f_ctx.shared["capture_rmp"] = bool(getattr(self, "capture_rmp", False))
                 layer.render(f_ctx, document)
-                if "rmp_snapshot" in f_ctx.shared:
-                    self.last_rmp_snapshot = f_ctx.shared["rmp_snapshot"]
                 if layer.name == "transport" and "transit_layout_report" in f_ctx.shared:
                     self.last_stats["transit_layout"] = f_ctx.shared["transit_layout_report"]
                 self.last_stats[layer.name] = time.time() - t0

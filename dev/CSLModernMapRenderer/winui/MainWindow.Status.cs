@@ -47,6 +47,8 @@ public sealed partial class MainWindow
         Progress.Value = _mapTask.Percent ?? 0;
         MapOverlayCancel.Visibility = _mapTask.Active && _mapTask.CanCancel ? Visibility.Visible : Visibility.Collapsed;
         MapView.IsHitTestVisible = !_mapTask.Active || _mapTask.Background;
+        TryShowSimplifiedRibbonIntro();
+        TryShowMapInteractionGuide();
     }
 
     private void CompleteMapTask(int generation)

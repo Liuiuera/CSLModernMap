@@ -13,7 +13,7 @@ import { RMPSave } from '../util/save';
 
 interface GeneratedDraft {
     version: number;
-    stations: { id: string; x: number; y: number; name: string; transfer: boolean }[];
+    stations: { id: string; x: number; y: number; name: string; transfer: boolean; name_source?: string }[];
     lines: { source_line_id: number; name?: string; chains: string[][]; color: string | number[] | null }[];
     water: [number, number][][];
     facilities: { kind: 'airport' | 'rail' | 'port'; x: number; y: number; name: string }[];
@@ -44,7 +44,10 @@ export function materializeDraft(project: RMPSave & { cmmDraft?: GeneratedDraft 
     draft.stations.forEach(row => {
         const type = row.transfer ? StationType.ShmetroInt : StationType.ShmetroBasic;
         const names = row.name.split('\n', 2);
-        node(`stn_cmm_${row.id}`, row.x, row.y, type, { names: [names[0], names[1] ?? ''] }, 5);
+        const importedNames: [string, ...string[]] = [names[0], names[1] ?? ''];
+        const source = row.name_source === 'custom' || row.name_source === 'game' ? row.name_source : 'unknown';
+        node(`stn_cmm_${row.id}`, row.x, row.y, type, { names: importedNames }, 5);
+        graph.setNodeAttribute(`stn_cmm_${row.id}`, 'cmmName', { source, importedSource: source, importedNames });
     });
     const parallel = new Map<string, number>();
     draft.lines.forEach((line, number) => {

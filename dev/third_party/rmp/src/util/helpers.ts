@@ -1,6 +1,7 @@
 import { MultiDirectedGraph } from 'graphology';
 import { EdgeAttributes, GraphAttributes, NodeAttributes } from '../constants/constants';
 import { Size } from './hooks';
+import { toMapPoint } from './map-rotation';
 
 export const getMousePosition = (e: React.MouseEvent) => {
     const bbox = e.currentTarget.getBoundingClientRect();
@@ -23,7 +24,7 @@ export const pointerPosToSVGCoord = (
     y: number,
     svgViewBoxZoom: number,
     svgViewBoxMin: { x: number; y: number }
-) => ({ x: (x * svgViewBoxZoom) / 100 + svgViewBoxMin.x, y: (y * svgViewBoxZoom) / 100 + svgViewBoxMin.y });
+) => toMapPoint({ x: (x * svgViewBoxZoom) / 100 + svgViewBoxMin.x, y: (y * svgViewBoxZoom) / 100 + svgViewBoxMin.y });
 
 /** Helper to auto-calculate decimal places from base value */
 const calculateDecimals = (base: number): number => {
@@ -74,7 +75,7 @@ export const calculateCanvasSize = (
     elements.forEach(id => {
         const elem = document.getElementById(id) as SVGSVGElement | null;
         if (elem) {
-            const rect = transformedBoundingBox(elem);
+            const rect = transformedBoundingBox(elem, document.getElementById('rmp-viewport') as unknown as SVGGraphicsElement | null);
             xMin = Math.min(rect.x, xMin);
             yMin = Math.min(rect.y, yMin);
             xMax = Math.max(rect.x + rect.width, xMax);
@@ -106,12 +107,13 @@ export const getViewpointSize = (
     svgViewBoxZoom: number,
     width: number,
     height: number
-) => ({
-    xMin: svgViewBoxMin.x,
-    yMin: svgViewBoxMin.y,
-    xMax: (width * svgViewBoxZoom) / 100 + svgViewBoxMin.x,
-    yMax: (height * svgViewBoxZoom) / 100 + svgViewBoxMin.y,
-});
+) => {
+    const a = toMapPoint(svgViewBoxMin);
+    const b = toMapPoint({ x: width * svgViewBoxZoom / 100 + svgViewBoxMin.x,
+        y: height * svgViewBoxZoom / 100 + svgViewBoxMin.y });
+    return { xMin: Math.min(a.x, b.x), yMin: Math.min(a.y, b.y),
+        xMax: Math.max(a.x, b.x), yMax: Math.max(a.y, b.y) };
+};
 
 /**
  * Calculate the bounding box of the current element, with respect to its own transformation attribute.
@@ -138,10 +140,10 @@ export const getViewpointSize = (
  * @param el The element to getBBox.
  * @returns The SVGRect with respect to its own transformation attribute.
  */
-export const transformedBoundingBox = (el: SVGSVGElement) => {
+export const transformedBoundingBox = (el: SVGGraphicsElement, relativeTo?: SVGGraphicsElement | null) => {
     const bb = el.getBBox();
     const svg = el.ownerSVGElement!;
-    const m = (el.parentNode! as SVGSVGElement).getScreenCTM()!.inverse().multiply(el.getScreenCTM()!);
+    const m = (relativeTo ?? el.parentNode! as SVGSVGElement).getScreenCTM()!.inverse().multiply(el.getScreenCTM()!);
 
     // Create an array of all four points for the original bounding box
     const pts = [svg.createSVGPoint(), svg.createSVGPoint(), svg.createSVGPoint(), svg.createSVGPoint()];
@@ -155,7 +157,7 @@ export const transformedBoundingBox = (el: SVGSVGElement) => {
     pts[3].y = bb.y + bb.height;
 
     // Transform each into the space of the parent, and calculate the min/max points from that.
-    let [xMin, yMin, xMax, yMax] = [Number.MAX_VALUE, Number.MAX_VALUE, Number.MIN_VALUE, Number.MIN_VALUE];
+    let [xMin, yMin, xMax, yMax] = [Infinity, Infinity, -Infinity, -Infinity];
     pts.forEach(pt => {
         pt = pt.matrixTransform(m);
         xMin = Math.min(xMin, pt.x);

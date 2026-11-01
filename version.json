@@ -1,7 +1,7 @@
 {
-  "version": "6.7.2f4",
-  "changenote": "v6.7.2f4 Fixed an issue that prevented the renderer from starting.",
-  "changenote_en": "v6.7.2f4 Fixed an issue that prevented the renderer from starting.",
-  "changenote_zh": "v6.7.2f4 Fixed an issue that prevented the renderer from starting.",
-  "assembly_version": "6.7.2.4"
+  "version": "6.7.3",
+  "changenote": "v6.7.3 Logic improvements and bug fixes, name filtering, navigation, and stage-one 3D maps with building height previews.",
+  "changenote_en": "v6.7.3 Logic improvements and bug fixes, name filtering, navigation, and stage-one 3D maps with building height previews.",
+  "changenote_zh": "v6.7.3 逻辑优化与问题修复，名称筛选、导航系统及 3D 地图阶段一（建筑高度展示）。",
+  "assembly_version": "6.7.3.0"
 }

@@ -108,7 +108,7 @@
   "gui.dialog.custom_resolution.prompt": "출력 가장자리 길이(픽셀)",
   "gui.dialog.layer_settings": "레이어 설정",
   "gui.dialog.open_city": "도시 저장 파일 열기",
-  "gui.dialog.open_city.filter": "도시 지도 (*.mmap.gz *.mmap *.cmm.gz *.cmm *.cmm.json)",
+  "gui.dialog.open_city.filter": "도시 지도 (*.mmap.gz *.mmap *.cslmap.gz *.cslmap *.cmm.gz *.cmm *.cmm.json)",
   "gui.dialog.save": "저장",
   "gui.dialog.save_png_filter": "PNG 이미지 (*.png)",
   "gui.editor.airport": "공항",

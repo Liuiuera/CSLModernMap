@@ -108,7 +108,7 @@
   "gui.dialog.custom_resolution.prompt": "出力サイズ（ピクセル）",
   "gui.dialog.layer_settings": "レイヤーの設定",
   "gui.dialog.open_city": "都市データを開く",
-  "gui.dialog.open_city.filter": "都市マップ (*.mmap.gz *.mmap *.cmm.gz *.cmm *.cmm.json)",
+  "gui.dialog.open_city.filter": "都市マップ (*.mmap.gz *.mmap *.cslmap.gz *.cslmap *.cmm.gz *.cmm *.cmm.json)",
   "gui.dialog.save": "保存",
   "gui.dialog.save_png_filter": "PNG 画像 (*.png)",
   "gui.editor.airport": "空港",

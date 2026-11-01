@@ -32,7 +32,7 @@ public sealed partial class MainWindow
         void Add(string group, string title, Func<bool> read, Func<Task> write)
         {
             var binding = new ContextRibbonToggle(title, RibbonIcons.Context(title), read,
-                () => QueueContextWriteAsync(false, write), error => SetError(error.Message));
+                () => QueueContextWriteAsync(false, write), error => SetError(error));
             GetGroup(group).Items.Add(binding.Button);
             _contextToggles.Add((false, binding));
             RegisterRibbonColors(binding.Button, binding.Button.Icon, "PRIMARY", selected: read);
@@ -42,8 +42,6 @@ public sealed partial class MainWindow
         AddButton(GetGroup(UiLanguage.Text("MainWindow_TransitRibbon_BuildTransitRibbonAsync_1AB216CC0D")), UiLanguage.Text("MainWindow_TransitRibbon_BuildTransitRibbonAsync_CF2382056B"), ShowTransitStationSettingsAsync, "view.transit.station_settings");
         Add(UiLanguage.Text("MainWindow_TransitRibbon_BuildTransitRibbonAsync_1AB216CC0D"), UiLanguage.Text("MainWindow_TransitRibbon_BuildTransitRibbonAsync_ED178EDA0E"), () => ReadContextToggle(false, "merge_enabled"),
             () => _engine.RequestAsync("setTransitOption", new { metro = false, key = "merge_enabled", value = !ReadContextToggle(false, "merge_enabled") }));
-        Add(UiLanguage.Text("MainWindow_TransitRibbon_BuildTransitRibbonAsync_C8FFBDF157"), UiLanguage.Text("MainWindow_TransitRibbon_BuildTransitRibbonAsync_661499ED97"), () => ReadContextToggle(false, "auto_color"),
-            () => _engine.RequestAsync("setTransitOption", new { metro = false, key = "auto_color", value = !ReadContextToggle(false, "auto_color") }));
         AddButton(GetGroup(UiLanguage.Text("MainWindow_TransitRibbon_BuildTransitRibbonAsync_1AB216CC0D")), UiLanguage.Text("MainWindow_TransitRibbon_BuildTransitRibbonAsync_26A0369483"), ShowTransitLinesAsync, "view.transit.lines");
         AddButton(GetGroup(UiLanguage.Text("MainWindow_TransitRibbon_BuildTransitRibbonAsync_C8FFBDF157")), UiLanguage.Text("MainWindow_TransitRibbon_BuildTransitRibbonAsync_8FB38E6289"), ShowTransitLineSettingsAsync, "view.transit.line_color");
         GetGroup(UiLanguage.Text("MainWindow_TransitRibbon_BuildTransitRibbonAsync_C8FFBDF157")).IsGroupVisible = false;

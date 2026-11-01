@@ -23,8 +23,8 @@
    消除多拐锯齿（三角形/平行四边形伪影）；随后重建网格边占用
 7. 可选的自适应比例尺先为密集站区预留网格间距并重跑 A*，再构建
    非均匀坐标轴；长区段压缩、密集站区舒展，线路与站点锚点保持一致
-8. 固定模式在网格域完成后等比缩放 + 居中 fit 画布；动态模式额外
-   校验变形后的斜边角度，超限时降低强度或回退固定模式
+8. 固定模式在网格域完成后等比缩放 + 居中 fit 画布；动态模式记录
+   变形后的斜边角度超限，保留布局并提示可手动调整
 
 严格入口保留拓扑校验；交互入口重试耗尽后可生成地理草图，保留连接供编辑。
 """
@@ -254,6 +254,7 @@ class SchematicResult:
     adaptive_scale_range: Tuple[float, float] = (1.0, 1.0)
     fallback_strategy: str = "requested"
     layout_failures: Tuple[str, ...] = ()
+    needs_visual_adjustment: bool = False
     # 保留稳定的源线路和逻辑站点标识，供后续编辑使用。
     source_chains: Dict[int, Tuple[Tuple[int, ...], ...]] = field(default_factory=dict)
     placement_metrics: dict = field(default_factory=dict)
@@ -786,8 +787,8 @@ def _adaptive_routes_keep_octilinear(
 ) -> bool:
     """检查轴变形后的原网格斜边是否仍接近 45°。
 
-    单调坐标轴不会破坏连通性，但可能把网格斜边拉成任意角度。动态比例尺
-    只作为视觉增强，因此几何质量不满足阈值时应由调用层降低强度或回退。
+    单调坐标轴不会破坏连通性，但可能把网格斜边拉成任意角度。
+    角度偏差只用于视觉调整提示，不改变生成结果。
     """
     def value(mapping: Dict[int, float], coord: int) -> float:
         if coord in mapping:
@@ -2457,6 +2458,7 @@ def schematic_layout(
     adaptive_x: Optional[Dict[int, float]] = None
     adaptive_y: Optional[Dict[int, float]] = None
     adaptive_scale_range = (1.0, 1.0)
+    needs_visual_adjustment = False
     if adaptive_scale and len(groups_by_rep) >= 2:
         # 动态比例尺在有效网格完成后应用为“非均匀网格轴”，不移动站点
         # 锚点、不重跑 A*，因此不会破坏已验证的环线/分支可行性。
@@ -2559,10 +2561,8 @@ def schematic_layout(
             max_compress=adaptive_max_compress,
             max_expand=adaptive_max_expand,
         )
-        if not _adaptive_routes_keep_octilinear(
-                routes, adaptive_x, adaptive_y, scale):
-            raise SchematicLayoutError(
-                "adaptive scale exceeded octilinear angle tolerance")
+        needs_visual_adjustment = not _adaptive_routes_keep_octilinear(
+            routes, adaptive_x, adaptive_y, scale)
         intervals = [
             (mapping[key + 1] - mapping[key]) / max(scale, 1e-9)
             for mapping in (adaptive_x, adaptive_y)
@@ -2695,6 +2695,7 @@ def schematic_layout(
         adaptive_strength=(float(adaptive_strength)
                            if adaptive_scale else 0.0),
         adaptive_scale_range=adaptive_scale_range,
+        needs_visual_adjustment=needs_visual_adjustment,
         source_chains={
             int(tr.id): tuple(
                 [tuple(gseq), *(

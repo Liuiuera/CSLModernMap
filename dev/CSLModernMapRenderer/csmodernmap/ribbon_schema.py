@@ -110,7 +110,7 @@ FIELDS = {
  'road.names': toggle('road.names'),
  'road.game_names': toggle('road.game_names', False),
  'road.accurate_intersections': toggle('road.accurate_intersections', True),
- 'building.color_mode': choice('building.color_mode', 'poi', 'uniform'),
+ 'building.color_mode': choice('building.color_mode', 'poi', 'category', 'uniform'),
  'building.default': color('building.default', '#D8D2C6'),
  'building.poi_tint.contrast': number('building.poi_tint.contrast', 30, 0, 100),
  # 旧别名仍可供旧客户端解析，但不显示在页面中。

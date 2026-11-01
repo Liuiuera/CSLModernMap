@@ -12,7 +12,7 @@
   "main_ui_a44c7ba211": "道路",
   "main_ui_5b46860a8e": "建築",
   "main_ui_97492a0e5d": "鐵路",
-  "main_ui_57f78ba1f9": "交通",
+  "main_ui_57f78ba1f9": "路況",
   "main_ui_b8466cd555": "捷運",
   "main_ui_9875b1f825": "標籤",
   "main_ui_9ff2b9e94d": "區劃",
@@ -31,5 +31,15 @@
   "surface-poi-layer_shader_f2a5d36a5f": "POI Surface 著色器編譯失敗",
   "surface-poi-layer_program_226d27beb7": "無法建立 POI Surface program",
   "surface-poi-layer_program_ea7d784c3e": "POI Surface 程式連結失敗",
-  "preview_title": "CSLModernMap 地圖預覽"
+  "preview_title": "CSLModernMap 地圖預覽",
+  "search_search": "搜尋地圖物件",
+  "search_searchHelp": "搜尋目前地圖中的名稱或類別",
+  "search_empty": "找不到符合的物件",
+  "search_findHelp": "在左上角輸入名稱或類別，尋找並定位地圖物件。",
+  "search_group_building": "其他建築",
+  "search_group_road": "道路",
+  "search_group_area": "區域",
+  "search_group_poi": "其他地點",
+  "search_more": "顯示更多",
+  "search_count": "({{number}})"
 }

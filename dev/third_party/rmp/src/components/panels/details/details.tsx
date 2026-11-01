@@ -1,9 +1,42 @@
-import { Box, Button, Heading, HStack, VStack } from '@chakra-ui/react';
+import ProjectSettings, { SelectedStationSettings } from './project-settings';
+import { MiscNodeType } from '../../../constants/nodes';
+import { STATION_TYPE_VALUES, StationType } from '../../../constants/stations';
+import {
+    Accordion,
+    AccordionButton,
+    AccordionIcon,
+    AccordionItem,
+    AccordionPanel,
+    Box,
+    Button,
+    Heading,
+    HStack,
+    VStack,
+    Tabs,
+    TabList,
+    Tab,
+    TabPanels,
+    TabPanel,
+    Menu,
+    MenuButton,
+    MenuList,
+    MenuItem,
+    Portal,
+    Tooltip,
+} from '@chakra-ui/react';
 import { RmgSidePanel, RmgSidePanelBody, RmgSidePanelFooter, RmgSidePanelHeader } from '@railmapgen/rmg-components';
 import { nanoid } from 'nanoid';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { LuClipboardCopy, LuClipboardPaste, LuCopy, LuCopyPlus, LuMerge, LuPanelRightOpen, LuTrash2 } from 'react-icons/lu';
+import {
+    LuClipboardCopy,
+    LuClipboardPaste,
+    LuCopy,
+    LuCopyPlus,
+    LuMerge,
+    LuPanelRightOpen,
+    LuTrash2,
+} from 'react-icons/lu';
 import { Id, LineId, NodeId, StnId } from '../../../constants/constants';
 import { useRootDispatch, useRootSelector } from '../../../redux';
 import { saveGraph } from '../../../redux/param/param-slice';
@@ -37,6 +70,7 @@ const embedded = import.meta.env.MODE === 'embedded';
 
 const DetailsPanel = () => {
     const { t } = useTranslation();
+    const portalContainer = React.useRef(document.getElementById('root'));
     const dispatch = useRootDispatch();
     const graph = React.useRef(window.graph);
     const hardRefresh = React.useCallback(() => {
@@ -44,15 +78,36 @@ const DetailsPanel = () => {
         dispatch(refreshNodesThunk());
         dispatch(refreshEdgesThunk());
     }, [dispatch, refreshNodesThunk, refreshEdgesThunk, saveGraph]);
-    const {
-        selected,
-        isDetailsOpen,
-    } = useRootSelector(state => state.runtime);
+    const { selected, isDetailsOpen } = useRootSelector(state => state.runtime);
     const {
         preference: { autoChangeStationType },
     } = useRootSelector(state => state.app);
     const [selectedFirst] = selected;
 
+    const stationSelected =
+        selected.size === 1 &&
+        graph.current.hasNode(selectedFirst) &&
+        STATION_TYPE_VALUES.has(graph.current.getNodeAttribute(selectedFirst, 'type') as StationType);
+    const selectionKey = [...selected].sort().join(',');
+    const [tab, setTab] = React.useState(selected.size ? 0 : 1);
+    React.useEffect(() => setTab(selected.size ? 0 : 1), [selectionKey]);
+    const nodeType =
+        selected.size === 1 && graph.current.hasNode(selectedFirst)
+            ? graph.current.getNodeAttribute(selectedFirst, 'type')
+            : undefined;
+    const title = !selected.size
+        ? t('cmm.mapSettings')
+        : selected.size > 1
+          ? t('cmm.selectedObjects', { count: selected.size })
+          : stationSelected
+            ? t('cmm.station')
+            : graph.current.hasEdge(selectedFirst)
+              ? t('cmm.lineSegment')
+              : nodeType === MiscNodeType.Text
+                ? t('cmm.textObject')
+                : nodeType === MiscNodeType.Facilities
+                  ? t('cmm.facilityObject')
+                  : t('cmm.objectProperties');
     const canCopyAttrs = selected.size === 1;
     const hasMultipleEdges = React.useMemo(
         () => [...selected].filter(id => graph.current.hasEdge(id)).length >= 2,
@@ -60,7 +115,7 @@ const DetailsPanel = () => {
     );
 
     const handleClose = () => {
-        if (!isPortraitClient()) {
+        if (!embedded && !isPortraitClient()) {
             dispatch(clearSelected());
         } else {
             dispatch(hideDetailsPanel());
@@ -147,13 +202,7 @@ const DetailsPanel = () => {
             return;
         }
 
-        if (
-            !importEdgeSpecificAttrs(
-                graph.current,
-                selected,
-                parsed.data as EdgeSpecificAttrsClipboardData
-            )
-        ) {
+        if (!importEdgeSpecificAttrs(graph.current, selected, parsed.data as EdgeSpecificAttrsClipboardData)) {
             sendErrorNotification(t('error'), t('clipboard.errors.cannotPasteSpecificAttrs'));
             return;
         }
@@ -167,63 +216,212 @@ const DetailsPanel = () => {
         }
     };
 
+    const properties = (
+        <>
+            {selected.size > 1 && (
+                <>
+                    <SelectedStationSettings />
+                    <InfoSection />
+                </>
+            )}
+            {selected.size === 1 && (
+                <>
+                    {graph.current.hasNode(selectedFirst) && <NodeSpecificAttributes />}
+                    {graph.current.hasEdge(selectedFirst) && (
+                        <>
+                            <InfoSection section="appearance" />
+                            <Heading as="h5" size="sm">
+                                {t('cmm.lineAppearance')}
+                            </Heading>
+                            <LineSpecificAttributes />
+                        </>
+                    )}
+                    {!stationSelected && (
+                        <Accordion allowToggle className="cmm-other-properties">
+                            <AccordionItem>
+                                <AccordionButton>
+                                    {t('cmm.otherProperties')}
+                                    <AccordionIcon />
+                                </AccordionButton>
+                                <AccordionPanel px={0}>
+                                    {graph.current.hasNode(selectedFirst) && (
+                                        <>
+                                            <InfoSection />
+                                            <NodePositionSection />
+                                        </>
+                                    )}
+                                    {graph.current.hasEdge(selectedFirst) && <><InfoSection section="other" /><LineExtremitiesSection /></>}
+                                </AccordionPanel>
+                            </AccordionItem>
+                        </Accordion>
+                    )}
+                </>
+            )}
+        </>
+    );
     return (
-        <RmgSidePanel isOpen={isDetailsOpen === 'show'} width={300} header="Dummy header" alwaysOverlay>
+        <RmgSidePanel isOpen={isDetailsOpen === 'show'} width={embedded ? 320 : 300} header={title} alwaysOverlay>
             <RmgSidePanelHeader onClose={handleClose}>
-                {embedded && <LuPanelRightOpen className="cmm-details-icon" aria-hidden="true"/>}
-                {t('panel.details.header')}
+                {embedded && <LuPanelRightOpen className="cmm-details-icon" aria-hidden="true" />}
+                {embedded ? title : t('panel.details.header')}
             </RmgSidePanelHeader>
             <RmgSidePanelBody>
-                <InfoSection />
-
-                {selected.size === 1 && graph.current.hasNode(selectedFirst) && <NodePositionSection />}
-                {selected.size === 1 && graph.current.hasEdge(selectedFirst) && <LineExtremitiesSection />}
-
-                {selected.size === 1 && (
-                    <Box p={1}>
-                        <Heading as="h5" size="sm">
-                            {t('panel.details.specificAttrsTitle')}
-                        </Heading>
-
-                        {window.graph.hasNode(selectedFirst) && <NodeSpecificAttributes />}
-                        {window.graph.hasEdge(selectedFirst) && <LineSpecificAttributes />}
-                    </Box>
+                {embedded ? (
+                    <Tabs index={tab} onChange={setTab} isLazy lazyBehavior="keepMounted" className="cmm-details-tabs">
+                        <TabList aria-label={t('panel.details.header')}>
+                            <Tab isDisabled={!selected.size}>{t('cmm.properties')}</Tab>
+                            <Tab>{t('cmm.mapSettings')}</Tab>
+                        </TabList>
+                        <TabPanels>
+                            <TabPanel px={0}>{properties}</TabPanel>
+                            <TabPanel px={0}>
+                                <ProjectSettings />
+                            </TabPanel>
+                        </TabPanels>
+                    </Tabs>
+                ) : (
+                    <>
+                        <InfoSection />
+                        {selected.size === 1 && (
+                            <Box p={1}>
+                                <Heading as="h5" size="sm">
+                                    {t('panel.details.specificAttrsTitle')}
+                                </Heading>
+                                {window.graph.hasNode(selectedFirst) && <NodeSpecificAttributes />}
+                                {window.graph.hasEdge(selectedFirst) && <LineSpecificAttributes />}
+                            </Box>
+                        )}
+                        {selected.size === 1 && (
+                            <Accordion allowToggle>
+                                <AccordionItem>
+                                    <AccordionButton>
+                                        {t('cmm.more')}
+                                        <AccordionIcon />
+                                    </AccordionButton>
+                                    <AccordionPanel px={0}>
+                                        {graph.current.hasNode(selectedFirst) && <NodePositionSection />}
+                                        {graph.current.hasEdge(selectedFirst) && <LineExtremitiesSection />}
+                                    </AccordionPanel>
+                                </AccordionItem>
+                            </Accordion>
+                        )}
+                    </>
                 )}
             </RmgSidePanelBody>
             <RmgSidePanelFooter>
-                <VStack spacing={2} align="stretch" width="100%">
-                    <HStack>
-                        {selected.size === 1 && graph.current.hasNode(selectedFirst) && (
+                {embedded ? (
+                    <HStack spacing={1} width="100%" className="cmm-object-actions">
+                        <Tooltip label={t('cmm.duplicateObject')}>
+                            <Button
+                                isDisabled={selected.size !== 1 || !graph.current.hasNode(selectedFirst)}
+                                onClick={() => handleDuplicate(selectedFirst)}
+                            >
+                                {t('cmm.duplicateObject')}
+                            </Button>
+                        </Tooltip>
+                        <Tooltip label={`${t('copy')} (Ctrl+C)`}>
+                            <Button isDisabled={!selected.size} onClick={() => handleCopy(selected)}>
+                                {t('copy')}
+                            </Button>
+                        </Tooltip>
+                        <Tooltip label={`${t('remove')} (Delete)`}>
+                            <Button
+                                className="cmm-remove"
+                                isDisabled={!selected.size}
+                                onClick={() => handleRemove(selected)}
+                            >
+                                {t('remove')}
+                            </Button>
+                        </Tooltip>
+                        <Menu placement="top-end">
+                            <MenuButton as={Button} flex={1} isDisabled={!selected.size}>
+                                {t('cmm.moreActions')}
+                            </MenuButton>
+                            <Portal containerRef={portalContainer}>
+                                <MenuList className="cmm-editor-menu">
+                                    <MenuItem
+                                        icon={<LuClipboardCopy />}
+                                        onClick={handleCopyAttrs}
+                                        isDisabled={!canCopyAttrs}
+                                    >
+                                        {t('cmm.copyStyle')}
+                                    </MenuItem>
+                                    <MenuItem icon={<LuClipboardPaste />} onClick={handlePasteAttrs}>
+                                        {t('cmm.pasteStyle')}
+                                    </MenuItem>
+                                    {hasMultipleEdges && (
+                                        <MenuItem icon={<LuMerge />} onClick={handleReconcile}>
+                                            {t('panel.details.info.reconcile')}
+                                        </MenuItem>
+                                    )}
+                                </MenuList>
+                            </Portal>
+                        </Menu>
+                    </HStack>
+                ) : (
+                    <VStack spacing={2} align="stretch" width="100%">
+                        <HStack>
+                            {selected.size === 1 && graph.current.hasNode(selectedFirst) && (
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    leftIcon={embedded ? <LuCopyPlus aria-hidden="true" /> : undefined}
+                                    onClick={() => handleDuplicate(selectedFirst)}
+                                    flex={1}
+                                >
+                                    {t('panel.details.footer.duplicate')}
+                                </Button>
+                            )}
                             <Button
                                 size="sm"
                                 variant="outline"
-                                leftIcon={embedded ? <LuCopyPlus aria-hidden="true"/> : undefined}
-                                onClick={() => handleDuplicate(selectedFirst)}
+                                leftIcon={embedded ? <LuCopy aria-hidden="true" /> : undefined}
+                                onClick={() => handleCopy(selected)}
                                 flex={1}
                             >
-                                {t('panel.details.footer.duplicate')}
+                                {t('copy')}
+                            </Button>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className={embedded ? 'cmm-remove' : undefined}
+                                leftIcon={embedded ? <LuTrash2 aria-hidden="true" /> : undefined}
+                                onClick={() => handleRemove(selected)}
+                                flex={1}
+                            >
+                                {t('remove')}
+                            </Button>
+                        </HStack>
+
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            leftIcon={embedded ? <LuClipboardCopy aria-hidden="true" /> : undefined}
+                            onClick={handleCopyAttrs}
+                            isDisabled={!canCopyAttrs}
+                        >
+                            {t(embedded ? 'cmm.copyStyle' : 'copyAttrs')}
+                        </Button>
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            leftIcon={embedded ? <LuClipboardPaste aria-hidden="true" /> : undefined}
+                            onClick={handlePasteAttrs}
+                        >
+                            {t(embedded ? 'cmm.pasteStyle' : 'pasteAttrs')}
+                        </Button>
+                        {hasMultipleEdges && (
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                leftIcon={embedded ? <LuMerge aria-hidden="true" /> : undefined}
+                                onClick={handleReconcile}
+                            >
+                                {t('panel.details.info.reconcile')}
                             </Button>
                         )}
-                        <Button size="sm" variant="outline" leftIcon={embedded ? <LuCopy aria-hidden="true"/> : undefined} onClick={() => handleCopy(selected)} flex={1}>
-                            {t('copy')}
-                        </Button>
-                        <Button size="sm" variant="outline" className={embedded ? 'cmm-remove' : undefined} leftIcon={embedded ? <LuTrash2 aria-hidden="true"/> : undefined} onClick={() => handleRemove(selected)} flex={1}>
-                            {t('remove')}
-                        </Button>
-                    </HStack>
-
-                    <Button size="sm" variant="outline" leftIcon={embedded ? <LuClipboardCopy aria-hidden="true"/> : undefined} onClick={handleCopyAttrs} isDisabled={!canCopyAttrs}>
-                        {t('copyAttrs')}
-                    </Button>
-                    <Button size="sm" variant="outline" leftIcon={embedded ? <LuClipboardPaste aria-hidden="true"/> : undefined} onClick={handlePasteAttrs}>
-                        {t('pasteAttrs')}
-                    </Button>
-                    {hasMultipleEdges && (
-                        <Button size="sm" variant="outline" leftIcon={embedded ? <LuMerge aria-hidden="true"/> : undefined} onClick={handleReconcile}>
-                            {t('panel.details.info.reconcile')}
-                        </Button>
-                    )}
-                </VStack>
+                    </VStack>
+                )}
             </RmgSidePanelFooter>
         </RmgSidePanel>
     );

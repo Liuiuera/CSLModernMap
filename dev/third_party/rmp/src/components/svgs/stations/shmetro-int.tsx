@@ -1,4 +1,5 @@
-import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
+import RmgFields, { StationField as RmgFieldsField } from '../../panels/details/station-fields';
+
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import StationNameTranslateButton from '../../panels/details/station-name-translate-button';
@@ -84,7 +85,8 @@ const ShmetroIntStation = (props: StationComponentProps) => {
     const { canDrag, dragHandlers, previewPreciseNameOffsets } = useDraggableStationName<ShmetroIntStationAttributes>(
         id,
         StationType.ShmetroInt,
-        defaultNameLayout
+        defaultNameLayout,
+        attrs
     );
     const nameLayout = previewPreciseNameOffsets ?? stationAttrs.preciseNameOffsets ?? defaultNameLayout;
 
@@ -189,6 +191,7 @@ const SHMetroIntAttrsComponent = (props: AttrsProps<ShmetroIntStationAttributes>
         {
             type: 'textarea',
             label: t('panel.details.stations.common.nameZh'),
+            cmmSection: 'name',
             value: attrs.names[0],
             onChange: val => {
                 attrs.names[0] = val;
@@ -199,6 +202,7 @@ const SHMetroIntAttrsComponent = (props: AttrsProps<ShmetroIntStationAttributes>
         {
             type: 'textarea',
             label: t('panel.details.stations.common.nameEn'),
+            cmmSection: 'name',
             value: attrs.names.at(1) ?? defaultShmetroIntStationAttributes.names[1],
             onChange: val => {
                 attrs.names[1] = val;
@@ -209,12 +213,14 @@ const SHMetroIntAttrsComponent = (props: AttrsProps<ShmetroIntStationAttributes>
         {
             type: 'custom',
             label: '',
+            cmmSection: 'name',
             component: <StationNameTranslateButton id={id} attrs={attrs} handleAttrsUpdate={handleAttrsUpdate} />,
             minW: 'full',
         },
         {
             type: 'select',
             label: t('panel.details.stations.common.nameOffsetX'),
+            cmmSection: 'position',
             value: nameOffsetXSelect.value,
             options: nameOffsetXSelect.options,
             disabledOptions: nameOffsetXSelect.disabledOptions,
@@ -228,6 +234,7 @@ const SHMetroIntAttrsComponent = (props: AttrsProps<ShmetroIntStationAttributes>
         {
             type: 'select',
             label: t('panel.details.stations.common.nameOffsetY'),
+            cmmSection: 'position',
             value: nameOffsetYSelect.value,
             options: nameOffsetYSelect.options,
             disabledOptions: nameOffsetYSelect.disabledOptions,
@@ -241,6 +248,7 @@ const SHMetroIntAttrsComponent = (props: AttrsProps<ShmetroIntStationAttributes>
         {
             type: 'input',
             label: t('panel.details.stations.shmetroInt.height'),
+            cmmSection: 'appearance',
             value: attrs.height.toString(),
             validator: val => Number.isInteger(val),
             onChange: val => {
@@ -252,6 +260,7 @@ const SHMetroIntAttrsComponent = (props: AttrsProps<ShmetroIntStationAttributes>
         {
             type: 'input',
             label: t('panel.details.stations.shmetroInt.width'),
+            cmmSection: 'appearance',
             value: attrs.width.toString(),
             validator: val => Number.isInteger(val),
             onChange: val => {
@@ -263,6 +272,7 @@ const SHMetroIntAttrsComponent = (props: AttrsProps<ShmetroIntStationAttributes>
         {
             type: 'select',
             label: t('panel.details.stations.common.rotate'),
+            cmmSection: 'appearance',
             value: attrs.rotate,
             options: { 0: '0', 45: '45', 90: '90', 135: '135', 180: '180', 225: '225', 270: '270', 315: '315' },
             onChange: val => {

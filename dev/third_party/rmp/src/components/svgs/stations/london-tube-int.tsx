@@ -1,4 +1,5 @@
-import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
+import RmgFields, { StationField as RmgFieldsField } from '../../panels/details/station-fields';
+
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { AttrsProps, CanvasType, CategoriesType, CityCode } from '../../../constants/constants';
@@ -73,7 +74,8 @@ const LondonTubeIntStation = (props: StationComponentProps) => {
     const { canDrag, dragHandlers, previewPreciseNameOffsets } = useDraggableStationName<StationAttributes>(
         id,
         StationType.LondonTubeInt,
-        defaultNameLayout
+        defaultNameLayout,
+        attrs
     );
     const nameLayout = previewPreciseNameOffsets ?? preciseNameOffsets ?? defaultNameLayout;
 
@@ -169,6 +171,7 @@ const londonTubeIntAttrsComponent = (props: AttrsProps<LondonTubeIntStationAttri
         {
             type: 'textarea',
             label: t('panel.details.stations.common.nameEn'),
+            cmmSection: 'name',
             value: attrs.names[0],
             onChange: val => {
                 attrs.names[0] = val.toString();
@@ -179,6 +182,7 @@ const londonTubeIntAttrsComponent = (props: AttrsProps<LondonTubeIntStationAttri
         {
             type: 'select',
             label: t('panel.details.stations.common.nameOffsetX'),
+            cmmSection: 'position',
             value: nameOffsetXSelect.value,
             options: nameOffsetXSelect.options,
             disabledOptions: nameOffsetXSelect.disabledOptions,
@@ -192,6 +196,7 @@ const londonTubeIntAttrsComponent = (props: AttrsProps<LondonTubeIntStationAttri
         {
             type: 'select',
             label: t('panel.details.stations.common.nameOffsetY'),
+            cmmSection: 'position',
             value: nameOffsetYSelect.value,
             options: nameOffsetYSelect.options,
             disabledOptions: nameOffsetYSelect.disabledOptions,

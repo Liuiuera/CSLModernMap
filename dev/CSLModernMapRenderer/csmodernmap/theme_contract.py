@@ -78,6 +78,8 @@ def cleanup_theme(data: dict) -> dict:
     out.pop("poi_area", None)
     buildings = out.get("buildings")
     if isinstance(buildings, dict):
+        from .building_categories import validate_category_colors
+        validate_category_colors(buildings)
         for key in ("residential", "commercial", "industrial", "office",
                     "publictransport", "beautification", "public"):
             buildings.pop(key, None)
@@ -157,6 +159,15 @@ def migrate_terrain_colors(terrain: dict) -> dict:
 def normalize_theme(data: dict) -> dict:
     """返回独立的标准化编辑副本，并保留额外字段。"""
     out = cleanup_theme(data)
+    buildings = out.get('buildings')
+    if isinstance(buildings, dict):
+        from .building_categories import CATEGORIES
+        buildings.setdefault('color_mode', 'poi')
+        colors = buildings.setdefault('category_colors', {})
+        for category in CATEGORIES:
+            entry = colors.setdefault(category, {})
+            entry.setdefault('enabled', False)
+            entry.setdefault('color', buildings.get('default', '#D8D2C6'))
     roads = out.get("roads")
     if isinstance(roads, dict):
         target = out["roads"]
@@ -199,6 +210,10 @@ def normalize_theme(data: dict) -> dict:
 def validate_theme_values(data: dict) -> None:
     """在编辑边界拒绝格式错误的数值、尺寸或渐变输入。"""
     from .theme_metadata import field_kind
+    from .building_categories import validate_category_colors
+    buildings = data.get('buildings', {})
+    if isinstance(buildings, dict):
+        validate_category_colors(buildings)
     def walk(value, path):
         if path[:2] == ("terrain", "ground"):
             return

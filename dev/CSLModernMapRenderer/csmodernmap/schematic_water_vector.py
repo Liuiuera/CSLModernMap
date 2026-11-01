@@ -18,6 +18,10 @@ _DIRECTIONS = np.array([(1, 0), (1, 1), (0, 1), (-1, 1),
                         (-1, 0), (-1, -1), (0, -1), (1, -1)], dtype=float)
 
 
+class WaterGeometryError(ValueError):
+    """水域派生几何不能满足拓扑或计算预算。"""
+
+
 def _parts(surface):
     return [] if surface.is_empty else [surface] if surface.geom_type == "Polygon" else list(surface.geoms)
 
@@ -67,6 +71,11 @@ def _on_bounds(points, bounds):
     x0, y0, x1, y1 = bounds
     return ((abs(points[:, 0]-x0) < 1e-8) | (abs(points[:, 0]-x1) < 1e-8) |
             (abs(points[:, 1]-y0) < 1e-8) | (abs(points[:, 1]-y1) < 1e-8))
+
+
+def _fixed_points(points, fixed):
+    keys = {tuple(np.round(point, 8)) for point in fixed}
+    return np.array([tuple(point) in keys for point in np.round(points, 8)], dtype=bool)
 
 
 def _clean(points, bounds=None):
@@ -140,7 +149,7 @@ def _endpoint_directions(points, bounds=None):
                        for d, angle in zip((a, b), angles))
             choices.append((cost, a, b))
         if not choices:
-            raise ValueError("岸线节点不能分配互异的八方向")
+            raise WaterGeometryError("岸线节点不能分配互异的八方向")
         _, incoming, outgoing = min(choices)
         result.append((incoming, outgoing))
     return result
@@ -174,7 +183,7 @@ def _staircase(start, end, first, last, count):
     return path
 
 
-def restrict_water_directions(surface, step, *, bounds=None):
+def restrict_water_directions(surface, step, *, bounds=None, budget=None):
     """端点固定、局部加密的八方向折线；无可用结果时明确报错。"""
     if surface.is_empty:
         return surface
@@ -208,11 +217,14 @@ def restrict_water_directions(surface, step, *, bounds=None):
         clearance = float(np.min(shapely.distance(segments[i], segments[separate]))) if separate else step
         tolerance = min(step/2, clearance/3)
         if tolerance <= 1e-9:
-            raise ValueError("保留岸线存在非相邻接触，不能安全限制方向")
+            raise WaterGeometryError("保留岸线存在非相邻接触，不能安全限制方向")
         counts.append(max(1, math.ceil(np.linalg.norm(end-start)/(4*tolerance))))
     for attempt in range(7):
-        if sum(counts)*6 > 200_000:
-            raise ValueError("八方向岸线超过局部细分上限")
+        required = sum(counts)*6
+        if required > (200_000 if budget is None else budget[0]):
+            raise WaterGeometryError("八方向岸线超过局部细分上限")
+        if budget is not None:
+            budget[0] -= required
         converted = [_staircase(*path, count) for path, count in zip(paths, counts)]
         result_groups, offset = [], 0
         for rings in groups:
@@ -225,7 +237,7 @@ def restrict_water_directions(surface, step, *, bounds=None):
         if same_water_topology(surface, candidate, ordered=True):
             return candidate
         counts = [2*count for count in counts]
-    raise ValueError("八方向岸线不能保持水体与岛洞关系")
+    raise WaterGeometryError("八方向岸线不能保持水体与岛洞关系")
 
 
 def _cross(a, b):
@@ -260,7 +272,7 @@ def _fit_chain(points):
     return sorted(candidates, key=lambda path: (len(path), float(np.linalg.norm(np.diff(path, axis=0), axis=1).sum())))
 
 
-def fit_water_chains(surface, tolerance, *, bounds=None, origin=(0, 0)):
+def fit_water_chains(surface, tolerance, *, bounds=None, origin=(0, 0), fixed_points=()):
     """先合并长岸段，保留细颈附近无法安全替换的短边；每环至多两轮。"""
     if surface.is_empty:
         return surface
@@ -284,6 +296,8 @@ def fit_water_chains(surface, tolerance, *, bounds=None, origin=(0, 0)):
                 segments = shapely.linestrings(np.stack((points, np.roll(points, -1, axis=0)), axis=1))
                 tree = STRtree(segments)
                 pinned = _on_bounds(closed, bounds)
+                if fixed_points:
+                    pinned |= _fixed_points(closed, fixed_points)
                 pieces, swept_regions, batch = [], [], 0
                 index = 0
                 while index < n:
@@ -396,7 +410,7 @@ def _blocked(move, points, tree, segments, others):
     return bool(len(others.query(swept, predicate="intersects")))
 
 
-def simplify_water_edges(surface, tolerance, *, bounds=None, origin=(0, 0)):
+def simplify_water_edges(surface, tolerance, *, bounds=None, origin=(0, 0), fixed_points=()):
     """闭合环上的配对平移；安全操作耗尽即可停止，不强求指定顶点数。"""
     if surface.is_empty:
         return surface
@@ -421,6 +435,8 @@ def simplify_water_edges(surface, tolerance, *, bounds=None, origin=(0, 0)):
                 segments = shapely.linestrings(np.stack((points, np.roll(points, -1, axis=0)), axis=1))
                 tree = STRtree(segments)
                 pinned = _on_bounds(points, bounds)
+                if fixed_points:
+                    pinned |= _fixed_points(points, fixed_points)
                 # 补偿留在同一段未跨越画布边界的岸线上，避免向画布外转移面积。
                 labels = np.zeros(len(points), dtype=int)
                 starts = np.flatnonzero(pinned)

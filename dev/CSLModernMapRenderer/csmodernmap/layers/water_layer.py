@@ -16,12 +16,14 @@ from ..style import hex_to_rgb
 import math
 import threading
 from collections import OrderedDict
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import numpy as np
 import aggdraw
 import contourpy
 from PIL import Image
+
+from ..shoreline import prepare_shoreline, smooth_shoreline
 from .base import Layer, RenderContext
 from ..i18n import tr
 
@@ -55,6 +57,20 @@ class _WaterGeometry:
     cell: float
     width: int
     height: int
+    prepared: dict = field(default_factory=dict, compare=False, repr=False)
+
+
+def prepare_water_ring(geometry, index, epsilon):
+    """低点数的直岸约束随原轮廓缓存释放；仅准备当前视口实际使用的环。"""
+    key = (index, float(epsilon))
+    with _WATER_GEOMETRY_CACHE_LOCK:
+        prepared = geometry.prepared.get(key)
+    if prepared is None:
+        prepared = prepare_shoreline(geometry.polygons[index], epsilon, geometry.upscale,
+            (0, 0, geometry.width*geometry.upscale-1, geometry.height*geometry.upscale-1))
+        with _WATER_GEOMETRY_CACHE_LOCK:
+            geometry.prepared[key] = prepared
+    return prepared
 
 
 def _point_in_poly(pt, poly) -> bool:
@@ -413,16 +429,17 @@ class WaterLayer(Layer):
         gx1 = (x1 - geometry.origin_x) / geometry.cell * geometry.upscale + margin
         gy1 = (z1 - geometry.origin_z) / geometry.cell * geometry.upscale + margin
         selected = [
-            (poly, is_w)
-            for poly, is_w, bounds in zip(
-                geometry.polygons, geometry.is_water, geometry.bounds)
+            (index, poly, is_w)
+            for index, (poly, is_w, bounds) in enumerate(zip(
+                geometry.polygons, geometry.is_water, geometry.bounds))
             if bounds[2] >= gx0 and bounds[0] <= gx1
             and bounds[3] >= gy0 and bounds[1] <= gy1
         ]
         if not selected:
             return
-        polys = [poly for poly, _is_w in selected]
-        is_water = [is_w for _poly, is_w in selected]
+        indices = [index for index, _poly, _is_w in selected]
+        polys = [poly for _index, poly, _is_w in selected]
+        is_water = [is_w for _index, _poly, is_w in selected]
         off_u_x = off_u_y = 0.0
         up_scale = geometry.upscale
         ctx.report(0.25, tr("gui.progress.water.contours"))
@@ -447,15 +464,14 @@ class WaterLayer(Layer):
             if _pi % 8 == 0 or _pi == _n_poly - 1:
                 ctx.report(0.3 + 0.65 * (_pi + 1) / _n_poly,
                            tr("gui.progress.water.fill", i=_pi + 1, n=_n_poly))
-            # RDP 简化（网格坐标，忽略岸边小锯齿）→ 像素 → Chaikin 圆润
-            poly = _rdp(poly, effective_rdp)
+            poly, pinned = prepare_water_ring(geometry, indices[_pi], effective_rdp)
             pts = []
             for gx, gy in poly:
                 wx, wz = grid_to_world(gx, gy)
                 px, py = ctx.transform(wx, wz)
                 pts.append((px, py))
-            pts = _chaikin(pts, iterations=self._smooth_iters)
-            coords = tuple(v for xy in pts for v in xy)
+            pts = smooth_shoreline(np.asarray(pts), pinned, self._smooth_iters)
+            coords = tuple(pts.ravel())
             agg.polygon(coords, None, aggdraw.Brush(255 if is_w else 0))
         agg.flush()
         ctx.image.paste(water_color, mask=water_mask)

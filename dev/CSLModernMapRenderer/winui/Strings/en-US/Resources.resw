@@ -12,6 +12,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
   </resheader>
+  <data name="RmpEditor_VisualAdjustmentHint" xml:space="preserve"><value>Some lines may need adjustment for the best visual result.</value></data>
   <data name="AppearanceControls_Create_0BB1EFDA65" xml:space="preserve">
     <value>{0}: enter a value between {1} and {2}.</value>
     <comment>AppearanceControls.cs:81</comment>
@@ -317,7 +318,7 @@ Could not open webpage: </value>
     <comment>ExportWindow.Preview.cs:28</comment>
   </data>
   <data name="ExportWindow_Preview__rangeFull_653AEA4D67" xml:space="preserve">
-    <value>City</value>
+    <value>Full city</value>
     <comment>ExportWindow.Preview.cs:27</comment>
   </data>
   <data name="ExportWindow_Preview__rotationHelp_4787583E64" xml:space="preserve">
@@ -517,7 +518,7 @@ Could not open webpage: </value>
     <comment>ExportWindow.cs:419</comment>
   </data>
   <data name="ExportWindow_UpdateDimensions_653AEA4D67" xml:space="preserve">
-    <value>City</value>
+    <value>Full city</value>
     <comment>ExportWindow.cs:427</comment>
   </data>
   <data name="ExportWindow_UpdateDimensions_97DFD85740" xml:space="preserve">
@@ -2700,7 +2701,7 @@ Shaoyao Shaoxian Cao Codex</value>
     <comment>MapRangeWindow.cs:20</comment>
   </data>
   <data name="MapRangeWindow__full_14425C91B0" xml:space="preserve">
-    <value>Full city range</value>
+    <value>Full city</value>
     <comment>MapRangeWindow.cs:16</comment>
   </data>
   <data name="MapRangeWindow__manual_20459B88AA" xml:space="preserve">
@@ -4445,4 +4446,34 @@ Do you want to save your current changes?</value></data>
   <data name="Map_RotateClockwise" xml:space="preserve">
     <value>Clockwise 90°</value>
   </data>
+  <data name="Failure_Internal" xml:space="preserve"><value>An unexpected error occurred. You can report this error to the author.</value></data>
+  <data name="Failure_Operation" xml:space="preserve"><value>Operation failed</value></data>
+  <data name="Failure_Metro" xml:space="preserve"><value>Metro map generation failed</value></data>
+  <data name="Failure_Export" xml:space="preserve"><value>Map export failed</value></data>
+  <data name="Failure_Permission" xml:space="preserve"><value>A required file could not be accessed. Check file or folder permissions and try again.</value></data>
+  <data name="Failure_MissingFile" xml:space="preserve"><value>A required file was not found. Check its location and try again.</value></data>
+  <data name="Failure_Memory" xml:space="preserve"><value>Memory allocation failed. Reduce the output size or close memory-intensive applications and try again.</value></data>
+  <data name="Failure_EngineStopped" xml:space="preserve"><value>The rendering engine has stopped. Reopen the viewer and try again.</value></data>
+  <data name="Failure_ViewDetails" xml:space="preserve"><value>View details</value></data>
+  <data name="Failure_CopyDetails" xml:space="preserve"><value>Copy error details</value></data>
+  <data name="Failure_Close" xml:space="preserve"><value>Close</value></data>
+  <data name="Failure_Copied" xml:space="preserve"><value>Copied</value></data>
+  <data name="Failure_CopyFailed" xml:space="preserve"><value>Copy failed. Please try again.</value></data>
+  <data name="Ribbon_MoreLayers" xml:space="preserve"><value>More layers</value></data>
+  <data name="Ribbon_Simplified" xml:space="preserve"><value>Simplified</value></data>
+  <data name="Ribbon_Classic" xml:space="preserve"><value>Classic</value></data>
+  <data name="Sidebar_ShowSettings" xml:space="preserve"><value>Show left panel</value></data>
+  <data name="Sidebar_HideSettings" xml:space="preserve"><value>Hide left panel</value></data>
+  <data name="Sidebar_ShowInspector" xml:space="preserve"><value>Show right panel</value></data>
+  <data name="Sidebar_HideInspector" xml:space="preserve"><value>Hide right panel</value></data>
+  <data name="Ribbon_IntroTitle" xml:space="preserve"><value>Try the new simplified mode</value></data>
+  <data name="Ribbon_IntroDescription" xml:space="preserve"><value>Simplified mode offers a more comfortable, simpler way to explore your map. You can switch back to classic mode at any time.</value></data>
+  <data name="Ribbon_IntroTry" xml:space="preserve"><value>Try simplified mode</value></data>
+  <data name="Ribbon_IntroLater" xml:space="preserve"><value>Not now</value></data>
+  <data name="RmpEditor_showNames" xml:space="preserve"><value>Show station names</value></data>
+  <data name="RmpEditor_showDefaultNames" xml:space="preserve"><value>Show default station names</value></data>
+  <data name="BuildingCategory_Help" xml:space="preserve"><value>Select Category colors to apply these settings. Enable Override color for all buildings in a category; disable it to restore automatic POI colors. Unknown uses remain unclassified.</value></data>
+  <data name="Poi_ShowDecorative" xml:space="preserve"><value>Show decorative POIs</value></data>
+  <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>Show icons and names for listed decorations. Buildings and map features remain visible.</value></data>
+  <data name="MetroSettings_Reset" xml:space="preserve"><value>Restore defaults</value></data>
 </root>

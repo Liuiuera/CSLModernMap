@@ -12,7 +12,7 @@
   "main_ui_a44c7ba211": "Дороги",
   "main_ui_5b46860a8e": "Здания",
   "main_ui_97492a0e5d": "Железная дорога",
-  "main_ui_57f78ba1f9": "Транспорт",
+  "main_ui_57f78ba1f9": "Дорожная обстановка",
   "main_ui_b8466cd555": "Метро",
   "main_ui_9875b1f825": "Аннотации",
   "main_ui_9ff2b9e94d": "Районы",
@@ -31,5 +31,15 @@
   "surface-poi-layer_shader_f2a5d36a5f": "Не удалось скомпилировать Surface shader POI",
   "surface-poi-layer_program_226d27beb7": "Не удалось создать Surface program POI",
   "surface-poi-layer_program_ea7d784c3e": "Ошибка связывания Surface program POI",
-  "preview_title": "Предпросмотр карты CSLModernMap"
+  "preview_title": "Предпросмотр карты CSLModernMap",
+  "search_search": "Поиск объектов на карте",
+  "search_searchHelp": "Поиск по названиям или категориям на текущей карте",
+  "search_empty": "Совпадений не найдено",
+  "search_findHelp": "Введите название или категорию в левом верхнем углу, чтобы найти объект на карте.",
+  "search_group_building": "Другие здания",
+  "search_group_road": "Дороги",
+  "search_group_area": "Районы",
+  "search_group_poi": "Другие места",
+  "search_more": "Показать ещё",
+  "search_count": "({{number}})"
 }

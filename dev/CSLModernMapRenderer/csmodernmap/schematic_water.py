@@ -8,14 +8,22 @@ from shapely.ops import unary_union
 from shapely.strtree import STRtree
 from shapely.errors import GEOSException
 
-from .schematic_water_vector import fit_water_chains, restrict_water_directions, same_water_topology, simplify_water_edges
+from .schematic_water_vector import (fit_water_chains, restrict_water_directions,
+    same_water_topology, simplify_water_edges, WaterGeometryError)
 from .schematic_water_rivers import schematize_rivers
 from .schematic_water_shores import round_water_shores
+from .shoreline import prepare_shoreline, simplify_fixed_ring
 
 
 class SchematicWaterError(ValueError):
     def __init__(self, reason):
         super().__init__(f"示意水域生成失败：{reason}。线网已保留。")
+
+
+def water_warning(report):
+    from . import i18n
+    key = {"unverified": "gui.transit.water_unverified", "degraded": "gui.transit.water_degraded"}.get(report.get("status"))
+    return i18n.tr(key) if key else None
 
 
 def polygon_parts(geometry):
@@ -209,11 +217,28 @@ def _visible_water(surface, area, clip):
                                {"removed_components": 0, "filled_holes": 0})
 
 
-def _simplify_display_water(filtered, area, epsilon, clip):
+def _simplify_display_water(filtered, area, epsilon, clip, *, shore_unit=None, fixed_points=None):
     baseline = _visible_water(filtered, area, clip)
     for attempt in range(7):
         used = epsilon/2**attempt
-        simplified = filtered.simplify(used, preserve_topology=True)
+        anchors = set()
+        if shore_unit is None and fixed_points:
+            simplified = shapely.MultiPolygon([
+                Polygon(simplify_fixed_ring(part.exterior.coords, fixed_points, used),
+                    [simplify_fixed_ring(ring.coords, fixed_points, used) for ring in part.interiors])
+                for part in polygon_parts(filtered)])
+        elif shore_unit is None:
+            simplified = filtered.simplify(used, preserve_topology=True)
+        else:
+            candidates = []
+            for part in polygon_parts(filtered):
+                rings = []
+                for ring in (part.exterior, *part.interiors):
+                    points, pinned = prepare_shoreline(ring.coords, used, shore_unit, clip.bounds)
+                    anchors.update(map(tuple, points[pinned]))
+                    rings.append(points)
+                candidates.append(Polygon(rings[0], rings[1:]))
+            simplified = shapely.MultiPolygon(candidates)
         protected, skipped = [], []
         for index, (original, candidate) in enumerate(zip(polygon_parts(filtered), polygon_parts(simplified))):
             below_area = any(Polygon(ring).area < area for ring in candidate.interiors)
@@ -228,14 +253,18 @@ def _simplify_display_water(filtered, area, epsilon, clip):
             protected.append(candidate)
         simplified = unary_union(protected) if protected else Polygon()
         if same_water_topology(filtered, simplified) and same_water_topology(baseline, _visible_water(simplified, area, clip)):
+            if fixed_points is not None:
+                fixed_points.update(anchors)
             if attempt:
                 skipped.append({"stage": "simplification", "reason": "visible_topology_reduced_tolerance",
                                 "requested_pixels": epsilon, "used_pixels": used})
             return simplified, skipped
+    if fixed_points is not None:
+        fixed_points.update(anchors)
     return filtered, [{"stage": "simplification", "reason": "water_topology_changed"}]
 
 
-def octilinear_water(geometry, bounds, step):
+def octilinear_water(geometry, bounds, step, *, fixed_points=(), budget=None):
     """矢量岸线的局部八方向限制；step 控制初始细分尺度。"""
     _check_display_surface(geometry)
     if not np.isfinite(step) or step <= 0:
@@ -245,14 +274,15 @@ def octilinear_water(geometry, bounds, step):
     origin_x, origin_y = geometry.bounds[:2]
     local = translate(geometry, xoff=-origin_x, yoff=-origin_y)
     local_bounds = (bounds[0]-origin_x, bounds[1]-origin_y, bounds[2]-origin_x, bounds[3]-origin_y)
+    fixed = {(x-origin_x, y-origin_y) for x, y in fixed_points}
     try:
-        restricted = restrict_water_directions(local, step, bounds=local_bounds)
-    except ValueError as error:
+        restricted = restrict_water_directions(local, step, bounds=local_bounds, budget=budget)
+    except WaterGeometryError as error:
         raise SchematicWaterError(str(error)) from error
-    fitted = fit_water_chains(restricted, step/2, bounds=local_bounds, origin=(origin_x, origin_y))
-    result = simplify_water_edges(fitted, step/2, bounds=local_bounds, origin=(origin_x, origin_y))
+    fitted = fit_water_chains(restricted, step/2, bounds=local_bounds, origin=(origin_x, origin_y), fixed_points=fixed)
+    result = simplify_water_edges(fitted, step/2, bounds=local_bounds, origin=(origin_x, origin_y), fixed_points=fixed)
     # 配对移动会释放原先受局部边阻挡的长岸段，再合并一次即可。
-    result = fit_water_chains(result, step/2, bounds=local_bounds, origin=(origin_x, origin_y))
+    result = fit_water_chains(result, step/2, bounds=local_bounds, origin=(origin_x, origin_y), fixed_points=fixed)
     result = translate(result, xoff=origin_x, yoff=origin_y)
     _check_display_surface(result)
     if not same_water_topology(translate(restricted, xoff=origin_x, yoff=origin_y), result, ordered=True):
@@ -266,8 +296,35 @@ def octilinear_water(geometry, bounds, step):
     return result
 
 
-def _chaikin_ring(ring, distance):
+def _octilinear_display_water(surface, bounds, step, fixed_points):
+    try:
+        return octilinear_water(surface, bounds, step, fixed_points=fixed_points), []
+    except (SchematicWaterError, GEOSException) as error:
+        parts = polygon_parts(surface)
+        if len(parts) <= 1:
+            return surface, [{"stage": "octilinear", "reason": str(error), "retained": True}]
+    # 整体候选失败后才逐组件尝试；所有重试共用细分预算。
+    budget, skipped = [200_000], []
+    clip = box(*bounds)
+    for index, original in enumerate(parts):
+        try:
+            candidate = octilinear_water(original, bounds, step, fixed_points=fixed_points, budget=budget)
+            combined = unary_union(parts[:index] + [candidate] + parts[index+1:])
+            if not (same_water_topology(surface, combined) and
+                    same_water_topology(surface.intersection(clip), combined.intersection(clip))):
+                raise SchematicWaterError("八方向组件改变了水体间关系")
+        except (SchematicWaterError, GEOSException) as error:
+            skipped.append({"component": index, "stage": "octilinear", "reason": str(error), "retained": True})
+        else:
+            parts[index] = candidate
+    return unary_union(parts), skipped
+
+
+def _chaikin_ring(ring, distance, fixed_points=()):
     points = np.asarray(ring.coords)[:-1, :2]
+    pinned = np.array([tuple(point) in fixed_points for point in points])
+    if pinned.all():
+        return points
     # 限制每次切角的距离，避免长边在小强度下也被大幅削去。
     for _ in range(3):
         previous, following = np.roll(points, 1, axis=0), np.roll(points, -1, axis=0)
@@ -277,12 +334,16 @@ def _chaikin_ring(ring, distance):
             out=np.zeros_like(left_length), where=left_length > 0))
         right_fraction = np.minimum(.25, np.divide(distance/3, right_length,
             out=np.zeros_like(right_length), where=right_length > 0))
+        left_fraction[pinned] = right_fraction[pinned] = 0
+        keep = np.ones(len(points)*2, dtype=bool)
+        keep[1::2] = ~pinned
         points = np.stack((points+left*left_fraction[:, None],
-                           points+right*right_fraction[:, None]), axis=1).reshape(-1, 2)
+                           points+right*right_fraction[:, None]), axis=1).reshape(-1, 2)[keep]
+        pinned = np.repeat(pinned, 2)[keep]
     return points
 
 
-def _smooth_display_water(surface, distance, area, clip):
+def _smooth_display_water(surface, distance, area, clip, *, fixed_points=()):
     """Chaikin 切角；逐组件降低强度，保留水体、岛洞和画布内关系。"""
     parts = polygon_parts(surface)
     visible = _visible_water(surface, area, clip)
@@ -293,8 +354,8 @@ def _smooth_display_water(surface, distance, area, clip):
         reason = None
         for attempt in range(7):
             used = distance/2**attempt
-            candidate = Polygon(_chaikin_ring(original.exterior, used),
-                [_chaikin_ring(ring, used) for ring in original.interiors])
+            candidate = Polygon(_chaikin_ring(original.exterior, used, fixed_points),
+                [_chaikin_ring(ring, used, fixed_points) for ring in original.interiors])
             if not candidate.is_valid:
                 reason = "invalid_smoothed_geometry"
             elif candidate.area < area or any(Polygon(ring).area < area for ring in candidate.interiors):
@@ -315,7 +376,7 @@ def _smooth_display_water(surface, distance, area, clip):
     return unary_union(parts) if parts else Polygon(), operations
 
 
-def generalize_water(water, layout, bounds, *, line_width_pixels=None, water_smoothing=0):
+def generalize_water(water, layout, bounds, *, line_width_pixels=None, water_smoothing=0, source_cell=1):
     """面积筛选、八方向岸线和倒圆只依赖画布尺度，不约束线网。"""
     x0, y0, x1, y1 = bounds
     scale = min(x1-x0, y1-y0)/1024
@@ -333,67 +394,106 @@ def generalize_water(water, layout, bounds, *, line_width_pixels=None, water_smo
     _check_display_surface(projected)
     clip = box(*bounds)
     counts = {"removed_components": 0, "filled_holes": 0}
-    filtered = _filter_small_water(projected, area, counts)
-    simplified, skipped = _simplify_display_water(filtered, area, epsilon, clip)
-    smoothed, smoothing_operations = _smooth_display_water(simplified, smoothing, area, clip)
-    skipped.extend(smoothing_operations)
-    # 切角增加的是曲线采样点；按亚像素误差压缩后再做方向限制。
-    sampling_tolerance = min(.25*scale, smoothing/8)
-    sampled = smoothed
-    if smoothing > 0:
-        sampled, sampling_skips = _simplify_display_water(smoothed, area, sampling_tolerance, clip)
-        skipped.extend({**item, "stage": "smoothing_sampling"} for item in sampling_skips)
-    skeleton = octilinear_water(sampled, bounds, step)
-    skeleton = _filter_small_water(skeleton, area, counts)
-    visible_skeleton = _visible_water(skeleton, area, clip)
-    rounded = polygon_parts(skeleton)
-    for index, part in enumerate(rounded):
-        reason = None
-        for attempt in range(7):
-            local_radius = radius/2**attempt
-            opened = part.buffer(-local_radius, join_style="round")
-            candidate = opened.buffer(2*local_radius, join_style="round").buffer(-local_radius, join_style="round")
-            if candidate.is_empty:
-                reason = "buffer_erased_component"
-            elif not same_water_topology(part, candidate):
-                reason = "buffer_changed_topology"
-            elif candidate.area < area or any(Polygon(ring).area < area for ring in candidate.interiors):
-                reason = "buffer_below_minimum_area"
-            else:
-                combined = unary_union(rounded[:index]+[candidate]+rounded[index+1:])
-                if (same_water_topology(skeleton, combined) and
-                        same_water_topology(skeleton.intersection(clip), combined.intersection(clip)) and
-                        same_water_topology(visible_skeleton, _visible_water(combined, area, clip))):
-                    rounded[index] = candidate
-                    break
-                reason = "buffer_changed_topology"
-        else:
-            local_radius = 0.0
-        if attempt or local_radius == 0:
-            skipped.append({"component": index, "stage": "rounding", "reason": reason,
-                            "requested_radius_pixels": radius, "used_radius_pixels": local_radius})
-    pre_river = unary_union(rounded)
-    protected_areas = []
+    retained = _visible_water(projected, area, clip)
+    _check_display_surface(retained)
+    skipped = []
+    stage = "filtering"
     try:
+        filtered = _filter_small_water(projected, area, counts)
+        fixed_points = set()
+        shore_unit = source_cell*layout.transform[0]/layout.spacing_m
+        stage = "simplification"
+        simplified, skipped = _simplify_display_water(filtered, area, epsilon, clip,
+            shore_unit=shore_unit, fixed_points=fixed_points)
+        retained = _visible_water(simplified, area, clip)
+        edges = []
+        for part in polygon_parts(simplified):
+            for ring in (part.exterior, *part.interiors):
+                coords = list(ring.coords)
+                edges.extend((a, b) for a, b in zip(coords, coords[1:])
+                             if a in fixed_points and b in fixed_points)
+        protection = shapely.MultiLineString(edges) if edges else shapely.MultiPoint(list(fixed_points))
+        stage = "smoothing"
+        smoothed, smoothing_operations = _smooth_display_water(simplified, smoothing, area, clip,
+            fixed_points=fixed_points)
+        skipped.extend(smoothing_operations)
+        retained = _visible_water(smoothed, area, clip)
+        # 切角增加的是曲线采样点；按亚像素误差压缩后再做方向限制。
+        sampling_tolerance = min(.25*scale, smoothing/8)
+        sampled = smoothed
+        stage = "smoothing_sampling"
+        if smoothing > 0:
+            sampled, sampling_skips = _simplify_display_water(smoothed, area, sampling_tolerance, clip,
+                fixed_points=fixed_points)
+            skipped.extend({**item, "stage": "smoothing_sampling"} for item in sampling_skips)
+        retained = _visible_water(sampled, area, clip)
+        stage = "octilinear"
+        skeleton, direction_skips = _octilinear_display_water(sampled, bounds, step, fixed_points)
+        skipped.extend(direction_skips)
+        skeleton = _filter_small_water(skeleton, area, counts)
+        visible_skeleton = _visible_water(skeleton, area, clip)
+        retained = visible_skeleton
+        stage = "rounding"
+        rounded = polygon_parts(skeleton)
+        for index, part in enumerate(rounded):
+            if not protection.is_empty and part.boundary.distance(protection) < 1e-8:
+                # buffer 无法固定局部端点；本组件交由后面的逐角倒圆处理。
+                skipped.append({"component": index, "stage": "rounding", "reason": "protected_shoreline",
+                                "requested_radius_pixels": radius, "used_radius_pixels": 0.0})
+                continue
+            reason = None
+            for attempt in range(7):
+                local_radius = radius/2**attempt
+                opened = part.buffer(-local_radius, join_style="round")
+                candidate = opened.buffer(2*local_radius, join_style="round").buffer(-local_radius, join_style="round")
+                if candidate.is_empty:
+                    reason = "buffer_erased_component"
+                elif not same_water_topology(part, candidate):
+                    reason = "buffer_changed_topology"
+                elif candidate.area < area or any(Polygon(ring).area < area for ring in candidate.interiors):
+                    reason = "buffer_below_minimum_area"
+                else:
+                    combined = unary_union(rounded[:index]+[candidate]+rounded[index+1:])
+                    if (same_water_topology(skeleton, combined) and
+                            same_water_topology(skeleton.intersection(clip), combined.intersection(clip)) and
+                            same_water_topology(visible_skeleton, _visible_water(combined, area, clip))):
+                        rounded[index] = candidate
+                        break
+                    reason = "buffer_changed_topology"
+            else:
+                local_radius = 0.0
+            if attempt or local_radius == 0:
+                skipped.append({"component": index, "stage": "rounding", "reason": reason,
+                                "requested_radius_pixels": radius, "used_radius_pixels": local_radius})
+        pre_river = unary_union(rounded)
+        retained = _visible_water(pre_river, area, clip)
+        stage = "rivers"
+        protected_areas = []
         result, river_adjustments = schematize_rivers(pre_river, bounds, scale=scale, width=8*scale,
-            minimum_area=area, protected_areas=protected_areas)
-    except ValueError as error:
-        raise SchematicWaterError(str(error)) from error
-    skipped.extend(river_adjustments)
-    result, shore_adjustments = round_water_shores(skeleton, result, bounds, radius=16*scale,
-        minimum_radius=max(radius, .25*scale), scale=scale, minimum_area=area, protected=protected_areas)
-    skipped.extend(shore_adjustments)
-    result = unary_union(polygon_parts(result.intersection(clip)))
-    result = _filter_small_water(result, area, counts)
-    _check_display_surface(result)
-    report = {"status": "generated", "verification_scope": "geometry_only",
+            minimum_area=area, protected_areas=protected_areas, fixed_shores=protection)
+        skipped.extend(river_adjustments)
+        retained = _visible_water(result, area, clip)
+        stage = "shore_rounding"
+        result, shore_adjustments = round_water_shores(skeleton, result, bounds, radius=16*scale,
+            minimum_radius=max(radius, .25*scale), scale=scale, minimum_area=area, protected=protected_areas,
+            fixed_points=fixed_points)
+        skipped.extend(shore_adjustments)
+        stage = "clipping"
+        result = unary_union(polygon_parts(result.intersection(clip)))
+        result = _filter_small_water(result, area, counts)
+        _check_display_surface(result)
+    except (SchematicWaterError, WaterGeometryError, GEOSException) as error:
+        result = retained
+        skipped.append({"stage": stage, "reason": str(error), "retained": True})
+    report = {"status": "degraded" if any(item.get("retained") for item in skipped) else "generated",
+              "displayed": not result.is_empty, "verification_scope": "geometry_only",
               **counts, "skipped_operations": skipped}
     return result, report
 
 
 def layout_and_water(mapdata, lines, stations, enabled, *, session=None, water=None,
                      line_width_pixels=None, water_smoothing=0, **options):
-    """先完成无水域布局；水面处理失败只隐藏水面，不重排线网。"""
+    """先完成无水域布局；美化失败保留合法水面，没有可用投影才隐藏水面。"""
     from .schematic import schematic_layout_with_fallback
     layout = schematic_layout_with_fallback(mapdata, lines, stations, enabled, **options)
     if not stations or not lines:
@@ -406,7 +506,8 @@ def layout_and_water(mapdata, lines, stations, enabled, *, session=None, water=N
         _check_display_surface(water)
         width, height = options.get("canvas", (1024, 1024))
         projected, report = generalize_water(water, layout, (0, 0, width, height),
-            line_width_pixels=line_width_pixels, water_smoothing=water_smoothing)
+            line_width_pixels=line_width_pixels, water_smoothing=water_smoothing,
+            source_cell=mapdata.terrain.cell)
         return layout, projected, report
     except (SchematicWaterError, GEOSException) as exc:
         report = {"status": "unverified", "displayed": False, "failures": [str(exc)],

@@ -1,5 +1,7 @@
 {
     "embed": {
+        "normalStation": "일반역",
+        "interchangeStation": "환승역",
         "showWaterControls": "수역 제어점 표시",
         "ribbon": "리본",
         "project": "프로젝트",

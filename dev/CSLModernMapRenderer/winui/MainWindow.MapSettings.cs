@@ -393,7 +393,7 @@ public sealed partial class MainWindow
                     await RefreshSnapshotAsync();
                     await window.RequestCloseAsync();
                 }
-                catch (Exception error) { status.Text = error.Message; }
+                catch (Exception error) { status.Text = UiLanguage.Text("Failure_Operation"); SetError(error); }
             });
             apply.Style = (Style)Application.Current.Resources["AccentButtonStyle"];
             try { await window.ShowAsync(); }

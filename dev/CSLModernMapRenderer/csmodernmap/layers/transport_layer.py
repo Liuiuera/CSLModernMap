@@ -23,25 +23,15 @@ from ..style import hex_to_rgb
 
 import math
 import re
-from dataclasses import replace
-from datetime import datetime
-from statistics import median
 
 import aggdraw
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 from .. import transit
 from .._paths import resource_dir
-from ..cmm import GroupingParams, JobParams, StationMergeParams, TransitKind
+from ..cmm import TransitKind
 from ..data import MapData, Point
 from ..fonts import load_pillow_font
-from ..services.transit.color import hex_palette
-from ..schematic_water import draw_water_surface, layout_and_water
-from ..services.transit import (
-    build_transit_model,
-    match_facilities,
-    resolve_route_geometry,
-)
 
 # TransitKind → TYPE_REGISTRY key 映射（替代旧的 transit.normalize_type）
 _TYPE_KIND_TO_KEY: dict[TransitKind, str] = {
@@ -86,32 +76,8 @@ def _resolve_size(val, render_scale: float) -> float:
     return float(val)
 
 
-def _minimum_station_font_size(width: int, height: int,
-                               pixels_per_1k: float = 10.0) -> int:
-    """按成图长边给站名字号设置可读下限，避免高分辨率小字发虚。"""
-    resolution_scale = max(int(width), int(height), 1) / 1024.0
-    return max(int(math.ceil(max(float(pixels_per_1k), 1.0)
-                             * resolution_scale)), 8)
 
 
-def _resolved_station_font_size(base_size: int, candidate_scale: float,
-                                readable_minimum: int, is_transfer: bool,
-                                transfer_scale: float = 1.25) -> int:
-    """解析单站字号；换乘站始终大于普通站的完整基准字号。"""
-    base_size = max(int(base_size), 1)
-    readable_minimum = max(int(readable_minimum), 1)
-    if is_transfer:
-        transfer_scale = max(float(transfer_scale), 1.01)
-        transfer_base = max(base_size + 1,
-                            int(math.ceil(base_size * transfer_scale)))
-        transfer_minimum = max(
-            transfer_base,
-            int(math.ceil(readable_minimum * transfer_scale)),
-        )
-        return max(int(round(transfer_base * float(candidate_scale))),
-                   transfer_minimum)
-    return max(int(round(base_size * float(candidate_scale))),
-               readable_minimum)
 
 
 def _rgba_to_hex(color) -> str:
@@ -225,9 +191,6 @@ def _paste_centered_icon(draw, icon: Image.Image, px: float, py: float) -> None:
     )
 
 
-def _railmapgen_facility_icon(kind: str, size: int) -> Image.Image:
-    """使用 Rail Map Painter 仓库中的原始设施 SVG 图标。"""
-    return _rmp_icon_bitmap(kind, size)
 
 
 def _color_close(c1: str, c2: str) -> bool:
@@ -929,12 +892,9 @@ class TransportLayer(Layer):
     # 避免分块渲染时跨瓦片边界被裁切（与 label 文字层相同的处理）。
     late = True
 
-    def __init__(self, transit_view: bool = False, metro: bool = False):
+    def __init__(self, transit_view: bool = False):
         super().__init__()
         self.transit_view = transit_view
-        # metro=True（地铁示意图纯图）：启用逻辑线路分组（line_groups）
-        # 与 RMG 风格参数，配置来自独立的 metro_map.yaml
-        self.metro = metro
         self._transit_model = None
         self._render_lines = ()
         self._raw_line_by_id = {}
@@ -946,11 +906,6 @@ class TransportLayer(Layer):
         self._group_of = {}
         # 同向重叠别名 id 集合（共享度归并的交路线：同几何同色重叠绘制）
         self._overlay_ids: set = set()
-        # 地铁示意图站名只保存在图层，不回写 mapdata；无名站点不生成文字。
-        self._rmp_labels = {}
-        self._rmp_facilities = []
-        self._metro_station_names: dict[int, str] = {}
-        self._metro_station_name_custom: dict[int, bool] = {}
         self._schematic_offset = (0, 0)
         self._font_family = None
         self._station_facilities = {}
@@ -961,76 +916,9 @@ class TransportLayer(Layer):
         self._legend_panel = None
         self._legend_panel_margin = 0
 
-    def _build_transit_render_context(self, mapdata: MapData, cfg: dict,
-                                      enabled: list):
-        """构建当前渲染共用的交通视图；源 MapData 保持兼容输入，后续消费只读取 T02 派生模型。"""
-        st_cfg = cfg.get("station") or {}
-        gcfg = cfg.get("grouping") or {}
-        station_params = StationMergeParams(
-            merge_enabled=bool(st_cfg.get("merge_enabled", True)),
-            merge_range=float(st_cfg.get("merge_range", 48.0)),
-            merge_bus_tram=bool(st_cfg.get("merge_bus_tram", True)),
-            merge_train_metro=bool(st_cfg.get("merge_train_metro", False)),
-            overrides=st_cfg.get("merge_overrides") or {},
-        )
-        grouping_params = GroupingParams(
-            by_name=bool(gcfg.get("by_name", True)),
-            sequence_fallback=bool(gcfg.get("sequence_fallback", True)),
-            share_ratio=float(gcfg.get("share_ratio", 0.0)),
-            merge_partial_overlap=bool(
-                gcfg.get("merge_partial_overlap", True)),
-            share_corridors=bool(gcfg.get("share_corridors", False)),
-        )
-        palette = tuple(hex_palette(cfg.get("palette") or ()))
-        line_selection = cfg.get(
-            "enabled_line_ids", cfg.get("line_ids"))
-        params = JobParams(
-            enabled_types=tuple(enabled),
-            enabled_line_ids=(
-                None if line_selection is None
-                else tuple(line_selection or ())),
-            view_all=False,
-            auto_color=bool(cfg.get("auto_color", False)),
-            palette=palette,
-            station_merge=station_params,
-            grouping=grouping_params,
-        )
-        # None 启用地图旁自动发现，显式路径原样传递，False 则关闭。
-        station_fix = st_cfg.get("sidecar", st_cfg.get("station_fix"))
-        model = build_transit_model(
-            mapdata, params, station_fix=station_fix,
-        )
-        # 设施匹配属于站点上下文，服务按 T02 站点标识返回关联而不修改源地图。
-        if self.metro:
-            facility_cfg = st_cfg.get("facilities") or {}
-            if bool(facility_cfg.get("enabled", True)):
-                facility_map = match_facilities(
-                    mapdata, model.stations,
-                    distances=facility_cfg.get("distances") or {},
-                    merge_distances=facility_cfg.get("merge_distances") or {},
-                )
-                model = replace(model, stations=tuple(
-                    replace(station, facilities=[facility_map[str(station.id)]])
-                    if str(station.id) in facility_map else station
-                    for station in model.stations
-                ))
-            else:
-                # 标准交通模型可能已有设施关联；关闭该视图时也必须清空这些关联。
-                model = replace(model, stations=tuple(
-                    replace(station, facilities=[]) for station in model.stations))
-
-        raw_by_id = model.source_lines
-        render_lines = tuple(
-            raw_by_id[line.id] for line in model.lines if line.id in raw_by_id
-        )
-        geometry_cache = {}
-        geometries = {
-            line.id: resolve_route_geometry(
-                mapdata, raw_by_id[line.id], line.kind, cache=geometry_cache)
-            for line in model.lines if line.id in raw_by_id
-        }
-        return model, render_lines, geometries
-
+    def _build_transit_render_context(self, mapdata: MapData, cfg: dict, enabled: list):
+        from ..transit_context import build_transit_context
+        return build_transit_context(mapdata, cfg, enabled, facilities=False)
 
     def _station_lines(self, station) -> list:
         """通过 T02 线路索引解析站点所属的原始线路。"""
@@ -1112,7 +1000,7 @@ class TransportLayer(Layer):
         shared = getattr(ctx, "shared", None)
         context_key = (
             "transport.context", id(mapdata), id(cfg),
-            tuple(enabled), self.transit_view, self.metro,
+            tuple(enabled), self.transit_view,
         )
         cached_context = (shared or {}).get(context_key)
         if cached_context is None:
@@ -1143,13 +1031,6 @@ class TransportLayer(Layer):
             for line_id in group.overlay_ids
             if line_id in self._raw_line_by_id
         }
-        self._metro_station_names = (
-            self._build_metro_station_names(
-                mapdata, self._merged, st_cfg)
-            if self.metro else {}
-        )
-        self._metro_station_name_custom = getattr(
-            self, "_metro_station_name_custom", {})
         # 线路绘制参数（YAML transports.line；缺省值 = 旧硬编码行为）
         line_cfg = cfg.get("line") or {}
         self._halo_color = str(line_cfg.get("halo_color", "#FFFFFF"))
@@ -1157,7 +1038,7 @@ class TransportLayer(Layer):
         self._round_factor = float(line_cfg.get("round_factor", 3.0))
         light_cfg = line_cfg.get("light_outline") or {}
         self._light_outline_enabled = bool(
-            self.metro and light_cfg.get("enabled", True))
+            False)
         self._light_outline_threshold = float(
             light_cfg.get("luminance_threshold", 170.0))
         self._light_outline_color = str(
@@ -1173,8 +1054,6 @@ class TransportLayer(Layer):
         self._schematic_pos = {}
         self._schematic_pos_by_stop_key = {}
         self._station_facilities = {}
-        self._rmp_labels = {}
-        self._rmp_facilities = []
         self._legend_rect = None
         self._title_rect = None
         self._schematic_offset = (
@@ -1195,9 +1074,6 @@ class TransportLayer(Layer):
                 float(lay_cfg.get("parallel_gap", 1.55)), 1.05)
             # 共享段几何复用（地铁图可经 grouping.share_corridors 关闭）
             share_corr = True
-            if self.metro:
-                share_corr = bool((cfg.get("grouping") or {}).get(
-                    "share_corridors", True))
             # 地铁图：直接消费外部分组结果（不在布局层内重新猜测）
             alias_map = {
                 id(self._raw_line_by_id[alias.id]):
@@ -1251,24 +1127,13 @@ class TransportLayer(Layer):
                 shared_corridor_overrides=compiled_edits.shared_segments,
             )
             projected, water_report = None, {}
-            if self.metro:
-                self._schematic, projected, water_report = layout_and_water(
-                    mapdata, list(self._render_lines), self._merged, enabled,
-                    session=ctx.session,
-                    water_smoothing=(cfg.get("schematic_water") or {}).get("smoothing", 8),
-                    line_width_pixels=median([
-                        self._resolve_width(transit.type_def(line.type))
-                        for line in self._render_lines]) if self._render_lines else None,
-                    **layout_kwargs)
-                if water_report["status"] == "unverified":
-                    message = i18n_tr("gui.transit.water_unverified")
-                    ctx.report(.4, message)
-            else:
-                self._schematic = schematic_layout_with_fallback(
-                    mapdata, list(self._render_lines), self._merged, enabled, **layout_kwargs)
+            self._schematic = schematic_layout_with_fallback(
+                mapdata, list(self._render_lines), self._merged, enabled, **layout_kwargs)
             ctx.shared["transit_layout_report"] = {
                 "mode": self._schematic.fallback_strategy,
                 "failures": list(self._schematic.layout_failures),
+                "needs_visual_adjustment": (self._schematic.needs_visual_adjustment
+                                            or self._schematic.fallback_strategy != "requested"),
                 "model_issues": list(self._transit_model.issues),
                 "placement": dict(self._schematic.placement_metrics),
                 "source_chains": self._schematic.source_chains,
@@ -1296,18 +1161,6 @@ class TransportLayer(Layer):
                 for key, (px, py) in getattr(
                     self._schematic, "stop_positions", {}).items()
             }
-            if self.metro and self._merged is not None:
-                self._station_facilities = {
-                    str(station.id): station.facilities[0]
-                    for station in self._transit_model.stations
-                    if station.facilities
-                }
-                water_cfg = cfg.get("schematic_water") or {}
-                if projected is not None:
-                    draw_water_surface(ctx.image, projected, water_cfg, offset=self._schematic_offset)
-                ctx.shared["transit_layout_report"]["water"] = {
-                    **water_report, "displayed": projected is not None and not projected.is_empty
-                    and bool(water_cfg.get("enabled", True))}
         # 线路像素缓存仅限当前 render context；每个整图/瓦片调用都会重置，
         # 避免把前一个 tile 的像素坐标带入下一个 tile。
         self._line_cache = {}
@@ -1329,16 +1182,9 @@ class TransportLayer(Layer):
             bundle_plans = self._prepare_nonabstract_bundle_plans(
                 line_list, mapdata, samples)
             self._draw_nonabstract_bundles(agg, bundle_plans)
-        grid_bundle_plans = None
-        if (self.metro and use_grid and composite_corridors
-                and self._schematic.fallback_strategy != "geographic"):
-            grid_bundle_plans = self._prepare_grid_bundle_plans()
-            self._draw_nonabstract_bundles(agg, grid_bundle_plans)
         for idx, tr in enumerate(line_list):
             td = transit.type_def(tr.type)
             self.ctx.report(idx / total_lines, tr.name or tr.type)
-            if grid_bundle_plans is not None:
-                continue
             if use_grid:
                 # 网格布局：检查是否为对向线的主线
                 alias_ids = self._schematic.alias_pairs.get(id(tr))
@@ -1386,10 +1232,6 @@ class TransportLayer(Layer):
                         self._draw_round_cap(agg, ep, color, width)
         agg.flush()
 
-        # 地铁示意图标题先于图例绘制，让图例四角避让时把标题也纳入占用评估。
-        if self.metro and use_grid:
-            self._draw_metro_title(mapdata, cfg)
-
         # 线路名徽章（放在细线之上）
         label_cfg = cfg.get("label", {})
         # 低分辨率（如 1024 全图）隐藏徽标，避免小图过于拥挤；
@@ -1431,16 +1273,6 @@ class TransportLayer(Layer):
                             and self.render_scale >= st_min_zoom)
         if stations_visible:
             self._draw_stations(mapdata, enabled, scfg)
-            if use_grid:
-                # 全站名标注（抽象地铁图专用；8 方向避让 + 网格防重叠）
-                self._draw_station_names(scfg)
-        if not use_grid and (self.transit_view or (scfg.get("names") or {}).get("enabled", False)):
-            self._draw_transit_station_names(scfg)
-        if self.metro and use_grid:
-            self._draw_annotations(mapdata, cfg)
-            # 设施符号最后绘制，确保不会被线路、站点和站名覆盖。
-            if stations_visible and self._station_facilities:
-                self._draw_facility_icons(scfg)
         if use_grid and self._schematic.fallback_strategy == "geographic":
             # 导出图像也须显示这一限制，不能只写入进度信息。
             notice = i18n_tr("gui.transit.layout_draft")
@@ -1451,10 +1283,6 @@ class TransportLayer(Layer):
                            fill="#FFF4CE")
             draw.text((8, 8), notice, font=font, fill="#614700")
 
-        if self.metro and use_grid and ctx.shared.get("capture_rmp"):
-            from ..rmp_snapshot import capture_layer
-            ctx.shared["rmp_snapshot"] = capture_layer(self, projected,
-                cfg.get("schematic_water") or {}, scfg)
 
     # ---- 线路像素（统一入口：transit 单元出世界坐标，本层做像素变换） ----
 
@@ -1598,7 +1426,7 @@ class TransportLayer(Layer):
             if geometry is None or str(geometry.kind) != "path_chain":
                 continue
             if geometry.parts:
-                continue
+                continue  # 显式有向区间使用原生点列，不经旧网络节点重新定向。
             segment_ids = list(geometry.path_segment_ids)
             valid_ids = [segment_id for segment_id in segment_ids
                          if mapdata.segment(segment_id) is not None]
@@ -1677,47 +1505,6 @@ class TransportLayer(Layer):
                     })
         return plans
 
-    def _prepare_grid_bundle_plans(self) -> list[dict]:
-        """将地铁示意图共享网格边合成单外框多色走廊。"""
-        if self._schematic is None:
-            return []
-        style_edges: dict[tuple, list[tuple]] = {}
-        style_lanes: dict[tuple, list[dict]] = {}
-        for grid_edge, occupants in self._schematic.edge_lines.items():
-            lanes = self._bundle_lanes(occupants)
-            if not lanes:
-                continue
-            key = tuple((
-                lane["color"].upper(),
-                round(float(lane["width"]), 3),
-                tuple(round(float(value), 3)
-                      for value in lane["dash"]),
-            ) for lane in lanes)
-            style_edges.setdefault(key, []).append(grid_edge)
-            style_lanes[key] = lanes
-
-        plans = []
-        for key in sorted(style_edges, key=str):
-            lanes = style_lanes[key]
-            width = max((lane["width"] for lane in lanes), default=1.0)
-            for grid_points in _connected_grid_chains(style_edges[key]):
-                pixels = [self._schematic_to_px(x, y)
-                          for x, y in grid_points]
-                path = self._generate_path_for_segment(
-                    pixels,
-                    len(lanes) > 1,
-                    round_corner_factor=max(
-                        width * self._round_factor, 8.0),
-                )
-                sampled = path.to_sampled_points(
-                    max(12, int(width * 2.0)))
-                if len(sampled) >= 2:
-                    plans.append({
-                        "points": sampled,
-                        "lanes": lanes,
-                        "dash_offset": 0.0,
-                    })
-        return plans
 
     def _bundle_metrics(self, lanes) -> tuple[float, float, float]:
         base_width = max((float(lane["width"]) for lane in lanes),
@@ -2639,208 +2426,9 @@ class TransportLayer(Layer):
                       if hasattr(signal, "get_flattened_data") else signal.getdata())
         return sum(pixels) / max(255.0 * len(pixels), 1.0)
 
-    def _draw_metro_title(self, mapdata, cfg: dict) -> None:
-        """绘制地铁示意图标题；双语时以中文主标题 + 拼音副标题呈现。"""
-        title_cfg = cfg.get("title") or {}
-        if not bool(title_cfg.get("enabled", True)):
-            return
-        city = str(getattr(mapdata, "city_name", "") or "").strip()
-        template = str(title_cfg.get("template", "{cityname}地铁图"))
-        title = template.replace("{cityname}", city)
-        if not city and title == template:
-            title = "地铁图"
-        if not title:
-            return
-        size = max(int(round(self._decoration_size(
-            title_cfg.get("size", {"fixed": 24, "scaled": 12}),
-            self.render_scale))), 8)
-        secondary_size = max(int(round(self._decoration_size(
-            title_cfg.get("secondary_size", {"fixed": 16, "scaled": 8}),
-            self.render_scale))), 7)
-        margin = max(int(round(self._decoration_size(
-            title_cfg.get("margin", {"fixed": 18, "scaled": 12}),
-            self.render_scale))), 4)
-        stroke_width = max(int(round(self._decoration_size(
-            title_cfg.get("stroke_width", {"fixed": 3, "scaled": 1}),
-            self.render_scale))), 0)
-        font = self._get_font(size, bold=True)
-        secondary_font = self._get_font(secondary_size)
-        draw = ImageDraw.Draw(self.ctx.image)
-        bbox = draw.textbbox((0, 0), title, font=font,
-                             stroke_width=stroke_width)
-        text_h = bbox[3] - bbox[1]
-        secondary = None
-        if str(title_cfg.get("language", "zh")) == "bilingual":
-            from ..romanize import chinese_pinyin
-            city_pinyin = chinese_pinyin(city)
-            if city_pinyin:
-                secondary = f"{city_pinyin} Metro Map"
-        secondary_h = 0
-        if secondary:
-            secondary_h = (draw.textbbox((0, 0), secondary,
-                                         font=secondary_font)[3]
-                           - draw.textbbox((0, 0), secondary,
-                                             font=secondary_font)[1])
-        canvas_w = int(
-            getattr(self.ctx, "canvas_width", 0) or self.ctx.image.width)
-        ox, oy = self._schematic_offset
-        x = canvas_w / 2 - ox
-        total_h = text_h + (secondary_h + max(4, secondary_size // 3)
-                            if secondary else 0)
-        y = margin + total_h / 2 - oy
-        draw.text(
-            (x, y), title, font=font,
-            anchor="mm",
-            fill=hex_to_rgb(title_cfg.get("color", "#101828")) + (255,),
-            stroke_width=stroke_width,
-            stroke_fill=hex_to_rgb(
-                title_cfg.get("stroke_fill", "#FAFAF8")) + (255,),
-        )
-        if secondary:
-            draw.text(
-                (x, y + text_h / 2 + max(4, secondary_size // 3)), secondary,
-                font=secondary_font, anchor="ma",
-                fill=hex_to_rgb(title_cfg.get("color", "#101828")) + (255,),
-            )
-        self._title_rect = (x - (bbox[2] - bbox[0]) / 2 - 4,
-                            y - total_h / 2 - 4,
-                            x + (bbox[2] - bbox[0]) / 2 + 4,
-                            y + total_h / 2 + 4)
-
-    def _draw_facility_icons(self, scfg: dict) -> None:
-        """在站点旁绘制设施语义符号，不替代换乘胶囊。"""
-        res = self._schematic
-        if res is None:
-            return
-        fcfg = scfg.get("facilities") or {}
-        if not bool(fcfg.get("enabled", True)):
-            return
-        # 设施图标属于最终成图的视觉标记。以 1024px 预览为设计基准，
-        # 随画布分辨率线性缩放，使 2048px 正式输出保持相同视觉占比。
-        canvas_scale = max(min(self.ctx.image.size) / 1024.0, 0.5)
-        size = max(int(round(_resolve_size(
-            fcfg.get("size", {"fixed": 12, "scaled": 8}),
-            self.render_scale) * canvas_scale)), 9)
-        offset = max(int(round(_resolve_size(
-            fcfg.get("offset", {"fixed": 10, "scaled": 7}),
-            self.render_scale) * canvas_scale)), 7)
-        seen = set()
-        for gid, facility in self._station_facilities.items():
-            if gid in seen or gid not in res.node_grid:
-                continue
-            seen.add(gid)
-            px, py = self._schematic_to_px(*res.node_grid[gid])
-            # 统一使用右上角邻近标识；图形采用 Rail Map Painter 的
-            # 灰底圆 + 白色设施轮廓，保留站芯和换乘线色信息。
-            cx, cy = int(px + offset), int(py - offset)
-            facility_kind = getattr(facility, "kind", "other")
-            facility_kind = getattr(facility_kind, "value", facility_kind)
-            icon = _railmapgen_facility_icon(
-                str(facility_kind).lower(), size)
-            if self.ctx.shared.get("capture_rmp"):
-                raw_name = getattr(facility.name, "text", str(facility.name))
-                self._rmp_facilities.append({"station_id": str(gid), "kind": str(facility_kind).lower(),
-                    "x": cx, "y": cy, "size": size, "name": raw_name,
-                    "name_visible": False})
-            self.ctx.image.paste(
-                icon,
-                (int(round(cx - icon.width / 2)),
-                 int(round(cy - icon.height / 2))),
-                icon,
-            )
 
 
-    def _draw_annotations(self, mapdata, cfg: dict) -> None:
-        """信息附注卡：与标题/图例共用四角避让，不遮盖主要内容。"""
-        acfg = cfg.get("annotations") or {}
-        if not bool(acfg.get("enabled", True)):
-            return
-        lines = []
-        if bool(acfg.get("disclaimer", True)):
-            lines.append(i18n_tr("metro.annotation.disclaimer"))
-        if (bool(acfg.get("scale_info", True)) and self._schematic is not None
-                and self._schematic.fallback_strategy != "geographic"):
-            res = self._schematic
-            spacing = res.spacing_m or float(
-                ((cfg.get("schematic") or {}).get("spacing", 400.0)))
-            if res.adaptive_x is not None and res.adaptive_y is not None:
-                low, high = res.adaptive_scale_range
-                lines.append(i18n_tr(
-                    "metro.annotation.scale_adaptive",
-                    spacing=f"{spacing:g}",
-                    low=f"{low:.2f}",
-                    high=f"{high:.2f}",
-                    strength=f"{res.adaptive_strength * 100:.0f}",
-                    zoom=f"{self.render_scale:.2f}",
-                ))
-            else:
-                lines.append(i18n_tr(
-                    "metro.annotation.scale_fixed",
-                    spacing=f"{spacing:g}",
-                    zoom=f"{self.render_scale:.2f}",
-                ))
-        if bool(acfg.get("data_notice", True)):
-            lines.append(i18n_tr("metro.annotation.data_notice"))
-        if bool(acfg.get("generated_at", True)):
-            stamp = datetime.now().strftime("%Y-%m-%d %H:%M")
-            lines.append(i18n_tr("metro.annotation.generated", time=stamp))
-        if bool(acfg.get("north_arrow", False)):
-            # 示意图默认关闭，用户显式打开时仅提示画布上方为北；不附比例尺。
-            lines.append(i18n_tr("metro.annotation.north"))
-        credit_raw = acfg.get("credit", "")
-        # credit: false 为 GUI 显式关闭；空串/缺省仍回退资源翻译表文案。
-        if credit_raw is not False:
-            credit = str(credit_raw or i18n_tr(
-                "metro.annotation.credit")).strip()
-            if credit:
-                lines.append(credit)
-        if not lines:
-            return
-        size = max(int(round(_resolve_size(
-            acfg.get("size", {"fixed": 12, "scaled": 8}), self.render_scale))), 7)
-        pad = max(int(round(_resolve_size(
-            acfg.get("padding", {"fixed": 8, "scaled": 6}), self.render_scale))), 5)
-        margin = max(int(round(_resolve_size(
-            acfg.get("margin", {"fixed": 16, "scaled": 12}), self.render_scale))), 8)
-        font = self._get_font(size)
-        probe = ImageDraw.Draw(Image.new("RGBA", (4, 4)))
-        max_width = max(probe.textbbox((0, 0), value, font=font)[2] for value in lines)
-        line_h = max(size + 3, int(size * 1.35))
-        card_w, card_h = max_width + pad * 2, line_h * len(lines) + pad * 2
-        w, h = self.ctx.image.size
-        positions = {
-            "left_bottom": (margin, h - card_h - margin),
-            "right_bottom": (w - card_w - margin, h - card_h - margin),
-            "right_top": (w - card_w - margin, margin),
-            "left_top": (margin, margin),
-        }
-        preferred = str(acfg.get("position", "left_bottom"))
-        candidates = [positions.get(preferred, positions["left_bottom"])] + [
-            point for key, point in positions.items() if key != preferred]
-        def overlaps(box, other):
-            return other and not (box[2] < other[0] or box[0] > other[2]
-                                  or box[3] < other[1] or box[1] > other[3])
-        scored = []
-        for x, y in candidates:
-            box = (x, y, x + card_w, y + card_h)
-            if overlaps(box, self._legend_rect) or overlaps(box, self._title_rect):
-                continue
-            occupancy = self._legend_occupancy(
-                self.ctx.image, x, y, card_w, card_h)
-            scored.append((occupancy, len(scored), x, y))
-        # 候选顺序只作为同占用率时的偏好；优先选择线路、站名和站点
-        # 实际像素最少的角落，避免附注卡盖住底部站名。
-        if scored:
-            _score, _order, x, y = min(scored)
-        else:
-            x, y = candidates[0]
-        d = ImageDraw.Draw(self.ctx.image, "RGBA")
-        d.rounded_rectangle((x, y, x + card_w, y + card_h), radius=5,
-                            fill=(255, 255, 255, int(acfg.get("alpha", 222))),
-                            outline=(152, 162, 179, 210), width=1)
-        for i, value in enumerate(lines):
-            d.text((x + pad, y + pad + i * line_h), value, font=font,
-                   fill=(52, 64, 84, 255))
+
 
 
     def _line_color_count(self, lines) -> int:
@@ -2914,547 +2502,19 @@ class TransportLayer(Layer):
         """公共交通视图与地铁示意图统一使用当前圆形换乘图标。"""
         return self.transit_view or self._transfer_is_circle(scfg)
 
-    def _build_metro_station_names(self, mapdata, merged, scfg: dict) -> dict:
-        """只返回存档中真实存在的站名；无名站点保留结构但不生成文字。"""
-        custom_flags: dict[int, bool] = {}
 
-        def real_name(ms) -> str:
-            display_name = getattr(ms, "name", "")
-            value = getattr(display_name, "text", display_name) or ""
-            value = str(value).strip()
-            if not value and self._transit_model is None:
-                value = next((str(getattr(stop, "name", "") or "").strip()
-                              for stop in getattr(ms, "stops", ())
-                              if str(getattr(stop, "name", "") or "").strip()),
-                             "")
-            custom_flags[ms.id] = bool(value)
-            return value
 
-        names = {ms.id: name for ms in merged if (name := real_name(ms))}
-        self._metro_station_name_custom = custom_flags
-        return names
 
-    def _draw_station_names(self, scfg: dict) -> None:
-        """全站名标注：换乘站优先，8 方向候选避让 + bbox 防重叠。"""
-        ncfg = scfg.get("names") or {}
-        if not bool(ncfg.get("enabled", True)):
-            return
-        merged = self._merged
-        res = self._schematic
-        if merged is None or res is None:
-            return
-        fsize = max(int(_resolve_size(
-            ncfg.get("size", {"fixed": 13, "scaled": 13}),
-            self.render_scale)), 8)
-        if "font_size_per_1k" in ncfg:
-            fsize = max(1, round(float(ncfg["font_size_per_1k"]) * min(self.ctx.image.size) / 1024))
-        color = ncfg.get("color", "#4A4F5A")
-        tcolor = ncfg.get("transfer_color", "#1A1D24")
-        # 站名 halo（白描边压线可读）与换乘站名加粗（RMG 风格，YAML 可配）
-        halo_on = bool(ncfg.get("halo", False))
-        stroke_w = float(ncfg.get("stroke_width", 2.0))
-        if "stroke_per_1k" in ncfg:
-            stroke_w = float(ncfg["stroke_per_1k"]) * min(self.ctx.image.size) / 1024
-        stroke_rgb = hex_to_rgb(ncfg.get("stroke_fill", "#FFFFFF"))
-        bold_on = bool(ncfg.get("transfer_bold", False))
-        adaptive_font = bool(ncfg.get("adaptive_font", True))
-        try:
-            min_font_scale = float(ncfg.get("adaptive_min_scale", 0.60))
-        except (TypeError, ValueError):
-            min_font_scale = 0.60
-        min_font_scale = max(0.50, min(min_font_scale, 1.0))
-        font_scales = (1.0,)
-        if adaptive_font and min_font_scale < 0.999:
-            font_scales = tuple(dict.fromkeys((
-                1.0, max(0.86, min_font_scale),
-                max(0.74, min_font_scale),
-                max(0.64, min_font_scale), min_font_scale,
-            )))
-        probe = ImageDraw.Draw(Image.new("RGBA", (4, 4)))
-        d = ImageDraw.Draw(self.ctx.image)
-        w, h = self.ctx.image.width, self.ctx.image.height
-        try:
-            readable_per_1k = float(
-                ncfg.get("min_readable_size_per_1k", 10.0))
-        except (TypeError, ValueError):
-            readable_per_1k = 10.0
-        readable_minimum = (max(1, round(fsize * .6)) if "font_size_per_1k" in ncfg else
-                            _minimum_station_font_size(w, h, readable_per_1k))
-        try:
-            transfer_size_scale = float(
-                ncfg.get("transfer_size_scale", 1.25))
-        except (TypeError, ValueError):
-            transfer_size_scale = 1.25
-        transfer_size_scale = max(transfer_size_scale, 1.01)
-        # 换乘站优先标注（信息量最大），后标普通站；
-        # 布局域近距站簇（P4）：非代表组跳过（代表统一画并列名）
-        # 颜色去重计数：同线双向不抬高优先级（普通站不被推迟）
-        ordered = sorted(
-            merged,
-            key=lambda m: (
-                -self._station_group_count(m, self._station_lines(m)),
-                not self._metro_station_name_custom.get(m.id, False),
-            ),
-        )
-        # 站芯也作为标签障碍物参与检测。旧逻辑只记录已放置文字，
-        # 因而标签虽然彼此不重叠，却可能压在邻站圆/胶囊上。
-        cl_lines = self._cluster_lines(merged)
-        station_obstacles = []
-        station_r = max(_resolve_size(
-            scfg.get("size", {"fixed": 2.5, "scaled": 5.0}),
-            self.render_scale), 1.0)
-        station_hscale = max(
-            float(scfg.get("transfer_height_scale", 0.78)), 0.5)
-        transfer_is_circle = self._uses_chongqing_transfer_icon(scfg)
-        for other in merged:
-            other_cell = res.node_grid.get(other.id)
-            if other_cell is None:
-                continue
-            other_rep = res.cluster_of.get(other.id)
-            if other_rep is not None and other_rep != other.id:
-                continue
-            opx, opy = self._schematic_to_px(*other_cell)
-            other_cl = cl_lines.get(other.id)
-            other_lines = (other_cl if other_cl is not None
-                           else self._station_lines(other))
-            other_n = self._station_group_count(other, other_lines)
-            other_r = self._station_radius_for_lines(
-                station_r, other_lines, transfer_is_circle, other)
-            if other_n >= 2:
-                half_w = (other_r if transfer_is_circle else
-                          other_r * self._transfer_aspect(other_n, scfg))
-                half_h = (other_r if transfer_is_circle else
-                          other_r * station_hscale)
-            else:
-                half_w = half_h = other_r
-            station_obstacles.append((
-                opx - half_w - 4.0, opy - half_h - 4.0,
-                opx + half_w + 4.0, opy + half_h + 4.0))
-        placed: list = list(station_obstacles)
-        if self._title_rect is not None:
-            placed.append(self._title_rect)
 
-        # 设施标记固定在站点右上方并最后绘制；先预留它们的实际占位，
-        # 防止站名先占住同一位置后再被机场/铁路/港口图标盖住。
-        fcfg = scfg.get("facilities") or {}
-        canvas_scale = max(min(self.ctx.image.size) / 1024.0, 0.5)
-        facility_size = max(int(round(_resolve_size(
-            fcfg.get("size", {"fixed": 12, "scaled": 8}),
-            self.render_scale) * canvas_scale)), 9)
-        facility_offset = max(int(round(_resolve_size(
-            fcfg.get("offset", {"fixed": 10, "scaled": 7}),
-            self.render_scale) * canvas_scale)), 7)
-        for gid in self._station_facilities:
-            cell = res.node_grid.get(gid)
-            if cell is None:
-                continue
-            fpx, fpy = self._schematic_to_px(*cell)
-            cx, cy = fpx + facility_offset, fpy - facility_offset
-            half = facility_size / 2.0 + 2.0
-            placed.append((cx - half, cy - half, cx + half, cy + half))
 
-        # 线路也参与避让。文字仍可贴近线路，但候选框不能穿过线路色带；
-        # 这样 halo 是可读性兜底，而不再承担“文字直接压线”的常态。
-        route_obstacles = []
-        seen_edges = set()
-        line_pad = max(
-            max((self._resolve_width(transit.type_def(tr.type))
-                 for tr in self._tr_by_id.values()
-                 if transit.type_def(tr.type) is not None), default=2.0)
-            * self._halo_ratio / 2.0,
-            2.0,
-        )
-        routes = list(res.routes.values())
-        routes.extend(part for parts in res.route_parts.values() for part in parts)
-        for route in routes:
-            for a, b in zip(route, route[1:]):
-                edge = edge_key(a, b)
-                if edge in seen_edges:
-                    continue
-                seen_edges.add(edge)
-                route_obstacles.append((self._schematic_to_px(*a),
-                                        self._schematic_to_px(*b)))
-        route_grid = self._segment_grid(route_obstacles)
-        # 候选偏移：先在站点外留出可读间距，再尝试斜向/垂直位置；
-        # 仅靠 6px 偏移会让密集站区的文字重新贴回站芯和线路。
-        label_gap = max(float(ncfg.get("gap", 4.0)), 3.0)
-        offs = [(1, 0, "lm"), (1, -1, "lm"), (1, 1, "lm"),
-                (-1, 0, "rm"), (-1, -1, "rm"), (-1, 1, "rm"),
-                (0, -1, "ms"), (0, 1, "mt")]
-        preferred_position = str(ncfg.get("position", "auto"))
-        if preferred_position == "left":
-            offs.sort(key=lambda item: item[0] >= 0)
-        elif preferred_position == "right":
-            offs.sort(key=lambda item: item[0] <= 0)
-        # 簇线路集（代表 → set(线路)）：胶囊大小按簇总线路数
-        for ms in ordered:
-            cell_ms = res.node_grid.get(ms.id)
-            if cell_ms is None:
-                continue
-            rep = res.cluster_of.get(ms.id)
-            if rep is not None and rep != ms.id:
-                continue          # 簇成员：由代表统一标注
-            names = res.cluster_names.get(ms.id)
-            if names:
-                name = "·".join(names[:3]) + ("…" if len(names) > 3 else "")
-            else:
-                name = self._metro_station_names.get(ms.id)
-                if not name:
-                    display_name = getattr(ms, "name", "")
-                    name = getattr(display_name, "text", display_name) or None
-            if not name:
-                continue
-            from ..romanize import bilingual_text, clean_station_name
-            if bool(ncfg.get("strip_player_station_suffix", True)):
-                name = clean_station_name(name)
-            name = bilingual_text(name, str(ncfg.get("language", "zh")))
-            px, py = self._schematic_to_px(*cell_ms)
-            if not (0 <= px <= w and 0 <= py <= h):
-                continue
-            # 视觉线路数（分组/颜色去重：同线双向计 1；簇并集优先）
-            cl = cl_lines.get(ms.id)
-            n_lines = self._station_group_count(
-                ms, cl if cl is not None else self._station_lines(ms))
-            manual_type = self._station_type_overrides.get(ms.id)
-            is_transfer = (manual_type == "interchange" or (
-                manual_type not in {"normal", "terminal"}
-                and n_lines >= 2))
-            base_r = max(_resolve_size(
-                scfg.get("size", {"fixed": 2.5, "scaled": 2.5}),
-                self.render_scale), 1.0)
-            angle = self._station_angle(ms.id) if is_transfer else 0.0
-            aspect = (
-                1.0 if self._transfer_is_circle(scfg)
-                else self._transfer_aspect(n_lines, scfg)
-            ) if is_transfer else 1.0
-            height_scale = max(
-                float(scfg.get("transfer_height_scale", 0.78)), 0.5)
-            selected = None
-            station_font_scales = (1.0,) if is_transfer else font_scales
-            # 先用用户设定字号找空位；只有全部候选均冲突时才逐级缩小。
-            # 最小字号仍无空位时，沿用冲突最小方向兜底，保证站名不消失。
-            for scale_index, font_scale in enumerate(station_font_scales):
-                current_size = _resolved_station_font_size(
-                    fsize, font_scale, readable_minimum, is_transfer,
-                    transfer_size_scale)
-                secondary_size = max(int(round(
-                    current_size * float(ncfg.get(
-                        "bilingual_english_scale", 0.72)))),
-                    int(math.ceil(readable_minimum * float(ncfg.get(
-                        "bilingual_english_scale", 0.72)))), 7)
-                use_bold = bold_on and is_transfer
-                f = self._get_font(current_size, bold=use_bold)
-                sf = self._get_font(secondary_size, bold=use_bold)
-                # Pillow 的 text anchor 不支持多行文本；先在原点量出实际
-                # 文本框，再按锚点语义换算左上角。
-                if "\n" in name:
-                    primary, secondary = name.split("\n", 1)
-                    primary_bb = probe.textbbox((0, 0), primary, font=f)
-                    secondary_bb = probe.textbbox((0, 0), secondary, font=sf)
-                    line_spacing = max(2, secondary_size // 5)
-                    primary_h = primary_bb[3] - primary_bb[1]
-                    secondary_h = secondary_bb[3] - secondary_bb[1]
-                    text_w = max(primary_bb[2] - primary_bb[0],
-                                 secondary_bb[2] - secondary_bb[0])
-                    text_h = primary_h + line_spacing + secondary_h
-                    metrics = (primary, secondary, primary_bb, secondary_bb,
-                               primary_h, line_spacing)
-                else:
-                    text_bb = probe.textbbox((0, 0), name, font=f)
-                    text_w = text_bb[2] - text_bb[0]
-                    text_h = text_bb[3] - text_bb[1]
-                    metrics = (text_bb,)
-                candidates = []
-                for distance_scale in (1.0, 1.65, 2.3, 3.1):
-                    for direction_rank, (dx, dy, anchor) in enumerate(offs):
-                        norm = math.hypot(dx, dy) or 1.0
-                        ux, uy = dx / norm, dy / norm
-                        ar = math.radians(angle)
-                        major = (math.cos(ar), math.sin(ar))
-                        minor = (-major[1], major[0])
-                        half_w = base_r * aspect
-                        half_h = (base_r * height_scale
-                                  if is_transfer else base_r)
-                        support = (
-                            abs(ux * major[0] + uy * major[1]) * half_w
-                            + abs(ux * minor[0] + uy * minor[1]) * half_h
-                        )
-                        distance = support + label_gap * distance_scale
-                        tx = px + ux * distance
-                        ty = py + uy * distance
-                        ax, ay = anchor[0], anchor[1]
-                        left = tx if ax == "l" else (
-                            tx - text_w if ax == "r" else tx - text_w / 2)
-                        top = ty - text_h / 2 if ay == "m" else (
-                            ty - text_h if ay == "s" else ty)
-                        # 边缘站点仍参与方向评分，但先把文字框收回画布内。
-                        if text_w <= w - 4:
-                            left = min(max(left, 2.0), w - 2.0 - text_w)
-                        if text_h <= h - 4:
-                            top = min(max(top, 2.0), h - 2.0 - text_h)
-                        bb = (left, top, left + text_w, top + text_h)
-                        candidates.append((left, top, bb, distance_scale,
-                                           direction_rank))
-                chosen = self._choose_label_candidate(
-                    candidates, placed, route_grid, line_pad, (w, h),
-                    allow_collision=(
-                        scale_index == len(station_font_scales) - 1))
-                if chosen is not None:
-                    selected = (chosen, f, sf, metrics)
-                    break
-            if selected is None:
-                continue  # 仅在无法生成任何候选框时发生
-            chosen, f, sf, metrics = selected
-            tx, ty, bb = chosen
-            if self.ctx.shared.get("capture_rmp"):
-                self._rmp_labels[str(ms.id)] = {"x": tx, "y": ty, "font_size": int(f.size), "text": name}
-            placed.append((bb[0] - 2, bb[1] - 1, bb[2] + 2, bb[3] + 1))
-            kw = ({"stroke_width": stroke_w,
-                   "stroke_fill": stroke_rgb + (255,)} if halo_on else {})
-            fill = tcolor if is_transfer else color
-            if "\n" in name:
-                (primary, secondary, primary_bb, secondary_bb,
-                 primary_h, line_spacing) = metrics
-                d.text((tx - primary_bb[0], ty - primary_bb[1]),
-                       primary, font=f, fill=fill, **kw)
-                d.text((tx - secondary_bb[0],
-                        ty + primary_h + line_spacing - secondary_bb[1]), secondary,
-                       font=sf, fill=fill, **kw)
-            else:
-                text_bb = metrics[0]
-                d.text((tx - text_bb[0], ty - text_bb[1]),
-                       name, font=f, fill=fill, **kw)
 
-    @staticmethod
-    def _bbox_hit(bb, placed, pad: float = 2.0) -> bool:
-        """bbox 与已放标签是否相交。"""
-        for p in placed:
-            if not (bb[2] + pad < p[0] or p[2] + pad < bb[0]
-                    or bb[3] + pad < p[1] or p[3] + pad < bb[1]):
-                return True
-        return False
 
-    @staticmethod
-    def _bbox_overlap_area(a, b) -> float:
-        """两个矩形的重叠面积。"""
-        width = max(0.0, min(a[2], b[2]) - max(a[0], b[0]))
-        height = max(0.0, min(a[3], b[3]) - max(a[1], b[1]))
-        return width * height
 
-    @staticmethod
-    def _bbox_distance(a, b) -> float:
-        """两个轴对齐矩形之间的最短距离（相交时为 0）。"""
-        dx = max(b[0] - a[2], a[0] - b[2], 0.0)
-        dy = max(b[1] - a[3], a[1] - b[3], 0.0)
-        return math.hypot(dx, dy)
 
-    @staticmethod
-    def _point_bbox_distance(point, bb) -> float:
-        """点到轴对齐矩形的最短距离。"""
-        x, y = point
-        dx = max(bb[0] - x, x - bb[2], 0.0)
-        dy = max(bb[1] - y, y - bb[3], 0.0)
-        return math.hypot(dx, dy)
 
-    @staticmethod
-    def _point_segment_distance(point, a, b) -> float:
-        """点到线段的最短距离。"""
-        vx, vy = b[0] - a[0], b[1] - a[1]
-        length_sq = vx * vx + vy * vy
-        if length_sq <= 1e-12:
-            return math.hypot(point[0] - a[0], point[1] - a[1])
-        t = ((point[0] - a[0]) * vx + (point[1] - a[1]) * vy) / length_sq
-        t = min(max(t, 0.0), 1.0)
-        return math.hypot(point[0] - (a[0] + t * vx),
-                          point[1] - (a[1] + t * vy))
 
-    @classmethod
-    def _bbox_segment_distance(cls, bb, a, b, pad: float = 0.0) -> float:
-        """文字框到线路色带的近似净空；相交时为 0。"""
-        expanded = (bb[0] - pad, bb[1] - pad,
-                    bb[2] + pad, bb[3] + pad)
-        if cls._bbox_segment_hit(bb, a, b, pad):
-            return 0.0
-        corners = ((expanded[0], expanded[1]), (expanded[2], expanded[1]),
-                   (expanded[2], expanded[3]), (expanded[0], expanded[3]))
-        return min(
-            cls._point_bbox_distance(a, expanded),
-            cls._point_bbox_distance(b, expanded),
-            *(cls._point_segment_distance(corner, a, b)
-              for corner in corners),
-        )
 
-    @classmethod
-    def _choose_label_candidate(cls, candidates, placed, route_grid,
-                                line_pad: float, canvas_size,
-                                allow_collision: bool = True):
-        """按周围净空选站名方向；全被占用时返回冲突最小的位置。"""
-        if not candidates:
-            return None
-        canvas_w, canvas_h = canvas_size
-        evaluated = []
-        for left, top, bb, distance_scale, direction_rank in candidates:
-            text_area = max((bb[2] - bb[0]) * (bb[3] - bb[1]), 1.0)
-            obstacle_cost = 0.0
-            clearances = [max(0.0, min(
-                bb[0], bb[1], canvas_w - bb[2], canvas_h - bb[3]))]
-            for obstacle in placed:
-                expanded = (obstacle[0] - 2.0, obstacle[1] - 2.0,
-                            obstacle[2] + 2.0, obstacle[3] + 2.0)
-                if cls._bbox_hit(bb, (obstacle,)):
-                    # 即使只是边缘接触，也保留一个非零代价，避免误判为空位。
-                    obstacle_cost += max(
-                        cls._bbox_overlap_area(bb, expanded), 1.0)
-                clearances.append(cls._bbox_distance(bb, expanded))
-            line_hits = 0
-            for a, b in cls._segments_near(route_grid, bb, line_pad):
-                if cls._bbox_segment_hit(bb, a, b, line_pad):
-                    line_hits += 1
-                clearances.append(
-                    cls._bbox_segment_distance(bb, a, b, line_pad))
-            collision_cost = obstacle_cost + line_hits * text_area * 1.25
-            clearance = min(clearances) if clearances else 0.0
-            evaluated.append((collision_cost, clearance, distance_scale,
-                              direction_rank, left, top, bb))
-
-        free = [item for item in evaluated if item[0] <= 1e-9]
-        if free:
-            # 每个方向只保留最近的空位，避免为了多一点净空把站名推得过远；
-            # 再在这些方向中选择四周最空旷的一个。
-            nearest_by_direction = {}
-            for item in free:
-                direction_rank = item[3]
-                previous = nearest_by_direction.get(direction_rank)
-                if previous is None or item[2] < previous[2]:
-                    nearest_by_direction[direction_rank] = item
-            best = max(nearest_by_direction.values(),
-                       key=lambda item: (item[1], -item[2], -item[3]))
-        else:
-            if not allow_collision:
-                return None
-            # 密集区没有绝对空位时不再隐藏文字：优先减少遮挡面积和穿线，
-            # 同等冲突下选择净空更大、离站点更近的方向。
-            best = min(evaluated,
-                       key=lambda item: (item[0], -item[1], item[2], item[3]))
-        return best[4], best[5], best[6]
-
-    @staticmethod
-    def _segment_grid(segments, cell_size: float = 64.0):
-        grid = {}
-        for segment in segments:
-            (x0, y0), (x1, y1) = segment
-            for cx in range(math.floor(min(x0, x1) / cell_size),
-                            math.floor(max(x0, x1) / cell_size) + 1):
-                for cy in range(math.floor(min(y0, y1) / cell_size),
-                                math.floor(max(y0, y1) / cell_size) + 1):
-                    grid.setdefault((cx, cy), []).append(segment)
-        return cell_size, grid
-
-    @staticmethod
-    def _segments_near(route_grid, bb, pad: float):
-        cell_size, grid = route_grid
-        result = set()
-        for cx in range(math.floor((bb[0] - pad) / cell_size),
-                        math.floor((bb[2] + pad) / cell_size) + 1):
-            for cy in range(math.floor((bb[1] - pad) / cell_size),
-                            math.floor((bb[3] + pad) / cell_size) + 1):
-                result.update(grid.get((cx, cy), ()))
-        return result
-
-    @staticmethod
-    def _bbox_segment_hit(bb, a, b, pad: float = 0.0) -> bool:
-        """线段是否穿过扩张后的文字框（Liang-Barsky 裁剪判定）。"""
-        left, top, right, bottom = (
-            bb[0] - pad, bb[1] - pad, bb[2] + pad, bb[3] + pad)
-        x0, y0 = a
-        dx, dy = b[0] - x0, b[1] - y0
-        t0, t1 = 0.0, 1.0
-        for p, q in ((-dx, x0 - left), (dx, right - x0),
-                     (-dy, y0 - top), (dy, bottom - y0)):
-            if abs(p) < 1e-12:
-                if q < 0:
-                    return False
-                continue
-            ratio = q / p
-            if p < 0:
-                if ratio > t1:
-                    return False
-                t0 = max(t0, ratio)
-            else:
-                if ratio < t0:
-                    return False
-                t1 = min(t1, ratio)
-        return t0 <= t1
-
-    def _draw_transit_station_names(self, scfg: dict) -> None:
-        """从标准模型绘制普通交通站名，并按确定性四方向规则避让。"""
-        ncfg = scfg.get("names") or scfg.get("station_names") or {}
-        if not bool(ncfg.get("enabled", True)) or self._merged is None:
-            return
-        try:
-            size = max(int(round(_resolve_size(
-                ncfg.get("size", ncfg.get("font_size", 11)),
-                self.render_scale))), 6 if self.transit_view else 8)
-        except (TypeError, ValueError):
-            size = 11
-        font = self._get_font(size, bold=bool(ncfg.get("bold", False)))
-        color = str(ncfg.get("color", "#344054"))
-        stroke_width = max(0, int(round(float(ncfg.get(
-            "stroke_width", 1 if ncfg.get("halo", True) else 0)))))
-        stroke_fill = str(ncfg.get("stroke_fill", "#FFFFFF"))
-        draw = ImageDraw.Draw(self.ctx.image)
-        base_radius = _resolve_size(
-            scfg.get("size", {"fixed": 2.5, "scaled": 5.0}),
-            self.render_scale)
-        gap = max(float(ncfg.get("gap", 5.0)), 1.0)
-        placed = []
-        candidates = ((1.0, 0.0), (-1.0, 0.0), (0.0, -1.0), (0.0, 1.0))
-        stations = sorted(
-            self._merged,
-            key=lambda item: (
-                round(float(getattr(item.position, "z", 0.0)), 4)
-                if item.position is not None else float("inf"),
-                round(float(getattr(item.position, "x", 0.0)), 4)
-                if item.position is not None else float("inf"),
-                str(item.id),
-            ),
-        )
-        for station in stations:
-            position = getattr(station, "position", None)
-            name_obj = getattr(station, "name", "")
-            text = str(getattr(name_obj, "text", name_obj) or "").strip()
-            if position is None or not text:
-                continue
-            px, py = self.ctx.transform(position.x, position.z)
-            if not (-size <= px <= self.ctx.image.width + size
-                    and -size <= py <= self.ctx.image.height + size):
-                continue
-            is_transfer = self._is_transfer_station(station)
-            label_font = font if not is_transfer else self._get_font(
-                max(size, int(round(size * float(ncfg.get(
-                    "transfer_size_scale", 1.0))))),
-                bold=bool(ncfg.get("transfer_bold", False)),
-            )
-            label_color = str(ncfg.get(
-                "transfer_color", color)) if is_transfer else color
-            for dx, dy in candidates:
-                anchor_x = px + dx * (base_radius + gap)
-                anchor_y = py + dy * (base_radius + gap)
-                bbox = draw.textbbox(
-                    (anchor_x, anchor_y), text, font=label_font,
-                    anchor="lm", stroke_width=stroke_width,
-                )
-                if not self._bbox_hit(bbox, placed, pad=2.0):
-                    draw.text(
-                        (anchor_x, anchor_y), text, font=label_font,
-                        fill=hex_to_rgb(label_color) + (255,), anchor="lm",
-                        stroke_width=stroke_width,
-                        stroke_fill=hex_to_rgb(stroke_fill) + (255,),
-                    )
-                    placed.append(bbox)
-                    break
-
-    def _draw_stations(self, mapdata, enabled: list, scfg: dict) -> None:
+    def _station_poi_items(self, mapdata, enabled: list, scfg: dict) -> None:
         """合并站点渲染：白底图形 + halo描边 + 换乘站多色tick。
 
         参考 railmapgen 站点渲染模式：
@@ -3468,10 +2528,10 @@ class TransportLayer(Layer):
         trs = [t for t in self._render_lines
                if (transit.normalize_type(t.type) or t.type) in enabled]
         if not trs:
-            return
+            return []
         merged = self._merged
         if merged is None:
-            return
+            return []
         radius = _resolve_size(scfg.get("size", {"fixed": 2.5, "scaled": 5.0}),
                                self.render_scale)
         if "diameter_per_1k" in scfg:
@@ -3556,8 +2616,62 @@ class TransportLayer(Layer):
                     has_track = bool(first_td.track_flag)
             st_info.append((px, py, r, n_lines, line_colors,
                             is_interchange, angle, sx,
-                            primary_type, has_track, station_type))
+                            primary_type, has_track, station_type, ms))
 
+        from functools import partial
+        from .poi_icon_layer import POIItem
+        ncfg = scfg.get("names") or scfg.get("station_names") or {}
+        size = max(round(_resolve_size(ncfg.get("size", ncfg.get("font_size", 11)), self.render_scale)),
+                   6 if self.transit_view else 8)
+        items = []
+        for info in st_info:
+            px, py, r, _, _, transfer, _, sx = info[:8]
+            station = info[11]
+            extent = r * sx + (transfer_halo if transfer_is_circle else tick_height) + 2 if transfer else r + 4
+            font_size = max(size, round(size * float(ncfg.get("transfer_size_scale", 1)))) if transfer else size
+            name_style = {
+                "name_size": font_size,
+                "name_color": ncfg.get("transfer_color", ncfg.get("color", "#344054")) if transfer else ncfg.get("color", "#344054"),
+                "name_offset": max(float(ncfg.get("gap", 5)), 1),
+                "name_stroke": ncfg.get("stroke_fill", "#FFFFFF"),
+                "name_stroke_ratio": float(ncfg.get("stroke_width", 1 if ncfg.get("halo", True) else 0)) / font_size,
+            }
+            items.append(POIItem(px, py, "", station.name.text, "station", 100, "station",
+                poi_id=f"station:{station.id}", group_id=f"station:{station.id}", poi_group="transit",
+                world_x=station.position.x, world_z=station.position.z,
+                draw_name=bool(ncfg.get("enabled", self.transit_view)),
+                symbol=partial(self._paint_station_symbols, [info], scfg),
+                symbol_box=(px-extent, py-extent, px+extent, py+extent),
+                name_style=name_style,
+                name_font=self._get_font(font_size, bold=bool(ncfg.get("transfer_bold" if transfer else "bold", False))),
+                serving_line_ids=tuple(station.serving_line_ids), member_stop_ids=tuple(station.member_stop_ids)))
+        return items
+
+    def _draw_stations(self, mapdata, enabled: list, scfg: dict) -> None:
+        items = self._station_poi_items(mapdata, enabled, scfg)
+        from .poi_icon_layer import POIIconLayer
+        POIIconLayer().render_station_items(self.ctx, items)
+
+    def _paint_station_symbols(self, st_info, scfg):
+        outline = scfg.get("outline", "#3A3F4A")
+        fill = scfg.get("fill", "#FFFFFF")
+        # 站点设计：rmg = railmapgen 经典式（白底 + 线路色描边，无中心色点）
+        design = str(scfg.get("design", ""))
+        # 换乘站描边色（缺省沿用普通描边色）；旧胶囊样式仍支持分色刻度
+        t_outline = scfg.get("transfer_outline", outline)
+        # 公共交通视图不再使用主题里的旧胶囊；与地铁示意图复用同一
+        # ChongqingRTIntStation SVG。普通地图仍尊重主题配置。
+        transfer_is_circle = self._uses_chongqing_transfer_icon(scfg)
+        ticks_on = bool(scfg.get("ticks", True))
+        border = max(
+            int(_resolve_size(scfg.get("border_width", 1.0),
+                              self.render_scale) * 2), 1)
+        transfer_halo = max(float(scfg.get("transfer_halo", 2.0)), 0.0)
+        transfer_height_scale = max(
+            float(scfg.get("transfer_height_scale", 0.78)), 0.5)
+        tick_height = max(int(_resolve_size(
+            scfg.get("tick_height", {"fixed": 4, "scaled": 4}),
+            self.render_scale)), 2)
         # 第二阶段：旧胶囊样式继续用 aggdraw；重庆式圆形标记在下一阶段
         # 用 ImageDraw 绘制，以便叠加清晰的双向箭头。
         if not transfer_is_circle and any(s[5] for s in st_info):
@@ -3921,11 +3035,21 @@ class TransportLayer(Layer):
         nearest = min(nearest, max(edge_clearance, 0.0))
         return outside, cost, nearest
 
+    @staticmethod
+    def _bbox_hit(bb, placed, pad: float = 2.0) -> bool:
+        """bbox 与已放标签是否相交。"""
+        for p in placed:
+            if not (bb[2] + pad < p[0] or p[2] + pad < bb[0]
+                    or bb[3] + pad < p[1] or p[3] + pad < bb[1]):
+                return True
+        return False
+
     def _draw_line_labels_view(self, mapdata, enabled: list, label_cfg: dict,
                                abstract: bool, samples: int) -> None:
         """公共交通图：标签更密更大更清晰；重合线路同一处横向拼接徽章。
 
         统一视觉规范（两端共用）见
+        ``docs/tasks/公共交通视图-整改-20260910/01-线路标签视觉统一-20260914.md``：
         线路色实心胶囊；文字色按 Rec.709 亮度自适应；无文字描边；
         一圈半透明细轮廓；重合线路各色块直接并排、共用同一圈轮廓。
         """

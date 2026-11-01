@@ -3,6 +3,12 @@
 :root { font-family: "Microsoft YaHei UI", "PingFang SC", sans-serif; }
 html, body, #map { width: 100%; height: 100%; margin: 0; overflow: hidden; }
 body { background: #eef1f4; }
+.road-warning {
+  position: absolute; top: 12px; left: 12px; z-index: 11;
+  max-width: min(420px, 70%); padding: 6px 10px; border-radius: 5px;
+  color: #6d4700; background: rgba(255,247,224,.96); font-size: 12px;
+  pointer-events: none;
+}
 /* Only the desktop shell opts in. Embedded exports retain their own colors. */
 html[data-ui-appearance="dark"] { color-scheme: dark; }
 html[data-ui-appearance="dark"] body { background: #171c22; }
@@ -52,21 +58,11 @@ body.selecting #map { cursor: crosshair; }
 .map-label {
   white-space: nowrap;
   color: #39424c; font-size: 12px; font-weight: 400; line-height: 1;
-  /* 描边（halo）：颜色与宽度由 applyLabelHalo 按主题 stroke / stroke_width 写
-     上面的变量，默认 1px 白 —— 与导出侧 label_layer / poi_icon_layer 的白色
-     stroke 同源。用 8 向偏移模拟外描边，只画 4 个角向会在笔画正侧面漏白。 */
-  --label-stroke-p: 1px;
-  --label-stroke-n: -1px;
+  /* 描边沿字形居中；先画双倍宽描边，再填字面，保持主题指定的外扩宽度。 */
+  --label-stroke-width: 2px;
   --label-stroke-c: rgba(255, 255, 255, .92);
-  text-shadow:
-    var(--label-stroke-n) 0 0 var(--label-stroke-c),
-    var(--label-stroke-p) 0 0 var(--label-stroke-c),
-    0 var(--label-stroke-n) 0 var(--label-stroke-c),
-    0 var(--label-stroke-p) 0 var(--label-stroke-c),
-    var(--label-stroke-n) var(--label-stroke-n) 0 var(--label-stroke-c),
-    var(--label-stroke-p) var(--label-stroke-n) 0 var(--label-stroke-c),
-    var(--label-stroke-n) var(--label-stroke-p) 0 var(--label-stroke-c),
-    var(--label-stroke-p) var(--label-stroke-p) 0 var(--label-stroke-c);
+  -webkit-text-stroke: var(--label-stroke-width) var(--label-stroke-c);
+  paint-order: stroke fill;
   pointer-events: none; transform: translateY(-10px);
 }
 .map-label-transit { font-weight: 650; transform: translateY(-12px); }
@@ -80,7 +76,7 @@ body.selecting #map { cursor: crosshair; }
   line-height: 1; pointer-events: none;
 }
 /* 描边开关按文字类别来（preview_scene 下发 halos），关掉时抹掉默认的白色描边。 */
-.map-label-no-halo { text-shadow: none; }
+.map-label-no-halo { -webkit-text-stroke-width: 0; }
 .maplibregl-ctrl-scale {
   border-color: #39424c; color: #39424c; background: rgba(255,255,255,.86);
   font-family: "Microsoft YaHei", sans-serif;
@@ -90,28 +86,3 @@ body.selecting #map { cursor: crosshair; }
   font-size: 12px; font-weight: 600; pointer-events: none;
 }
 .preview-watermark-left { left: 14px; right: auto; }
-/* 单文件导出页面的自运行工具栏 */
-.exp-toolbar {
-  position: absolute; top: 14px; right: 14px; z-index: 30;
-  font-family: "Microsoft YaHei UI", "PingFang SC", sans-serif;
-}
-.exp-toolbar-left { display: flex; gap: 6px; }
-.exp-toolbar button {
-  border: 1px solid #d3d8df; border-radius: 6px; background: rgba(255,255,255,.92);
-  color: #39424c; font-size: 13px; line-height: 1; padding: 6px 10px; cursor: pointer;
-  box-shadow: 0 1px 4px rgba(0,0,0,.10);
-}
-.exp-toolbar button:hover { background: #fff; }
-.exp-toolbar button:active { background: #eef2f7; }
-.exp-toolbar .exp-layer-toggle { margin-left: 6px; }
-.exp-toolbar-panel {
-  display: none; position: absolute; top: 40px; right: 0; z-index: 31;
-  width: 196px; padding: 8px 10px; border-radius: 8px; background: rgba(255,255,255,.95);
-  box-shadow: 0 2px 10px rgba(0,0,0,.14); border: 1px solid #d3d8df;
-}
-.exp-toolbar-panel.exp-open { display: block; }
-.exp-chip {
-  display: flex; align-items: center; gap: 7px; padding: 4px 2px;
-  font-size: 12.5px; color: #39424c; cursor: pointer; user-select: none;
-}
-.exp-chip input { margin: 0; accent-color: #2772e2; }

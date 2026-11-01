@@ -12,7 +12,7 @@
   "main_ui_a44c7ba211": "도로",
   "main_ui_5b46860a8e": "건물",
   "main_ui_97492a0e5d": "철도",
-  "main_ui_57f78ba1f9": "교통",
+  "main_ui_57f78ba1f9": "교통 상황",
   "main_ui_b8466cd555": "지하철",
   "main_ui_9875b1f825": "레이블",
   "main_ui_9ff2b9e94d": "구역",
@@ -31,5 +31,15 @@
   "surface-poi-layer_shader_f2a5d36a5f": "POI Surface 셰이더 컴파일 실패",
   "surface-poi-layer_program_226d27beb7": "POI Surface program을 만들 수 없습니다",
   "surface-poi-layer_program_ea7d784c3e": "POI Surface 프로그램 연결 실패",
-  "preview_title": "CSLModernMap 지도 미리보기"
+  "preview_title": "CSLModernMap 지도 미리보기",
+  "search_search": "지도 객체 검색",
+  "search_searchHelp": "현재 지도의 이름 또는 분류 검색",
+  "search_empty": "일치하는 객체가 없습니다",
+  "search_findHelp": "왼쪽 위에 이름이나 분류를 입력하여 지도 객체를 찾습니다.",
+  "search_group_building": "기타 건물",
+  "search_group_road": "도로",
+  "search_group_area": "구역",
+  "search_group_poi": "기타 장소",
+  "search_more": "더 보기",
+  "search_count": "({{number}})"
 }

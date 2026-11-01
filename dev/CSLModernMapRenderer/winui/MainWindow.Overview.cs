@@ -56,7 +56,7 @@ public sealed partial class MainWindow
             _overviewTheme.SelectionChanged += async (_, _) =>
             {
                 if (!_updatingOverview && _overviewTheme.SelectedItem is ComboBoxItem item)
-                    await SafeRequestAsync("setTheme", new { theme = (string)item.Tag });
+                    await RunAsync(() => SetMapThemeAsync((string)item.Tag));
             };
             map.Children.Add(_overviewTheme);
             map.Children.Add(OverviewCommand("style.edit_theme", UiLanguage.Text("MainWindow_Overview_ShowMapOverview_6F1C3CB04A")));

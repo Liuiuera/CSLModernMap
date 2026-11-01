@@ -42,6 +42,7 @@ import {
 } from '../util/snap-lines';
 import SnapPointGuideLines from './snap-point-guide-lines';
 import SvgLayer from './svg-layer';
+import { toMapVector } from '../util/map-rotation';
 import { linePaths, lineStyles } from './svgs/lines/lines';
 import miscNodes from './svgs/nodes/misc-nodes';
 import { default as stations } from './svgs/stations/stations';
@@ -174,6 +175,10 @@ const SvgCanvas = () => {
         // so we need to capture it here as a double insurance
         e.currentTarget.setPointerCapture(e.pointerId);
 
+        const movement = pointerPosition ? toMapVector({
+            x: (x - pointerPosition.x) * svgViewBoxZoom / 100,
+            y: (y - pointerPosition.y) * svgViewBoxZoom / 100,
+        }) : { x: 0, y: 0 };
         if (mode === 'free' && active === node) {
             if (!e.altKey && useSnapLines) {
                 // node start position (fromX, fromY)
@@ -183,8 +188,8 @@ const SvgCanvas = () => {
                 // this is similar to the pointer offset but different to line_create_in_progress
                 // the final position is calculated based on the offset and the snap lines,
                 // so we need to save here for further calculation instead of directly using it
-                const toX = fromX - ((pointerPosition!.x - x) * svgViewBoxZoom) / 100;
-                const toY = fromY - ((pointerPosition!.y - y) * svgViewBoxZoom) / 100;
+                const toX = fromX + movement.x;
+                const toY = fromY + movement.y;
                 // node final position (newX, newY)
                 let newX = toX;
                 let newY = toY;
@@ -304,9 +309,9 @@ const SvgCanvas = () => {
                 const base = e.altKey ? 0.01 : NODES_MOVE_DISTANCE;
                 const stdAttr = graph.current.getNodeAttributes(node);
                 const offsetX =
-                    roundToMultiple(stdAttr.x - ((pointerPosition!.x - x) * svgViewBoxZoom) / 100, base) - stdAttr.x;
+                    roundToMultiple(stdAttr.x + movement.x, base) - stdAttr.x;
                 const offsetY =
-                    roundToMultiple(stdAttr.y - ((pointerPosition!.y - y) * svgViewBoxZoom) / 100, base) - stdAttr.y;
+                    roundToMultiple(stdAttr.y + movement.y, base) - stdAttr.y;
                 selected.forEach(s => {
                     if (graph.current.hasNode(s)) {
                         const attr = graph.current.getNodeAttributes(s as NodeId);
@@ -327,8 +332,8 @@ const SvgCanvas = () => {
             }
         } else if (mode.startsWith('line') && active) {
             setPointerOffset({
-                dx: ((pointerPosition!.x - x) * svgViewBoxZoom) / 100,
-                dy: ((pointerPosition!.y - y) * svgViewBoxZoom) / 100,
+                dx: -movement.x,
+                dy: -movement.y,
             });
         }
     });
@@ -450,6 +455,7 @@ const SvgCanvas = () => {
                 y: roundToMultiple(svgY, 5),
                 type: stnType,
                 [stnType]: attr,
+                ...(isStation ? { cmmName: { source: 'placeholder' as const } } : {}),
             });
 
             const edgeAttrs = graph.current.getEdgeAttributes(edge);

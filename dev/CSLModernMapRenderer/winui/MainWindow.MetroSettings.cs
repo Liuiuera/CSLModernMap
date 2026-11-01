@@ -147,6 +147,13 @@ public sealed partial class MainWindow
         water.Children.Add(Check("schematic_water", Text("Water")));
         water.Children.Add(Number("water_smoothing", Text("WaterSmoothing"), () => Value("schematic_water").GetBoolean(), slider: true, step: .5));
         page.Children.Add(Check("facilities_enabled", Text("ShowFacilities")));
+        var reset = new Button { Content = Text("Reset"), HorizontalAlignment = HorizontalAlignment.Stretch };
+        Bind(reset, "reset", () => { });
+        reset.Click += async (_, _) =>
+        {
+            if (Editable(reset)) await Queue(() => _engine.RequestAsync("resetMetroGenerationOptions"));
+        };
+        page.Children.Add(reset);
         page.Children.Add(new TextBlock { Text = RmpText("ApplyWarning"), TextWrapping = TextWrapping.Wrap });
         var apply = new Button { Content = RmpText("Apply"), HorizontalAlignment = HorizontalAlignment.Stretch };
         Bind(apply, "apply", () => { }, () => CommandEnabled("view.metro.refresh", _commands["view.metro.refresh"]));

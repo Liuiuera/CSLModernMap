@@ -567,6 +567,8 @@ class NetworkSegment(_Serializable):
     game_name: str = ""
     source_raw: str = ""
     footprint: Polygon | None = None
+    car_access: dict[str, str] | None = None
+    car_speed: dict[str, Any] | None = None
 
     def __post_init__(self) -> None:
         self.id = int(self.id)
@@ -633,6 +635,8 @@ class NetworkSegment(_Serializable):
             source_raw=value.get("source_raw", ""),
             footprint=(Polygon.from_dict(value["footprint"])
                        if value.get("footprint") is not None else None),
+            car_access=value.get("car_access"),
+            car_speed=value.get("car_speed"),
         )
 
 
@@ -897,6 +901,9 @@ class Building(_Serializable):
     category_locale: str = ""
     growth_kind: str = "unknown"
     growth_use: str = ""
+    height_m: float | None = None
+    base_elevation_m: float | None = None
+    height_source: str = ""
 
     def __post_init__(self) -> None:
         self.id = int(self.id)
@@ -913,6 +920,17 @@ class Building(_Serializable):
         self.area_id = None if self.area_id is None else int(self.area_id)
         self.station_id = None if self.station_id is None else int(self.station_id)
         self.child_ids = [int(item) for item in self.child_ids]
+        if (self.height_m is None) != (self.base_elevation_m is None):
+            raise ValueError(f"building {self.id}: height_m and base_elevation_m must be provided together")
+        for key in ("height_m", "base_elevation_m"):
+            value = getattr(self, key)
+            if value is not None and (isinstance(value, bool)
+                    or not isinstance(value, (int, float)) or not isfinite(value)):
+                raise ValueError(f"building {self.id}: {key} must be a finite number")
+        if self.height_m is not None and self.height_m < 0:
+            raise ValueError(f"building {self.id}: height_m must be non-negative")
+        if not isinstance(self.height_source, str):
+            raise ValueError(f"building {self.id}: height_source must be a string")
 
     @classmethod
     def from_dict(cls, value: Mapping[str, Any]) -> "Building":
@@ -942,6 +960,9 @@ class Building(_Serializable):
             category_locale=value.get("category_locale", ""),
             growth_kind=value.get("growth_kind", "unknown"),
             growth_use=value.get("growth_use", ""),
+            height_m=value.get("height_m"),
+            base_elevation_m=value.get("base_elevation_m"),
+            height_source=value.get("height_source", ""),
         )
 
 
@@ -1947,6 +1968,7 @@ class MapDocument(_Serializable):
         return list(self.issues)
 
     def validate_transit(self) -> list[MapIssue]:
+        """文件读取边界仅检查交通对象引用，不复核游戏路径几何。"""
         for stop in self.stops:
             if stop.network_node_id is None and self.metadata.origin.game.casefold() == "cs2":
                 continue
@@ -2034,6 +2056,8 @@ class MapDocument(_Serializable):
         else:
             text = value
         raw = json.loads(text)
+        from .file_format import check_cmm
+        check_cmm(raw)
         return cls.from_dict(raw)
 
 

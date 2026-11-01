@@ -23,19 +23,17 @@ import logging
 import os
 import sys
 from dataclasses import dataclass
-from typing import List, Optional, Tuple
+from typing import Callable, List, Optional, Tuple
 
 from PIL import Image, ImageDraw, ImageFont
 
 from ..data import MapData
-from ..cmm import normalize_transit_kind
 from .._paths import cn_icons_dir, icons_library_dir
 from ..fonts import load_pillow_font, resolve_text_font
 from ..poi_color import dominant_icon_rgb
 from ..services.poi import POIJobParams, produce as produce_poi_catalog
 from ..services.poi.ownership import poi_group_for, poi_visibility_group_for, sublayer_for
 from ..services.poi.merge import strong_name_key
-from ..services.transit import resolve_route_geometry
 from .base import Layer, RenderContext
 from .poi_density import filter_pois_by_distance, poi_density_params, select_pois
 
@@ -67,7 +65,7 @@ class POIItem:
     source: str        # 来源：building / transport / park / node
     pool_key: str = ""        # 历史 CMM 字段，仅用于兼容读取
     draw_name: bool = True    # 是否绘制名字文字（红绿灯/出入口等不画）
-    avoid_dir: Optional[Tuple[float, float]] = None  # 站台圆点避让方向（像素单位向量）
+    station_box: tuple | None = None
     name_source: str = "empty"  # 自定义名称、游戏名称或空名称。
     semantic_level: str = "BUILDING"
     group_id: str = ""
@@ -78,6 +76,12 @@ class POIItem:
     world_x: float | None = None
     world_z: float | None = None
     strong_name: str = ""
+    symbol: Callable[[], None] | None = None
+    symbol_box: tuple | None = None
+    name_style: dict | None = None
+    name_font: ImageFont.FreeTypeFont | None = None
+    serving_line_ids: tuple[int, ...] = ()
+    member_stop_ids: tuple[int, ...] = ()
 
 
 class _Occupancy:
@@ -98,6 +102,13 @@ class _Occupancy:
     def overlaps(self, box):
         return any(box[0] < b[2] and b[0] < box[2] and box[1] < b[3] and b[1] < box[3]
                    for key in self._keys(box) for b in self.cells.get(key, ()))
+
+    def overlap_area(self, box):
+        # 一个占位框可能跨越多个网格，只计一次面积。
+        neighbors = {id(b): b for key in self._keys(box) for b in self.cells.get(key, ())}
+        return sum(max(0, min(box[2], b[2]) - max(box[0], b[0]))
+                   * max(0, min(box[3], b[3]) - max(box[1], b[1]))
+                   for b in neighbors.values())
 
 
 def _resolve_size(val, render_scale: float) -> float:
@@ -141,14 +152,8 @@ class POIIconLayer(Layer):
         self._icon_sources = {}
         self._color_cache = {}         # icon_id -> 主色 #RRGGBB
         self._font_cache = {}          # 字体尺寸到 ImageFont 的缓存。
-        # 站台圆点避让开关/距离（仅公共交通图叠加层启用，常规渲染恒为关闭，
-        # 保证正常模式 POI 完全不受影响）
-        self._station_avoid = False
-        self._station_avoid_dist = None
         self._transit_view_scale = 1.0
         self._prepared_catalogs = {}
-        self._poi_line_geometry = {}
-        self._poi_geometry_cache = {}
 
     def supports(self, document) -> bool:
         return True
@@ -212,68 +217,6 @@ class POIIconLayer(Layer):
                 shared[key] = catalog
         return catalog
 
-
-    def _service_stop_avoid_dir(self, mapdata: MapData, poi) -> Optional[Tuple[float, float]]:
-        """目录构建后在像素空间计算交通站点避让。"""
-        if not self._station_avoid or getattr(poi.source, "kind", "") != "stop":
-            return None
-        source_id = int(getattr(poi.source, "id", 0))
-        from ..services.transit.native import cs2_document, source_transports
-
-        document = cs2_document(mapdata)
-        transports = source_transports(document) if document is not None else mapdata.transports
-        node_id = source_id
-        if document is not None:
-            position = poi.anchor
-        else:
-            for source_stop in getattr(mapdata, "stops", ()) or ():
-                if int(getattr(source_stop, "id", -1)) == source_id:
-                    node_id = int(getattr(source_stop, "network_node_id", source_id))
-                    break
-            node = mapdata.node(node_id)
-            if node is None:
-                return None
-            position = node.pos
-
-        line_candidates = []
-        wanted_kind = str(getattr(poi, "kind", "")).casefold()
-        for tr in transports:
-            if not any(int(stop.node_id) == node_id for stop in tr.stops):
-                continue
-            if normalize_transit_kind(tr.type).value.casefold() == wanted_kind:
-                line_candidates.append(tr)
-        if not line_candidates:
-            line_candidates = [
-                tr for tr in transports
-                if any(int(stop.node_id) == node_id for stop in tr.stops)
-            ]
-
-        for tr in line_candidates:
-            points = self._poi_line_geometry.get(tr.id)
-            if points is None:
-                points = resolve_route_geometry(
-                    mapdata, tr, normalize_transit_kind(tr.type),
-                    cache=self._poi_geometry_cache,
-                ).points
-                self._poi_line_geometry[tr.id] = points
-            if not points:
-                continue
-            nx, nz = position.x, position.z
-            best, best_distance = 0, float("inf")
-            for index, point in enumerate(points):
-                distance = ((point.x - nx) ** 2 + (point.z - nz) ** 2)
-                if distance < best_distance:
-                    best_distance, best = distance, index
-            i0, i1 = max(0, best - 1), min(len(points) - 1, best + 1)
-            if i0 == i1:
-                continue
-            a = self.ctx.transform(points[i0].x, points[i0].z)
-            b = self.ctx.transform(points[i1].x, points[i1].z)
-            dx, dy = b[0] - a[0], b[1] - a[1]
-            length = math.hypot(dx, dy)
-            if length >= 1e-9:
-                return (-dy / length, dx / length)
-        return None
 
     def _service_poi_items(
         self, mapdata: MapData, cfg: dict, min_priority: int,
@@ -350,6 +293,11 @@ class POIIconLayer(Layer):
             px, py = self.ctx.transform(anchor.x, anchor.z)
             source_kind = str(getattr(poi.source, "kind", ""))
             source = "transport" if source_kind == "stop" else source_kind
+            station = self.ctx.shared.get("station_poi_by_stop", {}).get(int(poi.source.id)) if source_kind == "stop" else None
+            if station is not None:
+                px, py = station.px, station.py
+                if label:
+                    label = station.label
             result.append(POIItem(
                 px=px, py=py,
                 icon_id=str(getattr(poi, "icon_key", "") or category),
@@ -360,7 +308,7 @@ class POIIconLayer(Layer):
                 pool_key=str(getattr(poi, "pool_key", "") or ""),
                 draw_name=bool(getattr(poi, "draw_name", True) or name_source == "category")
                 and bool(label),
-                avoid_dir=self._service_stop_avoid_dir(mapdata, poi),
+                station_box=station.symbol_box if station is not None else None,
                 name_source=name_source,
                 semantic_level=str(getattr(poi, "semantic_level", "BUILDING")),
                 group_id=str(getattr(poi, "group_id", "") or ""),
@@ -374,6 +322,25 @@ class POIIconLayer(Layer):
             ))
         return result
 
+    def render_station_items(self, ctx: RenderContext, items: list[POIItem]) -> None:
+        """交通模型符号直接显示；身份和数量不经过 POI 目录再合并。"""
+        self.ctx = ctx
+        self.render_scale = ctx.zoom
+        self._raster_scale = 1.0
+        self._collision_scale = 1.0
+        self._static_png_profile = False
+        self._transit_view_scale = 1.0
+        self._poi_cfg = {"show_name": True}
+        self._occupancy = ctx.shared.setdefault("poi_name_occupancy", _Occupancy())
+        self._defer_names = True
+        self._pending_names = []
+        ctx.shared["station_poi_items"] = items
+        ctx.shared["station_poi_by_stop"] = {stop_id: item for item in items for stop_id in item.member_stop_ids}
+        for item in items:
+            self._draw_icon(item, 0, False, 0)
+        for args in self._pending_names:
+            self._draw_icon_name(*args)
+
     def render(self, ctx: RenderContext, document) -> None:
         """筛选并布局当前画布中的 POI 图标与名称。"""
         if self.sublayer is None:
@@ -382,7 +349,7 @@ class POIIconLayer(Layer):
                                                   force_detail=self.force_detail)]
                 if not self.transit_only:
                     self._children.append(BuildingPOILayer(force_detail=self.force_detail))
-            occupancy = _Occupancy()
+            occupancy = ctx.shared.setdefault("poi_name_occupancy", _Occupancy())
             icon_occupancy = _Occupancy()
             # 子图层先预留图标位置，再共享标注占位空间；交通标注优先。
             for child in self._children:
@@ -423,8 +390,6 @@ class POIIconLayer(Layer):
             self._init_icon_tools(cfg)
 
         self.ctx = ctx
-        self._poi_line_geometry = {}
-        self._poi_geometry_cache = {}
         self._poi_cfg = cfg
         self._active_profile = active_profile
         self._static_png_profile = static_profile
@@ -434,7 +399,7 @@ class POIIconLayer(Layer):
         self._collision_scale = self._raster_scale if static_profile else 1.0
         defer_to_parent = getattr(self, "_defer_names", False)
         if not defer_to_parent:
-            self._occupancy = _Occupancy()
+            self._occupancy = ctx.shared.setdefault("poi_name_occupancy", _Occupancy())
             self._icon_occupancy = _Occupancy()
             self._pending_names = []
         self._defer_names = True
@@ -476,24 +441,10 @@ class POIIconLayer(Layer):
             min_priority = max(min_priority, policy.poi_min_priority)
         show_categories = set(cfg.get("categories", []))
 
-        # 站台圆点避让（公共交通图叠加层）：交通站点 POI 图标让出站台圆点——
-        # "让位置/偏移距离"，而非靠图层顺序压住。仅公共交通图启用（transit_only
-        # 为 False 时 _station_avoid 恒为 False），常规渲染 POI 不受影响。
-        # 方向：与该站点所在线路线条垂直（切线法向）；距离：默认按
-        # 图标半宽+圆点半径+间隙随 zoom 等比自适应，可用 station_avoid_dist 覆盖。
-        self._station_avoid = transit_only and bool(cfg.get("station_avoid", True))
-        _avd = cfg.get("station_avoid_dist")
-        if isinstance(_avd, (int, float)) or isinstance(_avd, dict):
-            self._station_avoid_dist = (
-                _resolve_size(_avd, size_zoom) * raster_scale)
-        else:
-            self._station_avoid_dist = None  # None = 自适应（随 zoom 等比）
-
         # 从统一世界坐标目录适配全部候选对象，源识别在目录阶段完成。
         pois = self._collect_pois(mapdata, min_priority, show_categories)
         # 空白图标表示明确不绘制，聚类前移除以免抑制邻近符号。
-        pois = [poi for poi in pois if poi.poi_group == "area"
-                or not self.icon_map.is_hidden(poi.icon_id)]
+        pois = [poi for poi in pois if self.icon_map.icon_status(poi.icon_id) in {"visible", "empty"}]
         if not pois:
             self._defer_names = defer_to_parent
             return
@@ -512,15 +463,10 @@ class POIIconLayer(Layer):
                                         p.category, p.px, p.py, p.label))
         else:
             selected.sort(key=lambda p: (-p.priority, p.category, p.px, p.py, p.label))
-        selected_ids = {poi.poi_id for poi in selected}
         for poi in selected:
             self._draw_icon(poi, icon_size, bg_circle, bg_circle_size)
         for poi in pois:
-            if poi.poi_id not in selected_ids:
-                # 二代区域的图标和名称共用密度结果；显式空图标仍可独立标注。
-                if (poi.poi_group == "area" and poi.icon_id.startswith("cs2::")
-                        and not self.icon_map.is_hidden(poi.icon_id)):
-                    continue
+            if self.icon_map.icon_status(poi.icon_id) == "empty":
                 self._queue_unpainted_name(poi, icon_size)
         if not defer_to_parent:
             for args in self._pending_names:
@@ -554,10 +500,6 @@ class POIIconLayer(Layer):
             view_zoom = self.ctx.final_zoom / output_scale
             grid = _resolve_size(cfg.get("grid_size", 90), view_zoom) * output_scale
             limit = int(cfg.get("max_per_cell", 2))
-            if self.sublayer == "transit":
-                grid *= 0.5
-                transit_cfg = self.ctx.style.get("poi_icons", {}).get("transit", {})
-                limit = int(transit_cfg.get("max_per_cell", cfg.get("transit_max_per_cell", 3)))
             return select_pois(
                 selected, grid_size=grid, max_per_cell=limit,
                 origin=self.ctx.transform(0, 0), pixel_scale=aa,
@@ -569,10 +511,6 @@ class POIIconLayer(Layer):
                 active_profile.get("density_tier", "standard"))
             final_zoom = float(self.ctx.final_zoom)
             aa = self.ctx.zoom / final_zoom if final_zoom > 0 else 1.0
-            if self.sublayer == "transit":
-                grid *= 0.5
-                transit_cfg = self.ctx.style.get("poi_icons", {}).get("transit", {})
-                limit = int(transit_cfg.get("max_per_cell", limit))
             if not self.force_detail:
                 grid *= self.ctx.detail_policy.poi_grid_multiplier
                 cap = self.ctx.detail_policy.poi_max_per_cell
@@ -594,8 +532,6 @@ class POIIconLayer(Layer):
             layout_scale = max(width, height) / aa / 4096.0
             major = png_policy["mode"] == "major"
             grid = (110.0 if major else 70.0) * layout_scale
-            if self.sublayer == "transit":
-                grid *= 0.5
             return select_pois(
                 pois, grid_size=grid, max_per_cell=2 if major else 4,
                 origin=self.ctx.transform(0, 0), pixel_scale=aa,
@@ -607,10 +543,6 @@ class POIIconLayer(Layer):
         aa = self.ctx.zoom / final_zoom if final_zoom > 0 else 1.0
         grid = _resolve_size(cfg.get("grid_size", 90), final_zoom)
         limit = int(cfg.get("max_per_cell", 2))
-        if self.sublayer == "transit":
-            grid *= 0.5
-            transit_cfg = self.ctx.style.get("poi_icons", {}).get("transit", {})
-            limit = int(transit_cfg.get("max_per_cell", cfg.get("transit_max_per_cell", 3)))
         if not self.force_detail:
             grid *= self.ctx.detail_policy.poi_grid_multiplier
             cap = self.ctx.detail_policy.poi_max_per_cell
@@ -676,6 +608,13 @@ class POIIconLayer(Layer):
         bg_circle: bool,
         bg_circle_size: int,
     ) -> None:
+        if poi.symbol is not None:
+            poi.symbol()
+            x0, y0, x1, y1 = poi.symbol_box
+            self._occupancy.add(poi.symbol_box)
+            if poi.draw_name and poi.label:
+                self._pending_names.append((poi, icon_size, x0, y0, x1-x0, y1-y0))
+            return
         # 按实际图片宽度缩放，两种存储模式使用同一显示尺寸。
         cache_key = (poi.icon_id, icon_size)
         if cache_key not in self._icon_cache:
@@ -690,7 +629,6 @@ class POIIconLayer(Layer):
             if source_img is None:
                 LOGGER.warning("Missing POI icon asset: %s", poi.icon_id)
                 self._icon_cache[cache_key] = None
-                self._queue_unpainted_name(poi, icon_size)
                 return
             self._icon_sources[poi.icon_id] = source_img
             scale = icon_size / source_img.width
@@ -700,7 +638,6 @@ class POIIconLayer(Layer):
 
         icon_img = self._icon_cache[cache_key]
         if icon_img is None:
-            self._queue_unpainted_name(poi, icon_size)
             return
         source_img = self._icon_sources.get(poi.icon_id)
         bg_circle = bg_circle and not self.icon_map.get_icon(poi.icon_id).get("borderless", False)
@@ -709,22 +646,13 @@ class POIIconLayer(Layer):
         # 露出站点圆点。距离默认按 图标半宽+圆点半径+间隙 随 zoom 等比自适应，
         # 可用 poi_icons.station_avoid_dist 覆盖；方向不可算时兜底斜上方。
         ox = oy = 0.0
-        if self._station_avoid and poi.source == "transport":
-            d = self._station_avoid_dist
-            if d is None:
-                st_cfg = (self.ctx.style.get("transports") or {}).get("station") or {}
-                dot_r = _resolve_size(
-                    st_cfg.get("size", {"fixed": 2.5, "scaled": 2.5}),
-                    self.render_scale)
-                gap = (1.5 * self._raster_scale if self._static_png_profile
-                       else max(1.5, 1.5 * self.render_scale))
-                d = icon_size / 2.0 + dot_r + gap
-            if poi.avoid_dir is not None:
-                ox = poi.avoid_dir[0] * d
-                oy = poi.avoid_dir[1] * d
-            else:
-                ox = d * 0.70710678
-                oy = -d * 0.70710678
+        if poi.station_box is not None:
+            # 屏幕右上方的边界间隙；不查询线路法向或搜索空位。
+            gap = 3 * (self._raster_scale if self._static_png_profile else 1.0)
+            half_w = max(icon_img.width, bg_circle_size if bg_circle else 0) / 2
+            half_h = max(icon_img.height, bg_circle_size if bg_circle else 0) / 2
+            ox = poi.station_box[2] - poi.px + half_w + gap
+            oy = poi.station_box[1] - poi.py - half_h - gap
 
         x = int(round(poi.px + ox - icon_img.width / 2))
         y = int(round(poi.py + oy - icon_img.height / 2))
@@ -792,7 +720,6 @@ class POIIconLayer(Layer):
                          else self._collision_box(box))
         if (declutter and icon_occupancy is not None
                 and icon_occupancy.overlaps(collision_box)):
-            self._queue_unpainted_name(poi, icon_size)
             return
         if declutter and icon_occupancy is not None:
             icon_occupancy.add(collision_box)
@@ -838,8 +765,7 @@ class POIIconLayer(Layer):
                 self._draw_icon_name(*args)
 
     def _queue_unpainted_name(self, poi: POIItem, icon_size: int) -> None:
-        if not (poi.draw_name and poi.label
-                and (poi.poi_group == "area" or poi.name_source == "custom")):
+        if not (poi.draw_name and poi.label):
             return
         args = (poi, icon_size, poi.px, poi.py, 0, 0, 0.0, 0.0, None)
         if getattr(self, "_defer_names", False):
@@ -900,7 +826,8 @@ class POIIconLayer(Layer):
         输出旋转时：锚点位置已随地图 transform 旋转，文字保持水平正立可读，
         始终贴合屏幕阅读方向（图标居中、名字在右侧，均不旋转）。
         """
-        cfg = getattr(self, "_poi_cfg", self.ctx.style.get("poi_icons", {}))
+        cfg = {**getattr(self, "_poi_cfg", self.ctx.style.get("poi_icons", {})),
+               **(poi.name_style or {})}
         has_snapshot = isinstance(cfg.get("visibility_snapshot"), dict)
         if not has_snapshot and not cfg.get("show_name", True):
             return
@@ -919,7 +846,7 @@ class POIIconLayer(Layer):
             return
         offset = (_resolve_size(cfg.get("name_offset", 3), size_zoom)
                   * self._transit_view_scale)
-        font = self._get_font(size, poi.label)
+        font = poi.name_font or self._get_font(size, poi.label)
         # 描边颜色与宽度比例从主题读：预览侧 halos['poi'] 用同一组键判断要不要画
         # 描边（preview_scene._poi_name_halo），两端必须同源。缺省保持内置的
         # 「白色描边 + 字号 × 0.12」，即本层原来的硬编码行为。
@@ -927,7 +854,7 @@ class POIIconLayer(Layer):
         stroke_ratio = float(cfg.get("name_stroke_ratio", 0.12) or 0.0)
         stroke = (max(int(round(size * stroke_ratio)), 1)
                   if stroke_hex and stroke_ratio > 0 else 0)
-        fill = hex_to_rgb(self._icon_color(poi.icon_id)) + (255,)
+        fill = hex_to_rgb(cfg["name_color"] if "name_color" in cfg else self._icon_color(poi.icon_id)) + (255,)
         stroke_rgb = (hex_to_rgb(stroke_hex) + (255,)) if stroke_hex else fill
 
         probe = ImageDraw.Draw(Image.new("RGBA", (4, 4), (0, 0, 0, 0)))
@@ -988,11 +915,15 @@ class POIIconLayer(Layer):
             "preview", "normal_png", "transit_png"}
         avoid = (bool(getattr(self, "_overlap_avoidance", True))
                  if profile_layout else True)
+        if avoid and occupancy is not None:
+            def score(point):
+                x, y = point
+                box = (x, y, x + logical_width, y + logical_height)
+                return occupancy.overlap_area(box if static_layout else self._collision_box(box))
+            candidates = sorted(candidates, key=score)
         for x, y in candidates:
             box = (x, y, x + logical_width, y + logical_height)
             collision_box = box if static_layout else self._collision_box(box)
-            if avoid and occupancy is not None and occupancy.overlaps(collision_box):
-                continue
             if avoid and occupancy is not None:
                 occupancy.add(collision_box)
             paste_x = int(round(x * scale)) if static_layout else x

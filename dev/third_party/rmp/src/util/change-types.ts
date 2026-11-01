@@ -2,10 +2,6 @@ import { MultiDirectedGraph } from 'graphology';
 import { AttributesWithColor, dynamicColorInjection } from '../components/panels/details/color-field';
 import { InterchangeInfo, StationAttributesWithInterchange } from '../components/panels/details/interchange-field';
 import { linePaths, lineStyles } from '../components/svgs/lines/lines';
-import { LondonTubeBasicStationAttributes } from '../components/svgs/stations/london-tube-basic';
-import { OsakaMetroStationAttributes } from '../components/svgs/stations/osaka-metro';
-import { ShanghaiSuburbanRailwayStationAttributes } from '../components/svgs/stations/shanghai-suburban-railway';
-import { ShmetroBasic2020StationAttributes } from '../components/svgs/stations/shmetro-basic-2020';
 import stations from '../components/svgs/stations/stations';
 import {
     CityCode,
@@ -21,26 +17,9 @@ import {
 import { LinePathType, LineStyleType } from '../constants/lines';
 import { MasterParam } from '../constants/master';
 import { MiscNodeType } from '../constants/nodes';
-import { ExternalStationAttributes, StationType } from '../constants/stations';
+import { StationType } from '../constants/stations';
 import { makeParallelIndex, ParallelLinePathAttributes, supportsParallelLinePath } from './parallel';
 
-const stationsWithoutNameOffset = [
-    StationType.ShmetroBasic2020,
-    StationType.LondonTubeBasic,
-    StationType.ShanghaiSuburbanRailway,
-    StationType.OsakaMetro,
-];
-
-type StationsWithoutNameOffset =
-    | StationType.ShmetroBasic2020
-    | StationType.LondonTubeBasic
-    | StationType.ShanghaiSuburbanRailway
-    | StationType.OsakaMetro;
-type StationsWithoutNameOffsetAttributes =
-    | ShmetroBasic2020StationAttributes
-    | LondonTubeBasicStationAttributes
-    | ShanghaiSuburbanRailwayStationAttributes
-    | OsakaMetroStationAttributes;
 /**
  * Helper to check if a station type supports the transfer/interchange property.
  * Dynamically checks if the station has a 'transfer' property in its attributes.
@@ -64,52 +43,43 @@ const supportsTransferProperty = (
  * @param selectedFirst Current station's id.
  * @param newStnType New station's type.
  */
+const sharedStationKeys = new Set(['nameOffsetX', 'nameOffsetY', 'color', 'transfer', 'rotate', 'secondaryNames', 'lineCode', 'stationCode', 'open', 'construction', 'tram', 'textVertical', 'textOneLine']);
+
 export const changeStationType = (
     graph: MultiDirectedGraph<NodeAttributes, EdgeAttributes, GraphAttributes>,
     selectedFirst: string,
-    newStnType: StationType
+    newStnType: StationType,
+    populateTransfer = false
 ) => {
     const currentStnType = graph.getNodeAttribute(selectedFirst, 'type') as StationType;
-    const names = structuredClone(graph.getNodeAttribute(selectedFirst, currentStnType)!.names);
-    for (let i = 0; i < Math.abs(stations[newStnType].defaultAttrs.names.length - names.length); i++) {
-        if (stations[newStnType].defaultAttrs.names.length > names.length) {
-            names.push('Stn');
-        } else {
-            names.pop();
-        }
-    }
+    if (currentStnType === newStnType) return;
+    const oldAttrs = graph.getNodeAttribute(selectedFirst, currentStnType)!;
     const newAttrs = structuredClone(stations[newStnType].defaultAttrs);
-    newAttrs.names = names;
-    if (
-        !Object.values(stationsWithoutNameOffset).includes(currentStnType) ||
-        !Object.values(stationsWithoutNameOffset).includes(newStnType)
-    ) {
-        (
-            newAttrs as Exclude<
-                ExternalStationAttributes[keyof ExternalStationAttributes],
-                StationsWithoutNameOffsetAttributes | undefined
-            >
-        ).nameOffsetX = graph.getNodeAttribute(
-            selectedFirst,
-            currentStnType as Exclude<StationType, StationsWithoutNameOffset>
-        )!.nameOffsetX;
-        (
-            newAttrs as Exclude<
-                ExternalStationAttributes[keyof ExternalStationAttributes],
-                StationsWithoutNameOffsetAttributes | undefined
-            >
-        ).nameOffsetY = graph.getNodeAttribute(
-            selectedFirst,
-            currentStnType as Exclude<StationType, StationsWithoutNameOffset>
-        )!.nameOffsetY;
+    newAttrs.names = structuredClone(oldAttrs.names);
+    while (newAttrs.names.length < stations[newStnType].defaultAttrs.names.length) newAttrs.names.push('');
+    const oldValues = oldAttrs as unknown as Record<string, unknown>;
+    const nextValues = newAttrs as unknown as Record<string, unknown>;
+    for (const key of Object.keys(nextValues)) {
+        if (sharedStationKeys.has(key) && key in oldValues) nextValues[key] = structuredClone(oldValues[key]);
     }
-    if (dynamicColorInjection.has(newStnType) && dynamicColorInjection.has(currentStnType)) {
-        (newAttrs as AttributesWithColor).color = structuredClone(
-            (graph.getNodeAttribute(selectedFirst, currentStnType) as AttributesWithColor).color
-        );
-    }
+    if (oldAttrs.preciseNameOffsets) newAttrs.preciseNameOffsets = structuredClone(oldAttrs.preciseNameOffsets);
     graph.removeNodeAttribute(selectedFirst, currentStnType);
     graph.mergeNodeAttributes(selectedFirst, { type: newStnType, [newStnType]: newAttrs });
+    if (populateTransfer && 'transfer' in newAttrs && !('transfer' in oldAttrs))
+        autoPopulateTransfer(graph, selectedFirst as StnId);
+};
+
+export const stationTypeLosses = (
+    graph: MultiDirectedGraph<NodeAttributes, EdgeAttributes, GraphAttributes>, id: string, target: StationType
+): string[] => {
+    const current = graph.getNodeAttribute(id, 'type') as StationType;
+    if (current === target) return [];
+    const attrs = graph.getNodeAttribute(id, current)!;
+    const defaults = stations[current].defaultAttrs as unknown as Record<string, unknown>;
+    return Object.entries(attrs).filter(([key, value]) =>
+        !['names', 'preciseNameOffsets'].includes(key) && !(sharedStationKeys.has(key) && key in stations[target].defaultAttrs) &&
+        JSON.stringify(value) !== JSON.stringify(defaults[key])
+    ).map(([key]) => key);
 };
 
 /**
@@ -124,12 +94,13 @@ export const changeStationsTypeInBatch = (
     graph: MultiDirectedGraph<NodeAttributes, EdgeAttributes, GraphAttributes>,
     currentStnType: StationType | 'any',
     newStnType: StationType,
-    stations: StnId[]
+    stations: StnId[],
+    populateTransfer = false
 ) =>
     stations
         .filter(node => currentStnType === 'any' || graph.getNodeAttribute(node, 'type') === currentStnType)
         .forEach(stnId => {
-            changeStationType(graph, stnId, newStnType);
+            changeStationType(graph, stnId, newStnType, populateTransfer);
         });
 
 /**

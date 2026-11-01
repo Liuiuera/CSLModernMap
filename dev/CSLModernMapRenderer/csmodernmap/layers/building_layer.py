@@ -20,6 +20,7 @@ import aggdraw
 from ..spatial import building_bbox, intersects
 from .base import Layer, RenderContext
 from ..detail import classify_building_poi
+from ..building_categories import building_categories, category_palette
 from ..poi_color import (
     get_poi_color_resolver, mix_white, poi_tint_mix_white,
 )
@@ -124,6 +125,17 @@ class BuildingLayer(Layer):
         self.border_color = hex_to_rgb(cfg.get("border", "#D7DAE1"))
         default_color = hex_to_rgb(cfg.get("default", "#D8D2C6"))
         self.colors = {cat: default_color for cat in CATEGORIES}
+        self._category_colors = {}
+        if cfg.get('color_mode') == 'category':
+            categories = ctx.shared.get('building_categories')
+            if categories is None:
+                categories = building_categories(document)
+                ctx.shared['building_categories'] = categories
+            palette = category_palette(cfg)
+            self._category_colors = {
+                b.id: hex_to_rgb(palette[categories[b.id]]) for b in buildings
+                if categories[b.id] in palette
+            }
         # 建筑着色直接使用映射图标的颜色，不受图标可见性影响。
         self._poi_tint_enabled = str(cfg.get("color_mode", "poi")).casefold() != "uniform"
         self._poi_mix_white = poi_tint_mix_white(cfg)
@@ -197,7 +209,10 @@ class BuildingLayer(Layer):
     # ---- POI 淡色足迹 ----
 
     def _poi_fill(self, b):
-        """存在关联 POI 图标时返回其柔和化颜色。"""
+        """优先返回指定类别色，否则返回 POI 图标的柔和化颜色。"""
+        override = getattr(self, '_category_colors', {}).get(b.id)
+        if override is not None:
+            return override
         if not getattr(self, "_poi_tint_enabled", False):
             return None
         resolved = getattr(self, "_poi_building_colors", {}).get(int(b.id))

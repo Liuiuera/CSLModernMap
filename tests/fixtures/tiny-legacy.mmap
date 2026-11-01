@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Map version="4.1">
+<CSLExportXML version="4.1">
   <City>旧格式测试城</City>
   <Generated>2026-10-19</Generated>
   <SeaLevel>0</SeaLevel>
@@ -10,4 +10,4 @@
   <Segments>
     <Seg id="10" sn="1" en="2" icls="Road" width="16" CustomName="测试路" />
   </Segments>
-</Map>
+</CSLExportXML>

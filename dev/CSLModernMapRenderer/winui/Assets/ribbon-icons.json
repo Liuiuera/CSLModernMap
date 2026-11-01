@@ -13,6 +13,8 @@
   "rmp.gridLines": ["grid-dots", "PRIMARY"],
   "rmp.snapLines": ["magnet", "PRIMARY"],
   "rmp.detailsVisible": ["layout-sidebar-right", "PRIMARY"],
+  "rmp.showNames": ["typography", "PRIMARY"],
+  "rmp.showDefaultNames": ["typography", "PRIMARY"],
   "rmp.showWaterControls": ["droplet", "PRIMARY"],
   "rmp.misc-node-virtual": ["circle", "PRIMARY"],
   "rmp.misc-node-fill": ["paint", "PRIMARY"],

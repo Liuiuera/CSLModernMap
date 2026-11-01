@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """硬件配置识别：按可用内存 / CPU 核数输出低/中/高配置档与推荐默认值。
 
-低配专项#4（6.5.0）：低配机器默认关闭 2× 抗锯齿、平滑降档、开启低内存
+低配专项#4（6.5.0）：低配机器默认关闭 2× 抗锯齿、开启低内存
 自动分块，避免"默认路径直接撞峰值"；档位推荐仅为初始默认值，
 用户在界面仍可随时手动覆盖（现有控件即覆盖入口）。
 """
@@ -88,7 +88,7 @@ def detect_tier() -> dict:
         "tier": "低" | "中" | "高",
         "mem_gb": float | None,   # None = 内存检测失败
         "cores": int,
-        "recommend": {aa, memfriendly, water_smooth},
+        "recommend": {aa, memfriendly},
     }
     """
     mem_gb = total_memory_gb()

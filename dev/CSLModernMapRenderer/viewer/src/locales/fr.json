@@ -12,7 +12,7 @@
   "main_ui_a44c7ba211": "Routes",
   "main_ui_5b46860a8e": "Bâtiments",
   "main_ui_97492a0e5d": "Train",
-  "main_ui_57f78ba1f9": "Transports",
+  "main_ui_57f78ba1f9": "Trafic",
   "main_ui_b8466cd555": "Métro",
   "main_ui_9875b1f825": "Libellés",
   "main_ui_9ff2b9e94d": "Districts",
@@ -31,5 +31,15 @@
   "surface-poi-layer_shader_f2a5d36a5f": "Échec de la compilation du shader de surface des points d’intérêt",
   "surface-poi-layer_program_226d27beb7": "Impossible de créer le programme de surface des points d’intérêt",
   "surface-poi-layer_program_ea7d784c3e": "Échec de liaison du programme de surface des points d’intérêt",
-  "preview_title": "Aperçu cartographique CSLModernMap"
+  "preview_title": "Aperçu cartographique CSLModernMap",
+  "search_search": "Rechercher sur la carte",
+  "search_searchHelp": "Rechercher des noms ou des catégories sur la carte actuelle",
+  "search_empty": "Aucun objet correspondant",
+  "search_findHelp": "Saisissez un nom ou une catégorie en haut à gauche pour localiser un objet sur la carte.",
+  "search_group_building": "Autres bâtiments",
+  "search_group_road": "Routes",
+  "search_group_area": "Zones",
+  "search_group_poi": "Autres lieux",
+  "search_more": "Afficher plus",
+  "search_count": "({{number}})"
 }

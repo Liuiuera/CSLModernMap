@@ -137,11 +137,7 @@ def load_style(path: str, font_scale: float = 1.0) -> Style:
 
 
 def load_metro_style(styles_dir: str, font_scale: float = 1.0) -> Style:
-    """加载地铁图专用配置（styles/metro_map.yaml）。
-
-    与地图主题完全独立：地铁示意图纯图模式的线宽/站点/站名/徽章/
-    图例/色板/布局参数全部来自此文件。文件缺失时抛 FileNotFoundError。
-    """
+    """加载独立的 RMP 生成参数；不作为普通地图主题枚举。"""
     return load_style(str(Path(styles_dir) / METRO_STYLE_FILE),
                       font_scale=font_scale)
 

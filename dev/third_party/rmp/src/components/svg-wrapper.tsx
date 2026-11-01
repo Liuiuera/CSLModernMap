@@ -14,6 +14,7 @@ import { setSnapLines } from '../redux/app/app-slice';
 import { redoAction, saveGraph, undoAction } from '../redux/param/param-slice';
 import {
     clearSelected,
+    closeRadialTouchMenu,
     refreshEdgesThunk,
     refreshNodesThunk,
     setActive,
@@ -44,6 +45,7 @@ import {
 import { useMakeStationName } from '../util/random-station-names';
 import { rotateSelectedNodes } from '../util/transform';
 import { useViewportController } from '../util/use-viewport-controller';
+import { toMapVector } from '../util/map-rotation';
 import ContextMenu from './context-menu';
 import GridLines from './grid-lines';
 import { AttributesWithColor, dynamicColorInjection } from './panels/details/color-field';
@@ -57,7 +59,28 @@ import VirtualJoystick from './touch/virtual-joystick';
 
 const SvgWrapper = () => {
     const { t } = useTranslation();
+    const embedded = import.meta.env.MODE === 'embedded';
+    const [touchInput, setTouchInput] = React.useState(false);
     const dispatch = useRootDispatch();
+    React.useEffect(() => {
+        if (!embedded) return;
+        let touching = false;
+        const updateInput = (event: PointerEvent) => {
+            if (event.pointerType !== 'touch' && event.pointerType !== 'mouse' && event.pointerType !== 'pen') return;
+            const next = event.pointerType === 'touch';
+            if (next === touching) return;
+            touching = next;
+            setTouchInput(next);
+            if (!next) dispatch(closeRadialTouchMenu());
+        };
+        document.addEventListener('pointerdown', updateInput, true);
+        document.addEventListener('pointermove', updateInput, true);
+        return () => {
+            document.removeEventListener('pointerdown', updateInput, true);
+            document.removeEventListener('pointermove', updateInput, true);
+        };
+    }, [dispatch, embedded]);
+    const showTouchControls = embedded ? touchInput : isTouchClient();
     const graph = React.useRef(window.graph);
     const refreshAndSave = React.useCallback(() => {
         dispatch(saveGraph(graph.current.export()));
@@ -69,6 +92,7 @@ const SvgWrapper = () => {
         preference: { gridLines, snapLines, predictNextNode, autoParallel, autoChangeStationType },
     } = useRootSelector(state => state.app);
     const { svgViewBoxZoom, svgViewBoxMin } = useRootSelector(state => state.param);
+    const rotation = useRootSelector(state => state.param.present.attributes?.cmmRotation);
     const {
         selected,
         active,
@@ -146,6 +170,7 @@ const SvgWrapper = () => {
                 y: roundToMultiple(svgY, 5),
                 type,
                 [type]: attr,
+                ...(isStation ? { cmmName: { source: 'placeholder' as const } } : {}),
             });
 
             refreshAndSave();
@@ -294,8 +319,10 @@ const SvgWrapper = () => {
             });
             viewportCommitNow({ x: nextMin.x, y: nextMin.y, zoom: currentViewport.zoom });
         } else if (e.key === 'i' || e.key === 'j' || e.key === 'k' || e.key === 'l') {
-            const x_factor = (e.key === 'j' ? -1 : e.key === 'l' ? 1 : 0) * NODES_MOVE_DISTANCE;
-            const y_factor = (e.key === 'i' ? -1 : e.key === 'k' ? 1 : 0) * NODES_MOVE_DISTANCE;
+            const { x: x_factor, y: y_factor } = toMapVector({
+                x: (e.key === 'j' ? -1 : e.key === 'l' ? 1 : 0) * NODES_MOVE_DISTANCE,
+                y: (e.key === 'i' ? -1 : e.key === 'k' ? 1 : 0) * NODES_MOVE_DISTANCE,
+            });
             if (selected.size > 0) {
                 selected.forEach(s => {
                     if (graph.current.hasNode(s)) {
@@ -465,39 +492,43 @@ const SvgWrapper = () => {
                     // Additional 'transform' such as `translate(${x}, ${y}) scale(${scale})` will be applied to
                     // this group in updateViewportTransform, so all its children will be transformed accordingly.
                     ref={viewportRef}
+                    id="rmp-viewport"
                 >
-                    {gridLines && <GridLines svgWidth={width} svgHeight={height} />}
                     {isTouchClient() && mode === 'free' && <TouchOverlay />}
-                    {predictNextNode && selected.size === 1 && mode === 'free' && !active && <PredictNextNode />}
-                    {/* Provide SvgAssetsContext for components with imperative handle. (fonts bbox after load)  */}
-                    <utils.SvgAssetsContextProvider>
-                        <SvgCanvas />
-                    </utils.SvgAssetsContextProvider>
-                    {mode === 'select' && selectStart.x != 0 && selectStart.y != 0 && (
-                        <rect
-                            x={selectCoord.sx}
-                            y={selectCoord.sy}
-                            width={selectCoord.ex - selectCoord.sx}
-                            height={selectCoord.ey - selectCoord.sy}
-                            rx="2"
-                            stroke="#b5b5b6"
-                            strokeWidth="2"
-                            strokeOpacity="0.4"
-                            fill="#b5b5b6"
-                            opacity="0.75"
-                        />
-                    )}
-                    {isTouchClient() &&
+                    <g id="rmp-rotation"
+                        transform={rotation ? `rotate(${rotation.angle} ${rotation.cx} ${rotation.cy})` : undefined}>
+                        {gridLines && <GridLines key={rotation?.angle ?? 0} svgWidth={width} svgHeight={height} />}
+                        {predictNextNode && selected.size === 1 && mode === 'free' && !active && <PredictNextNode />}
+                        {/* Provide SvgAssetsContext for components with imperative handle. (fonts bbox after load)  */}
+                        <utils.SvgAssetsContextProvider>
+                            <SvgCanvas />
+                        </utils.SvgAssetsContextProvider>
+                        {mode === 'select' && selectStart.x != 0 && selectStart.y != 0 && (
+                            <rect
+                                x={selectCoord.sx}
+                                y={selectCoord.sy}
+                                width={selectCoord.ex - selectCoord.sx}
+                                height={selectCoord.ey - selectCoord.sy}
+                                rx="2"
+                                stroke="#b5b5b6"
+                                strokeWidth="2"
+                                strokeOpacity="0.4"
+                                fill="#b5b5b6"
+                                opacity="0.75"
+                            />
+                        )}
+                        {(!embedded || touchInput) && <RadialTouchMenu />}
+                    </g>
+                    {showTouchControls &&
                         [...selected].some(id => id.startsWith('stn_') || id.startsWith('misc_node_')) && (
                             <VirtualJoystick />
                         )}
-                    <RadialTouchMenu />
                 </g>
             </svg>
             <ContextMenu isOpen={contextMenu.isOpen} position={contextMenu.position} onClose={handleCloseContextMenu} />
             {isPortraitClient() && isDetailsOpen === 'hide' && (
                 <IconButton
-                    aria-label="open details panel"
+                    aria-label={t('cmm.openDetails')}
                     icon={<MdDoubleArrow style={{ transform: 'rotate(180deg)' }} />}
                     onClick={() => dispatch(showDetailsPanel())}
                     style={{

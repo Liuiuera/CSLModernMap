@@ -1,6 +1,6 @@
 """编译版本化的 MapLibre 预览场景并提供本地资源服务。
 
-预览直接使用 DocumentSession，不重复解析存档；地形图像复用正式地形图层。场景资源目录在发布后保持不变，便于 WebView 按需读取大型 GeoJSON。"""
+预览直接使用 DocumentSession，不重复解析存档；地形图像复用正式地形图层。资源按场景版本固定，路况首次请求时才生成。"""
 from __future__ import annotations
 
 from .zone_geometry import grid_rings
@@ -27,9 +27,10 @@ import numpy as np
 from PIL import Image, ImageFilter
 from .road_geometry import clip_polyline_span
 from .road_hierarchy import RoadLevel, road_style_candidates
-from .preview_road_order import VERSION as ROAD_ORDER_VERSION, build_road_order
+from .preview_road_order import VERSION as ROAD_ORDER_VERSION, build_road_order, flat_piece_key
 from .traffic import DIRECTION_BACKWARD, DIRECTION_FORWARD
 from .i18n import tr
+from .building_categories import building_categories, category_palette
 
 
 LOGGER = logging.getLogger(__name__)
@@ -111,6 +112,7 @@ def _document_fingerprint(document) -> str:
                 "displayName": getattr(item, "display_name").to_dict(),
                 "category": [item.category_id, item.category_name, item.category_locale],
                 "growth": [item.growth_kind, item.growth_use],
+                "height": [item.height_m, item.base_elevation_m, item.height_source],
                 "children": sorted(int(value) for value in
                                    (getattr(item, "child_ids", ()) or ())),
                 "points": [
@@ -345,6 +347,7 @@ def preview_theme(style: Any, options: dict[str, Any] | None = None) -> dict:
             "border": buildings.get("border", "#B9B2A5"),
             "colorMode": str(buildings.get("color_mode", "poi")),
             "poiTintMixWhite": poi_tint_mix,
+            "categoryColors": category_palette(buildings),
         },
         "poiVisibility": poi_visibility,
         "built_area": {
@@ -394,7 +397,9 @@ def preview_theme(style: Any, options: dict[str, Any] | None = None) -> dict:
                  "fill": zone.get("fill",
                      zone.get("colors", {}).get("default", "#C8C8C8")),
                  "opacity": float(zone.get("fill_alpha", 90)) / 255.0},
-        "poi": {"size": _preview_number(poi.get("icon_size", poi.get("size")), 18.0)},
+        "poi": {"size": _preview_number(poi.get("icon_size", poi.get("size")), 18.0),
+                "overlapAvoidance": (poi.get("active_profile") or {}).get("overlap_avoidance", True),
+                "transitOverlapAvoidance": (poi.get("transit_profile") or poi.get("active_profile") or {}).get("overlap_avoidance", True)},
         "baseText": data.get("labels", {}),
         "label": {"color": label_default.get("color", "#39424C"),
                   "size": _preview_number(label_default.get("size"), 12.0),
@@ -545,6 +550,10 @@ def _preview_water_upscale(document) -> int:
 
 
 def _feature(feature_id: str, geometry: dict, **properties: Any) -> dict:
+    if properties.get("geometryRole") in ("building", "area"):
+        from shapely.geometry import shape
+        anchor = shape(geometry).representative_point()
+        properties["navigationAnchor"] = [anchor.x, anchor.y]
     return {"type": "Feature", "id": feature_id,
             "properties": {"featureId": feature_id, **properties},
             "geometry": geometry}
@@ -610,106 +619,61 @@ def _line_geometry(points) -> dict | None:
     return {"type": "LineString", "coordinates": coordinates}
 
 
-def _unit_normals(points) -> list[tuple[float, float]]:
-    """每个点处切线 ``(dx, dz)`` 的右法线 ``(-dz, dx)/|·|``（世界坐标单位向量）。
+def _traffic_features(segment, road=None) -> list[dict]:
+    """共享一份中心线；方向统计和横向位置由查看器绘制。"""
+    from shapely.geometry import LineString
+    from .road_hierarchy import classify_traffic_segment
 
-    中间点用中心差分、端点用单侧差分，保证拐角处的偏移线仍然平行。
-    重合点没有切线，记 ``(0, 0)`` 原地不动，避免除零。
-    双向路两个方向共用同一份法线，省掉一半的切线计算。
-    """
-    last = len(points) - 1
-    if last < 1:  # 退化成点/空：返回零法线而不是抛异常（否则整层路况都会被拖没）
-        return [(0.0, 0.0)] * len(points)
-    normals = []
-    for index, point in enumerate(points):
-        if index == 0:
-            dx, dz = points[1].x - point.x, points[1].z - point.z
-        elif index == last:
-            dx, dz = point.x - points[index - 1].x, point.z - points[index - 1].z
-        else:
-            dx = points[index + 1].x - points[index - 1].x
-            dz = points[index + 1].z - points[index - 1].z
-        span = hypot(dx, dz)
-        normals.append((0.0, 0.0) if span <= 1e-9 else (-dz / span, dx / span))
-    return normals
-
-
-def _band_geometry(points, offset: float, normals) -> dict | None:
-    """沿法线把世界坐标折线平行挪 ``offset`` 米，再转经纬度 LineString。
-
-    偏移必须在**世界坐标（米）**里做：直接改经纬度会随纬度变形（同样米数，
-    经度跨度随纬度变化）。法线取行进方向右侧，正好对上 ``TrafficLane.position``
-    的符号约定（正 = 前进方向右侧）。世界偏移 ``(ox, oz)`` 对应的经纬度增量是
-    ``(-oz/M, ox/M)``（见 ``world_to_geo``），于是每点只需两次除法。
-    这里刻意写成列表推导而不是 ``for``+``append``：同一条预览里有几万条路段 ×
-    4 个点，循环开销会直接被放大成几百毫秒。
-    """
-    if len(points) < 2:
-        return None
-    return {"type": "LineString", "coordinates": [
-        [(-point.z - nz * offset) / METERS_PER_DEGREE,
-         (point.x + nx * offset) / METERS_PER_DEGREE]
-        for point, (nx, nz) in zip(points, normals)]}
-
-
-def _traffic_features(segment) -> list[dict]:
-    """把一条路段拆成按行驶方向分色的一到两条色带。
-
-    - 两个方向都有有效车道 → 两条，id ``traffic:{id}:f`` / ``:b``。
-    - 只有一个方向有有效车道 → 一条，id 沿用旧的 ``traffic:{id}``（兼容旧逻辑）。
-    - 完全没有有效车道（全是非机动车道 / 无统计 / 降级数据）→ 退回旧的
-      「一条中心线 + 路段加权均值」：宁可不分方向，也不让原本有色的路段变空白。
-      路段加权均值也是 ``-1`` 时不产出 feature（前端本就按 ``congestion >= 0`` 过滤）。
-    """
     points = segment.world_points()
-    segment_id = int(segment.segment_id)
-    center_geometry = _line_geometry(points)
-    if not center_geometry:
+    if len(points) < 2:
         return []
     road_width = float(segment.width if segment.width > 0 else sum(
         max(float(lane.width), 0.0) for lane in segment.lanes))
-    features = [_feature(
-        f"traffic:{segment_id}:footprint", center_geometry,
-        segmentId=segment_id, roadWidthMeters=road_width,
-        geometryRole="traffic-footprint")]
+    level = road.level if road is not None else classify_traffic_segment(segment)
+    properties = dict(
+        segmentId=int(segment.segment_id), physicalWidth=float(road.width) if road is not None else road_width,
+        styleKey=_road_style_key(road) if road is not None else f"{level.value}:ground",
+        level=level.value,
+        surface=road is not None and road.footprint is not None and len(road.footprint.points) >= 3,
+        geometryRole="traffic", forwardCongestion=-1.0, backwardCongestion=-1.0,
+        forwardWidth=0.0, backwardWidth=0.0, forwardOffset=0.0, backwardOffset=0.0)
+    directional = {direction: [lane for lane in segment.lanes
+        if lane.is_vehicle and lane.width > 0 and lane.direction == direction]
+        for direction, _ in _TRAFFIC_BANDS}
+    properties["splitDirections"] = all(directional.values())
+    properties["forwardSide"] = 1 if (
+        segment.direction_offset(DIRECTION_FORWARD, directional[DIRECTION_FORWARD]) >=
+        segment.direction_offset(DIRECTION_BACKWARD, directional[DIRECTION_BACKWARD])) else -1
     buckets = segment.directional_lanes()
+    congestion_by_direction = segment.directional_congestion(buckets)
     if not buckets:
-        stats = getattr(segment, "seg_stats", None)
-        congestion = float(getattr(stats, "weighted_avg_congestion", -1.0))
+        properties["splitDirections"] = False
+        congestion = float(segment.seg_stats.weighted_avg_congestion)
         if isfinite(congestion) and 0.0 <= congestion <= 1.0:
-            features.append(_feature(
-                f"traffic:{segment_id}", center_geometry,
-                segmentId=segment_id, congestion=congestion,
-                directionWidthMeters=road_width, geometryRole="traffic"))
-        return features
-
-    two_way = len(buckets) > 1
-    normals = None
+            properties.update(forwardCongestion=congestion, forwardWidth=road_width)
     for direction, label in _TRAFFIC_BANDS:
-        lanes = buckets.get(direction)
-        if not lanes:
-            continue
-        offset = segment.direction_offset(direction, lanes)
-        if offset == 0.0:
-            geometry = _line_geometry(points)
-        else:
-            if normals is None:
-                normals = _unit_normals(points)
-            geometry = _band_geometry(points, offset, normals)
-        if not geometry:
-            continue
+        lanes = buckets.get(direction, ())
         total_width = sum(max(float(lane.width), 0.0) for lane in lanes)
         if total_width <= 0.0:
             continue
-        congestion = sum(lane.congestion * max(float(lane.width), 0.0)
-                         for lane in lanes) / total_width
-        feature_id = (f"traffic:{segment_id}:{label[0]}" if two_way
-                      else f"traffic:{segment_id}")
-        features.append(_feature(
-            feature_id, geometry, segmentId=segment_id, direction=label,
-            congestion=congestion, directionWidthMeters=total_width,
-            geometryRole="traffic"))
-    return features
+        properties[label + "Congestion"] = congestion_by_direction[direction]
+        properties[label + "Width"] = total_width
+        properties[label + "Offset"] = segment.direction_offset(direction, lanes)
+    # 保留一份简化中心线，不为路况重新求交或按高度切段。
+    line = LineString([(p.x, p.z) for p in points]).simplify(0.25, preserve_topology=False)
+    geometry = {"type": "LineString", "coordinates": [
+        world_to_geo(x, z) for x, z in line.coords]}
+    return [_feature(f"traffic:{segment.segment_id}", geometry, **properties)]
+
+
+def _traffic_collection(session) -> dict:
+    features = []
+    snapshot = session.traffic_snapshot()
+    if snapshot is not None:
+        roads = session.road_scene().roads_by_id
+        for segment in snapshot.segments:
+            features.extend(_traffic_features(segment, roads.get(segment.segment_id)))
+    return {"type": "FeatureCollection", "features": features}
 
 
 def _road_style_key(road) -> str:
@@ -838,10 +802,10 @@ def _road_chain_feature(records, points, chain_index: int):
         styleKey=_road_style_key(road), physicalWidth=physical_width,
         lengthMeters=total_length, name=road_name,
         meanHeight=mean_y, sortKey=_road_sort_value(road, mean_y),
-        geometryRole="road-edge")
+        geometryRole="road-edge", navigationAnchor=_road_navigation_anchor(points))
 
 
-def _road_surface_feature(road):
+def _road_surface_feature(road, navigation_anchor=None):
     geometry = _polygon_geometry(road.footprint.points)
     if geometry is None:
         return None
@@ -856,27 +820,40 @@ def _road_surface_feature(road):
         styleKey=_road_style_key(road), physicalWidth=float(road.width),
         lengthMeters=float(road.length), name=name,
         meanHeight=float(road.mean_y),
-        sortKey=_road_sort_value(road), geometryRole="road-surface")
+        sortKey=_road_sort_value(road), geometryRole="road-surface",
+        navigationAnchor=navigation_anchor if navigation_anchor is not None else _road_navigation_anchor(road.points))
+
+
+def _road_navigation_anchor(points):
+    from shapely.geometry import LineString
+    line = LineString([(point.x, point.z) for point in points])
+    point = line.interpolate(.5, normalized=True)
+    return world_to_geo(point.x, point.y)
 
 
 def _ordered_road_features(scene, order=None):
     order = build_road_order(scene) if order is None else order
+    flat_pieces = sorted((piece for pieces in order.pieces.values() for piece in pieces
+                          if piece.flat_group is not None), key=flat_piece_key)
+    flat_order = {(piece.road.id, piece.index): index for index, piece in enumerate(flat_pieces)}
     features = []
     fallback_by_rank = {}
     fallback_ids = set()
     for road in scene.roads:
         pieces = order.pieces[road.id]
         surface = road.footprint is not None and len(road.footprint.points) >= 3
+        navigation_anchor = _road_navigation_anchor(road.points) if surface else None
         if not surface and len(pieces) == 1:
-            fallback_by_rank.setdefault(pieces[0].rank, []).append(road)
             fallback_ids.add(road.id)
-            continue
+            if pieces[0].flat_group is None:
+                fallback_by_rank.setdefault(pieces[0].rank, []).append(road)
+                continue
         for piece in pieces:
             for paint_index, region in enumerate(piece.paint_regions):
                 if surface:
                     if not region.rings:
                         continue
-                    feature = _road_surface_feature(road)
+                    feature = _road_surface_feature(road, navigation_anchor)
                     polygons = region.polygons or tuple((ring,) for ring in region.rings)
                     coordinates = [[[world_to_geo(x, z) for x, z in ring]
                                     for ring in polygon] for polygon in polygons]
@@ -895,6 +872,9 @@ def _ordered_road_features(scene, order=None):
                 feature['id'] = feature_id
                 feature['properties'].update(featureId=feature_id, rank=piece.rank,
                                              fragmentIndex=piece.index)
+                if piece.flat_group is not None:
+                    feature['properties'].update(flatGroup=piece.flat_group,
+                        sortKey=flat_order[road.id, piece.index])
                 features.append(feature)
                 if surface and region.boundaries:
                     features.append(_feature(
@@ -916,6 +896,9 @@ def _ordered_road_features(scene, order=None):
     for feature in _legacy_width_transition_features(scene, fallback_ids):
         road_id = feature['properties']['roadId']
         feature['properties']['rank'] = order.pieces[road_id][0].rank
+        piece = order.pieces[road_id][0]
+        if piece.flat_group is not None:
+            feature['properties'].update(flatGroup=piece.flat_group, sortKey=flat_order[road_id, piece.index])
         features.append(feature)
     return features, order.diagnostics
 
@@ -1011,11 +994,11 @@ def _compile_poi_atlas(root, cfg, keys, *, diagnostics=None):
     layer = POIIconLayer()
     layer._init_icon_tools(cfg)
     layer._load_sprite(cfg)
-    hidden_keys = {key for key in keys
-                   if (info := layer.icon_map.get_icon(key)) is not None
-                   and info.get("hidden", False)}
+    statuses = {key: layer.icon_map.icon_status(key) for key in keys}
+    hidden_keys = {key for key, status in statuses.items() if status in {"hidden", "empty"}}
     if diagnostics is not None:
-        diagnostics.setdefault("hidden", []).extend(sorted(hidden_keys))
+        for status in ("hidden", "empty"):
+            diagnostics.setdefault(status, []).extend(key for key, value in statuses.items() if value == status)
     keys = sorted(keys - hidden_keys)
     side, columns = 48, 16
     atlas = Image.new("RGBA", (columns*side, max(1, (len(keys)+columns-1)//columns)*side))
@@ -1076,7 +1059,7 @@ def _apply_poi_density(features, cfg):
         for feature in features:
             props = feature["properties"]
             if (zoom < props["minZoom"]
-                    or props.get("iconStatus") in {"missing", "hidden", "orphan"}):
+                    or props.get("iconStatus") in {"missing", "hidden", "empty", "orphan"}):
                 continue
             lng, lat = feature["geometry"]["coordinates"]
             items.append(SimpleNamespace(
@@ -1140,9 +1123,28 @@ def _write_distance_texture(root: Path, field, revision: int) -> dict:
     }
 
 
+def _preview_poi_params(style, options):
+    from dataclasses import replace
+    from .services.poi import POIJobParams
+
+    data = getattr(style, "data", style)
+    cfg = data.get("poi_icons", {})
+    params = POIJobParams.from_style(data)
+    selection = _preview_transit_selection(data, options)
+    params = replace(params,
+        transit_types=options.get("poi_transit_types", selection.types),
+        transit_line_ids=options.get("poi_transit_line_ids", selection.line_ids))
+    return params, replace(params,
+        scope="transit", min_priority=0, categories=(),
+        active_profile=cfg.get("transit_profile", cfg.get("active_profile", {})),
+        transit_types=options.get("transit_view_types"),
+        transit_line_ids=options.get("transit_view_line_ids"))
+
+
 def preview_source_signatures(style, options):
     """只把几何依赖计入数据身份，绘制和可见性变化不重新编译数据。"""
     data = getattr(style, "data", style)
+    from .built_area import DEFAULT_EXCLUDE_SERVICES
     transit_selection = _preview_transit_selection(style, options)
     built_cfg = data.get("built_area", {})
     if (str(built_cfg.get("backend", "surface")).lower() == "legacy"
@@ -1156,21 +1158,25 @@ def preview_source_signatures(style, options):
             "cellMeters": float(
                 built_cfg.get("surface_cell_meters", 8.0) or 8.0),
             "excludeServices": tuple(
-                built_cfg.get("exclude_services") or ()),
+                built_cfg.get("exclude_services") or DEFAULT_EXCLUDE_SERVICES),
         }
-    poi = {k: v for k, v in data.get("poi_icons", {}).items()
-           if k not in {"icon_size", "size", "enabled", "show_name",
-                        "visibility_snapshot"}}
-    # 图标及名称开关只改变预览展示；源保留所有合格图标，重新启用时无需编译。
-    for owner in ("building", "transit"):
-        if isinstance(poi.get(owner), dict):
-            poi[owner] = {
-                key: value for key, value in poi[owner].items()
-                if key not in {"show_name", "enabled"}
-            }
-            if not poi[owner]:
-                poi.pop(owner)
-    road_geometry = {"chainVersion": _ROAD_CHAIN_VERSION,
+    from dataclasses import replace
+    params, transit_params = _preview_poi_params(data, options)
+    cfg = data.get("poi_icons", {})
+    poi_resources = {key: cfg.get(key) for key in ("icons_dir", "appearance", "sprite")}
+    poi_density = {key: cfg.get(key) for key in (
+        "visual_merge_enabled", "grid_size", "max_per_cell",
+        "visual_merge_distance", "merge_distance")}
+    # 目录、密度和图集依赖数据；文字样式、显示尺寸和显隐由 Viewer 即时应用。
+    poi = {
+        "catalog": params.fingerprint,
+        **poi_resources, **poi_density,
+        **{key: cfg.get(key) for key in (
+            "use_game_names", "hidden_categories", "facility_selection",
+            "facility_hierarchy",
+        )},
+    }
+    road_geometry = {"navigationAnchor": 1, "chainVersion": _ROAD_CHAIN_VERSION,
                      "orderVersion": ROAD_ORDER_VERSION,
                      "accurateIntersections": bool(data.get("roads", {}).get("accurate_intersections", True)),
                      "widthEpsilon": _ROAD_WIDTH_EPSILON,
@@ -1181,11 +1187,12 @@ def preview_source_signatures(style, options):
                       "rdp": _WATER_PREVIEW_RDP,
                       "chaikin": _WATER_PREVIEW_CHAIKIN,
                       "minArea": _WATER_PREVIEW_MIN_AREA}
+    station_cfg = (data.get("transports") or {}).get("station", {}) or {}
     dependencies = {
         "terrain": [data.get("terrain", {}), options.get("terrain", {}), options.get("bounds")],
         "roads": road_geometry,
         "builtArea": built,
-        "pois": ["line-membership-v3", poi,
+        "pois": ["line-membership-v3", "search-category-v1", poi,
                  transit_selection.to_dict(),
                  options.get("poi_transit_types"), options.get("poi_transit_line_ids"),
                  options.get("poi_hidden_categories"),
@@ -1193,30 +1200,25 @@ def preview_source_signatures(style, options):
                  options.get("poi_mapping_revision", 0)],
         # 公共交通视图的图标只来自线路站点；普通地图的 POI 设置不能裁剪或使其失效。
         "transitViewPois": [
-            options.get("transit_view_types"), options.get("transit_view_line_ids"),
-            (data.get("poi_icons") or {}).get("use_game_names", False),
-            (data.get("poi_icons") or {}).get("facility_selection", {}),
-            (data.get("poi_icons") or {}).get("facility_hierarchy", {}),
-            "line-stop-icons-v4",
-            (data.get("poi_icons") or {}).get("transit_profile", {}),
+            # 只来自线路站点，不受普通地图装饰筛选影响。
+            replace(transit_params, show_decorative_pois=True).fingerprint,
+            cfg.get("use_game_names", False),
+            cfg.get("facility_selection", {}),
+            cfg.get("facility_hierarchy", {}),
+            "line-stop-icons-v4", "search-category-v1",
             data.get("_poi_mapping_override"),
             options.get("poi_mapping_revision", 0),
-            (data.get("poi_icons") or {}).get("icon_overrides", {}),
-            {
-                key: (data.get("poi_icons") or {}).get(key)
-                for key in (
-                    "appearance", "building_merge_enabled", "transit_merge_enabled",
-                    "block_gap_m", "hub_core_m", "merge_overrides",
-                )
-            },
+            poi_resources,
         ],
         "transit": [transit_selection.to_dict(),
                     (data.get("transports") or {}).get("grouping", {})],
         "stations": [transit_selection.to_dict(),
-                     options.get("station_merge_enabled", True),
-                     options.get("station_merge_range", 48.0),
-                     (data.get("transports") or {}).get("station", {})],
+                     options.get("station_merge_enabled", station_cfg.get("merge_enabled", True)),
+                     options.get("station_merge_range", station_cfg.get("merge_range", 48.0)),
+                     {key: station_cfg.get(key, default)
+                      for key, default in (("merge_bus_tram", True), ("merge_train_metro", False), ("merge_overrides", {}))}],
         "districts": [
+            "navigation-anchor-v1",
             "facility-union-v1",
             sorted(options.get("district_ids") or []),
             sorted(options.get("park_ids") or []),
@@ -1235,10 +1237,11 @@ def preview_source_signatures(style, options):
         if key in data.get("poi_icons", {})
     }
     poi_icon_colors["mappingOverride"] = data.get("_poi_mapping_override")
-    dependencies["buildings"] = ["building-poi-colors-v1", poi_icon_colors, options.get("poi_mapping_revision", 0),
+    dependencies["buildings"] = ["navigation-anchor-v1", "building-categories-v1", poi_icon_colors, options.get("poi_mapping_revision", 0),
                                  data.get("poi_icons", {}).get("use_game_names", False)]
     dependencies["landUse"] = 2
-    for key in ("forest", "railway", "traffic", "proceduralObjects"):
+    dependencies["traffic"] = "edge-bands-v3"
+    for key in ("forest", "railway", "proceduralObjects"):
         dependencies[key] = 1
     # labels.geojson 始终携带完整的道路 / 区划 / 区域文字。显示开关由
     # preview_theme 的轻量展示状态控制，不能让开关文字触发场景重编译。
@@ -1300,6 +1303,27 @@ class PreviewSceneBundle:
     _lock: Any = field(default_factory=threading.Lock, repr=False)
     _readers: int = field(default=0, init=False, repr=False)
     _retired: bool = field(default=False, init=False, repr=False)
+    navigation_session: Any = field(default=None, repr=False)
+    _navigation_lock: Any = field(default_factory=threading.Lock, repr=False)
+    _traffic_lock: Any = field(default_factory=threading.Lock, repr=False)
+
+    def traffic_path(self) -> Path:
+        path = self.root / "traffic.geojson"
+        with self._traffic_lock:
+            if not path.exists():
+                if self.navigation_session is None:
+                    raise RuntimeError("Traffic source requires a document session")
+                body = _json_bytes(_traffic_collection(self.navigation_session))
+                temporary = path.with_suffix(".tmp")
+                temporary.write_bytes(body)
+                temporary.replace(path)
+        return path
+
+    def navigation_payload(self) -> dict | None:
+        if self.navigation_session is None:
+            return None
+        with self._navigation_lock:
+            return self.navigation_session.navigation()
 
     def retain(self) -> None:
         with self._lock:
@@ -1366,7 +1390,7 @@ class PreviewSceneCompiler:
             if previous:
                 # 不可变文件可链接进下一快照，避免重新复制 GeoJSON。
                 for path in previous.root.iterdir():
-                    if path.name != "manifest.json":
+                    if path.name not in {"manifest.json", "traffic.tmp"}:
                         try:
                             os.link(path, root / path.name)
                         except OSError:
@@ -1443,6 +1467,7 @@ class PreviewSceneCompiler:
                 "renderStack": list(_preview_render_stack()),
                 "theme": preview_theme(style, options),
                 "fonts": fonts,
+                "navigation": {"schemaVersion": 1, "url": "navigation.json"},
                 "capabilities": {
                     "nativeText": True,
                     "pan": True,
@@ -1461,7 +1486,8 @@ class PreviewSceneCompiler:
                 (root / "poi-sprite.json").write_text("{}", encoding="utf-8")
             (root / "manifest.json").write_bytes(_json_bytes(manifest))
             report(94, tr("gui.progress.scene.ready"))
-            return PreviewSceneBundle(root, scene_id, int(revision), manifest)
+            return PreviewSceneBundle(root, scene_id, int(revision), manifest,
+                                      navigation_session=session)
         except Exception:
             shutil.rmtree(root, ignore_errors=True)
             raise
@@ -1551,6 +1577,7 @@ class PreviewSceneCompiler:
                  "_poi_mapping_override": options["style"].get("_poi_mapping_override")})
             buildings = []
             land_use = []
+            categories = building_categories(document)
             for item in document.buildings:
                 if int(item.id) in facility_container_ids:
                     continue
@@ -1572,6 +1599,9 @@ class PreviewSceneCompiler:
                     category=category, role=_enum_text(item.role), name=name,
                     nameSource=selected_name.source, categoryId=item.category_id,
                     categoryName=item.category_name, categoryLocale=item.category_locale,
+                    colorCategory=categories[item.id],
+                    height_m=item.height_m, base_elevation_m=item.base_elevation_m,
+                    height_source=item.height_source,
                     poiColor=poi_color,
                     stationId=item.station_id, semanticLevel=semantic_level,
                     groupId=group_id, parentPoiId=parent_poi_id,
@@ -1652,7 +1682,8 @@ class PreviewSceneCompiler:
         if "water" in options["changed"]:
             start_domain("water", "平滑水域")
             from .built_area import _poly_area
-            from .layers.water_layer import _chaikin, _rdp
+            from .layers.water_layer import prepare_water_ring
+            from .shoreline import smooth_shoreline
             water_upscale = _preview_water_upscale(document)
             # 简化距离与面积跟随采样倍数换算，保持原世界单位阈值。
             grid_scale = water_upscale / _WATER_PREVIEW_UPSCALE
@@ -1665,11 +1696,9 @@ class PreviewSceneCompiler:
                          for body in getattr(document.derived, "water_bodies", ())]
             else:
                 rings = []
-                for polygon in water.polygons:
-                    smooth = _chaikin(
-                        _rdp(polygon, _WATER_PREVIEW_RDP * grid_scale),
-                        iterations=_WATER_PREVIEW_CHAIKIN,
-                    )
+                for index in range(len(water.polygons)):
+                    points, pinned = prepare_water_ring(water, index, _WATER_PREVIEW_RDP * grid_scale)
+                    smooth = smooth_shoreline(points, pinned, _WATER_PREVIEW_CHAIKIN)
                     if len(smooth) < 3 or _poly_area(smooth) <= 1e-6:
                         continue
                     rings.append([
@@ -1766,7 +1795,8 @@ class PreviewSceneCompiler:
                 stations.append(_feature(
                     f"station:{item.id}", {"type": "Point",
                         "coordinates": world_to_geo(position.x, position.z)},
-                    stationId=str(item.id), name=name,
+                    stationId=str(item.id), name=name, poiId=f"station:{item.id}",
+                    memberStopIds=list(item.member_stop_ids), symbolKind="station", drawName=bool(name),
                     kind=_enum_text(getattr(item, "kind", "station")).lower(),
                     servingLineIds=sorted(serving),
                     servingGroupIds=sorted(int(value) for value in getattr(
@@ -1778,23 +1808,7 @@ class PreviewSceneCompiler:
             _write_geojson(root, "stations", stations, revision, sources)
 
         if "traffic" in options["changed"]:
-            start_domain("traffic", "交通状态")
-            traffic = []
-            try:
-                snapshot = session.traffic_snapshot()
-                if snapshot is not None:
-                    for item in snapshot.segments:
-                        traffic.extend(_traffic_features(item))
-                    for item in snapshot.lights:
-                        traffic.append(_feature(
-                            f"traffic-light:{item.node_id}", {"type": "Point",
-                                "coordinates": world_to_geo(item.position.x, item.position.z)},
-                            nodeId=int(item.node_id), active=bool(item.active),
-                            geometryRole="traffic-light"))
-            except Exception:
-                # 交通数据是可选图层，坏了不该拖垮整张预览，但也不能再静默吞掉。
-                LOGGER.warning("生成交通状态图层失败", exc_info=True)
-            _write_geojson(root, "traffic", traffic, revision, sources)
+            sources["traffic"] = f"traffic.geojson?revision={revision}"
 
         if "districts" in options["changed"]:
             start_domain("districts", "区划")
@@ -1860,8 +1874,9 @@ class PreviewSceneCompiler:
 
         if {"pois", "transitViewPois"} & options["changed"]:
             start_domain("pois", "兴趣点")
-            from dataclasses import asdict, replace
-            from .services.poi import POIJobParams
+            rebuild_pois = "pois" in options["changed"]
+            rebuild_transit = "transitViewPois" in options["changed"]
+            from dataclasses import asdict
             cfg = options["style"].get("poi_icons", {})
             from .building_names import BuildingNames
             names = BuildingNames(document.buildings, cfg.get("use_game_names", False))
@@ -1872,42 +1887,34 @@ class PreviewSceneCompiler:
             hidden_categories = {
                 str(value) for value in cfg.get("hidden_categories", ())
             }
-            params = POIJobParams.from_style(options["style"])
-            selection = _preview_transit_selection(options["style"], options)
-            params = replace(
-                params,
-                transit_types=options.get("poi_transit_types", selection.types),
-                transit_line_ids=options.get("poi_transit_line_ids", selection.line_ids),
-            )
+            params, transit_view_params = _preview_poi_params(options["style"], options)
             # 名字完整进入 POI 数据，建筑 / 交通文字开关由 Viewer 即时控制。
             # 两个细分筛选（玩家命名设施 / 重要公共设施）仍只作用于导出 PNG。
             poi_catalog = session.poi_catalog(
                 asdict(params),
                 override_path=options["style"].get("_poi_mapping_override"),
-            )
-            # 清除普通地图筛选时保留层级和配置设置。
-            transit_view_params = replace(
-                params, scope="transit", min_priority=0, categories=(),
-                active_profile=cfg.get("transit_profile", active_profile),
-                transit_types=options.get("transit_view_types"), transit_line_ids=options.get("transit_view_line_ids"))
+            ) if rebuild_pois else None
             transit_view_catalog = session.poi_catalog(
                 asdict(transit_view_params),
                 override_path=options["style"].get("_poi_mapping_override"),
-            )
+            ) if rebuild_transit else None
             from .services.poi.visibility import visible_pois, icon_visibility_dependencies
             from .services.poi.ownership import poi_group_for, poi_visibility_group_for, sublayer_for
             poi_items = visible_pois(
                 poi_catalog, cfg, visibility_snapshot=visibility_snapshot,
-                include_hidden_icons=True)
-            normal_visibility_dependencies = icon_visibility_dependencies(poi_catalog)
-            transit_visibility_dependencies = icon_visibility_dependencies(transit_view_catalog)
+                include_hidden_icons=True) if rebuild_pois else ()
+            normal_visibility_dependencies = icon_visibility_dependencies(poi_catalog) if rebuild_pois else {}
+            transit_visibility_dependencies = icon_visibility_dependencies(transit_view_catalog) if rebuild_transit else {}
             catalog_kinds = set(getattr(poi_catalog, "kinds", ()))
             group_by_id = {
                 str(group.id): group
                 for group in getattr(poi_catalog, "facility_groups", ())
             }
-            pois = []
-            transit_view_pois = []
+            # 两源共享图集；未变源保留原文件，但其图标仍须进入新图集。
+            pois = [] if rebuild_pois else json.loads(
+                (root / sources["pois"].split("?")[0]).read_bytes())["features"]
+            transit_view_pois = [] if rebuild_transit else json.loads(
+                (root / sources["transitViewPois"].split("?")[0]).read_bytes())["features"]
             icon_diagnostics = {"hidden": [], "missing": [], "orphan": []}
             for item in poi_items:
                 if not modern_profile and item.priority < params.min_priority:
@@ -1923,7 +1930,8 @@ class PreviewSceneCompiler:
                 group = group_by_id.get(str(getattr(item, "group_id", "") or ""))
                 pois.append(_feature(
                     f"poi:{item.id}", {"type": "Point", "coordinates": world_to_geo(item.anchor.x, item.anchor.z)},
-                    poiId=str(item.id), category=item.category, kind=item.kind,
+                    poiId=str(item.id), sourceId=item.source.id, sourceKind=item.source.kind,
+                    category=item.category, kind=item.kind,
                     servingLineIds=list(item.serving_line_ids), lineRelated=item.source.kind == "stop" or bool(item.serving_line_ids),
                     poiGroup=group_name, visibilityGroup=poi_visibility_group_for(item),
                     visibilityGroups=normal_visibility_dependencies[str(item.id)],
@@ -1962,10 +1970,10 @@ class PreviewSceneCompiler:
                 str(value.id): value
                 for value in getattr(transit_view_catalog, "facility_groups", ())
             }
-            for item in visible_pois(
+            for item in (visible_pois(
                     transit_view_catalog, transit_visibility_cfg,
-                    visibility_snapshot=visibility_snapshot, include_hidden_icons=True):
-                selected_name = names.poi(item, group_by_id)
+                    visibility_snapshot=visibility_snapshot, include_hidden_icons=True) if rebuild_transit else ()):
+                selected_name = names.poi(item, transit_group_by_id)
                 display_name = selected_name.text
                 group_name = poi_group_for(item)
                 # 源保留完整交通目录；各设施的展示距离由预览器按缩放应用，避免全城视图过密。
@@ -1977,7 +1985,8 @@ class PreviewSceneCompiler:
                     f"transit-view-poi:{item.id}",
                     {"type": "Point", "coordinates": world_to_geo(
                         item.anchor.x, item.anchor.z)},
-                    poiId=str(item.id), category=item.category, kind=item.kind,
+                    poiId=str(item.id), sourceId=item.source.id, sourceKind=item.source.kind,
+                    category=item.category, kind=item.kind,
                     servingLineIds=list(item.serving_line_ids), lineRelated=item.source.kind == "stop" or bool(item.serving_line_ids),
                     poiGroup=group_name, visibilityGroup=poi_visibility_group_for(item),
                     visibilityGroups=transit_visibility_dependencies[str(item.id)],
@@ -2003,18 +2012,24 @@ class PreviewSceneCompiler:
             icon_colors, hidden_icon_keys = _compile_poi_atlas(
                 root, {**cfg, "_poi_mapping_override": options["style"].get("_poi_mapping_override")}, {p["properties"]["iconKey"] for p in (
                     pois + transit_view_pois)},
-                diagnostics=icon_diagnostics)
-            pois = [p for p in pois
-                    if p["properties"]["visibilityGroup"] == "area"
-                    or p["properties"]["iconKey"] not in hidden_icon_keys]
-            transit_view_pois = [p for p in transit_view_pois
-                                 if p["properties"]["iconKey"] not in hidden_icon_keys]
+                diagnostics=icon_diagnostics,
+            )
+            suppressed = set(icon_diagnostics["hidden"])
+            pois = [p for p in pois if p["properties"]["iconKey"] not in suppressed]
+            transit_view_pois = [p for p in transit_view_pois if p["properties"]["iconKey"] not in suppressed]
             for feature in pois + transit_view_pois:
                 props = feature["properties"]
+                # POI 独立携带游戏译名，离线裁剪或关闭建筑图层后仍可搜索分类。
+                if props["sourceKind"] == "building":
+                    building = building_names.buildings[int(props["sourceId"])]
+                    props.update(categoryId=building.category_id,
+                                 categoryName=building.category_name,
+                                 categoryLocale=building.category_locale)
                 if props.get("iconStatus") == "orphan":
                     icon_diagnostics["orphan"].append(props["poiId"])
                 else:
                     props["iconStatus"] = (
+                        "empty" if props["iconKey"] in icon_diagnostics["empty"] else
                         "missing" if props["iconKey"] in icon_diagnostics["missing"]
                         else ("hidden" if props["iconKey"] in hidden_icon_keys else "visible")
                     )
@@ -2022,16 +2037,24 @@ class PreviewSceneCompiler:
                 icon_diagnostics[key] = sorted(
                     set(str(value) for value in icon_diagnostics[key]))
             options["poiIconDiagnostics"] = icon_diagnostics
-            _apply_poi_density(pois, cfg)
-            for feature in pois:
+            if rebuild_pois:
+                _apply_poi_density(pois, cfg)
+            if rebuild_transit:
+                _apply_poi_density(transit_view_pois, {
+                    "active_profile": transit_view_params.active_profile,
+                    "merge_overrides": cfg.get("merge_overrides", {}),
+                })
+            for feature in pois + transit_view_pois:
                 if feature["properties"].get("owner") == "transit":
                     feature["properties"]["priority"] = max(
                         1000, int(feature["properties"].get("priority", 0)))
                 feature["properties"]["labelColor"] = icon_colors.get(
                     feature["properties"]["iconKey"], "#505564")
-            _write_geojson(root, "pois", pois, revision, sources)
-            _write_geojson(
-                root, "transitViewPois", transit_view_pois, revision, sources)
+            if rebuild_pois:
+                _write_geojson(root, "pois", pois, revision, sources)
+            if rebuild_transit:
+                _write_geojson(
+                    root, "transitViewPois", transit_view_pois, revision, sources)
 
         if "labels" in options["changed"]:
             start_domain("labels", "文字标注")
@@ -2144,11 +2167,42 @@ class _PreviewRequestHandler(BaseHTTPRequestHandler):
             with owner._lock:
                 bundle = owner._bundles.get(parts[2]) if len(parts) > 2 else None
                 root = bundle.root if bundle is not None else None
+                if bundle is not None and relative == ["traffic.geojson"]:
+                    bundle.retain()
         else:
             root = None
             relative = []
         if root is None:
             self.send_error(404)
+            return
+        if parts[1] == "scene" and relative == ["traffic.geojson"]:
+            try:
+                body = bundle.traffic_path().read_bytes()
+            except Exception:
+                LOGGER.exception("生成交通状态图层失败")
+                self.send_error(500, "Traffic source generation failed")
+                return
+            finally:
+                bundle.release()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/geo+json; charset=utf-8")
+            self.send_header("Content-Length", str(len(body)))
+            self.send_header("Cache-Control", "no-store")
+            self.end_headers()
+            self.wfile.write(body)
+            return
+        if parts[1] == "scene" and relative == ["navigation.json"]:
+            payload = bundle.navigation_payload()
+            if payload is None:
+                self.send_error(404)
+                return
+            body = _json_bytes(payload)
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Content-Length", str(len(body)))
+            self.send_header("Cache-Control", "no-store")
+            self.end_headers()
+            self.wfile.write(body)
             return
         try:
             target = (Path(root) / Path(*relative)).resolve()
@@ -2179,9 +2233,13 @@ class _PreviewRequestHandler(BaseHTTPRequestHandler):
                          else "private, max-age=31536000, immutable")
         self.send_header("X-Content-Type-Options", "nosniff")
         self.end_headers()
-        with target.open("rb") as source:
-            for chunk in iter(lambda: source.read(1024 * 1024), b""):
-                self.wfile.write(chunk)
+        try:
+            with target.open("rb") as source:
+                for chunk in iter(lambda: source.read(1024 * 1024), b""):
+                    self.wfile.write(chunk)
+        except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
+            # 换图后客户端可能取消尚未完成的资源请求。
+            return
 
     def log_message(self, _format: str, *_args) -> None:
         return

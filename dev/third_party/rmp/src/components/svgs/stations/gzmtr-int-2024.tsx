@@ -1,4 +1,5 @@
-import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
+import RmgFields, { StationField as RmgFieldsField } from '../../panels/details/station-fields';
+
 import { MonoColour } from '@railmapgen/rmg-palette-resources';
 import { utils } from '@railmapgen/svg-assets';
 import { Coordinates, InterchangeStation2024, InterchangeStation2024Handle } from '@railmapgen/svg-assets/gzmtr';
@@ -139,7 +140,8 @@ const GzmtrInt2024Station = (props: StationComponentProps) => {
     const { canDrag, dragHandlers, previewPreciseNameOffsets } = useDraggableStationName<StationAttributes>(
         id,
         StationType.GzmtrInt2024,
-        defaultNameLayout
+        defaultNameLayout,
+        attrs
     );
     const nameLayout = previewPreciseNameOffsets ?? preciseNameOffsets ?? defaultNameLayout;
 
@@ -305,6 +307,7 @@ const gzmtrInt2024StationAttrsComponents = (props: AttrsProps<GzmtrInt2024Statio
         {
             type: 'textarea',
             label: t('panel.details.stations.common.nameZh'),
+            cmmSection: 'name',
             value: attrs.names[0],
             onChange: val => {
                 attrs.names[0] = val;
@@ -315,6 +318,7 @@ const gzmtrInt2024StationAttrsComponents = (props: AttrsProps<GzmtrInt2024Statio
         {
             type: 'textarea',
             label: t('panel.details.stations.common.nameEn'),
+            cmmSection: 'name',
             value: attrs.names.at(1) ?? defaultGzmtrInt2024StationAttributes.names[1],
             onChange: val => {
                 attrs.names[1] = val;
@@ -325,12 +329,14 @@ const gzmtrInt2024StationAttrsComponents = (props: AttrsProps<GzmtrInt2024Statio
         {
             type: 'custom',
             label: '',
+            cmmSection: 'name',
             component: <StationNameTranslateButton id={id} attrs={attrs} handleAttrsUpdate={handleAttrsUpdate} />,
             minW: 'full',
         },
         {
             type: 'select',
             label: t('panel.details.stations.common.nameOffsetX'),
+            cmmSection: 'position',
             value: nameOffsetXSelect.value,
             options: nameOffsetXSelect.options,
             disabledOptions: nameOffsetXSelect.disabledOptions,
@@ -344,6 +350,7 @@ const gzmtrInt2024StationAttrsComponents = (props: AttrsProps<GzmtrInt2024Statio
         {
             type: 'select',
             label: t('panel.details.stations.common.nameOffsetY'),
+            cmmSection: 'position',
             value: nameOffsetYSelect.value,
             options: nameOffsetYSelect.options,
             disabledOptions: nameOffsetYSelect.disabledOptions,

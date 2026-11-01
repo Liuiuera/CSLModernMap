@@ -5,11 +5,12 @@ from math import ceil, floor
 import numpy as np
 import shapely
 from shapely.geometry import LineString, Point, Polygon, box
+from shapely.errors import GEOSException
 from shapely.ops import nearest_points, substring
 
 from .schematic import SchematicLayoutError, _astar
 from .schematic_water_corners import round_river_centerlines
-from .schematic_water_vector import same_water_topology
+from .schematic_water_vector import same_water_topology, WaterGeometryError
 
 
 def _lines(geometry):
@@ -22,7 +23,7 @@ def river_centerlines(surface, spacing, minimum_branch):
     count = sum(np.ceil(np.linalg.norm(np.diff(np.asarray(ring.coords), axis=0), axis=1)/spacing).sum()
                 for ring in (surface.exterior, *surface.interiors))
     if count > 100_000:
-        raise ValueError("河流中心线边界采样超过 100000 点")
+        raise WaterGeometryError("河流中心线边界采样超过 100000 点")
     sampled = shapely.segmentize(surface, spacing)
     edges = shapely.get_parts(shapely.voronoi_polygons(sampled, only_edges=True))
     shapely.prepare(surface)
@@ -109,7 +110,7 @@ def _replacement_reason(before, after, clip, minimum_area):
     return None
 
 
-def schematize_rivers(surface, bounds, *, scale, width, minimum_area, protected_areas=None):
+def schematize_rivers(surface, bounds, *, scale, width, minimum_area, protected_areas=None, fixed_shores=None):
     """按局部宽度分开细长河段；逐段验证，受限段保留已有合法岸线。"""
     radius, grid = 24*scale, 2*scale
     clip = box(*bounds)
@@ -117,38 +118,44 @@ def schematize_rivers(surface, bounds, *, scale, width, minimum_area, protected_
     source_parts = list(parts)
     operations, regions = [], []
     for component, original in enumerate(parts):
-        core = original.buffer(-radius).buffer(radius)
-        residuals = sorted(shapely.get_parts(original.difference(core)), key=lambda part: -part.area)
-        for residual in residuals:
-            if residual.geom_type != "Polygon" or residual.area < minimum_area:
-                continue
-            lines = river_centerlines(residual, grid, max(3*width, 2*radius))
-            length = sum(line.length for line in lines)
-            average_width = residual.area/length if length else 0
-            if length < max(80*scale, 6*width) or length < 6*average_width:
-                continue
-            operation = {"component": component, "stage": "river"}
-            try:
-                routed = [route_river_centerline(line, grid)
-                          for line in _attach_mouths(lines, core, radius)]
-            except SchematicLayoutError as error:
-                operations.append({**operation, "reason": "centerline_routing_failed",
-                                   "detail": str(error)})
-                continue
-            routed = [line for line in routed if not line.is_empty]
-            if not routed:
-                operations.append({**operation, "reason": "centerline_collapsed_to_grid"})
-                continue
-            centerline = shapely.union_all(routed)
-            band = centerline.buffer(width/2, cap_style="round", join_style="round")
-            candidate = parts[component].difference(residual).union(band)
-            combined = shapely.union_all(parts[:component]+[candidate]+parts[component+1:])
-            reason = _replacement_reason(surface, combined, clip, minimum_area)
-            if reason is None:
-                parts[component] = candidate
-                regions.append((component, residual, centerline, band))
-                continue
-            operations.append({**operation, "reason": reason})
+        try:
+            core = original.buffer(-radius).buffer(radius)
+            residuals = sorted(shapely.get_parts(original.difference(core)), key=lambda part: -part.area)
+            for residual in residuals:
+                if residual.geom_type != "Polygon" or residual.area < minimum_area:
+                    continue
+                if fixed_shores is not None and not fixed_shores.is_empty and residual.distance(fixed_shores) < 1e-8:
+                    operations.append({"component": component, "stage": "river", "reason": "protected_shoreline"})
+                    continue
+                lines = river_centerlines(residual, grid, max(3*width, 2*radius))
+                length = sum(line.length for line in lines)
+                average_width = residual.area/length if length else 0
+                if length < max(80*scale, 6*width) or length < 6*average_width:
+                    continue
+                operation = {"component": component, "stage": "river"}
+                try:
+                    routed = [route_river_centerline(line, grid)
+                              for line in _attach_mouths(lines, core, radius)]
+                except SchematicLayoutError as error:
+                    operations.append({**operation, "reason": "centerline_routing_failed",
+                                       "detail": str(error)})
+                    continue
+                routed = [line for line in routed if not line.is_empty]
+                if not routed:
+                    operations.append({**operation, "reason": "centerline_collapsed_to_grid"})
+                    continue
+                centerline = shapely.union_all(routed)
+                band = centerline.buffer(width/2, cap_style="round", join_style="round")
+                candidate = parts[component].difference(residual).union(band)
+                combined = shapely.union_all(parts[:component]+[candidate]+parts[component+1:])
+                reason = _replacement_reason(surface, combined, clip, minimum_area)
+                if reason is None:
+                    parts[component] = candidate
+                    regions.append((component, residual, centerline, band))
+                    continue
+                operations.append({**operation, "reason": reason})
+        except (WaterGeometryError, GEOSException) as error:
+            operations.append({"component": component, "stage": "river", "reason": str(error), "retained": True})
     result = shapely.union_all(parts) if parts else Polygon()
     sharp_surface = result
     rounded_bands = {}
@@ -165,14 +172,17 @@ def schematize_rivers(surface, bounds, *, scale, width, minimum_area, protected_
             combined = replace_bands({**rounded_bands, index: band})
             return (_replacement_reason(sharp_surface, combined, clip, minimum_area)
                     or _replacement_reason(surface, combined, clip, minimum_area))
-        rounded, adjustments = round_river_centerlines(centerline, radius=2*width, width=width,
-                                                       tolerance=.1*scale, accept=accept)
-        if rounded is not centerline:
-            reason = accept(rounded)
-            if reason is None:
-                rounded_bands[index] = rounded.buffer(width/2, cap_style="round", join_style="round")
-            else:
-                adjustments = [{"reason": "final_"+reason, "used_radius_pixels": 0.0}]
+        try:
+            rounded, adjustments = round_river_centerlines(centerline, radius=2*width, width=width,
+                                                           tolerance=.1*scale, accept=accept)
+            if rounded is not centerline:
+                reason = accept(rounded)
+                if reason is None:
+                    rounded_bands[index] = rounded.buffer(width/2, cap_style="round", join_style="round")
+                else:
+                    adjustments = [{"reason": "final_"+reason, "used_radius_pixels": 0.0}]
+        except GEOSException as error:
+            adjustments = [{"reason": str(error), "retained": True}]
         operations.extend({"stage": "river_rounding", "region": index, **item} for item in adjustments)
     if rounded_bands:
         result = replace_bands(rounded_bands)

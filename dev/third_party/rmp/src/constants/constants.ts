@@ -16,6 +16,13 @@ export type NodeAttributes = BaseAttributes & {
     x: number;
     y: number;
     type: NodeType;
+    cmmName?: {
+        source: 'custom' | 'game' | 'placeholder' | 'unknown';
+        importedNames?: [string, ...string[]];
+        importedSource?: 'custom' | 'game' | 'unknown';
+        edited?: boolean;
+        visibility?: 'inherit' | 'show' | 'hide';
+    };
 } & Partial<ExternalStationAttributes> &
     Partial<MiscNodeAttributes>;
 
@@ -31,11 +38,15 @@ export type EdgeAttributes = BaseAttributes & {
      * Index for the line position in a parallel group. Leave it -1 for deactivation of parallel.
      */
     parallelIndex: number;
+    cmmSourceLineId?: number;
+    cmmSourceLineName?: string;
 } & Partial<ExternalLinePathAttributes> &
     Partial<ExternalLineStyleAttributes>;
 
 export type GraphAttributes = {
     name?: string;
+    cmmRotation?: import('../util/map-rotation').MapRotation;
+    cmmNameDisplay?: { showNames: boolean; showDefaultNames: boolean };
 };
 
 /**

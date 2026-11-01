@@ -1,6 +1,6 @@
 /* eslint-disable import/order */
 import React from 'react';
-import { AttrsProps, CanvasType, CategoriesType, CityCode, StnId } from './constants';
+import { AttrsProps, CanvasType, CategoriesType, CityCode, StnId, NodeAttributes } from './constants';
 import type { ShmetroBasicStationAttributes } from '../components/svgs/stations/shmetro-basic';
 import type { ShmetroBasic2020StationAttributes } from '../components/svgs/stations/shmetro-basic-2020';
 import type { ShmetroIntStationAttributes } from '../components/svgs/stations/shmetro-int';
@@ -134,7 +134,7 @@ export const STATION_TYPE_VALUES = new Set(Object.values(StationType));
 
 export interface StationComponentProps {
     id: StnId;
-    attrs: ExternalStationAttributes;
+    attrs: ExternalStationAttributes & Pick<NodeAttributes, 'cmmName'>;
     x: number;
     y: number;
     handlePointerDown: (node: StnId, e: React.PointerEvent<SVGElement>) => void;

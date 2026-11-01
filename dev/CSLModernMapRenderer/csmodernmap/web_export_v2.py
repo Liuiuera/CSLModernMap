@@ -18,6 +18,7 @@ from __future__ import annotations
 from . import i18n
 
 import base64
+import copy
 import json
 from html import escape
 import re
@@ -44,7 +45,7 @@ def _json_text(value: Any) -> str:
 
 def _escape_script(text: str) -> str:
     """内联脚本正文转义，防止出现 </script 提前截断 HTML。"""
-    return text.replace("</script", "<\\/script")
+    return re.sub(r"</script", lambda match: "<\\/" + match.group()[2:], text, flags=re.IGNORECASE)
 
 
 def _data_uri(path: Path) -> str:
@@ -103,7 +104,7 @@ def build_scene_payload(session, style: Any, options: dict[str, Any],
         session, style, revision,
         visibility=dict(visibility or {}), options=compile_options)
     try:
-        payload = _payload_from_bundle(bundle, progress)
+        payload = _payload_from_bundle(bundle, progress, include_navigation=options.get("navigation_enabled", True))
         raw_region = options.get("region")
         if raw_region is not None:
             try:
@@ -126,12 +127,14 @@ def build_scene_payload(session, style: Any, options: dict[str, Any],
         bundle.close()
 
 
-def _payload_from_bundle(bundle, progress=None) -> dict:
+def _payload_from_bundle(bundle, progress=None, *, include_navigation=True) -> dict:
     """把 bundle 目录内容读入内存并构造成内嵌 payload。"""
     sources: dict[str, Any] = {}
     images: dict[str, str] = {}
     fonts: dict[str, str] = {}
     poi_atlas_index: dict[str, Any] = {}
+    if "traffic" in bundle.manifest.get("sources", {}):
+        bundle.traffic_path()
     for path in bundle.root.iterdir():
         if path.is_dir():
             continue
@@ -150,6 +153,15 @@ def _payload_from_bundle(bundle, progress=None) -> dict:
     if progress is not None:
         progress(91, i18n.tr('ui.web_export_v2._payload_from_bundle.cea7853717'))
     manifest = dict(bundle.manifest)
+    manifest.pop("navigationRoute", None)
+    manifest.pop("navigationRouteOmitted", None)
+    if not include_navigation:
+        manifest.pop("navigation", None)
+        sources.pop("navigation.json", None)
+    elif manifest.get("navigation"):
+        navigation = bundle.navigation_payload()
+        if navigation is not None:
+            sources["navigation.json"] = navigation
     embedded = {
         "sources": sources, "images": images, "fonts": fonts,
         "poiAtlasIndex": poi_atlas_index,
@@ -160,9 +172,10 @@ def _payload_from_bundle(bundle, progress=None) -> dict:
 
 def payload_from_preview_bundle(bundle, *, theme: dict[str, Any] | None = None,
                                 visibility: dict[str, bool] | None = None,
-                                region=None, rotation: Any = None) -> dict:
+                                region=None, rotation: Any = None, view: dict | None = None,
+                                navigation_enabled=True) -> dict:
     """将已发布的中央预览打包为单文件 HTML；几何资源复用原包，实时主题和旋转写入清单副本。"""
-    payload = _payload_from_bundle(bundle)
+    payload = _payload_from_bundle(bundle, include_navigation=navigation_enabled)
     manifest = dict(payload["manifest"])
     if theme is not None:
         manifest["theme"] = theme
@@ -176,6 +189,8 @@ def payload_from_preview_bundle(bundle, *, theme: dict[str, Any] | None = None,
             raise ValueError("region must contain four coordinates")
         manifest["initialRegion"] = list(values)
     manifest["rotation"] = _output_rotation(rotation)
+    if view is not None:
+        manifest["view"] = copy.deepcopy(view)
     payload["manifest"] = manifest
     # 保持旧版集成读取的平铺镜像与标准清单一致。
     payload.update(manifest)
@@ -213,7 +228,12 @@ def render_export_html(payload: dict, viewer_dist: Path, city: str = "") -> str:
     worker = worker_path.read_text(encoding="utf-8")
     title = i18n.tr('ui.web_export_v2.render_export_html.cee2179528', p0=city) if city else i18n.tr('ui.web_export_v2.render_export_html.0fe5c970b8')
     worker_json = _escape_script(json.dumps(worker, ensure_ascii=False))
-    payload_json = _escape_script(_json_text(payload))
+    # 离线资源必须保留，但隐藏路况无需常驻解析后的坐标数组。
+    sources = dict(payload["embedded"]["sources"])
+    if "traffic.geojson" in sources and not isinstance(sources["traffic.geojson"], str):
+        sources["traffic.geojson"] = _json_text(sources["traffic.geojson"])
+    embedded_payload = {**payload, "embedded": {**payload["embedded"], "sources": sources}}
+    payload_json = _escape_script(_json_text(embedded_payload))
     # 旧版预览器可能早于适配后的 Vellum 标注和此提示。
     notice_path = viewer_dist / "VELLUM_LICENSE.txt"
     vellum_notice = notice_path.read_text(encoding="utf-8") if notice_path.is_file() else ""
@@ -221,6 +241,8 @@ def render_export_html(payload: dict, viewer_dist: Path, city: str = "") -> str:
     i18next_notice = i18next_notice_path.read_text(encoding="utf-8") if i18next_notice_path.is_file() else ""
     dependency_notices = (viewer_dist / "THIRD_PARTY_LICENSES.txt").read_text(encoding="utf-8")
     dependency_notices = dependency_notices.replace("--", "&#45;&#45;")
+    navigation_notice_path = viewer_dist / "NAVIGATION_LICENSES.txt"
+    navigation_notice = navigation_notice_path.read_text(encoding="utf-8") if navigation_notice_path.is_file() else ""
     return f"""<!DOCTYPE html>
 <html lang="{escape(i18n.LANG, quote=True)}">
 <head>
@@ -232,6 +254,9 @@ def render_export_html(payload: dict, viewer_dist: Path, city: str = "") -> str:
 -->
 <!-- i18next
 {i18next_notice}
+-->
+<!-- Navigation dependencies
+{navigation_notice}
 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -256,11 +281,12 @@ def render_export_html(payload: dict, viewer_dist: Path, city: str = "") -> str:
 def export_preview_bundle(bundle, city: str, out_path, *,
                           theme: dict[str, Any] | None = None,
                           visibility: dict[str, bool] | None = None,
-                          region=None, rotation: Any = None) -> str:
+                          region=None, rotation: Any = None, view: dict | None = None,
+                          navigation_enabled=True) -> str:
     """将当前中央预览保存为独立 HTML，不重新解析文档或编译场景。"""
     payload = payload_from_preview_bundle(
         bundle, theme=theme, visibility=visibility, region=region,
-        rotation=rotation)
+        rotation=rotation, view=view, navigation_enabled=navigation_enabled)
     viewer_dist = resource_dir("viewer") / "dist"
     html = render_export_html(payload, viewer_dist, city=city)
     out = Path(out_path)

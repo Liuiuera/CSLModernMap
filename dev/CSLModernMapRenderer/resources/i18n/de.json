@@ -108,7 +108,7 @@
   "gui.dialog.custom_resolution.prompt": "Ausgabeseitenlänge (Pixel)",
   "gui.dialog.layer_settings": "Ebeneneinstellungen",
   "gui.dialog.open_city": "Stadtspeicherstand öffnen",
-  "gui.dialog.open_city.filter": "Stadtkarte (*.mmap.gz *.mmap *.cmm.gz *.cmm *.cmm.json)",
+  "gui.dialog.open_city.filter": "Stadtkarte (*.mmap.gz *.mmap *.cslmap.gz *.cslmap *.cmm.gz *.cmm *.cmm.json)",
   "gui.dialog.save": "Speichern",
   "gui.dialog.save_png_filter": "PNG-Bild (*.png)",
   "gui.editor.airport": "Flughafen",

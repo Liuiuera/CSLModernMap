@@ -108,7 +108,7 @@
   "gui.dialog.custom_resolution.prompt": "Длина выходной стороны (пикс.)",
   "gui.dialog.layer_settings": "Настройки слоёв",
   "gui.dialog.open_city": "Открыть сохранение города",
-  "gui.dialog.open_city.filter": "Карта города (*.mmap.gz *.mmap *.cmm.gz *.cmm *.cmm.json)",
+  "gui.dialog.open_city.filter": "Карта города (*.mmap.gz *.mmap *.cslmap.gz *.cslmap *.cmm.gz *.cmm *.cmm.json)",
   "gui.dialog.save": "Сохранить",
   "gui.dialog.save_png_filter": "Изображение PNG (*.png)",
   "gui.editor.airport": "Аэропорт",

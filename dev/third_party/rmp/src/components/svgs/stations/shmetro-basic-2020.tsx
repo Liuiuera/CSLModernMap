@@ -1,4 +1,5 @@
-import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
+import RmgFields, { StationField as RmgFieldsField } from '../../panels/details/station-fields';
+
 import { MonoColour } from '@railmapgen/rmg-palette-resources';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -131,7 +132,8 @@ const ShmetroBasic2020Station = (props: StationComponentProps) => {
         anchor: ROTATE_CONST[rotate].textAnchor,
     };
     const { canDrag, dragHandlers, previewPreciseNameOffsets } =
-        useDraggableStationName<ShmetroBasic2020StationAttributes>(id, StationType.ShmetroBasic2020, fallbackLayout);
+        useDraggableStationName<ShmetroBasic2020StationAttributes>(id, StationType.ShmetroBasic2020, fallbackLayout,
+        attrs);
     const preciseNameOffsets = previewPreciseNameOffsets ?? stationAttrs.preciseNameOffsets;
 
     return (
@@ -210,6 +212,7 @@ const shmetroBasic2020AttrsComponent = (props: AttrsProps<ShmetroBasic2020Statio
         {
             type: 'textarea',
             label: t('panel.details.stations.common.nameZh'),
+            cmmSection: 'name',
             value: attrs.names[0],
             onChange: val => {
                 attrs.names[0] = val;
@@ -220,6 +223,7 @@ const shmetroBasic2020AttrsComponent = (props: AttrsProps<ShmetroBasic2020Statio
         {
             type: 'textarea',
             label: t('panel.details.stations.common.nameEn'),
+            cmmSection: 'name',
             value: attrs.names.at(1) ?? defaultShmetroBasic2020StationAttributes.names[1],
             onChange: val => {
                 attrs.names[1] = val;
@@ -230,12 +234,14 @@ const shmetroBasic2020AttrsComponent = (props: AttrsProps<ShmetroBasic2020Statio
         {
             type: 'custom',
             label: '',
+            cmmSection: 'name',
             component: <StationNameTranslateButton id={id} attrs={attrs} handleAttrsUpdate={handleAttrsUpdate} />,
             minW: 'full',
         },
         {
             type: 'select',
             label: t('panel.details.stations.common.rotate'),
+            cmmSection: 'appearance',
             value: rotateSelect.value,
             options: rotateSelect.options,
             disabledOptions: rotateSelect.disabledOptions,
@@ -249,6 +255,7 @@ const shmetroBasic2020AttrsComponent = (props: AttrsProps<ShmetroBasic2020Statio
         {
             type: 'custom',
             label: t('color'),
+            cmmSection: 'appearance',
             component: (
                 <ColorField
                     type={StationType.ShmetroBasic2020}

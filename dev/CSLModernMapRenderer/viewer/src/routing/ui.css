@@ -1,0 +1,124 @@
+.navigation-control {
+  --nav-surface: #fbfbfb; --nav-control: #fff; --nav-text: #202020; --nav-secondary: #666;
+  --nav-border: #dedede; --nav-hover: #f3f3f3; --nav-selected: #edf3f8;
+  --nav-accent: #0067c0; --nav-on-accent: #fff; --nav-shadow: #0002;
+  position: absolute; top: 12px; left: 12px; z-index: 10; max-width: calc(100% - 24px);
+  font: 14px/1.45 'Segoe UI Variable Text', 'Segoe UI', 'Microsoft YaHei UI', sans-serif;
+  color: var(--nav-text);
+}
+.navigation-control *, .navigation-control *::before { box-sizing: border-box; }
+.navigation-control [hidden], .navigation-control[hidden] { display: none !important; }
+.navigation-control button, .navigation-control input {
+  font: inherit; min-height: 32px; padding: 5px 12px; border-radius: 4px;
+  border: 1px solid var(--nav-border); background: var(--nav-control); color: var(--nav-text);
+}
+.navigation-control button { cursor: pointer; }
+.navigation-control button:hover:not(:disabled) { background: var(--nav-hover); }
+.navigation-control button:disabled { cursor: default; color: var(--nav-secondary); }
+.navigation-control button:focus-visible, .navigation-control input:focus-visible, .navigation-control summary:focus-visible {
+  outline: 2px solid var(--nav-accent); outline-offset: 2px;
+}
+.navigation-panel {
+  margin-top: 8px; width: 320px; max-width: calc(100vw - 24px); max-height: calc(100vh - 80px);
+  overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; padding: 16px;
+  background: var(--nav-surface); border: 1px solid var(--nav-border); border-radius: 8px;
+  box-shadow: 0 8px 24px var(--nav-shadow);
+}
+.navigation-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 16px; }
+.navigation-heading h2 { margin: 0; font-size: 24px; line-height: 1.3; font-weight: 600; }
+.navigation-modes { display: flex; gap: 6px; margin-bottom: 12px; }
+.navigation-modes button { flex: 1; }
+.navigation-modes button[aria-pressed="true"] { background: var(--nav-selected); border-color: var(--nav-accent); color: var(--nav-accent); }
+.navigation-endpoint-access { display: block; font-size: 11px; color: var(--nav-secondary); }
+.navigation-steps .navigation-leg { border-inline-start: 3px solid var(--nav-border); padding-inline-start: 10px; }
+.navigation-control .navigation-close { border-color: transparent; background: transparent; font-size: 12px; }
+.navigation-endpoints { border: 1px solid var(--nav-border); border-radius: 4px; background: var(--nav-control); padding: 0 12px; }
+.navigation-control .navigation-endpoint { display: block; width: 100%; border: 0; background: transparent; text-align: start; padding: 9px 2px; border-radius: 0; }
+.navigation-endpoint + .navigation-endpoint { border-top: 1px solid var(--nav-border); }
+.navigation-control .navigation-endpoint[aria-pressed="true"] { background: var(--nav-selected); }
+.navigation-endpoint input { display: block; width: 100%; min-width: 0; }
+.navigation-place-results { max-height: 220px; overflow-y: auto; border: 1px solid var(--nav-border); border-radius: 4px; margin-top: 6px; }
+.navigation-place-results [role="option"] { padding: 8px; cursor: pointer; overflow-wrap: anywhere; }
+.navigation-place-results [aria-selected="true"], .navigation-place-results [role="option"]:hover { background: var(--nav-selected); }
+.navigation-endpoint-label, .navigation-endpoint-name { display: block; overflow-wrap: anywhere; }
+.navigation-endpoint-label { font-size: 12px; color: var(--nav-secondary); }
+.navigation-control .navigation-swap { margin-bottom: 8px; border-color: transparent; background: transparent; }
+.navigation-endpoint-label, .navigation-route-label { display: flex; align-items: center; gap: 8px; }
+.navigation-status { margin: 12px 0; color: var(--nav-secondary); font-size: 12px; }
+.navigation-panel p { overflow-wrap: anywhere; }
+.navigation-panel > details { margin-top: 10px; }
+.navigation-panel summary { cursor: pointer; padding: 8px 4px; border-radius: 4px; }
+.navigation-panel summary:hover { background: var(--nav-hover); }
+.navigation-panel > details:not(.navigation-steps) > summary { color: var(--nav-secondary); font-size: 12px; }
+.navigation-panel details > p, .navigation-information p { font-size: 12px; color: var(--nav-secondary); line-height: 1.6; margin: 10px 0; }
+.navigation-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.navigation-actions:empty { display: none; }
+.navigation-actions input { width: 125px; min-width: 0; flex: 1; }
+.navigation-section-title { font-size: 12px; color: var(--nav-secondary); margin: 16px 0 8px; }
+.navigation-control .navigation-route-card { position: relative; width: 100%; display: block; text-align: start; padding: 12px 14px; margin-bottom: 8px; }
+.navigation-control .navigation-route-card[aria-pressed="true"] { background: var(--nav-selected); }
+.navigation-route-card[aria-pressed="true"]::before { content: ''; position: absolute; width: 3px; top: 25%; height: 50%; left: 0; background: var(--nav-accent); border-radius: 2px; }
+.navigation-duration, .navigation-distance, .navigation-via { display: block; }
+.navigation-route-label { font-size: 12px; color: var(--nav-secondary); }
+.navigation-route-card[aria-pressed="true"] .navigation-route-label { color: var(--nav-accent); }
+.navigation-duration { font-size: 24px; font-weight: 600; margin: 5px 0 3px; line-height: 1.4; overflow-wrap: anywhere; }
+.navigation-duration.has-estimate { font-size: 28px; }
+.navigation-route-card.transit .navigation-duration { font-size: 15px; margin: 0 0 6px; }
+.navigation-route-card.transit .navigation-via { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.navigation-line-badge { border-inline-start: 4px solid var(--nav-border); padding-inline-start: 5px; color: var(--nav-text); }
+.navigation-transfer-notice { display: block; font-size: 12px; color: var(--nav-text); margin-top: 6px; }
+.navigation-open-details { margin-bottom: 8px; }
+.navigation-route-sorting { display: flex; gap: 4px; margin: 12px 0; }
+.navigation-control .navigation-route-sorting button { flex: 1; min-width: 0; padding-inline: 6px; word-break: keep-all; overflow-wrap: normal; }
+.navigation-route-sorting button[aria-pressed="true"] { border-color: var(--nav-accent); color: var(--nav-accent); background: var(--nav-selected); }
+.navigation-route-advantages { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; font-size: 11px; color: var(--nav-secondary); }
+.navigation-route-advantages:empty { display: none; }
+.navigation-route-advantages > span { border: 1px solid var(--nav-border); border-radius: 3px; padding: 1px 4px; }
+.navigation-itinerary { list-style: none; padding: 8px 0 8px 10px; margin: 0; }
+.navigation-itinerary > li { position: relative; padding: 0 0 20px 16px; border-inline-start: 3px dotted var(--nav-secondary); overflow-wrap: anywhere; }
+.navigation-itinerary > .ride { border-inline-start: 3px solid var(--line-color, var(--nav-secondary)); }
+.navigation-itinerary > li::before { content: ''; position: absolute; width: 12px; height: 12px; border: 2px solid var(--nav-secondary); border-radius: 50%; background: var(--nav-control); left: -7px; top: 7px; }
+.navigation-itinerary > li:last-child { border-color: transparent; padding-bottom: 0; }
+.navigation-itinerary > li:last-child::before { border-style: double; border-width: 4px; width: 16px; height: 16px; left: -9px; }
+.navigation-itinerary .navigation-segment { width: 100%; text-align: start; border-color: transparent; background: transparent; padding: 3px 0; }
+.navigation-itinerary .navigation-segment[aria-pressed="true"] { color: var(--nav-accent); background: var(--nav-selected); }
+.navigation-itinerary ol { list-style: none; padding-inline-start: 12px; }
+.navigation-itinerary ol li { position: relative; border-inline-start: 1px solid var(--nav-border); padding: 5px 0 5px 14px; font-size: 12px; }
+.navigation-itinerary ol li::before { content: ''; position: absolute; width: 6px; height: 6px; left: -3px; top: 11px; background: var(--nav-secondary); border-radius: 50%; }
+.navigation-itinerary p { font-size: 12px; color: var(--nav-secondary); }
+.navigation-panel.navigation-details-open { display: flex; flex-direction: column; overflow: hidden; }
+.navigation-details-open > :is(.navigation-modes, .navigation-endpoints) { display: none; }
+.navigation-transit-details { display: flex; flex-direction: column; min-height: 0; }
+.navigation-transit-details > button { align-self: start; flex: none; }
+.navigation-transit-details > p { font-size: 13px; font-weight: 600; flex: none; }
+.navigation-transit-details .navigation-itinerary { overflow-y: auto; min-height: 0; overscroll-behavior: contain; }
+.navigation-details-open > :not(.navigation-transit-details) { flex-shrink: 0; }
+.navigation-route-card:disabled .navigation-duration { font-size: 14px; font-weight: 400; }
+.navigation-distance, .navigation-via { font-size: 12px; color: var(--nav-secondary); overflow-wrap: anywhere; }
+.navigation-via { margin-top: 3px; }
+.navigation-steps > summary { background: var(--nav-accent); color: var(--nav-on-accent); padding: 8px 12px; }
+.navigation-steps > summary:hover { background: var(--nav-accent); filter: brightness(.95); }
+.navigation-steps ol { padding-left: 22px; margin: 10px 0; }
+.navigation-steps li { padding: 10px 0; border-bottom: 1px solid var(--nav-border); overflow-wrap: anywhere; }
+.navigation-export-choice { display: flex; align-items: center; gap: 8px; font-size: 12px; margin: 10px 0; }
+.navigation-control input[type="checkbox"] { width: 16px; height: 16px; min-height: 0; padding: 0; margin: 0; flex: none; accent-color: var(--nav-accent); }
+.navigation-information { border-top: 1px solid var(--nav-border); padding-top: 5px; }
+.navigation-control .navigation-clear { margin-top: 8px; border-color: transparent; background: transparent; padding-left: 4px; font-size: 12px; color: var(--nav-secondary); }
+.navigation-pin { border-radius: 16px; min-width: 66px; min-height: 32px; padding: 4px 8px; border: 2px solid white;
+  background: #0067c0; color: white; font: 600 12px/1.4 'Segoe UI', sans-serif; cursor: grab; box-shadow: 0 1px 5px #0007; }
+.navigation-pin.destination { background: #c52a3a; }
+html[data-ui-appearance="dark"] .navigation-control {
+  --nav-surface: #2c2c2c; --nav-control: #323232; --nav-text: #f5f5f5; --nav-secondary: #bcbcbc;
+  --nav-border: #494949; --nav-hover: #3a3a3a; --nav-selected: #313e47;
+  --nav-accent: #60cdff; --nav-on-accent: #17242c; --nav-shadow: #0005;
+}
+@media (max-width: 520px) {
+  .navigation-panel { position: fixed; left: 8px; right: 8px; bottom: 30px; width: auto; max-width: none; max-height: 55vh; }
+  .navigation-control input:not([type="checkbox"]) { font-size: 16px; }
+}
+@media (pointer: coarse) {
+  .navigation-control button, .navigation-panel summary { min-height: 44px; }
+}
+@media (forced-colors: active) {
+  .navigation-route-card[aria-pressed="true"] { outline: 2px solid Highlight; outline-offset: -2px; }
+}

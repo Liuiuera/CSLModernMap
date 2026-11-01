@@ -29,6 +29,7 @@ public sealed partial class MainWindow
     private readonly Dictionary<string, RibbonToggleButton> _labelChildButtons = new();
     private readonly List<RibbonButton> _mapLayerSettingsButtons = new();
     private readonly Dictionary<string, RibbonToggleButton> _gameNamesButtons = new();
+    private RibbonToggleButton? _decorativePoiButton;
     private RibbonTab? _layersTab;
     private RibbonTab? _styleTab;
     private RibbonGroup? _layerContextGroup;
@@ -101,7 +102,7 @@ public sealed partial class MainWindow
             // 错误字段不能污染后续快照，也不能逃逸异步界面事件。
             _layerBindings.Remove(binding);
             binding.Control.IsEnabled = false;
-            SetError(UiLanguage.Format("MainWindow_Layers_RefreshLayerBinding_736346CBCE", binding.Key, error.Message));
+            SetError(error);
         }
         finally { binding.Syncing = false; }
     }
@@ -124,6 +125,13 @@ public sealed partial class MainWindow
             button.IsEnabled = _documentEnabled && _context == "map" && LayerVisible("label");
             Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(button,
                 button.Label + (button.IsChecked == true ? UiLanguage.Text("MainWindow_Layers_RefreshLayerBindings_645432A5BF") : UiLanguage.Text("MainWindow_Layers_RefreshLayerBindings_96E5815C15")));
+        }
+        if (_decorativePoiButton is { } decorative)
+        {
+            decorative.IsChecked = _snapshot.GetProperty("showDecorativePois").GetBoolean();
+            decorative.IsEnabled = _documentEnabled && _context == "map";
+            Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(decorative,
+                decorative.Label + (decorative.IsChecked == true ? UiLanguage.Text("MainWindow_Layers_RefreshLayerBindings_645432A5BF") : UiLanguage.Text("MainWindow_Layers_RefreshLayerBindings_96E5815C15")));
         }
         ApplyRibbonColors();
     }
@@ -188,6 +196,8 @@ public sealed partial class MainWindow
 
     private void AddRibbonLabelChildren(RibbonGroup group)
     {
+        group.ItemsLayout = RibbonGroupItemsLayout.Columns;
+        group.RowCount = 2;
         foreach (var child in LabelChildren)
         {
             var iconKey = child.Key switch
@@ -199,7 +209,7 @@ public sealed partial class MainWindow
             var button = new RibbonToggleButton { Label = child.Title, Icon = RibbonIcons.Create("label." + iconKey),
                 // 中号始终是图标加文字。
                 Size = RibbonItemSize.Medium };
-            button.Click += async (_, _) =>
+            AddRibbonLabelCommand(button, async (_, _) =>
             {
                 var generation = _documentGeneration;
                 await QueueLayerActionAsync(async () =>
@@ -208,7 +218,7 @@ public sealed partial class MainWindow
                     var enabled = !_snapshot.GetProperty("labelChildren").GetProperty(child.Key).GetBoolean();
                     await SetLabelChildAsync(child.Key, enabled);
                 }, () => !_closing && generation == _documentGeneration);
-            };
+            });
             group.Items.Add(button); _labelChildButtons[child.Key] = button;
             ToolTipService.SetToolTip(button, child.Key switch
             {
@@ -220,6 +230,7 @@ public sealed partial class MainWindow
         }
         AddGameNamesButton(group, "road.game_names", UiLanguage.Text("TextIcons_RoadGameNames"));
         AddGameNamesButton(group, "poi.game_names", UiLanguage.Text("TextIcons_BuildingGameNames"));
+        AddDecorativePoiButton(group);
         var details = new RibbonButton { Label = UiLanguage.Text("MainWindow_xaml_AddLayerGroup_4358ED3763"),
             Icon = new SymbolIcon(Symbol.Setting), Size = RibbonItemSize.Medium };
         details.Click += async (_, _) => await RunAsync(ShowMapPoiSettingsAsync);
@@ -229,6 +240,31 @@ public sealed partial class MainWindow
         ToolTipService.SetToolTip(_layerButtons["label"], UiLanguage.Text("MainWindow_Layers_AddRibbonLabelChildren_86AD8E73C0"));
     }
 
+    private void AddDecorativePoiButton(RibbonGroup group)
+    {
+        var button = new RibbonToggleButton { Label = UiLanguage.Text("Poi_ShowDecorative"),
+            Icon = RibbonIcons.Create("label.building_icon"), Size = RibbonItemSize.Medium, IsEnabled = false };
+        _decorativePoiButton = button;
+        group.Items.Add(button);
+        ToolTipService.SetToolTip(button, UiLanguage.Text("Poi_ShowDecorativeHint"));
+        AddRibbonLabelCommand(button, async (_, _) =>
+        {
+            var generation = _documentGeneration;
+            await QueueLayerActionAsync(async () =>
+            {
+                if (!_documentEnabled) return;
+                await _engine.RequestAsync("setDecorativePoiVisibility", new
+                {
+                    enabled = !_snapshot.GetProperty("showDecorativePois").GetBoolean(),
+                    documentEpoch = _snapshot.GetProperty("documentEpoch").GetInt32(),
+                });
+                await RefreshLivePreviewAsync();
+            }, () => !_closing && generation == _documentGeneration);
+        });
+        RegisterRibbonColors(button, button.Icon, "PRIMARY", selected: () =>
+            _snapshot.GetProperty("showDecorativePois").GetBoolean());
+    }
+
     private void AddGameNamesButton(RibbonGroup group, string key, string title)
     {
         var button = new RibbonToggleButton { Label = title,
@@ -236,7 +272,7 @@ public sealed partial class MainWindow
         _gameNamesButtons[key] = button;
         group.Items.Add(button);
         ToolTipService.SetToolTip(button, title);
-        button.Click += async (_, _) =>
+        AddRibbonLabelCommand(button, async (_, _) =>
         {
             var generation = _documentGeneration;
             await QueueLayerActionAsync(async () =>
@@ -244,7 +280,7 @@ public sealed partial class MainWindow
                 await UpdateFieldAsync(key,
                     !_snapshot.GetProperty("fields").GetProperty(key).GetBoolean());
             }, () => !_closing && generation == _documentGeneration);
-        };
+        });
         RegisterRibbonColors(button, button.Icon, "PRIMARY", selected: () =>
             _snapshot.GetProperty("fields").GetProperty(key).GetBoolean());
     }
@@ -338,6 +374,8 @@ public sealed partial class MainWindow
 
     private void ShowLayerStylePage(string layer)
     {
+        _settingsOpen = true;
+        UpdateScaleAndLayout();
         ShowLayerSettings(layer);
     }
 

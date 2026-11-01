@@ -1,3 +1,4 @@
+"""将二代原生交通事实接入现有领域模型，不经网络节点重建站台。"""
 from __future__ import annotations
 
 from dataclasses import replace
@@ -13,6 +14,7 @@ def cs2_document(mapdata):
 
 
 def source_transports(document):
+    """兼容绘制接口中的 node_id 在此入口表示 Stop 身份，不是网络锚点。"""
     by_stop = {stop.id: stop for stop in document.stops}
     by_line = {}
     for route in sorted(document.routes, key=lambda item: item.id):
@@ -31,6 +33,7 @@ def source_transports(document):
 
 
 def station_constraints(stops, params: StationMergeParams):
+    """将原生车站身份转换成现有分组约束，用户规则优先。"""
     from ..station.grouping import station_merge_policy
 
     stops = tuple(stops)
@@ -57,7 +60,7 @@ def station_constraints(stops, params: StationMergeParams):
 
     for keys in params.forced_merges:
         join(keys)
-
+    # 阻止未知归属的近邻链间接合并不同车站；显式手工合并优先。
     identified = [stop for stop in stops if stop.station_group is not None]
     for index, left in enumerate(identified):
         for right in identified[index + 1:]:
@@ -70,7 +73,7 @@ def station_constraints(stops, params: StationMergeParams):
         if len(keys) < 2 or not params.merge_enabled or not station_merge_policy(params, kind)[0]:
             continue
         roots = {root(key) for key in keys}
-
+        # 自动规则不能通过重叠的手工组件绕过拆站约束。
         if any(root(a) in roots and root(b) in roots
                for a, b in blocked if a in parent and b in parent):
             continue

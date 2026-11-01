@@ -12,11 +12,10 @@ namespace CSLModernMapWinUI;
 public sealed partial class MainWindow
 {
     private RmpEditorView? _rmpView;
-    private bool _generatingRmp, _cancellingRmp, _syncingRmp, _generationSettingsChanged;
+    private bool _generatingRmp, _cancellingRmp, _generationSettingsChanged;
     private TaskCompletionSource<JsonElement>? _rmpGeneration;
     private string? _rmpGenerationId;
-    private readonly Dictionary<string, ComboBox> _rmpChoices = new();
-    private readonly List<(RibbonToggleButton Button, string Key, string? Mode)> _rmpToggles = new();
+    private readonly List<(RibbonToggleButton Button, string Key)> _rmpToggles = new();
     private RibbonGroup? _rmpElements;
     private bool RmpBlocked => _generatingRmp || _rmpView?.IsBusy == true ||
         _rmpView?.State is { ValueKind: JsonValueKind.Object } state && state.TryGetProperty("placing", out var placing) && placing.GetBoolean();
@@ -46,27 +45,15 @@ public sealed partial class MainWindow
         AddButton(generate, RmpText("Cancel"), CancelCurrentTaskAsync, "app.cancel", requiresDocument: false);
         var history = Group(tab, RmpText("History"));
         Button(history, "Undo", "undo", VirtualKey.Z); Button(history, "Redo", "redo", VirtualKey.Y);
-        var draw = Group(tab, RmpText("Draw"));
-        AddRmpToggle(draw, "Select", "mode", "select");
-        foreach (var key in new[] { "stations", "paths", "styles" })
-        {
-            var combo = new ComboBox { PlaceholderText = RmpText(key), MinWidth = 120, MaxWidth = 175 };
-            AutomationProperties.SetAutomationId(combo, "rmp-" + key);
-            AutomationProperties.SetName(combo, RmpText(key));
-            draw.Items.Add(combo); _rmpChoices[key] = combo;
-            combo.SelectionChanged += async (_, _) =>
-            {
-                if (_syncingRmp || combo.SelectedItem is not ComboBoxItem item) return;
-                var id = (string)item.Tag;
-                var mode = key == "stations" ? id : RmpLineMode(key, id);
-                await RunAsync(() => RunRmpCommandAsync("setMode", new { mode }));
-            };
-        }
         _rmpElements = Group(tab, RmpText("Elements"));
         BuildRmpElements(_rmpElements);
         var view = Group(tab, RmpText("View"));
         Button(view, "Fit", "fit");
-        foreach (var key in new[] { "detailsVisible", "gridLines", "snapLines", "showWaterControls" }) AddRmpToggle(view, key, key);
+        AddButton(view, UiLanguage.Text("Map_RotateCounterclockwise"),
+            () => RunRmpCommandAsync("rotateMap", new { delta = -90 }), "rmp.rotate_counterclockwise");
+        AddButton(view, UiLanguage.Text("Map_RotateClockwise"),
+            () => RunRmpCommandAsync("rotateMap", new { delta = 90 }), "rmp.rotate_clockwise");
+        foreach (var key in new[] { "detailsVisible", "gridLines", "snapLines", "showWaterControls", "showNames", "showDefaultNames" }) AddRmpToggle(view, key, key);
         _metroOutputGroup = Group(tab, RmpText("Export"));
         Button(_metroOutputGroup, "Svg", "svg"); Button(_metroOutputGroup, "Png", "png");
         _metroCloseGroup = Group(tab, UiLanguage.Text("ContextRibbon_Close"));
@@ -77,58 +64,25 @@ public sealed partial class MainWindow
             new Button(), VirtualKey.E, VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift);
     }
 
-    private void AddRmpToggle(RibbonGroup group, string label, string key, string? mode = null)
+    private void AddRmpToggle(RibbonGroup group, string label, string key)
     {
         var button = new RibbonToggleButton { Label = RmpText(label), Icon = RibbonIcons.Create("rmp." + key),
             Size = RibbonItemSize.Medium };
-        AutomationProperties.SetAutomationId(button, "rmp-" + (mode ?? key));
-        group.Items.Add(button); _rmpToggles.Add((button, key, mode));
-        RegisterCommand("rmp." + (mode ?? key), () => mode is not null
-            ? RunRmpCommandAsync("setMode", new { mode })
-            : RunRmpCommandAsync("setViewOptions", new { options = new Dictionary<string, bool> { [key] = !RmpState(key) } }), true, button);
-        button.Click += async (_, _) => await ExecuteCommandAsync("rmp." + (mode ?? key));
+        AutomationProperties.SetAutomationId(button, "rmp-" + key);
+        group.Items.Add(button); _rmpToggles.Add((button, key));
+        RegisterCommand("rmp." + key, () => RunRmpCommandAsync("setViewOptions", new { options = new Dictionary<string, bool> { [key] = !RmpState(key) } }), true, button);
+        button.Click += async (_, _) => await ExecuteCommandAsync("rmp." + key);
     }
 
     private bool RmpState(string key) => _rmpView?.State is { ValueKind: JsonValueKind.Object } state && state.GetProperty(key).GetBoolean();
 
-    private string RmpLineMode(string choice, string id)
-    {
-        var styles = _rmpView!.Tools.GetProperty("styles").EnumerateArray().ToArray();
-        var mode = _rmpView.State.GetProperty("mode").GetString()!;
-        var current = mode.StartsWith("line-") ? mode[5..].Split('/') : ["", ""];
-        bool Supports(JsonElement style, string path) => style.GetProperty("paths").EnumerateArray().Any(item => item.GetString() == path);
-        var selected = choice == "styles" ? styles.Single(style => style.GetProperty("id").GetString() == id)
-            : styles.FirstOrDefault(style => style.GetProperty("id").GetString() == current[1] && Supports(style, id));
-        if (selected.ValueKind == JsonValueKind.Undefined) selected = styles.First(style => Supports(style, id));
-        var path = choice == "paths" ? id : Supports(selected, current[0]) ? current[0] : selected.GetProperty("paths")[0].GetString()!;
-        return $"line-{path}/{selected.GetProperty("id").GetString()}";
-    }
-
     private void RefreshRmpRibbon()
     {
-        _syncingRmp = true;
-        try
+        foreach (var (button, key) in _rmpToggles)
         {
-            if (_rmpView?.Tools is { ValueKind: JsonValueKind.Object } tools)
-            {
-                foreach (var (key, combo) in _rmpChoices)
-                {
-                    if (combo.Items.Count != 0) continue;
-                    foreach (var item in tools.GetProperty(key).EnumerateArray())
-                        combo.Items.Add(new ComboBoxItem { Content = item.GetProperty("label").GetString(), Tag = item.GetProperty("id").GetString()! });
-                }
-            }
-            var mode = _rmpView?.State is { ValueKind: JsonValueKind.Object } state ? state.GetProperty("mode").GetString()! : "";
-            foreach (var (key, combo) in _rmpChoices)
-            {
-                var selected = key == "stations" ? mode : !mode.StartsWith("line-") ? "" : key == "paths" ? mode[5..].Split('/')[0] : mode.Split('/')[1];
-                combo.SelectedItem = combo.Items.Cast<ComboBoxItem>().FirstOrDefault(item => (string)item.Tag == selected);
-                combo.IsEnabled = _context == "metro" && _rmpView?.IsReady == true && !RmpBlocked;
-            }
-            foreach (var (button, key, selectedMode) in _rmpToggles)
-                button.IsChecked = selectedMode is not null ? selectedMode == mode : RmpState(key);
+            button.IsChecked = RmpState(key);
+            if (key == "showDefaultNames") button.IsEnabled = _rmpView?.IsReady == true && !RmpBlocked && RmpState("showNames");
         }
-        finally { _syncingRmp = false; }
         UpdateCommandStates();
     }
 
@@ -156,7 +110,7 @@ public sealed partial class MainWindow
         var view = _rmpView = new RmpEditorView(this, Root);
         RmpWorkspace.Children.Add(view);
         view.StateChanged += RefreshRmpRibbon;
-        view.ProjectLoaded += () => ShowNotice(RmpText("LoadedHint"));
+        view.ProjectLoaded += () => ShowNotice(RmpText(view.NeedsVisualAdjustment ? "VisualAdjustmentHint" : "LoadedHint"));
         view.CommandRequested = command => RunAsync(() => RunRmpCommandAsync(command));
         return view;
     }
@@ -221,9 +175,6 @@ public sealed partial class MainWindow
     {
         if (_generatingRmp || _rmpView is { } view && !await view.ConfirmUnsavedAsync()) return false;
         _rmpView?.Dispose(); _rmpView = null; RmpWorkspace.Children.Clear();
-        _syncingRmp = true;
-        try { foreach (var combo in _rmpChoices.Values) combo.SelectedItem = null; }
-        finally { _syncingRmp = false; }
         return true;
     }
 }

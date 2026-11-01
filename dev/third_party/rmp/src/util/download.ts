@@ -58,6 +58,7 @@ export const makeRenderReadySVGElement = async (
     elem.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
     elem.removeAttribute('style');
     elem.removeAttribute('tabindex');
+    elem.querySelectorAll('[data-cmm-name][visibility="hidden"]').forEach(el => el.remove());
     // copy attributes from css to each elem in the newly cloned svg
     // this is necessary as styles stated in css will be missing in the cloned svg dom
     // only styles other than fonts need to be stated here, fonts are handled below

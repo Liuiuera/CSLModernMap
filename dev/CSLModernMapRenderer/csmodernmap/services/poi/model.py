@@ -27,6 +27,7 @@ class POIJobParams:
     min_zoom_overrides: Mapping[str, float] = field(default_factory=dict)
     categories: Sequence[str] = ()
     detail_gate: bool = True
+    show_decorative_pois: bool = True
     custom_pois: Sequence[Mapping[str, Any]] | None = None
     building_merge_enabled: bool = True
     transit_merge_enabled: bool = True
@@ -138,6 +139,7 @@ class POIJobParams:
             icon_overrides=cfg.get("icon_overrides", {}),
             min_zoom_overrides=cfg.get("min_zoom_overrides", {}),
             categories=cfg.get("categories", ()),
+            show_decorative_pois=cfg.get("show_decorative_pois", True),
             building_merge_enabled=(
                 bool(active_profile.get("merge_enabled", True))
                 and bool(ordinary_group.get("merge_enabled", True))
@@ -176,6 +178,7 @@ class POIJobParams:
             "min_zoom_overrides": self.min_zoom_overrides,
             "categories": self.categories,
             "detail_gate": self.detail_gate,
+            "show_decorative_pois": self.show_decorative_pois,
             "custom_pois": self.custom_pois,
             "building_merge_enabled": self.building_merge_enabled,
             "transit_merge_enabled": self.transit_merge_enabled,

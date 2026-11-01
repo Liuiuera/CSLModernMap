@@ -1,6 +1,6 @@
 """城市地图数据读取与渲染。"""
 
-__version__ = "6.7.2f4"
+__version__ = "6.7.3"
 
 from .detail import DetailMode
 

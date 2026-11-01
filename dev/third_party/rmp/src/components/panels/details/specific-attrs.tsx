@@ -1,3 +1,4 @@
+import { StationEditorContext } from './station-fields';
 import { Alert, AlertDescription, AlertIcon, Box, Button, Text } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { AttrsProps, LineId, NodeId } from '../../../constants/constants';
@@ -20,17 +21,24 @@ export const NodeSpecificAttributes = () => {
 
     const type = window.graph.getNodeAttribute(id, 'type');
     const AttrsComponent = type in nodes && (nodes[type].attrsComponent as React.FC<AttrsProps<any>>);
-    const attrs = (window.graph.getNodeAttribute(id, type) ?? {}) as any;
+    const attrs = structuredClone(window.graph.getNodeAttribute(id, type) ?? {}) as any;
 
     const handleAttrsUpdate = (selectedFirst: string, attrs: any) => {
         const type = window.graph.getNodeAttribute(selectedFirst, 'type');
+        if (type in stations) {
+            const before = window.graph.getNodeAttribute(selectedFirst, type as keyof typeof stations)!;
+            if (JSON.stringify(before.names) !== JSON.stringify(attrs.names)) {
+                const metadata = window.graph.getNodeAttribute(selectedFirst, 'cmmName');
+                window.graph.setNodeAttribute(selectedFirst, 'cmmName', { source: 'unknown', ...metadata, edited: true });
+            }
+        }
         window.graph.mergeNodeAttributes(selectedFirst, { [type]: attrs });
         dispatch(saveGraph(window.graph.export()));
         dispatch(refreshNodesThunk());
     };
 
     return AttrsComponent ? (
-        <AttrsComponent id={id} attrs={attrs} handleAttrsUpdate={handleAttrsUpdate} />
+        <StationEditorContext.Provider value={{ id }}><AttrsComponent id={id} attrs={attrs} handleAttrsUpdate={handleAttrsUpdate} /></StationEditorContext.Provider>
     ) : (
         <Text fontSize="xs" m="var(--chakra-space-1)">
             {t('panel.details.unknown.error', { category: t('panel.details.unknown.node') })}

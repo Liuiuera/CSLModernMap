@@ -14,6 +14,8 @@ internal static class RmpProjectStore
     // 原子保存 RMP 工程与来源信息，并保留上一组文件用于恢复。
     public static async Task SaveAsync(string path, JsonElement project, JsonElement? provenance, long revision)
     {
+        if (project.TryGetProperty("cmmDraft", out _))
+            throw new InvalidDataException("RMP draft must be materialized by the editor before saving.");
         path = Path.GetFullPath(path);
         Directory.CreateDirectory(Path.GetDirectoryName(path)!);
         var metadataPath = path + ".cmm-meta.json";

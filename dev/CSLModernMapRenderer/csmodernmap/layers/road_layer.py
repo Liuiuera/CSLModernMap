@@ -10,7 +10,7 @@ import math
 
 import aggdraw
 
-from ..preview_road_order import build_road_order
+from ..preview_road_order import build_road_order, flat_piece_key
 from ..road_geometry import RoadRecord, build_junction_mesh, junction_primary, road_sort_key
 from ..road_hierarchy import RoadLevel, road_style_candidates, visible_at_abstract_level
 from ..theme_contract import ROAD_MIN_FILL, ROAD_WIDTH_SCALE
@@ -43,6 +43,7 @@ class RoadLayer(Layer):
             order = (ctx.session.road_order(accurate=accurate) if ctx.session is not None
                      else build_road_order(scene, accurate=accurate))
             ctx.shared[_ORDER_KEY] = order
+        ctx.shared['road_order_report'] = order.diagnostics
 
         self.ctx, self.scene = ctx, scene
         self.render_scale = ctx.zoom
@@ -61,6 +62,8 @@ class RoadLayer(Layer):
         connectors = self._junctions(order, records, bbox)
         draw = aggdraw.Draw(ctx.image)
         for rank, pieces in sorted(by_rank.items()):
+            pieces = ([piece for piece in pieces if piece.flat_group is None]
+                      + sorted((piece for piece in pieces if piece.flat_group is not None), key=flat_piece_key))
             # 人为多边形切分不能生成道路外沿，未切分道路仍使用权威占地边界。
             for piece in pieces:
                 if self._has_footprint(piece.road):
@@ -92,7 +95,7 @@ class RoadLayer(Layer):
         draw.flush()
 
     def _rank(self, piece):
-        if self.scene.height_reliable:
+        if self.scene.height_reliable or piece.flat_group is not None:
             return piece.rank
         # 旧版零高度存档沿用语义回退；真实高度总按共享局部约束排序。
         return {"tunnel": 0, "ground": 1, "elevated": 2}.get(piece.road.mode, 1)

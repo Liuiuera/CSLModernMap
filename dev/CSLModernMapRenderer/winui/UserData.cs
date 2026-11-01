@@ -6,8 +6,68 @@ namespace CSLModernMapWinUI;
 
 internal static class UserData
 {
+    internal sealed record RibbonLayout(string DisplayMode, string VisibilityMode, bool SimplifiedIntroSeen = false);
+
+    internal static bool ShouldOfferSimplifiedIntro(RibbonLayout layout, Version version) =>
+        version >= new Version(6, 7, 3, 0) && layout.DisplayMode == "Classic" && !layout.SimplifiedIntroSeen;
+
     internal static string DirectoryPath => Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CSLModernMap", "UserData");
+
+    internal static bool ReadMapInteractionGuideSeen(string directory)
+    {
+        var path = Path.Combine(directory, "preview-ui.json");
+        if (!File.Exists(path)) return false;
+        using var document = JsonDocument.Parse(File.ReadAllText(path));
+        if (document.RootElement.ValueKind != JsonValueKind.Object ||
+            !document.RootElement.TryGetProperty("mapInteractionGuideSeen", out var seen) ||
+            seen.ValueKind is not (JsonValueKind.True or JsonValueKind.False))
+            throw new InvalidDataException($"地图操作提示配置格式无效：{path}");
+        return seen.GetBoolean();
+    }
+
+    internal static void WriteMapInteractionGuideSeen(string directory)
+    {
+        Directory.CreateDirectory(directory);
+        var path = Path.Combine(directory, "preview-ui.json");
+        File.WriteAllText(path + ".tmp", "{\"mapInteractionGuideSeen\":true}");
+        File.Move(path + ".tmp", path, overwrite: true);
+    }
+
+    internal static RibbonLayout ReadRibbonLayout(string directory)
+    {
+        var path = Path.Combine(directory, "ribbon-layout.json");
+        if (!File.Exists(path)) return new("Classic", "AlwaysShow");
+        using var document = JsonDocument.Parse(File.ReadAllText(path));
+        var root = document.RootElement;
+        if (root.ValueKind != JsonValueKind.Object ||
+            !root.TryGetProperty("displayMode", out var display) || display.ValueKind != JsonValueKind.String ||
+            !root.TryGetProperty("visibilityMode", out var visibility) || visibility.ValueKind != JsonValueKind.String ||
+            display.GetString() is not ("Classic" or "Simplified") ||
+            visibility.GetString() is not ("AlwaysShow" or "TabsOnly" or "FullScreen" or "PanelButtons" or "PanelTitles"))
+            throw new InvalidDataException($"Ribbon 布局配置格式无效：{path}");
+        var seen = false;
+        if (root.TryGetProperty("simplifiedIntroSeen", out var intro))
+        {
+            if (intro.ValueKind is not (JsonValueKind.True or JsonValueKind.False))
+                throw new InvalidDataException($"Ribbon 布局配置格式无效：{path}");
+            seen = intro.GetBoolean();
+        }
+        return new(display.GetString()!, visibility.GetString()!, seen);
+    }
+
+    internal static void WriteRibbonLayout(string directory, RibbonLayout layout)
+    {
+        Directory.CreateDirectory(directory);
+        var path = Path.Combine(directory, "ribbon-layout.json");
+        var json = new JsonObject
+        {
+            ["displayMode"] = layout.DisplayMode, ["visibilityMode"] = layout.VisibilityMode,
+            ["simplifiedIntroSeen"] = layout.SimplifiedIntroSeen,
+        };
+        File.WriteAllText(path + ".tmp", json.ToJsonString());
+        File.Move(path + ".tmp", path, overwrite: true);
+    }
 
     internal static void Prepare(string[] arguments, string engineDirectory)
     {

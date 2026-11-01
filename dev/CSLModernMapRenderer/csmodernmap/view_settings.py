@@ -16,7 +16,7 @@ from ._paths import user_data_dir
 
 
 VIEWS_FILE = "views.json"
-VIEWS_VERSION = 1
+VIEWS_VERSION = 2
 
 DEFAULT_TRANSIT_TYPES = (
     "Metro",
@@ -38,17 +38,11 @@ def _default_transit() -> dict[str, Any]:
     return {
         "mask": 0.6,
         "base_layers": {"water": True, "road": True, "district": True},
-        "layers": {
-            "lines": True,
-            "line_labels": True,
-            "base_water": True,
-            "base_road": True,
-            "base_district": True,
-        },
+        "layers": {"lines": True},
         "types": list(DEFAULT_TRANSIT_TYPES),
         "line_width": 3.0,
-        "palette": "game",
-        "auto_color": False,
+        "line_color_mode": "game",
+        "station_name_placement": "icon",
         "line_label": {"enabled": True, "size": 12.0, "interval": 800.0},
         "stations": {
             "enabled": True,
@@ -56,19 +50,15 @@ def _default_transit() -> dict[str, Any]:
             "merge": True,
             "merge_range": 48.0,
         },
-        "station_names": {"enabled": False, "size": 12.0},
+        "station_names": {"size": 12.0},
         "facilities": {
             "enabled": True,
-            "names_enabled": True,
             "icon_size": 24.0,
-            "density": "all",
-            "min_zoom": 8.0,
         },
         "ordinary_pois": "hidden",
         "presentation": {
             "label_scale": 1.0,
             "icon_scale": 1.0,
-            "palette_index": 0,
             "title_scale": 1.0,
             "legend_scale": 1.0,
         },
@@ -77,52 +67,16 @@ def _default_transit() -> dict[str, Any]:
 
 def _default_metro() -> dict[str, Any]:
     return {
-        "types": list(DEFAULT_METRO_TYPES),
-        "line_ids": None,
-        "station_line_ids": None,
-        "stations": {"enabled": True, "size": 8.0, "diameter": 12.0, "merge": True, "merge_range": 48.0},
-        "line_label": {"enabled": True, "size": 12.0, "interval": 800.0},
-        "station_names": {
-            "enabled": True,
-            "mode": "all",
-            "style": "all",
-            "size": 16.0,
-            "font": "SimHei", "color": "#4A4F5A", "stroke_width": 2.0, "stroke_color": "#FFFFFF",
-        },
-        "output_size": 0,
-        "diagram": {
-            "adaptive_scale": True,
-            "adaptive_strength": 0.85,
-            "spacing": 281,
-            "parallel_gap": 1.55,
-        },
-        "legend": {"enabled": True, "position": "right_top", "scale": 1.0},
-        "background": "",
-        "title": {"enabled": True, "template": "", "scale": 1.0},
-        "schematic_water": True,
-        "water_smoothing": 8.0,
-        # 接驳图标默认开（2026-09-17 产品经理拍板）。它与站点圆点不是平行的两个
-        # 开关：圆点是父设置，圆点不画时接驳图标也不画（见 main.ts 的 tv-poi 判据）。
-        "facilities": {"enabled": True, "scale": 1.0},
-        "presentation": {
-            "label_scale": 1.0,
-            "icon_scale": 1.0,
-            "palette_index": 0,
-            "auto_color": False,
-        },
-        "annotations": {
-            "disclaimer": True,
-            "scale_info": True,
-            "data_notice": True,
-            "generated_at": True,
-            "north_arrow": False,
-            "credit": True,
-        },
+        "types": list(DEFAULT_METRO_TYPES), "line_ids": None,
+        "stations": {"merge": True, "merge_range": 48.0},
+        "diagram": {"adaptive_scale": True, "adaptive_strength": .85, "spacing": 281},
+        "schematic_water": True, "water_smoothing": 8.0,
+        "facilities": {"enabled": True},
     }
 
 
 def default_view_settings() -> dict[str, Any]:
-    """返回包含全部受支持默认值的新版本一文档。"""
+    """返回包含全部受支持默认值的新当前版本文档。"""
     return {
         "version": VIEWS_VERSION,
         "migrated": False,
@@ -135,6 +89,63 @@ def default_view_settings() -> dict[str, Any]:
 
 # 默认值快照按约定只读，需要修改时须调用 default_view_settings 获取独立副本。
 DEFAULT_VIEW_SETTINGS = default_view_settings()
+
+# 持久化字段到 UI / 作业选项的单向投影；线路筛选的会话语义由调用方管理。
+TRANSIT_OPTION_PATHS = {
+    "types": "types", "stations": "stations.enabled",
+    "station_size": "stations.size", "merge_enabled": "stations.merge",
+    "merge_range": "stations.merge_range", "station_name_size": "station_names.size",
+    "station_name_placement": "station_name_placement", "line_color_mode": "line_color_mode",
+    "layers": "layers", "transit_mask": "mask", "line_width": "line_width",
+    "base_water": "base_layers.water", "base_road": "base_layers.road",
+    "base_district": "base_layers.district", "line_label_enabled": "line_label.enabled",
+    "line_label_size": "line_label.size", "line_label_interval": "line_label.interval",
+    "facilities_enabled": "facilities.enabled", "facility_icon_size": "facilities.icon_size",
+    "ordinary_pois": "ordinary_pois",
+    **{key: "presentation." + key for key in ("label_scale", "icon_scale", "title_scale", "legend_scale")},
+}
+METRO_OPTION_PATHS = {
+    "types": "types", "line_ids": "line_ids",
+    "merge_enabled": "stations.merge", "merge_range": "stations.merge_range",
+    "spacing": "diagram.spacing", "schematic_water": "schematic_water",
+    "water_smoothing": "water_smoothing", "facilities_enabled": "facilities.enabled",
+}
+
+
+def view_options(section: Mapping[str, Any], metro: bool) -> dict:
+    """从已迁移的视图设置创建独立快照，不读取旧扁平状态。"""
+    result = {}
+    for option, path in (METRO_OPTION_PATHS if metro else TRANSIT_OPTION_PATHS).items():
+        value = section
+        for key in path.split("."):
+            value = value[key]
+        result[option] = deepcopy(value)
+    if metro:
+        result.update(metro_edits=deepcopy(section.get("metro_edits")),
+                      schematic_options={key: section["diagram"][key] for key in
+                          ("adaptive_scale", "adaptive_strength")})
+    return result
+
+
+def apply_view_options(section: Mapping[str, Any], options: Mapping[str, Any], metro: bool) -> dict:
+    result = deepcopy(dict(section))
+    for option, path in (METRO_OPTION_PATHS if metro else TRANSIT_OPTION_PATHS).items():
+        if option not in options:
+            continue
+        target = result
+        keys = path.split(".")
+        for key in keys[:-1]:
+            target = target[key]
+        target[keys[-1]] = deepcopy(options[option])
+    if metro:
+        result["diagram"].update(options.get("schematic_options", {}))
+        for key in ("metro_edits",):
+            if key in options:
+                result[key] = deepcopy(options[key])
+    else:
+        result.pop("line_ids", None)
+        result.pop("station_line_ids", None)
+    return result
 
 
 def views_path(directory: str | Path | None = None) -> Path:
@@ -175,8 +186,17 @@ def _version(value: Any) -> int | None:
         return None
 
 
+def _migrate_line_label_aliases(section: dict) -> None:
+    labels = section.get("line_label", {})
+    for option, key in (("line_label_enabled", "enabled"),
+                        ("line_label_size", "size"),
+                        ("line_label_interval", "interval")):
+        if option in labels:
+            labels.setdefault(key, labels.pop(option))
+
+
 def _normalize_document(value: Mapping[str, Any]) -> dict[str, Any]:
-    """填充版本一缺失字段，不丢弃未知扩展字段。"""
+    """填充当前版本缺失字段，不丢弃未知扩展字段。"""
     if not isinstance(value, Mapping):
         raise TypeError("view settings must be a mapping")
 
@@ -188,17 +208,12 @@ def _normalize_document(value: Mapping[str, Any]) -> dict[str, Any]:
         raw = wrapped
 
     version = _version(raw.get("version", VIEWS_VERSION))
-    if version != VIEWS_VERSION:
+    if version not in (1, VIEWS_VERSION):
         raise ValueError(f"unsupported views.json version: {version!r}")
 
+    raw = deepcopy(dict(raw))
+    _migrate_line_label_aliases(raw.get("transit", {}))
     result = _deep_merge(DEFAULT_VIEW_SETTINGS, raw)
-    # 旧写入器曾保存工作进程选项名而非嵌套键。
-    transit_label = result["transit"]["line_label"]
-    for option, key in (("line_label_enabled", "enabled"),
-                        ("line_label_size", "size"),
-                        ("line_label_interval", "interval")):
-        if option in transit_label:
-            transit_label[key] = transit_label.pop(option)
     if raw.get("display_contract") != 2:
         transit = result["transit"]
         gates = transit["layers"]
@@ -212,13 +227,47 @@ def _normalize_document(value: Mapping[str, Any]) -> dict[str, Any]:
                 transit[section][field] = False
         result.setdefault("migration", {})["display_gates"] = archived
     result["display_contract"] = 2
-    if raw.get("schematic_contract") != 2:
-        metro = result["metro"]
-        presentation = metro["presentation"]
-        result.setdefault("migration", {})["schematic_presentation"] = deepcopy(presentation)
-        metro["stations"]["diameter"] = float(metro["stations"]["size"]) * 2 * float(presentation.get("icon_scale", 1))
-        metro["station_names"]["size"] = max(int(13.5 * float(presentation.get("label_scale", 1))), 8)
+    # 旧 PNG 展示参数不再进入工程生成状态；只保留生成输入和编辑覆盖。
+    metro = result["metro"]
+    defaults = DEFAULT_VIEW_SETTINGS["metro"]
+    result["metro"] = {key: ({child: metro[key][child] for child in default}
+                              if isinstance(default, dict) else metro[key])
+                       for key, default in defaults.items()}
+    if "metro_edits" in metro:
+        result["metro"]["metro_edits"] = metro["metro_edits"]
     result["schematic_contract"] = 2
+    transit = result["transit"]
+    old = raw.get("transit", {})
+    presentation = transit["presentation"]
+    if "line_color_mode" not in old:
+        index = presentation.get("palette_index", 0)
+        transit["line_color_mode"] = ("soft" if index == 2 else "classic"
+            if index > 0 or transit.get("auto_color", False) else "game")
+    if "station_name_placement" not in old:
+        transit["station_name_placement"] = (
+            "icon" if transit["facilities"].get("names_enabled", True) else
+            "station" if transit["station_names"].get("enabled", False) else "hidden")
+    # 旧图层门槛只在迁移时折叠，运行时每个控制项只有一个权威值。
+    gates = transit["layers"]
+    for gate, section, field in (("line_labels", "line_label", "enabled"),
+                                 ("base_water", "base_layers", "water"),
+                                 ("base_road", "base_layers", "road"),
+                                 ("base_district", "base_layers", "district"),
+                                 ("stations", "stations", "enabled"),
+                                 ("facilities", "facilities", "enabled")):
+        if gates.pop(gate, True) is False:
+            transit[section][field] = False
+    gates.pop("facility_names", None)
+    gates.pop("station_names", None)
+    for key in ("auto_color", "palette"):
+        transit.pop(key, None)
+    presentation.pop("palette_index", None)
+    transit["station_names"].pop("enabled", None)
+    for key in ("names_enabled", "density", "min_zoom"):
+        transit["facilities"].pop(key, None)
+    for key in tuple(result):
+        if key == "legacy" or key.startswith(("transit_view_", "metro_view_")):
+            result.pop(key)
     result["version"] = VIEWS_VERSION
     result["migrated"] = bool(raw.get("migrated", False))
     return _json_copy(result)
@@ -302,22 +351,19 @@ def migrate_legacy_settings(
     *,
     base: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """把旧版扁平视图键转换为版本一文档，保留原键供兼容回退。"""
+    """把旧版扁平视图键转换为当前版本文档，不再保留运行时旧键。"""
     if not isinstance(settings, Mapping):
         raise TypeError("legacy settings must be a mapping")
     values = _settings_values(settings)
     legacy = _legacy_keys(values)
 
-    if base is None:
-        result = default_view_settings()
-    else:
-        result = _normalize_document(base)
+    result = default_view_settings()
+    result["transit"].pop("line_color_mode")
+    result["transit"].pop("station_name_placement")
     overrides = _legacy_metro_merge(values)
     if overrides:
         result["metro"]["stations"].update({key: overrides[source] for source, key in
             (("enabled", "merge"), ("distance", "merge_range")) if source in overrides})
-    if not legacy:
-        return result
 
     transit = result["transit"]
     metro = result["metro"]
@@ -373,63 +419,18 @@ def migrate_legacy_settings(
     # 地铁示意图视图设置。
     _put_list(metro, ("types",), values, "metro_view_types")
     _put_list(metro, ("line_ids",), values, "metro_view_line_ids")
-    _put_list(metro, ("station_line_ids",), values,
-              "metro_view_station_line_ids")
-    _put(metro, ("stations", "enabled"), values, "metro_view_stations")
-    _put(metro, ("line_label", "enabled"), values,
-         "metro_view_line_label_enabled", "metro_view_line_names_enabled")
-    _put(metro, ("line_label", "size"), values,
-         "metro_view_line_label_size")
-    _put(metro, ("line_label", "interval"), values,
-         "metro_view_line_label_interval")
-    _put(metro, ("station_names", "enabled"), values,
-         "metro_view_station_names_enabled")
-    _put(metro, ("station_names", "mode"), values,
-         "metro_view_station_names_mode")
-    _put(metro, ("station_names", "style"), values,
-         "metro_view_station_name_style")
-    _put(metro, ("station_names", "size"), values,
-         "metro_view_station_name_size")
-    _put(metro, ("output_size",), values, "metro_view_output_size")
-    for old, new in (
-        ("metro_view_adaptive_scale", "adaptive_scale"),
-        ("metro_view_adaptive_strength", "adaptive_strength"),
-        ("metro_view_spacing", "spacing"),
-        ("metro_view_parallel_gap", "parallel_gap"),
-    ):
-        _put(metro, ("diagram", new), values, old)
-    _put(metro, ("legend", "enabled"), values,
-         "metro_view_legend_enabled")
-    _put(metro, ("legend", "position"), values,
-         "metro_view_legend_position")
-    _put(metro, ("legend", "scale"), values, "metro_view_legend_scale")
-    _put(metro, ("background",), values, "metro_view_background")
-    _put(metro, ("title", "enabled"), values, "metro_view_title_enabled")
-    _put(metro, ("title", "template"), values,
-         "metro_view_title_template")
-    _put(metro, ("title", "scale"), values, "metro_view_title_scale")
+    for name in ("adaptive_scale", "adaptive_strength", "spacing"):
+        _put(metro, ("diagram", name), values, "metro_view_" + name)
     _put(metro, ("schematic_water",), values, "metro_view_water")
     _put(metro, ("water_smoothing",), values, "metro_view_water_smoothing")
-    _put(metro, ("facilities", "enabled"), values,
-         "metro_view_facilities_enabled")
-    _put(metro, ("facilities", "scale"), values,
-         "metro_view_facilities_scale")
-    for name in ("disclaimer", "scale_info", "data_notice", "generated_at",
-                 "north_arrow", "credit"):
-        _put(metro, ("annotations", name), values, f"metro_view_ann_{name}")
-    for old, new in (
-        ("metro_view_label_scale", "label_scale"),
-        ("metro_view_icon_scale", "icon_scale"),
-        ("metro_view_palette_index", "palette_index"),
-        ("metro_view_auto_color", "auto_color"),
-    ):
-        _put(metro, ("presentation", new), values, old)
+    _put(metro, ("facilities", "enabled"), values, "metro_view_facilities_enabled")
 
-    result["migrated"] = True
-    result["legacy"] = legacy
-    # 顶层保留旧拼写，便于只复制 views.json 的工具完成迁移。
-    result.update(deepcopy(legacy))
-    if base is None:
+    result["migrated"] = bool(legacy or overrides)
+    if base is not None:
+        base = deepcopy(dict(base))
+        _migrate_line_label_aliases(base.get("transit", {}))
+        result = _deep_merge(result, base)
+    if base is None and legacy:
         result.pop("schematic_contract", None)
         result.pop("display_contract", None)
     return _normalize_document(result)
@@ -441,18 +442,28 @@ def _read_legacy_values(directory: str | Path | None) -> dict[str, Any]:
 
 
 def load_view_settings(directory: str | Path | None = None) -> dict[str, Any]:
-    """加载版本一视图设置，并在首次使用时迁移旧设置。"""
+    """加载当前版本视图设置，并在首次使用时迁移旧设置。"""
     path = views_path(directory)
     raw = _read_json(path) if path.exists() else None
     if raw is not None:
         try:
+            if raw.get("version", 1) == 1:
+                legacy = _read_legacy_values(directory)
+                legacy.update(raw.get("legacy", {}))
+                legacy.update(_legacy_keys(raw))
+                normalized = migrate_legacy_settings(legacy, base=raw)
+                save_view_settings(normalized, directory)
+                return normalized
             stations = raw.setdefault("metro", {}).setdefault("stations", {})
             if "merge" not in stations or "merge_range" not in stations:
                 overrides = _legacy_metro_merge(_read_legacy_values(directory))
                 stations.update({key: overrides[source]
                     for source, key in (("enabled", "merge"), ("distance", "merge_range"))
                     if source in overrides and key not in stations})
-            return _normalize_document(raw)
+            normalized = _normalize_document(raw)
+            if raw.get("version") != VIEWS_VERSION:
+                save_view_settings(normalized, directory)
+            return normalized
         except (TypeError, ValueError):
             # 损坏或较新版本的视图文件不能被覆盖；回退默认值，待显式保存时修复。
             return default_view_settings()
@@ -468,7 +479,7 @@ def load_view_settings(directory: str | Path | None = None) -> dict[str, Any]:
 
 def save_view_settings(settings: Mapping[str, Any],
                        directory: str | Path | None = None) -> bool:
-    """原子写入规范化的版本一视图文档。"""
+    """原子写入规范化的当前版本视图文档。"""
     if hasattr(settings, "to_dict") and callable(settings.to_dict):
         settings = settings.to_dict()
     normalized = _normalize_document(settings)

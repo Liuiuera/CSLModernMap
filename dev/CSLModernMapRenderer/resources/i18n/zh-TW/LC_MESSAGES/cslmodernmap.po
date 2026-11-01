@@ -357,7 +357,7 @@ msgid "gui.dialog.open_city"
 msgstr "開啟城市存檔"
 
 msgid "gui.dialog.open_city.filter"
-msgstr "城市地圖 (*.mmap.gz *.mmap *.cmm.gz *.cmm *.cmm.json)"
+msgstr "城市地圖 (*.mmap.gz *.mmap *.cslmap.gz *.cslmap *.cmm.gz *.cmm *.cmm.json)"
 
 msgid "gui.dialog.save"
 msgstr "儲存"
@@ -3413,7 +3413,7 @@ msgid "gui.style_editor.value.left_top"
 msgstr "左上角"
 
 msgid "gui.style_editor.value.poi"
-msgstr "依 POI 類別著色"
+msgstr "自動 POI 取色"
 
 msgid "gui.style_editor.value.right_bottom"
 msgstr "右下角"
@@ -3836,7 +3836,7 @@ msgid "style.building.color_mode.label"
 msgstr "建築填色方式"
 
 msgid "style.building.color_mode.value.poi"
-msgstr "依地點著色"
+msgstr "自動 POI 取色"
 
 msgid "style.building.color_mode.value.uniform"
 msgstr "統一顏色"
@@ -5153,3 +5153,111 @@ msgstr "正在轉換地圖資料…"
 
 msgid "gui.progress.transit_catalog"
 msgstr "正在整理公車路線：{done}/{total}"
+
+msgid "building.category.residential"
+msgstr "住宅"
+
+msgid "building.category.commercial"
+msgstr "商業"
+
+msgid "building.category.office"
+msgstr "辦公"
+
+msgid "building.category.industrial"
+msgstr "工業與倉儲"
+
+msgid "building.category.police"
+msgstr "警察"
+
+msgid "building.category.prison"
+msgstr "監獄與司法"
+
+msgid "building.category.fire"
+msgstr "消防與防災"
+
+msgid "building.category.healthcare"
+msgstr "醫療與福利"
+
+msgid "building.category.deathcare"
+msgstr "殯葬"
+
+msgid "building.category.education"
+msgstr "教育與科研"
+
+msgid "building.category.administration"
+msgstr "行政與金融"
+
+msgid "building.category.transport"
+msgstr "公共運輸"
+
+msgid "building.category.parking"
+msgstr "停車"
+
+msgid "building.category.post_telecom"
+msgstr "郵政與通訊"
+
+msgid "building.category.electricity"
+msgstr "電力"
+
+msgid "building.category.water"
+msgstr "供水與排污"
+
+msgid "building.category.garbage"
+msgstr "垃圾處理"
+
+msgid "building.category.maintenance"
+msgstr "道路與公園養護"
+
+msgid "building.category.park"
+msgstr "公園與體育"
+
+msgid "building.category.amusement"
+msgstr "遊樂設施"
+
+msgid "building.category.culture"
+msgstr "文化與觀光"
+
+msgid "building.category.decoration"
+msgstr "自然裝飾"
+
+msgid "building.category.unclassified"
+msgstr "未分類"
+
+msgid "building.category.label"
+msgstr "建築用途類別"
+
+msgid "building.category.table"
+msgstr "建築分類上色表"
+
+msgid "building.category.enabled"
+msgstr "指定顏色"
+
+msgid "building.category.color"
+msgstr "類別填充色"
+
+msgid "building.category.scope"
+msgstr "作用於全部「{category}」建築。"
+
+msgid "building.category.fallback"
+msgstr "預設建築色（未取得 POI 顏色）"
+
+msgid "building.category.unknown_notice"
+msgstr "現有匯出資料不足以確定用途；此處修改會影響全部未分類建築。"
+
+msgid "style.building.color_mode.value.category"
+msgstr "分類上色"
+
+msgid "gui.style_editor.value.category"
+msgstr "分類上色"
+
+msgid "building.category.fallback_scope"
+msgstr "只用於未取得 POI 顏色且未指定類別顏色的建築。"
+
+msgid "building.height"
+msgstr "模型高度"
+
+msgid "building.base_elevation"
+msgstr "模型底部高程"
+
+msgid "building.height_source"
+msgstr "高度來源"

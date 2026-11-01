@@ -190,6 +190,7 @@ class MetroEditDocument:
         return result
 
     def for_map(self, mapdata) -> "MetroEditDocument":
+        """旧二代编辑只在同一源文件且节点唯一对应站台时于内存中转换。"""
         from .services.transit.native import cs2_document
         document = cs2_document(mapdata)
         if document is None or self.identity_space == "cs2-stop":

@@ -13,8 +13,11 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Callable, Mapping
+import gzip
+import zlib
 
 import numpy as np
+from lxml import etree as LET
 
 from .. import __version__
 from ..parser import (
@@ -65,6 +68,7 @@ from .map_v41_common import (
     _zone_kind,
 )
 from ..i18n import tr
+from .file_format import MapFileError, check_cslmap
 
 
 # CMM 文档的家族后缀。三个都要认：
@@ -642,19 +646,13 @@ class MapV41Loader:
         issues: list[MapIssue] = []
 
         report(0.02, tr("gui.progress.load.xml"))
-        root = _load_element_tree(str(source_path))
-        version = (root.get("version") or "").strip()
-        if version and version != "4.1":
-            issues.append(MapIssue(
-                "error", "VERSION_UNKNOWN",
-                f"expected .mmap version 4.1, got {version}",
-            ))
-        elif not version:
-            version = "4.1"
-            issues.append(MapIssue(
-                "info", "VERSION_DEFAULTED",
-                "source has no version attribute; interpreted as v4.1",
-            ))
+        try:
+            root = _load_element_tree(str(source_path))
+        except LET.XMLSyntaxError as error:
+            raise MapFileError("invalid_xml") from error
+        format_issue = check_cslmap(root)
+        issues.append(MapIssue("warn", format_issue, tr("gui.file.unversioned_xml"
+            if format_issue == "MISSING_XML_VERSION" else "gui.file.legacy_xml")))
 
         report(0.08, tr("gui.progress.load.meta"))
         city_name, generated, sea_level = _read_metadata(root)
@@ -768,8 +766,17 @@ def load_document(
     validate: bool = True,
 ) -> MapDocument:
     """统一解析入口：所有 GUI/CLI/SVG/Web 前端都调用此函数。"""
+    try:
+        return _load_document(path, progress, validate=validate)
+    except (gzip.BadGzipFile, EOFError, zlib.error) as error:
+        raise MapFileError("invalid_gzip") from error
+    except UnicodeError as error:
+        raise MapFileError("invalid_encoding") from error
+
+
+def _load_document(path, progress, *, validate):
     source = Path(path)
-    if source.name.casefold().endswith(CMM_FILE_SUFFIXES):
+    if source.name.casefold().endswith(CMM_FILE_SUFFIXES) or source.suffix.lower() == ".json":
         if progress is not None:
             progress(0.1, tr("gui.progress.load.document"))
         document = MapDocument.from_json(source)

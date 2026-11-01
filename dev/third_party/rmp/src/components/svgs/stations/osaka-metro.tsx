@@ -1,4 +1,5 @@
-import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
+import RmgFields, { StationField as RmgFieldsField } from '../../panels/details/station-fields';
+
 import { MonoColour } from '@railmapgen/rmg-palette-resources';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -454,7 +455,8 @@ const OsakaMetroStation = (props: StationComponentProps) => {
     const { canDrag, dragHandlers, previewPreciseNameOffsets } = useDraggableStationName<OsakaMetroStationAttributes>(
         id,
         StationType.OsakaMetro,
-        defaultNameLayout
+        defaultNameLayout,
+        attrs
     );
     const nameLayout = previewPreciseNameOffsets ?? preciseNameOffsets ?? defaultNameLayout;
 
@@ -701,6 +703,7 @@ const OsakaMetroAttrsComponent = (props: AttrsProps<OsakaMetroStationAttributes>
         {
             type: 'textarea',
             label: t('panel.details.stations.common.nameJa'),
+            cmmSection: 'name',
             value: attrs.names[0],
             onChange: val => updateAttr('names', [val, attrs.names[1]]),
             minW: 'full',
@@ -715,6 +718,7 @@ const OsakaMetroAttrsComponent = (props: AttrsProps<OsakaMetroStationAttributes>
         {
             type: 'input',
             label: t('panel.details.stations.common.nameEn'),
+            cmmSection: 'name',
             value: attrs.names[1],
             onChange: val => updateAttr('names', [attrs.names[0], val]),
             minW: 'full',

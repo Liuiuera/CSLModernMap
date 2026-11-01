@@ -1,3 +1,4 @@
+import { validateNameMetadata } from './station-label';
 import { MultiDirectedGraph } from 'graphology';
 import { nanoid } from 'nanoid';
 import {
@@ -213,6 +214,9 @@ export const importSelectedNodesAndEdges = (
  * @param nodeId The ID of the node.
  * @returns JSON string of the specific attributes.
  */
+const stationIdentityFields = new Set(['names', 'nameOffsetX', 'nameOffsetY', 'preciseNameOffsets', 'transfer', 'secondaryNames', 'oldName', 'oldNames', 'nameOffset', 'nameOverallPosition', 'nameOffsetPosition', 'terminalNameRotate', 'textDistance', 'rotate']);
+const styleOnly = (attrs: object) => Object.fromEntries(Object.entries(attrs).filter(([key]) => !stationIdentityFields.has(key)));
+
 export const exportNodeSpecificAttrs = (
     graph: MultiDirectedGraph<NodeAttributes, EdgeAttributes, GraphAttributes>,
     nodeId: NodeId
@@ -222,8 +226,7 @@ export const exportNodeSpecificAttrs = (
 
     let specificAttrs: NodeSpecificAttributes;
     if (STATION_TYPE_VALUES.has(nodeType as StationType)) {
-        const { names, ...rest } = nodeAttrs as NonNullable<ExternalStationAttributes[StationType]>;
-        specificAttrs = rest as NodeSpecificAttributes;
+        specificAttrs = styleOnly(nodeAttrs) as NodeSpecificAttributes;
     } else {
         specificAttrs = structuredClone(nodeAttrs) as NodeSpecificAttributes;
     }
@@ -288,11 +291,12 @@ export const parseClipboardData = (
         const { type } = parsed;
 
         if (import.meta.env.MODE === 'embedded') {
-            const nodes = type === 'elements' ? Object.values(parsed.nodes ?? {}) as any[] : [];
+            const nodes = type === 'elements' ? Object.values(parsed.nodesWithAttrs ?? {}) as NodeAttributes[] : [];
             if (nodes.some((node: any) => ['image', 'master'].includes(node.attributes?.type ?? node.type))) return null;
             if (['image', 'master'].includes(type)) return null;
         }
         if (type === 'elements') {
+            Object.values(parsed.nodesWithAttrs ?? {}).forEach(node => validateNameMetadata(node as NodeAttributes));
             return { type: 'elements', data: parsed as ClipboardData };
         }
 
@@ -325,8 +329,10 @@ export const importNodeSpecificAttrs = (
     selected: Iterable<Id>,
     data: NodeSpecificAttrsClipboardData
 ): boolean => {
+    const ids = [...selected];
+    if (!ids.length || ids.some(id => !graph.hasNode(id) || graph.getNodeAttribute(id, 'type') !== data.type)) return false;
     let success = false;
-    for (const id of selected) {
+    for (const id of ids) {
         if (!graph.hasNode(id)) {
             continue;
         }
@@ -340,8 +346,8 @@ export const importNodeSpecificAttrs = (
                 >;
                 graph.setNodeAttribute(nodeId, targetNodeType, {
                     ...currentAttrs,
-                    ...data.specificAttrs,
-                    names: currentAttrs.names, // explicitly preserve names
+                    ...styleOnly(data.specificAttrs),
+                    names: currentAttrs.names,
                 });
             } else {
                 const currentAttrs = graph.getNodeAttribute(nodeId, targetNodeType)!;
@@ -370,8 +376,10 @@ export const importEdgeSpecificAttrs = (
     selected: Iterable<Id>,
     data: EdgeSpecificAttrsClipboardData
 ): boolean => {
+    const ids = [...selected];
+    if (!ids.length || ids.some(id => !graph.hasEdge(id) || graph.getEdgeAttribute(id, 'style') !== data.type)) return false;
     let success = false;
-    for (const id of selected) {
+    for (const id of ids) {
         if (!graph.hasEdge(id)) {
             continue;
         }

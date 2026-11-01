@@ -1,5 +1,6 @@
+import RmgFields, { StationField as RmgFieldsField } from '../../panels/details/station-fields';
 import { Flex, NumberInput, NumberInputField } from '@chakra-ui/react';
-import { RmgFields, RmgFieldsField, RmgLabel } from '@railmapgen/rmg-components';
+import { RmgLabel } from '@railmapgen/rmg-components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { AttrsProps, CanvasType, CategoriesType, CityCode } from '../../../constants/constants';
@@ -170,7 +171,8 @@ const JREastBasicStation = (props: StationComponentProps) => {
     const { canDrag, dragHandlers, previewPreciseNameOffsets } = useDraggableStationName<StationAttributes>(
         id,
         StationType.JREastBasic,
-        defaultNameLayout
+        defaultNameLayout,
+        attrs
     );
     const nameLayout = previewPreciseNameOffsets ?? preciseNameOffsets ?? defaultNameLayout;
 
@@ -347,6 +349,7 @@ const jrEastBasicAttrsComponent = (props: AttrsProps<JREastBasicStationAttribute
         {
             type: 'textarea',
             label: t('panel.details.stations.common.nameJa'),
+            cmmSection: 'name',
             value: attrs.names[0],
             onChange: val => {
                 attrs.names[0] = val.toString();
@@ -361,6 +364,7 @@ const jrEastBasicAttrsComponent = (props: AttrsProps<JREastBasicStationAttribute
         {
             type: 'textarea',
             label: t('panel.details.stations.common.nameEn'),
+            cmmSection: 'name',
             value: attrs.names.at(1) ?? defaultJREastBasicStationAttributes.names[1],
             onChange: val => {
                 attrs.names[1] = val.toString();
@@ -396,6 +400,7 @@ const jrEastBasicAttrsComponent = (props: AttrsProps<JREastBasicStationAttribute
         {
             type: 'select',
             label: t('panel.details.stations.common.rotate'),
+            cmmSection: 'appearance',
             value: attrs.rotate,
             options: { 0: '─', 45: '╲', 90: '│', 135: '╱' },
             onChange: val => {

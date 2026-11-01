@@ -12,7 +12,7 @@
   "main_ui_a44c7ba211": "道路",
   "main_ui_5b46860a8e": "建筑",
   "main_ui_97492a0e5d": "铁路",
-  "main_ui_57f78ba1f9": "交通",
+  "main_ui_57f78ba1f9": "路况",
   "main_ui_b8466cd555": "地铁",
   "main_ui_9875b1f825": "标注",
   "main_ui_9ff2b9e94d": "区划",
@@ -31,5 +31,16 @@
   "surface-poi-layer_shader_f2a5d36a5f": "POI Surface shader 编译失败",
   "surface-poi-layer_program_226d27beb7": "无法创建 POI Surface program",
   "surface-poi-layer_program_ea7d784c3e": "POI Surface program 链接失败",
-  "preview_title": "CSLModernMap 地图预览"
+  "preview_title": "CSLModernMap 地图预览",
+  "roads_local_flat_fallback": "部分道路交叉已按平面绘制，相关位置的桥隧遮挡可能不准确。",
+  "search_search": "搜索地图对象",
+  "search_searchHelp": "搜索当前地图中的名称或类别",
+  "search_empty": "未找到匹配的对象",
+  "search_findHelp": "在左上角输入名称或类别，查找并定位地图对象。",
+  "search_group_building": "其他建筑",
+  "search_group_road": "道路",
+  "search_group_area": "区域",
+  "search_group_poi": "其他地点",
+  "search_more": "显示更多",
+  "search_count": "({{number}})"
 }

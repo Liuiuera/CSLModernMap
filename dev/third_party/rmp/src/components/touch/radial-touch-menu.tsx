@@ -37,6 +37,7 @@ export const defaultRadialTouchMenuState: RadialTouchMenuState = {
 export const RadialTouchMenu: React.FC = () => {
     const dispatch = useRootDispatch();
     const { svgViewBoxZoom } = useRootSelector(state => state.param);
+    const angle = useRootSelector(state => state.param.present.attributes?.cmmRotation?.angle ?? 0);
     const { visible, position, data } = useRootSelector(state => state.runtime.radialTouchMenu);
 
     const elements = [...data[MenuCategory.STATION], ...data[MenuCategory.MISC_NODE], ...data[MenuCategory.LINE]];
@@ -52,7 +53,7 @@ export const RadialTouchMenu: React.FC = () => {
 
     return (
         <g
-            transform={`translate(${position.x}, ${position.y})scale(${(0.8 * svgViewBoxZoom) / 100})`}
+            transform={`translate(${position.x}, ${position.y})rotate(${-angle})scale(${(0.8 * svgViewBoxZoom) / 100})`}
             className="removeMe"
         >
             {(Object.entries(data) as [MenuCategory, MenuItemData[]][]).map(([category, layerData]) => {

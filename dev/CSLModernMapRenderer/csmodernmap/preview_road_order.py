@@ -3,6 +3,7 @@
 预览和 PNG 共用本模块。绘制等级作用于完整路面而非单次描边；通过交叉点之间的分段消除整条道路的循环约束。人为切分边不会成为道路边界。"""
 from __future__ import annotations
 
+
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from math import hypot, floor
@@ -10,12 +11,24 @@ from math import hypot, floor
 from PySide6.QtCore import QPointF, Qt
 from PySide6.QtGui import QPainterPath, QPainterPathStroker
 
-from .road_geometry import (HEIGHT_EPSILON, clip_polyline_span,
+from .road_geometry import (HEIGHT_EPSILON, clip_polyline_span, _point_at_distance,
                             build_junction_mesh, junction_primary)
 from .road_hierarchy import road_level_rank
 
-VERSION = 4
+VERSION = 6
 _EPS = 1e-6
+
+
+class LocalRoadCutError(ValueError):
+    """局部切口无法表达；调用方保留尚未切开的完整路面。"""
+    def __init__(self, road_id, distance, reason):
+        self.road_id, self.distance, self.reason = road_id, distance, reason
+        super().__init__(f"Road {road_id} cut at {distance:g}: {reason}")
+
+
+def road_warning(report):
+    from . import i18n
+    return i18n.tr("gui.roads.local_flat_fallback") if report.get("flatGroups") else None
 
 
 def _path(points, closed=True):
@@ -129,10 +142,10 @@ def _split_surface(path, road, start, end):
     negative = [hit for hit in hits if hit[0] < 0]
     positive = [hit for hit in hits if hit[0] >= 0]
     if not negative or not positive:
-        raise ValueError(f'Cannot locate a local road cut on segment {road.id}')
+        raise LocalRoadCutError(road.id, end, 'cut_not_found')
     left, right = max(negative), min(positive)
     if left[1] != right[1]:
-        raise ValueError(f'Road cut crosses separate surface rings on segment {road.id}')
+        raise LocalRoadCutError(road.id, end, 'separate_rings')
     ring = rings[left[1]][:-1]
     count = len(ring)
 
@@ -141,11 +154,9 @@ def _split_surface(path, road, start, end):
         return [a[3], *[ring[i % count] for i in range(floor(a[2])+1, floor(stop)+1)], b[3]]
 
     first, second = _path(arc(left, right)), _path(arc(right, left))
-    anchor = clip_polyline_span(road.points, max(start, end-.05), .001)[0]
-    if second.contains(QPointF(anchor.x, anchor.z)):
+    x, z, _, _ = _point_at_distance(road.points, (start+end)*.5)
+    if second.contains(QPointF(x, z)):
         first, second = second, first
-    elif not first.contains(QPointF(anchor.x, anchor.z)):
-        raise ValueError(f'Road centreline is outside its surface at cut on segment {road.id}')
     for index, other in enumerate(rings):
         if index == left[1]:
             continue
@@ -218,10 +229,12 @@ class RoadPiece:
     rings: tuple = ()
     boundaries: tuple = ()
     paints: tuple = ()
+    flat_group: int | None = None
+    polygons: tuple = ()
 
     @property
     def paint_regions(self):
-        return self.paints or (RoadPaint(self.road, self.rings, self.boundaries),)
+        return self.paints or (RoadPaint(self.road, self.rings, self.boundaries, self.polygons),)
 
     @property
     def points(self):
@@ -339,6 +352,64 @@ def _ranks(nodes, constraints):
             if degree[b] == 0:
                 ready.append(b)
     return ranks, {node for node, value in degree.items() if value}
+
+
+def _local_ranks(nodes, constraints):
+    """仅将强连通冲突组收缩为同层；循环下游和组间约束仍参与排序。"""
+    ranks, blocked = _ranks(nodes, constraints)
+    if not blocked:
+        return ranks, {}
+    outgoing, incoming = defaultdict(set), defaultdict(set)
+    for a, b in constraints:
+        if a in blocked and b in blocked:
+            outgoing[a].add(b)
+            incoming[b].add(a)
+    # 迭代 Kosaraju，避免长约束链耗尽 Python 递归栈。
+    visited, finished = set(), []
+    for node in sorted(blocked):
+        if node in visited:
+            continue
+        visited.add(node)
+        stack = [(node, iter(sorted(outgoing[node])))]
+        while stack:
+            current, neighbors = stack[-1]
+            neighbor = next(neighbors, None)
+            if neighbor is None:
+                finished.append(current)
+                stack.pop()
+            elif neighbor not in visited:
+                visited.add(neighbor)
+                stack.append((neighbor, iter(sorted(outgoing[neighbor]))))
+    assigned, groups = set(), []
+    for node in reversed(finished):
+        if node in assigned:
+            continue
+        group, stack = [], [node]
+        assigned.add(node)
+        while stack:
+            current = stack.pop()
+            group.append(current)
+            for neighbor in sorted(incoming[current]):
+                if neighbor not in assigned:
+                    assigned.add(neighbor)
+                    stack.append(neighbor)
+        if len(group) > 1:
+            groups.append(sorted(group))
+    groups.sort()
+    owners = {node: node for node in nodes}
+    flat = {}
+    for group_id, group in enumerate(groups, 1):
+        for node in group:
+            owners[node], flat[node] = group[0], group_id
+    edges = {(owners[a], owners[b]) for a, b in constraints if owners[a] != owners[b]}
+    group_ranks, remaining = _ranks(set(owners.values()), edges)
+    if remaining:
+        raise RuntimeError("Road constraint condensation is cyclic")
+    return {node: group_ranks[owners[node]] for node in nodes}, flat
+
+
+def flat_piece_key(piece):
+    return road_level_rank(piece.road.level), piece.road.id, piece.index
 
 
 def _edge_spans(a, b, boundaries):
@@ -481,7 +552,7 @@ def _outer_boundaries(road, original, scene, paths, incidence, neighbor_cache=No
 
 
 def build_road_order(scene, *, accurate=True):
-    """返回完全覆盖的片段及其局部物理顺序；占地相交也贡献约束，缺失或相等高度不虚构上下关系。"""
+    """返回完全覆盖的片段及局部绘制顺序；无法消除的循环仅在强连通组内取消分层。"""
     roads = scene.roads_by_id
     events = [(e.lower_segment_id, e.lower_distance,
                e.upper_segment_id, e.upper_distance) for e in scene.crossings
@@ -569,11 +640,8 @@ def build_road_order(scene, *, accurate=True):
         nodes = [(road.id, i) for road in scene.roads for i in range(len(cuts[road.id])+1)]
         constraints = {(key(a, ad), key(b, bd)) for a, ad, b, bd in events}
         ranks, cyclic = _ranks(nodes, constraints)
-    if cyclic:
-        # 物理循环不能靠源标识或平均高度悄悄打破。
-        raise ValueError(f"Preview road ordering has {len(cyclic)} unresolved fragments")
-
     result = RoadOrder()
+    skipped_cuts = []
     incidence = defaultdict(list)
     neighbor_cache = {}
     for road in scene.roads:
@@ -591,12 +659,20 @@ def build_road_order(scene, *, accurate=True):
             boundaries = (_outer_boundaries(road, original, scene, paths, incidence,
                            neighbor_cache, projection_indexes, height_ranges, junction_seams)
                           if accurate else (original,))
-        pieces = []
-        for index, (start, end) in enumerate(zip(bounds, bounds[1:])):
+        pieces, actual_cuts = [], []
+        start = 0.0
+        for end in bounds[1:]:
             region = remainder
-            if original and index < len(bounds)-2:
-                region, remainder = _split_surface(remainder, road, start, end)
-            piece = RoadPiece(road, index, start, end, ranks[road.id, index])
+            if original and end != road.length:
+                try:
+                    region, remainder = _split_surface(remainder, road, start, end)
+                except LocalRoadCutError as error:
+                    skipped_cuts.append({'roadId': road.id, 'distance': end,
+                                         'reason': error.reason})
+                    continue
+            if end != road.length:
+                actual_cuts.append(end)
+            piece = RoadPiece(road, len(pieces), start, end)
             if original:
                 piece.rings = tuple(_rings(region))
                 piece.boundaries = _clip_lines(boundaries, region, piece.rings) if cuts[road.id] else boundaries
@@ -604,12 +680,43 @@ def build_road_order(scene, *, accurate=True):
                     piece.paints = _paint_regions(road, region, piece.boundaries,
                         paint_masks[road.id])
             pieces.append(piece)
+            start = end
+        cuts[road.id] = actual_cuts
         result.pieces[road.id] = pieces
+    nodes = [(road_id, piece.index) for road_id, pieces in result.pieces.items() for piece in pieces]
+    flat = {}
+    if skipped_cuts or cyclic:
+        constraints = {(key(a, ad), key(b, bd)) for a, ad, b, bd in events}
+        ranks, flat = _local_ranks(nodes, constraints)
+    merged = set()
+    for skipped in skipped_cuts:
+        node = key(skipped['roadId'], skipped['distance'])
+        piece = result.pieces[node[0]][node[1]]
+        skipped.update(fragmentIndex=piece.index, start=piece.start, end=piece.end)
+        merged.add(node)
+    flat_groups = defaultdict(list)
+    for road_id, pieces in result.pieces.items():
+        for piece in pieces:
+            node = road_id, piece.index
+            piece.rank, piece.flat_group = ranks[node], flat.get(node)
+            if node in merged or piece.flat_group is not None:
+                # Qt 填充环可能通过回绕边连接孔洞；恢复片段对 GeoJSON 显式保留孔洞。
+                surface = _path([])
+                for ring in piece.rings:
+                    surface.addPath(_path(ring))
+                piece.polygons = _polygons(surface)
+            if piece.flat_group is not None:
+                flat_groups[piece.flat_group].append({'roadId': road_id, 'fragmentIndex': piece.index,
+                                                     'start': piece.start, 'end': piece.end})
     result.diagnostics = {
         'version': VERSION, 'accurateIntersections': accurate, 'constraints': len(constraints),
         'overlapSamples': overlap_samples,
         'splitRoads': sum(bool(value) for value in cuts.values()),
         'fragments': len(nodes), 'ranks': max(ranks.values(), default=0)+1,
         'paintRegions': sum(len(piece.paints) for pieces in result.pieces.values() for piece in pieces),
+        'status': 'degraded' if flat_groups else 'generated',
+        'skippedCuts': skipped_cuts,
+        'flatGroups': [{'id': group, 'pieces': sorted(pieces, key=lambda p: (p['roadId'], p['fragmentIndex']))}
+                       for group, pieces in sorted(flat_groups.items())],
     }
     return result

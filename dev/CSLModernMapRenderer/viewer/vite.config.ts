@@ -40,6 +40,7 @@ export default defineConfig({
         }
       }
       writeFileSync('dist/THIRD_PARTY_LICENSES.txt', notices.join('\n\n'));
+      writeFileSync('dist/NAVIGATION_LICENSES.txt', notices.join('\n\n'));
     },
   }],
 });

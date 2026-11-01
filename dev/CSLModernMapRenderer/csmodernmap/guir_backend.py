@@ -18,6 +18,7 @@ from .style import style_scalar
 
 import atexit
 import copy
+import json
 import math
 import logging
 import os
@@ -531,6 +532,7 @@ def _copy_image_to_clipboard(img) -> tuple[bool, str]:
 
 def _extract_city_info(document) -> dict:
     """从已解析文档直接提取城市信息（无需等 worker 回传）。"""
+    from .cmm.file_format import file_warnings
     name = (getattr(document, "city_name", "") or "").strip()
     metadata = getattr(document, "metadata", None)
     generated = (getattr(metadata, "exported_at", "") or ""
@@ -549,6 +551,7 @@ def _extract_city_info(document) -> dict:
     traffic = ensure_snapshot(getattr(document, "traffic", None))
     got_traffic = bool(traffic and getattr(traffic, "segments", None))
     return {
+        "fileWarnings": file_warnings(document),
         "name": name or i18n.tr('ui.guir_backend._extract_city_info.ec7227d6cd'),
         "generated": generated or "—",
         "buildings": buildings or int(counters.get("buildings", 0) or 0),
@@ -689,7 +692,7 @@ class GuirBackend:
             self._view_settings = load_view_settings(self._settings_dir)
         else:
             self._view_settings = migrate_legacy_settings(
-                self._settings, base=default_view_settings())
+                self._settings)
         self._recent_files = self._load_recent_files()
         self._settings_save_job = None
         self._output_dir = str(writable_dir())
@@ -731,6 +734,7 @@ class GuirBackend:
         self.poi_building = True
         self.poi_transit = True
         self.poi_hidden_categories: set[str] = set()
+        self.show_decorative_pois = True
         self.merge_enabled = True
         self.merge_distance = 48.0
         self.merge_overrides: dict = {}
@@ -925,6 +929,7 @@ class GuirBackend:
         self.poi_building = bool(self._setting("poi_building_var", True))
         self.poi_transit = bool(self._setting("poi_transit_var", True))
         raw_hidden_categories = self._setting("poi_hidden_categories", [])
+        self.show_decorative_pois = bool(self._setting("show_decorative_pois", True))
         self.poi_hidden_categories = {
             str(value).strip() for value in raw_hidden_categories
             if str(value).strip()
@@ -994,7 +999,7 @@ class GuirBackend:
             self._view_settings = load_view_settings(self._settings_dir)
         else:
             self._view_settings = migrate_legacy_settings(
-                self._settings, base=default_view_settings())
+                self._settings)
 
     def _save_view_settings(self) -> None:
         save_view_settings(self._view_settings, self._settings_dir)
@@ -1043,6 +1048,7 @@ class GuirBackend:
             "poi_building_var": bool(self.poi_building),
             "poi_transit_var": bool(self.poi_transit),
             "poi_hidden_categories": sorted(self.poi_hidden_categories),
+            "show_decorative_pois": self.show_decorative_pois,
             "road_names_var": bool(self.road_names),
             "accurate_intersections": bool(self.accurate_intersections),
             "road_player_names_var": bool(self.road_player_names),
@@ -1233,6 +1239,10 @@ class GuirBackend:
 
     def poi_type_visible(self, category: str) -> bool:
         return str(category).strip() not in self.poi_hidden_categories
+
+    def set_decorative_poi_visibility(self, enabled: bool) -> None:
+        self.show_decorative_pois = enabled
+        self._schedule_settings_save()
 
     def set_poi_type_visible(self, category: str, enabled: bool) -> bool:
         """切换所有匹配对象的 POI 类别映射。"""
@@ -1534,8 +1544,6 @@ class GuirBackend:
         callbacks 还支持 scene_ready(bundle, manifest_url) / scene_error(exc)。
         """
         path = str(path)
-        if not Path(path).exists():
-            return False
         if self._local_png_active:
             self._local_render_stop.set()
         if self._open_thread is not None and self._open_thread.is_alive():
@@ -1575,7 +1583,14 @@ class GuirBackend:
 
         def worker() -> None:
             try:
-                document = load_document(path, progress=p_parse, validate=False)
+                try:
+                    document = load_document(path, progress=p_parse, validate=False)
+                except json.JSONDecodeError as error:
+                    from .task_error import TaskFailure, capture_error
+                    diagnostic = capture_error(error, stage="readCityFile")
+                    diagnostic.update(category="city_json", inputSource=path, operation="open",
+                                      line=error.lineno, column=error.colno, position=error.pos)
+                    raise TaskFailure(diagnostic) from error
                 check_cancel()
                 p_prepare(0, tr("gui.progress.convert_data"))
                 session = DocumentSession(document=document)
@@ -1585,7 +1600,10 @@ class GuirBackend:
                 return
             except Exception as exc:  # noqa: BLE001
                 traceback.print_exc()
-                emit_current("error", exc)
+                from .task_error import TaskFailure, capture_error
+                diagnostic = capture_error(exc, stage="openDocument")
+                diagnostic.setdefault("operation", "open")
+                emit_current("error", TaskFailure(diagnostic))
                 return
 
             def on_parsed() -> None:
@@ -1777,11 +1795,11 @@ class GuirBackend:
             self._callbacks = callbacks
         self._serial += 1
         job["serial"] = self._serial
-        if not self._ensure_worker():
-            self._busy = False
-            self._emit("error", RuntimeError(tr("gui.error.worker_start_failed")))
-            return False
         try:
+            if not self._ensure_worker():
+                self._busy = False
+                self._emit("error", RuntimeError(tr("gui.error.worker_start_failed")))
+                return False
             if "png_output_dir" in job:
                 self.discard_png_result()
                 parent = Path(job["png_output_dir"])
@@ -1792,7 +1810,7 @@ class GuirBackend:
         except Exception as exc:  # noqa: BLE001
             self.discard_png_result()
             self._busy = False
-            self._emit("error", RuntimeError(tr("gui.error.task_submit_failed", error=exc)))
+            self._emit("error", exc)
             return False
         self._emit("busy", True)
         if self._poll_job is None:
@@ -1834,16 +1852,18 @@ class GuirBackend:
                     settled = True
                     break
                 elif kind == "error":
+                    if isinstance(msg[1], dict) and msg[1]["serial"] != serial:
+                        continue
                     self._on_worker_error(msg[1])
                     settled = True
                     break
                 elif kind == "reader_error":
-                    self._on_worker_error(i18n.tr('ui.guir_backend._poll.effd01f5d1', p0=msg[1]))
+                    self._on_worker_error(msg[1])
                     settled = True
                     break
         except Exception as exc:  # noqa: BLE001
             traceback.print_exc()
-            self._on_worker_error(str(exc))
+            self._on_worker_error(exc)
             settled = True
         if not settled:
             if latest_preview is not None:
@@ -1854,7 +1874,10 @@ class GuirBackend:
                     self._worker_exit_at = time.monotonic()
                 elif time.monotonic() - self._worker_exit_at >= 1.0:
                     print(f"Render worker exited: pid={proc.pid}, code={proc.exitcode}", file=sys.stderr)
-                    self._on_worker_error(i18n.tr('ui.guir_backend._poll.528c98ff25', p0=proc.exitcode))
+                    from .task_error import TaskFailure, capture_error
+                    diagnostic = capture_error(i18n.tr('ui.guir_backend._poll.528c98ff25', p0=proc.exitcode), stage="workerExit")
+                    diagnostic.update(workerPid=proc.pid, exitCode=proc.exitcode)
+                    self._on_worker_error(TaskFailure(diagnostic))
                     return
             else:
                 self._worker_exit_at = None
@@ -1869,7 +1892,6 @@ class GuirBackend:
         is_region = bool(payload.get("is_region"))
         self.result_image = image
         self.result_thumbnail = payload.get("thumbnail")
-        self.last_rmp_snapshot = payload.get("rmp_snapshot")
         self.last_diagnostics = {
             "elapsed": payload.get("elapsed", 0.0),
             "size": payload.get("size", 0),
@@ -1897,11 +1919,18 @@ class GuirBackend:
                    self.result_thumbnail, context)
         self._emit("busy", False)
 
-    def _on_worker_error(self, text: str) -> None:
+    def _on_worker_error(self, error) -> None:
+        if isinstance(error, dict) and error["serial"] != self._serial:
+            return
         self.discard_png_result()
         self._busy = False
         self._cancelled = False
-        self._emit("error", RuntimeError(text))
+        from .task_error import TaskFailure
+        if isinstance(error, dict):
+            error = TaskFailure(error)
+        elif not isinstance(error, BaseException):
+            error = RuntimeError(error)
+        self._emit("error", error)
         self._emit("busy", False)
 
     def cancel(self) -> None:
@@ -1940,6 +1969,7 @@ class GuirBackend:
             "poi_building": bool(self.poi_building),
             "poi_transit": bool(self.poi_transit),
             "poi_hidden_categories": sorted(self.poi_hidden_categories),
+            "show_decorative_pois": self.show_decorative_pois,
             "poi_density": self.poi_density,
             "text_enabled": bool(self.layer_visibility.get("label", False)),
             "merge_enabled": bool(self.merge_enabled),
@@ -2092,6 +2122,7 @@ class GuirBackend:
         cfg["show_name"] = True
         cfg["name_filters"] = {"player": True, "important": True}
         cfg["hidden_categories"] = sorted(self.poi_hidden_categories)
+        cfg["show_decorative_pois"] = self.show_decorative_pois
         for owner in ("building", "transit"):
             cfg.setdefault(owner, {})["enabled"] = True
         # 名字始终随 POI 要素进入预览数据；是否显示由 Viewer 即时控制。
@@ -2125,6 +2156,7 @@ class GuirBackend:
             "terrain": dict(self.terrain),
             "poi_mapping_revision": getattr(self, "_poi_mapping_revision", 0),
             "poi_hidden_categories": sorted(self.poi_hidden_categories),
+            "show_decorative_pois": self.show_decorative_pois,
             "poi_player_names": bool(self.poi_player_names),
             "poi_important_names": bool(self.poi_important_names),
             # 文字开关随轻量主题下发给 Viewer，不参与数据源签名。
@@ -2308,246 +2340,15 @@ class GuirBackend:
 
     def transit_options(self, metro: bool = False) -> dict:
         """根据已保存的界面值构造既有工作进程选项协议。"""
-        values = self._settings.get("values", {}) or {}
-        prefix = "metro_view" if metro else "transit_view"
-        # 地铁示意图默认画轨道三类（旧版 6.6.3：
-        # 「地铁/火车/单轨——经典地铁图范围」）；早先这里只放 Metro，
-        # 一个只有单轨或火车线的城市会直接报"没有可渲染的线路"。
-        default_types = (["Metro", "Train", "Monorail"] if metro
-                         else list(TYPE_REGISTRY))
-        types = values.get(prefix + "_types", default_types)
-        if not isinstance(types, list) or (metro and not types):
-            types = default_types
-        opts = {
-            "types": [t for t in types if t in TYPE_REGISTRY],
-            "stations": bool(values.get(prefix + "_stations", True)),
-            "label_scale": float(values.get(prefix + "_label_scale", 1.0) or 1.0),
-            "icon_scale": float(values.get(prefix + "_icon_scale", 1.0) or 1.0),
-            "palette_index": int(values.get(prefix + "_palette_index", 0) or 0),
-            "auto_color": bool(values.get(prefix + "_auto_color", False)),
-            "title_scale": float(values.get(prefix + "_title_scale", 1.0) or 1.0),
-            "legend_scale": float(values.get(prefix + "_legend_scale", 1.0) or 1.0),
-        }
-        # line_ids / station_line_ids 只有地铁示意图读回。公共交通视图的
-        # 「选择线路」是**当前会话的临时筛选**：不落盘、也不读回，重开即回到
-        # 全选（PM 2026-09-11）；那边只有外层的大类（types）跟着设置走。
-        # 地铁早期把读回关在 ``not metro`` 后面，写进 metro_view_line_ids 却
-        # 永远读不回来 → 勾掉线路一退出就恢复全选（PM 2026-09-10）。
-        # 未保存过时不设键，保持 worker 侧 ``if "line_ids" in opts`` 的判据
-        # （有键才过滤），避免把"没选过"误当成"选了空集"。
+        from .view_settings import view_options
+        opts = view_options(self._view_section(metro), metro)
+        opts["types"] = [item for item in opts["types"] if item in TYPE_REGISTRY]
         if metro:
-            for option, suffix in (("line_ids", "line_ids"),
-                                   ("station_line_ids", "station_line_ids")):
-                raw = values.get(f"{prefix}_{suffix}")
-                if isinstance(raw, list):
-                    opts[option] = _int_line_ids(raw)
-        if metro:
-            legacy_name_mode = values.get(
-                "metro_view_station_names_mode", "all")
-            station_names_enabled = bool(values.get(
-                "metro_view_station_names_enabled",
-                legacy_name_mode != "none"))
-            station_name_style = values.get(
-                "metro_view_station_name_style",
-                legacy_name_mode if legacy_name_mode in ("all", "custom")
-                else "all")
-            opts.update({
-                "pure": True,
-                "abstract": True,
-                "size": int(values.get("metro_view_output_size", 0) or 0),
-                # 可见性和展示方式分别是标准输入；station_names_mode 只在此处推导为工作进程兼容字段。
-                "station_names_enabled": station_names_enabled,
-                "station_name_style": station_name_style,
-                "station_names_mode": (station_name_style
-                                       if station_names_enabled else "none"),
-                "station_style": values.get(
-                    "metro_view_station_style", "rmg"),
-                "station_size": float(values.get(
-                    "metro_view_station_size", 8.0) or 8.0),
-                "station_label_position": values.get(
-                    "metro_view_station_label_position", "auto"),
-                "line_width": float(values.get(
-                    "metro_view_line_width", 3.0) or 3.0),
-                "language": values.get("metro_view_language", "zh"),
-                "schematic_options": {
-                    "adaptive_scale": bool(values.get(
-                        "metro_view_adaptive_scale", True)),
-                    "adaptive_strength": float(values.get(
-                        "metro_view_adaptive_strength", .85) or .85),
-
-                },
-                "legend_enabled": bool(values.get(
-                    "metro_view_legend_enabled", True)),
-                "legend_position": values.get(
-                    "metro_view_legend_position", "right_top"),
-                # 画布背景留空 = 跟随主题（worker 侧只在非空且可解析时才覆盖），
-                # 与旧版 6.6.3 对话框的默认值一致；早先默认 "#FFFFFF" 会把
-                # 每张地铁图都刷成纯白，脱离主题。
-                "background": str(values.get("metro_view_background", "") or ""),
-                "title_enabled": bool(values.get("metro_view_title_enabled", True)),
-                "title_template": values.get("metro_view_title_template", ""),
-                "schematic_water": bool(values.get("metro_view_water", True)),
-                "water_smoothing": float(values.get("metro_view_water_smoothing", 8)),
-                "facilities_enabled": bool(values.get(
-                    "metro_view_facilities_enabled", False)),
-                "facilities_scale": float(values.get(
-                    "metro_view_facilities_scale", 1.0) or 1.0),
-                "spacing": int(values.get("metro_view_spacing", 281) or 281),
-                "parallel_gap": float(values.get(
-                    "metro_view_parallel_gap", 1.55) or 1.55),
-                "metro_edits": copy.deepcopy(values.get("metro_view_metro_edits")),
-            })
-            for name, default in {
-                "disclaimer": True, "scale_info": True, "data_notice": True,
-                "generated_at": True, "north_arrow": False, "credit": True,
-            }.items():
-                opts[f"ann_{name}"] = bool(values.get(
-                    f"metro_view_ann_{name}", default))
-        else:
-            style = self.current_style_data().get("transports", {}) or {}
-            label = style.get("label", {}) or {}
-            # 公共交通线路选择仅属于当前会话，不读取落盘白名单。
-            opts.update({
-                "transit_mask": float(values.get(
-                    "transit_view_mask_strength", .6) or 0.0),
-                "base_water": bool(values.get("transit_view_base_water", True)),
-                "base_road": bool(values.get("transit_view_base_road", True)),
-                "base_district": bool(values.get(
-                    "transit_view_base_district", True)),
-                "facility_names_enabled": bool(values.get(
-                    "transit_view_facility_names_enabled",
-                    values.get("transit_view_station_names_enabled", True))),
-                "facilities_enabled": bool(values.get(
-                    "transit_view_facilities_enabled", True)),
-                "facility_icon_size": float(values.get(
-                    "transit_view_facility_icon_size", 24) or 24),
-                "facility_density": str(values.get(
-                    "transit_view_facility_density", "all") or "all"),
-                "facility_min_zoom": float(values.get(
-                    "transit_view_facility_min_zoom", 8) or 8),
-                "ordinary_pois": str(values.get(
-                    "transit_view_ordinary_pois", "hidden") or "hidden"),
-                "line_width": style_scalar(self.field_value("transport.width", 3), 3),
-                "station_size": style_scalar(self.field_value("transport.size", 8), 8),
-                "merge_enabled": bool(self.field_value("transport.merge", True)),
-                "merge_range": float(self.field_value("transport.distance", 48)),
-                "line_label_enabled": bool(label.get("enabled", True)),
-                "line_label_size": 12.0,
-                "station_name_size": 12.0,
-                "line_label_interval": style_scalar(self.field_value(
-                    "transport.label.interval", 600), 600),
-            })
-        # 嵌套的 views.json 是视图设置的权威来源；旧扁平值仅供回退兼容。
-        view = self._view_section(metro)
-        raw_types = view.get("types")
-        if isinstance(raw_types, list):
-            opts["types"] = [item for item in raw_types if item in TYPE_REGISTRY]
-        if metro:
-            raw_line_ids = view.get("line_ids")
-            if isinstance(raw_line_ids, list):
-                opts["line_ids"] = _int_line_ids(raw_line_ids)
-            else:
-                opts.pop("line_ids", None)
-            station_line_ids = view.get("station_line_ids")
-            if isinstance(station_line_ids, list):
-                opts["station_line_ids"] = _int_line_ids(station_line_ids)
-            else:
-                opts.pop("station_line_ids", None)
-            stations = view.get("stations", {})
-            names = view.get("station_names", {})
-            if isinstance(stations, dict):
-                if "enabled" in stations:
-                    opts["stations"] = bool(stations["enabled"])
-                opts["station_diameter"] = float(stations["diameter"])
-                opts["merge_enabled"] = bool(stations["merge"])
-                opts["merge_range"] = float(stations["merge_range"])
-                opts.pop("station_size", None)
-            if isinstance(names, dict):
-                for key in ("enabled", "mode", "style", "size", "font", "color", "stroke_width", "stroke_color"):
-                    if key in names:
-                        opts[{"enabled": "station_names_enabled",
-                              "mode": "station_names_mode",
-                              "style": "station_name_style",
-                              "size": "station_name_size", "font": "station_font", "color": "station_name_color",
-                              "stroke_width": "station_name_stroke", "stroke_color": "station_name_stroke_color"}[key]] = names[key]
-                opts["station_names_mode"] = (
-                    opts.get("station_name_style", "all")
-                    if opts.get("station_names_enabled", True) else "none")
-            diagram = view.get("diagram", {})
-            if isinstance(diagram, dict):
-                for key in ("adaptive_scale", "adaptive_strength", ):
-                    if key in diagram:
-                        opts.setdefault("schematic_options", {})[key] = diagram[key]
-                for key in ("spacing", "parallel_gap"):
-                    if key in diagram:
-                        opts[key] = diagram[key]
-            legend = view.get("legend", {})
-            if isinstance(legend, dict):
-                if "enabled" in legend:
-                    opts["legend_enabled"] = bool(legend["enabled"])
-                if "position" in legend:
-                    opts["legend_position"] = legend["position"]
-            opts["schematic_water"] = bool(view.get("schematic_water", opts.get("schematic_water", True)))
-            opts["water_smoothing"] = float(view.get("water_smoothing", opts.get("water_smoothing", 8)))
-            facilities = view.get("facilities", {})
-            if isinstance(facilities, dict):
-                if "enabled" in facilities:
-                    opts["facilities_enabled"] = bool(facilities["enabled"])
-                if "scale" in facilities:
-                    opts["facilities_scale"] = float(facilities["scale"])
-        else:
-            layers = view.get("layers", {})
-            if isinstance(layers, dict):
-                opts["layers"] = {
-                    str(key): bool(value) for key, value in layers.items()
-                    if key not in {"stations", "facilities", "facility_names", "station_names"}
-                }
-            names = view.get("station_names", {})
-            opts["station_names_enabled"] = bool(names.get("enabled", False))
-            opts["station_name_size"] = float(names.get("size", 12.0))
-            base = view.get("base_layers", {})
-            stations = view.get("stations", {})
-            facilities = view.get("facilities", {})
-            if "mask" in view:
-                opts["transit_mask"] = float(view["mask"])
-            if isinstance(base, dict):
-                for key in ("water", "road", "district"):
-                    if key in base:
-                        opts["base_" + key] = bool(base[key])
-            if isinstance(stations, dict):
-                if "enabled" in stations:
-                    opts["stations"] = bool(stations["enabled"])
-                if "size" in stations:
-                    opts["station_size"] = float(stations["size"])
-                if "merge" in stations:
-                    opts["merge_enabled"] = bool(stations["merge"])
-                if "merge_range" in stations:
-                    opts["merge_range"] = float(stations["merge_range"])
-            if isinstance(facilities, dict):
-                for old, new in (("enabled", "facilities_enabled"),
-                                 ("names_enabled", "facility_names_enabled"),
-                                 ("icon_size", "facility_icon_size"),
-                                 ("density", "facility_density"),
-                                 ("min_zoom", "facility_min_zoom")):
-                    if old in facilities:
-                        opts[new] = facilities[old]
-            if "ordinary_pois" in view:
-                opts["ordinary_pois"] = str(view["ordinary_pois"])
-            label = view.get("line_label", {})
-            if isinstance(label, dict):
-                for old, new in (("enabled", "line_label_enabled"),
-                                 ("size", "line_label_size"),
-                                 ("interval", "line_label_interval")):
-                    if old in label:
-                        opts[new] = label[old]
-            if "line_width" in view:
-                opts["line_width"] = float(view["line_width"])
-        if metro:
-            for retired in ("palette_index", "auto_color", "label_scale", "icon_scale"):
-                opts.pop(retired, None)
-        else:
-            from .transit_ui_schema import normalize_transit_presentation
-            normalize_transit_presentation(opts)
+            for key in ("line_ids",):
+                if opts[key] is None:
+                    opts.pop(key)
+                else:
+                    opts[key] = _int_line_ids(opts[key])
         return opts
 
     def _reconcile_transit_line_selection(self, catalog) -> bool:
@@ -2592,8 +2393,11 @@ class GuirBackend:
                 transit_view.pop(stale)
                 changed = True
         metro_view = self._view_section(True)
+        if "station_line_ids" in metro_view:
+            metro_view.pop("station_line_ids")
+            changed = True
         if known:
-            for key in ("line_ids", "station_line_ids"):
+            for key in ("line_ids",):
                 raw = metro_view.get(key)
                 if not isinstance(raw, list) or not raw:
                     continue
@@ -2617,12 +2421,7 @@ class GuirBackend:
     def local_render_active(self) -> bool:
         return self._local_render_thread is not None and self._local_render_thread.is_alive()
 
-    def render_metro_in_engine(self, opts: dict, callbacks: dict | None = None) -> bool:
-        """在不额外启动嵌套进程的情况下渲染 WinUI 地铁预览。"""
-        return self._submit_metro_job_in_engine(
-            self._build_transit_job(True, opts), callbacks)
-
-    def _submit_metro_job_in_engine(self, job: dict,
+    def generate_rmp_in_engine(self, job: dict,
                                     callbacks: dict | None = None) -> bool:
         if not self.source_file or self.document is None or self._busy or self.local_render_active:
             return False
@@ -2633,6 +2432,7 @@ class GuirBackend:
         self._local_render_stop = threading.Event()
         stop = self._local_render_stop
         document = self.document
+        options = copy.deepcopy(job["opts"])
         self._busy = True
         self._emit("busy", True)
 
@@ -2643,20 +2443,24 @@ class GuirBackend:
 
         def run() -> None:
             try:
-                result = _render_worker.run_transit_task(
-                    job, progress=progress,
-                    mapdata_cache={job["file"]: document})
+                from .rmp_generation import generate_rmp
+                result = generate_rmp(document, options, progress=progress, cancelled=stop.is_set)
                 error = None
-            except _render_worker.TransitSelectionError as exc:
-                result, error = None, str(exc)
-            except Exception:  # noqa: BLE001
-                result, error = None, traceback.format_exc()
+            except Exception as exc:  # noqa: BLE001 - 在工作线程内保存原始堆栈
+                from .task_error import TaskFailure, capture_error
+                result, error = None, TaskFailure(capture_error(exc, stage="metro",
+                    input_error=isinstance(exc, ValueError)))
 
             def finish() -> None:
                 self._local_render_thread = None
                 if serial == self._serial and not stop.is_set():
                     if error is None:
-                        self._on_worker_done(result)
+                        self.last_rmp_snapshot = result
+                        self.last_diagnostics = {"stats": {"transit_layout": result["diagnostics"]}}
+                        self._busy = False
+                        self._cancelled = False
+                        self._emit("rmp_done")
+                        self._emit("busy", False)
                     else:
                         self._on_worker_error(error)
                 else:
@@ -2665,12 +2469,14 @@ class GuirBackend:
             self._post(finish)
 
         self._local_render_thread = threading.Thread(
-            target=run, name="winui-metro-render", daemon=True)
+            target=run, name="winui-rmp-generation", daemon=True)
         self._local_render_thread.start()
         return True
 
     def _build_transit_job(self, metro=False, opts=None, png_poi_options=None) -> dict:
-        options = dict(opts or self.transit_options(metro))
+        if metro:
+            raise ValueError("原生地铁 PNG 已退役，请使用 RMP 工程编辑器")
+        options = dict(opts or self.transit_options(False))
         region, _auto_size, policy = self._resolve_range()
         job = {
             "kind": "transit",
@@ -2700,8 +2506,7 @@ class GuirBackend:
         """冻结全部渲染输入，包括视图局部配置和 POI 配置。"""
         context = getattr(context, "value", context)
         if context == "metro":
-            job = self._build_transit_job(True, metro_options)
-            return copy.deepcopy(job)
+            raise ValueError("请从 RMP 工程编辑器导出已编辑工程")
         elif context == "transit":
             job = self._build_transit_job(False, transit_options)
             profile_target = "transit_png"
@@ -2758,6 +2563,8 @@ class GuirBackend:
 
     def render_png_export(self, request, callbacks=None, *, transit_options=None,
                           metro_options=None, in_engine=False, file_result=False) -> bool:
+        if getattr(request.context, "value", request.context) == "metro":
+            raise ValueError("请从 RMP 工程编辑器导出已编辑工程")
         job = copy.deepcopy(request.render_snapshot) if request.render_snapshot else (
             self.capture_png_export_job(request.context, request.region,
                                         transit_options=transit_options,
@@ -2780,8 +2587,6 @@ class GuirBackend:
         if request.png_poi_options and getattr(request.context, "value", request.context) != "metro":
             job["ui"]["png_poi_options"] = dict(request.png_poi_options)
         job["final_png"] = True
-        if in_engine and getattr(request.context, "value", request.context) == "metro":
-            return self._submit_metro_job_in_engine(job, callbacks)
         if file_result and job.get("kind", "normal") == "normal":
             return self._submit_png_job_in_engine(job, request.target, callbacks)
         if file_result:
@@ -2949,179 +2754,10 @@ class GuirBackend:
         """持久化共用的交通对话框选项协议。"""
         if not metro:
             self._preview_transit_options = copy.deepcopy(opts)
-        prefix = "metro_view" if metro else "transit_view"
-        values = dict(self._settings.get("values", {}) or {})
-        common = {
-            "types": "types", "stations": "stations",
-            "label_scale": "label_scale", "icon_scale": "icon_scale",
-            "palette_index": "palette_index", "auto_color": "auto_color",
-            "title_scale": "title_scale", "legend_scale": "legend_scale",
-        }
-        for option, suffix in common.items():
-            if option in opts:
-                values[f"{prefix}_{suffix}"] = copy.deepcopy(opts[option])
-        if metro:
-            mapping = {
-                # 只有地铁示意图的线路勾选落盘（公共交通视图那份是会话级，
-                # 见下方 else 分支）。
-                "line_ids": "line_ids",
-                "station_line_ids": "station_line_ids",
-                "size": "output_size", "station_names_mode": "station_names_mode",
-                "station_names_enabled": "station_names_enabled",
-                "station_name_style": "station_name_style",
-                "language": "language", "station_style": "station_style",
-                "station_size": "station_size",
-                "station_label_position": "station_label_position",
-                "line_width": "line_width",
-                "legend_enabled": "legend_enabled",
-                "legend_position": "legend_position", "background": "background",
-                "title_enabled": "title_enabled", "title_template": "title_template",
-                "schematic_water": "water", "water_smoothing": "water_smoothing",
-                "facilities_enabled": "facilities_enabled",
-                "facilities_scale": "facilities_scale", "spacing": "spacing",
-                "parallel_gap": "parallel_gap", "metro_edits": "metro_edits",
-            }
-        else:
-            # 公共交通视图的「选择线路」是当前会话的临时筛选：不落盘、不读回，
-            # 重开存档即回到全选（PM 2026-09-11）。外层大类（types）照旧保留。
-            # 历史版本落过盘的旧键顺手删掉，别留在文件里被别的代码误读。
-            for stale in ("transit_view_line_ids",
-                          "transit_view_station_line_ids",
-                          "transit_view_station_names_enabled",
-                          "transit_view_station_name_size"):
-                values.pop(stale, None)
-            mapping = {
-                "transit_mask": "mask_strength",
-                "base_water": "base_water", "base_road": "base_road",
-                "base_district": "base_district",
-                "facility_names_enabled": "facility_names_enabled",
-                "facilities_enabled": "facilities_enabled",
-                "facility_icon_size": "facility_icon_size",
-                "facility_density": "facility_density",
-                "facility_min_zoom": "facility_min_zoom",
-                "ordinary_pois": "ordinary_pois",
-            }
-        for option, suffix in mapping.items():
-            if option in opts:
-                values[f"{prefix}_{suffix}"] = copy.deepcopy(opts[option])
-        if metro:
-            scale = opts.get("schematic_options") or {}
-            values["metro_view_adaptive_scale"] = bool(
-                scale.get("adaptive_scale", True))
-            values["metro_view_adaptive_strength"] = float(
-                scale.get("adaptive_strength", .85))
-            for name in ("disclaimer", "scale_info", "data_notice",
-                         "generated_at", "north_arrow", "credit"):
-                if f"ann_{name}" in opts:
-                    values[f"metro_view_ann_{name}"] = bool(opts[f"ann_{name}"])
-        # 把面向工作进程的选项同步到版本化视图文档，保留旧扁平键供回退。
+        from .view_settings import apply_view_options
         mode_key = "metro" if metro else "transit"
-        section = copy.deepcopy(self._view_section(metro))
-        if "types" in opts:
-            section["types"] = list(opts.get("types") or [])
-        if metro and "line_ids" in opts:
-            section["line_ids"] = (None if opts.get("line_ids") is None
-                                    else list(opts.get("line_ids") or []))
-        elif not metro:
-            # 线路标识只在当前城市有效，交通筛选属于会话，不得持久化到 views.json。
-            section.pop("line_ids", None)
-        if metro and "station_line_ids" in opts:
-            section["station_line_ids"] = (
-                None if opts.get("station_line_ids") is None
-                else list(opts.get("station_line_ids") or []))
-        if metro:
-            section.setdefault("stations", {})["enabled"] = bool(
-                opts.get("stations", True))
-            if "station_diameter" in opts:
-                section["stations"]["diameter"] = float(opts["station_diameter"])
-            for source, key in (("merge_enabled", "merge"), ("merge_range", "merge_range")):
-                if source in opts:
-                    section["stations"][key] = opts[source]
-            section.setdefault("station_names", {}).update({
-                target: opts[source] for source, target in (
-                    ("station_names_enabled", "enabled"),
-                    ("station_names_mode", "mode"),
-                    ("station_name_style", "style"),
-                    ("station_name_size", "size"),
-                    ("station_font", "font"), ("station_name_color", "color"),
-                    ("station_name_stroke", "stroke_width"), ("station_name_stroke_color", "stroke_color"),
-                ) if source in opts
-            })
-            section.setdefault("presentation", {}).update({
-                key: opts[key] for key in ("label_scale", "icon_scale",
-                                            "palette_index", "auto_color")
-                if key in opts
-            })
-            section.setdefault("diagram", {}).update({
-                key: opts[key] for key in ("spacing", "parallel_gap") if key in opts
-            })
-            if "schematic_options" in opts:
-                section["diagram"].update(opts["schematic_options"] or {})
-            if "schematic_water" in opts:
-                section["schematic_water"] = bool(opts["schematic_water"])
-            if "water_smoothing" in opts:
-                section["water_smoothing"] = float(opts["water_smoothing"])
-            if "legend_enabled" in opts or "legend_position" in opts:
-                section.setdefault("legend", {}).update({
-                    "enabled": bool(opts["legend_enabled"])
-                    if "legend_enabled" in opts else section["legend"].get("enabled", True),
-                    "position": opts["legend_position"]
-                    if "legend_position" in opts else section["legend"].get("position", "right_top"),
-                })
-            if "facilities_enabled" in opts or "facilities_scale" in opts:
-                section.setdefault("facilities", {}).update({
-                    "enabled": bool(opts.get("facilities_enabled", False)),
-                    "scale": float(opts.get("facilities_scale", 1.0)),
-                })
-        else:
-            section.setdefault("station_names", {})["enabled"] = bool(opts.get("station_names_enabled", False))
-            if "station_name_size" in opts:
-                section["station_names"]["size"] = float(opts["station_name_size"])
-            if isinstance(section.get("layers"), dict):
-                section["layers"].pop("station_names", None)
-            if "transit_mask" in opts:
-                section["mask"] = float(opts["transit_mask"])
-            if isinstance(opts.get("layers"), dict):
-                section["layers"] = {
-                    str(key): bool(value)
-                    for key, value in opts["layers"].items()
-                }
-            section.setdefault("base_layers", {}).update({
-                key.removeprefix("base_"): bool(opts[key]) for key in ("base_water", "base_road",
-                                                  "base_district") if key in opts
-            })
-            section.setdefault("stations", {}).update({
-                "enabled": bool(opts.get("stations", True)),
-                **({"size": float(opts["station_size"])}
-                   if "station_size" in opts else {}),
-                **({"merge": bool(opts["merge_enabled"])}
-                   if "merge_enabled" in opts else {}),
-                **({"merge_range": float(opts["merge_range"])}
-                   if "merge_range" in opts else {}),
-            })
-            facility_section = section.setdefault("facilities", {})
-            for option_key, view_key in (
-                ("facilities_enabled", "enabled"),
-                ("facility_names_enabled", "names_enabled"),
-                ("facility_icon_size", "icon_size"),
-                ("facility_density", "density"),
-                ("facility_min_zoom", "min_zoom"),
-            ):
-                if option_key in opts:
-                    facility_section[view_key] = opts[option_key]
-            if "ordinary_pois" in opts:
-                section["ordinary_pois"] = str(opts["ordinary_pois"])
-            if "line_width" in opts:
-                section["line_width"] = float(opts["line_width"])
-            section.setdefault("line_label", {}).update({
-                view_key: opts[option_key] for option_key, view_key in (
-                    ("line_label_enabled", "enabled"), ("line_label_size", "size"),
-                    ("line_label_interval", "interval")) if option_key in opts
-            })
-        self._view_settings[mode_key] = section
+        self._view_settings[mode_key] = apply_view_options(self._view_section(metro), opts, metro)
         self._save_view_settings()
-        self._settings["values"] = values
-        self._schedule_settings_save()
 
     def render_region(self, rect, callbacks: dict | None = None) -> bool:
         """渲染选区：rect 为图像像素 (x0, y0, x1, y1)，换算游戏坐标。"""
@@ -3232,6 +2868,8 @@ class GuirBackend:
         theme = (self.preview_theme(request.theme_snapshot.get("data")) if request else self.preview_theme())
         visibility = dict(request.layer_snapshot) if request and request.layer_snapshot else self.map_layer_visibility()
         rotation = int(request.render_snapshot.get("ui", {}).get("rotation", self.rotation) if request else getattr(self, "rotation", 0) or 0)
+        view = ({"mode": "transit", "options": copy.deepcopy(request.render_snapshot["opts"])}
+                if request and request.context.value == "transit" else None)
         export_region = (tuple(region.bounds if hasattr(region, "bounds") else region)
                          if region is not None else None)
         range_snapshot = None
@@ -3286,11 +2924,14 @@ class GuirBackend:
                 saved = export_preview_bundle(
                     export_bundle, city, str(out), theme=theme,
                     visibility=visibility, region=selected_region,
-                    rotation=rotation)
+                    rotation=rotation, view=view, navigation_enabled=True)
                 if self._export_cancelled.is_set():
                     raise RuntimeError(tr("gui.error.export_cancelled"))
-                done = gui_cb.get("web_done")
-                if done is not None:
+                result = gui_cb.get("web_result")
+                if result is not None:
+                    report = export_bundle.manifest.get("roadOrder", {})
+                    self._post(lambda: result(saved, report))
+                elif (done := gui_cb.get("web_done")) is not None:
                     self._post(lambda: done(saved))
             except Exception as exc:  # noqa: BLE001
                 traceback.print_exc()
@@ -3579,20 +3220,6 @@ class GuirBackend:
                 return False
             self._settings["values"] = values
         return True
-
-    @staticmethod
-    def performance_log_dir() -> Path:
-        return writable_dir() / "performance_logs"
-
-    def open_performance_log_dir(self) -> tuple[bool, str]:
-        """创建并打开性能日志目录。"""
-        target = self.performance_log_dir()
-        try:
-            target.mkdir(parents=True, exist_ok=True)
-            _open_with_system_viewer(target)
-            return True, str(target)
-        except (OSError, subprocess.SubprocessError) as exc:
-            return False, str(exc)
 
     def clear_cache(self) -> None:
         """清理解析/渲染缓存：重启常驻子进程（其内存缓存随之清空）。"""

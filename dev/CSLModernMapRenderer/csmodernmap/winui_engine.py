@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 from . import i18n
+from .task_error import error_payload
 
 import heapq
 import hashlib
@@ -40,9 +41,7 @@ from .map_extent import document_city_bounds, document_game, square_region
 from .map_overview import build_map_overview
 from .poi_editor_bridge import PoiEditorBridge
 from .regions import most_prosperous_window_by_size
-from .transit_ui_schema import (option_schema, validate_option, STYLE_FIELDS, LAYER_OPTIONS,
-                                station_name_placement, apply_station_name_placement,
-                                normalize_transit_presentation)
+from .transit_ui_schema import option_schema, validate_option, STYLE_FIELDS, LAYER_OPTIONS
 from .winui_workflows import WinuiWorkflows, METHODS as WORKFLOW_METHODS
 from csmodernmap.ui_contracts import (ExportRequest, ContextMode, RenderRegion,
                             export_capabilities)
@@ -55,6 +54,11 @@ TEXT_ICON_FIELDS = ("label.roads", "label.districts", "road.game_names", "poi.ga
     "poi.name_size", "poi.name_stroke", "poi.name_stroke_ratio") + tuple(
         f"label.{attr}.{kind}" for kind in ("road", "district")
         for attr in ("font", "size", "color", "stroke_width", "stroke_color"))
+TEXT_ICON_OPTIONS = {
+    "normal": ("stations", "facilities_enabled", "station_name_placement", "station_name_size"),
+    "transit": ("stations", "facilities_enabled", "station_name_placement", "station_name_size"),
+    "metro": ("facilities_enabled", "merge_enabled", "merge_range"),
+}
 LABEL_CHILDREN = {
     "transit_icon_text": ("poi_names", "transit"),
     "road_text": ("field", "label.roads"),
@@ -77,6 +81,7 @@ HEX_COLOR = re.compile(r"^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$")
 COLOR_PATHS = {tuple(path) for key, path in STYLE_FIELD_PATHS.items()
                if key in FIELDS and FIELDS[key].kind == "color"}
 _POI_ICON_PROCESSING_KEYS = {
+    "show_decorative_pois",
     "enabled", "merge_enabled", "merge_distance", "facility_hierarchy",
     "grid_size", "max_per_cell", "min_priority", "categories",
     "hidden_categories", "show_name", "name_filters", "visual_merge_enabled",
@@ -204,7 +209,6 @@ class EngineServer:
         self._external_busy = False
         self._transit_session_options: dict | None = None
         self._render_mode: str | None = None
-        self._metro_request_id: str | None = None
         self._theme_preview_request_id: str | None = None
         self._theme_preview_lock = threading.Lock()
         self._theme_preview_pending: tuple[str, dict, str, int, object] | None = None
@@ -220,7 +224,10 @@ class EngineServer:
             "scene_error": lambda error: self.event("sceneError", {"message": str(error)}),
             "scene_ready": self._scene_ready,
             "done": self._render_done,
+            "rmp_done": self._rmp_done,
             "web_done": lambda path: self.event("exportDone", {"path": str(path)}),
+            "web_result": lambda path, report: self.event("exportDone", {
+                "path": str(path), "warnings": self._render_warnings(road_order=report)}),
         }
 
     def send(self, frame: dict) -> None:
@@ -275,7 +282,7 @@ class EngineServer:
         self.event("sceneReady", {"manifestUrl": manifest_url,
                                   "sceneId": bundle.scene_id, "revision": bundle.revision,
                                   "completion": bundle.manifest.get("completion", "complete"),
-                                  "warnings": self._render_warnings(),
+                                  "warnings": self._render_warnings(road_order=bundle.manifest.get("roadOrder", {})),
                                   "theme": self.backend.preview_theme(),
                                   "layers": self.backend.map_layer_visibility()})
 
@@ -284,22 +291,20 @@ class EngineServer:
             pending = getattr(self, "_rmp_pending", None)
             self._rmp_pending = None
             self._render_mode = None
-            self.event("rmpProjectError", {"requestId": pending[2] if pending else None, "message": str(error)})
+            self.event("rmpProjectError", error_payload(error, operation="metro", stage="rmp", requestId=pending[2] if pending else None, documentEpoch=pending[3] if pending else self._document_epoch))
             return
-        if self._render_mode == "metro":
-            print(f"Metro render failed: {error}", file=sys.stderr)
         metadata = self._export_event_metadata()
         if metadata:
             self._export_failed(
                 error, metadata["requestId"], metadata["documentEpoch"],
                 metadata["context"], metadata["format"], metadata["target"])
             return
+        operation = "preview"
         export_id = self._export.request_id
         self._saving_export = False
         self._clear_export()
         self._render_mode = None
-        self._metro_request_id = None
-        self.event("error", {"message": str(error), "requestId": export_id})
+        self.event("error", error_payload(error, operation=operation, stage=operation, requestId=export_id, documentEpoch=self._document_epoch))
         self.event("busy", {"value": bool(getattr(self.backend, "busy", False))})
 
     def _clear_export(self) -> None:
@@ -339,14 +344,7 @@ class EngineServer:
         self._saving_export = False
         self._clear_export()
         self._render_mode = None
-        self._metro_request_id = None
-        message = str(error)
-        if (isinstance(error, MemoryError)
-                or "A process in the process pool was terminated abruptly" in message
-                or re.search(r"(?:^|\n)(?:[\w.]+\.)?MemoryError(?::|$)", message)):
-            print(message, file=sys.stderr)
-            message = i18n.tr("ui.export.possible_memory_exhaustion")
-        self.event("error", {**metadata, "message": message})
+        self.event("error", error_payload(error, operation="export", stage="export", **metadata))
         self.event("busy", {"value": bool(getattr(self.backend, "busy", False))})
 
     def _render_progress(self, percent, message) -> None:
@@ -356,34 +354,19 @@ class EngineServer:
         self.event("progress", {"percent": percent, "message": str(message),
                                  **(metadata or {})})
 
-    def _render_done(self, _image, _size, _stats, _elapsed, _region, _thumbnail, _context) -> None:
-        if self._render_mode == "rmp":
-            pending = getattr(self, "_rmp_pending", None)
-            self._rmp_pending = None
-            self._render_mode = None
-            if pending and pending[3] == self._document_epoch:
-                try:
-                    self.event("rmpProjectReady", {"requestId": pending[2], "draft": self._rmp_draft(pending[0], pending[1])})
-                except Exception as error:
-                    self.event("rmpProjectError", {"requestId": pending[2], "message": str(error)})
-            else:
-                self.event("rmpProjectError", {"requestId": pending[2] if pending else None, "message": "源地图已改变，请重新打开编辑器"})
-            return
-        if self._render_mode == "metro":
-            self._render_mode = None
-            request_id = self._metro_request_id
-            self._metro_request_id = None
+    def _rmp_done(self) -> None:
+        pending = getattr(self, "_rmp_pending", None)
+        self._rmp_pending = None
+        self._render_mode = None
+        if pending and pending[3] == self._document_epoch:
             try:
-                image = _thumbnail or _image
-                path = Path(self._preview_files.name) / f"metro-{uuid.uuid4().hex}.png"
-                image.save(path, format="PNG")
-                self.event("metroReady", {"url": path.as_uri(), "requestId": request_id,
-                                          "warnings": self._render_warnings(),
-                                          "diagnostics": dict(self.backend.last_diagnostics)})
-            except Exception as exc:  # noqa: BLE001 - 预览输入输出失败时保留引擎进程
-                traceback.print_exc(file=sys.stderr)
-                self.event("error", {"message": i18n.tr('ui.winui_engine._render_done.0cdaea5eb6', p0=exc)})
-            return
+                self.event("rmpProjectReady", {"requestId": pending[2], "draft": self._rmp_draft(pending[0], pending[1])})
+            except Exception as error:
+                self.event("rmpProjectError", error_payload(error, operation="metro", stage="rmpDraft", requestId=pending[2], documentEpoch=pending[3]))
+        else:
+            self.event("rmpProjectError", {"requestId": pending[2] if pending else None, "message": "源地图已改变，请重新打开编辑器"})
+
+    def _render_done(self, _image, _size, _stats, _elapsed, _region, _thumbnail, _context) -> None:
         if (self._export.request_id and self._export.document_epoch is not None
                 and self._export.document_epoch != self._document_epoch):
             self.backend.discard_png_result()
@@ -408,7 +391,7 @@ class EngineServer:
             if not started:
                 self._backend_error("PNG result could not be saved")
 
-    def _export_completed(self, path, request_id):
+    def _export_completed(self, path, request_id, *, road_order=None):
         if request_id != self._export.request_id:
             return
         metadata = self._export_event_metadata()
@@ -419,14 +402,21 @@ class EngineServer:
                                   "message": i18n.tr('ui.winui_engine._export_completed.bcd13e5ccc')})
             self.event("busy", {"value": bool(getattr(self.backend, "busy", False))})
             return
-        self.event("exportDone", {"path": str(path), "warnings": self._render_warnings(),
+        self.event("exportDone", {"path": str(path), "warnings": self._render_warnings(road_order=road_order),
                                    **(metadata or {"requestId": request_id})})
         self.event("busy", {"value": bool(getattr(self.backend, "busy", False))})
 
-    def _render_warnings(self):
+    def _render_warnings(self, *, road_order=None):
         from .services.poi.direct_mapping import document_warnings
+        from .schematic_water import water_warning
+        from .preview_road_order import road_warning
         water = self.backend.last_diagnostics.get("stats", {}).get("transit_layout", {}).get("water", {})
-        return (([i18n.tr("gui.transit.water_unverified")] if water.get("status") == "unverified" else [])
+        warning = water_warning(water)
+        if road_order is None:
+            road_order = self.backend.last_diagnostics.get("stats", {}).get("road_order", {})
+        road_message = road_warning(road_order)
+        return (([warning] if warning else [])
+                + ([road_message] if road_message else [])
                 + document_warnings(getattr(self.backend, "document", None)))
 
     def _export_cancelled(self, metadata):
@@ -501,6 +491,7 @@ class EngineServer:
             "themes": [{"id": stem, "name": tr(name_key)} for name_key, stem in THEME_CHOICES],
             "layers": visible_layers,
             "poiVisibility": poi_visibility,
+            "showDecorativePois": self.backend.show_decorative_pois,
             "documentEpoch": self._document_epoch,
             "fields": fields,
             "fieldSchema": {key: {"label": field.label, "kind": field.kind,
@@ -546,10 +537,7 @@ class EngineServer:
         }
 
     def transit_options(self) -> dict:
-        options = copy.deepcopy(self._transit_session_options or self.backend.transit_options(False))
-        options.setdefault("layers", {"lines": True, **{key: bool(options.get(value, True)) for key, value in LAYER_OPTIONS.items()}})
-        normalize_transit_presentation(options)
-        return options
+        return copy.deepcopy(self._transit_session_options or self.backend.transit_options(False))
 
     def metro_options(self) -> dict:
         return self.backend.transit_options(True)
@@ -902,6 +890,7 @@ class EngineServer:
             "themeName": next((tr(key) for key, stem in THEME_CHOICES if stem == self.backend.theme_stem), self.backend.theme_stem),
             "poiProfile": poi_profile,
             "poiVisibility": poi_visibility,
+            "showDecorativePois": self.backend.show_decorative_pois,
             "size": output["size"], "rotation": output["rotation"],
             "aa": output["aa"], "rangeN": self.backend.range_n,
             "rangeAnchor": self.backend.range_anchor,
@@ -918,7 +907,7 @@ class EngineServer:
         if context == ContextMode.METRO:
             formats = ("PNG", "RMG", "RMP")
         elif context == ContextMode.TRANSIT:
-            formats = ("PNG",)
+            formats = ("PNG", "HTML")
         else:
             formats = ("PNG", "HTML")
         result = {}
@@ -941,7 +930,7 @@ class EngineServer:
             elif output_format == "HTML":
                 result[output_format] = {
                     "targetKind": "file", "context": context_name,
-                    "outputProfileTarget": "normal_png",
+                    "outputProfileTarget": "transit_png" if context == ContextMode.TRANSIT else "normal_png",
                     "poiProfileTarget": None,
                     "outputFields": ["rotation"],
                     "showsOutputOptions": True, "showsRange": True,
@@ -998,6 +987,7 @@ class EngineServer:
                 raise ValueError("export profile target does not match the selected context")
             output = validate_output_profile({**backend.get_output_profile(target),
                 **{key: raw_output[key] for key in capability["outputFields"] if key in raw_output}}, target)
+            # 导出窗口可能仍持有旧快照；任务方向只取当前地图，随后随任务冻结。
             output["rotation"] = backend.rotation
             poi_target = "preview" if output_format == "HTML" else target
             poi = backend.get_poi_profile(poi_target)
@@ -1022,11 +1012,13 @@ class EngineServer:
     def _start_external_project_export(self, request: ExportRequest,
                                        params: dict, metadata: dict) -> bool:
         from .external_edit import (ExternalExportRequest, ExportSnapshot,
-                                    export_rmg, export_rmp)
+                                    export_rmg)
 
         backend = self.backend
         kind = request.format.casefold()
-        if kind not in {"rmg", "rmp"}:
+        if kind == "rmp":
+            raise ValueError("请从 RMP 工程编辑器导出已编辑工程")
+        if kind != "rmg":
             raise ValueError(f"unknown external export format: {request.format}")
         if request.context != ContextMode.METRO:
             raise ValueError(f"{request.format} export requires metro context")
@@ -1043,7 +1035,6 @@ class EngineServer:
             theme_id=backend.theme_stem,
             theme=sanitize_theme_data(backend.current_style_data()),
             visibility={},
-            render_job=backend.capture_png_export_job("metro", metro_options=options) if kind == "rmp" else None,
             line_ids=None if raw_ids is None else tuple(raw_ids),
         )
         session = backend.session
@@ -1063,8 +1054,7 @@ class EngineServer:
                     request_id, document_epoch, context, output_format, target)
                 self._export_progress(35, tr("gui.external.writing"),
                     request_id, document_epoch, context, output_format, target)
-                exporter = {"rmg": export_rmg, "rmp": export_rmp}[kind]
-                result = exporter(export_snapshot, external_request)
+                result = export_rmg(export_snapshot, external_request)
                 if request_id != self._export.request_id:
                     return
                 if document_epoch != self._document_epoch:
@@ -1095,24 +1085,13 @@ class EngineServer:
         defaults = DEFAULT_VIEW_SETTINGS["metro"]
         # 旧展示界面停用后只保留生成输入。
         options = {key: copy.deepcopy(saved[key]) for key in (
-            "types", "line_ids", "merge_enabled", "merge_range",
-            "spacing", "schematic_water", "water_smoothing", "facilities_enabled", "metro_edits",
+            "types", "line_ids", "merge_enabled", "merge_range", "spacing",
+            "schematic_water", "water_smoothing", "facilities_enabled", "metro_edits",
         ) if key in saved}
-        options.update(pure=True, abstract=True, stations=True, station_names_enabled=True,
-                       station_names_mode="all", station_name_style="all", background="#FFFFFF",
-                       size=0, title_enabled=False, legend_enabled=False,
-                       station_diameter=defaults["stations"]["diameter"],
-                       station_name_size=defaults["station_names"]["size"])
         options["schematic_options"] = {
             key: saved.get("schematic_options", {}).get(key, defaults["diagram"][key])
             for key in ("adaptive_scale", "adaptive_strength")}
-        options.update({"ann_" + key: False for key in defaults["annotations"]})
-        job = self.backend.capture_png_export_job("metro", metro_options=options)
-        job["layers"] = []
-        job["ui"]["rotation"] = 0
-        # 纯地铁渲染使用内置主题，不读取地图样式覆盖。
-        job["ui"].pop("style_overrides", None)
-        job["opts"]["capture_rmp"] = True
+        job = {"file": self.backend.source_file, "opts": options}
         inputs = {"rmpGraphVersion": RMP_GRAPH_VERSION, "job": job}
         key = hashlib.sha256(json.dumps(inputs, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
         return key, job
@@ -1124,8 +1103,9 @@ class EngineServer:
         from . import __version__
         scene = self.backend.last_rmp_snapshot
         if scene is None:
-            raise ValueError("地铁成图没有可编辑矢量快照")
-        project = build_editor_draft(scene)
+            raise ValueError("尚未生成 RMP 工程草稿")
+        warnings = self._render_warnings()
+        project = build_editor_draft(scene, warnings=warnings)
         source = Path(job["file"]).resolve()
         with source.open("rb") as stream:
             source_hash = hashlib.file_digest(stream, "sha256").hexdigest()
@@ -1133,9 +1113,12 @@ class EngineServer:
         return {"projectId": key, "sourceFile": str(source), "defaultPath": str(directory / (key + ".rmp.json")),
                 "project": project, "metadata": {
                     "cityName": self.backend.city_info.get("name", "map"),
+                    "warnings": warnings,
                     "sourceFingerprint": source_hash, "settingsFingerprint": key,
                     "rmpCommit": RMP_COMMIT, "sourceFile": str(source),
                     "generatorVersion": f"{__version__}/rmp-{RMP_GRAPH_VERSION}",
+                    "needsVisualAdjustment": bool(self.backend.last_diagnostics.get("stats", {})
+                        .get("transit_layout", {}).get("needs_visual_adjustment", False)),
                     "layoutFingerprint": hashlib.sha256(json.dumps(project["cmmDraft"], sort_keys=True, ensure_ascii=False).encode()).hexdigest(),
                 }}
 
@@ -1145,10 +1128,10 @@ class EngineServer:
         if (self._external_busy or self._saving_export) and method in {
             "openDocument", "setTheme", "setLayerVisibility", "setField", "resetLayer",
             "setLabelChild", "setTransitOption", "setTransitType", "setTransitLines",
-            "setMetroOutline", "renderMetro",
+            "setMetroOutline", "renderMetro", "resetMetroGenerationOptions",
             "commitThemeDraft", "setMergeOverride", "setFacilitySelection",
             "savePoiMapping", "renderInterchanges", "setRegionSelection",
-            "setOutputOption", "setTextIconSettings", "setPoiDensity", "setPoiVisibility", "resetFields",
+            "setOutputOption", "setTextIconSettings", "setPoiDensity", "setPoiVisibility", "setDecorativePoiVisibility", "resetFields",
             "resetProfileFields", "setRangeSelection", "compilePreview", "refreshPreview",
             "export", "clearCache", "setInspectorField", "resetInspectorGroup", "undoInspector", "redoInspector",
         }:
@@ -1352,39 +1335,24 @@ class EngineServer:
             if ids is None:
                 if metro:
                     options["line_ids"] = None
-                    options["station_line_ids"] = None
                 else:
                     options.pop("line_ids", None)
                     options.pop("station_line_ids", None)
             else:
                 options["line_ids"] = ids
-                options["station_line_ids"] = list(ids)
             if not metro:
                 self._transit_session_options = options
             backend.update_transit_options(metro, options)
             return {"lineIds": ids}
         if method == "setTheme":
             changed = backend.set_theme(str(params["theme"]))
-            if changed and backend.has_document:
-                backend.compile_preview_scene(self.callbacks)
             return {"changed": changed, "snapshot": self.snapshot()}
         if method == "getTextIconSettings":
             target = canonical_profile_target(str(params["target"]))
-            from .view_settings import default_view_settings
+            from .view_settings import default_view_settings, view_options
             defaults = default_view_settings()["metro" if target == "metro" else "transit"]
-            option_defaults = {"stations": defaults["stations"]["enabled"],
-                "station_names_enabled": defaults["station_names"]["enabled"],
-                "facilities_enabled": defaults["facilities"]["enabled"]}
-            if target == "metro":
-                names = defaults["station_names"]
-                option_defaults.update(station_name_size=names["size"], station_font=names["font"],
-                    station_name_color=names["color"], station_name_stroke=names["stroke_width"],
-                    station_name_stroke_color=names["stroke_color"], station_diameter=defaults["stations"]["diameter"],
-                    merge_enabled=defaults["stations"]["merge"], merge_range=defaults["stations"]["merge_range"])
-            else:
-                option_defaults["facility_names_enabled"] = defaults["facilities"]["names_enabled"]
-                option_defaults["station_name_placement"] = station_name_placement(option_defaults)
-                option_defaults["station_name_size"] = defaults["station_names"]["size"]
+            projected = view_options(defaults, target == "metro")
+            option_defaults = {key: projected[key] for key in TEXT_ICON_OPTIONS[target]}
             return {"theme": backend.theme_stem, "enabled": bool(backend.layer_visibility["label"]),
                 "fields": {key: backend.field_value(key, FIELDS[key].default) for key in TEXT_ICON_FIELDS},
                 "defaults": {key: backend.theme_default_field_value(key, FIELDS[key].default) for key in TEXT_ICON_FIELDS},
@@ -1439,12 +1407,7 @@ class EngineServer:
                 if not valid:
                     raise ValueError(i18n.tr('ui.winui_engine.dispatch.f7297a7ae6', p0=field.label))
             options = params.get("options", {})
-            allowed_options = {"stations", "station_names_enabled", "facilities_enabled", "facility_names_enabled"}
-            if target in {"normal", "transit"}:
-                allowed_options.update(("station_name_placement", "station_name_size"))
-            if target == "metro":
-                allowed_options.remove("facility_names_enabled")
-                allowed_options.update(("station_name_size", "station_diameter", "station_font", "station_name_color", "station_name_stroke", "station_name_stroke_color", "merge_enabled", "merge_range"))
+            allowed_options = set(TEXT_ICON_OPTIONS[target])
             if not isinstance(options, dict) or not set(options) <= allowed_options:
                 raise ValueError(i18n.tr('ui.winui_engine.dispatch.dd98f132f7'))
             current_options = self.metro_options() if target == "metro" else self.transit_options()
@@ -1459,8 +1422,6 @@ class EngineServer:
             if target != "normal":
                 current = self.metro_options() if target == "metro" else self.transit_options()
                 current.update(checked_options)
-                if target == "transit" and "station_name_placement" in checked_options:
-                    apply_station_name_placement(current, checked_options["station_name_placement"])
                 backend.update_transit_options(target == "metro", current)
                 if target == "transit":
                     self._transit_session_options = current
@@ -1479,6 +1440,15 @@ class EngineServer:
             layers = dict(backend.layer_visibility)
             layers["poi"] = any(snapshot["icons"].values())
             return {"poiVisibility": snapshot, "layers": layers}
+        if method == "setDecorativePoiVisibility":
+            self._require_document_epoch(params)
+            if not backend.has_document:
+                raise RuntimeError(i18n.tr('ui.winui_engine.dispatch.ae3f8c8a07'))
+            enabled = params.get("enabled")
+            if not isinstance(enabled, bool):
+                raise ValueError("enabled must be a boolean")
+            backend.set_decorative_poi_visibility(enabled)
+            return {"showDecorativePois": backend.show_decorative_pois}
         if method == "setLayerVisibility":
             key = str(params["key"])
             if key not in backend.layer_visibility:
@@ -1574,6 +1544,15 @@ class EngineServer:
         if method == "getTransitSchema":
             metro = bool(params.get("metro", False))
             return option_schema(self.metro_options() if metro else self.transit_options())
+        if method == "resetMetroGenerationOptions":
+            from .view_settings import default_view_settings, view_options
+            defaults = view_options(default_view_settings()["metro"], True)
+            options = self.metro_options()
+            for key in ("merge_enabled", "merge_range", "spacing", "schematic_water",
+                        "water_smoothing", "facilities_enabled", "schematic_options"):
+                options[key] = defaults[key]
+            backend.update_transit_options(True, options)
+            return {"options": self.metro_options()}
         if method == "setTransitOption":
             metro = bool(params.get("metro", False))
             key = str(params["key"])
@@ -1582,32 +1561,8 @@ class EngineServer:
             if not metro and key in STYLE_FIELDS:
                 backend.apply_style_override(STYLE_FIELDS[key], params["value"])
             options[key] = params["value"]
-            if not metro and key == "station_name_placement":
-                apply_station_name_placement(options, params["value"])
-            if not metro and key in {"station_names_enabled", "facility_names_enabled"}:
-                placement = "station" if key == "station_names_enabled" else "icon"
-                if params["value"]:
-                    apply_station_name_placement(options, placement)
-                elif options["station_name_placement"] == placement:
-                    apply_station_name_placement(options, "none")
-            if not metro and key == "line_color_mode":
-                options["palette_index"] = {"game": 0, "classic": 1, "soft": 2}[params["value"]]
-                options["auto_color"] = params["value"] != "game"
-            if not metro:
-                if key == "layers":
-                    for layer, option in LAYER_OPTIONS.items():
-                        if layer in params["value"]: options[option] = bool(params["value"][layer])
-                else:
-                    for layer, option in LAYER_OPTIONS.items():
-                        if key == option: options["layers"][layer] = bool(params["value"])
             if key == "merge_enabled":
                 backend.set_merge_options(transit=bool(params["value"]))
-            if key == "station_names_mode" and metro:
-                options["station_names_enabled"] = params["value"] != "none"
-                if params["value"] != "none": options["station_name_style"] = params["value"]
-            if key == "station_names_enabled" and metro:
-                options["station_names_mode"] = (options.get("station_name_style", "all")
-                                                 if params["value"] else "none")
             if not metro:
                 self._transit_session_options = options
             backend.update_transit_options(metro, options)
@@ -1680,7 +1635,8 @@ class EngineServer:
             if not backend.has_document:
                 return {"started": False}
             if backend.preview_needs_rebuild():
-                return {"started": backend.compile_preview_scene(self.callbacks)}
+                return {"started": backend.compile_preview_scene(self.callbacks),
+                        "theme": backend.preview_theme()}
             return {"started": False, "theme": backend.preview_theme()}
         if method == "prepareRmpProject":
             if not backend.has_document:
@@ -1691,7 +1647,7 @@ class EngineServer:
             self._rmp_pending = (key, job, str(params["requestId"]), self._document_epoch)
             self._render_mode = "rmp"
             try:
-                if not backend._submit_metro_job_in_engine(job, self.callbacks):
+                if not backend.generate_rmp_in_engine(job, self.callbacks):
                     raise ValueError("无法启动地铁编辑快照生成")
             except Exception:
                 self._render_mode = None
@@ -1699,24 +1655,7 @@ class EngineServer:
                 raise
             return {"started": True}
         if method == "renderMetro":
-            busy = bool(backend.busy or getattr(backend, "local_render_active", False) or
-                        self._export.request_id or self._external_busy)
-            if not backend.has_document or busy:
-                return {"started": False, "busy": busy}
-            request_id = str(params["requestId"])
-            options = self.metro_options()
-            self._render_mode = "metro"
-            self._metro_request_id = request_id
-            try:
-                started = backend.render_metro_in_engine(options, self.callbacks)
-            except Exception:
-                self._render_mode = None
-                self._metro_request_id = None
-                raise
-            if not started:
-                self._render_mode = None
-                self._metro_request_id = None
-            return {"started": started}
+            raise ValueError("原生地铁 PNG 已退役，请使用 RMP 工程编辑器生成与输出")
         if method == "getExportProfile":
             return self._export_profile(params)
         if method == "export":
@@ -1725,6 +1664,8 @@ class EngineServer:
             capabilities = self._format_capabilities(request.context)
             if request.format not in capabilities:
                 raise ValueError("unsupported export format")
+            if request.context == ContextMode.METRO and request.format != "RMG":
+                raise ValueError("请在 RMP 工程编辑器中输出已编辑工程")
             if not backend.has_document or backend.busy or self._export.request_id or self._external_busy:
                 return {"started": False}
             export_id = str(params.get("requestId") or uuid.uuid4().hex)
@@ -1767,40 +1708,34 @@ class EngineServer:
                     error, export_id, export_epoch,
                     context_name, output_format, str(requested_target)),
                 "web_done": lambda path: self._export_completed(path, export_id),
+                "web_result": lambda path, report: self._export_completed(path, export_id, road_order=report),
             }
             try:
-                if request.context == ContextMode.METRO:
-                    # 地铁示意图保留独立的旧版配置。
+                region = self._normalize_output_region(params.get("region"))
+                render_snapshot, theme_data, layer_snapshot = self._capture_output_snapshot(
+                    request.context, request.format, params)
+                transit_options = (self.transit_options()
+                                   if request.context == ContextMode.TRANSIT else None)
+                render_snapshot["export_context"] = context_name
+                render_snapshot["export_format"] = output_format
+                render_snapshot["export_target"] = str(requested_target)
+                render_snapshot["request_id"] = export_id
+                request = replace(
+                    request, region=region,
+                    theme_snapshot={"name": backend.theme_stem,
+                                    "data": theme_data},
+                    layer_snapshot=layer_snapshot,
+                    render_snapshot=render_snapshot,
+                )
+                if request.format == "HTML":
+                    started = backend.export_web(
+                        request.output_dir or backend.output_dir, callbacks,
+                        region=region, target=request.target, request=request)
+                else:
                     self._export.target = str(request.target)
                     started = backend.render_png_export(
-                        request, callbacks, transit_options=self.transit_options(),
-                        metro_options=self.metro_options(), in_engine=True)
-                else:
-                    region = self._normalize_output_region(params.get("region"))
-                    render_snapshot, theme_data, layer_snapshot = self._capture_output_snapshot(
-                        request.context, request.format, params)
-                    transit_options = (self.transit_options()
-                                       if request.context == ContextMode.TRANSIT else None)
-                    render_snapshot["export_context"] = context_name
-                    render_snapshot["export_format"] = output_format
-                    render_snapshot["export_target"] = str(requested_target)
-                    render_snapshot["request_id"] = export_id
-                    request = replace(
-                        request, region=region,
-                        theme_snapshot={"name": backend.theme_stem,
-                                        "data": theme_data},
-                        layer_snapshot=layer_snapshot,
-                        render_snapshot=render_snapshot,
-                    )
-                    if request.format == "HTML":
-                        started = backend.export_web(
-                            request.output_dir or backend.output_dir, callbacks,
-                            region=region, target=request.target, request=request)
-                    else:
-                        self._export.target = str(request.target)
-                        started = backend.render_png_export(
-                            request, callbacks, transit_options=transit_options,
-                            metro_options=self.metro_options(), file_result=True)
+                        request, callbacks, transit_options=transit_options,
+                        metro_options=self.metro_options(), file_result=True)
             except Exception:
                 self._clear_export()
                 raise
@@ -1824,7 +1759,6 @@ class EngineServer:
             self._rmp_pending = None
             self._clear_export()
             self._render_mode = None
-            self._metro_request_id = None
             return {"cancelled": True}
         if method == "close":
             self.running = False
@@ -1840,7 +1774,18 @@ class EngineServer:
             self.send({"id": request_id, "result": result})
         except Exception as exc:  # noqa: BLE001
             traceback.print_exc(file=sys.stderr)
-            self.send({"id": request_id, "error": {"code": type(exc).__name__, "message": str(exc)}})
+            method = str(frame.get("method", ""))
+            operation = "metro" if method in {"prepareRmpProject", "renderMetro"} else "export" if method == "export" else "open" if method in {"open", "openDocument"} else "operation"
+            params = frame.get("params", {})
+            metadata = {"documentEpoch": self._document_epoch, "rpcId": request_id}
+            if isinstance(params, dict):
+                for key in ("requestId", "documentEpoch", "context", "format", "target"):
+                    if key in params:
+                        metadata[key] = params[key]
+                if "documentEpoch" in params:
+                    metadata["currentDocumentEpoch"] = self._document_epoch
+            self.send({"id": request_id, "error": {"code": type(exc).__name__,
+                **error_payload(exc, operation=operation, stage=method, **metadata)}})
 
     def _read(self) -> None:
         for line in self.input:

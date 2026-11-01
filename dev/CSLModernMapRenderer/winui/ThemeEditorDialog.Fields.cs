@@ -72,6 +72,7 @@ internal sealed partial class ThemeEditorDialog
             else if (_search.Text.Trim().Length > 0 && !SectionLabel(_section).Contains(_search.Text.Trim(), StringComparison.OrdinalIgnoreCase))
                 BuildNode(_working[_section]!, [_section], _fieldsPanel);
             else if (_section == "roads") BuildRoadsPage();
+            else if (_section == "buildings") BuildBuildingsPage();
             else if (_section == "terrain") BuildTerrainPage();
             else if (_section == "labels") BuildLabelsPage();
             else BuildOtherPage();

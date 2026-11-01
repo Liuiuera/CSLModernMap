@@ -12,7 +12,7 @@
   "main_ui_a44c7ba211": "Strade",
   "main_ui_5b46860a8e": "Edifici",
   "main_ui_97492a0e5d": "Ferrovia",
-  "main_ui_57f78ba1f9": "Trasporti",
+  "main_ui_57f78ba1f9": "Traffico",
   "main_ui_b8466cd555": "Metropolitana",
   "main_ui_9875b1f825": "Etichette",
   "main_ui_9ff2b9e94d": "Distretti",
@@ -31,5 +31,15 @@
   "surface-poi-layer_shader_f2a5d36a5f": "Compilazione dello shader POI Surface non riuscita",
   "surface-poi-layer_program_226d27beb7": "Impossibile creare Surface program POI",
   "surface-poi-layer_program_ea7d784c3e": "Collegamento al programma POI Surface non riuscito",
-  "preview_title": "Anteprima mappa CSLModernMap"
+  "preview_title": "Anteprima mappa CSLModernMap",
+  "search_search": "Cerca oggetti sulla mappa",
+  "search_searchHelp": "Cerca nomi o categorie nella mappa attuale",
+  "search_empty": "Nessun oggetto corrispondente",
+  "search_findHelp": "Inserisci un nome o una categoria in alto a sinistra per individuare un oggetto sulla mappa.",
+  "search_group_building": "Altri edifici",
+  "search_group_road": "Strade",
+  "search_group_area": "Aree",
+  "search_group_poi": "Altri luoghi",
+  "search_more": "Mostra altro",
+  "search_count": "({{number}})"
 }

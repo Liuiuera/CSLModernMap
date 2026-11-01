@@ -12,7 +12,7 @@
   "main_ui_a44c7ba211": "Straßen",
   "main_ui_5b46860a8e": "Gebäude",
   "main_ui_97492a0e5d": "Bahn",
-  "main_ui_57f78ba1f9": "Verkehr",
+  "main_ui_57f78ba1f9": "Verkehrslage",
   "main_ui_b8466cd555": "Metro",
   "main_ui_9875b1f825": "Beschriftungen",
   "main_ui_9ff2b9e94d": "Bezirke",
@@ -31,5 +31,15 @@
   "surface-poi-layer_shader_f2a5d36a5f": "POI-Surface-Shader konnte nicht kompiliert werden",
   "surface-poi-layer_program_226d27beb7": "POI-Surface-Programm konnte nicht erstellt werden",
   "surface-poi-layer_program_ea7d784c3e": "POI-Surface-Programmverknüpfung fehlgeschlagen",
-  "preview_title": "CSLModernMap-Kartenvorschau"
+  "preview_title": "CSLModernMap-Kartenvorschau",
+  "search_search": "Kartenobjekte suchen",
+  "search_searchHelp": "Namen oder Kategorien auf der aktuellen Karte suchen",
+  "search_empty": "Keine passenden Objekte",
+  "search_findHelp": "Oben links einen Namen oder eine Kategorie eingeben, um ein Kartenobjekt zu finden.",
+  "search_group_building": "Weitere Gebäude",
+  "search_group_road": "Straßen",
+  "search_group_area": "Gebiete",
+  "search_group_poi": "Weitere Orte",
+  "search_more": "Mehr anzeigen",
+  "search_count": "({{number}})"
 }

@@ -10,6 +10,7 @@ import { linePaths, lineStyles } from '../components/svgs/lines/lines';
 import { FacilitiesType, getFacilityOptions } from '../components/svgs/nodes/facilities';
 import { findShortestClosedPath } from '../util/graph-find-shortest-closed-path';
 import { transformedBoundingBox } from '../util/helpers';
+import { currentMapRotation, rotatePoint, toMapVector } from '../util/map-rotation';
 import { TextLanguage } from '../util/fonts';
 import i18n from '../i18n/config';
 
@@ -43,6 +44,15 @@ const signature = (value: unknown): string => {
     return JSON.stringify(value) ?? 'null';
 };
 
+function stationLegendKey(attrs: NodeAttributes): 'normalStation' | 'interchangeStation' {
+    const type = attrs.type as StationType;
+    // Fixed interchange symbols use -int (including dated variants) or -osysi.
+    const interchange = /-int(?:-|$)/.test(type) || type === StationType.ShmetroOutOfSystemInt ||
+        (type === StationType.QingdaoMetroStation && attrs[type]!.isInt) ||
+        ((type === StationType.MTR || type === StationType.OsakaMetro) && attrs[type]!.transfer[0].length > 1);
+    return interchange ? 'interchangeStation' : 'normalStation';
+}
+
 export function buildInsertion(request: InsertRequest): Insertion {
     const graph = new MultiDirectedGraph<LegendNode, LegendEdge>();
     const rows: Row[] = [];
@@ -55,8 +65,7 @@ export function buildInsertion(request: InsertRequest): Insertion {
                 : miscNodes[type as MiscNodeType].defaultAttrs;
         graph.addNode(id, {
             type,
-            x,
-            y,
+            ...toMapVector({ x, y }),
             visible: true,
             zIndex: 6,
             [type]: { ...structuredClone(defaults), ...data },
@@ -148,7 +157,8 @@ export function buildInsertion(request: InsertRequest): Insertion {
         if (!attrs.visible || attrs.cmmDecoration) return;
         const type = attrs.type;
         if (!(type in stations) && type !== MiscNodeType.Facilities) return;
-        const key = type === MiscNodeType.Facilities ? `facility:${attrs.facilities!.type}` : type;
+        const stationKind = type in stations ? stationLegendKey(attrs) : undefined;
+        const key = type === MiscNodeType.Facilities ? `facility:${attrs.facilities!.type}` : `station:${stationKind}`;
         if (seen.has(key)) return;
         seen.add(key);
         const data =
@@ -158,7 +168,7 @@ export function buildInsertion(request: InsertRequest): Insertion {
         const sample = node(type, data);
         const label = text(
             type in stations
-                ? i18n.t(stations[type as StationType].metadata.displayName)
+                ? i18n.t(`embed.${stationKind}`)
                 : facilityNames[attrs.facilities!.type],
             {},
             100
@@ -178,13 +188,21 @@ export function positionInsertion(insertion: Insertion, x: number, y: number) {
         insertion.graph.forEachNode(id => graph.mergeNodeAttributes(id, { x, y }));
         return;
     }
+    // Measure and arrange in the visible viewport; persist offsets in map coordinates.
+    const origin = rotatePoint({ x, y }, currentMapRotation());
+    const viewport = document.getElementById('rmp-viewport') as unknown as SVGGraphicsElement;
+    const move = (id: string, dx: number, dy: number) => {
+        const attrs = graph.getNodeAttributes(id);
+        const delta = toMapVector({ x: dx, y: dy });
+        graph.mergeNodeAttributes(id, { x: attrs.x + delta.x, y: attrs.y + delta.y });
+    };
     const bounds = (ids: string[], stroke = 0) => {
         const elements = ids.flatMap(id =>
             [id, id + '.pre', id + '.post']
                 .map(key => document.getElementById(key))
                 .filter((element): element is HTMLElement => element !== null)
         );
-        const boxes = elements.map(element => transformedBoundingBox(element as unknown as SVGSVGElement));
+        const boxes = elements.map(element => transformedBoundingBox(element as unknown as SVGSVGElement, viewport));
         return {
             left: Math.min(...boxes.map(b => b.x)) - stroke / 2,
             right: Math.max(...boxes.map(b => b.x + b.width)) + stroke / 2,
@@ -194,22 +212,17 @@ export function positionInsertion(insertion: Insertion, x: number, y: number) {
     };
     const measurements = insertion.rows.map(row => bounds(row.samples, row.stroke));
     const sampleWidth = Math.max(80, ...measurements.slice(1).map(b => b.right - b.left));
-    let top = y;
+    let top = origin.y;
     insertion.rows.forEach((row, index) => {
         const box = measurements[index];
         const label = row.label ? bounds([row.label]) : undefined;
         const height = Math.max(32, box.bottom - box.top, label ? label.bottom - label.top : 0);
-        const dx = x - box.left + (row.label ? (sampleWidth - (box.right - box.left)) / 2 : 0);
+        const dx = origin.x - box.left + (row.label ? (sampleWidth - (box.right - box.left)) / 2 : 0);
         const dy = top + height / 2 - (box.top + box.bottom) / 2;
-        row.nodes.forEach(id => {
-            const attrs = graph.getNodeAttributes(id);
-            graph.mergeNodeAttributes(id, { x: attrs.x + dx, y: attrs.y + dy });
-        });
+        row.nodes.forEach(id => move(id, dx, dy));
         if (row.label && label)
-            graph.mergeNodeAttributes(row.label, {
-                x: graph.getNodeAttribute(row.label, 'x') + x + sampleWidth + 20 - (label.left + dx),
-                y: graph.getNodeAttribute(row.label, 'y') + top + height / 2 - ((label.top + label.bottom) / 2 + dy),
-            });
+            move(row.label, origin.x + sampleWidth + 20 - (label.left + dx),
+                top + height / 2 - ((label.top + label.bottom) / 2 + dy));
         top += height + 12;
     });
 }

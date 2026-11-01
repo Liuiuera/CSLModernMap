@@ -358,7 +358,7 @@ msgid "gui.dialog.open_city"
 msgstr "打开城市存档"
 
 msgid "gui.dialog.open_city.filter"
-msgstr "城市地图 (*.mmap.gz *.mmap *.cmm.gz *.cmm *.cmm.json)"
+msgstr "城市地图 (*.mmap.gz *.mmap *.cslmap.gz *.cslmap *.cmm.gz *.cmm *.cmm.json)"
 
 msgid "gui.dialog.save"
 msgstr "保存"
@@ -3414,7 +3414,7 @@ msgid "gui.style_editor.value.left_top"
 msgstr "左上角"
 
 msgid "gui.style_editor.value.poi"
-msgstr "地点分类着色"
+msgstr "自动 POI 取色"
 
 msgid "gui.style_editor.value.right_bottom"
 msgstr "右下角"
@@ -3837,7 +3837,7 @@ msgid "style.building.color_mode.label"
 msgstr "建筑填色方式"
 
 msgid "style.building.color_mode.value.poi"
-msgstr "按地点着色"
+msgstr "自动 POI 取色"
 
 msgid "style.building.color_mode.value.uniform"
 msgstr "统一颜色"
@@ -4170,7 +4170,7 @@ msgid "style.range.value.center"
 msgstr "城市中心"
 
 msgid "style.range.value.city"
-msgstr "整座城市"
+msgstr "全城"
 
 msgid "style.range.value.custom"
 msgstr "自定义…"
@@ -5391,6 +5391,88 @@ msgstr "存档"
 msgid "watermark.traffic_at"
 msgstr "路况"
 
+msgid "gui.language.notice"
+msgstr "简体中文为原文，其他语言由 ChatGPT 自动翻译，可能存在不准确或不清晰的表达。"
+
+msgid "gui.language.contribute"
+msgstr "欢迎在 GitHub 提交本地语言翻译，帮助改进。"
+
+msgid "gui.transit.water_degraded"
+msgstr "水域已保留，但部分岸线美化未完成。"
+
+msgid "gui.transit.rmp_water_omitted"
+msgstr "RMP 水域组件 {component} 未能转换，已保留站线、设施及其他可用水域：{reason}"
+
+msgid "gui.transit.water_unverified"
+msgstr "水域未验证，已生成不含水面的示意图。"
+
+#: csmodernmap/object_inspector.py
+msgid "ui.poi_density.extremely_sparse"
+msgstr "极少"
+
+#: csmodernmap/object_inspector.py
+msgid "ui.poi_density.very_sparse"
+msgstr "很少"
+
+#: csmodernmap/object_inspector.py
+msgid "ui.poi_density.very_dense"
+msgstr "很多"
+
+#: csmodernmap/object_inspector.py
+msgid "ui.poi_density.extremely_dense"
+msgstr "极多"
+
+msgid "style.road.game_names.label"
+msgstr "使用游戏自动道路名"
+
+msgid "gui.layer.poi_area"
+msgstr "建筑区上色"
+
+msgid "gui.layer.poi_area_desc"
+msgstr "复用建筑轮廓和颜色，仅填充建筑内部，不绘制边框。可独立于建筑图层显示。"
+
+msgid "gui.layer.title.poi_area"
+msgstr "建筑用途上色"
+
+msgid "gui.poi_shared.all_games"
+msgstr "全部游戏"
+
+msgid "gui.poi_shared.search"
+msgstr "搜索名称或原生 ID"
+
+msgid "gui.poi_shared.display"
+msgstr "显示图标"
+
+msgid "gui.poi_shared.image_search"
+msgstr "搜索图标"
+
+msgid "gui.poi_shared.restore"
+msgstr "恢复默认"
+
+msgid "gui.poi_shared.save"
+msgstr "保存"
+
+msgid "gui.poi_shared.close"
+msgstr "关闭"
+
+msgid "gui.poi_shared.no_image"
+msgstr "不显示图标"
+
+msgid "gui.poi_shared.external_change"
+msgstr "映射已被外部修改，请关闭窗口后重新打开。"
+
+msgid "gui.poi_shared.saved"
+msgstr "已保存，所有地图共用此配置。"
+
+msgid "gui.poi_shared.unsaved"
+msgstr "保存未保存的修改？"
+
+msgid "style.poi.set.value.modern"
+msgstr "浅色"
+
+msgid "style.poi.set.value.modern-dark"
+msgstr "深色"
+
 msgid "ui.export.possible_memory_exhaustion"
 msgstr "可能是内存不足，渲染进程已意外退出。如果游戏仍在运行，请先关闭游戏，并关闭其他占用内存较多的程序，或减小导出尺寸后重试。"
 
@@ -5399,3 +5481,174 @@ msgstr "正在转换地图数据…"
 
 msgid "gui.progress.transit_catalog"
 msgstr "正在整理公交线路：{done}/{total}"
+
+msgid "building.category.residential"
+msgstr "住宅"
+
+msgid "building.category.commercial"
+msgstr "商业"
+
+msgid "building.category.office"
+msgstr "办公"
+
+msgid "building.category.industrial"
+msgstr "工业与仓储"
+
+msgid "building.category.police"
+msgstr "警察"
+
+msgid "building.category.prison"
+msgstr "监狱与司法"
+
+msgid "building.category.fire"
+msgstr "消防与防灾"
+
+msgid "building.category.healthcare"
+msgstr "医疗与福利"
+
+msgid "building.category.deathcare"
+msgstr "殡葬"
+
+msgid "building.category.education"
+msgstr "教育与科研"
+
+msgid "building.category.administration"
+msgstr "行政与金融"
+
+msgid "building.category.transport"
+msgstr "公共交通"
+
+msgid "building.category.parking"
+msgstr "停车"
+
+msgid "building.category.post_telecom"
+msgstr "邮政与通信"
+
+msgid "building.category.electricity"
+msgstr "电力"
+
+msgid "building.category.water"
+msgstr "供水与排污"
+
+msgid "building.category.garbage"
+msgstr "垃圾处理"
+
+msgid "building.category.maintenance"
+msgstr "道路与公园养护"
+
+msgid "building.category.park"
+msgstr "公园与体育"
+
+msgid "building.category.amusement"
+msgstr "游乐设施"
+
+msgid "building.category.culture"
+msgstr "文化与旅游"
+
+msgid "building.category.decoration"
+msgstr "自然装饰"
+
+msgid "building.category.unclassified"
+msgstr "未分类"
+
+msgid "building.category.label"
+msgstr "建筑用途类别"
+
+msgid "building.category.table"
+msgstr "建筑分类上色表"
+
+msgid "building.category.enabled"
+msgstr "指定颜色"
+
+msgid "building.category.color"
+msgstr "类别填充色"
+
+msgid "building.category.scope"
+msgstr "作用于全部“{category}”建筑。"
+
+msgid "building.category.fallback"
+msgstr "默认建筑色（未取得 POI 颜色）"
+
+msgid "building.category.unknown_notice"
+msgstr "现有导出数据不足以确定用途；此处修改会影响全部未分类建筑。"
+
+msgid "style.building.color_mode.value.category"
+msgstr "分类上色"
+
+msgid "gui.style_editor.value.category"
+msgstr "分类上色"
+
+msgid "building.category.fallback_scope"
+msgstr "只用于未取得 POI 颜色且未指定类别颜色的建筑。"
+
+msgid "building.height"
+msgstr "模型高度"
+
+msgid "building.base_elevation"
+msgstr "模型底部高程"
+
+msgid "building.height_source"
+msgstr "高度来源"
+
+msgid "gui.roads.local_flat_fallback"
+msgstr "部分道路交叉已按平面绘制，相关位置的桥隧遮挡可能不准确。"
+
+msgid "gui.file.missing_version"
+msgstr "{format} 文件缺少格式版本号，无法确认兼容性。请使用新版 CSLModernMap Mod 重新导出地图。"
+
+msgid "gui.file.invalid_version"
+msgstr "{format} 文件的格式版本号无效。请选择正确的地图文件，或重新导出地图。"
+
+msgid "gui.file.old_version"
+msgstr "{format} {version} 已过期，当前支持 {supported}。请更新 CSLModernMap Mod 并重新导出地图。"
+
+msgid "gui.file.unsupported_version"
+msgstr "暂不支持 {format} {version}，当前支持 {supported}。请使用与该文件兼容的新版查看器。"
+
+msgid "gui.file.invalid_cmm"
+msgstr "这不是有效的 CMM 地图文件，或地图数据结构不正确。请选择 Mod 导出的地图文件，或重新导出地图。"
+
+msgid "gui.file.invalid_xml"
+msgstr "这不是有效的 CSLMap XML 地图，或文件已损坏。请选择正确的地图文件，或重新导出地图。"
+
+msgid "gui.file.invalid_gzip"
+msgstr "地图压缩文件无效或不完整。请重新复制文件，或在游戏内重新导出地图。"
+
+msgid "gui.file.invalid_encoding"
+msgstr "地图文件的编码无效。请选择 Mod 导出的地图文件，或重新导出地图。"
+
+msgid "gui.file.legacy_xml"
+msgstr "CSLMAP 是兼容格式，可能不支持部分新特性和功能。建议使用 CMM 格式导出地图。"
+
+msgid "gui.file.unversioned_xml"
+msgstr "此 CSLMAP 文件未标注版本，已按兼容格式打开，可能不支持部分新特性和功能。建议使用 CMM 格式导出地图。"
+
+msgid "ui.failure.internal"
+msgstr "程序发生异常，可以将此错误反馈给作者"
+
+msgid "ui.failure.permission"
+msgstr "无法访问所需文件，请检查文件或文件夹的访问权限后重试"
+
+msgid "ui.failure.missing_file"
+msgstr "找不到所需文件，请确认文件仍在原位置后重试"
+
+msgid "ui.failure.memory"
+msgstr "内存分配失败，请减小输出尺寸或关闭占用内存的程序后重试"
+
+msgid "ui.failure.operation.metro"
+msgstr "地铁示意图生成失败"
+
+msgid "ui.failure.operation.preview"
+msgstr "地图预览生成失败"
+
+msgid "ui.failure.operation.export"
+msgstr "地图导出失败"
+
+msgid "ui.failure.operation.open"
+msgstr "地图打开失败"
+
+msgid "ui.failure.operation.operation"
+msgstr "操作失败"
+
+msgid "ui.failure.city_json"
+msgstr "城市文件的 JSON 格式无效，请从游戏重新导出；若仍失败，可将错误详情反馈给作者"

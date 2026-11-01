@@ -369,6 +369,8 @@ FIELD_KINDS = {
 
 
 def field_kind(path: tuple) -> str | None:
+    if len(path) == 4 and path[:2] == ('buildings', 'category_colors'):
+        return {'enabled': 'toggle', 'color': 'color'}.get(path[-1])
     dotted = ".".join(path)
     explicit = next((kind for pattern, kind in FIELD_KINDS.items() if fnmatchcase(dotted, pattern)), None)
     if explicit: return explicit
@@ -522,6 +524,10 @@ def field_key_for(path: tuple) -> str | None:
 
 def field_label(key: str, path: tuple = ()) -> str:
     """字段显示名：schema 的字段键优先（style.<key>.label），回退到叶子名兜底表。"""
+    if path[:2] == ('buildings', 'category_colors'):
+        if len(path) == 2:
+            return tr('building.category.table')
+        return tr('building.category.' + key)
     field_key = field_key_for(path)
     if field_key and field_key in FIELDS:
         return tr(f"style.{field_key}.label")
@@ -704,7 +710,7 @@ def describe_theme(data: dict) -> dict:
         "terrain.elevation_mode": ("continuous", "stepped"),
         "watermark.position": ("left_top", "right_top", "left_bottom", "right_bottom"),
         "land_use.detail": ("base", "detailed"),
-        "buildings.color_mode": ("uniform", "poi"),
+        "buildings.color_mode": ("uniform", "poi", "category"),
     }
 
     def describe(value, path):

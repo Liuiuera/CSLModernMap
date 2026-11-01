@@ -7,6 +7,7 @@
         <ResourceDictionary>
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Light">
+                    <Color x:Key="WorkspaceExportButtonColor">#E2F3E8</Color>
                     <Color x:Key="WorkspaceOutputHeaderColor">#E3EEE6</Color>
                     <SolidColorBrush x:Key="WorkspaceWindowSurfaceBrush" Color="#33F7F8FA" />
                     <SolidColorBrush x:Key="WorkspaceRibbonSurfaceBrush" Color="#E8F7F8FA" />
@@ -18,6 +19,7 @@
                     <SolidColorBrush x:Key="RibbonWindowBackgroundBrush" Color="Transparent" />
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Dark">
+                    <Color x:Key="WorkspaceExportButtonColor">#244438</Color>
                     <Color x:Key="WorkspaceOutputHeaderColor">#32433A</Color>
                     <SolidColorBrush x:Key="WorkspaceWindowSurfaceBrush" Color="#33242629" />
                     <SolidColorBrush x:Key="WorkspaceRibbonSurfaceBrush" Color="#E8242629" />
@@ -28,6 +30,7 @@
                     <SolidColorBrush x:Key="RibbonWindowBackgroundBrush" Color="Transparent" />
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="HighContrast">
+                    <StaticResource x:Key="WorkspaceExportButtonColor" ResourceKey="SystemColorButtonFaceColor" />
                     <StaticResource x:Key="WorkspaceOutputHeaderColor" ResourceKey="SystemColorButtonFaceColor" />
                     <SolidColorBrush x:Key="WorkspaceWindowSurfaceBrush" Color="{ThemeResource SystemColorWindowColor}" />
                     <SolidColorBrush x:Key="WorkspaceRibbonSurfaceBrush" Color="{ThemeResource SystemColorWindowColor}" />

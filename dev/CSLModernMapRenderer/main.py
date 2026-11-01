@@ -3,7 +3,6 @@
 用法：
     python main.py parse <文件>                 # 解析存档，输出数据统计
     python main.py render <文件> [选项]         # 渲染整张地图为 PNG
-    python main.py metro <文件> [选项]          # 渲染纯地铁示意图为 PNG
     python main.py random <文件> [选项]         # 随机特写：随机渲染一块城市建成区
     python main.py interchange <文件> [选项]    # 立交特写：识别立交桥并拼图
     python main.py export-web <文件> [选项]     # 导出 MapLibre 单文件网页地图 HTML（资源全部内嵌）
@@ -24,7 +23,7 @@ from csmodernmap.i18n import AVAILABLE_LANGS, detect_lang, set_lang
 # 所有子命令名（判断裸存档路径时使用，避免与子命令重名）
 _SUBCOMMANDS = {
     "engine", "parse", "render", "random", "interchange",
-    "spot", "transit", "metro", "list-styles",
+    "spot", "transit", "list-styles",
     "export-web", "self-check",
 }
 
@@ -510,131 +509,6 @@ def cmd_transit(args: argparse.Namespace) -> int:
             custom_text=getattr(args, "watermark_text", None),
         )
     export.export_png(img, args.output)
-    print(f"完成: {args.output} (总耗时 {time.time() - t0:.1f}s)")
-    return 0
-
-
-def cmd_metro(args: argparse.Namespace) -> int:
-    """渲染纯地铁示意图：线路、站点、站名、图例与城市标题。"""
-    if not _check_file(args.file):
-        return 1
-    import copy
-
-    from PIL import Image, ImageColor
-
-    from csmodernmap import export
-    from csmodernmap import parser as map_parser
-    from csmodernmap import transit
-    from csmodernmap._paths import resource_dir
-    from csmodernmap.layers.transport_layer import TransportLayer
-    from csmodernmap.metro_features import (
-        metro_content_canvas_size, recommended_metro_output_size)
-    from csmodernmap.renderer import Renderer
-    from csmodernmap.services.station import StationSidecarError
-    from csmodernmap.style import load_metro_style
-    t0 = time.time()
-    print(f"解析 {args.file} ...")
-    mapdata = map_parser.parse_document(args.file)
-    session = _open_session(mapdata)
-    utility_map = session._legacy_view()
-
-    print("加载地铁示意图主题 ...")
-    style = load_metro_style(
-        str(resource_dir("styles")),
-        font_scale=getattr(args, "font_scale", 1.0),
-    )
-    _apply_station_fix_arg(args, style, mapdata)
-    s2 = copy.deepcopy(style)
-    cfg = s2.data.setdefault("transports", {})
-    requested = [s.strip() for s in (args.metro_types or "").split(",")
-                 if s.strip()]
-    if not requested:
-        requested = ["Metro", "Train", "Monorail"]
-    types = transit.resolve_enabled(requested)
-    available = {
-        transit.normalize_type(t.type) or t.type
-        for t in utility_map.transports
-    }
-    types = [key for key in types if key in available]
-    if not types:
-        print("错误：存档中没有可渲染的地铁线路，请检查 --metro-types。")
-        return 1
-    cfg["enabled"] = types
-    cfg["abstract"] = True
-    cfg["octilinear"] = True
-    station_cfg = copy.deepcopy(cfg.get("station") or {})
-    station_cfg["enabled"] = True
-    # 接驳设施图标：开关与大小倍率与 GUI 地铁示意图对话框一致。
-    facilities_cfg = copy.deepcopy(station_cfg.get("facilities") or {})
-    facilities_cfg["enabled"] = not bool(
-        getattr(args, "no_facilities", False))
-    facilities_scale = max(0.5, min(float(
-        getattr(args, "facilities_scale", 1.0) or 1.0), 2.0))
-    if facilities_scale != 1.0:
-        for key in ("size", "offset"):
-            value = facilities_cfg.get(key)
-            if isinstance(value, dict):
-                facilities_cfg[key] = {
-                    k: (v * facilities_scale if isinstance(v, (int, float))
-                        else v)
-                    for k, v in value.items()
-                }
-            elif isinstance(value, (int, float)):
-                facilities_cfg[key] = value * facilities_scale
-    station_cfg["facilities"] = facilities_cfg
-    cfg["station"] = station_cfg
-    label_cfg = copy.deepcopy(cfg.get("label") or {})
-    label_cfg["enabled"] = True
-    cfg["label"] = label_cfg
-
-    requested_size = int(args.size)
-    size = (recommended_metro_output_size(utility_map, types)
-            if requested_size <= 0 else max(requested_size, 128))
-    rotation = int(getattr(args, "rotate", 0) or 0)
-    canvas_w, canvas_h = metro_content_canvas_size(
-        utility_map, types, size, rotation=rotation)
-    aa_rate = 2 if args.aa else 1
-    renderer = Renderer(
-        s2, width=canvas_w, height=canvas_h,
-        rotation=rotation,
-    )
-    renderer.parallel_workers = 0
-    renderer.tile_size = int(getattr(args, "tile_size", 0) or 0)
-    renderer.memory_friendly = bool(getattr(args, "memory_friendly", False))
-    renderer.disk_backing = bool(getattr(args, "disk_backing", False))
-    renderer.transparent = True
-    renderer.add_layer(TransportLayer(transit_view=True, metro=True))
-    from csmodernmap.render_jobs import build_render_job
-    renderer.render_job = build_render_job(
-        "metro", layers=("transit",), width=canvas_w, height=canvas_h,
-        zoom=float(size) / 4096.0, detail_mode="detailed",
-        derive_params={"schematic": True, "transparent": True},
-    )
-    print(f"渲染地铁示意图（{', '.join(types)}，"
-          f"{canvas_w}x{canvas_h}，AA={args.aa}）...")
-
-    def _progress(pct: float, msg: str) -> None:
-        sys.stdout.write(f"\r地铁示意图 {pct * 100:3.0f}% {msg}   ")
-        sys.stdout.flush()
-    try:
-        image = renderer.render(
-            mapdata, region=None, aa_downsample=aa_rate, progress=_progress,
-            session=session,
-        )
-    except StationSidecarError as exc:
-        sys.stdout.write("\n")
-        print(f"错误：站点侧车未应用，渲染已停止：{exc}")
-        return 1
-    sys.stdout.write("\n")
-    sys.stdout.flush()
-    bg = style.get("canvas.background", "#FAFAF8")
-    try:
-        bg_rgb = ImageColor.getrgb(str(bg))
-    except ValueError:
-        bg_rgb = (250, 250, 248)
-    out = Image.new("RGBA", image.size, bg_rgb + (255,))
-    out.alpha_composite(image.convert("RGBA"))
-    export.export_png(out.convert("RGB"), args.output)
     print(f"完成: {args.output} (总耗时 {time.time() - t0:.1f}s)")
     return 0
 
@@ -1151,50 +1025,6 @@ def main(argv=None) -> int:
     p_transit.add_argument("--font-scale", type=float, default=1.0,
                            help="全局字号倍率")
     p_transit.set_defaults(func=cmd_transit)
-
-    p_metro = sub.add_parser(
-        "metro",
-        help="纯地铁示意图：八方向线路、站点、站名、图例与城市标题",
-    )
-    p_metro.add_argument("file", help=".mmap 或 .mmap.gz 文件路径")
-    p_metro.add_argument("--size", type=int, default=0,
-                         help="输出长边像素（0=按站点数量自动，默认 0）")
-    p_metro.add_argument("--aa", action="store_true",
-                         help="抗锯齿：按 2× 尺寸渲染后下采样")
-    p_metro.add_argument("--metro-types", default=None,
-                         help="线路类型（逗号分隔；默认 Metro,Train,Monorail）")
-    p_metro.add_argument("--rotate", type=int, default=0,
-                         choices=[0, 90, 180, 270],
-                         help="输出顺时针旋转角度（0/90/180/270）")
-    p_metro.add_argument("-o", "--output", default="metro.png",
-                         help="输出文件路径")
-    p_metro.add_argument("--font-scale", type=float, default=1.0,
-                         help="全局字号倍率")
-    p_metro.add_argument(
-        "--memory-friendly", action="store_true",
-        help="大图分块渲染并降低峰值内存，适合 8K 以上输出",
-    )
-    p_metro.add_argument(
-        "--disk-backing", action="store_true",
-        help="使用磁盘画布合并大图，进一步降低内存占用",
-    )
-    p_metro.add_argument(
-        "--tile-size", type=int, default=0,
-        help="分块瓦片边长像素（0=自动；推荐 1024/2048/4096）",
-    )
-    p_metro.add_argument(
-        "--no-facilities", action="store_true",
-        help="不绘制机场/铁路/码头接驳设施图标（默认绘制）",
-    )
-    p_metro.add_argument(
-        "--station-fix", default=None, metavar="JSON",
-        help="站点 Stop 锚定修正侧车路径；不指定时自动读取存档旁的 .stations.json",
-    )
-    p_metro.add_argument(
-        "--facilities-scale", type=float, default=1.0,
-        help="接驳设施图标大小倍率（0.5~2.0，默认 1.0）",
-    )
-    p_metro.set_defaults(func=cmd_metro)
 
     p_random = sub.add_parser("random", help="随机特写：随机渲染一块城市建成区")
     p_random.add_argument("file", help=".mmap 或 .mmap.gz 文件路径")

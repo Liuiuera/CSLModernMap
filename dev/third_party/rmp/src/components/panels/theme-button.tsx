@@ -16,6 +16,7 @@ export default function ThemeButton(props: ThemeButtonProps) {
 
     return (
         <IconButton
+            className="rmp-color-swatch"
             aria-label={t('Color')}
             color={theme[3]}
             bg={theme[2]}

@@ -15,9 +15,6 @@ class ExternalExportRequest:
     theme: Mapping[str, Any] = field(default_factory=dict)
     visibility: Mapping[str, bool] = field(default_factory=dict)
     line_ids: tuple[int, ...] | None = None
-    render_ui: Mapping[str, Any] | None = None
-    render_job: Mapping[str, Any] | None = None
-    rmp_scene: Mapping[str, Any] | None = None
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "output_root", Path(self.output_root))

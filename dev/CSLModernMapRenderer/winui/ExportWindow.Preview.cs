@@ -289,7 +289,7 @@ internal sealed partial class ExportWindow
         catch (Exception error)
         {
             LoadDensityProfile(_poiProfile);
-            _status.Text = UiLanguage.Text("ExportWindow_CommitOutputOptionAsync_F4E15E33A6") + error.Message;
+            ShowFailure(error);
         }
         finally { _savingDensity = false; RefreshControlStates(); }
     }
@@ -425,6 +425,7 @@ internal sealed partial class ExportWindow
         };
         _status.RegisterPropertyChangedCallback(TextBlock.TextProperty, (_, _) =>
         {
+            _feedback.Content = null;
             var text = _status.Text ?? "";
             _feedback.Message = text;
             _feedback.IsOpen = text.Length != 0;
@@ -483,7 +484,7 @@ internal sealed partial class ExportWindow
             if (_summaryPanel is not null) RefreshSnapshotSummary(profile, _summaryPanel);
             UpdateTheme(profile); UpdateDimensions();
         }
-        catch (Exception error) { if (!_closed) _status.Text = UiLanguage.Text("ExportWindow_Preview_RefreshSharedSnapshotAsync_5681D752E1") + error.Message; }
+        catch (Exception error) { if (!_closed) ShowFailure(error); }
         finally
         {
             _refreshingShared = false;
@@ -510,7 +511,7 @@ internal sealed partial class ExportWindow
         catch (Exception error)
         {
             _rangePreview.Visibility = Visibility.Collapsed;
-            if (!_closed) _status.Text = UiLanguage.Text("ExportWindow_Preview_LoadRangeOverviewAsync_0109D8D4CE") + error.Message;
+            if (!_closed) ShowFailure(error);
         }
     }
 }

@@ -108,7 +108,7 @@
   "gui.dialog.custom_resolution.prompt": "Długość boku wyjściowego (piksele)",
   "gui.dialog.layer_settings": "Ustawienia warstw",
   "gui.dialog.open_city": "Otwórz zapis miasta",
-  "gui.dialog.open_city.filter": "Mapa miasta (*.mmap.gz *.mmap *.cmm.gz *.cmm *.cmm.json)",
+  "gui.dialog.open_city.filter": "Mapa miasta (*.mmap.gz *.mmap *.cslmap.gz *.cslmap *.cmm.gz *.cmm *.cmm.json)",
   "gui.dialog.save": "Zapisz",
   "gui.dialog.save_png_filter": "Obraz PNG (*.png)",
   "gui.editor.airport": "Lotnisko",

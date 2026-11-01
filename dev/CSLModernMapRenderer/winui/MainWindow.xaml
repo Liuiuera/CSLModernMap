@@ -5,6 +5,7 @@
     xmlns:ribbon="using:RibbonSpace.Controls">
 <Grid x:Name="Root" Background="{ThemeResource WorkspaceWindowSurfaceBrush}">
     <Grid.Resources>
+        <SolidColorBrush x:Key="PrimaryExportBackground" Color="{ThemeResource WorkspaceExportButtonColor}" />
         <DataTemplate x:Key="ThemePreviewTemplate">
             <StackPanel HorizontalAlignment="Center" Spacing="2">
                 <Image Source="{Binding Preview}" Width="76" Height="38" />
@@ -49,7 +50,7 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition x:Name="InspectorColumn" Width="290" />
             </Grid.ColumnDefinitions>
-            <Border Grid.Column="0" BorderThickness="0,0,1,0" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" Background="{ThemeResource WorkspaceSidebarSurfaceBrush}">
+            <Border x:Name="SettingsBorder" Grid.Column="0" BorderThickness="0,0,1,0" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" Background="{ThemeResource WorkspaceSidebarSurfaceBrush}">
                 <Grid>
                     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
                     <StackPanel x:Name="SettingsHeader" Padding="12,10,12,0" Spacing="8" Visibility="Collapsed" />
@@ -63,12 +64,13 @@
                     <InfoBar x:Name="PreviewLoadingNotice" IsOpen="False" Severity="Warning" IsClosable="False" />
                 </StackPanel>
                 <Grid Grid.Row="1" Padding="8" ColumnSpacing="8">
-                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                    <StackPanel Spacing="6">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                    <Button x:Name="SettingsToggle" VerticalAlignment="Top" Padding="6" />
+                    <StackPanel Grid.Column="1" Spacing="6">
                         <TextBlock x:Uid="MainWindow_ContextText" x:Name="ContextText"  />
                         <Grid x:Name="ViewerToolbar" ColumnSpacing="6" RowSpacing="6" />
                     </StackPanel>
-                    <Button x:Uid="MainWindow_InspectorToggle" x:Name="InspectorToggle" Grid.Column="1"  VerticalAlignment="Top" />
+                    <Button x:Name="InspectorToggle" Grid.Column="2" VerticalAlignment="Top" Padding="6" />
                 </Grid>
                 <Grid Grid.Row="2">
                 <WebView2 x:Name="MapView" />

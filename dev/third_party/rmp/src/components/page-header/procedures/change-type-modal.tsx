@@ -1,3 +1,6 @@
+import StationStylePicker from '../../panels/details/station-style-picker';
+import { stationCatalog } from '../../../util/station-catalog';
+import { confirmStationTypeChange } from '../../../util/station-style-change';
 import {
     Accordion,
     AccordionButton,
@@ -32,13 +35,11 @@ import {
     changeNodesColorInBatch,
     changeStationsTypeInBatch,
     changeZIndexInBatch,
-    checkAndChangeStationIntType,
 } from '../../../util/change-types';
 import { findThemes } from '../../../util/color';
 import { usePaletteTheme } from '../../../util/hooks';
 import ThemeButton from '../../panels/theme-button';
 import { linePaths, lineStyles } from '../../svgs/lines/lines';
-import stations from '../../svgs/stations/stations';
 
 export type FilterType = 'station' | 'misc-node' | 'line';
 
@@ -93,7 +94,7 @@ export const ChangeTypeModal = (props: {
     const availableStationOptions = {
         any: t('header.settings.procedures.changeType.any'),
         ...(Object.fromEntries(
-            Object.entries(stations).map(([key, val]) => [key, t(val.metadata.displayName).toString()])
+            stationCatalog().map(item => [item.type, item.label])
         ) as { [k in StationType]: string }),
     };
 
@@ -149,12 +150,9 @@ export const ChangeTypeModal = (props: {
                     onChange: value => setCurrentStationType(value as StationType | 'any'),
                 },
                 {
-                    type: 'select',
+                    type: 'custom',
                     label: t('header.settings.procedures.changeStationType.changeTo'),
-                    options: availableStationOptions,
-                    value: newStationType,
-                    disabledOptions: ['any', currentStationType],
-                    onChange: value => setNewStationType(value as StationType),
+                    component: <StationStylePicker value={newStationType} onChange={setNewStationType} />,
                 },
             ],
         },
@@ -290,8 +288,9 @@ export const ChangeTypeModal = (props: {
             ? ([...selected].filter(edge => edge.startsWith('line')) as LineId[])
             : (graph.current.edges() as LineId[]);
         if ((!filter || filter.includes('station')) && isStationTypeSwitch) {
-            changeStationsTypeInBatch(graph.current, currentStationType, newStationType, stations);
-            if (autoChangeStationType) stations.forEach(s => checkAndChangeStationIntType(graph.current, s as StnId));
+            if (!confirmStationTypeChange(stations.filter(id => currentStationType === 'any' || graph.current.getNodeAttribute(id, 'type') === currentStationType), newStationType)) return;
+            changeStationsTypeInBatch(graph.current, currentStationType, newStationType, stations, autoChangeStationType);
+
         }
         if ((!filter || filter.includes('line')) && isLineStyleTypeSwitch) {
             changeLineStyleTypeInBatch(graph.current, currentLineStyleType, newLineStyleType, newTheme, lines);

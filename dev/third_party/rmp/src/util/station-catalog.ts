@@ -1,0 +1,55 @@
+import { StationType } from '../constants/stations';
+import i18n from '../i18n/config';
+
+// Persist the presentation order independently of registry refactors. Append new styles here.
+export const stationStyleOrder: StationType[] = [
+    StationType.ShmetroBasic,
+    StationType.ShmetroBasic2020,
+    StationType.ShmetroInt,
+    StationType.ShmetroOutOfSystemInt,
+    StationType.ShanghaiSuburbanRailway,
+    StationType.GzmtrBasic,
+    StationType.GzmtrInt,
+    StationType.GzmtrInt2024,
+    StationType.BjsubwayBasic,
+    StationType.BjsubwayInt,
+    StationType.MTR,
+    StationType.SuzhouRTBasic,
+    StationType.SuzhouRTInt,
+    StationType.KunmingRTBasic,
+    StationType.KunmingRTInt,
+    StationType.MRTBasic,
+    StationType.MRTInt,
+    StationType.JREastBasic,
+    StationType.JREastImportant,
+    StationType.FoshanMetroBasic,
+    StationType.QingdaoMetroStation,
+    StationType.TokyoMetroBasic,
+    StationType.TokyoMetroInt,
+    StationType.LondonTubeBasic,
+    StationType.LondonTubeInt,
+    StationType.LondonRiverServicesInt,
+    StationType.GuangdongIntercityRailway,
+    StationType.ChongqingRTBasic,
+    StationType.ChongqingRTInt,
+    StationType.ChongqingRTBasic2021,
+    StationType.ChongqingRTInt2021,
+    StationType.ChengduRTBasic,
+    StationType.ChengduRTInt,
+    StationType.OsakaMetro,
+    StationType.WuhanRTBasic,
+    StationType.WuhanRTInt,
+    StationType.CsmetroBasic,
+    StationType.CsmetroInt,
+    StationType.HzmetroBasic,
+    StationType.HzmetroInt,
+];
+
+export const stationCatalog = () =>
+    stationStyleOrder.map((type, index) => ({
+        type,
+        id: `station-${type}`,
+        number: index + 1,
+        label: i18n.t('cmm.style', { number: index + 1 }),
+        preview: `station-previews/${type}.png`,
+    }));

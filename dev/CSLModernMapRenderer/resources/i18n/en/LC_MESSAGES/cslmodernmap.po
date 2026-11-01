@@ -368,7 +368,7 @@ msgid "gui.dialog.open_city"
 msgstr "Open City Save"
 
 msgid "gui.dialog.open_city.filter"
-msgstr "City map (*.mmap.gz *.mmap *.cmm.gz *.cmm *.cmm.json)"
+msgstr "City map (*.mmap.gz *.mmap *.cslmap.gz *.cslmap *.cmm.gz *.cmm *.cmm.json)"
 
 msgid "gui.dialog.save"
 msgstr "Save"
@@ -3519,7 +3519,7 @@ msgid "gui.style_editor.value.left_top"
 msgstr "Top left"
 
 msgid "gui.style_editor.value.poi"
-msgstr "POI categories"
+msgstr "Automatic POI colors"
 
 msgid "gui.style_editor.value.right_bottom"
 msgstr "Bottom right"
@@ -3965,7 +3965,7 @@ msgid "style.building.color_mode.label"
 msgstr "Building fill mode"
 
 msgid "style.building.color_mode.value.poi"
-msgstr "Tint by place"
+msgstr "Automatic POI colors"
 
 msgid "style.building.color_mode.value.uniform"
 msgstr "Uniform color"
@@ -4298,7 +4298,7 @@ msgid "style.range.value.center"
 msgstr "City center"
 
 msgid "style.range.value.city"
-msgstr "Whole city"
+msgstr "Full city"
 
 msgid "style.range.value.custom"
 msgstr "Custom…"
@@ -5276,6 +5276,95 @@ msgstr "Save timestamp"
 msgid "watermark.traffic_at"
 msgstr "Traffic at"
 
+msgid "gui.language.notice"
+msgstr ""
+"Simplified Chinese is the original text. Other languages are translated automatically by ChatGPT "
+"and may be inaccurate or unclear."
+
+msgid "gui.language.contribute"
+msgstr ""
+"Native speakers are welcome to submit local-language translations on GitHub to help improve the "
+"translations."
+
+msgid "gui.transit.water_degraded"
+msgstr "Water was preserved, but some shoreline styling could not be completed."
+
+msgid "gui.transit.rmp_water_omitted"
+msgstr "RMP water component {component} could not be converted. Stations, lines, facilities and other usable water were preserved: {reason}"
+
+msgid "gui.transit.water_unverified"
+msgstr "Water could not be verified; the schematic was generated without water."
+
+#: csmodernmap/object_inspector.py
+msgid "ui.poi_density.extremely_sparse"
+msgstr "Very few"
+
+#: csmodernmap/object_inspector.py
+msgid "ui.poi_density.very_sparse"
+msgstr "Few"
+
+#: csmodernmap/object_inspector.py
+msgid "ui.poi_density.very_dense"
+msgstr "Many"
+
+#: csmodernmap/object_inspector.py
+msgid "ui.poi_density.extremely_dense"
+msgstr "Very many"
+
+msgid "style.road.game_names.label"
+msgstr "Use game-generated road names"
+
+msgid "gui.layer.poi_area"
+msgstr "POI footprint"
+
+msgid "gui.layer.poi_area_desc"
+msgstr ""
+"Reuse building footprints and colours for interior fills without outlines. Works independently of"
+" the Buildings layer.Colours buildings by use (residential, commercial, industrial, office and so"
+" on). The Buildings layer must also be on, or the colours will not show."
+
+msgid "gui.layer.title.poi_area"
+msgstr "Building use colours"
+
+msgid "gui.poi_shared.all_games"
+msgstr "All games"
+
+msgid "gui.poi_shared.search"
+msgstr "Search name or native ID"
+
+msgid "gui.poi_shared.display"
+msgstr "Display icon"
+
+msgid "gui.poi_shared.image_search"
+msgstr "Search icons"
+
+msgid "gui.poi_shared.restore"
+msgstr "Restore defaults"
+
+msgid "gui.poi_shared.save"
+msgstr "Save"
+
+msgid "gui.poi_shared.close"
+msgstr "Close"
+
+msgid "gui.poi_shared.no_image"
+msgstr "No icon"
+
+msgid "gui.poi_shared.external_change"
+msgstr "Mappings changed externally. Close and reopen the editor."
+
+msgid "gui.poi_shared.saved"
+msgstr "Saved for all maps."
+
+msgid "gui.poi_shared.unsaved"
+msgstr "Save unsaved changes?"
+
+msgid "style.poi.set.value.modern"
+msgstr "Light"
+
+msgid "style.poi.set.value.modern-dark"
+msgstr "Dark"
+
 msgid "ui.export.possible_memory_exhaustion"
 msgstr ""
 "The rendering process stopped unexpectedly, possibly because there was not enough memory. If the "
@@ -5287,3 +5376,174 @@ msgstr "Converting map data…"
 
 msgid "gui.progress.transit_catalog"
 msgstr "Preparing transit lines: {done}/{total}"
+
+msgid "building.category.residential"
+msgstr "Residential"
+
+msgid "building.category.commercial"
+msgstr "Commercial"
+
+msgid "building.category.office"
+msgstr "Office"
+
+msgid "building.category.industrial"
+msgstr "Industry and storage"
+
+msgid "building.category.police"
+msgstr "Police"
+
+msgid "building.category.prison"
+msgstr "Prisons and justice"
+
+msgid "building.category.fire"
+msgstr "Fire and disaster response"
+
+msgid "building.category.healthcare"
+msgstr "Healthcare and welfare"
+
+msgid "building.category.deathcare"
+msgstr "Deathcare"
+
+msgid "building.category.education"
+msgstr "Education and research"
+
+msgid "building.category.administration"
+msgstr "Administration and finance"
+
+msgid "building.category.transport"
+msgstr "Public transport"
+
+msgid "building.category.parking"
+msgstr "Parking"
+
+msgid "building.category.post_telecom"
+msgstr "Post and telecommunications"
+
+msgid "building.category.electricity"
+msgstr "Electricity"
+
+msgid "building.category.water"
+msgstr "Water and sewage"
+
+msgid "building.category.garbage"
+msgstr "Waste management"
+
+msgid "building.category.maintenance"
+msgstr "Road and park maintenance"
+
+msgid "building.category.park"
+msgstr "Parks and sports"
+
+msgid "building.category.amusement"
+msgstr "Amusement facilities"
+
+msgid "building.category.culture"
+msgstr "Culture and tourism"
+
+msgid "building.category.decoration"
+msgstr "Natural decorations"
+
+msgid "building.category.unclassified"
+msgstr "Unclassified"
+
+msgid "building.category.label"
+msgstr "Building use category"
+
+msgid "building.category.table"
+msgstr "Building category colors"
+
+msgid "building.category.enabled"
+msgstr "Override color"
+
+msgid "building.category.color"
+msgstr "Category fill color"
+
+msgid "building.category.scope"
+msgstr "Applies to all buildings in “{category}”."
+
+msgid "building.category.fallback"
+msgstr "Default building color (no POI color)"
+
+msgid "building.category.unknown_notice"
+msgstr "The export does not identify the building use. Changes here affect all unclassified buildings."
+
+msgid "style.building.color_mode.value.category"
+msgstr "Category colors"
+
+msgid "gui.style_editor.value.category"
+msgstr "Category colors"
+
+msgid "building.category.fallback_scope"
+msgstr "Used when neither a POI color nor a category override is available."
+
+msgid "building.height"
+msgstr "Model height"
+
+msgid "building.base_elevation"
+msgstr "Model base elevation"
+
+msgid "building.height_source"
+msgstr "Height source"
+
+msgid "gui.roads.local_flat_fallback"
+msgstr "Some road crossings are drawn flat. Bridge and tunnel overlaps may be inaccurate in these locations."
+
+msgid "gui.file.missing_version"
+msgstr "The {format} file has no format version. Compatibility cannot be verified. Export the map again with an up-to-date CSLModernMap mod."
+
+msgid "gui.file.invalid_version"
+msgstr "The {format} file has an invalid format version. Select a valid map file or export the map again."
+
+msgid "gui.file.old_version"
+msgstr "{format} {version} is outdated; this viewer supports {supported}. Update the CSLModernMap mod and export the map again."
+
+msgid "gui.file.unsupported_version"
+msgstr "{format} {version} is not supported; this viewer supports {supported}. Use an updated viewer compatible with this file."
+
+msgid "gui.file.invalid_cmm"
+msgstr "This is not a valid CMM map, or its data structure is invalid. Select a map exported by the mod or export the map again."
+
+msgid "gui.file.invalid_xml"
+msgstr "This is not a valid CSLMap XML map, or the file is damaged. Select a valid map file or export the map again."
+
+msgid "gui.file.invalid_gzip"
+msgstr "The compressed map is invalid or incomplete. Copy the file again or export the map again in the game."
+
+msgid "gui.file.invalid_encoding"
+msgstr "The map file has an invalid text encoding. Select a map exported by the mod or export the map again."
+
+msgid "gui.file.legacy_xml"
+msgstr "CSLMAP is a compatibility format and may not support some new features and functions. We recommend exporting maps in CMM format."
+
+msgid "gui.file.unversioned_xml"
+msgstr "This CSLMAP file has no version number and was opened as a compatibility format. Some new features and functions may not be supported. We recommend exporting maps in CMM format."
+
+msgid "ui.failure.internal"
+msgstr "An unexpected error occurred. You can report this error to the author."
+
+msgid "ui.failure.permission"
+msgstr "A required file could not be accessed. Check file or folder permissions and try again."
+
+msgid "ui.failure.missing_file"
+msgstr "A required file was not found. Check that it is still in its original location and try again."
+
+msgid "ui.failure.memory"
+msgstr "Memory allocation failed. Reduce the output size or close memory-intensive applications and try again."
+
+msgid "ui.failure.operation.metro"
+msgstr "Metro map generation failed"
+
+msgid "ui.failure.operation.preview"
+msgstr "Map preview generation failed"
+
+msgid "ui.failure.operation.export"
+msgstr "Map export failed"
+
+msgid "ui.failure.operation.open"
+msgstr "Map opening failed"
+
+msgid "ui.failure.operation.operation"
+msgstr "Operation failed"
+
+msgid "ui.failure.city_json"
+msgstr "The city file contains invalid JSON. Export it again from the game; if it still fails, report the error details to the author."

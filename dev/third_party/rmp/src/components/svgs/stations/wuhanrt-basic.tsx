@@ -1,4 +1,5 @@
-import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
+import RmgFields, { StationField as RmgFieldsField } from '../../panels/details/station-fields';
+
 import { MonoColour } from '@railmapgen/rmg-palette-resources';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -75,7 +76,8 @@ const WuhanRTBasicStation = (props: StationComponentProps) => {
     const { canDrag, dragHandlers, previewPreciseNameOffsets } = useDraggableStationName<StationAttributes>(
         id,
         StationType.WuhanRTBasic,
-        defaultNameLayout
+        defaultNameLayout,
+        attrs
     );
     const nameLayout = previewPreciseNameOffsets ?? preciseNameOffsets ?? defaultNameLayout;
 
@@ -168,6 +170,7 @@ const wuhanRTBasicAttrsComponent = (props: AttrsProps<WuhanRTBasicStationAttribu
         {
             type: 'textarea',
             label: t('panel.details.stations.common.nameZh'),
+            cmmSection: 'name',
             value: attrs.names[0],
             onChange: val => {
                 attrs.names[0] = val;
@@ -178,6 +181,7 @@ const wuhanRTBasicAttrsComponent = (props: AttrsProps<WuhanRTBasicStationAttribu
         {
             type: 'textarea',
             label: t('panel.details.stations.common.nameEn'),
+            cmmSection: 'name',
             value: attrs.names.at(1) ?? defaultWuhanRTBasicStationAttributes.names[1],
             onChange: val => {
                 attrs.names[1] = val;
@@ -188,12 +192,14 @@ const wuhanRTBasicAttrsComponent = (props: AttrsProps<WuhanRTBasicStationAttribu
         {
             type: 'custom',
             label: '',
+            cmmSection: 'name',
             component: <StationNameTranslateButton id={id} attrs={attrs} handleAttrsUpdate={handleAttrsUpdate} />,
             minW: 'full',
         },
         {
             type: 'select',
             label: t('panel.details.stations.common.nameOffsetX'),
+            cmmSection: 'position',
             value: nameOffsetXSelect.value,
             options: nameOffsetXSelect.options,
             disabledOptions: nameOffsetXSelect.disabledOptions,
@@ -207,6 +213,7 @@ const wuhanRTBasicAttrsComponent = (props: AttrsProps<WuhanRTBasicStationAttribu
         {
             type: 'select',
             label: t('panel.details.stations.common.nameOffsetY'),
+            cmmSection: 'position',
             value: nameOffsetYSelect.value,
             options: nameOffsetYSelect.options,
             disabledOptions: nameOffsetYSelect.disabledOptions,
@@ -220,6 +227,7 @@ const wuhanRTBasicAttrsComponent = (props: AttrsProps<WuhanRTBasicStationAttribu
         {
             type: 'custom',
             label: t('color'),
+            cmmSection: 'appearance',
             component: (
                 <ColorField type={StationType.WuhanRTBasic} defaultTheme={defaultWuhanRTBasicStationAttributes.color} />
             ),

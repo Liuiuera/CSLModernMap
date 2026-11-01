@@ -42,8 +42,8 @@ class TrafficLane:
     lane_type: str = ""            # 车辆、行人、停车等类别。
     position: float = 0.0          # 相对道路中心线横向偏移（米）
     width: float = 0.0             # 车道宽（米）
-    speed: float = 0.0             # 真实车速 m/s（= relativeSpeed × maxSpeed）
-    max_speed: float = 0.0
+    speed: float = 0.0             # 旧 CS1 快照的游戏速度单位，不用于推算 ETA。
+    max_speed: float = 0.0         # 旧 CS1 预设限速；1 = 50 km/h。
     relative_speed: float = -1.0   # [0,1]，无统计 = -1
     vehicle_count: int = 0
     congestion: float = -1.0       # [0,1]，非机动车道/无统计 = -1
@@ -118,6 +118,12 @@ class TrafficSegment:
                 continue
             buckets.setdefault(key, []).append(lane)
         return buckets
+
+    def directional_congestion(self, buckets=None) -> Dict[str, float]:
+        """与路况色带、导航共用的分方向宽度加权拥堵值。"""
+        return {direction: sum(lane.congestion * lane.width for lane in lanes)
+                / sum(lane.width for lane in lanes)
+                for direction, lanes in (self.directional_lanes() if buckets is None else buckets).items()}
 
     def direction_offset(self, direction: str, lanes: List[TrafficLane] | None = None
                          ) -> float:

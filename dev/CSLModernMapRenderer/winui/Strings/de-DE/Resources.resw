@@ -12,6 +12,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
   </resheader>
+  <data name="RmpEditor_VisualAdjustmentHint" xml:space="preserve"><value>Einige Linien müssen möglicherweise angepasst werden, um das beste visuelle Ergebnis zu erzielen.</value></data>
   <data name="AppearanceControls_Create_0BB1EFDA65" xml:space="preserve">
     <value>{0}: Wert zwischen {1} und {2} eingeben.</value>
     <comment>AppearanceControls.cs:81</comment>
@@ -4440,4 +4441,33 @@ Beispielstraße: 16 m, Rendermultiplikator 1</value>
   <data name="Map_RotateClockwise" xml:space="preserve">
     <value>90° im Uhrzeigersinn</value>
   </data>
+  <data name="Failure_Internal" xml:space="preserve"><value>An unexpected error occurred. You can report this error to the author.</value></data>
+  <data name="Failure_Operation" xml:space="preserve"><value>Operation failed</value></data>
+  <data name="Failure_Metro" xml:space="preserve"><value>Metro map generation failed</value></data>
+  <data name="Failure_Export" xml:space="preserve"><value>Map export failed</value></data>
+  <data name="Failure_Permission" xml:space="preserve"><value>A required file could not be accessed. Check file or folder permissions and try again.</value></data>
+  <data name="Failure_MissingFile" xml:space="preserve"><value>A required file was not found. Check its location and try again.</value></data>
+  <data name="Failure_Memory" xml:space="preserve"><value>Memory allocation failed. Reduce the output size or close memory-intensive applications and try again.</value></data>
+  <data name="Failure_EngineStopped" xml:space="preserve"><value>The rendering engine has stopped. Reopen the viewer and try again.</value></data>
+  <data name="Failure_ViewDetails" xml:space="preserve"><value>View details</value></data>
+  <data name="Failure_CopyDetails" xml:space="preserve"><value>Copy error details</value></data>
+  <data name="Failure_Close" xml:space="preserve"><value>Close</value></data>
+  <data name="Failure_Copied" xml:space="preserve"><value>Copied</value></data>
+  <data name="Failure_CopyFailed" xml:space="preserve"><value>Copy failed. Please try again.</value></data>
+  <data name="Ribbon_MoreLayers" xml:space="preserve"><value>Weitere Ebenen</value></data>
+  <data name="Ribbon_Simplified" xml:space="preserve"><value>Vereinfacht</value></data>
+  <data name="Ribbon_Classic" xml:space="preserve"><value>Klassisch</value></data>
+  <data name="Sidebar_ShowSettings" xml:space="preserve"><value>Linken Bereich anzeigen</value></data>
+  <data name="Sidebar_HideSettings" xml:space="preserve"><value>Linken Bereich ausblenden</value></data>
+  <data name="Sidebar_ShowInspector" xml:space="preserve"><value>Rechten Bereich anzeigen</value></data>
+  <data name="Sidebar_HideInspector" xml:space="preserve"><value>Rechten Bereich ausblenden</value></data>
+  <data name="Ribbon_IntroTitle" xml:space="preserve"><value>Den neuen vereinfachten Modus ausprobieren</value></data>
+  <data name="Ribbon_IntroDescription" xml:space="preserve"><value>Der vereinfachte Modus macht das Erkunden der Karte angenehmer und einfacher. Sie können jederzeit zum klassischen Modus zurückwechseln.</value></data>
+  <data name="Ribbon_IntroTry" xml:space="preserve"><value>Vereinfachten Modus testen</value></data>
+  <data name="Ribbon_IntroLater" xml:space="preserve"><value>Jetzt nicht</value></data>
+  <data name="RmpEditor_showNames" xml:space="preserve"><value>Show station names</value></data>
+  <data name="RmpEditor_showDefaultNames" xml:space="preserve"><value>Show default station names</value></data>
+  <data name="Poi_ShowDecorative" xml:space="preserve"><value>Dekorative POIs anzeigen</value></data>
+  <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>Symbole und Namen erfasster Dekorationen anzeigen. Gebäude und Kartenobjekte bleiben sichtbar.</value></data>
+  <data name="MetroSettings_Reset" xml:space="preserve"><value>Standardwerte wiederherstellen</value></data>
 </root>

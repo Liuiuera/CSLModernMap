@@ -108,7 +108,7 @@
   "gui.dialog.custom_resolution.prompt": "Comprimento da borda de saída (pixels)",
   "gui.dialog.layer_settings": "Configurações de camada",
   "gui.dialog.open_city": "Abrir arquivo de cidade",
-  "gui.dialog.open_city.filter": "Mapa da cidade (*.mmap.gz *.mmap *.cmm.gz *.cmm *.cmm.json)",
+  "gui.dialog.open_city.filter": "Mapa da cidade (*.mmap.gz *.mmap *.cslmap.gz *.cslmap *.cmm.gz *.cmm *.cmm.json)",
   "gui.dialog.save": "Salvar",
   "gui.dialog.save_png_filter": "Imagem PNG (*.png)",
   "gui.editor.airport": "Aeroporto",

@@ -3,8 +3,14 @@ import { i18n, setLanguage } from './i18n';
 import * as maplibregl from 'maplibre-gl';
 import { type ExpressionSpecification, type Map as MapLibreMap, type Marker } from 'maplibre-gl';
 import './style.css';
+import {stationAnchors, stationFacilityOffset, stationIconOffset} from './poi-anchors';
 import { setUiAppearance } from './ui-appearance';
 import { SurfaceDistanceLayer, type SurfaceDistanceSpec } from './surface-distance-layer';
+import { NavigationControl } from './routing/ui';
+import { Preview3D, BUILDINGS_3D, CAMERA_TRANSITION_MS } from './preview-3d';
+import { PreviewControls } from './preview-controls';
+import { trafficColor as trafficColorExpression } from './traffic-paint';
+import type { Edge, Endpoint, NavigationPackage } from './routing/types';
 
 // 单文件导出模式：整份场景（manifest + sources + 图片）已内联在
 // window.__CSL_SCENE__ 中，worker 源码由 __CSL_SCENE_WORKER_SRC__ 提供。
@@ -28,12 +34,17 @@ type RoadPaint = { fill: string; border: string; minFillPx: number; borderFixedP
 type RoadTheme = { background: string; widthScale: number; levels: Record<string, RoadPaint> };
 type FullTheme = Record<string, any> & { road: RoadTheme };
 type SceneManifest = { schemaVersion: number; sceneId: string; revision: number;
+  roadOrder?: {flatGroups?: unknown[]};
   world: { bounds?: [number, number, number, number]; geoBounds: [[number, number], [number, number]] }; sources: Record<string, string>;
   sourceRevisions: Record<string, number>; poiAtlas: { image: string; index: string };
   fonts?: Record<string, {family: string; url: string}>;
+  navigation?: {schemaVersion: number; url: string};
+  navigationRoute?: Record<string, unknown>;
+  navigationRouteOmitted?: string;
   initialRegion?: [number, number, number, number];
   exportRegion?: [number, number, number, number];
   rotation?: number;
+  view?: { mode: string; options: Record<string, any> };
   terrainCorners?: [number, number][] | null;
   surfaceFields?: {
     builtArea?: SurfaceDistanceSpec & { url: string; color?: string; bufferMeters?: number; edgeMeters?: number };
@@ -44,7 +55,7 @@ type PreviewCommand = { type: string; sceneId?: string; revision?: number; manif
   preset?: string; bounds?: [[number, number], [number, number]];
   options?: Record<string, any>; appearance?: 'light' | 'dark';
   text?: string; language?: string; rotation?: number; worldBounds?: [number, number, number, number];
-  featureId?: string; selection?: any };
+  featureId?: string; selection?: any; layers?: Record<string, boolean>; enabled?: boolean; guideAvailable?: boolean; pendingLayers?: string[] };
 // 单文件导出：整份场景内联数据的结构（与 web_export_v2.py 的 payload 对应）
 type EmbeddedPayload = {
   manifest: SceneManifest;
@@ -119,14 +130,15 @@ const sourceIds: Record<string, string> = { roads: 'roads',
   water: 'water', railway: 'railway', transit: 'transit', stations: 'stations', traffic: 'traffic',
   districts: 'districts', zones: 'zones', pois: 'pois',
   transitViewPois: 'transit-view-pois', labels: 'labels',
-  proceduralObjects: 'procedural-objects', inspectorSelection: 'inspector-selection' };
+  proceduralObjects: 'procedural-objects', inspectorSelection: 'inspector-selection', searchSelection: 'search-selection' };
 const groups: Record<string, string[]> = {
   terrain: ['terrain', 'forest'], built_area: ['built-area', 'built-area-surface'], poi_area: ['poi-area'], land_use: ['land-use'],
   water: ['water-fill', 'water-shore'], building: ['buildings'],
   road: [], railway: [
       'railway-base', 'railway-dash-metro', 'railway-dash-tram',
       'railway-dash-cablecar', 'railway-dash-monorail', 'railway-dash-train',
-      'railway-station'], traffic: ['traffic-casing', 'traffic', 'traffic-lights'],
+      'railway-station'], traffic: ['traffic-base', 'traffic-forward-casing', 'traffic-backward-casing',
+      'traffic-forward-fill', 'traffic-backward-fill'],
   transit: ['tv-line', 'tv-station', 'tv-poi'],
   metro: ['transit', 'stations'],
   district: ['district-fill', 'district-border'], zone: ['zone-fill', 'zone-border'],
@@ -139,22 +151,42 @@ const renderGroups: Record<string, string[]> = {
   road: [],
   railway: ['railway-base', 'railway-dash-metro', 'railway-dash-tram',
     'railway-dash-cablecar', 'railway-dash-monorail', 'railway-dash-train',
-    'railway-station'], traffic: ['traffic-casing', 'traffic', 'traffic-lights'],
+    'railway-station'], traffic: ['traffic-base', 'traffic-forward-casing', 'traffic-backward-casing',
+      'traffic-forward-fill', 'traffic-backward-fill'],
   procedural_objects: ['procedural-objects'], district: ['district-fill', 'district-border'],
   zone: ['zone-fill', 'zone-border'],
   transit: ['transit', 'stations', 'tv-line', 'tv-station'],
   poi: ['pois', 'transit-pois', 'tv-poi'], label: ['district-labels', 'zone-labels', 'road-labels'], watermark: [],
 };
 const customLayers: string[] = [];
-let markers: Array<{ marker: Marker; group: string; labelType: string; featureColor?: string; transitStationName?: boolean }> = [];
+type LabelMarker = {marker: Marker; group: string; labelType: string; featureColor?: string; transitStationName?: boolean};
+const markers = new Map<string, LabelMarker>();
 let currentSceneId = '', currentRevision = -1, loadGeneration = 0;
 let focusAnimationGeneration = 0;
 let sourceData: Record<string, any> = {};
+let mapPoiDisplayFeatures: any[] = [];
+let transitPoiDisplayFeatures: any[] = [];
+const navigationRoadProperties = new Map<string, Record<string, any>>();
+let sceneProvider: ResourceProvider | null = null;
+let trafficRequest: AbortController | null = null;
+let trafficSourceRevision: number | null = null;
 let transitStationDisplayFeatures: any[] = [];
 const registeredIcons = new Set<string>();
 let labelLayoutKey = '';
+let labelLayoutTime = -Infinity, labelTimer = 0, labelDirty = false;
+let poiAnchorInputs: unknown[] = [];
+const labelMeasure = document.createElement('canvas').getContext('2d')!;
+const labelWidths = new Map<string, {font: string; width: number}>();
 const loadedFonts = new Set<string>();
 let currentManifest: SceneManifest | null = null, currentTheme: FullTheme | null = null;
+const roadWarning = document.createElement('div');
+roadWarning.className = 'road-warning'; roadWarning.hidden = true;
+roadWarning.setAttribute('role', 'status'); document.body.appendChild(roadWarning);
+function updateRoadWarning(): void {
+  roadWarning.hidden = !EMBEDDED || !currentManifest?.roadOrder?.flatGroups?.length;
+  roadWarning.textContent = roadWarning.hidden ? '' : i18n.t('roads_local_flat_fallback');
+}
+i18n.on('languageChanged', updateRoadWarning);
 let selectedWorldBounds: [number, number, number, number] | null = null;
 let selectionStart: { x: number; y: number } | null = null, selectionMode = false;
 let suppressNextClick = false;
@@ -179,10 +211,54 @@ function reportError(error: unknown): void { const message = error instanceof Er
 const map: MapLibreMap = new maplibregl.Map({ container: 'map', style: { version: 8, sources: {},
   layers: [{ id: 'background', type: 'background', paint: { 'background-color': '#eef1f4' } }] },
   center: [0, 0], zoom: 12, minZoom: 8, maxZoom: 24, attributionControl: false,
-  renderWorldCopies: false, pitchWithRotate: false, dragRotate: false,
+  renderWorldCopies: false, pitchWithRotate: false, dragRotate: false, maxPitch: 60,
   localIdeographFontFamily: false });
-map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
 map.addControl(new maplibregl.ScaleControl({ maxWidth: 140, unit: 'metric' }), 'bottom-left');
+const preview3d = new Preview3D(() => outputBearing(outputRotation), dismissHint);
+map.addControl(preview3d, 'bottom-right');
+const navigation: NavigationControl = new NavigationControl(map,
+  () => selectionMode || selectionStart !== null, () => {
+    if (!currentManifest || currentManifest.layers.traffic === false) return;
+    void setLayerVisibility('traffic', false).catch(reportError);
+    postEvent('navigationStarted');
+  }, navigationPlaceAt, {properties: navigationRoadStyle, width: navigationWidth, widthMeters: navigationWidthMeters}, preview3d);
+preview3d.onToggle = enabled => navigation.simulation.set3DEnabled(enabled);
+let quickLayersEnabled = EMBEDDED;
+const previewControls = new PreviewControls(navigation, feature => {
+  navigation.simulation.stop(); dismissHint(); locateGeometry(feature.geometry);
+  setFeatureHighlight('search-selection', feature);
+}, (layer, visible) => {
+  if (EMBEDDED) {
+    void setLayerVisibility(layer, visible).catch(reportError).finally(() => updateQuickLayers(true));
+  } else postEvent('requestLayerVisibility', {layer, visible});
+}, () => fitBounds(CAMERA_TRANSITION_MS), delta => {
+  navigation.simulation.stop(); map.zoomTo(map.getZoom() + delta);
+}, type => {
+  if (type === 'mapInteractionGuideOpened') { navigation.simulation.stop(); dismissHint(); }
+  postEvent(type);
+}, () => map.getCanvas().focus(), EMBEDDED);
+map.addControl(previewControls.viewControl, 'bottom-right');
+function updateZoomControls(): void {
+  previewControls.setZoomAvailability(map.getZoom() < map.getMaxZoom(), map.getZoom() > map.getMinZoom());
+}
+map.on('zoom', updateZoomControls); updateZoomControls();
+
+function updateQuickLayers(settled = false, pending?: string[]): void {
+  if (!currentManifest) return;
+  const sources = currentManifest.sources;
+  const available = new Set<string>(['label', 'watermark']);
+  const sourceGroups: Record<string, string[]> = {
+    terrain: ['terrain', 'forest'], built_area: ['builtArea'], land_use: ['landUse'], water: ['water'],
+    road: ['roads'], building: ['buildings'], railway: ['railway'], traffic: ['traffic'],
+    metro: ['transit', 'stations'], transit: ['transit', 'stations'], poi_area: ['buildings'],
+    poi: ['pois', 'transitViewPois'], district: ['districts'], zone: ['zones'], procedural_objects: ['proceduralObjects'],
+  };
+  for (const [key, names] of Object.entries(sourceGroups)) if (names.some(name => name in sources)) available.add(key);
+  available.delete(contextMode === 'transit' ? 'metro' : 'transit');
+  if (currentManifest.terrainCorners?.length) available.add('terrain');
+  if (currentManifest.surfaceFields?.builtArea) available.add('built_area');
+  previewControls.setLayers(currentManifest.layers, available, quickLayersEnabled, settled, pending);
+}
 
 const token = (name: string): Record<string, any> => currentTheme?.[name] ?? {};
 function add(layer: any): void { map.addLayer(layer); customLayers.push(layer.id); }
@@ -205,6 +281,7 @@ function applyRenderStack(): void {
       if (map.getLayer(id)) map.moveLayer(id, overlay);
     }
   }
+  preview3d.refresh();
 }
 function categoryColor(values: Record<string, unknown>, fallback: string): string | ExpressionSpecification {
   const entries = Object.entries(values ?? {});
@@ -240,6 +317,29 @@ function fillWidth(): ExpressionSpecification {
 function casingWidth(): ExpressionSpecification {
   return ['interpolate', ['exponential', 2], ['zoom'], ...Array.from({length: 25}, (_, z) => [z, widthAt(z, true)]).flat()] as ExpressionSpecification;
 }
+function navigationRoadStyle(edge: Edge): Record<string, unknown> {
+  const properties = navigationRoadProperties.get(edge.sourceSegmentId);
+  return {physicalWidth: properties?.physicalWidth ?? edge.widthM ?? 0,
+    styleKey: properties?.styleKey ?? `${edge.level}:${edge.mode.toLowerCase()}`,
+    surfaceWidth: properties?.geometryRole === 'road-surface' ? properties.physicalWidth : 0};
+}
+function navigationWidth(casing: boolean): ExpressionSpecification {
+  return ['interpolate', ['exponential', 2], ['zoom'], ...Array.from({length: 25}, (_, z) => [z,
+    ['case', ['==', ['get', 'mode'], 'RIDE'], casing ? 10 : 6,
+      ['+', casing ? 6 : 0, ['case', ['>', ['get', 'surfaceWidth'], 0],
+        ['*', ['get', 'surfaceWidth'], Math.pow(2, z)/MPP0*WEB_MERCATOR_METERS_PER_DEGREE/LOCAL_METERS_PER_DEGREE],
+        widthAt(z)]]]
+  ]).flat()] as ExpressionSpecification;
+}
+function navigationWidthMeters(edge: Edge): number {
+  const properties = navigationRoadStyle(edge);
+  // MapLibre 的地面投影使用 512px 瓦片；既有路线宽度表达式沿用 256px 基准。
+  if (Number(properties.surfaceWidth) > 0) return Number(properties.surfaceWidth)/2;
+  const paint = currentTheme?.road.levels?.[String(properties.styleKey)];
+  const ppm = 2**18/MPP0*WEB_MERCATOR_METERS_PER_DEGREE/LOCAL_METERS_PER_DEGREE;
+  const physical = Number(properties.physicalWidth)*(currentTheme?.road.widthScale ?? .15)*WORLD_SIZE_METERS/REFERENCE_RENDER_PX;
+  return Math.max(paint?.minFillPx ?? .8, .5+physical*ppm)/(ppm*2);
+}
 // 表面多边形已包含道路宽度，边界只绘制外沿，同时保留固定像素和缩放宽度。
 function borderWidth(): ExpressionSpecification {
   return ['interpolate', ['exponential', 2], ['zoom'], ...Array.from({length: 25}, (_, z) => [z,
@@ -251,20 +351,30 @@ function enabledFilter(): ExpressionSpecification { const value: unknown[] = ['m
 const role = (name: string): ExpressionSpecification => ['all', enabledFilter(), ['==', ['get', 'geometryRole'], name]];
 
 type RoadLayer = {id: string; role: string; rank: number; type: 'line' | 'fill';
-  paint: 'border' | 'fill'; width?: 'border' | 'casing' | 'fill'};
+  paint: 'border' | 'fill'; width?: 'border' | 'casing' | 'fill'; flatOrder?: number};
 function roadLineWidth(width: RoadLayer['width']): ExpressionSpecification {
   return width === 'border' ? borderWidth() : width === 'casing' ? casingWidth() : fillWidth();
 }
 let roadLayers: RoadLayer[] = [];
 function roadFilter(layer: RoadLayer): ExpressionSpecification {
-  return ['all', role(layer.role), ['==', ['coalesce', ['get', 'rank'], 0], layer.rank]];
+  return ['all', role(layer.role), ['==', ['coalesce', ['get', 'rank'], 0], layer.rank],
+    layer.flatOrder === undefined ? ['!', ['has', 'flatGroup']]
+      : ['all', ['has', 'flatGroup'], ['==', ['get', 'sortKey'], layer.flatOrder]]];
 }
 function addRoads(): void {
   const rolesByRank = new Map<number, Set<string>>();
+  const flatRolesByRank = new Map<number, Map<number, Set<string>>>();
   for (const feature of sourceData.roads?.features ?? []) {
     const rank = Number(feature.properties?.rank ?? 0);
     if (!rolesByRank.has(rank)) rolesByRank.set(rank, new Set());
     rolesByRank.get(rank)!.add(String(feature.properties?.geometryRole));
+    const p = feature.properties;
+    if (p?.flatGroup !== undefined) {
+      if (!flatRolesByRank.has(rank)) flatRolesByRank.set(rank, new Map());
+      const orders = flatRolesByRank.get(rank)!;
+      if (!orders.has(p.sortKey)) orders.set(p.sortKey, new Set());
+      orders.get(p.sortKey)!.add(p.geometryRole);
+    }
   }
   const ranks = [...rolesByRank.keys()].sort((a, b) => a-b);
   roadLayers = [];
@@ -281,9 +391,18 @@ function addRoads(): void {
       ['road-piece-fill', 'road-piece', 'line', 'fill', 'fill'],
       ['road-transition-fill', 'road-transition', 'line', 'fill', 'fill'],
     ] as const;
-    for (const [base, geometryRole, type, paint, width] of definitions) {
+    const flatRoles = flatRolesByRank.get(rank) ?? new Map<number, Set<string>>();
+    const variants: Array<{definition: typeof definitions[number]; flatOrder?: number}> =
+      definitions.map(definition => ({definition}));
+    for (const [flatOrder, roles] of [...flatRoles].sort((a, b) => a[0]-b[0]))
+      for (const definition of definitions)
+        if (roles.has(definition[1])) variants.push({definition, flatOrder});
+    // 回退组内的原生路面与中心线必须共用样式顺序，不能由图元类型决定覆盖。
+    variants.sort((a, b) => Number(a.definition[3] === 'fill')-Number(b.definition[3] === 'fill'));
+    for (const {definition: [base, geometryRole, type, paint, width], flatOrder} of variants) {
       if (!rolesByRank.get(rank)?.has(geometryRole)) continue;
-      const layer: RoadLayer = {id: base+suffix, role: geometryRole, rank, type, paint, width};
+      const layer: RoadLayer = {id: base+suffix+(flatOrder === undefined ? '' : `-flat-${flatOrder}`),
+        role: geometryRole, rank, type, paint, width, flatOrder};
       roadLayers.push(layer);
       add({id: layer.id, type, source: 'roads', filter: roadFilter(layer),
         layout: type === 'fill' ? {'fill-sort-key': ['get', 'sortKey']} : {
@@ -316,10 +435,14 @@ function buildingColor(): ExpressionSpecification {
   const fallback = building.fill ?? '#D8D2C6';
   if (building.colorMode === 'uniform') return fallback;
   const poiColor = ['get', 'poiColor'] as ExpressionSpecification;
-  return ['case', ['==', poiColor, null], fallback,
+  const automatic = ['case', ['==', poiColor, null], fallback,
     ['interpolate', ['linear'], ['literal', Number(
       building.poiTintMixWhite ?? .7)],
     0, ['to-color', poiColor], 1, '#ffffff']] as ExpressionSpecification;
+  const colors = Object.entries(building.categoryColors ?? {});
+  if (building.colorMode !== 'category' || colors.length === 0) return automatic;
+  return ['match', ['get', 'colorCategory'],
+    ...colors.flatMap(([category, color]) => [category, color]), automatic] as unknown as ExpressionSpecification;
 }
 function effectivePoiIcons(): Record<string, boolean> {
   const icons = {...(token('poiVisibility').icons ?? {})} as Record<string, boolean>;
@@ -336,22 +459,14 @@ function poiVisibilityFilter(): ExpressionSpecification {
     .filter(group => icons[group] === false)
     .map<ExpressionSpecification>(group => ['!', ['in', group, ['coalesce', ['get', 'visibilityGroups'], ['literal', []]]]])];
 }
-function poiFeatureVisible(feature: any): boolean {
-  const properties = feature.properties ?? {};
-  const group = properties.visibilityGroup ?? properties.poiGroup
-    ?? (properties.owner === 'transit' ? 'transit' : 'ordinary');
-  const icons = effectivePoiIcons();
-  return poiLineSelected(feature) && icons[group] !== false && (properties.visibilityGroups ?? [])
-    .every((required: string) => icons[required] !== false);
-}
 function poiFilter(): ExpressionSpecification {
-  const zoom = Math.floor(map.getZoom());
+  const zoom: ExpressionSpecification = ['zoom'];
   return ['all', poiVisibilityFilter(), ['!=', ['get', 'owner'], 'transit'],
     ['<=', ['get', 'minZoom'], zoom], ['in', zoom, ['get', 'visibleZooms']]];
 }
 function transitPoiFilter(): ExpressionSpecification {
   if (contextMode === 'transit') return alwaysFalseFilter();
-  const zoom = Math.floor(map.getZoom());
+  const zoom: ExpressionSpecification = ['zoom'];
   return ['all', poiVisibilityFilter(), ['==', ['get', 'owner'], 'transit'],
     ['<=', ['get', 'minZoom'], zoom], ['in', zoom, ['get', 'visibleZooms']]];
 }
@@ -364,11 +479,6 @@ function selectedTransitRouteIds(): number[] {
     .filter((feature: any) => (typeValues == null || requestedTypes.has(String(feature.properties?.kind ?? '').toLowerCase()))
       && (requestedIds === null || requestedIds.has(Number(feature.properties?.lineId))))
     .map((feature: any) => Number(feature.properties?.lineId));
-}
-function poiLineSelected(feature: any): boolean {
-  if (feature.properties?.lineRelated !== true) return true;
-  const ids = new Set(selectedTransitRouteIds());
-  return (feature.properties.servingLineIds ?? []).some((id: number) => ids.has(Number(id)));
 }
 function poiLineSelectionFilter(): ExpressionSpecification {
   const ids = selectedTransitRouteIds();
@@ -388,89 +498,58 @@ function transitViewLineFilter(): ExpressionSpecification {
 function alwaysFalseFilter(): ExpressionSpecification {
   return ['==', ['get', 'featureId'], ''] as unknown as ExpressionSpecification;
 }
-type TransitScreenBox = [number, number, number, number];
-function screenBoxesOverlap(a: TransitScreenBox, b: TransitScreenBox): boolean {
-  return a[0] < b[2] && b[0] < a[2] && a[1] < b[3] && b[1] < a[3];
+function transitViewPoiFilter(): ExpressionSpecification {
+  const zoom: ExpressionSpecification = ['zoom'];
+  return ['all', poiVisibilityFilter(), ['<=', ['coalesce', ['get', 'minZoom'], 0], zoom],
+    ['any', ['==', ['get', 'iconStatus'], 'empty'], ['in', zoom, ['get', 'visibleZooms']]]];
 }
-function transitViewPoiFeatures(): any[] {
-  if (contextOptions.facilities_enabled === false
-      || (contextOptions.layers ?? {}).facilities === false) return [];
-  const compact = String(contextOptions.facility_density ?? 'all') === 'auto';
-  const zoom = map.getZoom();
-  const globalMinZoom = Number(contextOptions.facility_min_zoom ?? 8);
-  const densityDelay = compact ? 1 : 0;
-  return (sourceData.transitViewPois?.features ?? [])
-    .filter((feature: any) => feature.geometry?.type === 'Point'
-      && poiFeatureVisible(feature)
-      && zoom >= Math.max(globalMinZoom,
-        Number(feature.properties?.minZoom ?? 8) + densityDelay));
+function updatePoiFilters(): void {
+  for (const [id, filter] of [['pois', poiFilter()], ['transit-pois', transitPoiFilter()],
+    ['tv-poi', transitViewPoiFilter()]] as const) if (map.getLayer(id)) map.setFilter(id, filter);
 }
 function updateTransitViewLayout(): void {
   const stationSource = map.getSource('transit-view-stations') as maplibregl.GeoJSONSource | undefined;
   const poiSource = map.getSource('transit-view-pois-displaced') as maplibregl.GeoJSONSource | undefined;
-  if (!stationSource || !poiSource) return;
-  const stations = (sourceData.stations?.features ?? [])
-    .filter(stationFeatureVisible)
-    .sort((a: any, b: any) => Number(b.properties?.servingLineCount ?? 0)
-      - Number(a.properties?.servingLineCount ?? 0));
+  const mapSource = map.getSource('map-pois-displaced') as maplibregl.GeoJSONSource | undefined;
+  const inputs = [sourceData.stations, sourceData.pois, sourceData.transitViewPois, sourceData.transit,
+    JSON.stringify([contextOptions.line_ids, contextOptions.types, contextOptions.stations,
+      currentManifest?.layers.metro, contextMode])];
+  if (inputs.every((value, index) => value === poiAnchorInputs[index])) return;
+  poiAnchorInputs = inputs;
+  const visible = stationVisibility();
+  const stations = (sourceData.stations?.features ?? []).filter(visible)
+    .sort((a: any, b: any) => Number(b.properties?.servingLineCount ?? 0) - Number(a.properties?.servingLineCount ?? 0));
   transitStationDisplayFeatures = stations;
-  stationSource.setData({type: 'FeatureCollection', features: stations});
-  const compact = String(contextOptions.facility_density ?? 'all') === 'auto';
-  const stationRadius = Math.max(3, Number(
-    contextOptions.station_size ?? token('transit').stationSize ?? 8) / 2) + 3;
-  const stationsVisible = contextOptions.stations !== false
-    && (contextOptions.layers ?? {}).stations !== false;
-  const occupied: TransitScreenBox[] = stationsVisible ? stations.map((feature: any): TransitScreenBox => {
-    const point = map.project(feature.geometry.coordinates as [number, number]);
-    return [point.x-stationRadius, point.y-stationRadius,
-      point.x+stationRadius, point.y+stationRadius];
-  }) : [];
-  const iconRadius = Math.max(8, Number(contextOptions.facility_icon_size ?? 24) / 2)
-    + (compact ? 7 : 3);
-  const gap = compact ? 7 : 3;
-  const firstRing = Math.max(12, Math.max(8,
-    Number(contextOptions.facility_icon_size ?? 24) / 2) + stationRadius + gap);
-  const ringStep = Math.max(8, iconRadius * 2 + gap);
-  const result: any[] = [];
-  const pois = [...transitViewPoiFeatures()].sort((a: any, b: any) =>
-    Number(b.properties?.transitPriority ?? b.properties?.priority ?? 0)
-      - Number(a.properties?.transitPriority ?? a.properties?.priority ?? 0));
-  for (const feature of pois) {
-    if (feature.geometry?.type !== 'Point') continue;
-    const origin = map.project(feature.geometry.coordinates as [number, number]);
-    let chosen = {x: origin.x, y: origin.y};
-    const fits = (x: number, y: number): boolean => {
-      const box: TransitScreenBox = [x-iconRadius, y-iconRadius,
-        x+iconRadius, y+iconRadius];
-      // 布局不依赖视口边缘；平移时相同要素在同一缩放级别保持稳定偏移。
-      return !occupied.some(other => screenBoxesOverlap(box, other));
-    };
-    if (!fits(origin.x, origin.y)) {
-      let found = false;
-      // 站点圆心是精确地理锚点，应向外寻找最近图标位置，不移动或隐藏站点圆。
-      for (let ring = 0; ring < 8 && !found; ring++) {
-        const distance = firstRing + ring * ringStep;
-        for (let direction = 0; direction < 8; direction++) {
-          const angle = -Math.PI / 2 + direction * Math.PI / 4;
-          const x = origin.x + Math.cos(angle) * distance;
-          const y = origin.y + Math.sin(angle) * distance;
-          if (!fits(x, y)) continue;
-          chosen = {x, y}; found = true; break;
-        }
-      }
-    }
-    const box: TransitScreenBox = [chosen.x-iconRadius, chosen.y-iconRadius,
-      chosen.x+iconRadius, chosen.y+iconRadius];
-    occupied.push(box);
-    const coordinates = map.unproject([chosen.x, chosen.y]).toArray();
-    result.push({...feature, geometry: {...feature.geometry, coordinates}});
+  mapPoiDisplayFeatures = stationAnchors(sourceData.pois?.features ?? [], stations,
+    contextOptions.stations !== false && currentManifest?.layers.metro !== false);
+  mapSource?.setData({type: 'FeatureCollection', features: mapPoiDisplayFeatures});
+  if (contextMode === 'transit') {
+    stationSource?.setData({type: 'FeatureCollection', features: stations});
+    transitPoiDisplayFeatures = stationAnchors(sourceData.transitViewPois?.features ?? [], stations,
+      contextOptions.stations !== false);
+    poiSource?.setData({type: 'FeatureCollection', features: transitPoiDisplayFeatures});
   }
-  poiSource.setData({type: 'FeatureCollection', features: result});
   labelLayoutKey = '';
 }
+function poiDimensions(transit: boolean): [number, number] {
+  return [Number(transit ? contextOptions.facility_icon_size ?? 24 : token('poi').size ?? 18),
+    Number(transit ? contextOptions.station_size ?? token('transit').stationSize ?? 8 : token('transit').stationSize ?? 8)];
+}
+function updatePoiOffsets(): void {
+  for (const id of ['pois', 'transit-pois', 'tv-poi']) if (map.getLayer(id))
+    map.setLayoutProperty(id, 'icon-offset', stationIconOffset(...poiDimensions(id === 'tv-poi')));
+}
+function poiScreenOffset(feature: any): [number, number] {
+  return feature.properties?.stationAnchor
+    ? stationFacilityOffset(...poiDimensions(contextMode === 'transit' && feature.properties.owner === 'transit')) : [0, 0];
+}
+function poiScreenPoint(feature: any) {
+  const point = map.project(feature.geometry.coordinates as [number, number]), offset = poiScreenOffset(feature);
+  return {x: point.x + offset[0], y: point.y + offset[1]};
+}
 function transitViewColor(): ExpressionSpecification {
-  const paletteIndex = Number(contextOptions.palette_index ?? 0);
-  if (paletteIndex <= 0 && contextOptions.auto_color !== true) return ['get', 'color'];
+  const colorMode = String(contextOptions.line_color_mode ?? 'game');
+  if (colorMode === 'game') return ['get', 'color'];
   const expression: unknown[] = ['match', ['to-number', ['get', 'lineId']]];
   const lines = sourceData.transit?.features ?? [];
   lines.forEach((feature: any, index: number) => {
@@ -482,11 +561,11 @@ function transitViewColor(): ExpressionSpecification {
 function transitViewFeatureColor(feature: any, index: number): string {
   const classic = ['#D94B4B', '#3978C5', '#2A9D69', '#E59A2F', '#8A5BB5', '#2A9DA8'];
   const soft = ['#D98282', '#729BCD', '#72B795', '#E4B46F', '#A98AC3', '#6EB6BC'];
-  const paletteIndex = Number(contextOptions.palette_index ?? 0);
-  if (paletteIndex <= 0 && contextOptions.auto_color !== true) {
+  const colorMode = String(contextOptions.line_color_mode ?? 'game');
+  if (colorMode === 'game') {
     return String(feature.properties?.color ?? '#4277C9');
   }
-  const palette = paletteIndex === 2 ? soft : classic;
+  const palette = colorMode === 'soft' ? soft : classic;
   return palette[index % palette.length];
 }
 // 公共交通视图的线路标签改成「彩底 + 自动深浅文字」（与
@@ -608,29 +687,100 @@ function paintTransitBadge(el: HTMLElement, color: string,
   el.style.color = tone.color;
   el.style.borderColor = tone.border;
 }
-/** 只画有有效拥堵值的路况色带。
- *  congestion < 0 表示"无统计"（非机动车道 / TM:PE 滑窗未积累）；线性插值会把
- *  它当成 0 涂成"畅通绿"，把没数据的路画得像一路畅通，必须挡在图层外。 */
-function trafficFilter(): ExpressionSpecification {
-  return ['all', ['==', ['get', 'geometryRole'], 'traffic'],
-    ['>=', ['to-number', ['get', 'congestion']], 0]];
+type TrafficDirection = 'forward' | 'backward';
+type TrafficLayer = {id: string; direction?: TrafficDirection; casing: boolean};
+const trafficLayers: TrafficLayer[] = [
+  {id: 'traffic-base', casing: false},
+  ...[true, false].flatMap(casing => (['forward', 'backward'] as const).map(direction => ({
+    id: `traffic-${direction}-${casing ? 'casing' : 'fill'}`, direction, casing,
+  }))),
+];
+const TRAFFIC_OUTLINE = .65;
+function trafficFilter(direction?: TrafficDirection): ExpressionSpecification {
+  return ['all', enabledFilter(), ['==', ['get', 'geometryRole'], 'traffic'],
+    ...(direction ? [['>=', ['get', `${direction}Congestion`], 0] as ExpressionSpecification] : [])
+  ] as ExpressionSpecification;
 }
-function trafficFootprintFilter(): ExpressionSpecification {
-  return ['==', ['get', 'geometryRole'], 'traffic-footprint'];
+function trafficRoadWidthAt(z: number): ExpressionSpecification {
+  // 原生路面按米投影，普通线道路沿用现有制图宽度。MapLibre 的世界瓦片为 512 px。
+  const width: ExpressionSpecification = ['case', ['==', ['get', 'surface'], true],
+    ['*', ['get', 'physicalWidth'], 2 ** z / MPP0 * 2
+      * WEB_MERCATOR_METERS_PER_DEGREE / LOCAL_METERS_PER_DEGREE], widthAt(z)];
+  return currentManifest?.layers.road === false ? ['min', 14, width] : width;
 }
-function trafficWidth(property: 'roadWidthMeters' | 'directionWidthMeters', scale: number,
-                      minimum: number): ExpressionSpecification {
+function trafficBandWidthAt(z: number): ExpressionSpecification {
+  const road = trafficRoadWidthAt(z);
+  return ['case', ['==', ['get', 'splitDirections'], true],
+    ['min', 6, ['max', .5, ['*', .34, road]]],
+    ['min', 10, ['max', .8, ['*', .8, road]]]];
+}
+function trafficMetric(direction?: TrafficDirection, casing = false, offset = false): ExpressionSpecification {
   return ['interpolate', ['exponential', 2], ['zoom'],
-    ...Array.from({length: 25}, (_, z) => [z, ['max', minimum,
-      ['*', ['get', property], scale, renderScaleAt(z)]] as ExpressionSpecification]).flat()
-  ] as ExpressionSpecification;
+    ...Array.from({length: 25}, (_, z) => {
+      const road = trafficRoadWidthAt(z), band = trafficBandWidthAt(z);
+      const outline: ExpressionSpecification = ['min', TRAFFIC_OUTLINE, ['*', .2, band]];
+      const outer: ExpressionSpecification = ['+', band, ['*', 2, outline]];
+      const side: ExpressionSpecification = ['*', direction === 'forward' ? -1 : 1,
+        ['coalesce', ['get', 'forwardSide'], 1]];
+      const shift: ExpressionSpecification = ['case', ['==', ['get', 'splitDirections'], true],
+        ['*', side, ['max', 0, ['/', ['-', road, outer], 2]]], 0];
+      return [z, offset ? shift : direction ? (casing ? outer : band) : road];
+    }).flat()] as ExpressionSpecification;
 }
-function trafficColor(traffic: Record<string, any>): ExpressionSpecification {
-  const ramp = Array.isArray(traffic.ramp) && traffic.ramp.length
-    ? traffic.ramp : [[0, '#2AA96D'], [.3, '#F2C14E'], [.6, '#EF733C'], [.85, '#C1322B'], [1, '#921519']];
-  return ['interpolate', ['linear'], ['get', 'congestion'],
-    ...ramp.flatMap((stop: unknown[]) => [Number(stop[0]), String(stop[1])])
-  ] as ExpressionSpecification;
+function trafficColor(direction: TrafficDirection): ExpressionSpecification {
+  return trafficColorExpression(['get', `${direction}Congestion`]);
+}
+function addTrafficLayers(): void {
+  // 描边统一先于色带，不为路况构建独立高低层级。
+  for (const layer of trafficLayers) {
+    add({id: layer.id, type: 'line', source: 'traffic', filter: trafficFilter(layer.direction),
+      layout: {'line-cap': 'round', 'line-join': 'round'},
+      paint: {'line-color': layer.direction ? (layer.casing ? '#52635B' : trafficColor(layer.direction)) : '#D9DDDA',
+        'line-width': trafficMetric(layer.direction, layer.casing),
+        'line-offset': layer.direction ? trafficMetric(layer.direction, false, true) : 0}});
+  }
+  updateTrafficPaint();
+}
+function updateTrafficPaint(): void {
+  if (!map.getSource('traffic')) return;
+  for (const layer of trafficLayers) {
+    map.setLayoutProperty(layer.id, 'visibility', layer.direction || currentManifest?.layers.road === false
+      ? 'visible' : 'none');
+    map.setFilter(layer.id, trafficFilter(layer.direction));
+    map.setPaintProperty(layer.id, 'line-width', trafficMetric(layer.direction, layer.casing));
+    if (layer.direction) map.setPaintProperty(layer.id, 'line-offset', trafficMetric(layer.direction, false, true));
+  }
+}
+function releaseTraffic(): void {
+  trafficRequest?.abort(); trafficRequest = null; trafficSourceRevision = null;
+  for (const id of groups.traffic) {
+    if (map.getLayer(id)) map.removeLayer(id);
+    const index = customLayers.indexOf(id);
+    if (index >= 0) customLayers.splice(index, 1);
+  }
+  if (map.getSource('traffic')) map.removeSource('traffic');
+}
+async function syncTraffic(): Promise<void> {
+  const manifest = currentManifest, provider = sceneProvider;
+  if (!manifest || !provider || manifest.layers.traffic === false || !manifest.sources.traffic) {
+    releaseTraffic(); return;
+  }
+  if (trafficSourceRevision === manifest.sourceRevisions.traffic) return;
+  releaseTraffic();
+  const request = new AbortController(); trafficRequest = request;
+  const generation = loadGeneration;
+  try {
+    const data = await provider.json(new URL(manifest.sources.traffic, provider.base), request.signal);
+    if (request.signal.aborted || generation !== loadGeneration || currentManifest !== manifest) return;
+    map.addSource('traffic', {type: 'geojson', data, maxzoom: 18, buffer: 32,
+      tolerance: .375, promoteId: 'featureId'});
+    trafficSourceRevision = manifest.sourceRevisions.traffic;
+    addTrafficLayers(); applyRenderStack(); applyContextStyling();
+  } catch (error) {
+    if (!request.signal.aborted) throw error;
+  } finally {
+    if (trafficRequest === request) trafficRequest = null;
+  }
 }
 const RAIL_TYPES = ['metro', 'tram', 'cablecar', 'monorail', 'train'] as const;
 function railTypePaint(field: string, fallback: string | number): ExpressionSpecification {
@@ -682,13 +832,18 @@ function addRailways(): void {
 function addDomains(): void {
   const land = token('terrain'), water = token('water'), building = token('building');
   const district = token('district'), zone = token('zone');
-  const traffic = token('traffic'), transit = token('transit'), use = token('land_use');
+  const transit = token('transit'), use = token('land_use');
+  updateTransitViewLayout();
   if (!map.getSource('transit-view-stations')) map.addSource('transit-view-stations', {
-    type: 'geojson', data: {type: 'FeatureCollection', features: []},
+    type: 'geojson', data: {type: 'FeatureCollection', features: contextMode === 'transit' ? transitStationDisplayFeatures : []},
     maxzoom: 24, buffer: 256, tolerance: 0, promoteId: 'featureId',
   });
   if (!map.getSource('transit-view-pois-displaced')) map.addSource('transit-view-pois-displaced', {
-    type: 'geojson', data: {type: 'FeatureCollection', features: []},
+    type: 'geojson', data: {type: 'FeatureCollection', features: transitPoiDisplayFeatures},
+    maxzoom: 24, buffer: 256, tolerance: 0, promoteId: 'featureId',
+  });
+  if (!map.getSource('map-pois-displaced')) map.addSource('map-pois-displaced', {
+    type: 'geojson', data: {type: 'FeatureCollection', features: mapPoiDisplayFeatures},
     maxzoom: 24, buffer: 256, tolerance: 0, promoteId: 'featureId',
   });
   if (map.getSource('terrain-image')) add({ id: 'terrain', type: 'raster', source: 'terrain-image',
@@ -732,22 +887,6 @@ function addDomains(): void {
     'fill-outline-color': token('procedural_objects').border ?? '#8E877C' } });
   addRailways();
   addRoads();
-  // 无数据占地和方向拥堵带沿用 PNG 物理宽度，缩放只转换世界米到屏幕像素。
-  add({ id: 'traffic-casing', type: 'line', source: 'traffic', filter: trafficFootprintFilter(),
-    layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: {
-    'line-color': traffic.noDataColor ?? '#E9EBF0',
-    'line-width': trafficWidth('roadWidthMeters', 1, Number(traffic.minLanePx ?? .5)) } });
-  add({ id: 'traffic', type: 'line', source: 'traffic', filter: trafficFilter(),
-    layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: {
-    'line-color': trafficColor(traffic),
-    'line-width': trafficWidth('directionWidthMeters', Number(traffic.widthScale ?? .5),
-      Number(traffic.minLanePx ?? .5)) } });
-  // 信号灯只在放大到能看清单个路口时出现（阈值待真机确认），
-  // 且不做成刺眼的纯绿：有灯/无灯都用低饱和色区分。
-  add({ id: 'traffic-lights', type: 'circle', source: 'traffic', minzoom: 16.5,
-    filter: ['==', ['get', 'geometryRole'], 'traffic-light'], paint: {
-      'circle-radius': 3, 'circle-color': ['case', ['get', 'active'], '#2E8B72', '#9AA3AC'],
-      'circle-stroke-color': '#fff', 'circle-stroke-width': 1 } });
   add({ id: 'transit', type: 'line', source: 'transit', layout: { 'line-cap': 'round', 'line-join': 'round' },
     paint: { 'line-color': ['get', 'color'], 'line-width': transit.width ?? 3 } });
   add({ id: 'stations', type: 'circle', source: 'stations', paint: {
@@ -760,35 +899,37 @@ function addDomains(): void {
     layout: { 'visibility': 'none' }, paint: {
       'circle-radius': Math.max(3, Number(transit.stationSize ?? 8) / 2), 'circle-color': '#fff',
       'circle-stroke-color': '#39424C', 'circle-stroke-width': 1.5 } });
-  add({ id: 'pois', type: 'symbol', source: 'pois',
+  add({ id: 'pois', type: 'symbol', source: 'map-pois-displaced',
     filter: poiFilter(),
     layout: { 'icon-image': ['get', 'iconKey'], 'icon-size': Number(token('poi').size ?? 18) / 24,
       'symbol-sort-key': ['*', -1, ['get', 'priority']], 'symbol-z-order': 'source',
-      'icon-allow-overlap': false, 'icon-ignore-placement': false, 'icon-padding': 4 } });
+      'icon-allow-overlap': false, 'icon-ignore-placement': false, 'icon-padding': 4, 'icon-offset': stationIconOffset(...poiDimensions(false)), 'icon-rotation-alignment': 'viewport', 'icon-pitch-alignment': 'viewport' } });
   // 普通地图使用此图层；交通视图通过 tv-poi 管理图标。
-  add({ id: 'transit-pois', type: 'symbol', source: 'pois',
+  add({ id: 'transit-pois', type: 'symbol', source: 'map-pois-displaced',
     filter: transitPoiFilter(),
     layout: { 'icon-image': ['get', 'iconKey'], 'icon-size': Number(token('poi').size ?? 18) / 24,
       'symbol-sort-key': ['*', -1, ['get', 'priority']], 'symbol-z-order': 'source',
-      'icon-allow-overlap': true, 'icon-ignore-placement': true, 'icon-padding': 0 } });
-  add({ id: 'tv-poi', type: 'symbol', source: 'transit-view-pois-displaced',
+      'icon-allow-overlap': true, 'icon-ignore-placement': true, 'icon-padding': 0, 'icon-offset': stationIconOffset(...poiDimensions(false)), 'icon-rotation-alignment': 'viewport', 'icon-pitch-alignment': 'viewport' } });
+  add({ id: 'tv-poi', type: 'symbol', source: 'transit-view-pois-displaced', filter: transitViewPoiFilter(),
     layout: { 'visibility': 'none', 'icon-image': ['get', 'iconKey'],
       'icon-size': Number(contextOptions.facility_icon_size ?? 24) / 24,
       'symbol-sort-key': ['*', -1, ['get', 'transitPriority']], 'symbol-z-order': 'source',
-      'icon-allow-overlap': true, 'icon-ignore-placement': true, 'icon-padding': 0 } });
+      'icon-allow-overlap': true, 'icon-ignore-placement': true, 'icon-padding': 0, 'icon-offset': stationIconOffset(...poiDimensions(true)), 'icon-rotation-alignment': 'viewport', 'icon-pitch-alignment': 'viewport' } });
   addBaseTextLayers();
-  add({ id: 'inspector-selection-fill', type: 'fill', source: 'inspector-selection',
-    filter: ['==', ['geometry-type'], 'Polygon'], paint: {
-      'fill-color': '#2772E2', 'fill-opacity': .16,
-      'fill-outline-color': '#1E65CB' } });
-  add({ id: 'inspector-selection-line', type: 'line', source: 'inspector-selection',
-    filter: ['==', ['geometry-type'], 'LineString'], layout: {
-      'line-cap': 'round', 'line-join': 'round' }, paint: {
-      'line-color': '#2772E2', 'line-width': 6, 'line-opacity': .86 } });
-  add({ id: 'inspector-selection-point', type: 'circle', source: 'inspector-selection',
-    filter: ['==', ['geometry-type'], 'Point'], paint: {
-      'circle-radius': 11, 'circle-color': '#2772E2', 'circle-opacity': .18,
-      'circle-stroke-color': '#1E65CB', 'circle-stroke-width': 3 } });
+  for (const source of ['inspector-selection', 'search-selection']) {
+    add({ id: `${source}-fill`, type: 'fill', source,
+      filter: ['==', ['geometry-type'], 'Polygon'], paint: {
+        'fill-color': '#2772E2', 'fill-opacity': .16,
+        'fill-outline-color': '#1E65CB' } });
+    add({ id: `${source}-line`, type: 'line', source,
+      filter: ['==', ['geometry-type'], 'LineString'], layout: {
+        'line-cap': 'round', 'line-join': 'round' }, paint: {
+        'line-color': '#2772E2', 'line-width': 6, 'line-opacity': .86 } });
+    add({ id: `${source}-point`, type: 'circle', source,
+      filter: ['==', ['geometry-type'], 'Point'], paint: {
+        'circle-radius': 11, 'circle-color': '#2772E2', 'circle-opacity': .18,
+        'circle-stroke-color': '#1E65CB', 'circle-stroke-width': 3 } });
+  }
 }
 
 function applyTheme(theme: FullTheme): void {
@@ -839,14 +980,7 @@ function applyTheme(theme: FullTheme): void {
   set('zone-fill', 'fill-opacity', token('zone').opacity);
   set('zone-border', 'line-width', Number(token('zone').width ?? 1));
   set('procedural-objects', 'fill-color', token('procedural_objects').fill);
-  const traffic = token('traffic');
-  set('traffic-casing', 'line-color', traffic.noDataColor ?? '#E9EBF0');
-  set('traffic-casing', 'line-width', trafficWidth(
-    'roadWidthMeters', 1, Number(traffic.minLanePx ?? .5)));
-  set('traffic', 'line-color', trafficColor(traffic));
-  set('traffic', 'line-width', trafficWidth(
-    'directionWidthMeters', Number(traffic.widthScale ?? .5),
-    Number(traffic.minLanePx ?? .5)));
+  updateTrafficPaint();
   const modeWidths = Object.entries(token('transit').typeWidths ?? {});
   set('transit', 'line-width', modeWidths.length ? ['match', ['downcase', ['to-string', ['get', 'kind']]],
     ...modeWidths.flatMap(([kind, width]) => [kind, Number(width)]),
@@ -864,7 +998,7 @@ function applyTheme(theme: FullTheme): void {
   const wm = token('watermark'); watermark.textContent = String(wm.text ?? 'CSLModernMap');
   watermark.style.opacity = String(wm.opacity ?? .4);
   watermark.classList.toggle('preview-watermark-left', wm.position === 'bl');
-  for (const item of markers) { const el = item.marker.getElement();
+  for (const item of markers.values()) { const el = item.marker.getElement();
     if (item.group === 'transit-line') {
       // 与 layoutLabels 共用同一套规范，避免这里用旧样式（白底 + 线路色字）
       // 把徽章刷回去 —— 两处必须走同一个函数。
@@ -876,9 +1010,10 @@ function applyTheme(theme: FullTheme): void {
       applyLabelHalo(el, item.labelType);
     } }
   applyContextStyling();
-  requestAnimationFrame(layoutLabels);
+  navigation.refreshStyle();
+  scheduleLabels();
 }
-function setLayerVisibility(layer: string, visible: boolean): void {
+async function setLayerVisibility(layer: string, visible: boolean): Promise<void> {
   for (const id of groups[layer] ?? []) if (map.getLayer(id)) {
     let layerVisible = visible;
     if (layerVisible && layer === 'railway' && id.startsWith('railway-dash-')) {
@@ -887,13 +1022,20 @@ function setLayerVisibility(layer: string, visible: boolean): void {
     }
     map.setLayoutProperty(id, 'visibility', layerVisible ? 'visible' : 'none');
   }
-  for (const item of markers) if (item.group === layer) item.marker.getElement().style.display = visible ? '' : 'none';
+  for (const item of markers.values()) if (item.group === layer) item.marker.getElement().style.display = visible ? '' : 'none';
   if (layer === 'watermark') watermark.style.display = visible ? '' : 'none';
   if (currentManifest) currentManifest.layers[layer] = visible;
+  if (layer === 'traffic') {
+    for (const checkbox of document.querySelectorAll<HTMLInputElement>('input[data-layer="traffic"]')) checkbox.checked = visible;
+    await syncTraffic();
+  }
+  if (layer === 'road' || layer === 'traffic') updateTrafficPaint();
   if (layer === 'poi' || layer === 'metro') applyContextStyling();
   if (layer === 'label') updateBaseTextLayers();
+  if (layer === 'building') preview3d.refresh();
   labelLayoutKey = '';
-  layoutLabels();
+  scheduleLabels();
+  updateQuickLayers();
 }
 function applyContextStyling(): void {
   updateBaseTextLayers();
@@ -905,7 +1047,7 @@ function applyContextStyling(): void {
   const mask = Math.max(0, Math.min(1, Number(contextOptions.transit_mask ?? .6)));
   const fade = active ? Math.max(.08, 1-mask) : 1;
   const baseRoadAllowed = !active
-    || (contextOptions.base_road !== false && transitLayerVisible('base_road'));
+    || (contextOptions.base_road !== false);
   builtSurfaceLayer?.setFade(fade);
   const set = (id: string, prop: Parameters<MapLibreMap['setPaintProperty']>[1], value: any) => {
     if (map.getLayer(id)) map.setPaintProperty(id, prop, value);
@@ -919,28 +1061,26 @@ function applyContextStyling(): void {
     const opacity = (id === 'district-fill' ? Number(token('district').opacity ?? .3)
       : id === 'zone-fill' ? Number(token('zone').opacity ?? .35) : 1) * fade;
     const allowed = !active || (id === 'water-fill'
-      ? contextOptions.base_water !== false && transitLayerVisible('base_water')
+      ? contextOptions.base_water !== false
       : id === 'district-fill' || id === 'zone-fill'
-        ? contextOptions.base_district !== false && transitLayerVisible('base_district') : true);
+        ? contextOptions.base_district !== false : true);
     set(id, 'fill-opacity', id === 'water-fill' ? painterOrderedOpacity(allowed ? opacity : 0) : allowed ? opacity : 0);
   }
   for (const id of ['water-shore', 'district-border', 'zone-border',
     'railway-base', 'railway-dash-metro', 'railway-dash-tram',
     'railway-dash-cablecar', 'railway-dash-monorail', 'railway-dash-train',
-    'railway-station', 'traffic-casing', 'traffic']) {
+    'railway-station', ...groups.traffic]) {
     const allowed = !active || (id === 'water-shore'
-      ? contextOptions.base_water !== false && transitLayerVisible('base_water')
+      ? contextOptions.base_water !== false
       : id === 'district-border' || id === 'zone-border'
-        ? contextOptions.base_district !== false && transitLayerVisible('base_district')
+        ? contextOptions.base_district !== false
       : true);
     set(id, 'line-opacity', allowed ? fade : 0);
   }
   for (const layer of roadLayers) set(layer.id, `${layer.type}-opacity`, baseRoadAllowed ? fade : 0);
-  set('traffic-lights', 'circle-opacity', fade);
   const ordinaryPoiMode = String(contextOptions.ordinary_pois ?? 'hidden');
   set('pois', 'icon-opacity', active ? ordinaryPoiMode === 'visible' ? 1 : ordinaryPoiMode === 'dim' ? fade : 0 : 1);
   set('transit-pois', 'icon-opacity', active ? 0 : 1);
-  if (map.getLayer('transit-pois')) map.setFilter('transit-pois', transitPoiFilter());
   set('transit', 'line-opacity', active ? 0 : 1);
   set('stations', 'circle-opacity', active ? 0 : 1);
   set('tv-line', 'line-opacity', active ? 1 : 0);
@@ -951,14 +1091,21 @@ function applyContextStyling(): void {
     contextOptions.station_size ?? token('transit').stationSize ?? 8) / 2));
   if (map.getLayer('tv-poi')) map.setLayoutProperty(
     'tv-poi', 'icon-size', Number(contextOptions.facility_icon_size ?? 24) / 24);
+  for (const id of ['pois', 'transit-pois']) if (map.getLayer(id)) {
+    const allowOverlap = token('poi').overlapAvoidance === false;
+    map.setLayoutProperty(id, 'icon-allow-overlap', allowOverlap);
+    map.setLayoutProperty(id, 'icon-ignore-placement', allowOverlap);
+  }
   if (map.getLayer('tv-poi')) {
     // POI 与站点开关互相独立，同时启用时两个类别都必须可见，图标围绕精确站点锚点偏移。
-    map.setLayoutProperty('tv-poi', 'icon-allow-overlap', true);
-    map.setLayoutProperty('tv-poi', 'icon-ignore-placement', true);
+    const allowOverlap = token('poi').transitOverlapAvoidance === false;
+    map.setLayoutProperty('tv-poi', 'icon-allow-overlap', allowOverlap);
+    map.setLayoutProperty('tv-poi', 'icon-ignore-placement', allowOverlap);
     map.setLayoutProperty('tv-poi', 'icon-padding', 0);
   }
   if (map.getLayer('tv-line')) map.setFilter('tv-line', transitViewLineFilter());
   updateTransitViewLayout();
+  updatePoiOffsets(); updatePoiFilters();
   if (active) {
     map.setLayoutProperty('transit', 'visibility', 'none');
     map.setLayoutProperty('stations', 'visibility', 'none');
@@ -966,9 +1113,9 @@ function applyContextStyling(): void {
     map.setLayoutProperty('tv-line', 'visibility',
       transitLayerVisible('lines') ? 'visible' : 'none');
     map.setLayoutProperty('tv-station', 'visibility',
-      contextOptions.stations === false || !transitLayerVisible('stations') ? 'none' : 'visible');
+      contextOptions.stations === false ? 'none' : 'visible');
     map.setLayoutProperty('tv-poi', 'visibility',
-      contextOptions.facilities_enabled === false || !transitLayerVisible('facilities') ? 'none' : 'visible');
+      contextOptions.facilities_enabled === false ? 'none' : 'visible');
   } else if (currentManifest) {
     const visible = currentManifest.layers.metro !== false;
     map.setLayoutProperty('transit', 'visibility', visible ? 'visible' : 'none');
@@ -984,18 +1131,20 @@ function applyContextStyling(): void {
       map.setFilter('stations', contextOptions.line_ids == null && contextOptions.types == null
         ? null : clauses.length ? ['any', ...clauses] : alwaysFalseFilter());
     }
-    if (map.getLayer('pois')) map.setFilter('pois', poiFilter());
-    if (map.getLayer('transit-pois')) map.setFilter('transit-pois', transitPoiFilter());
   }
   labelLayoutKey = '';
-  requestAnimationFrame(layoutLabels);
+  scheduleLabels();
 }
 function setContextMode(mode: string, options: Record<string, any> = {}): void {
-  contextMode = mode === 'transit' ? 'transit' : 'map';
+  const nextMode = mode === 'transit' ? 'transit' : 'map';
+  if (nextMode !== contextMode) navigation.simulation.stop();
+  contextMode = nextMode;
   contextOptions = {...options};
   applyContextStyling();
+  updateQuickLayers();
 }
 const selectableObjects: Record<string, { objectType: string; styleLayer: string; priority: number }> = {
+  [BUILDINGS_3D]: {objectType: 'building', styleLayer: 'building', priority: 98},
   'tv-poi': {objectType: 'poi', styleLayer: 'poi', priority: 108},
   'tv-station': {objectType: 'transit_station', styleLayer: 'metro', priority: 97},
   'tv-line': {objectType: 'transit_line', styleLayer: 'metro', priority: 92},
@@ -1013,6 +1162,19 @@ const selectableObjects: Record<string, { objectType: string; styleLayer: string
   'zone-fill': {objectType: 'zone', styleLayer: 'zone', priority: 50},
   'district-fill': {objectType: 'district', styleLayer: 'district', priority: 40},
 };
+function navigationPlaceAt(point: {x: number; y: number}): Endpoint['place'] {
+  const layers = ['pois', 'transit-pois', BUILDINGS_3D, 'buildings', 'poi-area'].filter(id => map.getLayer(id));
+  if (!layers.length) return undefined;
+  const features = map.queryRenderedFeatures([point.x, point.y], {layers});
+  const feature = features.find(f => f.properties?.buildingId != null && Number(f.properties.buildingId) > 0)
+    ?? features.find(f => f.layer.id === 'buildings');
+  if (!feature) return undefined;
+  const building = sourceData.buildings?.features?.find((f: any) =>
+    String(f.properties?.buildingId) === String(feature.properties?.buildingId));
+  const selected = building ?? feature;
+  return {name: String(selected.properties?.name || feature.properties?.name || i18n.t('building', {ns: 'navigation'})), geometry: selected.geometry};
+}
+
 function selectableLayerIds(): string[] {
   return Object.keys(selectableObjects).filter(id => Boolean(map.getLayer(id)));
 }
@@ -1034,7 +1196,10 @@ function featureAt(point: {x: number; y: number}): any | null {
     || Number(b.properties?.rank ?? 0)-Number(a.properties?.rank ?? 0))[0] ?? null;
 }
 function setInspectorHighlight(feature: any | null): void {
-  const source = map.getSource('inspector-selection') as maplibregl.GeoJSONSource | undefined;
+  setFeatureHighlight('inspector-selection', feature);
+}
+function setFeatureHighlight(sourceId: string, feature: any | null): void {
+  const source = map.getSource(sourceId) as maplibregl.GeoJSONSource | undefined;
   if (!source) return;
   const data = feature ? {type: 'FeatureCollection', features: [{
     type: 'Feature', geometry: feature.geometry,
@@ -1051,7 +1216,7 @@ function clearInspectorSelection(report = true): void {
 }
 function restoreInspectorSelection(selection: any): void {
   if (!selection) return;
-  const sourceKey = ({'transit-view-pois-displaced': 'transitViewPois',
+  const sourceKey = ({'transit-view-pois-displaced': 'transitViewPois', 'map-pois-displaced': 'pois',
     'transit-view-lines': 'transit', 'transit-view-stations': 'stations'} as Record<string, string>)[selection.source]
     ?? Object.keys(sourceIds).find(key => sourceIds[key] === selection.source);
   const candidates = sourceKey ? (sourceData[sourceKey]?.features ?? []) : [];
@@ -1066,7 +1231,11 @@ function restoreInspectorSelection(selection: any): void {
   setInspectorHighlight(feature);
 }
 function locateInspectorObject(): void {
-  const coordinates = inspectorSelectedFeature?.geometry?.coordinates;
+  if (inspectorSelectedFeature) locateGeometry(inspectorSelectedFeature.geometry);
+}
+function locateGeometry(geometry: GeoJSON.Geometry): void {
+  preview3d.reset();
+  const coordinates = 'coordinates' in geometry ? geometry.coordinates : undefined;
   if (!coordinates) return;
   const points: number[][] = [];
   function collect(value: any): void {
@@ -1075,18 +1244,23 @@ function locateInspectorObject(): void {
   }
   collect(coordinates);
   if (!points.length) return;
-  if (points.length === 1) { map.easeTo({center: points[0] as [number, number], zoom: Math.max(map.getZoom(), 15), duration: 260}); return; }
+  if (points.length === 1) { map.easeTo({center: points[0] as [number, number], zoom: Math.max(map.getZoom(), 15), duration: 260, bearing: outputBearing(outputRotation)}); return; }
   const bounds = new maplibregl.LngLatBounds();
   for (const point of points) bounds.extend(point as [number, number]);
-  map.fitBounds(bounds, {padding: 50, maxZoom: 17, duration: 260, bearing: outputBearing(outputRotation)});
+  const width = map.getCanvas().clientWidth;
+  map.fitBounds(bounds, {padding: {top: 65, bottom: 55, left: 35, right: Math.min(120, width / 4)},
+    maxZoom: 17, duration: 260, bearing: outputBearing(outputRotation)});
 }
 function inspectFeature(feature: any): void {
   const descriptor = selectableObjects[feature.layer.id];
   if (!descriptor) return;
   const featureId = String(feature.properties?.featureId ?? feature.id ?? '');
   inspectorSelectionId = featureId;
-  inspectorSelectedFeature = feature;
-  setInspectorHighlight(feature);
+  const originalSource = feature.source === 'map-pois-displaced' ? sourceData.pois
+    : feature.source === 'transit-view-pois-displaced' ? sourceData.transitViewPois : undefined;
+  const original = originalSource?.features.find((item: any) => String(item.properties?.featureId ?? item.id) === featureId) ?? feature;
+  inspectorSelectedFeature = original;
+  setInspectorHighlight(original);
   postEvent('objectSelected', {
     objectType: descriptor.objectType,
     styleLayer: descriptor.styleLayer,
@@ -1120,24 +1294,29 @@ function outputBearing(rotation: number): number {
  * 适配一律按正北计算**：刚设好的朝向会被当场拧回去（导出页打开时那次
  * fitBounds 就是这么把 90° 抹平的）。改这里之前先想清楚这一点。
  */
-function fitWorldBounds(bounds: [number, number, number, number], padding = 28): void {
+function fitWorldBounds(bounds: [number, number, number, number], padding = 28, duration = 0): void {
   const [x0, z0, x1, z1] = bounds;
   map.fitBounds([
     [-z1 / LOCAL_METERS_PER_DEGREE, x0 / LOCAL_METERS_PER_DEGREE],
     [-z0 / LOCAL_METERS_PER_DEGREE, x1 / LOCAL_METERS_PER_DEGREE],
-  ], {padding, duration: 0, bearing: outputBearing(outputRotation)});
+  ], {padding, duration, pitch: 0, bearing: outputBearing(outputRotation), linear: true});
 }
-function fitBounds(): void {
+function fitBounds(duration = 0): void {
+  navigation.simulation.stop(duration === 0);
+  preview3d.reset(false);
   if (!currentManifest) return;
   if (currentManifest.initialRegion?.length === 4) {
-    fitWorldBounds(currentManifest.initialRegion, currentManifest.exportRegion ? 0 : 28);
+    fitWorldBounds(currentManifest.initialRegion, currentManifest.exportRegion ? 0 : 28, duration);
     return;
   }
   map.fitBounds(currentManifest.world.geoBounds, {
-    padding: 28, duration: 0, bearing: outputBearing(outputRotation)});
+    padding: 28, duration, pitch: 0, bearing: outputBearing(outputRotation), linear: true});
 }
 function applyOutputRotation(rotation: number): void {
   const value = ((Number(rotation) || 0) % 360 + 360) % 360;
+  // 宿主在刷新后会重放相同输出角度；它不应覆盖用户的自由预览朝向。
+  if (value === outputRotation) return;
+  navigation.simulation.stop();
   outputRotation = value;
   // 角度改回 0 也要显式设一次，不能靠「0 就不用设」—— 那是转不回去的。
   map.setBearing(outputBearing(value));
@@ -1167,6 +1346,7 @@ function easeCameraTo(
 }
 async function focusGeoBounds(bounds: [[number, number], [number, number]]): Promise<void> {
   if (!currentManifest) return;
+  preview3d.reset();
   const generation = ++focusAnimationGeneration;
   map.stop();
   const overview = map.cameraForBounds(currentManifest.world.geoBounds,
@@ -1180,16 +1360,21 @@ async function focusGeoBounds(bounds: [[number, number], [number, number]]): Pro
 }
 const ZOOM_PRESETS: Record<string, number> = { city: 11, region: 13, district: 15, detail: 17 };
 function setZoomPreset(preset: string): void {
+  navigation.simulation.stop();
   if (preset === 'overview') { fitBounds(); return; }
   map.easeTo({ zoom: ZOOM_PRESETS[preset] ?? ZOOM_PRESETS.city, duration: 220 });
 }
-function clearScene(): void { for (const item of markers) item.marker.remove(); markers = [];
+function clearScene(): void {
+  releaseTraffic(); navigation.clear(); preview3d.reset(); cancelLabelLayout();
+  for (const item of markers.values()) item.marker.remove();
+  markers.clear(); poiAnchorInputs = []; labelWidths.clear();
   for (const id of [...customLayers].reverse()) if (map.getLayer(id)) map.removeLayer(id); customLayers.length = 0;
   if (map.getSource('terrain-image')) map.removeSource('terrain-image');
   for (const id of Object.values(sourceIds)) if (map.getSource(id)) map.removeSource(id);
   if (map.getSource('transit-view-stations')) map.removeSource('transit-view-stations');
   if (map.getSource('transit-view-pois-displaced')) map.removeSource('transit-view-pois-displaced');
-  transitStationDisplayFeatures = [];
+  if (map.getSource('map-pois-displaced')) map.removeSource('map-pois-displaced');
+  transitStationDisplayFeatures = []; mapPoiDisplayFeatures = []; transitPoiDisplayFeatures = [];
   for (const layer of roadLayers) delete selectableObjects[layer.id];
   roadLayers = [];
   builtSurfaceLayer = null; pendingBuiltSurface = null;
@@ -1199,15 +1384,14 @@ function transitFeatureVisible(feature: any): boolean {
   const ids = new Set(selectedTransitRouteIds());
   return ids.has(Number(feature.properties?.lineId));
 }
-function stationFeatureVisible(feature: any): boolean {
+function stationVisibility(): (feature: any) => boolean {
   const ids = new Set(selectedTransitRouteIds());
-  const serving = feature.properties?.servingLineIds ?? [];
-  if (serving.some((id: unknown) => ids.has(Number(id)))) return true;
-  if (contextOptions.line_ids != null) return false;
-  const requestedTypes = new Set((contextOptions.types ?? []).map(
-    (value: unknown) => String(value).toLowerCase()));
-  return contextOptions.types == null
-    || requestedTypes.has(String(feature.properties?.kind ?? '').toLowerCase());
+  const requestedTypes = new Set((contextOptions.types ?? []).map((value: unknown) => String(value).toLowerCase()));
+  return feature => {
+    if ((feature.properties?.servingLineIds ?? []).some((id: unknown) => ids.has(Number(id)))) return true;
+    return contextOptions.line_ids == null && (contextOptions.types == null
+      || requestedTypes.has(String(feature.properties?.kind ?? '').toLowerCase()));
+  };
 }
 function geoDistance(a: [number, number], b: [number, number]): number {
   const rad = Math.PI / 180, lat1 = a[1] * rad, lat2 = b[1] * rad;
@@ -1319,9 +1503,7 @@ function applyLabelHalo(el: HTMLElement, labelType: string): void {
   const width = labelHalo(labelType) ? stroke.width : 0;
   el.classList.toggle('map-label-no-halo', width <= 0);
   if (width <= 0) return;
-  const px = width;
-  el.style.setProperty('--label-stroke-p', `${px}px`);
-  el.style.setProperty('--label-stroke-n', `${-px}px`);
+  el.style.setProperty('--label-stroke-width', `${width * 2}px`);
   el.style.setProperty('--label-stroke-c', stroke.color);
 }
 const baseTextLayers = [
@@ -1418,34 +1600,76 @@ async function loadSceneFonts(manifest: SceneManifest, base: string): Promise<vo
     loadedFonts.add(asset.family);
   }));
 }
+function cancelLabelLayout(): void {
+  window.clearTimeout(labelTimer); labelTimer = 0; labelDirty = false; labelLayoutTime = -Infinity;
+}
+function scheduleLabels(): void {
+  labelDirty = true;
+  if (labelTimer || !currentManifest) return;
+  const delay = Math.max(0, 250 - (performance.now() - labelLayoutTime));
+  labelTimer = window.setTimeout(() => {
+    labelTimer = 0;
+    if (labelDirty) { labelDirty = false; layoutLabels(); }
+  }, delay);
+}
+function measuredLabelWidth(text: string, font: string): number {
+  const cached = labelWidths.get(text);
+  if (cached?.font === font) return cached.width;
+  labelMeasure.font = font;
+  const width = labelMeasure.measureText(text).width;
+  labelWidths.set(text, {font, width}); return width;
+}
+function placeLabel(id: string, coordinates: [number, number], offset: [number, number],
+  metadata: Omit<LabelMarker, 'marker'>): HTMLElement {
+  let item = markers.get(id);
+  if (!item) {
+    const marker = new maplibregl.Marker({element: document.createElement('div'), anchor: 'center', offset})
+      .setLngLat(coordinates).addTo(map);
+    item = {...metadata, marker}; markers.set(id, item);
+  } else {
+    const point = item.marker.getLngLat(), previous = item.marker.getOffset();
+    if (point.lng !== coordinates[0] || point.lat !== coordinates[1]) item.marker.setLngLat(coordinates);
+    if (previous.x !== offset[0] || previous.y !== offset[1]) item.marker.setOffset(offset);
+    Object.assign(item, metadata);
+  }
+  const element = item.marker.getElement(); element.style.display = '';
+  return element;
+}
 function layoutLabels(): void {
   if (!currentManifest || map.isMoving()) return;
+  labelLayoutTime = performance.now();
   const renderedLayers = contextMode === 'transit'
     ? [contextOptions.facilities_enabled === false ? '' : 'tv-poi',
        String(contextOptions.ordinary_pois ?? 'hidden') === 'hidden' ? '' : 'pois']
     : currentManifest.layers.poi === false ? [] : ['pois', 'transit-pois'];
-  const rendered = renderedLayers.filter(id => id && map.getLayer(id)).length
-    ? map.queryRenderedFeatures({ layers: renderedLayers.filter(id => id && map.getLayer(id)) }) : [];
+  const layers = renderedLayers.filter(id => id && map.getLayer(id));
+  // GeoJSON 更新及瓦片切换期间，符号放置结果可能仍引用上一版要素索引。
+  if (layers.some(id => !map.isSourceLoaded((map.getLayer(id) as {source: string}).source))) return;
+  const rendered = layers.length ? map.queryRenderedFeatures({layers}) : [];
   const seen = new Set<string>();
   const icons = rendered.filter(f => { const id = String(f.properties?.featureId ?? f.id); if (seen.has(id)) return false; seen.add(id); return true; });
   const labelVisibility = (token('label').visibility ?? {}) as Record<string, boolean>;
   const poiNameVisibility = (token('poiVisibility').names ?? {}) as Record<string, boolean>;
   const key = JSON.stringify([currentRevision, map.getZoom(), map.getCenter(), map.getCanvas().clientWidth,
-    map.getCanvas().clientHeight, icons.map(f => f.id).sort(), currentManifest.layers,
-    map.getBearing(), contextMode, contextOptions, token('transit').label, labelVisibility, token('baseText'),
+    map.getCanvas().clientHeight, icons.map(f => [f.id, f.geometry, f.properties?.stationAnchor, f.layer.id]).sort((a, b) => String(a[0]).localeCompare(String(b[0]))), currentManifest.layers,
+    map.getBearing(), map.getPitch(), contextMode, contextOptions, token('transit').label, labelVisibility, token('baseText'),
     poiNameVisibility, effectivePoiIcons()]);
   if (key === labelLayoutKey) return;
   labelLayoutKey = key;
-  for (const item of markers) item.marker.remove(); markers = [];
+  const kept = new Set<string>();
   const cells = new Map<string, Box[]>();
   const keys = (b: Box): string[] => { const result: string[] = [];
     for (let x = Math.floor(b[0]/64); x <= Math.floor(b[2]/64); x++)
       for (let y = Math.floor(b[1]/64); y <= Math.floor(b[3]/64); y++) result.push(`${x}:${y}`); return result; };
   const reserve = (b: Box) => { for (const k of keys(b)) cells.set(k, [...(cells.get(k) ?? []), b]); };
   const overlaps = (b: Box) => keys(b).some(k => (cells.get(k) ?? []).some(a => b[0]<a[2] && a[0]<b[2] && b[1]<a[3] && a[1]<b[3]));
+  const overlapArea = (b: Box): number => [...new Set(keys(b).flatMap(k => cells.get(k) ?? []))]
+    .reduce((sum, a) => sum + Math.max(0, Math.min(b[2], a[2])-Math.max(b[0], a[0]))
+      * Math.max(0, Math.min(b[3], a[3])-Math.max(b[1], a[1])), 0);
   const radius = Number(token('poi').size ?? 18)/2;
   for (const f of icons) { if (f.geometry.type !== 'Point') continue;
-    const p = map.project(f.geometry.coordinates as [number, number]); reserve([p.x-radius, p.y-radius, p.x+radius, p.y+radius]); }
+    const p = poiScreenPoint(f), r = poiDimensions(f.layer.id === 'tv-poi')[0] / 2;
+    reserve([p.x-r, p.y-r, p.x+r, p.y+r]); }
   const stationRadius = Math.max(3, Number(
     contextOptions.station_size ?? token('transit').stationSize ?? 8) / 2);
   if (contextMode === 'transit' && contextOptions.stations !== false) {
@@ -1454,46 +1678,43 @@ function layoutLabels(): void {
       reserve([p.x-stationRadius, p.y-stationRadius, p.x+stationRadius, p.y+stationRadius]);
     }
   }
-  // 区域和玩家名称从源候选参与布局；已绘制图标只提供位置和占位。
-  const iconById = new Map(icons.map(f => [String(f.properties?.poiId ?? f.id), f]));
+  // 附属名称只跟随已显示图标；显式空图标保留纯文字。
+  const iconById = new Map(icons.map(f => [String(f.properties?.poiId ?? f.properties?.featureId ?? f.id), f]));
   const width = map.getCanvas().clientWidth, height = map.getCanvas().clientHeight;
   const sources = contextMode === 'transit'
-    ? [...transitViewPoiFeatures(), ...(String(contextOptions.ordinary_pois ?? 'hidden') === 'hidden'
-      ? [] : (sourceData.pois?.features ?? []).filter((f: any) => f.properties?.owner !== 'transit'))]
-    : currentManifest.layers.poi === false ? [] : (sourceData.pois?.features ?? []);
+    ? [...transitPoiDisplayFeatures, ...(String(contextOptions.ordinary_pois ?? 'hidden') === 'hidden'
+      ? [] : mapPoiDisplayFeatures.filter((f: any) => f.properties?.owner !== 'transit'))]
+    : currentManifest.layers.poi === false ? [] : mapPoiDisplayFeatures;
   const labelSeen = new Set<string>();
   const selectedRoutes = new Set(selectedTransitRouteIds());
   const iconGroups = effectivePoiIcons();
   const bounds = map.getBounds();
+  const stationIcons = contextOptions.station_name_placement === 'station'
+    && contextOptions.stations !== false && currentManifest.layers.metro !== false
+    ? transitStationDisplayFeatures : [];
   const labelIcons = sources.filter((f: any) => {
     if (f.geometry.type !== 'Point' || !bounds.contains(f.geometry.coordinates as [number, number])) return false;
     const properties = f.properties ?? {};
     if (properties.lineRelated === true
         && !(properties.servingLineIds ?? []).some((id: number) => selectedRoutes.has(Number(id)))) return false;
     if ((properties.visibilityGroups ?? []).some((required: string) => iconGroups[required] === false)) return false;
-    const id = String(properties.poiId ?? f.id);
+    const id = String(properties.poiId ?? properties.featureId ?? f.id);
     if (labelSeen.has(id)) return false;
     labelSeen.add(id);
     const group = String(properties.visibilityGroup ?? properties.poiGroup ?? 'ordinary');
     if (iconGroups[group] === false) return false;
-    if (group === 'area' && String(properties.iconKey ?? '').startsWith('cs2::')
-        && properties.iconStatus === 'visible' && Array.isArray(properties.visibleZooms)
-        && !properties.visibleZooms.includes(Math.floor(map.getZoom()))) return false;
-    const independent = group === 'area' || properties.nameSource === 'custom';
-    if (!independent && !iconById.has(id)) return false;
+    if (properties.iconStatus !== 'empty' && !iconById.has(id)) return false;
     if (map.getZoom() < Number(properties.minZoom ?? 0)) return false;
-    const point = map.project(f.geometry.coordinates as [number, number]);
+    if (contextMode === 'transit' && properties.owner === 'transit' && contextOptions.facilities_enabled === false) return false;
+    const point = poiScreenPoint(f);
     if (point.x < 0 || point.y < 0 || point.x > width || point.y > height) return false;
     return Boolean(properties.drawName) && poiNameVisibility[group] !== false
       && (contextMode !== 'transit' || group !== 'transit'
-        || contextOptions.facility_names_enabled !== false);
-  }).map((f: any) => iconById.get(String(f.properties?.poiId ?? f.id)) ?? f);
-  const candidates = [
-    ...labelIcons.map((f: any) => ({f, group: 'poi', field: 'name'})),
-    ...(contextOptions.station_names_enabled === true
-      ? (sourceData.stations?.features ?? []).filter(stationFeatureVisible).map((f: any) => ({f, group: 'station', field: 'name'}))
-      : []),
-  ].sort((a, b) => {
+        || contextOptions.station_name_placement === 'icon');
+  });
+  const candidates = [...labelIcons, ...stationIcons]
+    .map((f: any) => ({f, group: 'poi', field: 'name'}))
+    .sort((a, b) => {
     // 图标密度筛选时，符合条件的玩家名称优先于生成名称，缩放与密度阈值保持不变。
     // 同组内仍以数值优先级打破并列。
     const aCustom = String(a.f.properties?.nameSource ?? '').toLowerCase() === 'custom';
@@ -1501,96 +1722,87 @@ function layoutLabels(): void {
     if (aCustom !== bCustom) return aCustom ? -1 : 1;
     return Number(b.f.properties?.priority ?? 0)-Number(a.f.properties?.priority ?? 0);
   });
-  const measure = document.createElement('canvas').getContext('2d')!;
   for (const {f, group, field} of candidates) {
-    const contextVisible = contextMode !== 'transit'
-      ? currentManifest.layers[group] !== false
-      : group === 'poi' || group === 'station';
+    const stationSymbol = f.properties?.symbolKind === 'station';
+    const contextVisible = stationSymbol || contextMode === 'transit' || currentManifest.layers.poi !== false;
     if (!contextVisible || f.geometry.type !== 'Point' || !f.properties?.[field]) continue;
-    const p = map.project(f.geometry.coordinates as [number, number]);
-    const labelType = group === 'station' ? 'stop' : resolvedLabelType(f, group);
+    const p = poiScreenPoint(f);
+    const labelType = stationSymbol ? 'stop' : resolvedLabelType(f, group);
     const transitStationName = contextMode === 'transit'
-      && (group === 'station' || (group === 'poi' && f.properties?.owner === 'transit'));
+      && (stationSymbol || f.properties?.owner === 'transit');
     const fontSize = labelFontSize(labelType, transitStationName);
     if (fontSize < 6) continue;
-    measure.font = `${fontSize}px ${labelFontFamily(labelType)}`;
+    const font = `${fontSize}px ${labelFontFamily(labelType)}`;
     const text = String(f.properties[field]);
-    const width = measure.measureText(text).width+10, height = fontSize+8;
-    const gap = group === 'poi' ? radius + 5 : stationRadius + 5;
+    const width = measuredLabelWidth(text, font)+10, height = fontSize+8;
+    const gap = (stationSymbol ? stationRadius : contextMode === 'transit' && f.properties?.owner === 'transit'
+      ? Number(contextOptions.facility_icon_size ?? 24) / 2 : radius) + 5;
     const offsets: [number, number][] = [
       [gap + width/2, 0], [-gap - width/2, 0],
       [0, -gap - height/2], [0, gap + height/2],
     ];
-    const position = offsets.find(([x, y]) => {
-      const box: Box = [p.x+x-width/2, p.y+y-height/2, p.x+x+width/2, p.y+y+height/2];
-      return box[0] >= 0 && box[1] >= 0 && box[2] <= map.getCanvas().clientWidth
-        && box[3] <= map.getCanvas().clientHeight && !overlaps(box);
-    });
-    if (!position) continue;
+    const score = ([x, y]: [number, number]): number => overlapArea(
+      [p.x+x-width/2, p.y+y-height/2, p.x+x+width/2, p.y+y+height/2]);
+    const avoid = token('poi')[contextMode === 'transit' ? 'transitOverlapAvoidance' : 'overlapAvoidance'] !== false;
+    const position = !avoid ? offsets[0]
+      : offsets.reduce((best, candidate) => score(candidate) < score(best) ? candidate : best);
     const [offsetX, offsetY] = position;
     const box: Box = [p.x+offsetX-width/2, p.y+offsetY-height/2,
       p.x+offsetX+width/2, p.y+offsetY+height/2];
     const featureColor = group === 'poi' ? String(f.properties?.labelColor ?? '') : undefined;
-    reserve(box); const el = document.createElement('div'); el.className = `map-label map-label-${group}`;
-    el.textContent = text; el.style.color = labelColor(labelType, featureColor);
+    reserve(box);
+    const id = `poi:${f.properties.featureId ?? f.properties.poiId ?? f.id}`, iconOffset = poiScreenOffset(f);
+    kept.add(id);
+    const el = placeLabel(id, f.geometry.coordinates as [number, number],
+      [offsetX + iconOffset[0], offsetY + iconOffset[1]], {group, labelType, featureColor, transitStationName});
+    el.classList.add('map-label', `map-label-${group}`);
+    if (el.textContent !== text) el.textContent = text;
+    el.style.color = labelColor(labelType, featureColor);
     el.style.fontSize = `${fontSize}px`; el.style.fontFamily = labelFontFamily(labelType);
     applyLabelHalo(el, labelType);
-    const marker = new maplibregl.Marker({ element: el, anchor: 'center', offset: [offsetX, offsetY] })
-      .setLngLat(f.geometry.coordinates as [number, number]).addTo(map);
-    markers.push({marker, group, labelType, featureColor, transitStationName});
   }
   const badge = token('transit').label ?? {};
   if (contextMode === 'transit' && badge.enabled !== false
       && contextOptions.line_label_enabled !== false
       && (contextOptions.layers ?? {}).lines !== false
-      && (contextOptions.layers ?? {}).line_labels !== false) {
+     ) {
     const metrics = transitBadgeMetrics();
     const {style: badgeStyle, size: badgeSize} = metrics;
     const interval = Number(badge.repeatInterval ?? contextOptions.line_label_interval ?? 600);
     const maximum = Number(badge.maxPerLine ?? 4);
-    measure.font = `${badgeStyle.fontWeight} ${badgeSize}px `
+    const font = `${badgeStyle.fontWeight} ${badgeSize}px `
       + `"${badgeStyle.font}", "Microsoft YaHei", sans-serif`;
     for (const [featureIndex, feature] of (sourceData.transit?.features ?? []).entries()) {
       if (!transitFeatureVisible(feature)) continue;
       const name = String(feature.properties?.name ?? '').trim();
       if (!name) continue;
       const color = transitViewFeatureColor(feature, featureIndex);
-      const width = Math.min(180, measure.measureText(name).width)
+      const width = Math.min(180, measuredLabelWidth(name, font))
         + (metrics.padX + metrics.outline) * 2;
       const height = badgeSize + (metrics.padY + metrics.outline) * 2;
-      for (const coordinate of lineBadgePoints(feature, interval, maximum)) {
+      for (const [pointIndex, coordinate] of lineBadgePoints(feature, interval, maximum).entries()) {
         const p = map.project(coordinate), box: Box = [p.x-width/2, p.y-height/2, p.x+width/2, p.y+height/2];
         if (box[0] < 0 || box[1] < 0 || box[2] > map.getCanvas().clientWidth
             || box[3] > map.getCanvas().clientHeight || overlaps(box)) continue;
         reserve(box);
-        const el = document.createElement('div'); el.className = 'map-transit-badge';
-        el.textContent = name;
+        const id = `badge:${feature.properties.featureId ?? feature.id ?? featureIndex}:${pointIndex}`;
+        kept.add(id);
+        const el = placeLabel(id, coordinate, [0, 0], {group: 'transit-line', labelType: 'transit-line', featureColor: color});
+        el.classList.add('map-transit-badge');
+        if (el.textContent !== name) el.textContent = name;
         paintTransitBadge(el, color, metrics);
-        const marker = new maplibregl.Marker({element: el, anchor: 'center'}).setLngLat(coordinate).addTo(map);
-        markers.push({marker, group: 'transit-line', labelType: 'transit-line', featureColor: color});
       }
     }
   }
+  for (const [id, item] of markers) if (!kept.has(id)) { item.marker.remove(); markers.delete(id); }
 }
-map.on('zoomend', () => {
-  if (map.getLayer('pois')) map.setFilter('pois', poiFilter());
-  if (map.getLayer('transit-pois')) map.setFilter(
-    'transit-pois', transitPoiFilter());
-  if (contextMode === 'transit') updateTransitViewLayout();
-  layoutLabels();
+map.on('move', scheduleLabels);
+map.on('moveend', scheduleLabels);
+map.on('idle', scheduleLabels);
+map.on('sourcedata', event => {
+  if (event.isSourceLoaded && ['map-pois-displaced', 'transit-view-pois-displaced'].includes(event.sourceId)) scheduleLabels();
 });
-map.on('moveend', () => {
-  // 平移时保留上一次布局的地理结果，避免根据新视口边缘重算而造成图标跳动。
-  // 缩放、上下文或数据变化时仍重新布局。
-  layoutLabels();
-});
-map.on('idle', layoutLabels);
-map.on('resize', () => {
-  if (contextMode === 'transit') {
-    updateTransitViewLayout();
-  }
-  layoutLabels();
-});
+map.on('resize', scheduleLabels);
 
 // 内嵌场景资源解析：把相对 URL（含 ?query）规整为纯文件名，再从内联数据取用
 function embeddedBaseName(relativeUrl: string): string {
@@ -1601,7 +1813,8 @@ function embeddedJson(relativeUrl: string): any {
   if (!payload) return undefined;
   const base = embeddedBaseName(relativeUrl);
   if (base === 'manifest.json') return payload.manifest;
-  return payload.embedded.sources[base] ?? payload.embedded.poiAtlasIndex[base] ?? undefined;
+  const value = payload.embedded.sources[base] ?? payload.embedded.poiAtlasIndex[base];
+  return typeof value === 'string' ? JSON.parse(value) : value;
 }
 function embeddedImage(relativeUrl: string): string | undefined {
   return window.__CSL_SCENE__?.embedded.images[embeddedBaseName(relativeUrl)];
@@ -1610,15 +1823,15 @@ function embeddedImage(relativeUrl: string): string | undefined {
 // 均按同款相对 URL 规约取数，applyScene 的加载逻辑因此完全复用。
 type ResourceProvider = {
   base: string;
-  json(url: URL): Promise<any>;
+  json(url: URL, signal?: AbortSignal): Promise<any>;
   image(url: string): Promise<ImageBitmap>;
   imageUrlFor(url: string): string;
 };
 function httpProvider(base: string): ResourceProvider {
   return {
     base,
-    async json(url: URL) {
-      const response = await fetch(url);
+    async json(url: URL, signal?: AbortSignal) {
+      const response = await fetch(url, {signal});
       if (!response.ok) throw new Error(`${url.pathname}: HTTP ${response.status}`);
       return response.json();
     },
@@ -1654,8 +1867,6 @@ function embeddedProvider(): ResourceProvider {
 }
 // 读取场景清单及资源，并把完整场景发布到预览地图。
 async function loadScene(provider: ResourceProvider, requestedRevision: number): Promise<void> {
-  ++focusAnimationGeneration;
-  map.stop();
   const generation = ++loadGeneration;
   const manifestUrl = provider.base;
   const manifest = await provider.json(new URL(manifestUrl)) as SceneManifest;
@@ -1663,9 +1874,20 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number):
     postEvent('sceneDiscarded', { revision: requestedRevision, outcome: 'stale' }); return;
   }
   if (manifest.schemaVersion !== 1) throw new Error(i18n.t("main_loadScene_2197b880cc", { p0: manifest.schemaVersion }));
+  // 早期导出只保存 transit；普通地图的交通显隐使用 metro 分组。
+  if (EMBEDDED && !('metro' in manifest.layers) && 'transit' in manifest.layers) manifest.layers.metro = manifest.layers.transit;
   const changed = manifest.sceneId !== currentSceneId;
-  const needs = (key: string) => changed || manifest.sourceRevisions[key] !== currentManifest?.sourceRevisions[key];
-  const entries = Object.entries(manifest.sources).filter(([key]) => key !== 'terrain' && needs(key));
+  const previousManifest = currentManifest;
+  const needs = (key: string) => changed || manifest.sourceRevisions[key] !== previousManifest?.sourceRevisions[key];
+  trafficRequest?.abort();
+  if (changed) {
+    ++focusAnimationGeneration; map.stop(); navigation.simulation.stop();
+    previewControls.resetSearch(); setFeatureHighlight('search-selection', null);
+    clearWorldSelection(false); clearInspectorSelection(false); clearScene(); sourceData = {};
+    for (const id of registeredIcons) if (map.hasImage(id)) map.removeImage(id);
+    registeredIcons.clear(); currentSceneId = ''; currentManifest = null; sceneProvider = null;
+  }
+  const entries = Object.entries(manifest.sources).filter(([key]) => key !== 'terrain' && key !== 'traffic' && needs(key));
   const fetched = Object.fromEntries(await Promise.all(entries.map(async ([key, url]) => [key, await provider.json(new URL(url, manifestUrl))])));
   let atlas: ImageBitmap | null = null, atlasIndex: Record<string, any> = {};
   let terrain: ImageBitmap | null = null, terrainUrl: string | null = null;
@@ -1678,23 +1900,26 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number):
     }
     if (needs('builtArea') && manifest.surfaceFields?.builtArea)
       builtSurface = await provider.image(manifest.surfaceFields.builtArea.url);
-    await loadSceneFonts(manifest, manifestUrl);
+    if (needs('labelFonts')) await loadSceneFonts(manifest, manifestUrl);
     if (generation !== loadGeneration || manifest.revision < currentRevision) {
       postEvent('sceneDiscarded', { revision: requestedRevision, outcome: 'stale' }); return;
     }
-    if (changed) { clearWorldSelection(false); clearInspectorSelection(false); clearScene(); sourceData = {}; for (const id of registeredIcons) if (map.hasImage(id)) map.removeImage(id); registeredIcons.clear(); }
     if (atlas) {
       const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d', {willReadFrequently: true})!;
+      const searchIcons = new Map<string, ImageData>();
       for (const [id, entry] of Object.entries(atlasIndex)) {
         canvas.width = entry.width; canvas.height = entry.height;
         ctx.drawImage(atlas, entry.x, entry.y, entry.width, entry.height, 0, 0, entry.width, entry.height);
         const pixels = ctx.getImageData(0, 0, entry.width, entry.height);
+        searchIcons.set(id, pixels);
         if (map.hasImage(id)) map.updateImage(id, pixels); else map.addImage(id, pixels, {pixelRatio: entry.pixelRatio});
         registeredIcons.add(id);
       }
+      previewControls.setSearchIcons(searchIcons);
     }
     currentSceneId = manifest.sceneId; currentRevision = manifest.revision;
-    currentManifest = manifest; currentTheme = manifest.theme;
+    currentManifest = manifest; currentTheme = manifest.theme; sceneProvider = provider;
+    preview3d.setAvailable(EMBEDDED || !manifest.exportRegion);
     labelLayoutKey = '';
     map.setMaxBounds(manifest.exportRegion ? manifest.world.geoBounds : null);
     updateExportMask();
@@ -1734,21 +1959,37 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number):
       }
     }
     for (const [key, id] of Object.entries(sourceIds)) {
+      if (key === 'traffic') continue;
       if (!changed && !needsFromData(key, fetched)) continue;
       const data = fetched[key] ?? {type: 'FeatureCollection', features: []}; sourceData[key] = data;
+      if (key === 'roads') {
+        navigationRoadProperties.clear();
+        for (const feature of data.features) {
+          const properties = feature.properties, id = String(properties.roadId);
+          if (properties.geometryRole === 'road-surface' || !navigationRoadProperties.has(id))
+            navigationRoadProperties.set(id, properties);
+        }
+      }
       const source = map.getSource(id) as maplibregl.GeoJSONSource | undefined;
       if (source) source.setData(data); else map.addSource(id, {type: 'geojson', data, maxzoom: key === 'labels' ? 14 : 18, buffer: 256, tolerance: 0, promoteId: 'featureId'});
     }
     if (changed) { addDomains(); pendingBuiltSurface = null; }
     else if (needsFromData('roads', fetched)) rebuildRoadLayers();
+    if (needsFromData('buildings', fetched)) preview3d.setBuildings(sourceData.buildings?.features ?? []);
     applyRenderStack();
     applyTheme(manifest.theme);
-    for (const [layer, visible] of Object.entries(manifest.layers)) setLayerVisibility(layer, visible);
+    for (const [layer, visible] of Object.entries(manifest.layers)) {
+      if (layer !== 'traffic') await setLayerVisibility(layer, visible);
+    }
+    await syncTraffic();
+    if (generation !== loadGeneration) return;
     applyContextStyling();
+    navigation.setScene(manifest.navigation?.schemaVersion === 1
+      ? () => provider.json(new URL(manifest.navigation!.url, manifestUrl)) as Promise<NavigationPackage> : null,
+      Boolean(manifest.navigationRouteOmitted));
+    if (changed && manifest.navigationRoute && !EMBEDDED) void navigation.restoreRoute(manifest.navigationRoute);
     if (changed) { fitBounds(); labelLayoutKey = ''; }
-    // 旋转只是「输出显示」，与场景几何无关。场景重建不该把朝向重置回正北，
-    // 所以每次加载完按一遍宿主当前的角度。
-    applyOutputRotation(outputRotation);
+    // 同场景增量更新保留用户当前的相机朝向。
     // idle 发生在工作进程处理、瓦片上传和渲染之后；两次动画帧回调可能早于 GeoJSON 处理完成。
     await new Promise<string>(resolve => {
       const finish = (result: string) => {
@@ -1763,6 +2004,10 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number):
     if (generation !== loadGeneration) {
       postEvent('sceneDiscarded', {revision: requestedRevision, outcome: 'stale'}); return;
     }
+    updateRoadWarning();
+    if (changed || ['buildings', 'roads', 'districts', 'zones', 'pois', 'transitViewPois', 'stations'].some(key => needsFromData(key, fetched)))
+      previewControls.rebuild(sourceData, !changed);
+    updateQuickLayers(true);
     postEvent('sceneLoaded', {bundleId: new URL(manifestUrl).pathname.split('/').at(-2),
       completion: (manifest as any).completion ?? 'complete' });
   } finally {
@@ -1781,28 +2026,35 @@ async function dispatch(command: PreviewCommand): Promise<void> {
   }
   if (command.type !== 'loadScene' && currentSceneId && command.sceneId &&
       (command.sceneId !== currentSceneId || command.revision !== currentRevision)) { outcome = 'stale'; return; }
+  if (['setZoomPreset', 'fitBounds', 'fitGeoBounds',
+    'focusGeoBounds', 'beginSelection', 'locateObject'].includes(command.type)) navigation.simulation.stop();
   switch (command.type) {
     case 'loadScene': if (command.manifestUrl && typeof command.revision === 'number') await loadScene(httpProvider(command.manifestUrl), command.revision); break;
     case 'applyTheme': if (command.theme) applyTheme(command.theme as FullTheme); break;
     case 'setUiAppearance': setUiAppearance(command.appearance); break;
     case 'setLanguage': if (command.language) await setLanguage(command.language); break;
     case 'applyRoadTheme': if (command.theme) applyTheme({ ...(currentTheme ?? {}), road: command.theme as RoadTheme } as FullTheme); break;
-    case 'setLayerVisibility': if (command.layer) setLayerVisibility(command.layer, Boolean(command.visible)); break;
+    case 'setLayerVisibility': if (command.layer) await setLayerVisibility(command.layer, Boolean(command.visible)); break;
     case 'setContextMode': setContextMode(command.mode ?? 'map', command.options ?? {}); break;
     case 'setZoomPreset': setZoomPreset(command.preset ?? 'city'); break;
     case 'setOutputRotation': applyOutputRotation(command.rotation ?? 0); break;
-    case 'setRoadVisibility': setLayerVisibility('road', Boolean(command.visible)); break;
+    case 'setRoadVisibility': await setLayerVisibility('road', Boolean(command.visible)); break;
     case 'fitBounds': fitBounds(); break;
-    case 'fitGeoBounds': if (command.bounds) map.fitBounds(command.bounds, {padding: 36, duration: 260, bearing: outputBearing(outputRotation)}); break;
+    case 'fitGeoBounds': preview3d.reset(); if (command.bounds) map.fitBounds(command.bounds, {padding: 36, duration: 260, bearing: outputBearing(outputRotation)}); break;
     case 'focusGeoBounds': if (command.bounds) await focusGeoBounds(command.bounds); break;
-    case 'beginSelection': selectionMode = true; map.getCanvas().style.cursor = 'crosshair'; document.body.classList.add('selecting'); break;
+    case 'beginSelection': preview3d.suspendSelection(); selectionMode = true; map.getCanvas().style.cursor = 'crosshair'; document.body.classList.add('selecting'); break;
     case 'clearSelection': clearWorldSelection(); break;
     case 'setSelection': selectedWorldBounds = command.worldBounds ?? null; drawWorldSelection(); break;
     case 'clearObjectSelection': clearInspectorSelection(); break;
     case 'restoreObjectSelection': restoreInspectorSelection(command.selection); break;
     case 'locateObject': locateInspectorObject(); break;
     case 'showHint': showHint(String(command.text ?? '')); break;
-    case 'dispose': map.remove(); break;
+    case 'setPreviewUiState':
+      if (currentManifest && command.layers) Object.assign(currentManifest.layers, command.layers);
+      quickLayersEnabled = Boolean(command.enabled); updateQuickLayers(true, command.pendingLayers);
+      previewControls.setGuideAvailable(command.guideAvailable !== false); break;
+    case 'showMapInteractionGuide': previewControls.showGuide(true); break;
+    case 'dispose': ++loadGeneration; releaseTraffic(); previewControls.dispose(); navigation.dispose(); cancelLabelLayout(); map.remove(); break;
   }
 } catch (error) { outcome = 'error'; reportError(error);
   if (command.type === 'loadScene' && typeof command.revision === 'number') {
@@ -1819,6 +2071,7 @@ function clearWorldSelection(report = true): void {
   selectedWorldBounds = null; selectionStart = null; selectionMode = false;
   selection.style.display = 'none'; map.dragPan.enable();
   map.getCanvas().style.cursor = ''; document.body.classList.remove('selecting');
+  preview3d.restoreSelection();
   if (report) postEvent('selectionCleared');
 }
 function projectedRegion(bounds: [number, number, number, number]): maplibregl.Point[] {
@@ -1862,7 +2115,7 @@ window.addEventListener('mousemove', event => {
     width:`${Math.abs(event.clientX-selectionStart.x)}px`,height:`${Math.abs(event.clientY-selectionStart.y)}px`});
 });
 window.addEventListener('mouseup', event => {
-  if (!selectionStart) return;
+  if (!selectionStart || event.button !== 0) return;
   const rect = map.getCanvas().getBoundingClientRect();
   if (Math.abs(event.clientX-selectionStart.x)<3 || Math.abs(event.clientY-selectionStart.y)<3) { clearWorldSelection(); return; }
   const points = [[selectionStart.x,selectionStart.y],[selectionStart.x,event.clientY],
@@ -1877,7 +2130,7 @@ window.addEventListener('mouseup', event => {
   selectionStart = null; selectionMode = false; suppressNextClick = true;
   map.dragPan.enable(); map.getCanvas().style.cursor = ''; document.body.classList.remove('selecting');
   if (!bounds.every(Number.isFinite) || bounds[2]-bounds[0]<=1e-6 || bounds[3]-bounds[1]<=1e-6) { clearWorldSelection(); return; }
-  selectedWorldBounds = bounds; drawWorldSelection(); postEvent('selectionChanged',{bounds});
+  selectedWorldBounds = bounds; preview3d.restoreSelection(); drawWorldSelection(); postEvent('selectionChanged',{bounds});
 });
 window.addEventListener('keydown', event => { if (event.key==='Escape' && (selectionMode || selectionStart)) clearWorldSelection(); });
 window.addEventListener('blur', () => { if (selectionStart) clearWorldSelection(); });
@@ -1893,24 +2146,28 @@ map.getCanvas().addEventListener('touchstart', dismissHint, { passive: true });
 map.on('click', event => {
   if (suppressNextClick) { suppressNextClick = false; return; }
   if (selectionMode || selectionStart) return;
+  if (navigation.handleClick(event)) return;
   const feature = featureAt(event.point);
   if (feature) inspectFeature(feature); else clearInspectorSelection();
 });
 map.on('mousemove', event => {
-  if (selectionMode) return;
+  if (selectionMode || preview3d.dragging || navigation.selectingPoint) return;
   hoverPoint = {x: event.point.x, y: event.point.y};
   if (hoverFrame) return;
   hoverFrame = requestAnimationFrame(() => {
     hoverFrame = 0;
-    if (!selectionMode && hoverPoint)
+    if (!selectionMode && !preview3d.dragging && !navigation.selectingPoint && hoverPoint)
       map.getCanvas().style.cursor = featureAt(hoverPoint) ? 'pointer' : '';
   });
+});
+map.getCanvas().addEventListener('pointerup', () => {
+  if (navigation.selectingPoint && !preview3d.dragging) map.getCanvas().style.cursor = 'crosshair';
 });
 map.getCanvas().addEventListener('mouseleave', () => {
   if (hoverFrame) cancelAnimationFrame(hoverFrame);
   hoverFrame = 0;
   hoverPoint = null;
-  if (!selectionMode) map.getCanvas().style.cursor = '';
+  if (!selectionMode && !preview3d.dragging && !navigation.selectingPoint) map.getCanvas().style.cursor = '';
 });
 window.addEventListener('keydown', event => {
   if (event.key === 'Escape' && !selectionStart) clearInspectorSelection();
@@ -1921,57 +2178,14 @@ async function loadEmbeddedScene(payload: EmbeddedPayload): Promise<void> {
   await loadScene(embeddedProvider(), revision);
   // 单文件导出：角度随 manifest 一起来（导出页没有宿主在旁边发命令）。
   // 下面这次适配也带上朝向，否则刚设好的角度会被 fitBounds 按正北抹掉。
+  if (payload.manifest.view) setContextMode(payload.manifest.view.mode, payload.manifest.view.options);
   applyOutputRotation(Number(payload.manifest.rotation ?? 0));
   fitBounds();
-}
-const TOOLBAR_ENTRIES: Array<[string, string]> = [
-  ['terrain', i18n.t("main_ui_51695ad45a")], ['built_area', i18n.t("main_ui_433091eabe")], ['land_use', i18n.t("main_ui_66c791916d")], ['water', i18n.t("main_ui_fd5de6559a")],
-  ['road', i18n.t("main_ui_a44c7ba211")], ['building', i18n.t("main_ui_5b46860a8e")], ['railway', i18n.t("main_ui_97492a0e5d")], ['traffic', i18n.t("main_ui_57f78ba1f9")],
-  ['transit', i18n.t("main_ui_b8466cd555")], ['poi', 'POI'], ['label', i18n.t("main_ui_9875b1f825")], ['district', i18n.t("main_ui_9ff2b9e94d")], ['zone', i18n.t("main_ui_5d6f637daa")],
-  ['watermark', i18n.t("main_ui_aa9f217c81")],
-];
-function buildToolbar(): void {
-  if (!EMBEDDED) return;
-  const bar = document.createElement('div');
-  bar.className = 'exp-toolbar';
-  const left = document.createElement('div'); left.className = 'exp-toolbar-left';
-  const zoomin = document.createElement('button'); zoomin.textContent = '+'; zoomin.title = i18n.t("main_buildToolbar_80f8fbcfa0");
-  zoomin.addEventListener('click', () => map.zoomIn());
-  const zoomout = document.createElement('button'); zoomout.textContent = '−'; zoomout.title = i18n.t("main_buildToolbar_290f680305");
-  zoomout.addEventListener('click', () => map.zoomOut());
-  const fit = document.createElement('button'); fit.textContent = i18n.t("main_buildToolbar_72891f7a3b"); fit.title = i18n.t("main_buildToolbar_aba6857714");
-  fit.addEventListener('click', () => fitBounds());
-  left.append(zoomin, zoomout, fit);
-  const panel = document.createElement('div'); panel.className = 'exp-toolbar-panel';
-  panel.textContent = i18n.t("main_buildToolbar_f2926eb3bb");
-  TOOLBAR_ENTRIES.forEach(([layer, name]) => {
-    const label = document.createElement('label'); label.className = 'exp-chip';
-    const checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.checked = true;
-    checkbox.setAttribute('data-layer', layer);
-    checkbox.addEventListener('change', () => {
-      setLayerVisibility(layer, checkbox.checked);
-      const manifest = window.__CSL_SCENE__?.manifest;
-      if (manifest) manifest.layers[layer] = checkbox.checked;
-    });
-    label.append(checkbox, document.createTextNode(name));
-    panel.appendChild(label);
-  });
-  const panelToggle = document.createElement('button'); panelToggle.textContent = i18n.t("main_buildToolbar_f2926eb3bb"); panelToggle.className = 'exp-layer-toggle';
-  panelToggle.addEventListener('click', () => { panel.classList.toggle('exp-open'); });
-  bar.append(left, panelToggle, panel);
-  // 勾选状态同步到 manifest.layers（初始可见性来自场景）
-  if (window.__CSL_SCENE__) {
-    for (const [layer] of TOOLBAR_ENTRIES) {
-      const checkbox = panel.querySelector<HTMLInputElement>(`input[data-layer="${layer}"]`);
-      if (checkbox) checkbox.checked = window.__CSL_SCENE__.manifest.layers[layer] !== false;
-    }
-  }
-  document.body.appendChild(bar);
+  if (payload.manifest.navigationRoute) await navigation.restoreRoute(payload.manifest.navigationRoute);
 }
 map.once('load', () => {
   if (EMBEDDED && window.__CSL_SCENE__) {
-    buildToolbar();
-    void loadEmbeddedScene(window.__CSL_SCENE__);
+    void loadEmbeddedScene(window.__CSL_SCENE__).catch(reportError);
   } else {
     setError('');
     postEvent('ready');

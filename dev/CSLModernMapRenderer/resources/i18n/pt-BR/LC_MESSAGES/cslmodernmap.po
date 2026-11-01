@@ -370,7 +370,7 @@ msgid "gui.dialog.open_city"
 msgstr "Abrir arquivo de cidade"
 
 msgid "gui.dialog.open_city.filter"
-msgstr "Mapa da cidade (*.mmap.gz *.mmap *.cmm.gz *.cmm *.cmm.json)"
+msgstr "Mapa da cidade (*.mmap.gz *.mmap *.cslmap.gz *.cslmap *.cmm.gz *.cmm *.cmm.json)"
 
 msgid "gui.dialog.save"
 msgstr "Salvar"

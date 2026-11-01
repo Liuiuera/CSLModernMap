@@ -108,7 +108,7 @@
   "gui.dialog.custom_resolution.prompt": "Longueur du côté de sortie (pixels)",
   "gui.dialog.layer_settings": "Paramètres des couches",
   "gui.dialog.open_city": "Ouvrir une sauvegarde de ville",
-  "gui.dialog.open_city.filter": "Carte de la ville (*.mmap.gz *.mmap *.cmm.gz *.cmm *.cmm.json)",
+  "gui.dialog.open_city.filter": "Carte de la ville (*.mmap.gz *.mmap *.cslmap.gz *.cslmap *.cmm.gz *.cmm *.cmm.json)",
   "gui.dialog.save": "Enregistrer",
   "gui.dialog.save_png_filter": "Image PNG (*.png)",
   "gui.editor.airport": "Aéroport",

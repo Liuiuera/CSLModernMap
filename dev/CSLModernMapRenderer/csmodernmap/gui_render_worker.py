@@ -26,10 +26,6 @@ from csmodernmap.layers.transport_layer import TransportLayer
 from csmodernmap.layers.water_layer import WaterLayer
 from csmodernmap.layers.watermark_layer import WatermarkLayer
 from csmodernmap.layers.zone_layer import ZoneLayer
-from csmodernmap.metro_features import (
-    metro_content_canvas_size,
-    recommended_metro_output_size,
-)
 from csmodernmap.cmm import load_document
 from csmodernmap.render_jobs import RegionPolicy, build_render_job, build_transit_jobs
 from csmodernmap.ribbon_schema import normalize_terrain_mode
@@ -46,7 +42,6 @@ from csmodernmap.spots import (
 )
 from csmodernmap.style import (
     Style,
-    load_metro_style,
     load_style,
     strip_retired_region_palette_fields,
 )
@@ -114,14 +109,6 @@ def _scale_keys(config: dict, factor: float, *keys: str) -> None:
             config[key] = _scale_size_value(config[key], factor)
 
 
-def _metro_canvas_bg(style) -> tuple:
-    try:
-        c = str(style.get("canvas.background", "#FAFAF8")).strip().lstrip("#")
-        if len(c) == 3:
-            c = "".join(ch * 2 for ch in c)
-        return (int(c[0:2], 16), int(c[2:4], 16), int(c[4:6], 16))
-    except (ValueError, IndexError):
-        return (250, 250, 248)
 
 
 def _load_ui_style(ui: dict, stem: str) -> Style:
@@ -300,6 +287,7 @@ def _build_normal_renderer(
 
 
 def _apply_poi_display_settings(cfg: dict, ui: dict, *, legacy: bool = True) -> None:
+    cfg["show_decorative_pois"] = ui.get("show_decorative_pois", True)
     # 城市专属设施选择属于对象排除规则，独立于配置的展示方式。
     cfg["facility_selection"] = copy.deepcopy(ui.get("facility_poi_overrides", {}))
     if legacy:
@@ -322,158 +310,6 @@ def _apply_poi_display_settings(cfg: dict, ui: dict, *, legacy: bool = True) -> 
         cfg.pop(key, None)
 
 
-def _apply_metro_options(
-    ui: dict,
-    s: Style,
-    opts: dict,
-    types: list,
-    label_scale: float,
-    icon_scale: float,
-    station_names_mode: str,
-    stations: bool,
-) -> None:
-    from PIL import ImageColor
-
-    cfg = s.data.setdefault("transports", {})
-    cfg["enabled"] = list(types)
-    # 「选择线路」勾选出来的行车线白名单。这条映射原先只写在非 pure 分支
-    # （_build_transit_renderer 的公共交通图），而地铁示意图走的是 pure 分支，
-    # 于是勾选框点了、选项也存住了，画面却纹丝不动——PM 2026-09-10 报的
-    # 「线路选择功能依旧不起效」。只有真拿到列表才设键：缺键 = 不过滤。
-    raw_line_ids = opts.get("line_ids")
-    if isinstance(raw_line_ids, list):
-        cfg["enabled_line_ids"] = [int(value) for value in raw_line_ids]
-    cfg["abstract"] = True
-    cfg["octilinear"] = True
-    try:
-        line_width = float(opts.get("line_width", 0) or 0)
-    except (TypeError, ValueError):
-        line_width = 0
-    if line_width > 0:
-        cfg["width"] = line_width
-
-    scale_opts = opts.get("schematic_options") or {}
-    adaptive_enabled = bool(scale_opts.get("adaptive_scale", True))
-    try:
-        adaptive_strength = float(scale_opts.get("adaptive_strength", 0.40))
-    except (TypeError, ValueError):
-        adaptive_strength = 0.40
-    adaptive_strength = max(0.0, min(adaptive_strength, 1.0))
-    schematic_cfg = dict(cfg.get("schematic") or {})
-    schematic_cfg["scale_mode"] = "adaptive" if adaptive_enabled else "fixed"
-    adaptive_cfg = dict(schematic_cfg.get("adaptive") or {})
-    adaptive_cfg["strength"] = adaptive_strength
-    schematic_cfg["adaptive"] = adaptive_cfg
-    try:
-        spacing = int(opts.get("spacing", 0) or 0)
-    except (TypeError, ValueError):
-        spacing = 0
-    if spacing > 0:
-        schematic_cfg["spacing"] = float(
-            max(SPACING_RANGE[0], min(spacing, SPACING_RANGE[1])))
-    try:
-        parallel_gap = float(opts.get("parallel_gap", 0.0) or 0.0)
-    except (TypeError, ValueError):
-        parallel_gap = 0.0
-    if parallel_gap > 0:
-        schematic_cfg["parallel_gap"] = max(1.05, min(parallel_gap, 3.0))
-    # 未来矢量编辑器只发送小型 JSON 覆盖，保存在渲染作业中而不修改源地图或主题文件。
-    edit_document = opts.get("metro_edits", opts.get("edit_document"))
-    if isinstance(edit_document, dict):
-        schematic_cfg["edits"] = dict(edit_document)
-    cfg["schematic"] = schematic_cfg
-
-    cfg["auto_color"] = False
-    cfg.pop("palette", None)
-
-    legend_enabled = bool(opts.get("legend_enabled", True))
-    legend_position = str(opts.get("legend_position", "right_top"))
-    cfg["legend"] = {"enabled": legend_enabled,
-                     "position": legend_position}
-
-    background = str(opts.get("background", "") or "").strip()
-    if background:
-        try:
-            ImageColor.getrgb(background)
-            s.data.setdefault("canvas", {})["background"] = background
-        except ValueError:
-            pass
-
-    water_cfg = dict(cfg.get("schematic_water") or {})
-    if not bool(opts.get("schematic_water", True)):
-        water_cfg["enabled"] = False
-    water_cfg["smoothing"] = float(opts.get("water_smoothing", water_cfg.get("smoothing", 8)))
-    cfg["schematic_water"] = water_cfg
-
-    ann_values = {}
-    for name, yaml_default in (("disclaimer", True), ("scale_info", True),
-                               ("data_notice", True), ("generated_at", True),
-                               ("north_arrow", False)):
-        value = opts.get(f"ann_{name}")
-        if value is None:
-            continue
-        if bool(value) != yaml_default:
-            ann_values[name] = bool(value)
-    credit_on = opts.get("ann_credit")
-    if credit_on is not None and not bool(credit_on):
-        ann_values["credit"] = False
-    if ann_values:
-        ann_cfg = dict(cfg.get("annotations") or {})
-        ann_cfg.update(ann_values)
-        cfg["annotations"] = ann_cfg
-
-    if station_names_mode not in ("none", "custom", "all"):
-        station_names_mode = "all"
-    st = copy.deepcopy(cfg.get("station") or {})
-    st["enabled"] = bool(stations)
-    try:
-        station_size = float(opts.get("station_size", 0) or 0)
-    except (TypeError, ValueError):
-        station_size = 0
-    if station_size > 0:
-        st["size"] = station_size
-    st["design"] = str(opts.get("station_style", "rmg"))
-    st["merge_enabled"] = bool(opts.get("merge_enabled", True))
-    st["merge_range"] = float(opts.get("merge_range", 48.0))
-    st["merge_overrides"] = {}
-    st["diameter_per_1k"] = float(opts.get("station_diameter", 12))
-    facilities_cfg = copy.deepcopy(st.get("facilities") or {})
-    facilities_cfg["enabled"] = bool(opts.get("facilities_enabled", True))
-    facilities_cfg.setdefault("size", {"fixed": 12, "scaled": 8})
-    facilities_cfg.setdefault("offset", {"fixed": 10, "scaled": 7})
-    _scale_keys(facilities_cfg, _clamped_view_scale(
-        opts.get("facilities_scale", 1.0)), "size", "offset")
-    st["facilities"] = facilities_cfg
-    names_cfg = dict(st.get("names") or {})
-    names_cfg["font_size_per_1k"] = float(opts.get("station_name_size", 16))
-    cfg.setdefault("label", {})["font"] = opts.get("station_font", "SimHei")
-    names_cfg["color"] = opts.get("station_name_color", "#4A4F5A")
-    names_cfg["stroke_per_1k"] = float(opts.get("station_name_stroke", 2))
-    names_cfg["stroke_fill"] = opts.get("station_name_stroke_color", "#FFFFFF")
-    names_cfg["halo"] = names_cfg["stroke_per_1k"] > 0
-    names_cfg["enabled"] = station_names_mode != "none"
-    names_cfg["position"] = str(opts.get("station_label_position", "auto"))
-    language = str(opts.get("language", "zh"))
-    names_cfg["language"] = language if language in ("zh", "bilingual") else "zh"
-    st["names"] = names_cfg
-    cfg["station"] = st
-
-    title_cfg = dict(cfg.get("title") or {})
-    _scale_keys(title_cfg, _clamped_view_scale(
-            opts.get("title_scale", 1.0)), "size", "secondary_size")
-    title_cfg["language"] = names_cfg["language"]
-    if "title_enabled" in opts and not bool(opts["title_enabled"]):
-        title_cfg["enabled"] = False
-    title_template = str(opts.get("title_template", "") or "").strip()
-    if title_template:
-        title_cfg["template"] = title_template
-    cfg["title"] = title_cfg
-
-    lb = copy.deepcopy(cfg.get("label") or {})
-    _scale_keys(lb, _clamped_view_scale(
-            opts.get("legend_scale", 1.0)), "size", "title_size")
-    lb["enabled"] = True
-    cfg["label"] = lb
 
 
 def _build_transit_renderer(
@@ -484,7 +320,6 @@ def _build_transit_renderer(
     stations: bool = True,
     abstract: bool = False,
     pure: bool = False,
-    station_names_mode: str = "all",
     opts: dict | None = None,
 ) -> Renderer:
     if isinstance(render_size, tuple):
@@ -495,28 +330,7 @@ def _build_transit_renderer(
     label_scale = _clamped_view_scale(opts.get("label_scale", 1.0))
     icon_scale = _clamped_view_scale(opts.get("icon_scale", 1.0))
     if pure:
-        s = load_metro_style(str(resource_dir("styles")))
-        _attach_poi_runtime_state(s, ui)
-        _apply_metro_options(ui, s, opts, types, label_scale, icon_scale,
-                             station_names_mode, stations)
-        renderer = Renderer(
-            s, width=canvas_w, height=canvas_h, rotation=ui["rotation"])
-        renderer.parallel_workers = 0
-        renderer.transparent = True
-        decision = _auto_memory_decision(max(canvas_w, canvas_h))
-        renderer.memory_friendly = decision["memory_friendly"]
-        renderer.disk_backing = decision["disk_backing"]
-        renderer.tile_size = decision["tile_size"]
-        renderer._cslm_memory_decision = decision
-        renderer.capture_rmp = bool(opts.get("capture_rmp", False))
-        renderer.add_layer(TransportLayer(transit_view=True, metro=True))
-        renderer.render_job = build_render_job(
-            "metro", layers=("transit",), width=canvas_w, height=canvas_h,
-            zoom=float(max(canvas_w, canvas_h)) / 4096.0,
-            detail_mode="detailed",
-            derive_params={"schematic": True, "transparent": True},
-        )
-        return renderer
+        raise ValueError("原生地铁 PNG 已退役，请使用 RMP 工程编辑器")
     s = _load_ui_style(ui, style)
     cfg = s.data.setdefault("transports", {})
     cfg["enabled"] = list(types)
@@ -527,9 +341,9 @@ def _build_transit_renderer(
     cfg["lines_visible"] = _transit_option_enabled(opts, "lines", "lines")
     if "line_width" in opts:
         cfg["width"] = float(opts["line_width"])
-    auto_color = bool(opts.get("auto_color", False))
+    auto_color = opts.get("line_color_mode", "game") != "game"
     cfg["auto_color"] = auto_color
-    colors = _palette_colors(opts.get("palette_index", 0))
+    colors = _palette_colors({"game": 0, "classic": 1, "soft": 2}[opts.get("line_color_mode", "game")])
     if auto_color and colors:
         cfg["palette"] = colors
     station_cfg = dict(cfg.get("station") or {})
@@ -545,7 +359,7 @@ def _build_transit_renderer(
     if "station_size" in opts:
         station_cfg["size"] = float(opts["station_size"]) / 2.0
     names_cfg = dict(station_cfg.get("names") or {})
-    names_cfg["enabled"] = bool(opts.get("station_names_enabled", False))
+    names_cfg["enabled"] = opts.get("station_name_placement", "icon") == "station"
     if "station_name_size" in opts:
         names_cfg["size"] = {"fixed": 0.0, "scaled": float(opts["station_name_size"]) * 4.0}
     station_cfg["names"] = names_cfg
@@ -590,7 +404,7 @@ def _build_transit_renderer(
     visibility = copy.deepcopy(poi_cfg.get("visibility_snapshot", {}))
     if visibility:
         visibility["icons"]["transit"] = bool(opts.get("facilities_enabled", True))
-        visibility["names"]["transit"] = bool(opts.get("facility_names_enabled", True))
+        visibility["names"]["transit"] = opts.get("station_name_placement", "icon") == "icon"
         poi_cfg["visibility_snapshot"] = visibility
     s.data["poi_icons"] = poi_cfg
     renderer = Renderer(
@@ -614,7 +428,7 @@ def _build_transit_renderer(
 
 
 def _transit_option_enabled(opts, option, layer):
-    return bool(opts.get(option, True)) and bool((opts.get("layers") or {}).get(layer, True))
+    return bool((opts.get("layers") or {}).get("lines", True)) if option == "lines" else bool(opts.get(option, True))
 
 
 def _transit_base_layers(layers, opts):
@@ -881,13 +695,7 @@ def run_transit_task(
     }
     types = [item for item in types if item in present_types]
     if opts.get("pure"):
-        selected_ids = opts.get("line_ids")
-        if not any(
-            transit.normalize_type(line.type) in types
-            and (selected_ids is None or line.id in selected_ids)
-            for line in mapdata.transports
-        ):
-            raise TransitSelectionError(tr("gui.transit.no_lines_selected"))
+        raise ValueError("原生地铁 PNG 已退役，请使用 RMP 工程编辑器")
     # 显式空线路白名单是有效交通视图，表示仅显示弱化底图；缺失类型选择仍是配置错误。
     if not types and opts.get("line_ids") != []:
         raise ValueError(tr("gui.transit.no_transport"))
@@ -895,103 +703,73 @@ def run_transit_task(
     if getattr(mapdata, "traffic", None) is not None:
         document.traffic = mapdata.traffic
 
-    if bool(opts.get("pure")):
-        requested = int(opts.get("size", 0) or 0)
-        out_size = (recommended_metro_output_size(mapdata, types)
-                    if requested <= 0 else max(requested, 128))
-        canvas_w, canvas_h = metro_content_canvas_size(
-            mapdata, types, out_size,
-            rotation=int(ui.get("rotation", 0) or 0))
-        r_tr = _build_transit_renderer(
-            ui, style, types, (canvas_w, canvas_h),
-            stations=bool(opts["stations"]), abstract=True, pure=True,
-            station_names_mode=opts.get("station_names_mode", "all"),
-            opts=opts)
-        decision = _auto_memory_decision(max(canvas_w, canvas_h),
-                                         aa_rate=aa_rate)
-        r_tr.memory_friendly = decision["memory_friendly"]
-        r_tr.disk_backing = decision["disk_backing"]
-        r_tr.tile_size = decision["tile_size"]
-        r_tr._cslm_memory_decision = decision
-        img_tr = r_tr.render(document, region=None, aa_downsample=aa_rate,
-                             progress=p_transit, session=session)
-        bg = _metro_canvas_bg(r_tr.style)
-        img = Image.new("RGBA", img_tr.size, bg + (255,))
-        img.alpha_composite(img_tr)
-        img = img.convert("RGB")
-        stats = dict(r_tr.last_stats)
-        stats["transit_overlay"] = r_tr.last_stats.get("transport", 0)
-        stats["_memory_decision"] = getattr(
-            r_tr, "_cslm_memory_decision", None)
-        is_region = False
-    else:
-        region, out_size, _is_region, _center = _resolve_region(job, mapdata)
-        canvas_size = _job_canvas(job, region, out_size)
-        base_layers = _transit_base_layers(layers, opts)
-        r_base = _build_normal_renderer(
-            ui, style, base_layers, canvas_size,
-            preview=False, job_kind="transit")
-        decision = _auto_memory_decision(out_size, aa_rate=aa_rate)
-        r_base.memory_friendly = decision["memory_friendly"]
-        r_base.disk_backing = decision["disk_backing"]
-        r_base.tile_size = decision["tile_size"]
-        r_base._cslm_memory_decision = decision
-        img = r_base.render(document, progress=p_render, region=region,
-                            aa_downsample=aa_rate, session=session)
-        ordinary_mode = str(opts.get("ordinary_pois", "hidden"))
-        ordinary_image = None
-        if ordinary_mode in {"dim", "visible"}:
-            ordinary_ui = {**ui, "poi_transit": False, "poi_building": True,
-                           "text_enabled": True, "poi_names": True}
-            ordinary = _build_normal_renderer(
-                ordinary_ui, style, ["poi"], canvas_size, False, "normal",
-                poi_sublayer="building")
-            ordinary.transparent = True
-            ordinary_image = ordinary.render(document, region=region,
-                                             aa_downsample=aa_rate, session=session)
-            if ordinary_mode == "dim":
-                img = Image.alpha_composite(img.convert("RGBA"), ordinary_image.convert("RGBA")).convert("RGB")
-        mask_override = opts.get("transit_mask")
-        if mask_override is None:
-            _tv = ((r_base.style.data.get("transports") or {})
-                   .get("transit_view") or {})
-            try:
-                mask = float(_tv.get("mask_intensity", 0.5))
-            except (TypeError, ValueError):
-                mask = 0.5
-        else:
-            try:
-                mask = float(mask_override)
-            except (TypeError, ValueError):
-                mask = 0.0
-        mask = max(0.0, min(1.0, mask))
-        if mask > 0:
-            white = Image.new("RGB", img.size, (255, 255, 255))
-            img = Image.blend(img, white, mask)
-        stats = dict(r_base.last_stats)
-        if ordinary_mode == "visible" and ordinary_image is not None:
+    region, out_size, _is_region, _center = _resolve_region(job, mapdata)
+    canvas_size = _job_canvas(job, region, out_size)
+    base_layers = _transit_base_layers(layers, opts)
+    r_base = _build_normal_renderer(
+        ui, style, base_layers, canvas_size,
+        preview=False, job_kind="transit")
+    decision = _auto_memory_decision(out_size, aa_rate=aa_rate)
+    r_base.memory_friendly = decision["memory_friendly"]
+    r_base.disk_backing = decision["disk_backing"]
+    r_base.tile_size = decision["tile_size"]
+    r_base._cslm_memory_decision = decision
+    img = r_base.render(document, progress=p_render, region=region,
+                        aa_downsample=aa_rate, session=session)
+    ordinary_mode = str(opts.get("ordinary_pois", "hidden"))
+    ordinary_image = None
+    if ordinary_mode in {"dim", "visible"}:
+        ordinary_ui = {**ui, "poi_transit": False, "poi_building": True,
+                       "text_enabled": True, "poi_names": True}
+        ordinary = _build_normal_renderer(
+            ordinary_ui, style, ["poi"], canvas_size, False, "normal",
+            poi_sublayer="building")
+        ordinary.transparent = True
+        ordinary_image = ordinary.render(document, region=region,
+                                         aa_downsample=aa_rate, session=session)
+        if ordinary_mode == "dim":
             img = Image.alpha_composite(img.convert("RGBA"), ordinary_image.convert("RGBA")).convert("RGB")
-        # 空线路选择仍允许没有服务线路的设施。
-        r_tr = _build_transit_renderer(
-            ui, style, types, canvas_size,
-            stations=bool(opts["stations"]),
-            abstract=bool(opts.get("abstract", False)), opts=opts)
-        decision = _auto_memory_decision(out_size, aa_rate=aa_rate)
-        r_tr.memory_friendly = decision["memory_friendly"]
-        r_tr.disk_backing = decision["disk_backing"]
-        r_tr.tile_size = decision["tile_size"]
-        r_tr._cslm_memory_decision = decision
-        img_tr = r_tr.render(document, region=region, aa_downsample=aa_rate,
-                             progress=p_transit, session=session)
-        img = img.convert("RGBA")
-        img.alpha_composite(img_tr)
-        img = img.convert("RGB")
-        stats["transit_overlay"] = r_tr.last_stats.get("transport", 0)
-        if "transit_layout" in r_tr.last_stats:
-            stats["transit_layout"] = r_tr.last_stats["transit_layout"]
-        stats["_memory_decision"] = getattr(
-            r_base, "_cslm_memory_decision", None)
-        is_region = region is not None
+    mask_override = opts.get("transit_mask")
+    if mask_override is None:
+        _tv = ((r_base.style.data.get("transports") or {})
+               .get("transit_view") or {})
+        try:
+            mask = float(_tv.get("mask_intensity", 0.5))
+        except (TypeError, ValueError):
+            mask = 0.5
+    else:
+        try:
+            mask = float(mask_override)
+        except (TypeError, ValueError):
+            mask = 0.0
+    mask = max(0.0, min(1.0, mask))
+    if mask > 0:
+        white = Image.new("RGB", img.size, (255, 255, 255))
+        img = Image.blend(img, white, mask)
+    stats = dict(r_base.last_stats)
+    if ordinary_mode == "visible" and ordinary_image is not None:
+        img = Image.alpha_composite(img.convert("RGBA"), ordinary_image.convert("RGBA")).convert("RGB")
+    # 空线路选择仍允许没有服务线路的设施。
+    r_tr = _build_transit_renderer(
+        ui, style, types, canvas_size,
+        stations=bool(opts["stations"]),
+        abstract=bool(opts.get("abstract", False)), opts=opts)
+    decision = _auto_memory_decision(out_size, aa_rate=aa_rate)
+    r_tr.memory_friendly = decision["memory_friendly"]
+    r_tr.disk_backing = decision["disk_backing"]
+    r_tr.tile_size = decision["tile_size"]
+    r_tr._cslm_memory_decision = decision
+    img_tr = r_tr.render(document, region=region, aa_downsample=aa_rate,
+                         progress=p_transit, session=session)
+    img = img.convert("RGBA")
+    img.alpha_composite(img_tr)
+    img = img.convert("RGB")
+    stats["transit_overlay"] = r_tr.last_stats.get("transport", 0)
+    if "transit_layout" in r_tr.last_stats:
+        stats["transit_layout"] = r_tr.last_stats["transit_layout"]
+    stats["_memory_decision"] = getattr(
+        r_base, "_cslm_memory_decision", None)
+    is_region = region is not None
 
     if "watermark" in layers:
         s = _load_ui_style(ui, style)
@@ -1009,7 +787,6 @@ def run_transit_task(
         "elapsed": elapsed,
         "is_region": is_region,
         "context": context,
-        "rmp_snapshot": getattr(r_tr, "last_rmp_snapshot", None),
     }
 
 
@@ -1088,7 +865,9 @@ def worker_loop(job_q: Any, result_q: Any) -> None:
                 result.pop("thumbnail", None)
             result["serial"] = job.get("serial")
             result_q.put(("done", result))
-        except TransitSelectionError as exc:
-            result_q.put(("error", str(exc)))
-        except Exception:  # noqa: BLE001
-            result_q.put(("error", traceback.format_exc()))
+        except Exception as exc:  # noqa: BLE001 - 任务失败通过队列交还宿主
+            from .task_error import capture_error
+            diagnostic = capture_error(exc, stage=progress_cb.phase,
+                input_error=isinstance(exc, TransitSelectionError))
+            diagnostic["serial"] = job.get("serial")
+            result_q.put(("error", diagnostic))

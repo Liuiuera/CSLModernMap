@@ -8,8 +8,12 @@
     "build": "vite build"
   },
   "dependencies": {
+    "flatbush": "4.6.2",
     "i18next": "26.4.4",
-    "maplibre-gl": "6.4.1"
+    "maplibre-gl": "6.4.1",
+    "ngraph.graph": "20.1.2",
+    "ngraph.path": "1.6.1",
+    "polygon-clipping": "0.15.7"
   },
   "devDependencies": {
     "typescript": "5.9.3",

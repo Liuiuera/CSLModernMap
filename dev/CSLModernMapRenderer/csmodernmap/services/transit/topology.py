@@ -80,7 +80,7 @@ def physical_legs(mapdata, transport, station_of, stops, cache):
             for leg in route.legs or ():
                 if not (0 <= leg.from_stop_index < len(route.stop_ids)
                         and 0 <= leg.to_stop_index < len(route.stop_ids)):
-                    continue
+                    continue  # 文档验证器报告损坏的外部引用，不能据此访问站序。
                 native.append((route, leg.from_stop_index, leg.to_stop_index, leg))
         pairs = [(route.stop_ids[start], route.stop_ids[end]) for route, start, end, _leg in native]
     legs, issues = [], []
@@ -229,7 +229,7 @@ def build_physical_topologies(mapdata, source_lines, stops, stations, group_of, 
         legs_by_line[ident] = legs
         issues.extend(leg_issues)
         sequence = _sequence(legs, transport, station_of, stops)
-
+        # 多路线没有单一车辆轨迹，不把相邻路线接起来推测站台配对。
         if not native or len({leg.route_id for leg in legs}) <= 1:
             merges.extend(_platform_pairs(mapdata, transport, legs, sequence, stations, params, stops))
     if merges:

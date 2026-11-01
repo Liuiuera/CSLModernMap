@@ -128,4 +128,17 @@ def clip_scene_payload(payload, bounds):
     manifest["initialRegion"] = region
     manifest["exportRegion"] = region
     result.update(manifest)
+    navigation = result["embedded"]["sources"].get("navigation.json")
+    if navigation is not None:
+        from .services.navigation import clip_navigation
+        clipped_navigation = clip_navigation(navigation, region, selected_route=manifest.get("navigationRoute"))
+        result["embedded"]["sources"]["navigation.json"] = clipped_navigation
+        if "navigationRoute" in manifest:
+            selected_route = clipped_navigation.pop("selectedRoute", None)
+            if selected_route is None:
+                manifest.pop("navigationRoute")
+                manifest["navigationRouteOmitted"] = "outside-export-region"
+            else:
+                manifest["navigationRoute"] = selected_route
+        result.update(manifest)
     return result

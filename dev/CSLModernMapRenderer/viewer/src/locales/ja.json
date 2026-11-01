@@ -12,7 +12,7 @@
   "main_ui_a44c7ba211": "道路",
   "main_ui_5b46860a8e": "建物",
   "main_ui_97492a0e5d": "鉄道",
-  "main_ui_57f78ba1f9": "交通",
+  "main_ui_57f78ba1f9": "道路交通情報",
   "main_ui_b8466cd555": "地下鉄",
   "main_ui_9875b1f825": "ラベル",
   "main_ui_9ff2b9e94d": "地区",
@@ -31,5 +31,15 @@
   "surface-poi-layer_shader_f2a5d36a5f": "POI Surface シェーダーのコンパイルに失敗しました",
   "surface-poi-layer_program_226d27beb7": "POI Surface program を作成できません",
   "surface-poi-layer_program_ea7d784c3e": "POI Surface プログラムへのリンクに失敗しました",
-  "preview_title": "CSLModernMap マッププレビュー"
+  "preview_title": "CSLModernMap マッププレビュー",
+  "search_search": "地図上のオブジェクトを検索",
+  "search_searchHelp": "現在の地図の名前やカテゴリを検索",
+  "search_empty": "一致するオブジェクトがありません",
+  "search_findHelp": "左上に名前やカテゴリを入力して、地図上のオブジェクトを探します。",
+  "search_group_building": "その他の建物",
+  "search_group_road": "道路",
+  "search_group_area": "エリア",
+  "search_group_poi": "その他の場所",
+  "search_more": "さらに表示",
+  "search_count": "({{number}})"
 }

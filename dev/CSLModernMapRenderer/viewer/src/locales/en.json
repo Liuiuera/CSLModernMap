@@ -12,7 +12,7 @@
   "main_ui_a44c7ba211": "Roads",
   "main_ui_5b46860a8e": "Buildings",
   "main_ui_97492a0e5d": "Railways",
-  "main_ui_57f78ba1f9": "Transit",
+  "main_ui_57f78ba1f9": "Traffic",
   "main_ui_b8466cd555": "Metro",
   "main_ui_9875b1f825": "Labels",
   "main_ui_9ff2b9e94d": "Districts",
@@ -31,5 +31,16 @@
   "surface-poi-layer_shader_f2a5d36a5f": "POI Surface shader compilation failed",
   "surface-poi-layer_program_226d27beb7": "Could not create POI Surface program",
   "surface-poi-layer_program_ea7d784c3e": "POI Surface program link failed",
-  "preview_title": "CSLModernMap Map Preview"
+  "preview_title": "CSLModernMap Map Preview",
+  "roads_local_flat_fallback": "Some road crossings are drawn flat. Bridge and tunnel overlaps may be inaccurate in these locations.",
+  "search_search": "Search map objects",
+  "search_searchHelp": "Search names or categories in the current map",
+  "search_empty": "No matching objects",
+  "search_findHelp": "Enter a name or category at the top left to find and locate a map object.",
+  "search_group_building": "Other buildings",
+  "search_group_road": "Roads",
+  "search_group_area": "Areas",
+  "search_group_poi": "Other places",
+  "search_more": "Show more",
+  "search_count": "({{number}})"
 }

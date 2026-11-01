@@ -9,6 +9,38 @@ namespace CSLModernMapWinUI;
 
 internal sealed partial class ThemeEditorDialog
 {
+    private void BuildBuildingsPage()
+    {
+        var buildings = _working["buildings"]!.AsObject();
+        foreach (var (key, value) in buildings)
+            if (key != "category_colors" && value is not null && !Hidden(["buildings", key]))
+                BuildNode(value, ["buildings", key], _fieldsPanel);
+        if (buildings["category_colors"] is not JsonObject colors) return;
+        _fieldsPanel.Children.Add(new TextBlock { Text = Label(["buildings", "category_colors"]),
+            FontWeight = Microsoft.UI.Text.FontWeights.SemiBold });
+        _fieldsPanel.Children.Add(new TextBlock { Text = UiLanguage.Text("BuildingCategory_Help"),
+            TextWrapping = TextWrapping.Wrap, FontSize = 12 });
+        var table = new Grid { ColumnSpacing = 12, RowSpacing = 8 };
+        table.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        table.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        table.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(2, GridUnitType.Star) });
+        foreach (var (category, value) in colors)
+        {
+            if (value is not JsonObject row) continue;
+            string[] path = ["buildings", "category_colors", category];
+            int index = table.RowDefinitions.Count;
+            table.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            var label = new TextBlock { Text = Label(path), TextWrapping = TextWrapping.Wrap,
+                VerticalAlignment = VerticalAlignment.Center };
+            var enabled = MakeField(row["enabled"]!, [.. path, "enabled"]);
+            var color = MakeField(row["color"]!, [.. path, "color"], showLabel: false);
+            Grid.SetRow(label, index); table.Children.Add(label);
+            Grid.SetRow(enabled, index); Grid.SetColumn(enabled, 1); table.Children.Add(enabled);
+            Grid.SetRow(color, index); Grid.SetColumn(color, 2); table.Children.Add(color);
+        }
+        _fieldsPanel.Children.Add(table);
+    }
+
     private void BuildBasicPage()
     {
         foreach (var key in new[] { "name", "description" })

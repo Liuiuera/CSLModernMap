@@ -108,7 +108,7 @@
   "gui.dialog.custom_resolution.prompt": "Lunghezza lato di uscita (pixel)",
   "gui.dialog.layer_settings": "Impostazioni livelli",
   "gui.dialog.open_city": "Apri salvataggio città",
-  "gui.dialog.open_city.filter": "Mappa della città (*.mmap.gz *.mmap *.cmm.gz *.cmm *.cmm.json)",
+  "gui.dialog.open_city.filter": "Mappa della città (*.mmap.gz *.mmap *.cslmap.gz *.cslmap *.cmm.gz *.cmm *.cmm.json)",
   "gui.dialog.save": "Salva",
   "gui.dialog.save_png_filter": "Immagine PNG (*.png)",
   "gui.editor.airport": "Aeroporto",

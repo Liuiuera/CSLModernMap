@@ -82,7 +82,7 @@ def normalize_output_profile(raw: Mapping[str, Any] | None,
 
 
 def normalize_output_profiles(settings_values: Mapping[str, Any] | None) -> dict[str, Any]:
-    """在设置副本中分别规范化两个 PNG 输出目标；已有目标值优先，旧版全局值仅首次填充缺失配置。"""
+    """输出尺寸分别保存；方向始终来自地图共享的 rotation_var。"""
     values = deepcopy(dict(settings_values or {}))
     raw_store = values.get(OUTPUT_PROFILE_SETTING_KEY)
     if not isinstance(raw_store, Mapping):

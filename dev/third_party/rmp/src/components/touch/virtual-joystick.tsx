@@ -13,6 +13,7 @@ import { saveGraph } from '../../redux/param/param-slice';
 import { clearSelected, refreshEdgesThunk, refreshNodesThunk } from '../../redux/runtime/runtime-slice';
 import { exportSelectedNodesAndEdges } from '../../util/clipboard';
 import { useCanvasSize } from '../../util/canvas-size';
+import { toMapVector } from '../../util/map-rotation';
 
 /**
  * Virtual joystick component for touch devices to move selected nodes.
@@ -25,7 +26,7 @@ export const VirtualJoystick: React.FC = () => {
     const { svgViewBoxZoom, svgViewBoxMin } = useRootSelector(state => state.param);
     const { selected } = useRootSelector(state => state.runtime);
 
-    const { height, width } = useCanvasSize();
+    const { height, width, visibleWidth } = useCanvasSize();
 
     const refreshAndSave = React.useCallback(() => {
         dispatch(saveGraph(graph.current.export()));
@@ -37,10 +38,11 @@ export const VirtualJoystick: React.FC = () => {
         (e: React.PointerEvent, xFactor: number, yFactor: number) => {
             e.stopPropagation();
             if (selected.size > 0) {
+                const movement = toMapVector({ x: xFactor, y: yFactor });
                 selected.forEach(s => {
                     if (graph.current.hasNode(s)) {
-                        graph.current.updateNodeAttribute(s, 'x', x => (x ?? 0) + xFactor * NODES_MOVE_DISTANCE);
-                        graph.current.updateNodeAttribute(s, 'y', y => (y ?? 0) + yFactor * NODES_MOVE_DISTANCE);
+                        graph.current.updateNodeAttribute(s, 'x', x => (x ?? 0) + movement.x * NODES_MOVE_DISTANCE);
+                        graph.current.updateNodeAttribute(s, 'y', y => (y ?? 0) + movement.y * NODES_MOVE_DISTANCE);
                     }
                 });
                 refreshAndSave();
@@ -76,14 +78,14 @@ export const VirtualJoystick: React.FC = () => {
     }, [selected, dispatch, refreshAndSave]);
 
     // Position at bottom center of the SVG viewport
-    const centerX = svgViewBoxMin.x + (width * svgViewBoxZoom) / 200; // Center horizontally
+    const centerX = svgViewBoxMin.x + ((visibleWidth ?? width) * svgViewBoxZoom) / 200; // Center horizontally
     const bottomY = svgViewBoxMin.y + ((height - 100) * svgViewBoxZoom) / 100; // 100px from bottom
 
     const buttonSize = 40;
     const buttonSpacing = 40;
 
     return (
-        <g transform={`translate(${centerX}, ${bottomY})scale(${(1.5 * svgViewBoxZoom) / 100})`}>
+        <g className="removeMe" data-testid="touch-joystick" transform={`translate(${centerX}, ${bottomY})scale(${(1.5 * svgViewBoxZoom) / 100})`}>
             {/* Up button */}
             <g transform={`translate(0, -${buttonSpacing})`}>
                 <circle

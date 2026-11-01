@@ -96,6 +96,20 @@ class POIIconMap:
         info = self.get_icon(icon_id)
         return info is None or bool(info.get("hidden", False))
 
+    def icon_status(self, icon_id):
+        """Distinguish intentional text-only entries from missing artwork."""
+        info = self.get_icon(icon_id)
+        if "::" in icon_id:
+            entry = self.direct_mapping.get(icon_id)
+            if entry is not None:
+                if not entry["display"]:
+                    return "hidden"
+                if not entry["icons"][self.library]:
+                    return "empty"
+        if info is None:
+            return "missing"
+        return "hidden" if info.get("hidden", False) else "visible"
+
     def get_by_category(self, category):
         return self._by_category.get(category, [])
 

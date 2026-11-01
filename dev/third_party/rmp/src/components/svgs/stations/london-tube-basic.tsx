@@ -1,5 +1,6 @@
+import RmgFields, { StationField as RmgFieldsField } from '../../panels/details/station-fields';
 import { Box, FormLabel, HStack, IconButton, Text, VStack } from '@chakra-ui/react';
-import { RmgCard, RmgFields, RmgFieldsField, RmgLabel, RmgThrottledSlider } from '@railmapgen/rmg-components';
+import { RmgCard, RmgLabel, RmgThrottledSlider } from '@railmapgen/rmg-components';
 import { MonoColour } from '@railmapgen/rmg-palette-resources';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -231,7 +232,8 @@ const LondonTubeBasicStation = (props: StationComponentProps) => {
     const { canDrag, dragHandlers, previewPreciseNameOffsets } = useDraggableStationName<StationAttributes>(
         id,
         StationType.LondonTubeBasic,
-        defaultNameLayout
+        defaultNameLayout,
+        attrs
     );
     const nameLayout = previewPreciseNameOffsets ?? preciseNameOffsets ?? defaultNameLayout;
 
@@ -344,6 +346,7 @@ const londonTubeBasicAttrsComponent = (props: AttrsProps<LondonTubeBasicStationA
         {
             type: 'textarea',
             label: t('panel.details.stations.common.nameEn'),
+            cmmSection: 'name',
             value: attrs.names[0],
             onChange: val => {
                 attrs.names[0] = val.toString();
@@ -354,6 +357,7 @@ const londonTubeBasicAttrsComponent = (props: AttrsProps<LondonTubeBasicStationA
         {
             type: 'select',
             label: t('panel.details.stations.common.rotate'),
+            cmmSection: 'appearance',
             value: rotateSelect.value,
             options: rotateSelect.options,
             disabledOptions: rotateSelect.disabledOptions,
