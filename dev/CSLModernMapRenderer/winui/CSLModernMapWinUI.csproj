@@ -82,4 +82,7 @@
       <ResolvedFileToPublish Include="$(TargetDir)$(AssemblyName).pri" RelativePath="$(AssemblyName).pri" CopyToPublishDirectory="PreserveNewest" />
     </ItemGroup>
   </Target>
+  <Target Name="CheckRibbonIcons" BeforeTargets="PrepareForBuild" Condition="'$(DesignTimeBuild)' != 'true'">
+    <Exec Command="python &quot;$(MSBuildProjectDirectory)\..\..\..\tools\renderer\check_winui_icons.py&quot;" />
+  </Target>
 </Project>

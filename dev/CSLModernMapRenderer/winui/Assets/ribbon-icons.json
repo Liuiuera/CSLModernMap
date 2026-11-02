@@ -8,6 +8,8 @@
   "rmp.redo": ["arrow-forward-up", "PRIMARY"],
   "rmp.mode": ["pointer", "PRIMARY"],
   "rmp.fit": ["zoom-scan", "PRIMARY"],
+  "rmp.rotate_counterclockwise": ["rotate", "PRIMARY"],
+  "rmp.rotate_clockwise": ["rotate-clockwise", "PRIMARY"],
   "rmp.svg": ["file-export", "OUTPUT"],
   "rmp.png": ["file-export", "OUTPUT"],
   "rmp.gridLines": ["grid-dots", "PRIMARY"],

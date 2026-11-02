@@ -29,6 +29,14 @@ def validate_application(app: Path) -> None:
     missing = [item for item in required if not (app / item).is_file()]
     if missing:
         raise ValueError("Application files are missing: " + ", ".join(missing))
+    spec = importlib.util.spec_from_file_location("cmm_icons", ROOT / "tools/renderer/check_winui_icons.py")
+    icons = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(icons)
+    icons.validate_icons(definitions_path=app / "Assets/ribbon-icons.json",
+                         font_css=app / "Assets/Fonts/tabler-icons.css")
+    if json.loads((app / "Assets/ribbon-icons.json").read_text("utf-8")) != json.loads(
+            (RENDERER / "winui/Assets/ribbon-icons.json").read_text("utf-8")):
+        raise ValueError("Packaged ribbon icon registry differs from source")
     previews = ROOT / "dev/third_party/rmp/public/station-previews"
     missing_previews = [path.name for path in previews.glob("*.svg")
                         if not (app / "Assets/Rmp/station-previews" / path.name).is_file()]
