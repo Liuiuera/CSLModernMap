@@ -5153,3 +5153,238 @@ msgstr "マップデータを変換中…"
 
 msgid "gui.progress.transit_catalog"
 msgstr "交通路線を整理中：{done}/{total}"
+
+msgid "gui.transit.water_degraded"
+msgstr "水域は保持されましたが、一部の岸辺のスタイルを完全には適用できませんでした。"
+
+
+msgid "gui.transit.rmp_water_omitted"
+msgstr "RMP の水域コンポーネント {component} を変換できませんでした。駅、路線、施設、および利用可能な他の水域は保持されています：{reason}"
+
+
+msgid "building.category.residential"
+msgstr "住宅"
+
+
+msgid "building.category.commercial"
+msgstr "商業"
+
+
+msgid "building.category.office"
+msgstr "オフィス"
+
+
+msgid "building.category.industrial"
+msgstr "産業・倉庫"
+
+
+msgid "building.category.police"
+msgstr "警察"
+
+
+msgid "building.category.prison"
+msgstr "刑務所・司法"
+
+
+msgid "building.category.fire"
+msgstr "消防・防災"
+
+
+msgid "building.category.healthcare"
+msgstr "医療・福祉"
+
+
+msgid "building.category.deathcare"
+msgstr "葬祭"
+
+
+msgid "building.category.education"
+msgstr "教育・研究"
+
+
+msgid "building.category.administration"
+msgstr "行政・金融"
+
+
+msgid "building.category.transport"
+msgstr "公共交通"
+
+
+msgid "building.category.parking"
+msgstr "駐車場"
+
+
+msgid "building.category.post_telecom"
+msgstr "郵便・通信"
+
+
+msgid "building.category.electricity"
+msgstr "電力"
+
+
+msgid "building.category.water"
+msgstr "上下水道"
+
+
+msgid "building.category.garbage"
+msgstr "廃棄物処理"
+
+
+msgid "building.category.maintenance"
+msgstr "道路・公園の維持管理"
+
+
+msgid "building.category.park"
+msgstr "公園・スポーツ"
+
+
+msgid "building.category.amusement"
+msgstr "娯楽施設"
+
+
+msgid "building.category.culture"
+msgstr "文化・観光"
+
+
+msgid "building.category.decoration"
+msgstr "自然の装飾"
+
+
+msgid "building.category.unclassified"
+msgstr "未分類"
+
+
+msgid "building.category.label"
+msgstr "建物の用途分類"
+
+
+msgid "building.category.table"
+msgstr "建物分類ごとの色"
+
+
+msgid "building.category.enabled"
+msgstr "色を指定"
+
+
+msgid "building.category.color"
+msgstr "分類の塗りつぶし色"
+
+
+msgid "building.category.scope"
+msgstr "「{category}」のすべての建物に適用します。"
+
+
+msgid "building.category.fallback"
+msgstr "建物の既定色（POI の色なし）"
+
+
+msgid "building.category.unknown_notice"
+msgstr "エクスポートデータに建物の用途がありません。ここでの変更は未分類の建物すべてに適用されます。"
+
+
+msgid "style.building.color_mode.value.category"
+msgstr "分類別の色"
+
+
+msgid "gui.style_editor.value.category"
+msgstr "分類別の色"
+
+
+msgid "building.category.fallback_scope"
+msgstr "POI の色と分類の指定色のどちらもない場合に使用します。"
+
+
+msgid "building.height"
+msgstr "モデルの高さ"
+
+
+msgid "building.base_elevation"
+msgstr "モデル基部の標高"
+
+
+msgid "building.height_source"
+msgstr "高さの出典"
+
+
+msgid "gui.roads.local_flat_fallback"
+msgstr "一部の道路交差部は平面で描画されます。これらの場所では橋やトンネルの重なりが不正確な場合があります。"
+
+
+msgid "gui.file.missing_version"
+msgstr "{format} ファイルに形式バージョンがなく、互換性を確認できません。最新の CSLModernMap MOD でマップを再エクスポートしてください。"
+
+
+msgid "gui.file.invalid_version"
+msgstr "{format} ファイルの形式バージョンが無効です。有効なマップを選択するか、再エクスポートしてください。"
+
+
+msgid "gui.file.old_version"
+msgstr "{format} {version} は古い形式です。このビューアは {supported} に対応しています。CSLModernMap MOD を更新して再エクスポートしてください。"
+
+
+msgid "gui.file.unsupported_version"
+msgstr "{format} {version} には対応していません。このビューアは {supported} に対応しています。このファイルに対応した最新のビューアを使用してください。"
+
+
+msgid "gui.file.invalid_cmm"
+msgstr "CMM マップまたはデータ構造が無効です。MOD でエクスポートしたマップを選択するか、再エクスポートしてください。"
+
+
+msgid "gui.file.invalid_xml"
+msgstr "CSLMap XML マップが無効か、ファイルが破損しています。有効なマップを選択するか、再エクスポートしてください。"
+
+
+msgid "gui.file.invalid_gzip"
+msgstr "圧縮マップが無効か、不完全です。ファイルをコピーし直すか、ゲームから再エクスポートしてください。"
+
+
+msgid "gui.file.invalid_encoding"
+msgstr "マップの文字エンコーディングが無効です。MOD でエクスポートしたマップを選択するか、再エクスポートしてください。"
+
+
+msgid "gui.file.legacy_xml"
+msgstr "CSLMAP は互換用の形式で、一部の新機能に対応していない場合があります。CMM 形式でのエクスポートをお勧めします。"
+
+
+msgid "gui.file.unversioned_xml"
+msgstr "この CSLMAP ファイルにはバージョン番号がなく、互換モードで開かれました。一部の新機能が使えない場合があります。CMM 形式をお勧めします。"
+
+
+msgid "ui.failure.internal"
+msgstr "予期しないエラーが発生しました。作者に報告できます。"
+
+
+msgid "ui.failure.permission"
+msgstr "必要なファイルにアクセスできませんでした。ファイルまたはフォルダーの権限を確認して、再試行してください。"
+
+
+msgid "ui.failure.missing_file"
+msgstr "必要なファイルが見つかりません。元の場所にあることを確認して、再試行してください。"
+
+
+msgid "ui.failure.memory"
+msgstr "メモリを確保できませんでした。出力サイズを小さくするか、メモリを多く使うアプリを閉じて、再試行してください。"
+
+
+msgid "ui.failure.operation.metro"
+msgstr "路線図の生成に失敗しました"
+
+
+msgid "ui.failure.operation.preview"
+msgstr "マップのプレビュー生成に失敗しました"
+
+
+msgid "ui.failure.operation.export"
+msgstr "マップのエクスポートに失敗しました"
+
+
+msgid "ui.failure.operation.open"
+msgstr "マップを開けませんでした"
+
+
+msgid "ui.failure.operation.operation"
+msgstr "操作に失敗しました"
+
+
+msgid "ui.failure.city_json"
+msgstr "都市ファイルの JSON が無効です。ゲームから再エクスポートしてください。解決しない場合はエラーの詳細を作者に報告してください。"

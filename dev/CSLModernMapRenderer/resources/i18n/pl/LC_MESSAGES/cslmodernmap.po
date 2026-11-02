@@ -5319,3 +5319,238 @@ msgstr "Konwertowanie danych mapy…"
 
 msgid "gui.progress.transit_catalog"
 msgstr "Przygotowywanie linii transportowych: {done}/{total}"
+
+msgid "gui.transit.water_degraded"
+msgstr "Zachowano wodę, ale nie udało się w pełni zastosować niektórych stylów brzegu."
+
+
+msgid "gui.transit.rmp_water_omitted"
+msgstr "Nie udało się przekonwertować elementu wody RMP {component}. Zachowano stacje, linie, obiekty i pozostałe użyteczne obszary wody: {reason}"
+
+
+msgid "building.category.residential"
+msgstr "Mieszkalne"
+
+
+msgid "building.category.commercial"
+msgstr "Handlowe"
+
+
+msgid "building.category.office"
+msgstr "Biura"
+
+
+msgid "building.category.industrial"
+msgstr "Przemysł i magazyny"
+
+
+msgid "building.category.police"
+msgstr "Policja"
+
+
+msgid "building.category.prison"
+msgstr "Więzienia i wymiar sprawiedliwości"
+
+
+msgid "building.category.fire"
+msgstr "Straż pożarna i ratownictwo"
+
+
+msgid "building.category.healthcare"
+msgstr "Zdrowie i opieka społeczna"
+
+
+msgid "building.category.deathcare"
+msgstr "Usługi pogrzebowe"
+
+
+msgid "building.category.education"
+msgstr "Edukacja i badania"
+
+
+msgid "building.category.administration"
+msgstr "Administracja i finanse"
+
+
+msgid "building.category.transport"
+msgstr "Transport publiczny"
+
+
+msgid "building.category.parking"
+msgstr "Parkingi"
+
+
+msgid "building.category.post_telecom"
+msgstr "Poczta i telekomunikacja"
+
+
+msgid "building.category.electricity"
+msgstr "Energia elektryczna"
+
+
+msgid "building.category.water"
+msgstr "Woda i kanalizacja"
+
+
+msgid "building.category.garbage"
+msgstr "Gospodarka odpadami"
+
+
+msgid "building.category.maintenance"
+msgstr "Utrzymanie dróg i parków"
+
+
+msgid "building.category.park"
+msgstr "Parki i sport"
+
+
+msgid "building.category.amusement"
+msgstr "Obiekty rozrywkowe"
+
+
+msgid "building.category.culture"
+msgstr "Kultura i turystyka"
+
+
+msgid "building.category.decoration"
+msgstr "Dekoracje naturalne"
+
+
+msgid "building.category.unclassified"
+msgstr "Niesklasyfikowane"
+
+
+msgid "building.category.label"
+msgstr "Kategoria użytkowania budynku"
+
+
+msgid "building.category.table"
+msgstr "Kolory kategorii budynków"
+
+
+msgid "building.category.enabled"
+msgstr "Zastąp kolor"
+
+
+msgid "building.category.color"
+msgstr "Kolor wypełnienia kategorii"
+
+
+msgid "building.category.scope"
+msgstr "Dotyczy wszystkich budynków w kategorii „{category}”."
+
+
+msgid "building.category.fallback"
+msgstr "Domyślny kolor budynku (bez koloru POI)"
+
+
+msgid "building.category.unknown_notice"
+msgstr "Eksport nie określa przeznaczenia budynków. Zmiany tutaj dotyczą wszystkich niesklasyfikowanych budynków."
+
+
+msgid "style.building.color_mode.value.category"
+msgstr "Kolory kategorii"
+
+
+msgid "gui.style_editor.value.category"
+msgstr "Kolory kategorii"
+
+
+msgid "building.category.fallback_scope"
+msgstr "Używany, gdy nie ma koloru POI ani koloru przypisanego do kategorii."
+
+
+msgid "building.height"
+msgstr "Wysokość modelu"
+
+
+msgid "building.base_elevation"
+msgstr "Rzędna podstawy modelu"
+
+
+msgid "building.height_source"
+msgstr "Źródło wysokości"
+
+
+msgid "gui.roads.local_flat_fallback"
+msgstr "Niektóre skrzyżowania są rysowane płasko. Nakładanie mostów i tuneli może być w tych miejscach niedokładne."
+
+
+msgid "gui.file.missing_version"
+msgstr "Plik {format} nie zawiera wersji formatu. Nie można sprawdzić zgodności. Wyeksportuj mapę ponownie przy użyciu aktualnego moda CSLModernMap."
+
+
+msgid "gui.file.invalid_version"
+msgstr "Plik {format} ma nieprawidłową wersję formatu. Wybierz prawidłową mapę lub wyeksportuj ją ponownie."
+
+
+msgid "gui.file.old_version"
+msgstr "{format} {version} jest przestarzały; ta przeglądarka obsługuje {supported}. Zaktualizuj mod CSLModernMap i wyeksportuj mapę ponownie."
+
+
+msgid "gui.file.unsupported_version"
+msgstr "{format} {version} nie jest obsługiwany; ta przeglądarka obsługuje {supported}. Użyj aktualnej przeglądarki zgodnej z tym plikiem."
+
+
+msgid "gui.file.invalid_cmm"
+msgstr "Mapa CMM lub jej struktura danych jest nieprawidłowa. Wybierz mapę wyeksportowaną przez mod lub wyeksportuj ją ponownie."
+
+
+msgid "gui.file.invalid_xml"
+msgstr "Mapa XML CSLMap jest nieprawidłowa lub uszkodzona. Wybierz prawidłową mapę lub wyeksportuj ją ponownie."
+
+
+msgid "gui.file.invalid_gzip"
+msgstr "Skompresowana mapa jest nieprawidłowa lub niepełna. Skopiuj plik ponownie lub ponów eksport w grze."
+
+
+msgid "gui.file.invalid_encoding"
+msgstr "Plik mapy ma nieprawidłowe kodowanie tekstu. Wybierz mapę wyeksportowaną przez mod lub wyeksportuj ją ponownie."
+
+
+msgid "gui.file.legacy_xml"
+msgstr "CSLMAP jest formatem zgodności i może nie obsługiwać niektórych nowych funkcji. Zalecamy eksport w formacie CMM."
+
+
+msgid "gui.file.unversioned_xml"
+msgstr "Ten plik CSLMAP nie ma numeru wersji i został otwarty w trybie zgodności. Niektóre nowe funkcje mogą być niedostępne. Zalecamy format CMM."
+
+
+msgid "ui.failure.internal"
+msgstr "Wystąpił nieoczekiwany błąd. Możesz zgłosić go autorowi."
+
+
+msgid "ui.failure.permission"
+msgstr "Nie można uzyskać dostępu do wymaganego pliku. Sprawdź uprawnienia pliku lub folderu i spróbuj ponownie."
+
+
+msgid "ui.failure.missing_file"
+msgstr "Nie znaleziono wymaganego pliku. Sprawdź, czy nadal znajduje się w pierwotnej lokalizacji, i spróbuj ponownie."
+
+
+msgid "ui.failure.memory"
+msgstr "Nie udało się przydzielić pamięci. Zmniejsz rozmiar wyjściowy lub zamknij aplikacje zużywające dużo pamięci i spróbuj ponownie."
+
+
+msgid "ui.failure.operation.metro"
+msgstr "Nie udało się wygenerować mapy metra"
+
+
+msgid "ui.failure.operation.preview"
+msgstr "Nie udało się wygenerować podglądu mapy"
+
+
+msgid "ui.failure.operation.export"
+msgstr "Nie udało się wyeksportować mapy"
+
+
+msgid "ui.failure.operation.open"
+msgstr "Nie udało się otworzyć mapy"
+
+
+msgid "ui.failure.operation.operation"
+msgstr "Operacja nie powiodła się"
+
+
+msgid "ui.failure.city_json"
+msgstr "Plik miasta zawiera nieprawidłowy JSON. Wyeksportuj go ponownie z gry; jeśli błąd nadal występuje, prześlij szczegóły autorowi."

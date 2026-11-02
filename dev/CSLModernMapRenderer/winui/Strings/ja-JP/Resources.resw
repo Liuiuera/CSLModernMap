@@ -4470,4 +4470,5 @@ Esc  現在のタスクをキャンセル</value>
   <data name="Poi_ShowDecorative" xml:space="preserve"><value>装飾物の POI を表示</value></data>
   <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>登録済み装飾物のアイコンと名前を表示します。建物や地物は引き続き表示されます。</value></data>
   <data name="MetroSettings_Reset" xml:space="preserve"><value>既定値に戻す</value></data>
+  <data name="BuildingCategory_Help" xml:space="preserve"><value>「分類別の色」を選択すると適用されます。「色を指定」を有効にすると分類内のすべての建物に適用され、無効にすると POI の自動色に戻ります。用途不明の建物は未分類のままです。</value></data>
 </root>

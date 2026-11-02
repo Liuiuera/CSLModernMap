@@ -50,6 +50,7 @@
   <ItemGroup>
     <RmpSource Include="..\..\third_party\rmp\src\**\*;..\..\third_party\rmp\public\images\facilities\**\*;..\..\third_party\rmp\public\logo.svg;..\..\third_party\rmp\LICENCE;..\..\third_party\rmp\package*.json;..\..\third_party\rmp\embed.html;..\..\third_party\rmp\vite.embed.config.ts;..\..\third_party\rmp\CSLMM-UPSTREAM.md;..\..\..\tools\renderer\build_rmp_editor.py" />
     <RmpSource Include="..\..\third_party\rmp\RMP-IMAGE-TERMS.txt" />
+    <RmpSource Include="..\..\third_party\rmp\public\station-previews\*.svg" />
     <Content Include="..\..\..\LICENSES\RibbonSpace-MIT.txt" Link="Assets\Licenses\RibbonSpace-MIT.txt" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\..\LICENSE" Link="Assets\Licenses\LICENSE" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\..\LICENSING.md" Link="Assets\Licenses\LICENSING.md" CopyToOutputDirectory="PreserveNewest" />

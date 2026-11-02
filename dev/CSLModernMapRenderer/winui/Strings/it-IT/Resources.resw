@@ -4470,4 +4470,5 @@ Strada di prova 16 m, scala di rendering 1</value>
   <data name="Poi_ShowDecorative" xml:space="preserve"><value>Mostra POI decorativi</value></data>
   <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>Mostra icone e nomi delle decorazioni elencate. Gli edifici e gli elementi della mappa restano visibili.</value></data>
   <data name="MetroSettings_Reset" xml:space="preserve"><value>Ripristina predefiniti</value></data>
+  <data name="BuildingCategory_Help" xml:space="preserve"><value>Seleziona Colori per categoria per applicare queste impostazioni. Attiva Sovrascrivi colore per tutti gli edifici di una categoria; disattivalo per ripristinare i colori POI automatici. Gli usi sconosciuti restano non classificati.</value></data>
 </root>

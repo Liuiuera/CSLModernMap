@@ -10,6 +10,7 @@ export default defineConfig({
     plugins: [react(), svgr(), { name: 'embedded-resources', closeBundle() {
         mkdirSync('dist-embed/images', { recursive: true });
         cpSync('public/images/facilities', 'dist-embed/images/facilities', { recursive: true });
+        cpSync('public/station-previews', 'dist-embed/station-previews', { recursive: true });
         copyFileSync('public/logo.svg', 'dist-embed/logo.svg');
         mkdirSync('dist-embed/licenses', { recursive: true });
         copyFileSync('LICENCE', 'dist-embed/licenses/RMP-LICENSE.txt');

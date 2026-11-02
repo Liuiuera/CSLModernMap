@@ -164,7 +164,7 @@ internal sealed class RmpEditorView : Grid, IDisposable
             foreach (var pending in _pending.Values) pending.TrySetException(new IOException(T("ProcessFailed")));
             _loaded.TrySetException(new IOException(T("ProcessFailed")));
         };
-        var language = UiLanguage.Language switch { "zh-CN" => "zh-Hans", "zh-TW" => "zh-Hant", var value => value.Split('-')[0] };
+        var language = UiLanguage.Language switch { "zh-CN" => "zh-Hans", "zh-TW" => "zh-Hant", var value => value };
         _web.Source = new Uri($"https://{Host}/embed.html?language={Uri.EscapeDataString(language)}");
         await _loaded.Task.WaitAsync(TimeSpan.FromSeconds(60));
         SendTheme();

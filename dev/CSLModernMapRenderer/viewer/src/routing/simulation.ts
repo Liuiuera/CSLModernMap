@@ -9,31 +9,7 @@ import type {RouteResult} from './types';
 import './simulation.css';
 import type {Preview3D} from '../preview-3d';
 
-const en = {start: 'Simulate', title: 'Simulation', exit: 'Exit', play: 'Play', pause: 'Pause',
-  resume: 'Resume', replay: 'Replay', restart: 'Restart', overview: 'Overview', follow: 'Follow',
-  view: 'View', flat: '2D', tilt: '2.5D', buildings: '3D buildings',
-  buildingHeight: 'Buildings use exported model heights; missing heights remain flat.', orientation: 'Orientation', north: 'North up', heading: 'Heading up',
-  speed: 'Speed', zoom: 'Zoom', smooth: 'Smooth turns', progress: 'Progress', settings: 'Settings',
-  remainingDistance: 'Distance remaining', remainingTime: 'Simulation time remaining',
-  left: 'Turn left', right: 'Turn right', arrive: 'Destination', arrived: 'Arrived', unnamed: 'Unnamed road',
-  seconds: '{{seconds}} s', minutes: '{{minutes}} min {{seconds}} s'};
-const zh = {start: '模拟导航', title: '模拟导航', exit: '退出', play: '开始', pause: '暂停',
-  resume: '继续', replay: '再播放', restart: '重新开始', overview: '全览', follow: '恢复跟随',
-  view: '视图', flat: '2D', tilt: '2.5D', buildings: '立体建筑',
-  buildingHeight: '建筑采用导出的模型高度；缺失高度的建筑保持平面。', orientation: '朝向', north: '正北朝上', heading: '车头朝上',
-  speed: '速度', zoom: '缩放', smooth: '平滑转向', progress: '进度', settings: '设置',
-  remainingDistance: '剩余路程', remainingTime: '模拟剩余时间',
-  left: '左转', right: '右转', arrive: '到达终点', arrived: '已到达', unnamed: '未命名道路',
-  seconds: '{{seconds}} 秒', minutes: '{{minutes}} 分 {{seconds}} 秒'};
-i18n.addResourceBundle('en', 'simulation', en);
-i18n.addResourceBundle('zh-CN', 'simulation', zh);
-i18n.addResourceBundle('zh-TW', 'simulation', {...zh, start: '模擬導航', title: '模擬導航', exit: '退出',
-  pause: '暫停', resume: '繼續', restart: '重新開始', overview: '全覽', follow: '恢復跟隨',
-  view: '視圖', buildings: '立體建築', buildingHeight: '建築採用匯出的模型高度；缺失高度的建築保持平面。',
-  orientation: '朝向', heading: '車頭朝上', zoom: '縮放', smooth: '平滑轉向', progress: '進度', settings: '設定',
-  remainingDistance: '剩餘路程', remainingTime: '模擬剩餘時間', left: '左轉', right: '右轉', arrive: '抵達終點', arrived: '已抵達'});
-const text = (key: string, values: Record<string, number> = {}): string =>
-  i18n.t(key, {ns: 'simulation', ...values, defaultValue: en[key as keyof typeof en] ?? key});
+const text = (key: string, values: Record<string, number> = {}): string => i18n.t(`simulation_${key}`, values);
 const distance = (m: number): string => m >= 1000 ? `${(m/1000).toFixed(1)} km` : `${Math.round(m)} m`;
 const simulationIcons: Record<string, ControlIcon> = {
   start: 'navigation', exit: 'logout', settings: 'adjustments', pause: 'player-pause', follow: 'navigation',

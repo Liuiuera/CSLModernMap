@@ -44,7 +44,11 @@
             "grid": "顯示畫布格線；不變更工程內容",
             "snap": "拖曳物件時顯示並使用吸附輔助線",
             "water": "顯示匯入水域的控制點及輔助邊，以調整水域形狀"
-        }
+        },
+        "defaultTitle": "地鐵路線圖",
+        "legend": "圖例",
+        "unnamedLine": "未命名路線",
+        "emptyLegend": "目前的圖中沒有可加入圖例的路線或符號。"
     },
     "color": "顏色",
     "warning": "警告",
@@ -1199,5 +1203,8 @@
             "importance": "重要程度",
             "mereOffset": "標志偏移"
         }
-    }
+    },
+    "confirm": "確認",
+    "Color": "顏色",
+    "Confirm": "確認"
 }

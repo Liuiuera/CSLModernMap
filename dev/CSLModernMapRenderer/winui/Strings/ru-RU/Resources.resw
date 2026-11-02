@@ -4470,4 +4470,5 @@ Shaotang Shaoxiancao Codex</value>
   <data name="Poi_ShowDecorative" xml:space="preserve"><value>Показывать декоративные POI</value></data>
   <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>Показывать значки и названия декораций из списка. Здания и объекты карты остаются видимыми.</value></data>
   <data name="MetroSettings_Reset" xml:space="preserve"><value>Восстановить по умолчанию</value></data>
+  <data name="BuildingCategory_Help" xml:space="preserve"><value>Выберите «Цвета категорий», чтобы применить настройки. Включите «Задать цвет» для всех зданий категории; выключите, чтобы восстановить автоматические цвета POI. Неизвестные назначения остаются без категории.</value></data>
 </root>

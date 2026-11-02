@@ -5,6 +5,8 @@
     <AssemblyVersion Condition="'$(AssemblyVersion)' == ''">$(ReleaseVersion).0</AssemblyVersion>
     <Version>$(AssemblyVersion)</Version>
     <FileVersion>$(AssemblyVersion)</FileVersion>
-    <InformationalVersion>$(ReleaseVersion)</InformationalVersion>
+    <BuildTimestamp Condition="'$(BuildTimestamp)' == ''">$([System.DateTime]::Now.ToString('yyyyMMdd.HHmmss'))</BuildTimestamp>
+    <InformationalVersion>$(ReleaseVersion)+$(BuildTimestamp)</InformationalVersion>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 </Project>

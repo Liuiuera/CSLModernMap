@@ -5328,3 +5328,238 @@ msgstr "Convertendo dados do mapa…"
 
 msgid "gui.progress.transit_catalog"
 msgstr "Preparando linhas de transporte: {done}/{total}"
+
+msgid "gui.transit.water_degraded"
+msgstr "A água foi preservada, mas alguns estilos de margem não puderam ser concluídos."
+
+
+msgid "gui.transit.rmp_water_omitted"
+msgstr "Não foi possível converter o componente de água RMP {component}. Estações, linhas, instalações e outras águas utilizáveis foram preservadas: {reason}"
+
+
+msgid "building.category.residential"
+msgstr "Residencial"
+
+
+msgid "building.category.commercial"
+msgstr "Comercial"
+
+
+msgid "building.category.office"
+msgstr "Escritórios"
+
+
+msgid "building.category.industrial"
+msgstr "Indústria e armazenamento"
+
+
+msgid "building.category.police"
+msgstr "Polícia"
+
+
+msgid "building.category.prison"
+msgstr "Prisões e justiça"
+
+
+msgid "building.category.fire"
+msgstr "Bombeiros e resposta a desastres"
+
+
+msgid "building.category.healthcare"
+msgstr "Saúde e assistência social"
+
+
+msgid "building.category.deathcare"
+msgstr "Serviços funerários"
+
+
+msgid "building.category.education"
+msgstr "Educação e pesquisa"
+
+
+msgid "building.category.administration"
+msgstr "Administração e finanças"
+
+
+msgid "building.category.transport"
+msgstr "Transporte público"
+
+
+msgid "building.category.parking"
+msgstr "Estacionamento"
+
+
+msgid "building.category.post_telecom"
+msgstr "Correios e telecomunicações"
+
+
+msgid "building.category.electricity"
+msgstr "Eletricidade"
+
+
+msgid "building.category.water"
+msgstr "Água e esgoto"
+
+
+msgid "building.category.garbage"
+msgstr "Gestão de resíduos"
+
+
+msgid "building.category.maintenance"
+msgstr "Manutenção de vias e parques"
+
+
+msgid "building.category.park"
+msgstr "Parques e esportes"
+
+
+msgid "building.category.amusement"
+msgstr "Instalações de lazer"
+
+
+msgid "building.category.culture"
+msgstr "Cultura e turismo"
+
+
+msgid "building.category.decoration"
+msgstr "Decorações naturais"
+
+
+msgid "building.category.unclassified"
+msgstr "Não classificado"
+
+
+msgid "building.category.label"
+msgstr "Categoria de uso do edifício"
+
+
+msgid "building.category.table"
+msgstr "Cores dos edifícios por categoria"
+
+
+msgid "building.category.enabled"
+msgstr "Substituir cor"
+
+
+msgid "building.category.color"
+msgstr "Cor de preenchimento da categoria"
+
+
+msgid "building.category.scope"
+msgstr "Aplica-se a todos os edifícios de “{category}”."
+
+
+msgid "building.category.fallback"
+msgstr "Cor padrão dos edifícios (sem cor de POI)"
+
+
+msgid "building.category.unknown_notice"
+msgstr "A exportação não identifica o uso dos edifícios. As alterações aqui afetam todos os edifícios não classificados."
+
+
+msgid "style.building.color_mode.value.category"
+msgstr "Cores por categoria"
+
+
+msgid "gui.style_editor.value.category"
+msgstr "Cores por categoria"
+
+
+msgid "building.category.fallback_scope"
+msgstr "Usada quando não há cor de POI nem cor definida para a categoria."
+
+
+msgid "building.height"
+msgstr "Altura do modelo"
+
+
+msgid "building.base_elevation"
+msgstr "Elevação da base do modelo"
+
+
+msgid "building.height_source"
+msgstr "Origem da altura"
+
+
+msgid "gui.roads.local_flat_fallback"
+msgstr "Alguns cruzamentos são desenhados no mesmo plano. A sobreposição de pontes e túneis pode ser imprecisa nesses locais."
+
+
+msgid "gui.file.missing_version"
+msgstr "O arquivo {format} não tem versão de formato. Não é possível verificar a compatibilidade. Exporte o mapa novamente com um mod CSLModernMap atualizado."
+
+
+msgid "gui.file.invalid_version"
+msgstr "O arquivo {format} tem uma versão de formato inválida. Selecione um mapa válido ou exporte-o novamente."
+
+
+msgid "gui.file.old_version"
+msgstr "{format} {version} está desatualizado; este visualizador aceita {supported}. Atualize o mod CSLModernMap e exporte o mapa novamente."
+
+
+msgid "gui.file.unsupported_version"
+msgstr "{format} {version} não é compatível; este visualizador aceita {supported}. Use um visualizador atualizado compatível com este arquivo."
+
+
+msgid "gui.file.invalid_cmm"
+msgstr "O mapa CMM ou sua estrutura de dados é inválido. Selecione um mapa exportado pelo mod ou exporte-o novamente."
+
+
+msgid "gui.file.invalid_xml"
+msgstr "O mapa XML CSLMap é inválido ou está danificado. Selecione um mapa válido ou exporte-o novamente."
+
+
+msgid "gui.file.invalid_gzip"
+msgstr "O mapa compactado é inválido ou está incompleto. Copie o arquivo novamente ou exporte o mapa de novo no jogo."
+
+
+msgid "gui.file.invalid_encoding"
+msgstr "O arquivo do mapa tem codificação de texto inválida. Selecione um mapa exportado pelo mod ou exporte-o novamente."
+
+
+msgid "gui.file.legacy_xml"
+msgstr "CSLMAP é um formato de compatibilidade e pode não aceitar algumas funções novas. Recomendamos exportar no formato CMM."
+
+
+msgid "gui.file.unversioned_xml"
+msgstr "Este arquivo CSLMAP não tem número de versão e foi aberto em modo de compatibilidade. Algumas funções novas podem não estar disponíveis. Recomendamos o formato CMM."
+
+
+msgid "ui.failure.internal"
+msgstr "Ocorreu um erro inesperado. Você pode relatá-lo ao autor."
+
+
+msgid "ui.failure.permission"
+msgstr "Não foi possível acessar um arquivo necessário. Verifique as permissões do arquivo ou pasta e tente novamente."
+
+
+msgid "ui.failure.missing_file"
+msgstr "Um arquivo necessário não foi encontrado. Verifique se ele ainda está no local original e tente novamente."
+
+
+msgid "ui.failure.memory"
+msgstr "Falha na alocação de memória. Reduza o tamanho da saída ou feche aplicativos que consomem muita memória e tente novamente."
+
+
+msgid "ui.failure.operation.metro"
+msgstr "Falha ao gerar o mapa de metrô"
+
+
+msgid "ui.failure.operation.preview"
+msgstr "Falha ao gerar a prévia do mapa"
+
+
+msgid "ui.failure.operation.export"
+msgstr "Falha ao exportar o mapa"
+
+
+msgid "ui.failure.operation.open"
+msgstr "Falha ao abrir o mapa"
+
+
+msgid "ui.failure.operation.operation"
+msgstr "Falha na operação"
+
+
+msgid "ui.failure.city_json"
+msgstr "O arquivo da cidade contém JSON inválido. Exporte-o novamente pelo jogo; se o erro persistir, envie os detalhes ao autor."

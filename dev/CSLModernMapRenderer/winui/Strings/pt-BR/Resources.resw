@@ -4470,4 +4470,5 @@ Via de amostra com 16 m, escala de renderização 1</value>
   <data name="Poi_ShowDecorative" xml:space="preserve"><value>Mostrar POIs decorativos</value></data>
   <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>Mostrar ícones e nomes das decorações listadas. Os edifícios e elementos do mapa permanecem visíveis.</value></data>
   <data name="MetroSettings_Reset" xml:space="preserve"><value>Restaurar padrões</value></data>
+  <data name="BuildingCategory_Help" xml:space="preserve"><value>Selecione Cores por categoria para aplicar estas configurações. Ative Substituir cor para todos os edifícios de uma categoria; desative para restaurar as cores automáticas de POI. Usos desconhecidos permanecem não classificados.</value></data>
 </root>

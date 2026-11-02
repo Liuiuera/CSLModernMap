@@ -5338,3 +5338,238 @@ msgstr "Kartendaten werden konvertiert…"
 
 msgid "gui.progress.transit_catalog"
 msgstr "ÖPNV-Linien werden vorbereitet: {done}/{total}"
+
+msgid "gui.transit.water_degraded"
+msgstr "Das Wasser wurde beibehalten, einige Uferstile konnten jedoch nicht vollständig angewendet werden."
+
+
+msgid "gui.transit.rmp_water_omitted"
+msgstr "Die RMP-Wasserkomponente {component} konnte nicht konvertiert werden. Stationen, Linien, Einrichtungen und anderes nutzbares Wasser wurden beibehalten: {reason}"
+
+
+msgid "building.category.residential"
+msgstr "Wohnen"
+
+
+msgid "building.category.commercial"
+msgstr "Gewerbe"
+
+
+msgid "building.category.office"
+msgstr "Büros"
+
+
+msgid "building.category.industrial"
+msgstr "Industrie und Lager"
+
+
+msgid "building.category.police"
+msgstr "Polizei"
+
+
+msgid "building.category.prison"
+msgstr "Gefängnisse und Justiz"
+
+
+msgid "building.category.fire"
+msgstr "Feuerwehr und Katastrophenschutz"
+
+
+msgid "building.category.healthcare"
+msgstr "Gesundheit und Soziales"
+
+
+msgid "building.category.deathcare"
+msgstr "Bestattungswesen"
+
+
+msgid "building.category.education"
+msgstr "Bildung und Forschung"
+
+
+msgid "building.category.administration"
+msgstr "Verwaltung und Finanzen"
+
+
+msgid "building.category.transport"
+msgstr "Öffentlicher Verkehr"
+
+
+msgid "building.category.parking"
+msgstr "Parkplätze"
+
+
+msgid "building.category.post_telecom"
+msgstr "Post und Telekommunikation"
+
+
+msgid "building.category.electricity"
+msgstr "Stromversorgung"
+
+
+msgid "building.category.water"
+msgstr "Wasser und Abwasser"
+
+
+msgid "building.category.garbage"
+msgstr "Abfallwirtschaft"
+
+
+msgid "building.category.maintenance"
+msgstr "Straßen- und Parkpflege"
+
+
+msgid "building.category.park"
+msgstr "Parks und Sport"
+
+
+msgid "building.category.amusement"
+msgstr "Freizeiteinrichtungen"
+
+
+msgid "building.category.culture"
+msgstr "Kultur und Tourismus"
+
+
+msgid "building.category.decoration"
+msgstr "Natürliche Dekorationen"
+
+
+msgid "building.category.unclassified"
+msgstr "Nicht klassifiziert"
+
+
+msgid "building.category.label"
+msgstr "Gebäudenutzung"
+
+
+msgid "building.category.table"
+msgstr "Gebäudefarben nach Kategorie"
+
+
+msgid "building.category.enabled"
+msgstr "Farbe überschreiben"
+
+
+msgid "building.category.color"
+msgstr "Füllfarbe der Kategorie"
+
+
+msgid "building.category.scope"
+msgstr "Gilt für alle Gebäude der Kategorie „{category}“."
+
+
+msgid "building.category.fallback"
+msgstr "Standardgebäudefarbe (ohne POI-Farbe)"
+
+
+msgid "building.category.unknown_notice"
+msgstr "Der Export enthält keine Gebäudenutzung. Änderungen hier betreffen alle nicht klassifizierten Gebäude."
+
+
+msgid "style.building.color_mode.value.category"
+msgstr "Kategoriefarben"
+
+
+msgid "gui.style_editor.value.category"
+msgstr "Kategoriefarben"
+
+
+msgid "building.category.fallback_scope"
+msgstr "Wird verwendet, wenn weder eine POI-Farbe noch eine Kategoriefarbe verfügbar ist."
+
+
+msgid "building.height"
+msgstr "Modellhöhe"
+
+
+msgid "building.base_elevation"
+msgstr "Basishöhe des Modells"
+
+
+msgid "building.height_source"
+msgstr "Höhenquelle"
+
+
+msgid "gui.roads.local_flat_fallback"
+msgstr "Einige Straßenkreuzungen werden flach dargestellt. Überlagerungen von Brücken und Tunneln können dort ungenau sein."
+
+
+msgid "gui.file.missing_version"
+msgstr "Die {format}-Datei hat keine Formatversion. Die Kompatibilität kann nicht geprüft werden. Exportieren Sie die Karte erneut mit einem aktuellen CSLModernMap-Mod."
+
+
+msgid "gui.file.invalid_version"
+msgstr "Die {format}-Datei hat eine ungültige Formatversion. Wählen Sie eine gültige Kartendatei oder exportieren Sie die Karte erneut."
+
+
+msgid "gui.file.old_version"
+msgstr "{format} {version} ist veraltet; dieser Viewer unterstützt {supported}. Aktualisieren Sie den CSLModernMap-Mod und exportieren Sie die Karte erneut."
+
+
+msgid "gui.file.unsupported_version"
+msgstr "{format} {version} wird nicht unterstützt; dieser Viewer unterstützt {supported}. Verwenden Sie einen aktuellen, mit dieser Datei kompatiblen Viewer."
+
+
+msgid "gui.file.invalid_cmm"
+msgstr "Dies ist keine gültige CMM-Karte, oder ihre Datenstruktur ist ungültig. Wählen Sie eine vom Mod exportierte Karte oder exportieren Sie sie erneut."
+
+
+msgid "gui.file.invalid_xml"
+msgstr "Dies ist keine gültige CSLMap-XML-Karte, oder die Datei ist beschädigt. Wählen Sie eine gültige Karte oder exportieren Sie sie erneut."
+
+
+msgid "gui.file.invalid_gzip"
+msgstr "Die komprimierte Karte ist ungültig oder unvollständig. Kopieren Sie die Datei erneut oder exportieren Sie die Karte erneut im Spiel."
+
+
+msgid "gui.file.invalid_encoding"
+msgstr "Die Kartendatei hat eine ungültige Textkodierung. Wählen Sie eine vom Mod exportierte Karte oder exportieren Sie sie erneut."
+
+
+msgid "gui.file.legacy_xml"
+msgstr "CSLMAP ist ein Kompatibilitätsformat und unterstützt möglicherweise einige neue Funktionen nicht. Wir empfehlen den Export im CMM-Format."
+
+
+msgid "gui.file.unversioned_xml"
+msgstr "Diese CSLMAP-Datei hat keine Versionsnummer und wurde im Kompatibilitätsmodus geöffnet. Einige neue Funktionen werden möglicherweise nicht unterstützt. Wir empfehlen den Export im CMM-Format."
+
+
+msgid "ui.failure.internal"
+msgstr "Ein unerwarteter Fehler ist aufgetreten. Sie können diesen Fehler dem Autor melden."
+
+
+msgid "ui.failure.permission"
+msgstr "Auf eine erforderliche Datei konnte nicht zugegriffen werden. Prüfen Sie die Datei- oder Ordnerberechtigungen und versuchen Sie es erneut."
+
+
+msgid "ui.failure.missing_file"
+msgstr "Eine erforderliche Datei wurde nicht gefunden. Prüfen Sie, ob sie sich noch am ursprünglichen Speicherort befindet, und versuchen Sie es erneut."
+
+
+msgid "ui.failure.memory"
+msgstr "Speicher konnte nicht zugewiesen werden. Verringern Sie die Ausgabegröße oder schließen Sie speicherintensive Anwendungen und versuchen Sie es erneut."
+
+
+msgid "ui.failure.operation.metro"
+msgstr "Erstellen der Metrokarte fehlgeschlagen"
+
+
+msgid "ui.failure.operation.preview"
+msgstr "Erstellen der Kartenvorschau fehlgeschlagen"
+
+
+msgid "ui.failure.operation.export"
+msgstr "Kartenexport fehlgeschlagen"
+
+
+msgid "ui.failure.operation.open"
+msgstr "Öffnen der Karte fehlgeschlagen"
+
+
+msgid "ui.failure.operation.operation"
+msgstr "Vorgang fehlgeschlagen"
+
+
+msgid "ui.failure.city_json"
+msgstr "Die Stadtdatei enthält ungültiges JSON. Exportieren Sie sie erneut im Spiel. Falls der Fehler weiterhin auftritt, melden Sie dem Autor die Fehlerdetails."

@@ -4470,4 +4470,5 @@ Przykładowa droga: 16 m, skala renderowania: 1</value>
   <data name="Poi_ShowDecorative" xml:space="preserve"><value>Pokaż dekoracyjne POI</value></data>
   <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>Pokaż ikony i nazwy dekoracji z listy. Budynki i obiekty mapy pozostają widoczne.</value></data>
   <data name="MetroSettings_Reset" xml:space="preserve"><value>Przywróć domyślne</value></data>
+  <data name="BuildingCategory_Help" xml:space="preserve"><value>Wybierz Kolory kategorii, aby zastosować te ustawienia. Włącz Zastąp kolor dla wszystkich budynków kategorii; wyłącz, aby przywrócić automatyczne kolory POI. Nieznane zastosowania pozostają niesklasyfikowane.</value></data>
 </root>

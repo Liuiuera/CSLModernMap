@@ -4470,4 +4470,5 @@ Carretera de muestra de 16 m, escala de renderizado 1</value>
   <data name="Poi_ShowDecorative" xml:space="preserve"><value>Mostrar POI decorativos</value></data>
   <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>Mostrar iconos y nombres de las decoraciones incluidas. Los edificios y elementos del mapa permanecen visibles.</value></data>
   <data name="MetroSettings_Reset" xml:space="preserve"><value>Restaurar valores predeterminados</value></data>
+  <data name="BuildingCategory_Help" xml:space="preserve"><value>Selecciona Colores por categoría para aplicar estos ajustes. Activa Reemplazar color para todos los edificios de una categoría; desactívalo para restaurar los colores automáticos de POI. Los usos desconocidos permanecen sin clasificar.</value></data>
 </root>

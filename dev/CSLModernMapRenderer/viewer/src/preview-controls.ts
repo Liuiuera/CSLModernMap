@@ -6,56 +6,16 @@ import {searchCandidates, searchGroups, type Candidate, type SearchFeature as Fe
   type SearchSources as Sources, type SearchGroup} from './preview-search';
 import './preview-controls.css';
 
-const english = {
-  search: 'Search map objects', searchHelp: 'Search names in the current map', empty: 'No matching objects',
-  building: 'Building', road: 'Road', area: 'Area', layers: 'Layers', fit: 'Show full map', help: 'Controls',
-  title: 'Map controls', move: 'Move and zoom', moveHelp: 'Hold the left mouse button to drag. Scroll to zoom.',
-  view: 'Adjust the view', viewHelp: 'Enable 3D, then hold the middle mouse button and drag to rotate or tilt.',
-  find: 'Search', findHelp: 'Enter a name at the top left to find and locate a map object.',
-  navigate: 'Navigation', navigateHelp: 'Click Routes, then choose a start and destination on the map.',
-  gotIt: 'Got it', terrain: 'Terrain', built_area: 'Built-up area', land_use: 'Land use', water: 'Water',
-  railway: 'Railway', traffic: 'Traffic', metro: 'Transit', transit: 'Transit view', poi: 'POI',
-  label: 'Labels', district: 'Districts', zone: 'Zones', watermark: 'Watermark',
-  poi_area: 'Facility areas', procedural_objects: 'Procedural objects',
-  baseMap: 'Base map', transportFacilities: 'Transport and facilities', labelsOther: 'Labels and other',
-  close: 'Close', zoomIn: 'Zoom in', zoomOut: 'Zoom out', collapse: 'Collapse', expand: 'Expand',
-  searchRoutes: 'Search / Routes', actions: 'View',
-};
-const chinese: typeof english = {
-  search: '搜索地图对象', searchHelp: '搜索当前地图中的名称', empty: '未找到匹配的对象',
-  building: '建筑', road: '道路', area: '区域', layers: '图层', fit: '显示全图', help: '操作提示',
-  title: '地图操作', move: '移动与缩放', moveHelp: '按住左键拖动地图，滚动滚轮缩放。',
-  view: '调整视角', viewHelp: '开启 3D 后，按住中键拖动，旋转或倾斜视角。',
-  find: '搜索', findHelp: '在左上角输入名称，查找并定位地图对象。',
-  navigate: '导航', navigateHelp: '点击“路线”，在地图上选择起点和终点。',
-  gotIt: '知道了', terrain: '地形', built_area: '建成区', land_use: '用地', water: '水体',
-  railway: '铁路', traffic: '路况', metro: '公共交通', transit: '公共交通视图', poi: 'POI',
-  label: '标注', district: '区划', zone: '分区', watermark: '水印',
-  poi_area: '设施范围', procedural_objects: 'Procedural Objects',
-  baseMap: '基础地图', transportFacilities: '交通与设施', labelsOther: '标注与其他',
-  close: '关闭', zoomIn: '放大', zoomOut: '缩小', collapse: '收起', expand: '展开',
-  searchRoutes: '搜索 / 路线', actions: '操作',
-};
-const traditional: typeof english = {
-  search: '搜尋地圖物件', searchHelp: '搜尋目前地圖中的名稱', empty: '找不到符合的物件',
-  building: '建築', road: '道路', area: '區域', layers: '圖層', fit: '顯示全圖', help: '操作提示',
-  title: '地圖操作', move: '移動與縮放', moveHelp: '按住左鍵拖動地圖，捲動滾輪縮放。',
-  view: '調整視角', viewHelp: '開啟 3D 後，按住中鍵拖動，旋轉或傾斜視角。',
-  find: '搜尋', findHelp: '在左上角輸入名稱，尋找並定位地圖物件。',
-  navigate: '導航', navigateHelp: '點擊「路線」，在地圖上選擇起點和終點。',
-  gotIt: '知道了', terrain: '地形', built_area: '建成區', land_use: '用地', water: '水體',
-  railway: '鐵路', traffic: '路況', metro: '公共交通', transit: '公共交通檢視', poi: 'POI',
-  label: '標註', district: '區劃', zone: '分區', watermark: '浮水印',
-  poi_area: '設施範圍', procedural_objects: 'Procedural Objects',
-  baseMap: '基礎地圖', transportFacilities: '交通與設施', labelsOther: '標註與其他',
-  close: '關閉', zoomIn: '放大', zoomOut: '縮小', collapse: '收起', expand: '展開',
-  searchRoutes: '搜尋 / 路線', actions: '操作',
-};
-type TextKey = keyof typeof english;
+type TextKey = 'search' | 'searchHelp' | 'empty' | 'building' | 'road' | 'area' | 'layers' | 'fit' | 'help'
+  | 'title' | 'move' | 'moveHelp' | 'view' | 'viewHelp' | 'find' | 'findHelp' | 'navigate' | 'navigateHelp'
+  | 'gotIt' | 'terrain' | 'built_area' | 'land_use' | 'water' | 'railway' | 'traffic' | 'metro' | 'transit'
+  | 'poi' | 'label' | 'district' | 'zone' | 'watermark' | 'poi_area' | 'procedural_objects' | 'baseMap'
+  | 'transportFacilities' | 'labelsOther' | 'close' | 'zoomIn' | 'zoomOut' | 'collapse' | 'expand'
+  | 'searchRoutes' | 'actions';
 type EdgeGroup = 'search' | 'layers' | 'view';
 function text(key: TextKey): string {
   if (['search', 'searchHelp', 'empty', 'findHelp'].includes(key)) return i18n.t(`search_${key}`);
-  return (i18n.language === 'zh-CN' ? chinese : i18n.language === 'zh-TW' ? traditional : english)[key];
+  return i18n.t(`controls_${key}`);
 }
 
 const layerGroups: Array<{title: TextKey; items: Array<[TextKey, ControlIcon]>}> = [

@@ -42,7 +42,13 @@
             "grid": "Show canvas grid lines without changing the project",
             "snap": "Show and use alignment guides while dragging objects",
             "water": "Show imported water control points and boundary guides to edit its shape"
-        }
+        },
+        "defaultTitle": "Metro Map",
+        "legend": "Legend",
+        "normalStation": "Regular station",
+        "interchangeStation": "Interchange station",
+        "unnamedLine": "Unnamed line",
+        "emptyLegend": "The current drawing has no lines or symbols to include in a legend."
     },
     "color": "Color",
     "warning": "Warning",
@@ -1091,14 +1097,6 @@
     },
 
     "localStorageQuotaExceeded": "Local storage limit reached. Unable to save new changes.",
-    "embed": {
-        "defaultTitle": "Metro Map",
-        "legend": "Legend",
-        "normalStation": "Regular station",
-        "interchangeStation": "Interchange station",
-        "unnamedLine": "Unnamed line",
-        "emptyLegend": "The current drawing has no lines or symbols to include in a legend."
-    },
     "cmm": {
     "properties": "Properties",
     "otherProperties": "Other properties",
@@ -1206,5 +1204,8 @@
             "importance": "Importance",
             "mereOffset": "Symbol offset"
         }
-    }
+    },
+    "confirm": "Confirm",
+    "Color": "Color",
+    "Confirm": "Confirm"
 }

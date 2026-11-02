@@ -5361,3 +5361,238 @@ msgstr "Convirtiendo datos del mapa…"
 
 msgid "gui.progress.transit_catalog"
 msgstr "Preparando líneas de transporte: {done}/{total}"
+
+msgid "gui.transit.water_degraded"
+msgstr "Se conservó el agua, pero no se pudieron completar algunos estilos de costa."
+
+
+msgid "gui.transit.rmp_water_omitted"
+msgstr "No se pudo convertir el componente de agua RMP {component}. Se conservaron las estaciones, líneas, instalaciones y otras masas de agua utilizables: {reason}"
+
+
+msgid "building.category.residential"
+msgstr "Residencial"
+
+
+msgid "building.category.commercial"
+msgstr "Comercial"
+
+
+msgid "building.category.office"
+msgstr "Oficinas"
+
+
+msgid "building.category.industrial"
+msgstr "Industria y almacenamiento"
+
+
+msgid "building.category.police"
+msgstr "Policía"
+
+
+msgid "building.category.prison"
+msgstr "Prisiones y justicia"
+
+
+msgid "building.category.fire"
+msgstr "Bomberos y emergencias"
+
+
+msgid "building.category.healthcare"
+msgstr "Sanidad y bienestar"
+
+
+msgid "building.category.deathcare"
+msgstr "Servicios funerarios"
+
+
+msgid "building.category.education"
+msgstr "Educación e investigación"
+
+
+msgid "building.category.administration"
+msgstr "Administración y finanzas"
+
+
+msgid "building.category.transport"
+msgstr "Transporte público"
+
+
+msgid "building.category.parking"
+msgstr "Aparcamiento"
+
+
+msgid "building.category.post_telecom"
+msgstr "Correos y telecomunicaciones"
+
+
+msgid "building.category.electricity"
+msgstr "Electricidad"
+
+
+msgid "building.category.water"
+msgstr "Agua y alcantarillado"
+
+
+msgid "building.category.garbage"
+msgstr "Gestión de residuos"
+
+
+msgid "building.category.maintenance"
+msgstr "Mantenimiento de carreteras y parques"
+
+
+msgid "building.category.park"
+msgstr "Parques y deportes"
+
+
+msgid "building.category.amusement"
+msgstr "Instalaciones recreativas"
+
+
+msgid "building.category.culture"
+msgstr "Cultura y turismo"
+
+
+msgid "building.category.decoration"
+msgstr "Decoración natural"
+
+
+msgid "building.category.unclassified"
+msgstr "Sin clasificar"
+
+
+msgid "building.category.label"
+msgstr "Categoría de uso del edificio"
+
+
+msgid "building.category.table"
+msgstr "Colores por categoría de edificios"
+
+
+msgid "building.category.enabled"
+msgstr "Reemplazar color"
+
+
+msgid "building.category.color"
+msgstr "Color de relleno de la categoría"
+
+
+msgid "building.category.scope"
+msgstr "Se aplica a todos los edificios de «{category}»."
+
+
+msgid "building.category.fallback"
+msgstr "Color predeterminado del edificio (sin color de POI)"
+
+
+msgid "building.category.unknown_notice"
+msgstr "La exportación no identifica el uso de los edificios. Estos cambios afectan a todos los edificios sin clasificar."
+
+
+msgid "style.building.color_mode.value.category"
+msgstr "Colores por categoría"
+
+
+msgid "gui.style_editor.value.category"
+msgstr "Colores por categoría"
+
+
+msgid "building.category.fallback_scope"
+msgstr "Se usa cuando no hay un color de POI ni un color asignado a la categoría."
+
+
+msgid "building.height"
+msgstr "Altura del modelo"
+
+
+msgid "building.base_elevation"
+msgstr "Elevación de la base del modelo"
+
+
+msgid "building.height_source"
+msgstr "Origen de la altura"
+
+
+msgid "gui.roads.local_flat_fallback"
+msgstr "Algunos cruces se dibujan planos. La superposición de puentes y túneles puede ser inexacta en esos lugares."
+
+
+msgid "gui.file.missing_version"
+msgstr "El archivo {format} no tiene versión de formato. No se puede comprobar la compatibilidad. Vuelve a exportar el mapa con un mod CSLModernMap actualizado."
+
+
+msgid "gui.file.invalid_version"
+msgstr "El archivo {format} tiene una versión de formato no válida. Selecciona un mapa válido o vuelve a exportarlo."
+
+
+msgid "gui.file.old_version"
+msgstr "{format} {version} está obsoleto; este visor admite {supported}. Actualiza el mod CSLModernMap y vuelve a exportar el mapa."
+
+
+msgid "gui.file.unsupported_version"
+msgstr "{format} {version} no es compatible; este visor admite {supported}. Usa un visor actualizado compatible con este archivo."
+
+
+msgid "gui.file.invalid_cmm"
+msgstr "El mapa CMM o su estructura de datos no es válido. Selecciona un mapa exportado por el mod o vuelve a exportarlo."
+
+
+msgid "gui.file.invalid_xml"
+msgstr "El mapa XML de CSLMap no es válido o está dañado. Selecciona un mapa válido o vuelve a exportarlo."
+
+
+msgid "gui.file.invalid_gzip"
+msgstr "El mapa comprimido no es válido o está incompleto. Copia el archivo de nuevo o vuelve a exportar el mapa desde el juego."
+
+
+msgid "gui.file.invalid_encoding"
+msgstr "El archivo del mapa tiene una codificación de texto no válida. Selecciona un mapa exportado por el mod o vuelve a exportarlo."
+
+
+msgid "gui.file.legacy_xml"
+msgstr "CSLMAP es un formato de compatibilidad y puede no admitir algunas funciones nuevas. Recomendamos exportar en formato CMM."
+
+
+msgid "gui.file.unversioned_xml"
+msgstr "Este archivo CSLMAP no tiene número de versión y se abrió en modo de compatibilidad. Algunas funciones nuevas podrían no estar disponibles. Recomendamos el formato CMM."
+
+
+msgid "ui.failure.internal"
+msgstr "Se produjo un error inesperado. Puedes informar al autor."
+
+
+msgid "ui.failure.permission"
+msgstr "No se pudo acceder a un archivo necesario. Comprueba los permisos del archivo o carpeta y vuelve a intentarlo."
+
+
+msgid "ui.failure.missing_file"
+msgstr "No se encontró un archivo necesario. Comprueba que sigue en su ubicación original y vuelve a intentarlo."
+
+
+msgid "ui.failure.memory"
+msgstr "No se pudo asignar memoria. Reduce el tamaño de salida o cierra aplicaciones que consuman mucha memoria y vuelve a intentarlo."
+
+
+msgid "ui.failure.operation.metro"
+msgstr "Error al generar el plano de metro"
+
+
+msgid "ui.failure.operation.preview"
+msgstr "Error al generar la vista previa"
+
+
+msgid "ui.failure.operation.export"
+msgstr "Error al exportar el mapa"
+
+
+msgid "ui.failure.operation.open"
+msgstr "Error al abrir el mapa"
+
+
+msgid "ui.failure.operation.operation"
+msgstr "Error en la operación"
+
+
+msgid "ui.failure.city_json"
+msgstr "El archivo de ciudad contiene JSON no válido. Vuelve a exportarlo desde el juego; si el error persiste, envía los detalles al autor."

@@ -14,6 +14,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
+from datetime import datetime
 
 ROOT = Path(__file__).resolve().parent
 PROJECT_ROOT = ROOT.parent.parent
@@ -22,6 +23,7 @@ REPORT_ROOT = ROOT / "build" / "nuitka"
 MAIN = ROOT / "main.py"
 OUTPUT_NAME = "CSLModernMapEngine.exe"
 VIEWER_BUILD = PROJECT_ROOT / "tools/renderer/build_preview_viewer.py"
+BUILD_TIMESTAMP = os.environ.get("BuildTimestamp") or datetime.now().strftime("%Y%m%d.%H%M%S")
 
 def _version() -> str:
     version_file = PROJECT_ROOT / "version.json"
@@ -64,6 +66,8 @@ def _build_command(mode: str, console: bool = False,
         f"--output-dir={DIST_ROOT}",
         f"--output-filename={OUTPUT_NAME}",
         # 无窗口引擎不设置 exe 图标：Nuitka 会为 Qt 图标注入 QtWidgets。
+        f"--product-version={_version()}",
+        f"--file-description=CSLModernMap Engine {_version()}+{BUILD_TIMESTAMP}",
         "--remove-output",
         f"--report={REPORT_ROOT / (mode + '-compilation.xml')}",
         # main.py 通过延迟导入和 CLI 子命令访问这些模块，显式收集避免漏包。

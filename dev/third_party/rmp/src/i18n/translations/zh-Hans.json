@@ -42,7 +42,13 @@
             "grid": "显示画布网格线；不改变工程内容",
             "snap": "拖动对象时显示并使用吸附辅助线",
             "water": "显示导入水域的控制点与辅助边，便于修改水域形状"
-        }
+        },
+        "defaultTitle": "地铁图",
+        "legend": "图例",
+        "normalStation": "普通站",
+        "interchangeStation": "换乘站",
+        "unnamedLine": "未命名线路",
+        "emptyLegend": "当前图中没有可添加到图例的线路或符号。"
     },
     "color": "颜色",
     "warning": "警告",
@@ -1090,14 +1096,6 @@
     },
 
     "localStorageQuotaExceeded": "本地存储空间已达上限。无法保存新更改。",
-    "embed": {
-        "defaultTitle": "地铁图",
-        "legend": "图例",
-        "normalStation": "普通站",
-        "interchangeStation": "换乘站",
-        "unnamedLine": "未命名线路",
-        "emptyLegend": "当前图中没有可添加到图例的线路或符号。"
-    },
     "cmm": {
     "properties": "属性",
     "otherProperties": "其他属性",
@@ -1205,5 +1203,8 @@
             "importance": "重要程度",
             "mereOffset": "标志偏移"
         }
-    }
+    },
+    "confirm": "确认",
+    "Color": "颜色",
+    "Confirm": "确认"
 }

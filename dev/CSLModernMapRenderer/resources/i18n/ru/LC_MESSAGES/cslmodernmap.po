@@ -5311,3 +5311,238 @@ msgstr "Преобразование данных карты…"
 
 msgid "gui.progress.transit_catalog"
 msgstr "Подготовка маршрутов транспорта: {done}/{total}"
+
+msgid "gui.transit.water_degraded"
+msgstr "Вода сохранена, но некоторые стили береговой линии не удалось применить полностью."
+
+
+msgid "gui.transit.rmp_water_omitted"
+msgstr "Не удалось преобразовать компонент воды RMP {component}. Станции, линии, объекты и другие пригодные участки воды сохранены: {reason}"
+
+
+msgid "building.category.residential"
+msgstr "Жилые здания"
+
+
+msgid "building.category.commercial"
+msgstr "Торговля"
+
+
+msgid "building.category.office"
+msgstr "Офисы"
+
+
+msgid "building.category.industrial"
+msgstr "Промышленность и склады"
+
+
+msgid "building.category.police"
+msgstr "Полиция"
+
+
+msgid "building.category.prison"
+msgstr "Тюрьмы и правосудие"
+
+
+msgid "building.category.fire"
+msgstr "Пожарная служба и спасатели"
+
+
+msgid "building.category.healthcare"
+msgstr "Здравоохранение и социальная помощь"
+
+
+msgid "building.category.deathcare"
+msgstr "Ритуальные услуги"
+
+
+msgid "building.category.education"
+msgstr "Образование и наука"
+
+
+msgid "building.category.administration"
+msgstr "Администрация и финансы"
+
+
+msgid "building.category.transport"
+msgstr "Общественный транспорт"
+
+
+msgid "building.category.parking"
+msgstr "Парковки"
+
+
+msgid "building.category.post_telecom"
+msgstr "Почта и связь"
+
+
+msgid "building.category.electricity"
+msgstr "Электроснабжение"
+
+
+msgid "building.category.water"
+msgstr "Вода и канализация"
+
+
+msgid "building.category.garbage"
+msgstr "Обращение с отходами"
+
+
+msgid "building.category.maintenance"
+msgstr "Обслуживание дорог и парков"
+
+
+msgid "building.category.park"
+msgstr "Парки и спорт"
+
+
+msgid "building.category.amusement"
+msgstr "Развлекательные объекты"
+
+
+msgid "building.category.culture"
+msgstr "Культура и туризм"
+
+
+msgid "building.category.decoration"
+msgstr "Природные декорации"
+
+
+msgid "building.category.unclassified"
+msgstr "Без категории"
+
+
+msgid "building.category.label"
+msgstr "Категория назначения здания"
+
+
+msgid "building.category.table"
+msgstr "Цвета категорий зданий"
+
+
+msgid "building.category.enabled"
+msgstr "Задать цвет"
+
+
+msgid "building.category.color"
+msgstr "Цвет заливки категории"
+
+
+msgid "building.category.scope"
+msgstr "Применяется ко всем зданиям категории «{category}»."
+
+
+msgid "building.category.fallback"
+msgstr "Цвет зданий по умолчанию (без цвета POI)"
+
+
+msgid "building.category.unknown_notice"
+msgstr "В экспорте не указано назначение зданий. Эти изменения затронут все здания без категории."
+
+
+msgid "style.building.color_mode.value.category"
+msgstr "Цвета категорий"
+
+
+msgid "gui.style_editor.value.category"
+msgstr "Цвета категорий"
+
+
+msgid "building.category.fallback_scope"
+msgstr "Используется, если нет ни цвета POI, ни заданного цвета категории."
+
+
+msgid "building.height"
+msgstr "Высота модели"
+
+
+msgid "building.base_elevation"
+msgstr "Отметка основания модели"
+
+
+msgid "building.height_source"
+msgstr "Источник высоты"
+
+
+msgid "gui.roads.local_flat_fallback"
+msgstr "Некоторые пересечения дорог отображаются в одной плоскости. Наложение мостов и тоннелей в этих местах может быть неточным."
+
+
+msgid "gui.file.missing_version"
+msgstr "В файле {format} не указана версия формата. Невозможно проверить совместимость. Экспортируйте карту заново с актуальным модом CSLModernMap."
+
+
+msgid "gui.file.invalid_version"
+msgstr "В файле {format} указана недопустимая версия формата. Выберите корректную карту или экспортируйте её заново."
+
+
+msgid "gui.file.old_version"
+msgstr "{format} {version} устарел; этот просмотрщик поддерживает {supported}. Обновите мод CSLModernMap и экспортируйте карту заново."
+
+
+msgid "gui.file.unsupported_version"
+msgstr "{format} {version} не поддерживается; этот просмотрщик поддерживает {supported}. Используйте актуальный просмотрщик, совместимый с этим файлом."
+
+
+msgid "gui.file.invalid_cmm"
+msgstr "Карта CMM или её структура данных некорректна. Выберите карту, экспортированную модом, или экспортируйте её заново."
+
+
+msgid "gui.file.invalid_xml"
+msgstr "Карта CSLMap XML некорректна или повреждена. Выберите корректную карту или экспортируйте её заново."
+
+
+msgid "gui.file.invalid_gzip"
+msgstr "Сжатая карта некорректна или неполна. Скопируйте файл ещё раз или экспортируйте карту заново в игре."
+
+
+msgid "gui.file.invalid_encoding"
+msgstr "Кодировка текста карты некорректна. Выберите карту, экспортированную модом, или экспортируйте её заново."
+
+
+msgid "gui.file.legacy_xml"
+msgstr "CSLMAP — формат совместимости, который может не поддерживать некоторые новые функции. Рекомендуем экспорт в формате CMM."
+
+
+msgid "gui.file.unversioned_xml"
+msgstr "В этом файле CSLMAP нет номера версии, он открыт в режиме совместимости. Некоторые новые функции могут быть недоступны. Рекомендуем формат CMM."
+
+
+msgid "ui.failure.internal"
+msgstr "Произошла непредвиденная ошибка. Вы можете сообщить о ней автору."
+
+
+msgid "ui.failure.permission"
+msgstr "Не удалось получить доступ к необходимому файлу. Проверьте права доступа к файлу или папке и повторите попытку."
+
+
+msgid "ui.failure.missing_file"
+msgstr "Необходимый файл не найден. Убедитесь, что он находится на прежнем месте, и повторите попытку."
+
+
+msgid "ui.failure.memory"
+msgstr "Не удалось выделить память. Уменьшите размер результата или закройте приложения, потребляющие много памяти, и повторите попытку."
+
+
+msgid "ui.failure.operation.metro"
+msgstr "Не удалось создать схему метро"
+
+
+msgid "ui.failure.operation.preview"
+msgstr "Не удалось создать предпросмотр карты"
+
+
+msgid "ui.failure.operation.export"
+msgstr "Не удалось экспортировать карту"
+
+
+msgid "ui.failure.operation.open"
+msgstr "Не удалось открыть карту"
+
+
+msgid "ui.failure.operation.operation"
+msgstr "Операция не выполнена"
+
+
+msgid "ui.failure.city_json"
+msgstr "Файл города содержит некорректный JSON. Экспортируйте его заново из игры; если ошибка повторится, отправьте её подробности автору."

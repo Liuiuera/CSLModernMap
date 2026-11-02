@@ -29,6 +29,11 @@ def validate_application(app: Path) -> None:
     missing = [item for item in required if not (app / item).is_file()]
     if missing:
         raise ValueError("Application files are missing: " + ", ".join(missing))
+    previews = ROOT / "dev/third_party/rmp/public/station-previews"
+    missing_previews = [path.name for path in previews.glob("*.svg")
+                        if not (app / "Assets/Rmp/station-previews" / path.name).is_file()]
+    if not any(previews.glob("*.svg")) or missing_previews:
+        raise ValueError("Station previews are missing: " + ", ".join(missing_previews))
     spec = importlib.util.spec_from_file_location("cmm_assemble", RENDERER / "winui/assemble.py")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

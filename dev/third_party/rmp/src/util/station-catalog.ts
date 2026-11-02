@@ -51,5 +51,5 @@ export const stationCatalog = () =>
         id: `station-${type}`,
         number: index + 1,
         label: i18n.t('cmm.style', { number: index + 1 }),
-        preview: `station-previews/${type}.png`,
+        preview: `station-previews/${type}.svg`,
     }));

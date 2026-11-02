@@ -1,7 +1,7 @@
 {
   "version": "6.7.3",
-  "changenote": "v6.7.3 Logic improvements and bug fixes, name filtering, navigation, and stage-one 3D maps with building height previews.",
-  "changenote_en": "v6.7.3 Logic improvements and bug fixes, name filtering, navigation, and stage-one 3D maps with building height previews.",
-  "changenote_zh": "v6.7.3 逻辑优化与问题修复，名称筛选、导航系统及 3D 地图阶段一（建筑高度展示）。",
+  "changenote": "v6.7.3\n1. Fixed an issue where the traffic layer could cause memory exhaustion.\n2. Restored custom colors for building categories.\n3. Added driving and public transport route planning, plus a 3D building mode. Navigation and 3D buildings are available only in HTML maps and the preview viewer.\n4. Improved the metro map editor with station previews and map rotation. Fixed an issue where adaptive layout could fail to start.\n5. Fixed several issues that could prevent maps from rendering.",
+  "changenote_en": "v6.7.3\n1. Fixed an issue where the traffic layer could cause memory exhaustion.\n2. Restored custom colors for building categories.\n3. Added driving and public transport route planning, plus a 3D building mode. Navigation and 3D buildings are available only in HTML maps and the preview viewer.\n4. Improved the metro map editor with station previews and map rotation. Fixed an issue where adaptive layout could fail to start.\n5. Fixed several issues that could prevent maps from rendering.",
+  "changenote_zh": "v6.7.3\n1. 修复交通图层可能导致内存溢出的问题。\n2. 重新提供建筑分类自定义颜色功能。\n3. 新增导航系统，支持驾车和公共交通路线计算；新增 3D 建筑模式。导航和 3D 建筑模式仅限 HTML 地图与预览器使用。\n4. 优化地铁视图编辑器，新增站点预览和地图旋转功能，修复自适应布局有时无法启动的问题。\n5. 修复若干导致地图无法渲染的问题。",
   "assembly_version": "6.7.3.0"
 }

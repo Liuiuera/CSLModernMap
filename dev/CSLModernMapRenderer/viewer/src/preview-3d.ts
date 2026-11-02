@@ -7,16 +7,7 @@ export const BUILDINGS_3D = 'buildings-3d';
 export const CAMERA_TRANSITION_MS = 400;
 export type Preview3DState = {enabled: boolean; pitch: number; bearing: number};
 const metersScale = (2 * Math.PI * 6378137 / 360) / 111195;
-const messages = {
-  en: {title: '3D preview', help: 'Hold the middle mouse button: drag sideways to rotate, up/down to tilt.',
-    missing: 'Some buildings have no model height and remain flat. Export again with the updated mod.'},
-  'zh-CN': {title: '3D 预览', help: '按住鼠标中键：左右旋转，上下调整倾斜。',
-    missing: '部分建筑没有模型高度，仍以平面显示。请使用新版模组重新导出。'},
-  'zh-TW': {title: '3D 預覽', help: '按住滑鼠中鍵：左右旋轉，上下調整傾斜。',
-    missing: '部分建築沒有模型高度，仍以平面顯示。請使用新版模組重新匯出。'},
-};
-for (const [language, values] of Object.entries(messages)) i18n.addResourceBundle(language, 'preview3d', values);
-const text = (key: keyof typeof messages.en) => i18n.t(key, {ns: 'preview3d', defaultValue: messages.en[key]});
+const text = (key: 'title' | 'help' | 'missing') => i18n.t(`preview3d_${key}`);
 
 /** 共享预览状态和建筑拉伸；导航只选择视图，不再拥有另一份建筑图层。 */
 export class Preview3D implements IControl {

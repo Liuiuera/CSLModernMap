@@ -4470,4 +4470,5 @@ Beispielstraße: 16 m, Rendermultiplikator 1</value>
   <data name="Poi_ShowDecorative" xml:space="preserve"><value>Dekorative POIs anzeigen</value></data>
   <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>Symbole und Namen erfasster Dekorationen anzeigen. Gebäude und Kartenobjekte bleiben sichtbar.</value></data>
   <data name="MetroSettings_Reset" xml:space="preserve"><value>Standardwerte wiederherstellen</value></data>
+  <data name="BuildingCategory_Help" xml:space="preserve"><value>Wählen Sie Kategoriefarben, um diese Einstellungen anzuwenden. Aktivieren Sie Farbe überschreiben für alle Gebäude einer Kategorie; deaktivieren Sie es, um automatische POI-Farben wiederherzustellen. Unbekannte Nutzungen bleiben nicht klassifiziert.</value></data>
 </root>

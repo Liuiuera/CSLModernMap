@@ -4470,4 +4470,5 @@ Route de référence : 16 m, échelle de rendu : 1</value>
   <data name="Poi_ShowDecorative" xml:space="preserve"><value>Afficher les POI décoratifs</value></data>
   <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>Afficher les icônes et noms des décorations répertoriées. Les bâtiments et éléments de la carte restent visibles.</value></data>
   <data name="MetroSettings_Reset" xml:space="preserve"><value>Rétablir les valeurs par défaut</value></data>
+  <data name="BuildingCategory_Help" xml:space="preserve"><value>Sélectionnez Couleurs par catégorie pour appliquer ces réglages. Activez Remplacer la couleur pour tous les bâtiments d’une catégorie ; désactivez-le pour rétablir les couleurs automatiques des POI. Les usages inconnus restent non classés.</value></data>
 </root>
