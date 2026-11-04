@@ -1,6 +1,7 @@
 """按源站序乘车，沿双向道路步行；不依赖班次或步行车道数据。"""
 from __future__ import annotations
 
+from dataclasses import replace
 from math import dist, isfinite
 import hashlib
 import json
@@ -47,7 +48,9 @@ def compile_transit(document, roads):
 
     nodes, geometries, edges = {}, {}, []
     view = MapDocumentView(document)
-    stops = {str(s.id): s for s in resolve_stop_names(view, document.stops)}
+    source_stops = (tuple(replace(stop, _identity_space="cs2-stop") for stop in document.stops)
+                    if document.metadata.origin.game.casefold() == "cs2" else document.stops)
+    stops = {str(s.id): s for s in resolve_stop_names(view, source_stops)}
     lines = {line.id: line for line in document.transit_lines}
     networks = {segment.id: segment for segment in document.networks}
     road_shapes = [LineString([(p[0], p[2]) for p in road["points"]]) for road in roads]

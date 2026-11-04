@@ -25,10 +25,10 @@ OUTPUT_NAME = "CSLModernMapEngine.exe"
 VIEWER_BUILD = PROJECT_ROOT / "tools/renderer/build_preview_viewer.py"
 BUILD_TIMESTAMP = os.environ.get("BuildTimestamp") or datetime.now().strftime("%Y%m%d.%H%M%S")
 
-def _version() -> str:
+def _version(field: str = "version") -> str:
     version_file = PROJECT_ROOT / "version.json"
     try:
-        return str(json.loads(version_file.read_text(encoding="utf-8"))["version"])
+        return str(json.loads(version_file.read_text(encoding="utf-8"))[field])
     except (OSError, KeyError, TypeError, json.JSONDecodeError) as exc:
         raise RuntimeError(f"无法读取版本号：{version_file}") from exc
 
@@ -66,7 +66,7 @@ def _build_command(mode: str, console: bool = False,
         f"--output-dir={DIST_ROOT}",
         f"--output-filename={OUTPUT_NAME}",
         # 无窗口引擎不设置 exe 图标：Nuitka 会为 Qt 图标注入 QtWidgets。
-        f"--product-version={_version()}",
+        f"--product-version={_version('assembly_version')}",
         f"--file-description=CSLModernMap Engine {_version()}+{BUILD_TIMESTAMP}",
         "--remove-output",
         f"--report={REPORT_ROOT / (mode + '-compilation.xml')}",
@@ -180,6 +180,7 @@ def _write_report(mode: str, command: list[str], started: float,
     report = {
         "mode": mode,
         "version": _version(),
+        "internal_version": f"{_version()}+{BUILD_TIMESTAMP}",
         "returncode": returncode,
         "elapsed_seconds": round(time.time() - started, 2),
         "command": command,
@@ -302,7 +303,7 @@ def main() -> int:
         _clean(args.mode)
     log_file = REPORT_ROOT / f"build_{args.mode}.log"
     started = time.time()
-    print(f"开始构建 Nuitka {args.mode}：v{version}")
+    print(f"开始构建 Nuitka {args.mode}：v{version}+{BUILD_TIMESTAMP}")
     print(f"输出目录：{DIST_ROOT}")
     print(f"日志文件：{log_file}")
     print("命令：", " ".join(command))
