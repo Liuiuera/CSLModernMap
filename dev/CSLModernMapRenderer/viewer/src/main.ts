@@ -1991,7 +1991,7 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number):
     if (changed) { fitBounds(); labelLayoutKey = ''; }
     // 同场景增量更新保留用户当前的相机朝向。
     // idle 发生在工作进程处理、瓦片上传和渲染之后；两次动画帧回调可能早于 GeoJSON 处理完成。
-    await new Promise<string>(resolve => {
+    const completion = await new Promise<string>(resolve => {
       const finish = (result: string) => {
         clearTimeout(timer); map.off('idle', idle); map.off('render', stale);
         resolve(result);
@@ -2009,7 +2009,10 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number):
       previewControls.rebuild(sourceData, !changed);
     updateQuickLayers(true);
     postEvent('sceneLoaded', {bundleId: new URL(manifestUrl).pathname.split('/').at(-2),
-      completion: (manifest as any).completion ?? 'complete' });
+      completion: (manifest as any).completion ?? 'complete', performance: {completion} });
+    if (completion === 'timeout') map.once('idle', () => {
+      if (generation === loadGeneration) postEvent('scenePresentationReady', {completion: (manifest as any).completion ?? 'complete'});
+    });
   } finally {
     atlas?.close(); terrain?.close(); builtSurface?.close();
   }
