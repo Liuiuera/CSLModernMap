@@ -12,8 +12,7 @@ import re
 from . import i18n
 from .ribbon_schema import FIELDS
 from .guir_backend import _baseline_1024, road_level_style_key
-from .style import load_style
-from ._paths import resource_dir
+from .style import Style
 
 
 
@@ -27,6 +26,7 @@ TYPES = {
 }
 LEVELS = {'highway': 'ui.object_inspector.catalog.534c553126', 'main': 'ui.object_inspector.catalog.85f71ec8da',
           'branch': 'ui.object_inspector.catalog.109688e695', 'special': 'ui.object_inspector.catalog.ede0519a4c',
+          'quay': 'gui.style_editor.field.quay',
           'beautification': 'ui.object_inspector.catalog.35cde54ceb'}
 GROUPS = {'transit': 'ui.object_inspector.catalog.f7ccd76bf8', 'facility': 'ui.object_inspector.catalog.666dd3886c',
           'ordinary': 'ui.object_inspector.catalog.85155a34a5', 'area': 'gui.style_editor.section.zone'}
@@ -371,7 +371,8 @@ def describe(backend, frame, context='map', options=None):
         if kind == 'district':
             names('district', 'label.districts')
         else:
-            group = section('names', i18n.tr(GROUPS['area']))
+            group = section('names', i18n.tr(GROUPS['area']),
+                            i18n.tr('ui.object_inspector.describe.86a200764b'))
             visibility_field(group, 'icons', 'area')
             visibility_field(group, 'names', 'area')
 
@@ -443,7 +444,7 @@ def apply(backend, frame, context, options, key=None, value=None, reset_group=No
         if key == 'building.category.color' and len(value) != 7:
             raise ValueError('Category fill requires #RRGGBB')
         keys = [key]
-    defaults = load_style(str(resource_dir('styles') / f'{backend.theme_stem}.yaml'))
+    defaults = Style(backend.theme_defaults())
     for field_key in keys:
         binding = bindings[field_key]
         if 'field' in binding:

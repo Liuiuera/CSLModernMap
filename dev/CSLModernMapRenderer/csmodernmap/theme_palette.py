@@ -54,7 +54,7 @@ def theme_palette(stem: str) -> dict:
             colors[name] = "#{:02x}{:02x}{:02x}".format(*rgb[:3])
         except ValueError:
             pass
-    # 主干路色缺失的主题（如 apple_maps 没有 roads.main）用高速色顶上，
+    # 主干路色缺失的主题（如 modern 没有 roads.main）用高速色顶上，
     # 否则次干道会掉成兜底灰，与整体配色打架。
     for name, source in (("road2", "road"), ("road2_edge", "road_edge")):
         if colors[name] == _FALLBACK[name] and colors[source] != _FALLBACK[source]:

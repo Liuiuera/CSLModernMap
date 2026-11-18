@@ -11,6 +11,7 @@ internal sealed class EngineClient : IAsyncDisposable
     private readonly ConcurrentDictionary<long, TaskCompletionSource<JsonElement>> _pending = new();
     private readonly SemaphoreSlim _write = new(1, 1);
     private Process? _process;
+    private string[]? _themeSourceDirectories;
     private long _serial;
     private volatile bool _closing;
     private readonly CancellationTokenSource _shutdown = new();
@@ -25,7 +26,7 @@ internal sealed class EngineClient : IAsyncDisposable
     public async Task StartAsync(string[] startupArguments)
     {
         var (executable, arguments, directory) = FindEngine();
-        await Task.Run(() => UserData.Prepare(startupArguments, directory), _shutdown.Token);
+        _themeSourceDirectories = await Task.Run(() => UserData.Prepare(startupArguments, directory), _shutdown.Token);
         await StartAsync(executable, arguments, directory);
     }
 
@@ -46,6 +47,8 @@ internal sealed class EngineClient : IAsyncDisposable
         };
         start.Environment["PYTHONIOENCODING"] = "utf-8";
         start.Environment["CSLMM_USER_DATA_DIR"] = UserData.DirectoryPath;
+        if (_themeSourceDirectories is not null)
+            start.Environment["CSLMM_THEME_SOURCE_DIRS"] = JsonSerializer.Serialize(_themeSourceDirectories);
         lock (_closeLock)
         {
             _shutdown.Token.ThrowIfCancellationRequested();

@@ -15,7 +15,6 @@ internal sealed partial class ThemeEditorDialog
     private void BuildSamples()
     {
         _samplePanel.Children.Clear(); _textSideSample = null;
-        _samplePanel.Children.Add(new TextBlock { Text = UiLanguage.Text("ThemeEditorDialog_Preview_BuildSamples_EBD3615F5E"), FontSize = 12 });
         if (_section == "roads" && _working["roads"] is JsonObject roads)
         {
             if (roads[_selectedRoad] is not JsonObject) _selectedRoad = RoadLevels.FirstOrDefault(level => roads[level.Key] is JsonObject).Key ?? "highway";
@@ -25,13 +24,18 @@ internal sealed partial class ThemeEditorDialog
             _sampleUpdates.Add(() =>
             {
                 if (_working["roads"]?[_selectedRoad] is not JsonObject cfg) return;
+                line.Opacity = Numeric(_working["roads"]!["opacity"]!);
                 if (cfg["fill"] is { } fill) line.Background = BrushFor(fill.GetValue<string>());
                 if (cfg["border"] is { } border) line.BorderBrush = BrushFor(border.GetValue<string>());
                 var minimum = cfg["min_fill_px"] is { } minFill ? Numeric(minFill) : 0;
                 var borderWidth = cfg["border_width"] is { } bw ? SizeAt(bw, 1) : 1;
                 var scale = roads["width_scale"] is { } widthScale ? Numeric(widthScale) : .15;
-                line.BorderThickness = new Thickness(borderWidth / 2); line.Height = Math.Max(.5 + 16 * scale, minimum) + borderWidth;
-                caption.Text = RoadLevels.First(level => level.Key == _selectedRoad).Label + UiLanguage.Format("ThemeEditorDialog_Preview_BuildSamples_1A0787C40B", minimum);
+                line.BorderThickness = new Thickness(borderWidth / 2);
+                line.Height = (_selectedRoad == "quay" ? 16 * Numeric(cfg["footprint_scale"]!)
+                    : Math.Max(.5 + 16 * scale, minimum)) + borderWidth;
+                caption.Text = _selectedRoad == "quay"
+                    ? Label(["roads", "quay", "footprint_scale"]) + $" {Numeric(cfg["footprint_scale"]!):P0}"
+                    : RoadLevels.First(level => level.Key == _selectedRoad).Label + UiLanguage.Format("ThemeEditorDialog_Preview_BuildSamples_1A0787C40B", minimum);
             });
         }
         else if (_section == "terrain" && _working["terrain"]?["elevation_colors"] is JsonArray)
@@ -48,7 +52,7 @@ internal sealed partial class ThemeEditorDialog
             _textSideSample = new Image { Stretch = Stretch.Uniform, MaxHeight = 80, MinHeight = 48 };
             _samplePanel.Children.Add(_textSideSample);
         }
-        else _samplePanel.Children.Add(new TextBlock { Text = UiLanguage.Text("ThemeEditorDialog_Preview_BuildSamples_1350C527B6"), FontSize = 12, TextWrapping = TextWrapping.Wrap });
+        _sampleSurface.Visibility = _samplePanel.Children.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
     }
     private void UpdateSamples()
     {
@@ -121,6 +125,6 @@ internal sealed partial class ThemeEditorDialog
         _ = PreviewImages.SetAsync(_preview, payload.GetProperty("url").GetString()!,
             () => !_invalidated && _previewRequestId == requestId,
             error => _previewStatus.Text = UiLanguage.Text("ThemeEditorDialog_Preview_HandlePreviewEvent_61D83FB564") + error,
-            () => _previewStatus.Text = UiLanguage.Text("ThemeEditorDialog_Preview_HandlePreviewEvent_DCAB07490E"));
+            () => _previewStatus.Text = "");
     }
 }

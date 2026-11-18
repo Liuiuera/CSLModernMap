@@ -12,8 +12,9 @@ from PySide6.QtCore import QPointF, Qt
 from PySide6.QtGui import QPainterPath, QPainterPathStroker
 
 from .road_geometry import (HEIGHT_EPSILON, clip_polyline_span, _point_at_distance,
+                            scale_footprint_width,
                             build_junction_mesh, junction_primary)
-from .road_hierarchy import road_level_rank
+from .road_hierarchy import RoadLevel, road_level_rank
 
 VERSION = 6
 _EPS = 1e-6
@@ -217,6 +218,21 @@ class RoadPaint:
     rings: tuple
     boundaries: tuple
     polygons: tuple = ()
+
+
+def display_paint_regions(piece, quay_scale, centerlines):
+    """两套绘图器共用收窄后的护岸填充和源边；原排序几何保持不变。"""
+    regions = piece.paint_regions
+    if piece.road.level is not RoadLevel.QUAY or quay_scale == 1.0:
+        return regions
+    def shrink(points):
+        return scale_footprint_width(points, centerlines[piece.road.id], quay_scale)
+    return tuple(RoadPaint(region.road,
+                          tuple(shrink(ring) for ring in region.rings),
+                          tuple(shrink(line) for line in region.boundaries),
+                          tuple(tuple(shrink(ring) for ring in polygon)
+                                for polygon in region.polygons))
+                 for region in regions)
 
 
 @dataclass

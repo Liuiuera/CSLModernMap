@@ -4471,4 +4471,83 @@ Beispielstraße: 16 m, Rendermultiplikator 1</value>
   <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>Symbole und Namen erfasster Dekorationen anzeigen. Gebäude und Kartenobjekte bleiben sichtbar.</value></data>
   <data name="MetroSettings_Reset" xml:space="preserve"><value>Standardwerte wiederherstellen</value></data>
   <data name="BuildingCategory_Help" xml:space="preserve"><value>Wählen Sie Kategoriefarben, um diese Einstellungen anzuwenden. Aktivieren Sie Farbe überschreiben für alle Gebäude einer Kategorie; deaktivieren Sie es, um automatische POI-Farben wiederherzustellen. Unbekannte Nutzungen bleiben nicht klassifiziert.</value></data>
+  <data name="BuildingList_NoName" xml:space="preserve"><value>Kein Name vorhanden</value></data>
+  <data name="ThemeEditor_New" xml:space="preserve"><value>Neues Thema</value></data>
+  <data name="BuildingList_OfficialName" xml:space="preserve"><value>Offizielle Spielkategorie</value></data>
+  <data name="ThemeEditor_Name" xml:space="preserve"><value>Themenname</value></data>
+  <data name="BuildingList_Search" xml:space="preserve"><value>Gebäudenamen suchen</value></data>
+  <data name="Preview_AutoStart" xml:space="preserve"><value>Eingebettete Vorschau beim Start laden</value></data>
+  <data name="BuildingList_DetailHint" xml:space="preserve"><value>Wählen Sie ein Gebäude, um Details anzuzeigen.</value></data>
+  <data name="BuildingList_Height" xml:space="preserve"><value>Gebäudehöhe</value></data>
+  <data name="BuildingList_Open" xml:space="preserve"><value>Gebäudeliste</value></data>
+  <data name="BuildingList_Name" xml:space="preserve"><value>Gebäudename</value></data>
+  <data name="Preview_Continue.Content" xml:space="preserve"><value>Weiter warten</value></data>
+  <data name="ThemeUpdate_Intro" xml:space="preserve"><value>„{0}“ enthält jetzt die aktualisierte Vorlage.</value></data>
+  <data name="BuildingList_Id" xml:space="preserve"><value>ID</value></data>
+  <data name="ThemeUpdate_Off" xml:space="preserve"><value>Aus</value></data>
+  <data name="BuildingList_CategoryDesc" xml:space="preserve"><value>Kategorie: absteigend</value></data>
+  <data name="ThemeEditor_Unsaved" xml:space="preserve"><value>Nicht gespeichert</value></data>
+  <data name="BuildingList_IdDesc" xml:space="preserve"><value>ID: absteigend</value></data>
+  <data name="ThemeEditor_MigrationWarning" xml:space="preserve"><value>Einige ältere Themen konnten nicht gelesen werden. Originaldateien wurden gesichert:</value></data>
+  <data name="ThemeEditor_Select" xml:space="preserve"><value>Thema auswählen</value></data>
+  <data name="ThemeEditor_Copy" xml:space="preserve"><value>Thema duplizieren</value></data>
+  <data name="BuildingList_Info" xml:space="preserve"><value>Gebäudeinformationen</value></data>
+  <data name="BuildingList_Unnamed" xml:space="preserve"><value>Unbenanntes Gebäude</value></data>
+  <data name="BuildingList_CustomName" xml:space="preserve"><value>Spielerdefiniert</value></data>
+  <data name="ThemeEditor_Cancel" xml:space="preserve"><value>Abbrechen</value></data>
+  <data name="ThemeUpdate_Continue" xml:space="preserve"><value>Weiter</value></data>
+  <data name="BuildingList_NameSource" xml:space="preserve"><value>Namensquelle</value></data>
+  <data name="BuildingList_Details" xml:space="preserve"><value>Gebäudedetails</value></data>
+  <data name="ThemeUpdate_UsePrevious" xml:space="preserve"><value>Vorheriges nutzen</value></data>
+  <data name="ThemeUpdate_Archived" xml:space="preserve"><value>Ihr bisheriges Design wurde gespeichert. Sie können es in der Designliste auswählen.</value></data>
+  <data name="BuildingList_All" xml:space="preserve"><value>Alle</value></data>
+  <data name="ThemeEditor_Exported" xml:space="preserve"><value>Thema exportiert</value></data>
+  <data name="BuildingList_Empty" xml:space="preserve"><value>Keine passenden Gebäude</value></data>
+  <data name="ThemeUpdate_Kept" xml:space="preserve"><value>Ihre Änderungen bleiben erhalten</value></data>
+  <data name="BuildingList_Count" xml:space="preserve"><value>{0:N0} / {1:N0} Gebäude (Gebäudekomplexe zusammengefasst)</value></data>
+  <data name="BuildingList_Back" xml:space="preserve"><value>Zurück zur Übersicht</value></data>
+  <data name="Preview_DataAvailable" xml:space="preserve"><value>Kartendaten sind geladen. Sie können ein Thema wählen und exportieren.</value></data>
+  <data name="ThemeEditor_Personal" xml:space="preserve"><value>Meine Themen</value></data>
+  <data name="ThemeUpdate_ColorRamp" xml:space="preserve"><value>Höhenfarben</value></data>
+  <data name="ThemeEditor_Export" xml:space="preserve"><value>Thema exportieren…</value></data>
+  <data name="ThemeEditor_Import" xml:space="preserve"><value>Thema importieren…</value></data>
+  <data name="BuildingList_OutsideFilter" xml:space="preserve"><value>Das ausgewählte Gebäude entspricht nicht dem aktuellen Filter.</value></data>
+  <data name="ThemeEditor_Base" xml:space="preserve"><value>Basisvorlage</value></data>
+  <data name="BuildingList_NameAsc" xml:space="preserve"><value>Name: aufsteigend</value></data>
+  <data name="BuildingList_GroupCount" xml:space="preserve"><value>{0} Gebäude (einschließlich Hauptgebäude)</value></data>
+  <data name="ThemeEditor_CurrentUnreadable" xml:space="preserve"><value>Das aktuelle Thema konnte nicht gelesen werden. Wählen Sie ein anderes Thema. Die Originaldateien bleiben erhalten.</value></data>
+  <data name="Preview_OpenFailed" xml:space="preserve"><value>Die HTML-Datei wurde gespeichert, konnte aber nicht geöffnet werden. Öffnen Sie sie manuell im Ausgabeordner.</value></data>
+  <data name="ThemeEditor_Rename" xml:space="preserve"><value>Umbenennen</value></data>
+  <data name="Preview_OpenMap" xml:space="preserve"><value>Öffnen Sie eine Kartendatei, um ein Thema zu wählen und zu exportieren.</value></data>
+  <data name="Preview_Slow" xml:space="preserve"><value>Kartenvorschau dauert länger</value></data>
+  <data name="ThemeUpdate_AllChanges" xml:space="preserve"><value>Alle Änderungen</value></data>
+  <data name="ThemeEditor_Builtins" xml:space="preserve"><value>Integrierte Themen</value></data>
+  <data name="BuildingList_OpenButton.Content" xml:space="preserve"><value>Gebäudeliste</value></data>
+  <data name="ThemeUpdate_Custom" xml:space="preserve"><value>Eigene Einstellungen</value></data>
+  <data name="BuildingList_GameCategory" xml:space="preserve"><value>Spielkategorie</value></data>
+  <data name="Preview_Retry.Content" xml:space="preserve"><value>Vorschau neu laden</value></data>
+  <data name="BuildingList_Members" xml:space="preserve"><value>Nebengebäude</value></data>
+  <data name="BuildingList_NameDesc" xml:space="preserve"><value>Name: absteigend</value></data>
+  <data name="BuildingList_IdAsc" xml:space="preserve"><value>ID: aufsteigend</value></data>
+  <data name="BuildingList_Group" xml:space="preserve"><value>Gebäudegruppe</value></data>
+  <data name="ThemeEditor_Save" xml:space="preserve"><value>Speichern</value></data>
+  <data name="ThemeUpdate_On" xml:space="preserve"><value>Ein</value></data>
+  <data name="BuildingList_GameName" xml:space="preserve"><value>Spielgenerierter Name</value></data>
+  <data name="ThemeUpdate_Conflict" xml:space="preserve"><value>Diese Einstellung wurde auch von Ihnen geändert. Die neue Vorlage hat Vorrang.</value></data>
+  <data name="Preview_Html.Content" xml:space="preserve"><value>Im Browser öffnen</value></data>
+  <data name="ThemeEditor_InvalidName" xml:space="preserve"><value>Verwenden Sie 1–64 Zeichen ohne Steuerzeichen.</value></data>
+  <data name="Preview_Stopped" xml:space="preserve"><value>Eingebettete Vorschau ist gestoppt</value></data>
+  <data name="ThemeUpdate_MoreKept" xml:space="preserve"><value>{0} weitere Änderungen bleiben erhalten</value></data>
+  <data name="BuildingList_GameNames" xml:space="preserve"><value>Spielgenerierte Namen verwenden</value></data>
+  <data name="Preview_Png.Content" xml:space="preserve"><value>PNG exportieren (2048 px)</value></data>
+  <data name="BuildingList_CategoryAsc" xml:space="preserve"><value>Kategorie: aufsteigend</value></data>
+  <data name="BuildingList_Category" xml:space="preserve"><value>Gebäudekategorie</value></data>
+  <data name="ThemeUpdate_Unset" xml:space="preserve"><value>Nicht festgelegt</value></data>
+  <data name="Preview_Failed" xml:space="preserve"><value>Kartenvorschau konnte nicht geladen werden</value></data>
+  <data name="ThemeUpdate_Title" xml:space="preserve"><value>Design aktualisiert</value></data>
+  <data name="BuildingList_Sort" xml:space="preserve"><value>Sortieren</value></data>
+  <data name="BuildingList_NameHint" xml:space="preserve"><value>Die Namenseinstellung wird mit der Karte synchronisiert. Eigene Namen bleiben erhalten.</value></data>
+  <data name="BuildingList_Clear" xml:space="preserve"><value>Filter löschen</value></data>
+  <data name="Satellite_LayerTitle" xml:space="preserve"><value>Satellitenbild</value></data>
+  <data name="Satellite_Composing" xml:space="preserve"><value>Satellitenbild wird zusammengesetzt…</value></data>
 </root>

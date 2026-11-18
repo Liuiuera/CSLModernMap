@@ -1,0 +1,26 @@
+{
+  "bright.yaml": {
+    "sha256": "39d5036528f9d0e4208341da4a8e66f91375e183e3ddebdd0758b003871876d6",
+    "content": "2de0e37a087645a1a292dd75dfa1ec87d48f376d9d2b29231df4306edb033ab9"
+  },
+  "dark.yaml": {
+    "sha256": "8f25c417b28919657782ae481597ddf949f5275e51d74c3264c30971caa52019",
+    "content": "acc9c86e29a00011f858f79ad39a177dbc52d3d3403c471c87065957475c9098"
+  },
+  "modern.yaml": {
+    "sha256": "f322046c77a9c8f3cdf4fcb91fb384cb3db27769efdddc44a16b4836729163c2",
+    "content": "78111139258c94141d2e91f123a6b1a571794f1a0190b8cd01da0a1b74126acd"
+  },
+  "satellite.yaml": {
+    "sha256": "1380e70f5443411cf35d8dd6075c12bcb191e007ee1ca381077e6fe82f2dd4df",
+    "content": "2f78f10e15fe7d9327e6e70a13faa3f6bca0659a5084622e5a05cad0e84d43ba"
+  },
+  "vintage.yaml": {
+    "sha256": "0aa4dfdc6575ebbd0109994c86c1c31d9fd143df12f56fabc0ba8ca795318647",
+    "content": "ccd07a63c9ddca6fb57cb9f997daffb788c245bb4c1b54130f46c83cf7906e52"
+  },
+  "warm_natural.yaml": {
+    "sha256": "95be86ba13aff161441d0cd3565dfab5ac90c427f9c3da7e17b95fcd8c10ce8a",
+    "content": "89fdd16cfd02fe1d37b21af774ba84ec0fcdc1091ff8821d3851e9e9d97ec43d"
+  }
+}

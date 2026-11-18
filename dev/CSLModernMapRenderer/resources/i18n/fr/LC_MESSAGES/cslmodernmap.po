@@ -23,16 +23,14 @@ msgstr ""
 "Auteur : Shaotang Shaoxiancao\n"
 "© 2026 Shaotang Shaoxiancao. Tous droits réservés.\n"
 "\n"
-"Génère des cartes de style moderne à partir de sauvegardes de Cities: Skylines (.mmap / .cslmap)."
-"\n"
+"Génère des cartes de style moderne à partir de sauvegardes de Cities: Skylines (.mmap / .cslmap).\n"
 "\n"
 "Remerciements :\n"
 "  · CSLMapView (kkshoko) — origine du format d’exportation\n"
 "  · TM:PE (Traffic Manager President Edition) — données de trafic\n"
 "  · Python / Pillow / numpy / PyYAML / Nuitka et autres projets open source\n"
 "\n"
-"Certains éléments d’icônes proviennent de sources tierces et restent la propriété de leurs ayants"
-" droit."
+"Certains éléments d’icônes proviennent de sources tierces et restent la propriété de leurs ayants droit."
 
 msgid "gui.about.close"
 msgstr "Fermer"
@@ -185,9 +183,7 @@ msgid "gui.creator.current_spot"
 msgstr "Détail actuel"
 
 msgid "gui.creator.hint.aa"
-msgstr ""
-"Effectue le rendu à plus haute résolution puis le réduit pour lisser les bords des routes et du "
-"texte. Augmente le temps de rendu et la mémoire utilisée."
+msgstr "Effectue le rendu à plus haute résolution puis le réduit pour lisser les bords des routes et du texte. Augmente le temps de rendu et la mémoire utilisée."
 
 msgid "gui.creator.hint.interchange_count"
 msgstr "Nombre maximal d’échangeurs dans la galerie, sélectionnés du plus grand au plus petit."
@@ -196,9 +192,7 @@ msgid "gui.creator.hint.layers"
 msgstr "Couches affichées dans chaque vignette d’échangeur."
 
 msgid "gui.creator.hint.tile_size"
-msgstr ""
-"Longueur du côté de chaque tuile d’échangeur, en pixels. Une valeur supérieure donne plus de "
-"détails, mais ralentit le rendu."
+msgstr "Longueur du côté de chaque tuile d’échangeur, en pixels. Une valeur supérieure donne plus de détails, mais ralentit le rendu."
 
 msgid "gui.creator.interchange.auto"
 msgstr "Automatique"
@@ -207,14 +201,10 @@ msgid "gui.creator.interchange.count"
 msgstr "Nombre d’échangeurs"
 
 msgid "gui.creator.interchange.hint"
-msgstr ""
-"Définissez les paramètres ci-dessous pour générer la galerie. Le résultat apparaît dans l’aperçu "
-"central. Utilisez la fenêtre d’exportation pour l’export final."
+msgstr "Définissez les paramètres ci-dessous pour générer la galerie. Le résultat apparaît dans l’aperçu central. Utilisez la fenêtre d’exportation pour l’export final."
 
 msgid "gui.creator.interchange.hint2"
-msgstr ""
-"Les échangeurs sont détectés automatiquement dans la sauvegarde ; si aucun n’est sélectionné à la"
-" main, les plus grands sont utilisés."
+msgstr "Les échangeurs sont détectés automatiquement dans la sauvegarde ; si aucun n’est sélectionné à la main, les plus grands sont utilisés."
 
 msgid "gui.creator.interchange.layers"
 msgstr "Couches de la collection"
@@ -259,9 +249,7 @@ msgid "gui.creator.preference_label"
 msgstr "Préférence de cadrage"
 
 msgid "gui.creator.random.hint"
-msgstr ""
-"La sélection aléatoire ne change que l’emprise de l’aperçu ; elle ne lance pas le rendu. Vous "
-"pouvez encore ajuster la sélection dans l’aperçu central."
+msgstr "La sélection aléatoire ne change que l’emprise de l’aperçu ; elle ne lance pas le rendu. Vous pouvez encore ajuster la sélection dans l’aperçu central."
 
 msgid "gui.creator.random.pick"
 msgstr "Choisir au hasard"
@@ -324,9 +312,7 @@ msgid "gui.diagnostics.preview_state"
 msgstr "État de l’aperçu"
 
 msgid "gui.diagnostics.purpose"
-msgstr ""
-"Indique si la sauvegarde, l’aperçu et les données de transport sont prêts. Consultez « Erreurs » "
-"ci-dessous pour les détails."
+msgstr "Indique si la sauvegarde, l’aperçu et les données de transport sont prêts. Consultez « Erreurs » ci-dessous pour les détails."
 
 msgid "gui.diagnostics.ready"
 msgstr "Prêt"
@@ -491,8 +477,7 @@ msgid "gui.error.preview_host_timeout"
 msgstr ""
 "Le composant d’aperçu de la carte n’a pas démarré à temps (après {seconds} s).\n"
 "\n"
-"Veuillez fermer puis rouvrir l’application. Si le problème persiste, envoyez ce journal de "
-"diagnostic au développeur :\n"
+"Veuillez fermer puis rouvrir l’application. Si le problème persiste, envoyez ce journal de diagnostic au développeur :\n"
 "{path}"
 
 msgid "gui.error.preview_live_body"
@@ -516,8 +501,7 @@ msgstr ""
 "\n"
 "{error}\n"
 "\n"
-"Vérifiez que le runtime WebView2 est installé et que les ressources d’aperçu de la carte ont été "
-"générées."
+"Vérifiez que le runtime WebView2 est installé et que les ressources d’aperçu de la carte ont été générées."
 
 msgid "gui.error.pypinyin_missing"
 msgstr "Les schémas de métro bilingues nécessitent pypinyin ; installez cette dépendance d’exécution."
@@ -631,9 +615,7 @@ msgid "gui.export.filename_has_path"
 msgstr "Le nom du fichier ne peut pas inclure de chemin ; saisissez uniquement le nom."
 
 msgid "gui.export.filename_hint"
-msgstr ""
-"Nom de fichier enregistré dans le dossier de sortie ci-dessous. L’extension s’adapte "
-"automatiquement au format d’exportation."
+msgstr "Nom de fichier enregistré dans le dossier de sortie ci-dessous. L’extension s’adapte automatiquement au format d’exportation."
 
 msgid "gui.export.filename_placeholder"
 msgstr "Saisir un nom de fichier"
@@ -642,9 +624,7 @@ msgid "gui.export.format"
 msgstr "Format de sortie"
 
 msgid "gui.export.format_hint"
-msgstr ""
-"PNG est une image statique ; HTML est une carte interactive autonome, utilisable hors ligne, avec"
-" zoom, déplacement et gestion des couches."
+msgstr "PNG est une image statique ; HTML est une carte interactive autonome, utilisable hors ligne, avec zoom, déplacement et gestion des couches."
 
 msgid "gui.export.not_started"
 msgstr "Pas encore démarré"
@@ -677,42 +657,31 @@ msgid "gui.export.poi.detail"
 msgstr "Détails"
 
 msgid "gui.export.poi.detail.hint"
-msgstr ""
-"Afficher davantage de lieux et d’icônes de bâtiments à l’intérieur des installations, et "
-"fusionner les icônes identiques à proximité. Pour ce PNG uniquement."
+msgstr "Afficher davantage de lieux et d’icônes de bâtiments à l’intérieur des installations, et fusionner les icônes identiques à proximité. Pour ce PNG uniquement."
 
 msgid "gui.export.poi.internal"
 msgstr "Afficher les icônes des bâtiments internes"
 
 msgid "gui.export.poi.internal.tip"
-msgstr ""
-"Afficher des icônes de bâtiments distincts à l’intérieur des campus, parcs, aéroports et autres "
-"installations. Les modules associés restent rattachés au bâtiment principal."
+msgstr "Afficher des icônes de bâtiments distincts à l’intérieur des campus, parcs, aéroports et autres installations. Les modules associés restent rattachés au bâtiment principal."
 
 msgid "gui.export.poi.major"
 msgstr "Lieux principaux"
 
 msgid "gui.export.poi.major.hint"
-msgstr ""
-"Conserver les icônes des lieux principaux, masquer celles des bâtiments intérieurs aux "
-"installations et fusionner les icônes identiques à proximité. Pour ce PNG uniquement."
+msgstr "Conserver les icônes des lieux principaux, masquer celles des bâtiments intérieurs aux installations et fusionner les icônes identiques à proximité. Pour ce PNG uniquement."
 
 msgid "gui.export.poi.merge"
 msgstr "Fusionner les icônes de bâtiments proches de même type"
 
 msgid "gui.export.poi.merge.tip"
-msgstr ""
-"Choisissez une icône représentative parmi les bâtiments similaires proches, sans modifier leurs "
-"contours. Si l’option est désactivée, chaque bâtiment reste distinct ; les icônes qui se "
-"chevauchent sont toujours écartées."
+msgstr "Choisissez une icône représentative parmi les bâtiments similaires proches, sans modifier leurs contours. Si l’option est désactivée, chaque bâtiment reste distinct ; les icônes qui se chevauchent sont toujours écartées."
 
 msgid "gui.export.poi.off"
 msgstr "Désactivé"
 
 msgid "gui.export.poi.off.hint"
-msgstr ""
-"Masque les icônes de lieux et leurs noms associés. Les contours de bâtiments, noms de routes et "
-"lignes de transport conservent leurs réglages."
+msgstr "Masque les icônes de lieux et leurs noms associés. Les contours de bâtiments, noms de routes et lignes de transport conservent leurs réglages."
 
 msgid "gui.export.range.all_metro_lines"
 msgstr "Toutes les lignes de métro"
@@ -748,9 +717,7 @@ msgid "gui.external.rmg"
 msgstr "Exporter des projets RMG"
 
 msgid "gui.external.rmg_layout_note"
-msgstr ""
-"RMG réorganisera automatiquement les stations ; les positions déplacées dans CMM ne seront pas "
-"conservées."
+msgstr "RMG réorganisera automatiquement les stations ; les positions déplacées dans CMM ne seront pas conservées."
 
 msgid "gui.external.rmp"
 msgstr "Exporter le réseau complet RMP"
@@ -804,14 +771,10 @@ msgid "gui.game_running.title"
 msgstr "Le jeu est toujours en cours d’exécution"
 
 msgid "gui.game_running.warning"
-msgstr ""
-"Le jeu est toujours en cours d’exécution. En cas de mémoire insuffisante, le rendu d’images haute"
-" résolution ou de grandes villes peut échouer. Fermez le jeu avant le rendu."
+msgstr "Le jeu est toujours en cours d’exécution. En cas de mémoire insuffisante, le rendu d’images haute résolution ou de grandes villes peut échouer. Fermez le jeu avant le rendu."
 
 msgid "gui.help.layout"
-msgstr ""
-"Le ruban regroupe les actions fréquentes ; le panneau de gauche règle la fonction actuelle et "
-"celui de droite affiche l’objet sélectionné sur la carte."
+msgstr "Le ruban regroupe les actions fréquentes ; le panneau de gauche règle la fonction actuelle et celui de droite affiche l’objet sélectionné sur la carte."
 
 msgid "gui.help.shortcuts"
 msgstr ""
@@ -828,17 +791,13 @@ msgid "gui.inspector.explore"
 msgstr "Explorer"
 
 msgid "gui.inspector.export_hint"
-msgstr ""
-"Ouvrez la fenêtre d’exportation pour choisir le format, l’emprise et l’emplacement "
-"d’enregistrement."
+msgstr "Ouvrez la fenêtre d’exportation pour choisir le format, l’emprise et l’emplacement d’enregistrement."
 
 msgid "gui.inspector.export_section"
 msgstr "Exporter la carte"
 
 msgid "gui.inspector.hint"
-msgstr ""
-"Cliquez sur une route, un bâtiment, un lieu, une ligne ou un arrêt dans l’aperçu central pour "
-"afficher ses détails."
+msgstr "Cliquez sur une route, un bâtiment, un lieu, une ligne ou un arrêt dans l’aperçu central pour afficher ses détails."
 
 msgid "gui.inspector.object_fallback"
 msgstr "Objet"
@@ -886,30 +845,22 @@ msgid "gui.label_detail.reset"
 msgstr "Rétablir les valeurs par défaut du texte et des icônes"
 
 msgid "gui.label_detail.text.hint"
-msgstr ""
-"La police, la taille, la couleur et le contour se règlent par catégorie de texte : « Bâtiments / "
-"Parcs » désigne les noms de lieux, et « Texte des districts » les noms de zones."
+msgstr "La police, la taille, la couleur et le contour se règlent par catégorie de texte : « Bâtiments / Parcs » désigne les noms de lieux, et « Texte des districts » les noms de zones."
 
 msgid "gui.label_detail.title"
 msgstr "Détails des libellés"
 
 msgid "gui.language.contribute"
-msgstr ""
-"Les traductions dans votre langue sont les bienvenues sur GitHub et contribueront à améliorer le "
-"projet."
+msgstr "Les traductions dans votre langue sont les bienvenues sur GitHub et contribueront à améliorer le projet."
 
 msgid "gui.language.notice"
-msgstr ""
-"Le chinois simplifié est le texte original ; les autres langues ont été traduites automatiquement"
-" par ChatGPT. Certaines formulations peuvent être inexactes ou peu claires."
+msgstr "Le chinois simplifié est le texte original ; les autres langues ont été traduites automatiquement par ChatGPT. Certaines formulations peuvent être inexactes ou peu claires."
 
 msgid "gui.layer.building"
 msgstr "Bâtiments"
 
 msgid "gui.layer.building_desc"
-msgstr ""
-"Contours des bâtiments, équipements et autres constructions de la ville. Désactivez cette couche "
-"pour accélérer nettement le rendu dans les villes très bâties."
+msgstr "Contours des bâtiments, équipements et autres constructions de la ville. Désactivez cette couche pour accélérer nettement le rendu dans les villes très bâties."
 
 msgid "gui.layer.built_area"
 msgstr "Zone bâtie"
@@ -930,9 +881,7 @@ msgid "gui.layer.label"
 msgstr "Noms des districts et des routes"
 
 msgid "gui.layer.label_desc"
-msgstr ""
-"Noms des routes, districts et lieux. Si les libellés sont trop denses, désactivez des catégories "
-"dans « Réglages détaillés des libellés… »."
+msgstr "Noms des routes, districts et lieux. Si les libellés sont trop denses, désactivez des catégories dans « Réglages détaillés des libellés… »."
 
 msgid "gui.layer.land_use"
 msgstr "Occupation du sol"
@@ -944,9 +893,7 @@ msgid "gui.layer.metro"
 msgstr "Métro"
 
 msgid "gui.layer.metro_desc"
-msgstr ""
-"Dessine les lignes de bus, de tramway et de métro ainsi que les arrêts sur la carte standard. "
-"Pour un plan de lignes autonome, utilisez la Vue des transports en commun."
+msgstr "Dessine les lignes de bus, de tramway et de métro ainsi que les arrêts sur la carte standard. Pour un plan de lignes autonome, utilisez la Vue des transports en commun."
 
 msgid "gui.layer.po"
 msgstr "Objets POI"
@@ -961,16 +908,10 @@ msgid "gui.layer.poi_area"
 msgstr "Coloration de l’emprise des lieux"
 
 msgid "gui.layer.poi_area_desc"
-msgstr ""
-"Réutilise les contours et les couleurs des bâtiments pour remplir leur intérieur sans bordure. "
-"Fonctionne sans le calque des bâtiments.Colore les bâtiments selon leur usage (résidentiel, "
-"commercial, industriel, bureaux, etc.). La couche Bâtiments doit aussi être activée pour afficher"
-" les couleurs."
+msgstr "Réutilise les contours et les couleurs des bâtiments pour remplir leur intérieur sans bordure. Fonctionne sans le calque des bâtiments.Colore les bâtiments selon leur usage (résidentiel, commercial, industriel, bureaux, etc.). La couche Bâtiments doit aussi être activée pour afficher les couleurs."
 
 msgid "gui.layer.poi_desc"
-msgstr ""
-"Icônes des hôpitaux, écoles, stations et autres lieux. Le texte des icônes se règle séparément "
-"dans « Libellés textuels »."
+msgstr "Icônes des hôpitaux, écoles, stations et autres lieux. Le texte des icônes se règle séparément dans « Libellés textuels »."
 
 msgid "gui.layer.procedural_objects"
 msgstr "Objets PO"
@@ -979,9 +920,7 @@ msgid "gui.layer.railway"
 msgstr "Voies ferrées"
 
 msgid "gui.layer.railway_desc"
-msgstr ""
-"Voies ferrées, métro et autres lignes sur rails — voies seules. Pour afficher les couleurs des "
-"lignes et les stations, utilisez « Transports en commun »."
+msgstr "Voies ferrées, métro et autres lignes sur rails — voies seules. Pour afficher les couleurs des lignes et les stations, utilisez « Transports en commun »."
 
 msgid "gui.layer.reset"
 msgstr "Rétablir les valeurs par défaut de cette couche"
@@ -990,9 +929,7 @@ msgid "gui.layer.road"
 msgstr "Routes"
 
 msgid "gui.layer.road_desc"
-msgstr ""
-"Routes de toutes catégories, y compris surélevées et souterraines. Dans « Paramètres… », réglez "
-"séparément le remplissage, le contour et la largeur de chaque catégorie."
+msgstr "Routes de toutes catégories, y compris surélevées et souterraines. Dans « Paramètres… », réglez séparément le remplissage, le contour et la largeur de chaque catégorie."
 
 msgid "gui.layer.row.district"
 msgstr "Emprises des districts"
@@ -1073,9 +1010,7 @@ msgid "gui.layer.traffic"
 msgstr "Informations sur le trafic"
 
 msgid "gui.layer.traffic_desc"
-msgstr ""
-"Affiche l’instantané des embouteillages enregistré à l’exportation. Cities: Skylines utilise les "
-"statistiques TM:PE ; Cities: Skylines II utilise les statistiques de trafic du jeu."
+msgstr "Affiche l’instantané des embouteillages enregistré à l’exportation. Cities: Skylines utilise les statistiques TM:PE ; Cities: Skylines II utilise les statistiques de trafic du jeu."
 
 msgid "gui.layer.transit"
 msgstr "Transports en commun"
@@ -1099,9 +1034,7 @@ msgid "gui.layer.zone"
 msgstr "Limites des zones"
 
 msgid "gui.layer.zone_desc"
-msgstr ""
-"Couleurs des parcs, zones industrielles, campus, aéroports, zones piétonnes et autres secteurs "
-"fonctionnels. Indépendantes des districts."
+msgstr "Couleurs des parcs, zones industrielles, campus, aéroports, zones piétonnes et autres secteurs fonctionnels. Indépendantes des districts."
 
 msgid "gui.layers.detail_settings_title"
 msgstr "Paramètres détaillés de {name}"
@@ -1134,17 +1067,13 @@ msgid "gui.map.hint.range"
 msgstr "Définissez la zone de terrain à exporter. Ce réglage s’applique uniquement au contenu exporté."
 
 msgid "gui.map.hint.resolution"
-msgstr ""
-"Longueur du côté le plus long de l’image exportée, en pixels. Une valeur plus élevée donne une "
-"meilleure définition, mais augmente le temps de rendu et la mémoire utilisée."
+msgstr "Longueur du côté le plus long de l’image exportée, en pixels. Une valeur plus élevée donne une meilleure définition, mais augmente le temps de rendu et la mémoire utilisée."
 
 msgid "gui.map.hint.rotation"
 msgstr "Rotation horaire"
 
 msgid "gui.map.hint.theme"
-msgstr ""
-"Choisissez les couleurs et le style de lignes de la carte. Pour ajuster chaque élément, cliquez "
-"sur « Modifier le thème… » dans le ruban."
+msgstr "Choisissez les couleurs et le style de lignes de la carte. Pour ajuster chaque élément, cliquez sur « Modifier le thème… » dans le ruban."
 
 msgid "gui.menu.button"
 msgstr "Menu"
@@ -1192,54 +1121,40 @@ msgid "gui.merge.enable"
 msgstr "Activer la fusion et le regroupement"
 
 msgid "gui.merge.enable.tip"
-msgstr ""
-"Désactivée, aucune des options ci-dessous ne s’applique ; la fusion des icônes de lieux est "
-"également gérée ici"
+msgstr "Désactivée, aucune des options ci-dessous ne s’applique ; la fusion des icônes de lieux est également gérée ici"
 
 msgid "gui.merge.entry"
 msgstr "Paramètres de fusion et de regroupement…"
 
 msgid "gui.merge.entry.tip"
-msgstr ""
-"Ouvre les réglages de fusion et de regroupement : activation générale, fusion des bâtiments, "
-"installations identiques et arrêts, ainsi que les différentes distances"
+msgstr "Ouvre les réglages de fusion et de regroupement : activation générale, fusion des bâtiments, installations identiques et arrêts, ainsi que les différentes distances"
 
 msgid "gui.merge.facility"
 msgstr "Fusionner les lieux d’une même installation"
 
 msgid "gui.merge.facility.hint"
-msgstr ""
-"Installations regroupées selon les relations réelles entre bâtiments et les zones ParkGrid ; les "
-"zones industrielles et piétonnes conservent leurs propres bâtiments."
+msgstr "Installations regroupées selon les relations réelles entre bâtiments et les zones ParkGrid ; les zones industrielles et piétonnes conservent leurs propres bâtiments."
 
 msgid "gui.merge.facility_area_labels"
 msgstr "Masquer les libellés de zone en double des installations"
 
 msgid "gui.merge.facility_area_labels.tip"
-msgstr ""
-"Masquer les noms de zone en double avec le lieu parent d’un aéroport, d’un campus ou d’un parc ; "
-"les libellés des zones industrielles et piétonnes restent visibles."
+msgstr "Masquer les noms de zone en double avec le lieu parent d’un aéroport, d’un campus ou d’un parc ; les libellés des zones industrielles et piétonnes restent visibles."
 
 msgid "gui.merge.facility_children"
 msgstr "Afficher les lieux enfants à l’intérieur des installations"
 
 msgid "gui.merge.facility_children.tip"
-msgstr ""
-"Désactivée, seule l’installation parente de l’aéroport, du campus ou du parc s’affiche ; le "
-"regroupement de l’installation est conservé."
+msgstr "Désactivée, seule l’installation parente de l’aéroport, du campus ou du parc s’affiche ; le regroupement de l’installation est conservé."
 
 msgid "gui.merge.facility_list.tip"
-msgstr ""
-"Afficher les installations et leurs lieux internes. Les bâtiments, routes et couleurs de zone se "
-"règlent indépendamment."
+msgstr "Afficher les installations et leurs lieux internes. Les bâtiments, routes et couleurs de zone se règlent indépendamment."
 
 msgid "gui.merge.facility_zoom"
 msgstr "Zoom minimal des lieux enfants"
 
 msgid "gui.merge.facility_zoom.tip"
-msgstr ""
-"Zoom minimal d’affichage des lieux enfants ; plus la valeur est élevée, plus il faut zoomer. Par "
-"défaut : 1,0."
+msgstr "Zoom minimal d’affichage des lieux enfants ; plus la valeur est élevée, plus il faut zoomer. Par défaut : 1,0."
 
 msgid "gui.merge.hint.intro"
 msgstr "Activez d’abord l’interrupteur général, puis réglez chaque fonction et distance."
@@ -1263,9 +1178,7 @@ msgid "gui.metro.adaptive"
 msgstr "Échelle adaptative"
 
 msgid "gui.metro.adaptive_hint"
-msgstr ""
-"Compresse les longs tronçons rectilignes et étire les zones denses pour mieux répartir le réseau "
-"sur le canevas. Désactivé, l’espacement réel des stations est conservé."
+msgstr "Compresse les longs tronçons rectilignes et étire les zones denses pour mieux répartir le réseau sur le canevas. Désactivé, l’espacement réel des stations est conservé."
 
 msgid "gui.metro.adjust_network"
 msgstr "Ajuster le réseau à la main…"
@@ -1274,9 +1187,7 @@ msgid "gui.metro.annotation_hint"
 msgstr "Cochez une note pour l’imprimer sur la carte."
 
 msgid "gui.metro.bad_edit_doc"
-msgstr ""
-"Impossible de lire {name} : ce fichier n’a pas été exporté comme document de modifications par "
-"cet outil."
+msgstr "Impossible de lire {name} : ce fichier n’a pas été exporté comme document de modifications par cet outil."
 
 msgid "gui.metro.bilingual_names"
 msgstr "Noms d’arrêts bilingues"
@@ -1285,9 +1196,7 @@ msgid "gui.metro.debug_band"
 msgstr "Afficher la bande d’échelle en couleurs"
 
 msgid "gui.metro.debug_band_hint"
-msgstr ""
-"Les tronçons compressés apparaissent en bleu et les tronçons étirés en orange pour vérifier "
-"l’échelle adaptative. Désactivez cette option avant l’exportation finale."
+msgstr "Les tronçons compressés apparaissent en bleu et les tronçons étirés en orange pour vérifier l’échelle adaptative. Désactivez cette option avant l’exportation finale."
 
 msgid "gui.metro.display_size"
 msgstr "Taille d’affichage"
@@ -1296,14 +1205,10 @@ msgid "gui.metro.draw_default"
 msgstr "Par défaut, les lignes de métro, train et monorail sont dessinées. Ajustez selon votre ville."
 
 msgid "gui.metro.facility_density_hint"
-msgstr ""
-"Davantage d’installations apparaissent à mesure que vous zoomez. Avec les niveaux espacés, elles "
-"apparaissent un niveau plus tard et sont plus éloignées."
+msgstr "Davantage d’installations apparaissent à mesure que vous zoomez. Avec les niveaux espacés, elles apparaissent un niveau plus tard et sont plus éloignées."
 
 msgid "gui.metro.facility_icon_hint"
-msgstr ""
-"Afficher les icônes des équipements de correspondance, comme les aéroports, gares et ports. Cette"
-" option et la taille ne modifient pas les icônes des stations."
+msgstr "Afficher les icônes des équipements de correspondance, comme les aéroports, gares et ports. Cette option et la taille ne modifient pas les icônes des stations."
 
 msgid "gui.metro.facility_icons"
 msgstr "Icônes de correspondance"
@@ -1327,9 +1232,7 @@ msgid "gui.metro.import_edits_filter"
 msgstr "Fichier de modification du réseau (*.json);;Tous les fichiers (*.*)"
 
 msgid "gui.metro.import_edits_hint"
-msgstr ""
-"« Importer un fichier de modifications » charge les ajustements JSON enregistrés (tracés, "
-"positions des arrêts, tronçons partagés), puis redessine immédiatement la carte."
+msgstr "« Importer un fichier de modifications » charge les ajustements JSON enregistrés (tracés, positions des arrêts, tronçons partagés), puis redessine immédiatement la carte."
 
 msgid "gui.metro.import_edits_title"
 msgstr "Importer un fichier de modifications"
@@ -1353,9 +1256,7 @@ msgid "gui.metro.label_scale_hint"
 msgstr "Échelle en pourcentage de la taille par défaut ; 100 % correspond à la taille par défaut."
 
 msgid "gui.metro.layer_scope_hint"
-msgstr ""
-"Les interrupteurs de couche n’agissent ici que sur la vue des transports en commun ; ils ne "
-"modifient pas les couches de la carte de la ville."
+msgstr "Les interrupteurs de couche n’agissent ici que sur la vue des transports en commun ; ils ne modifient pas les couches de la carte de la ville."
 
 msgid "gui.metro.legend_label"
 msgstr "Libellés de ligne / légende"
@@ -1373,17 +1274,13 @@ msgid "gui.metro.line_gap"
 msgstr "Espacement entre lignes parallèles"
 
 msgid "gui.metro.line_gap_hint"
-msgstr ""
-"Espacement entre les lignes parallèles, exprimé en multiples de la largeur de ligne. Plage : "
-"1,05–3,00."
+msgstr "Espacement entre les lignes parallèles, exprimé en multiples de la largeur de ligne. Plage : 1,05–3,00."
 
 msgid "gui.metro.line_outline"
 msgstr "Contour de ligne"
 
 msgid "gui.metro.line_type_hint"
-msgstr ""
-"« Type de ligne » filtre par mode de transport. Pour n’afficher qu’une ligne, utilisez « "
-"Sélectionner des lignes… » ci-dessus."
+msgstr "« Type de ligne » filtre par mode de transport. Pour n’afficher qu’une ligne, utilisez « Sélectionner des lignes… » ci-dessus."
 
 msgid "gui.metro.manual_section"
 msgstr "Modification manuelle"
@@ -1392,10 +1289,7 @@ msgid "gui.metro.output.auto"
 msgstr "Auto"
 
 msgid "gui.metro.output.tooltip"
-msgstr ""
-"Taille de sortie du grand côté en pixels. « Automatique » recommande une taille selon l’échelle "
-"du réseau. Le rendu ne démarre pas immédiatement ; le réglage s’applique à l’ouverture de la "
-"fenêtre d’exportation."
+msgstr "Taille de sortie du grand côté en pixels. « Automatique » recommande une taille selon l’échelle du réseau. Le rendu ne démarre pas immédiatement ; le réglage s’applique à l’ouverture de la fenêtre d’exportation."
 
 msgid "gui.metro.result_broken"
 msgstr "Le résultat généré ne peut pas être affiché."
@@ -1407,10 +1301,7 @@ msgstr ""
 "Cliquez sur « {button} » ci-dessus pour commencer."
 
 msgid "gui.metro.result_note"
-msgstr ""
-"Le schéma est généré en une fois à partir des paramètres actuels. Après avoir modifié l’épaisseur"
-" des lignes ou l’espacement des arrêts, cliquez sur « {button} » ci-dessus pour ouvrir la fenêtre"
-" d’exportation."
+msgstr "Le schéma est généré en une fois à partir des paramètres actuels. Après avoir modifié l’épaisseur des lignes ou l’espacement des arrêts, cliquez sur « {button} » ci-dessus pour ouvrir la fenêtre d’exportation."
 
 msgid "gui.metro.scale_section"
 msgstr "Échelle et résolution"
@@ -1431,9 +1322,7 @@ msgid "gui.metro.show_water"
 msgstr "Afficher l’eau"
 
 msgid "gui.metro.spacing_hint"
-msgstr ""
-"Distance entre stations voisines sur le schéma. Une valeur plus élevée disperse le réseau et les "
-"lignes longues occupent davantage le canevas."
+msgstr "Distance entre stations voisines sur le schéma. Une valeur plus élevée disperse le réseau et les lignes longues occupent davantage le canevas."
 
 msgid "gui.metro.station_diameter"
 msgstr "Diamètre des stations"
@@ -1442,9 +1331,7 @@ msgid "gui.metro.station_form"
 msgstr "Style des arrêts"
 
 msgid "gui.metro.station_name_hint"
-msgstr ""
-"Avec « Noms personnalisés uniquement », seuls les noms saisis manuellement sont affichés ; les "
-"autres sont générés automatiquement."
+msgstr "Avec « Noms personnalisés uniquement », seuls les noms saisis manuellement sont affichés ; les autres sont générés automatiquement."
 
 msgid "gui.metro.station_names.all"
 msgstr "Tous les noms d’arrêts"
@@ -1462,9 +1349,7 @@ msgid "gui.metro.station_style.standard"
 msgstr "Cercle standard"
 
 msgid "gui.metro.station_style_hint"
-msgstr ""
-"« Rail classique » utilise des icônes de station de style ferroviaire ; « Cercle standard » "
-"utilise de simples points."
+msgstr "« Rail classique » utilise des icônes de station de style ferroviaire ; « Cercle standard » utilise de simples points."
 
 msgid "gui.metro.title"
 msgstr "Schéma du métro"
@@ -1485,9 +1370,7 @@ msgid "gui.metro_editor.empty"
 msgstr "Sélectionnez une station ou une ligne pour commencer la modification."
 
 msgid "gui.metro_editor.hint"
-msgstr ""
-"Faites glisser les stations sur les cases entières de la grille. Appliquez pour actualiser "
-"l’aperçu."
+msgstr "Faites glisser les stations sur les cases entières de la grille. Appliquez pour actualiser l’aperçu."
 
 msgid "gui.metro_editor.labels.all"
 msgstr "Afficher le nom de chaque station"
@@ -1574,9 +1457,7 @@ msgid "gui.msg.no_spot_region"
 msgstr "Aucune zone de détail utilisable. Modifiez le nombre ou le thème, puis réessayez."
 
 msgid "gui.msg.no_traffic_spot"
-msgstr ""
-"Cette sauvegarde ne contient aucun instantané du trafic ; impossible de générer un détail des "
-"embouteillages. Réessayez."
+msgstr "Cette sauvegarde ne contient aucun instantané du trafic ; impossible de générer un détail des embouteillages. Réessayez."
 
 msgid "gui.msg.open_first"
 msgstr "Veuillez d’abord ouvrir une sauvegarde de ville"
@@ -1738,9 +1619,7 @@ msgid "gui.poi_editor.advanced_yaml"
 msgstr "Avancé : modifier YAML"
 
 msgid "gui.poi_editor.advanced_yaml_help"
-msgstr ""
-"Avancé : modifier directement le YAML de correspondance des points d’intérêt. La configuration "
-"est rechargée après modification. Recommandé uniquement aux utilisateurs connaissant le format."
+msgstr "Avancé : modifier directement le YAML de correspondance des points d’intérêt. La configuration est rechargée après modification. Recommandé uniquement aux utilisateurs connaissant le format."
 
 msgid "gui.poi_editor.col.category"
 msgstr "Catégorie"
@@ -1965,9 +1844,7 @@ msgstr ""
 "Lecture de la sauvegarde de la ville ; les grandes villes prennent plus de temps."
 
 msgid "gui.preview.host_unavailable"
-msgstr ""
-"L’aperçu cartographique intégré n’est pas disponible sur cette plateforme ; l’exportation "
-"d’images reste possible."
+msgstr "L’aperçu cartographique intégré n’est pas disponible sur cette plateforme ; l’exportation d’images reste possible."
 
 msgid "gui.preview.map_hint"
 msgstr "Faites glisser pour déplacer la carte · molette pour zoomer"
@@ -2141,14 +2018,10 @@ msgid "gui.range.dialog.full_tiles"
 msgstr "Toutes les tuiles terrestres · {n} × {n} ({total} tuiles)"
 
 msgid "gui.range.dialog.legacy"
-msgstr ""
-"L’ancienne zone couvre {side} × {side} km. Appliquer remplace la zone par les tuiles ci-dessus ; "
-"Annuler conserve l’ancienne zone."
+msgstr "L’ancienne zone couvre {side} × {side} km. Appliquer remplace la zone par les tuiles ci-dessus ; Annuler conserve l’ancienne zone."
 
 msgid "gui.range.dialog.note"
-msgstr ""
-"Choisissez ici la zone à exporter ; réglez la taille en pixels de l’image dans la fenêtre "
-"d’exportation."
+msgstr "Choisissez ici la zone à exporter ; réglez la taille en pixels de l’image dans la fenêtre d’exportation."
 
 msgid "gui.range.dialog.open"
 msgstr "Définir l’emprise…"
@@ -2166,9 +2039,7 @@ msgid "gui.range.dialog.side"
 msgstr "Tuiles par côté"
 
 msgid "gui.range.dialog.small"
-msgstr ""
-"Ce fichier est plus petit qu’une tuile complète. Utilisez « Carte entière » ou « Sélectionner une"
-" zone »."
+msgstr "Ce fichier est plus petit qu’une tuile complète. Utilisez « Carte entière » ou « Sélectionner une zone »."
 
 msgid "gui.range.dialog.square"
 msgstr "→ {n} × {n}"
@@ -2239,9 +2110,7 @@ msgid "gui.road.fill"
 msgstr "Remplissage"
 
 msgid "gui.road.width.tip"
-msgstr ""
-"Épaisseur minimale de ce niveau ; la différence se remarque sur les routes étroites et lorsque la"
-" carte est dézoomée."
+msgstr "Épaisseur minimale de ce niveau ; la différence se remarque sur les routes étroites et lorsque la carte est dézoomée."
 
 msgid "gui.sidebar.edit_style"
 msgstr "Modifier le thème…"
@@ -2370,9 +2239,7 @@ msgid "gui.status.map_failed_detail"
 msgstr "La carte n’a pas pu être générée : {error}"
 
 msgid "gui.status.metro_cannot_start"
-msgstr ""
-"Impossible de générer : ouvrez d’abord une sauvegarde de ville ou attendez la fin de la tâche "
-"actuelle."
+msgstr "Impossible de générer : ouvrez d’abord une sauvegarde de ville ou attendez la fin de la tâche actuelle."
 
 msgid "gui.status.metro_failed"
 msgstr "Échec de la génération."
@@ -2417,9 +2284,7 @@ msgid "gui.status.render_short"
 msgstr "Carte générée · {size} px · {elapsed} s"
 
 msgid "gui.status.rendering_stall"
-msgstr ""
-"Rendu en cours… aucune progression depuis {sec} s ; c’est normal pour les grandes cartes ou une "
-"qualité élevée."
+msgstr "Rendu en cours… aucune progression depuis {sec} s ; c’est normal pour les grandes cartes ou une qualité élevée."
 
 msgid "gui.status.save_missing_or_parsing"
 msgstr "Le fichier est introuvable ou une autre sauvegarde est en cours d’analyse."
@@ -2443,14 +2308,10 @@ msgid "gui.status.writing_png"
 msgstr "Écriture du PNG…"
 
 msgid "gui.style.hint.redirect"
-msgstr ""
-"La mise en forme de la carte se règle dans l’éditeur de thème ; il n’y a pas de deuxième page de "
-"réglages rapides."
+msgstr "La mise en forme de la carte se règle dans l’éditeur de thème ; il n’y a pas de deuxième page de réglages rapides."
 
 msgid "gui.style.hint.theme_editor"
-msgstr ""
-"Le terrain, les routes, les bâtiments, l’eau, les libellés et les icônes sont gérés dans le même "
-"éditeur de thème."
+msgstr "Le terrain, les routes, les bâtiments, l’eau, les libellés et les icônes sont gérés dans le même éditeur de thème."
 
 msgid "gui.style_editor.add_step"
 msgstr "+ Ajouter un niveau"
@@ -2474,9 +2335,7 @@ msgid "gui.style_editor.auto_preview"
 msgstr "Aperçu automatique"
 
 msgid "gui.style_editor.basic.aa.desc"
-msgstr ""
-"Effectue le rendu à plus haute résolution puis le réduit pour lisser les bords des routes et du "
-"texte. Augmente le temps de rendu et la mémoire utilisée."
+msgstr "Effectue le rendu à plus haute résolution puis le réduit pour lisser les bords des routes et du texte. Augmente le temps de rendu et la mémoire utilisée."
 
 msgid "gui.style_editor.basic.aa.label"
 msgstr "Lisser les bords"
@@ -2530,22 +2389,16 @@ msgid "gui.style_editor.desc.buildings.border"
 msgstr "Couleur du contour des bâtiments"
 
 msgid "gui.style_editor.desc.buildings.border_width"
-msgstr ""
-"Épaisseur du contour des bâtiments. Une valeur élevée le rend plus visible, mais peut couvrir les"
-" bâtiments voisins."
+msgstr "Épaisseur du contour des bâtiments. Une valeur élevée le rend plus visible, mais peut couvrir les bâtiments voisins."
 
 msgid "gui.style_editor.desc.buildings.default"
-msgstr ""
-"Couleur de remplissage du corps du bâtiment. Utilisée comme couleur de secours pour le coloriage "
-"par type de bâtiment."
+msgstr "Couleur de remplissage du corps du bâtiment. Utilisée comme couleur de secours pour le coloriage par type de bâtiment."
 
 msgid "gui.style_editor.desc.buildings.poi_tint.enabled"
 msgstr "Teinter légèrement les bâtiments selon leur usage"
 
 msgid "gui.style_editor.desc.buildings.shadow"
-msgstr ""
-"Ajoute une ombre portée aux bâtiments pour donner du relief aux quartiers ; le rendu est un peu "
-"plus lent."
+msgstr "Ajoute une ombre portée aux bâtiments pour donner du relief aux quartiers ; le rendu est un peu plus lent."
 
 msgid "gui.style_editor.desc.buildings.shadow.enabled"
 msgstr "Ajouter une ombre portée aux bâtiments ?"
@@ -2566,9 +2419,7 @@ msgid "gui.style_editor.desc.built_area.include_parks"
 msgstr "Inclure les parcs dans la zone bâtie ?"
 
 msgid "gui.style_editor.desc.canvas"
-msgstr ""
-"Dimensions du canevas en pixels. La taille finale de l’exportation est définie dans la fenêtre "
-"d’exportation."
+msgstr "Dimensions du canevas en pixels. La taille finale de l’exportation est définie dans la fenêtre d’exportation."
 
 msgid "gui.style_editor.desc.canvas.background"
 msgstr "Couleur d’arrière-plan de toute la carte"
@@ -2631,9 +2482,7 @@ msgid "gui.style_editor.desc.poi_icons.bg_circle"
 msgstr "Ajouter un cercle blanc sous les icônes ?"
 
 msgid "gui.style_editor.desc.poi_icons.bg_circle_size"
-msgstr ""
-"Diamètre du cercle blanc sous les icônes (pixels). Augmentez-le si les icônes se confondent avec "
-"le fond de carte."
+msgstr "Diamètre du cercle blanc sous les icônes (pixels). Augmentez-le si les icônes se confondent avec le fond de carte."
 
 msgid "gui.style_editor.desc.poi_icons.enabled"
 msgstr "Afficher les icônes de lieux ?"
@@ -2651,9 +2500,7 @@ msgid "gui.style_editor.desc.poi_icons.icons_dir"
 msgstr "Bibliothèque d’icônes utilisée"
 
 msgid "gui.style_editor.desc.poi_icons.merge_distance"
-msgstr ""
-"Deux icônes de lieu peuvent être fusionnées si leur distance est inférieure à cette valeur, en "
-"mètres de distance dans le monde du jeu."
+msgstr "Deux icônes de lieu peuvent être fusionnées si leur distance est inférieure à cette valeur, en mètres de distance dans le monde du jeu."
 
 msgid "gui.style_editor.desc.poi_icons.name_size"
 msgstr "Taille de police des noms d’icônes (pixels)."
@@ -2698,9 +2545,7 @@ msgid "gui.style_editor.desc.terrain.ground.ramp_meters"
 msgstr "Altitude de transition entre les deux couleurs du sol"
 
 msgid "gui.style_editor.desc.terrain.hillshade.altitude"
-msgstr ""
-"Angle entre la lumière et le sol. Une valeur plus faible produit des ombres plus longues et "
-"accentue le relief."
+msgstr "Angle entre la lumière et le sol. Une valeur plus faible produit des ombres plus longues et accentue le relief."
 
 msgid "gui.style_editor.desc.terrain.hillshade.azimuth"
 msgstr "Azimut de la lumière sur le terrain, mesuré dans le sens horaire depuis le nord (0°)."
@@ -2715,25 +2560,19 @@ msgid "gui.style_editor.desc.terrain.hillshade.large_scale_meters"
 msgstr "Échelle de lissage de l’orientation générale des chaînes de montagnes, en mètres."
 
 msgid "gui.style_editor.desc.terrain.hillshade.large_scale_weight"
-msgstr ""
-"Poids de l’ombrage des reliefs étendus dans le mélange. Une valeur plus élevée évoque de grands "
-"massifs ; les deux poids totalisent généralement 1,0."
+msgstr "Poids de l’ombrage des reliefs étendus dans le mélange. Une valeur plus élevée évoque de grands massifs ; les deux poids totalisent généralement 1,0."
 
 msgid "gui.style_editor.desc.terrain.hillshade.small_scale_meters"
 msgstr "Échelle des détails des vallées, plis et autres reliefs, en mètres."
 
 msgid "gui.style_editor.desc.terrain.hillshade.small_scale_weight"
-msgstr ""
-"Poids de l’ombrage local dans le mélange. Une valeur élevée donne une texture plus fine ; les "
-"deux poids totalisent généralement 1,0."
+msgstr "Poids de l’ombrage local dans le mélange. Une valeur élevée donne une texture plus fine ; les deux poids totalisent généralement 1,0."
 
 msgid "gui.style_editor.desc.transports.auto_color"
 msgstr "Choisir automatiquement une couleur pour les lignes sans couleur"
 
 msgid "gui.style_editor.desc.transports.label"
-msgstr ""
-"Badges de nom de ligne : police, taille, marges intérieures, bordure et répétition le long de la "
-"ligne."
+msgstr "Badges de nom de ligne : police, taille, marges intérieures, bordure et répétition le long de la ligne."
 
 msgid "gui.style_editor.desc.transports.label.bg"
 msgstr "Arrière-plan du badge de nom"
@@ -3360,9 +3199,7 @@ msgid "gui.style_editor.font_current"
 msgstr "Police actuelle ({value})"
 
 msgid "gui.style_editor.footer_hint"
-msgstr ""
-"Les modifications s’appliquent immédiatement à l’aperçu ; enregistrez pour les écrire dans le "
-"fichier du thème."
+msgstr "Les modifications s’appliquent immédiatement à l’aperçu ; enregistrez pour les écrire dans le fichier du thème."
 
 msgid "gui.style_editor.group_basic"
 msgstr "Bases"
@@ -3605,17 +3442,8 @@ msgstr "Vue des transports en commun"
 msgid "gui.terrain_relief.unit.degree"
 msgstr "°"
 
-msgid "gui.theme.choice.amap"
-msgstr "Carte lumineuse"
-
-msgid "gui.theme.choice.apple_maps"
-msgstr "Moderne épuré"
-
 msgid "gui.theme.choice.dark"
 msgstr "Style sombre"
-
-msgid "gui.theme.choice.google"
-msgstr "Nature chaleureuse"
 
 msgid "gui.theme.choice.vintage"
 msgstr "Style rétro"
@@ -3633,10 +3461,7 @@ msgid "gui.tools.clear_cache"
 msgstr "Libérer le cache mémoire"
 
 msgid "gui.tools.clear_cache.tip"
-msgstr ""
-"Ferme les processus de rendu en arrière-plan et vide le cache d’analyse pour libérer de la "
-"mémoire. Le prochain chargement de ville prendra plus de temps, car les données devront être "
-"analysées à nouveau."
+msgstr "Ferme les processus de rendu en arrière-plan et vide le cache d’analyse pour libérer de la mémoire. Le prochain chargement de ville prendra plus de temps, car les données devront être analysées à nouveau."
 
 msgid "gui.tools.copy_image"
 msgstr "Copier l’image"
@@ -3648,14 +3473,10 @@ msgid "gui.tools.layers.tip"
 msgstr "Cochez les éléments à dessiner et réglez les paramètres de chaque couche."
 
 msgid "gui.tools.lines_layer.tip"
-msgstr ""
-"Cochez une ligne pour l’afficher ; après l’avoir sélectionnée, les changements de style ne "
-"s’appliquent qu’à cette ligne."
+msgstr "Cochez une ligne pour l’afficher ; après l’avoir sélectionnée, les changements de style ne s’appliquent qu’à cette ligne."
 
 msgid "gui.tools.merge_settings.tip"
-msgstr ""
-"Options de fusion et distances pour les bâtiments, les lieux d’une même installation et les "
-"arrêts de transport."
+msgstr "Options de fusion et distances pour les bâtiments, les lieux d’une même installation et les arrêts de transport."
 
 msgid "gui.tools.metro"
 msgstr "Plan schématique du métro"
@@ -3664,9 +3485,7 @@ msgid "gui.tools.metro.short"
 msgstr "Plan schématique du métro"
 
 msgid "gui.tools.metro_editor.tip"
-msgstr ""
-"Ouvre l’éditeur du schéma de métro : déplacez les stations, définissez les correspondances et "
-"tronçons partagés, puis confirmez pour relancer le rendu."
+msgstr "Ouvre l’éditeur du schéma de métro : déplacez les stations, définissez les correspondances et tronçons partagés, puis confirmez pour relancer le rendu."
 
 msgid "gui.tools.poi_editor"
 msgstr "Correspondances d’icônes des lieux"
@@ -3675,17 +3494,13 @@ msgid "gui.tools.poi_editor.tip"
 msgstr "Associez une icône de lieu à chaque bâtiment du jeu pour définir son icône sur la carte."
 
 msgid "gui.tools.refresh.tip"
-msgstr ""
-"Régénère l’aperçu central. Il s’actualise généralement après toute modification des couches ou du"
-" style ; utilisez cette commande s’il ne réagit plus."
+msgstr "Régénère l’aperçu central. Il s’actualise généralement après toute modification des couches ou du style ; utilisez cette commande s’il ne réagit plus."
 
 msgid "gui.tools.select_short"
 msgstr "Sélectionner"
 
 msgid "gui.tools.theme.tip"
-msgstr ""
-"Ajustez les couleurs, l’épaisseur des lignes, le texte et les autres styles cartographiques "
-"élément par élément ; l’aperçu en direct se trouve à droite."
+msgstr "Ajustez les couleurs, l’épaisseur des lignes, le texte et les autres styles cartographiques élément par élément ; l’aperçu en direct se trouve à droite."
 
 msgid "gui.tools.transit"
 msgstr "Vue des transports en commun"
@@ -3730,9 +3545,7 @@ msgid "gui.transit.facilities"
 msgstr "Équipements de correspondance"
 
 msgid "gui.transit.layout_draft"
-msgstr ""
-"Ébauche géographique : disposition à revoir ; les croisements ne représentent pas des "
-"correspondances"
+msgstr "Ébauche géographique : disposition à revoir ; les croisements ne représentent pas des correspondances"
 
 msgid "gui.transit.layout_fallback"
 msgstr "Disposition de secours utilisée ; toutes les lignes et stations sont conservées"
@@ -3744,9 +3557,7 @@ msgid "gui.transit.legend_size"
 msgstr "Taille de la légende"
 
 msgid "gui.transit.line_select_hint"
-msgstr ""
-"La case à cocher contrôle l’affichage de la ligne ; une fois sélectionnée, les styles ci-dessous "
-"ne s’appliquent qu’à elle."
+msgstr "La case à cocher contrôle l’affichage de la ligne ; une fois sélectionnée, les styles ci-dessous ne s’appliquent qu’à elle."
 
 msgid "gui.transit.line_select_title"
 msgstr "Sélection des lignes"
@@ -3779,10 +3590,7 @@ msgstr ""
 "Cliquez sur « {button} » ci-dessus pour commencer."
 
 msgid "gui.transit.result_note"
-msgstr ""
-"Le plan des transports est généré en une fois à partir des paramètres actuels. Après avoir "
-"modifié les lignes ou leur style, cliquez sur « {button} » ci-dessus pour ouvrir la fenêtre "
-"d’exportation."
+msgstr "Le plan des transports est généré en une fois à partir des paramètres actuels. Après avoir modifié les lignes ou leur style, cliquez sur « {button} » ci-dessus pour ouvrir la fenêtre d’exportation."
 
 msgid "gui.transit.settings_title"
 msgstr "Paramètres des transports en commun"
@@ -3839,9 +3647,7 @@ msgid "gui.transit.water_unverified"
 msgstr "Les zones d’eau n’ont pas été vérifiées. Le schéma a été généré sans eau."
 
 msgid "gui.transit_line.color.note"
-msgstr ""
-"Les couleurs des lignes proviennent de la sauvegarde ; sélectionnez une ligne pour les afficher "
-"ici."
+msgstr "Les couleurs des lignes proviennent de la sauvegarde ; sélectionnez une ligne pour les afficher ici."
 
 msgid "gui.transit_line.default.hint"
 msgstr "Aucune ligne sélectionnée ; les valeurs s’appliquent au style de ligne par défaut"
@@ -3895,21 +3701,13 @@ msgid "gui.transit_view.density.tiered"
 msgstr "Affichage par niveaux"
 
 msgid "gui.transit_view.hint.fade"
-msgstr ""
-"Degré d’éclaircissement de la carte dans la vue des transports. 0 % conserve l’image d’origine ; "
-"100 % la rend blanche. 60 % est un bon point de départ."
+msgstr "Degré d’éclaircissement de la carte dans la vue des transports. 0 % conserve l’image d’origine ; 100 % la rend blanche. 60 % est un bon point de départ."
 
 msgid "gui.transit_view.hint.labels"
-msgstr ""
-"L’intervalle indique la fréquence de répétition du nom de ligne ; une valeur plus grande les "
-"espace. La taille du nom correspond à celle du texte du badge en pixels."
+msgstr "L’intervalle indique la fréquence de répétition du nom de ligne ; une valeur plus grande les espace. La taille du nom correspond à celle du texte du badge en pixels."
 
 msgid "gui.transit_view.hint.stations"
-msgstr ""
-"« Taille des stations » correspond au diamètre des points, en pixels ; les stations de "
-"correspondance sont agrandies selon le facteur du thème. Lorsque « Fusionner les stations proches"
-" » est activé, les stations séparées par moins que la distance définie partagent un libellé. Cela"
-" ne modifie que les libellés, pas le tracé des lignes."
+msgstr "« Taille des stations » correspond au diamètre des points, en pixels ; les stations de correspondance sont agrandies selon le facteur du thème. Lorsque « Fusionner les stations proches » est activé, les stations séparées par moins que la distance définie partagent un libellé. Cela ne modifie que les libellés, pas le tracé des lignes."
 
 msgid "gui.transit_view.independent_layers"
 msgstr "Couches indépendantes"
@@ -3987,9 +3785,7 @@ msgid "metro.annotation.credit"
 msgstr "Cartographie CSLModernMap"
 
 msgid "metro.annotation.data_notice"
-msgstr ""
-"Les stations, lignes et informations de service correspondent à l’état de la sauvegarde exportée "
-"depuis le jeu."
+msgstr "Les stations, lignes et informations de service correspondent à l’état de la sauvegarde exportée depuis le jeu."
 
 msgid "metro.annotation.disclaimer"
 msgstr "Schéma de tracé uniquement ; distances et orientations non représentatives de la réalité"
@@ -4001,9 +3797,7 @@ msgid "metro.annotation.north"
 msgstr "↑ Nord"
 
 msgid "metro.annotation.scale_adaptive"
-msgstr ""
-"Schéma : 1 grille ≈ {spacing}m ; rapport local {low}–{high}× ; intensité {strength} % ; zoom du "
-"canevas {zoom}×"
+msgstr "Schéma : 1 grille ≈ {spacing}m ; rapport local {low}–{high}× ; intensité {strength} % ; zoom du canevas {zoom}×"
 
 msgid "metro.annotation.scale_fixed"
 msgstr "Schéma : 1 case ≈ {spacing} m ; échelle adaptative désactivée ; zoom du canevas {zoom}×"
@@ -4375,9 +4169,7 @@ msgid "style.range.value.selection"
 msgstr "Sélection actuelle"
 
 msgid "style.road.accurate_intersections.desc"
-msgstr ""
-"Calcul précis des chevauchements routiers, du masquage par les ponts et tunnels et des raccords. "
-"Les villes complexes prennent plus de temps."
+msgstr "Calcul précis des chevauchements routiers, du masquage par les ponts et tunnels et des raccords. Les villes complexes prennent plus de temps."
 
 msgid "style.road.accurate_intersections.label"
 msgstr "Intersections précises"
@@ -4490,9 +4282,6 @@ msgstr "Couleur de la végétation"
 msgid "style.terrain.mode.label"
 msgstr "Style du terrain"
 
-msgid "style.terrain.mode.value.shade"
-msgstr "Bandes d’altitude + ombrage du relief"
-
 msgid "style.terrain.mode.value.simple"
 msgstr "Plages d’altitude"
 
@@ -4505,14 +4294,8 @@ msgstr "Direction de l’éclairage"
 msgid "style.theme.label"
 msgstr "Thème cartographique"
 
-msgid "style.theme.value.amap"
-msgstr "Carte lumineuse"
-
 msgid "style.theme.value.dark"
 msgstr "Style sombre"
-
-msgid "style.theme.value.google"
-msgstr "Nature chaleureuse"
 
 msgid "style.theme.value.modern"
 msgstr "Moderne épuré"
@@ -4833,9 +4616,7 @@ msgid "ui.object_inspector.describe.1a1ef51c8d"
 msgstr "Usage / catégorie d’installation"
 
 msgid "ui.object_inspector.describe.1c786295e3"
-msgstr ""
-"La densité et l’évitement des chevauchements s’appliquent à tous les lieux de l’aperçu ; la "
-"fusion par groupe s’applique uniquement à"
+msgstr "La densité et l’évitement des chevauchements s’appliquent à tous les lieux de l’aperçu ; la fusion par groupe s’applique uniquement à"
 
 msgid "ui.object_inspector.describe.1d4da9cc30"
 msgstr "Bâtiments de l’installation"
@@ -4952,9 +4733,7 @@ msgid "ui.object_inspector.describe.756762e293"
 msgstr "Non fourni"
 
 msgid "ui.object_inspector.describe.77007520ba"
-msgstr ""
-"Le style de ligne s’applique à ce mode de transport ; les paramètres de libellé s’appliquent à "
-"toutes les lignes de cette vue."
+msgstr "Le style de ligne s’applique à ce mode de transport ; les paramètres de libellé s’appliquent à toutes les lignes de cette vue."
 
 msgid "ui.object_inspector.describe.7aeb540769"
 msgstr "Taille de l’icône"
@@ -4996,9 +4775,7 @@ msgid "ui.object_inspector.describe.9fe74bef39"
 msgstr ". Les profils PNG restent inchangés."
 
 msgid "ui.object_inspector.describe.a54fa2904e"
-msgstr ""
-"La taille et l’apparence s’appliquent à tous les lieux ; l’option des noms ne concerne que le "
-"groupe indiqué ci-dessous."
+msgstr "La taille et l’apparence s’appliquent à tous les lieux ; l’option des noms ne concerne que le groupe indiqué ci-dessous."
 
 msgid "ui.object_inspector.describe.a76488cf50"
 msgstr "Couleur de ligne (données source)"
@@ -5064,9 +4841,7 @@ msgid "ui.object_inspector.describe.c3b7111911"
 msgstr "Nombre de bâtiments membres"
 
 msgid "ui.object_inspector.describe.c3cdf137f2"
-msgstr ""
-"Les noms des installations peuvent provenir des icônes de lieux ; le style du texte des bâtiments"
-" ne modifie pas les noms associés aux lieux."
+msgstr "Les noms des installations peuvent provenir des icônes de lieux ; le style du texte des bâtiments ne modifie pas les noms associés aux lieux."
 
 msgid "ui.object_inspector.describe.c6c54bf846"
 msgstr "S’applique à tous les noms associés aux lieux."
@@ -5132,9 +4907,7 @@ msgid "ui.object_inspector.describe.efc9ada2bd"
 msgstr "Objet cartographique"
 
 msgid "ui.object_inspector.describe.f2c5395498"
-msgstr ""
-"Les noms des stations sont dessinés via le canal des noms associés aux icônes de lieu ; "
-"s’applique à tous les noms associés."
+msgstr "Les noms des stations sont dessinés via le canal des noms associés aux icônes de lieu ; s’applique à tous les noms associés."
 
 msgid "ui.object_inspector.describe.f38d46b4f4"
 msgstr "Couleur d’usage de l’installation"
@@ -5355,10 +5128,7 @@ msgid "watermark.traffic_at"
 msgstr "Trafic à"
 
 msgid "ui.export.possible_memory_exhaustion"
-msgstr ""
-"Le processus de rendu s’est arrêté de manière inattendue, peut-être par manque de mémoire. Si le "
-"jeu est encore ouvert, fermez-le ainsi que les autres applications gourmandes en mémoire, ou "
-"réduisez la taille d’exportation, puis réessayez."
+msgstr "Le processus de rendu s’est arrêté de manière inattendue, peut-être par manque de mémoire. Si le jeu est encore ouvert, fermez-le ainsi que les autres applications gourmandes en mémoire, ou réduisez la taille d’exportation, puis réessayez."
 
 msgid "gui.progress.convert_data"
 msgstr "Conversion des données de la carte…"
@@ -5369,234 +5139,305 @@ msgstr "Préparation des lignes de transport : {done}/{total}"
 msgid "gui.transit.water_degraded"
 msgstr "L’eau a été conservée, mais certains styles de rivage n’ont pas pu être appliqués complètement."
 
-
 msgid "gui.transit.rmp_water_omitted"
 msgstr "Le composant d’eau RMP {component} n’a pas pu être converti. Les stations, lignes, équipements et autres eaux utilisables ont été conservés : {reason}"
-
 
 msgid "building.category.residential"
 msgstr "Résidentiel"
 
-
 msgid "building.category.commercial"
 msgstr "Commerce"
-
 
 msgid "building.category.office"
 msgstr "Bureaux"
 
-
 msgid "building.category.industrial"
 msgstr "Industrie et stockage"
-
 
 msgid "building.category.police"
 msgstr "Police"
 
-
 msgid "building.category.prison"
 msgstr "Prisons et justice"
-
 
 msgid "building.category.fire"
 msgstr "Pompiers et secours"
 
-
 msgid "building.category.healthcare"
 msgstr "Santé et aide sociale"
-
 
 msgid "building.category.deathcare"
 msgstr "Services funéraires"
 
-
 msgid "building.category.education"
 msgstr "Éducation et recherche"
-
 
 msgid "building.category.administration"
 msgstr "Administration et finance"
 
-
 msgid "building.category.transport"
 msgstr "Transports en commun"
-
 
 msgid "building.category.parking"
 msgstr "Stationnement"
 
-
 msgid "building.category.post_telecom"
 msgstr "Poste et télécommunications"
-
 
 msgid "building.category.electricity"
 msgstr "Électricité"
 
-
 msgid "building.category.water"
 msgstr "Eau et assainissement"
-
 
 msgid "building.category.garbage"
 msgstr "Gestion des déchets"
 
-
 msgid "building.category.maintenance"
 msgstr "Entretien des routes et parcs"
-
 
 msgid "building.category.park"
 msgstr "Parcs et sports"
 
-
 msgid "building.category.amusement"
 msgstr "Équipements de loisirs"
-
 
 msgid "building.category.culture"
 msgstr "Culture et tourisme"
 
-
 msgid "building.category.decoration"
 msgstr "Décorations naturelles"
-
 
 msgid "building.category.unclassified"
 msgstr "Non classé"
 
-
 msgid "building.category.label"
 msgstr "Catégorie d’usage du bâtiment"
-
 
 msgid "building.category.table"
 msgstr "Couleurs par catégorie de bâtiments"
 
-
 msgid "building.category.enabled"
 msgstr "Remplacer la couleur"
-
 
 msgid "building.category.color"
 msgstr "Couleur de remplissage de la catégorie"
 
-
 msgid "building.category.scope"
 msgstr "S’applique à tous les bâtiments de « {category} »."
-
 
 msgid "building.category.fallback"
 msgstr "Couleur par défaut des bâtiments (sans couleur de POI)"
 
-
 msgid "building.category.unknown_notice"
 msgstr "L’export n’identifie pas l’usage des bâtiments. Ces modifications affectent tous les bâtiments non classés."
-
 
 msgid "style.building.color_mode.value.category"
 msgstr "Couleurs par catégorie"
 
-
 msgid "gui.style_editor.value.category"
 msgstr "Couleurs par catégorie"
-
 
 msgid "building.category.fallback_scope"
 msgstr "Utilisée lorsqu’aucune couleur de POI ni couleur de catégorie n’est disponible."
 
-
 msgid "building.height"
 msgstr "Hauteur du modèle"
-
 
 msgid "building.base_elevation"
 msgstr "Altitude de base du modèle"
 
-
 msgid "building.height_source"
 msgstr "Source de la hauteur"
-
 
 msgid "gui.roads.local_flat_fallback"
 msgstr "Certains croisements sont dessinés à plat. La superposition des ponts et tunnels peut y être inexacte."
 
-
 msgid "gui.file.missing_version"
 msgstr "Le fichier {format} n’a pas de version de format. Sa compatibilité ne peut pas être vérifiée. Réexportez la carte avec un mod CSLModernMap à jour."
-
 
 msgid "gui.file.invalid_version"
 msgstr "Le fichier {format} a une version de format invalide. Sélectionnez une carte valide ou réexportez-la."
 
-
 msgid "gui.file.old_version"
 msgstr "{format} {version} est obsolète ; cette visionneuse prend en charge {supported}. Mettez le mod CSLModernMap à jour et réexportez la carte."
-
 
 msgid "gui.file.unsupported_version"
 msgstr "{format} {version} n’est pas pris en charge ; cette visionneuse prend en charge {supported}. Utilisez une visionneuse à jour compatible avec ce fichier."
 
-
 msgid "gui.file.invalid_cmm"
 msgstr "Cette carte CMM ou sa structure de données est invalide. Sélectionnez une carte exportée par le mod ou réexportez-la."
-
 
 msgid "gui.file.invalid_xml"
 msgstr "Cette carte XML CSLMap est invalide ou endommagée. Sélectionnez une carte valide ou réexportez-la."
 
-
 msgid "gui.file.invalid_gzip"
 msgstr "La carte compressée est invalide ou incomplète. Recopiez le fichier ou réexportez la carte dans le jeu."
-
 
 msgid "gui.file.invalid_encoding"
 msgstr "L’encodage du fichier de carte est invalide. Sélectionnez une carte exportée par le mod ou réexportez-la."
 
-
 msgid "gui.file.legacy_xml"
 msgstr "CSLMAP est un format de compatibilité qui peut ne pas prendre en charge certaines nouvelles fonctions. Nous recommandons le format CMM."
-
 
 msgid "gui.file.unversioned_xml"
 msgstr "Ce fichier CSLMAP n’a pas de numéro de version et a été ouvert en mode de compatibilité. Certaines nouvelles fonctions peuvent être indisponibles. Nous recommandons le format CMM."
 
-
 msgid "ui.failure.internal"
 msgstr "Une erreur inattendue s’est produite. Vous pouvez la signaler à l’auteur."
-
 
 msgid "ui.failure.permission"
 msgstr "Impossible d’accéder à un fichier requis. Vérifiez les autorisations du fichier ou du dossier et réessayez."
 
-
 msgid "ui.failure.missing_file"
 msgstr "Un fichier requis est introuvable. Vérifiez qu’il se trouve toujours à son emplacement d’origine et réessayez."
-
 
 msgid "ui.failure.memory"
 msgstr "Échec de l’allocation de mémoire. Réduisez la taille de sortie ou fermez les applications gourmandes en mémoire et réessayez."
 
-
 msgid "ui.failure.operation.metro"
 msgstr "Échec de la génération du plan de métro"
-
 
 msgid "ui.failure.operation.preview"
 msgstr "Échec de la génération de l’aperçu"
 
-
 msgid "ui.failure.operation.export"
 msgstr "Échec de l’export de la carte"
-
 
 msgid "ui.failure.operation.open"
 msgstr "Échec de l’ouverture de la carte"
 
-
 msgid "ui.failure.operation.operation"
 msgstr "Échec de l’opération"
 
-
 msgid "ui.failure.city_json"
 msgstr "Le fichier de ville contient du JSON invalide. Réexportez-le depuis le jeu ; si l’erreur persiste, transmettez ses détails à l’auteur."
+
+msgid "style.road.level.quay.width.label"
+msgstr "Coefficient de largeur du quai"
+
+msgid "gui.satellite.unavailable"
+msgstr "This map has no satellite imagery"
+
+msgid "gui.style_editor.field.opacity"
+msgstr "Opacité des routes"
+
+msgid "gui.layer.title.satellite"
+msgstr "Image satellite"
+
+msgid "style.satellite.preset.value.combined"
+msgstr "Effet combiné"
+
+msgid "gui.style_editor.field.stroke_blur"
+msgstr "Flou du halo"
+
+msgid "satellite_texture_limit"
+msgstr "Satellite image size {size} exceeds the device texture limit {limit}"
+
+msgid "gui.theme.error.write"
+msgstr "Impossible d’enregistrer les paramètres utilisateur."
+
+msgid "style.terrain.mode.value.continuous"
+msgstr "Transition continue"
+
+msgid "style.satellite.preset.desc"
+msgstr "S’applique uniquement à l’image satellite ; les surcouches restent inchangées."
+
+msgid "style.satellite.preset.value.resolution"
+msgstr "Flou et rééchantillonnage"
+
+msgid "gui.theme.choice.modern"
+msgstr "Moderne épuré"
+
+msgid "gui.theme.copy"
+msgstr "Copie"
+
+msgid "style.road.level.quay.border.label"
+msgstr "Contour du quai"
+
+msgid "gui.satellite.filtering"
+msgstr "Traitement des effets d’imagerie satellite…"
+
+msgid "gui.satellite.ready"
+msgstr "Satellite imagery ready"
+
+msgid "gui.style_editor.field.quay"
+msgstr "Quai"
+
+msgid "gui.theme.error.builtin"
+msgstr "Les thèmes intégrés ne peuvent pas être écrasés."
+
+msgid "gui.theme.choice.satellite"
+msgstr "Satellite chaud"
+
+msgid "gui.theme.error.duplicate"
+msgstr "Ce nom de thème existe déjà."
+
+msgid "gui.style_editor.desc.labels.stroke_blur"
+msgstr "Adoucit le halo en gardant le texte net."
+
+msgid "style.satellite.intensity.label"
+msgstr "Intensité (%)"
+
+msgid "style.road.level.quay.fill.label"
+msgstr "Couleur du quai"
+
+msgid "gui.satellite.composing"
+msgstr "Compositing satellite imagery…"
+
+msgid "gui.layer.satellite"
+msgstr "Image satellite"
+
+msgid "gui.theme.error.file"
+msgstr "Choisissez un fichier de thème YAML."
+
+msgid "style.satellite.preset.value.grain"
+msgstr "Grain du capteur"
+
+msgid "gui.theme.error.name"
+msgstr "Utilisez 1 à 64 caractères sans caractères de contrôle."
+
+msgid "style.satellite.preset.value.haze"
+msgstr "Brume et diffusion"
+
+msgid "style.theme.value.warm_natural"
+msgstr "Nature chaleureuse"
+
+msgid "gui.theme.legacy"
+msgstr "Ancien"
+
+msgid "style.satellite.preset.value.distortion"
+msgstr "Distorsion d’image"
+
+msgid "gui.theme.choice.warm_natural"
+msgstr "Nature chaleureuse"
+
+msgid "gui.theme.choice.bright"
+msgstr "Carte lumineuse"
+
+msgid "gui.theme.personal"
+msgstr "Mon thème"
+
+msgid "style.theme.value.bright"
+msgstr "Carte lumineuse"
+
+msgid "style.terrain.mode.value.shade"
+msgstr "Transition continue avec ombrage"
+
+msgid "style.satellite.preset.value.original"
+msgstr "Original"
+
+msgid "gui.style_editor.desc.roads.opacity"
+msgstr "Opacité des routes : 0 est transparent, 1 est opaque."
+
+msgid "style.satellite.intensity.desc"
+msgstr "0 restaure l’original ; 100 applique l’effet complet."
+
+msgid "gui.style_editor.field.quay_elevated"
+msgstr "Quai surélevé"
+
+msgid "gui.style_editor.field.quay_tunnel"
+msgstr "Quai en tunnel"
+
+msgid "style.satellite.preset.label"
+msgstr "Effet d’imagerie"

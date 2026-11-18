@@ -4,6 +4,7 @@ from __future__ import annotations
 import copy
 import time
 import traceback
+from pathlib import Path
 from typing import Any, Callable
 
 from PIL import Image
@@ -28,7 +29,7 @@ from csmodernmap.layers.watermark_layer import WatermarkLayer
 from csmodernmap.layers.zone_layer import ZoneLayer
 from csmodernmap.cmm import load_document
 from csmodernmap.render_jobs import RegionPolicy, build_render_job, build_transit_jobs
-from csmodernmap.ribbon_schema import normalize_terrain_mode
+from csmodernmap.terrain import resolve_terrain_config
 from csmodernmap.renderer import (
     AUTO_THRESHOLD,
     DISK_BACK_MIN_PIXELS,
@@ -178,30 +179,9 @@ def _build_normal_renderer(
     detail_mode = "auto" if preview else "detailed"
     s = _load_ui_style(ui, style)
     s.data.setdefault("roads", {})["accurate_intersections"] = bool(ui.get("accurate_intersections", True))
-    terrain_cfg = s.data.setdefault("terrain", {})
-    hillshade_cfg = terrain_cfg.setdefault("hillshade", {})
-    terrain_ui = ui["terrain"]
-    # 「地形表现」只有两档：分层设色（simple）/ 分层设色 + 山影（shade）。
-    mode = normalize_terrain_mode(terrain_ui.get("mode"))
-    # 高度场可插值，颜色只按等高区间取固定值。
+    terrain_cfg = s.data["terrain"] = resolve_terrain_config(
+        s.data.get("terrain", {}), ui.get("terrain"))
     terrain_cfg["ground"] = {"enabled": False}
-    terrain_cfg["elevation_mode"] = "stepped"
-    hillshade_cfg["enabled"] = mode == "shade"
-    # 面片参数与 polygon 模式随「立体棱角」一并删除：旧主题/旧主题覆写里可能
-    # 还留着这些键，就地清掉，免得把渲染端引回已不存在的分支。
-    for retired in ("mode", "facet_size_meters", "facet_jitter"):
-        hillshade_cfg.pop(retired, None)
-    # 界面上「山影强度」是 0~100 的百分比、「光照方向」是 0~360 度，渲染端读的
-    # 却是 hillshade.intensity（0~1）与 hillshade.azimuth。此前这里把 shade / sun
-    # 两个名字原样写进配置，渲染端根本不认这两个键 → 两个滑块在导出时形同虚设
-    # （预览那条路一直是对的，见 preview_terrain）。这里按真实字段名写回去。
-    try:
-        shade_percent = float(terrain_ui.get("shade", 35.0))
-        azimuth = float(terrain_ui.get("sun", 315.0))
-    except (TypeError, ValueError):
-        shade_percent, azimuth = 35.0, 315.0
-    hillshade_cfg["intensity"] = max(0.0, min(1.0, shade_percent / 100.0))
-    hillshade_cfg["azimuth"] = azimuth
     renderer = Renderer(
         s, width=canvas_w, height=canvas_h,
         rotation=ui["rotation"],
@@ -579,6 +559,11 @@ def run_render_task(
     if document is None:
         document = _parse_for_render(file, p_parse)
         cache[file] = document
+    if job.get("satellite_composite_path"):
+        document._satellite_composite = Path(job["satellite_composite_path"]).read_bytes()
+    if job.get("satellite_filtered_path"):
+        document._satellite_filtered = (tuple(job["satellite_filter_key"]),
+                                        Path(job["satellite_filtered_path"]).read_bytes())
     timer.end("load.xml")
     timer.start("derive.session")
     session = session if session is not None else _session_for(document)

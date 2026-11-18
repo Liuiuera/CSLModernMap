@@ -107,23 +107,24 @@ def clip_scene_payload(payload, bounds):
             images[name] = _crop_image(images[name], fractions, "distance")
         descriptor["worldBounds"] = [a, b, c, d]
 
-    terrain = manifest.get("sources", {}).get("terrain")
-    corners = manifest.get("terrainCorners")
-    if terrain and corners:
-        lng0, lng1 = min(p[0] for p in corners), max(p[0] for p in corners)
-        lat0, lat1 = min(p[1] for p in corners), max(p[1] for p in corners)
-        left, right = max(lng0, geo[0][0]), min(lng1, geo[1][0])
-        bottom, top = max(lat0, geo[0][1]), min(lat1, geo[1][1])
-        name = _name(terrain)
-        if left >= right or bottom >= top:
-            manifest["sources"].pop("terrain")
-            manifest["terrainCorners"] = None
-            images.pop(name, None)
-        else:
-            fractions = ((left-lng0)/(lng1-lng0), (lat1-top)/(lat1-lat0),
-                         (right-lng0)/(lng1-lng0), (lat1-bottom)/(lat1-lat0))
-            images[name] = _crop_image(images[name], fractions)
-            manifest["terrainCorners"] = [[left, top], [right, top], [right, bottom], [left, bottom]]
+    for raster_key, corner_key in (("terrain", "terrainCorners"), ("satellite", "satelliteCorners")):
+        terrain = manifest.get("sources", {}).get(raster_key)
+        corners = manifest.get(corner_key)
+        if terrain and corners:
+            lng0, lng1 = min(p[0] for p in corners), max(p[0] for p in corners)
+            lat0, lat1 = min(p[1] for p in corners), max(p[1] for p in corners)
+            left, right = max(lng0, geo[0][0]), min(lng1, geo[1][0])
+            bottom, top = max(lat0, geo[0][1]), min(lat1, geo[1][1])
+            name = _name(terrain)
+            if left >= right or bottom >= top:
+                manifest["sources"].pop(raster_key)
+                manifest[corner_key] = None
+                images.pop(name, None)
+            else:
+                fractions = ((left-lng0)/(lng1-lng0), (lat1-top)/(lat1-lat0),
+                             (right-lng0)/(lng1-lng0), (lat1-bottom)/(lat1-lat0))
+                images[name] = _crop_image(images[name], fractions)
+                manifest[corner_key] = [[left, top], [right, top], [right, bottom], [left, bottom]]
     manifest["world"] = {**manifest.get("world", {}), "bounds": region, "geoBounds": geo}
     manifest["initialRegion"] = region
     manifest["exportRegion"] = region

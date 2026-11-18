@@ -14,6 +14,26 @@ internal static class UserData
     internal static string DirectoryPath => Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CSLModernMap", "UserData");
 
+    internal static bool ReadAutoPreview(string directory)
+    {
+        var path = Path.Combine(directory, "preview-startup.json");
+        if (!File.Exists(path)) return true;
+        using var document = JsonDocument.Parse(File.ReadAllText(path));
+        if (document.RootElement.ValueKind != JsonValueKind.Object ||
+            !document.RootElement.TryGetProperty("autoPreview", out var enabled) ||
+            enabled.ValueKind is not (JsonValueKind.True or JsonValueKind.False))
+            throw new InvalidDataException($"Invalid preview startup settings: {path}");
+        return enabled.GetBoolean();
+    }
+
+    internal static void WriteAutoPreview(string directory, bool enabled)
+    {
+        Directory.CreateDirectory(directory);
+        var path = Path.Combine(directory, "preview-startup.json");
+        File.WriteAllText(path + ".tmp", JsonSerializer.Serialize(new { autoPreview = enabled }));
+        File.Move(path + ".tmp", path, overwrite: true);
+    }
+
     internal static bool ReadMapInteractionGuideSeen(string directory)
     {
         var path = Path.Combine(directory, "preview-ui.json");
@@ -69,7 +89,7 @@ internal static class UserData
         File.Move(path + ".tmp", path, overwrite: true);
     }
 
-    internal static void Prepare(string[] arguments, string engineDirectory)
+    internal static string[] Prepare(string[] arguments, string engineDirectory)
     {
         var map = arguments.FirstOrDefault(File.Exists);
         var sources = new[]
@@ -79,11 +99,13 @@ internal static class UserData
         };
         Migrate(DirectoryPath, sources, engineDirectory,
             Path.Combine(Path.GetDirectoryName(DirectoryPath)!, "preferences"));
+        return sources.Select(Path.GetFullPath).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
     }
 
     // 将旧用户配置搬到固定目录，并在确认目标可读取后清理旧文件。
     internal static void Migrate(string target, IEnumerable<string> sources, string engineDirectory, string preferences)
     {
+        var roots = sources.Append(engineDirectory).Select(Path.GetFullPath).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
         var settingsPath = Path.Combine(target, "settings.json");
         if (File.Exists(settingsPath))
         {
@@ -91,7 +113,6 @@ internal static class UserData
             return;
         }
 
-        var roots = sources.Select(Path.GetFullPath).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
         var source = roots.FirstOrDefault(root => File.Exists(Path.Combine(root, "settings.json")));
         var settings = source is null
             ? new JsonObject { ["version"] = 3, ["values"] = new JsonObject() }
@@ -132,9 +153,6 @@ internal static class UserData
         foreach (var root in roots)
             foreach (var name in new[] { "custom_fonts", "user_icon_libraries" })
                 CopyDirectory(Path.Combine(root, name), Path.Combine(target, name), true);
-        // 旧版本允许直接编辑安装目录中的文件。
-        // 保留安装目录副本，让引擎仍能读取默认资源。
-        CopyDirectory(Path.Combine(engineDirectory, "styles"), Path.Combine(target, "styles"), false);
         var mapping = Path.Combine(engineDirectory, "csmodernmap", "services", "poi", "poi_mapping.yaml");
         if (!File.Exists(Path.Combine(target, "poi_mapping.yaml")))
             Copy(mapping, Path.Combine(target, "poi_mapping.yaml"), false);

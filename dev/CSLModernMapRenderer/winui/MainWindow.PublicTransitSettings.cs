@@ -116,7 +116,12 @@ public sealed partial class MainWindow
             {
                 if (args.Key == VirtualKey.Enter) await Commit(args.OriginalSource as TextBox);
             }), handledEventsToo: true);
-            if (range is null) { input.Header = label; return input; }
+            if (range is null)
+            {
+                input.ValueChanged += async (_, _) => await Commit();
+                input.Header = label;
+                return input;
+            }
             input.Width = 76;
             Bind(range, () => range.Value = input.Value, enabled);
             range.ValueChanged += (_, args) => { if (!syncing) input.Value = args.NewValue; };

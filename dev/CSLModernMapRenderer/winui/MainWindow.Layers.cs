@@ -173,7 +173,35 @@ public sealed partial class MainWindow
 
     private async Task SetLayerVisibleAsync(string layer, bool enabled)
     {
-        await _engine.RequestAsync("setLayerVisibility", new { key = layer, enabled });
+        if (layer == "satellite")
+            BeginMapTask(MapTaskPhase.Loading, UiLanguage.Text("Satellite_Composing"), canCancel: false, waitForScene: false);
+        try
+        {
+            int? maxTextureSize = null;
+            if (layer == "satellite" && enabled)
+            {
+                var limit = await MapView.ExecuteScriptAsync("(() => { const gl = document.querySelector('.maplibregl-canvas').getContext('webgl2'); return gl.getParameter(gl.MAX_TEXTURE_SIZE); })()");
+                maxTextureSize = JsonSerializer.Deserialize<int>(limit);
+            }
+            var result = await _engine.RequestAsync("setLayerVisibility", new { key = layer, enabled, maxTextureSize });
+            if (layer == "satellite")
+            {
+                foreach (var item in result.GetProperty("mapLayers").EnumerateObject())
+                    SendViewer(LayerVisibilityCommand.Create(item.Name, item.Value.GetBoolean(), _sceneId, _revision));
+                await RefreshLivePreviewAsync();
+                return;
+            }
+        }
+        finally
+        {
+            if (layer == "satellite")
+            {
+                _mapTask.Reset(!string.IsNullOrEmpty(_sceneId));
+                SetDocumentEnabled(_snapshot.ValueKind == JsonValueKind.Object &&
+                    _snapshot.GetProperty("hasDocument").GetBoolean() && !_engineBusy);
+                ApplyMapTaskState();
+            }
+        }
         SendViewer(LayerVisibilityCommand.Create(layer, enabled, _sceneId, _revision));
         if (layer == "label")
             SendViewer(LayerVisibilityCommand.Create("poi", enabled &&

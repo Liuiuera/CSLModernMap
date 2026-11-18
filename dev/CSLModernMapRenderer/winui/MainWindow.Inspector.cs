@@ -12,14 +12,25 @@ public sealed partial class MainWindow
     private string? _inspectorContext;
     private readonly Dictionary<string, Dictionary<string, bool>> _inspectorExpansion = new();
 
-    private async Task ShowObjectInspectorAsync(JsonElement frame)
+    private async Task ShowObjectInspectorAsync(JsonElement frame, bool locate = false)
     {
         var request = ++_inspectorRequest;
         var generation = _documentGeneration;
         var context = _context;
         _inspectorContext = context;
-        var selection = frame.Clone();
         var epoch = _snapshot.GetProperty("documentEpoch").GetInt32();
+        var selection = frame.Clone();
+        var props = frame.GetProperty("properties");
+        int? buildingId = props.TryGetProperty("buildingId", out var building) ? building.GetInt32() : null;
+        if (buildingId is null && props.TryGetProperty("sourceKind", out var sourceKind) && sourceKind.GetString() == "building"
+            && props.TryGetProperty("sourceId", out var source) && int.TryParse(source.ToString(), out var sourceId)) buildingId = sourceId;
+        if (buildingId is > 0)
+        {
+            selection = await _engine.RequestAsync("getBuildingSelection", new { buildingId, documentEpoch = epoch });
+            if (_closing || request != _inspectorRequest || generation != _documentGeneration || context != _context) return;
+            SendViewer(new { type = "selectCatalogBuilding", selection, locate, sceneId = _sceneId, revision = _revision });
+        }
+        SyncBuildingList(selection);
         _inspectorSelection = selection;
         _objectInspector = null;
         ClearLayerPanel(InspectorPanel);
@@ -30,6 +41,7 @@ public sealed partial class MainWindow
             new { @object = selection, context, documentEpoch = epoch });
         var model = await Read();
         if (!Current()) return;
+        _buildingList?.ShowDetails(model, selection);
         var kind = model.GetProperty("objectType").GetString()!;
         if (!_inspectorExpansion.TryGetValue(kind, out var expansion))
             _inspectorExpansion[kind] = expansion = new();
@@ -67,6 +79,18 @@ public sealed partial class MainWindow
         ClearLayerPanel(InspectorPanel);
         _objectInspector = panel;
         InspectorPanel.Children.Add(panel);
+        if (selection.TryGetProperty("members", out var members) && members.GetArrayLength() > 0)
+        {
+            var children = new StackPanel { Spacing = 6 };
+            foreach (var member in members.EnumerateArray())
+            {
+                var id = member.GetProperty("id").GetInt32();
+                children.Children.Add(new TextBlock { Text = $"{BuildingListPanel.DisplayName(member.GetProperty("name").GetString()!, id)} · {id}\n{member.GetProperty("categoryName").GetString()}",
+                    TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap });
+            }
+            InspectorPanel.Children.Add(new Expander { Header = UiLanguage.Text("BuildingList_Members"), Content = children,
+                HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Stretch, HorizontalContentAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Stretch });
+        }
         panel.SetAvailable(_documentEnabled && context is "map" or "transit");
     }
 

@@ -4471,4 +4471,83 @@ Shaotang Shaoxiancao Codex</value>
   <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>Показывать значки и названия декораций из списка. Здания и объекты карты остаются видимыми.</value></data>
   <data name="MetroSettings_Reset" xml:space="preserve"><value>Восстановить по умолчанию</value></data>
   <data name="BuildingCategory_Help" xml:space="preserve"><value>Выберите «Цвета категорий», чтобы применить настройки. Включите «Задать цвет» для всех зданий категории; выключите, чтобы восстановить автоматические цвета POI. Неизвестные назначения остаются без категории.</value></data>
+  <data name="BuildingList_NoName" xml:space="preserve"><value>Название отсутствует</value></data>
+  <data name="ThemeEditor_New" xml:space="preserve"><value>Новая тема</value></data>
+  <data name="BuildingList_OfficialName" xml:space="preserve"><value>Официальная категория игры</value></data>
+  <data name="ThemeEditor_Name" xml:space="preserve"><value>Название темы</value></data>
+  <data name="BuildingList_Search" xml:space="preserve"><value>Поиск по названию здания</value></data>
+  <data name="Preview_AutoStart" xml:space="preserve"><value>Загружать встроенный предпросмотр при запуске</value></data>
+  <data name="BuildingList_DetailHint" xml:space="preserve"><value>Выберите здание для просмотра сведений.</value></data>
+  <data name="BuildingList_Height" xml:space="preserve"><value>Высота здания</value></data>
+  <data name="BuildingList_Open" xml:space="preserve"><value>Список зданий</value></data>
+  <data name="BuildingList_Name" xml:space="preserve"><value>Название здания</value></data>
+  <data name="Preview_Continue.Content" xml:space="preserve"><value>Продолжить ожидание</value></data>
+  <data name="ThemeUpdate_Intro" xml:space="preserve"><value>«{0}» включает обновление предустановки.</value></data>
+  <data name="BuildingList_Id" xml:space="preserve"><value>ID</value></data>
+  <data name="ThemeUpdate_Off" xml:space="preserve"><value>Выкл.</value></data>
+  <data name="BuildingList_CategoryDesc" xml:space="preserve"><value>Категория: по убыванию</value></data>
+  <data name="ThemeEditor_Unsaved" xml:space="preserve"><value>Не сохранено</value></data>
+  <data name="BuildingList_IdDesc" xml:space="preserve"><value>ID: по убыванию</value></data>
+  <data name="ThemeEditor_MigrationWarning" xml:space="preserve"><value>Не удалось прочитать некоторые старые темы. Исходные файлы сохранены в резервной копии:</value></data>
+  <data name="ThemeEditor_Select" xml:space="preserve"><value>Выбрать тему</value></data>
+  <data name="ThemeEditor_Copy" xml:space="preserve"><value>Дублировать тему</value></data>
+  <data name="BuildingList_Info" xml:space="preserve"><value>Информация о здании</value></data>
+  <data name="BuildingList_Unnamed" xml:space="preserve"><value>Здание без названия</value></data>
+  <data name="BuildingList_CustomName" xml:space="preserve"><value>Задано игроком</value></data>
+  <data name="ThemeEditor_Cancel" xml:space="preserve"><value>Отмена</value></data>
+  <data name="ThemeUpdate_Continue" xml:space="preserve"><value>Продолжить</value></data>
+  <data name="BuildingList_NameSource" xml:space="preserve"><value>Источник названия</value></data>
+  <data name="BuildingList_Details" xml:space="preserve"><value>Сведения о здании</value></data>
+  <data name="ThemeUpdate_UsePrevious" xml:space="preserve"><value>Прежняя тема</value></data>
+  <data name="ThemeUpdate_Archived" xml:space="preserve"><value>Прежняя тема сохранена. Её можно выбрать в списке тем.</value></data>
+  <data name="BuildingList_All" xml:space="preserve"><value>Все</value></data>
+  <data name="ThemeEditor_Exported" xml:space="preserve"><value>Тема экспортирована</value></data>
+  <data name="BuildingList_Empty" xml:space="preserve"><value>Подходящие здания не найдены</value></data>
+  <data name="ThemeUpdate_Kept" xml:space="preserve"><value>Ваши изменения сохранены</value></data>
+  <data name="BuildingList_Count" xml:space="preserve"><value>Показано {0:N0} / {1:N0} зданий (комплексы объединены)</value></data>
+  <data name="BuildingList_Back" xml:space="preserve"><value>Назад к обзору</value></data>
+  <data name="Preview_DataAvailable" xml:space="preserve"><value>Данные карты загружены. Можно выбрать тему и экспортировать карту.</value></data>
+  <data name="ThemeEditor_Personal" xml:space="preserve"><value>Мои темы</value></data>
+  <data name="ThemeUpdate_ColorRamp" xml:space="preserve"><value>Цвета высот</value></data>
+  <data name="ThemeEditor_Export" xml:space="preserve"><value>Экспорт темы…</value></data>
+  <data name="ThemeEditor_Import" xml:space="preserve"><value>Импорт темы…</value></data>
+  <data name="BuildingList_OutsideFilter" xml:space="preserve"><value>Выбранное здание не соответствует текущему фильтру.</value></data>
+  <data name="ThemeEditor_Base" xml:space="preserve"><value>Базовая предустановка</value></data>
+  <data name="BuildingList_NameAsc" xml:space="preserve"><value>Название: по возрастанию</value></data>
+  <data name="BuildingList_GroupCount" xml:space="preserve"><value>Зданий: {0} (включая главное)</value></data>
+  <data name="ThemeEditor_CurrentUnreadable" xml:space="preserve"><value>Не удалось прочитать текущую тему. Выберите другую тему. Исходные файлы сохранены.</value></data>
+  <data name="Preview_OpenFailed" xml:space="preserve"><value>HTML сохранён, но не удалось открыть его в браузере. Откройте файл вручную в папке вывода.</value></data>
+  <data name="ThemeEditor_Rename" xml:space="preserve"><value>Переименовать</value></data>
+  <data name="Preview_OpenMap" xml:space="preserve"><value>Откройте файл карты, чтобы выбрать тему и экспортировать карту.</value></data>
+  <data name="Preview_Slow" xml:space="preserve"><value>Предпросмотр загружается дольше обычного</value></data>
+  <data name="ThemeUpdate_AllChanges" xml:space="preserve"><value>Все изменения</value></data>
+  <data name="ThemeEditor_Builtins" xml:space="preserve"><value>Встроенные темы</value></data>
+  <data name="BuildingList_OpenButton.Content" xml:space="preserve"><value>Список зданий</value></data>
+  <data name="ThemeUpdate_Custom" xml:space="preserve"><value>Свои настройки</value></data>
+  <data name="BuildingList_GameCategory" xml:space="preserve"><value>Категория игры</value></data>
+  <data name="Preview_Retry.Content" xml:space="preserve"><value>Перезагрузить предпросмотр</value></data>
+  <data name="BuildingList_Members" xml:space="preserve"><value>Пристроенные здания</value></data>
+  <data name="BuildingList_NameDesc" xml:space="preserve"><value>Название: по убыванию</value></data>
+  <data name="BuildingList_IdAsc" xml:space="preserve"><value>ID: по возрастанию</value></data>
+  <data name="BuildingList_Group" xml:space="preserve"><value>Группа зданий</value></data>
+  <data name="ThemeEditor_Save" xml:space="preserve"><value>Сохранить</value></data>
+  <data name="ThemeUpdate_On" xml:space="preserve"><value>Вкл.</value></data>
+  <data name="BuildingList_GameName" xml:space="preserve"><value>Название из игры</value></data>
+  <data name="ThemeUpdate_Conflict" xml:space="preserve"><value>Вы тоже изменили этот параметр. Применено новое значение предустановки.</value></data>
+  <data name="Preview_Html.Content" xml:space="preserve"><value>Открыть в браузере</value></data>
+  <data name="ThemeEditor_InvalidName" xml:space="preserve"><value>Используйте от 1 до 64 символов без управляющих символов.</value></data>
+  <data name="Preview_Stopped" xml:space="preserve"><value>Встроенный предпросмотр остановлен</value></data>
+  <data name="ThemeUpdate_MoreKept" xml:space="preserve"><value>Сохранено ещё {0} изменений</value></data>
+  <data name="BuildingList_GameNames" xml:space="preserve"><value>Использовать названия из игры</value></data>
+  <data name="Preview_Png.Content" xml:space="preserve"><value>Экспорт PNG (2048 пикс.)</value></data>
+  <data name="BuildingList_CategoryAsc" xml:space="preserve"><value>Категория: по возрастанию</value></data>
+  <data name="BuildingList_Category" xml:space="preserve"><value>Категория здания</value></data>
+  <data name="ThemeUpdate_Unset" xml:space="preserve"><value>Не задано</value></data>
+  <data name="Preview_Failed" xml:space="preserve"><value>Не удалось загрузить предпросмотр</value></data>
+  <data name="ThemeUpdate_Title" xml:space="preserve"><value>Тема обновлена</value></data>
+  <data name="BuildingList_Sort" xml:space="preserve"><value>Сортировка</value></data>
+  <data name="BuildingList_NameHint" xml:space="preserve"><value>Названия соответствуют настройке карты. Пользовательские названия сохраняются.</value></data>
+  <data name="BuildingList_Clear" xml:space="preserve"><value>Сбросить фильтры</value></data>
+  <data name="Satellite_LayerTitle" xml:space="preserve"><value>Спутниковый снимок</value></data>
+  <data name="Satellite_Composing" xml:space="preserve"><value>Создание спутникового снимка…</value></data>
 </root>

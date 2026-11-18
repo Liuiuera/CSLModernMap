@@ -214,5 +214,7 @@
   "preview3d_title": "Prévia 3D",
   "preview3d_help": "Segure o botão do meio: arraste para os lados para girar, para cima/baixo para inclinar.",
   "preview3d_missing": "Alguns edifícios não têm altura de modelo e permanecem planos. Exporte novamente com o mod atualizado.",
-  "roads_local_flat_fallback": "Alguns cruzamentos são desenhados no mesmo plano. A sobreposição de pontes e túneis pode ser imprecisa nesses locais."
+  "roads_local_flat_fallback": "Alguns cruzamentos são desenhados no mesmo plano. A sobreposição de pontes e túneis pode ser imprecisa nesses locais.",
+  "satellite_texture_limit": "Satellite image size {{size}} exceeds the device texture limit {{limit}}",
+  "controls_satellite": "Imagem de satélite"
 }

@@ -35,7 +35,7 @@ from pathlib import Path
 
 from PIL import Image
 
-from ._paths import application_settings_dir, poi_mapping_override_path, resource_dir, user_data_dir, writable_dir
+from ._paths import application_settings_dir, bundle_root, poi_mapping_override_path, resource_dir, user_data_dir, writable_dir
 from .cmm import load_document
 from .cmm.session import DocumentSession
 from .export import export_png
@@ -44,6 +44,7 @@ from . import gui_render_worker as _render_worker
 from .layers.building_layer import BuildingLayer
 from .layers.built_area_layer import BuiltAreaLayer
 from .layers.district_layer import DistrictLayer, visible_administrative_districts
+from .layers.label_layer import LabelLayer
 from .layers.poi_density import POI_DENSITY_PRESETS, poi_density_params
 from .layers.railway_layer import RailwayLayer
 from .layers.registry import gui_layer_registry, layer_directory
@@ -62,6 +63,7 @@ from .regions import closeup_region
 from .render_jobs import RegionPolicy
 from .renderer import Renderer
 from .ribbon_schema import normalize_terrain_mode
+from .terrain import resolve_terrain_config, terrain_ui_state
 from .settings_store import load_settings, save_settings
 from .poi_profiles import PROFILE_SETTING_KEY, canonical_profile_target, normalize_poi_profiles, normalize_poi_visibility_snapshot, validate_poi_profile
 from .system_info import automatic_antialias
@@ -70,8 +72,9 @@ from .output_profiles import (
     normalize_output_profiles,
     validate_output_profile,
 )
-from .style import (Style, load_style,
+from .style import (Style, load_style, canonical_theme_id,
                     strip_retired_region_palette_fields)
+from . import theme_library
 from .transit import TYPE_REGISTRY
 from .view_settings import (default_view_settings, load_view_settings,
                              migrate_legacy_settings, save_view_settings,
@@ -87,39 +90,43 @@ RECENT_MAX = 6
 
 WORLD_HALF = 8640.0
 
-# 主题显示名（**翻译键**，取值处再 tr()）→ stem（与 guir 下拉一致；
-# metro_map.yaml 不作为可选主题）。模块级常量在导入期求值，不能直接放译文。
+# 只存翻译键，显示时翻译；地铁图主题不参与选择。
 THEME_CHOICES = (
-    ("gui.theme.choice.apple_maps", "apple_maps"),
-    ("gui.theme.choice.amap", "amap"),
-    ("gui.theme.choice.google", "google"),
+    ("gui.theme.choice.modern", "modern"),
+    ("gui.theme.choice.bright", "bright"),
+    ("gui.theme.choice.warm_natural", "warm_natural"),
+    ("gui.theme.choice.satellite", "satellite"),
     ("gui.theme.choice.dark", "dark"),
     ("gui.theme.choice.vintage", "vintage"),
 )
 
-#: 主题显示名（**各语言的译值**）与旧 stem → 当前 stem。只用于**读回旧值**，
-#: 不参与显示。
-#:
-#: 为什么要连英文显示名一起列：设置项与导出配置里存的是「当时界面上的主题名」，
-#: 用户在英文界面下选的主题，切回中文后仍要认得出来。所以这里的解析**与当前
-#: 语言无关**，不能靠 tr() 现查 —— 那会让同一份数据在不同语言下解析出不同结果。
-#: 改 ``gui.theme.choice.*`` 的译值时必须同步这张表。
+# 旧配置可能保存任一语言的显示名，读取时不能依赖当前界面语言。
 _LEGACY_THEME_NAMES = {
-    "Apple Maps": "apple_maps",
-    "高德地图": "amap", "Amap": "amap",
-    "Google": "google",
+    "Apple Maps": "modern",
+    "高德地图": "bright", "Amap": "bright",
+    "Google": "warm_natural",
     "深色地图": "dark", "Dark": "dark",
     "纸质地图": "vintage", "Paper": "vintage",
-    # 早期主题名（`gui.theme.<stem>.name` 那一代的措辞）。当前
-    # ``gui.theme.choice.*`` 的译值已改回这一套，所以中文侧同时就是「当前译值」。
-    "轻简现代": "apple_maps", "明亮地图": "amap", "暖色自然": "google",
+    "轻简现代": "modern", "明亮地图": "bright", "暖色自然": "warm_natural",
     "暗黑风格": "dark", "复古风格": "vintage",
-    # 同一套名字的英文译值（`gui.theme.<stem>.name` 的 en 侧）。
-    "Minimal Modern": "apple_maps", "Bright Map": "amap",
-    "Warm Natural": "google", "Dark Style": "dark",
+    "Minimal Modern": "modern", "Bright Map": "bright",
+    "Warm Natural": "warm_natural", "Dark Style": "dark",
     "Vintage Style": "vintage",
     # 早期 stem
-    "modern": "apple_maps", "paper": "vintage",
+    "modern": "modern", "paper": "vintage",
+    "Satellite Warm": "satellite",
+    "卫星暖色": "satellite",
+    "衛星暖色": "satellite",
+    "Satellit warm": "satellite",
+    "Satélite cálido": "satellite",
+    "Satellite chaud": "satellite",
+    "Satellite caldo": "satellite",
+    "衛星・暖色": "satellite",
+    "따뜻한 위성 지도": "satellite",
+    "Satelitarny ciepły": "satellite",
+    "Satélite quente": "satellite",
+    "Спутник, тёплый": "satellite",
+
 }
 
 
@@ -128,6 +135,9 @@ def _theme_stem_for(value: str) -> str | None:
 
     解析不出来返回 None：调用方按失败处理，不静默改主题。
     """
+    value = canonical_theme_id(value)
+    if value.startswith("gui.theme.choice."):
+        value = "gui.theme.choice." + canonical_theme_id(value.removeprefix("gui.theme.choice."))
     for name_key, stem in THEME_CHOICES:
         if value in (stem, name_key):
             return stem
@@ -196,6 +206,11 @@ def _range_from_legacy(value) -> tuple[int, str]:
 
 # 字段键 → style.data 路径（部分字段需特殊映射，见 _UI_FIELD_HANDLERS）
 _STYLE_FIELD_PATHS = {
+    "terrain.mode": ("terrain", "mode"),
+    "terrain.shade": ("terrain", "hillshade", "intensity"),
+    "terrain.sun": ("terrain", "hillshade", "azimuth"),
+    "satellite.preset": ("satellite", "preset"),
+    "satellite.intensity": ("satellite", "intensity"),
     "terrain.color": ("terrain", "elevation_colors", "0", "color"),
     "terrain.forest": ("forest", "color"),
     "water.color": ("water", "color"),
@@ -314,6 +329,7 @@ _ROAD_LEVEL_ENUM = {
     "main": RoadLevel.MAIN,
     "branch": RoadLevel.BRANCH,
     "special": RoadLevel.SPECIAL,
+    "quay": RoadLevel.QUAY,
     "beautification": RoadLevel.BEAUTIFICATION,
 }
 
@@ -324,8 +340,8 @@ _ROAD_LEVEL_WIDTH_KEY = "min_fill_px"
 def road_level_style_key(roads: dict, level_key: str) -> str:
     """该等级在当前主题 ``roads`` 段里实际使用的键。
 
-    主题之间叫法不同：amap / google / dark / vintage 用 ``main`` / ``branch``，
-    apple_maps 用 ``primary`` / ``secondary`` / ``tertiary``。一律以主题里真实
+    主题之间叫法不同：bright / warm_natural / dark / vintage 用 ``main`` / ``branch``，
+    modern 用 ``primary`` / ``secondary`` / ``tertiary``。一律以主题里真实
     存在的那个键为准（顺序即 ``road_style_candidates`` 的别名表），这样写回去的
     值渲染侧一定读得到；主题没配这个等级时回退到规范名，此时渲染侧的候选表也会
     优先命中它。
@@ -341,12 +357,15 @@ def road_level_style_key(roads: dict, level_key: str) -> str:
 def road_level_read(roads: dict, level_key: str, attr: str, default=None):
     """读回某个道路等级的一个属性（读不到就返回 ``default``）。
 
-    注意面板上的 ``width`` 在主题里叫 ``min_fill_px``（渲染侧读的是同一个键）。
+    普通道路 width 对应 min_fill_px，护岸对应 footprint_scale。
     """
-    cfg = roads.get(road_level_style_key(roads, level_key))
+    cfg = roads.get("quay" if level_key == "quay" and attr == "width"
+                    else road_level_style_key(roads, level_key))
     if not isinstance(cfg, dict):
-        return default
-    key = _ROAD_LEVEL_WIDTH_KEY if attr == "width" else attr
+        return 0.5 if level_key == "quay" and attr == "width" else default
+    key = ("footprint_scale" if level_key == "quay" else _ROAD_LEVEL_WIDTH_KEY) if attr == "width" else attr
+    if key == "footprint_scale":
+        default = 0.5
     value = cfg.get(key, default)
     if attr == "width":
         try:
@@ -364,10 +383,15 @@ def _road_level_handler(level_key: str, attr: str):
     """
     def handler(backend, value) -> None:
         roads = backend._style_data_mut().setdefault("roads", {})
-        cfg = roads.setdefault(road_level_style_key(roads, level_key), {})
+        cfg = roads.setdefault("quay" if level_key == "quay" and attr == "width"
+                               else road_level_style_key(roads, level_key), {})
         if attr == "width":
             try:
-                cfg[_ROAD_LEVEL_WIDTH_KEY] = max(0.2, min(6.0, float(value)))
+                if level_key == "quay":
+                    cfg["footprint_scale"] = max(0.05, min(1.0, float(value)))
+                    cfg.pop("min_fill_px", None)
+                else:
+                    cfg[_ROAD_LEVEL_WIDTH_KEY] = max(0.2, min(6.0, float(value)))
             except (TypeError, ValueError):
                 return
         else:
@@ -378,6 +402,7 @@ def _road_level_handler(level_key: str, attr: str):
 # 水印位置：ribbon 值 → 主题 yaml 值
 _WATERMARK_POS = {"br": "right_bottom", "bl": "left_bottom"}
 _PERCENT_STYLE_FIELDS = {
+    "terrain.shade",
     "building.poi_tint.contrast",
     "district.opacity", "zone.opacity",
     "land_use.opacity", "watermark.opacity",
@@ -392,6 +417,7 @@ _STYLE_SCENE_LAYERS = {
     "terrain": (TerrainLayer,),
     "water": (TerrainLayer, WaterLayer),
     "roads": (TerrainLayer, WaterLayer, RoadLayer),
+    "labels": (TerrainLayer, WaterLayer, RoadLayer, LabelLayer),
     "railway": (TerrainLayer, WaterLayer, RoadLayer, RailwayLayer),
     "transports": (TerrainLayer, WaterLayer, RoadLayer,
                    RailwayLayer, TransportLayer),
@@ -704,8 +730,19 @@ class GuirBackend:
         self.city_info = {}
 
         # 样式状态（主题 / 覆盖 / 字体 / 画质）
-        self.theme_stem = "apple_maps"
+        self.theme_stem = "modern"
         self.style_overrides: dict[str, dict] = {}
+        self.user_themes: dict[str, dict] = {}
+        self._style_dirty: set[str] = set()
+        self._theme_file_imports: dict[str, dict] = {}
+        self.theme_migration_issues: list[str] = []
+        self._migrated_file_themes: dict[str, str] = {}
+        self._legacy_themes: dict[str, dict] = {}
+        self._theme_scan_done = False
+        self._theme_migration_complete = False
+        self._theme_migration_aborted = False
+        self.theme_load_error = ""
+        self.theme_update_notice = None
         self.font_scale = 1.0
         self.contrast = "standard"
         self.rotation = 0
@@ -718,7 +755,6 @@ class GuirBackend:
         self.size = 4096
         self.aa = False
         self.watermark_text = ""
-        self.terrain = {"mode": "simple", "shade": 35.0, "sun": 315.0}
         self.road_names = True
         self.accurate_intersections = True
         self.road_player_names = True
@@ -759,6 +795,7 @@ class GuirBackend:
         }
         # GUIR 提供程序化对象渲染器，旧版界面仍不显示对应复选框。
         self.layer_visibility.setdefault("procedural_objects", False)
+        self._satellite_previous_layers = None
 
         # 常驻渲染子进程
         self._job_q = None
@@ -769,6 +806,8 @@ class GuirBackend:
         self._local_render_thread = None
         self._local_render_stop = threading.Event()
         self._local_png_active = False
+        self._web_export_active = False
+        self._web_export_thread = None
         self._pending_preview = None
         self._poll_job = None
         self._serial = 0
@@ -803,7 +842,9 @@ class GuirBackend:
         # 比对会话与 revision，避免旧地图或旧宽度结果覆盖新场景。
         self._preview_revision = 0
         self._preview_compile_thread = None
+        self._open_revision = 0
         self.preview_waits_for_presentation = False
+        self.preview_enabled = True
         self._preview_base_presentation: tuple[int, threading.Event] | None = None
         self._preview_server = PreviewSceneServer(
             resource_dir("viewer") / "dist")
@@ -897,9 +938,14 @@ class GuirBackend:
 
     def _load_persisted_state(self) -> None:
         """把旧界面设置应用到控制器的标准状态。"""
-        style_value = str(self._setting("style_var", "apple_maps"))
+        if not self._theme_scan_done:
+            self._load_theme_library()
+            self._theme_scan_done = True
+        style_value = str(self._setting("style_var", "modern"))
         style_stem = style_value.split("·", 1)[0].strip()
-        # 旧 stem（modern / paper）与旧显示名由 _theme_stem_for 统一解析。
+        if not self._setting("theme_library_version", 0):
+            if _theme_stem_for(style_stem) in self._migrated_file_themes:
+                style_stem = self._migrated_file_themes[_theme_stem_for(style_stem)]
         self.set_theme(style_stem, persist=False)
         self.set_size(self._setting("size_var", "4K · 4096"), persist=False)
         # 旧配置里存的是下拉显示值或老模式名，统一解析成 (n, anchor)。解析
@@ -969,24 +1015,11 @@ class GuirBackend:
                     "merge_enabled", raw.get("enabled", self.merge_enabled))),
                 "distance": distance,
             }
-        raw_styles = self._setting("guir_style_overrides", {})
-        self.style_overrides = copy.deepcopy(raw_styles)
-        if isinstance(self.style_overrides, dict):
-            from .theme_contract import cleanup_theme
-            self.style_overrides = {
-                key: cleanup_theme(value) if isinstance(value, dict) else value
-                for key, value in self.style_overrides.items()
-            }
-        # 老设置里可能存着已下线的地形模式（gradient / facets），统一归一到现取值，
-        # 否则下拉框会读出一个不存在的选项。
-        self.terrain["mode"] = normalize_terrain_mode(
-            self._setting("terrain_mode_var", "simple"))
-        self.terrain["shade"] = self._saved_float("terrain_intensity_var", 35.)
-        if 0 < self.terrain["shade"] <= 1:
-            self.terrain["shade"] *= 100.
-        self.terrain["sun"] = self._saved_float("terrain_azimuth_var", 315.0)
+        if not self.theme_load_error:
+            self._migrate_terrain_settings()
         for key, _cls, default, _title in gui_layer_registry():
             self.layer_visibility[key] = bool(self._setting("layer_" + key, default))
+        self.layer_visibility["satellite"] = False
         self.layer_visibility["procedural_objects"] = bool(self._setting(
             "layer_procedural_objects", False))
         self.transit_types = [
@@ -1070,17 +1103,24 @@ class GuirBackend:
                       "merge_distance": f"{float(raw.get('distance', self.merge_distance)):g}"}
                 for key, raw in self.merge_overrides.items()
             },
-            "guir_style_overrides": {
-                key: cleanup_theme(value)
-                for key, value in self.style_overrides.items()
-                if isinstance(value, dict)
-            },
-            "terrain_mode_var": self.terrain["mode"],
-            "terrain_intensity_var": str(self.terrain["shade"]),
-            "terrain_azimuth_var": str(self.terrain["sun"]),
+            "user_themes": self._saved_theme_records(),
+            "theme_file_imports": dict(self._theme_file_imports),
+            "theme_library_version": 1 if self._theme_migration_complete else self._setting("theme_library_version", 0),
         })
-        for key, enabled in self.layer_visibility.items():
-            if key == "poi":
+        if self._theme_migration_complete:
+            values.pop("guir_style_overrides", None)
+        if self.theme_stem in self._legacy_themes and self.theme_stem not in self.user_themes:
+            values["style_var"] = self._setting("style_var", "modern")
+        if self._theme_migration_aborted and not self._style_dirty and self.user_themes == self._setting("user_themes", {}):
+            for key in ("user_themes", "theme_file_imports", "theme_library_version"):
+                if key in self._settings["values"]:
+                    values[key] = copy.deepcopy(self._settings["values"][key])
+                else:
+                    values.pop(key, None)
+        for key in ("terrain_mode_var", "terrain_intensity_var", "terrain_azimuth_var"):
+            values.pop(key, None)
+        for key, enabled in (self._satellite_previous_layers or self.layer_visibility).items():
+            if key in {"poi", "satellite"}:
                 continue
             values["layer_" + key] = bool(enabled)
         selected = set(self.transit_types)
@@ -1216,6 +1256,19 @@ class GuirBackend:
         return True
 
     def set_layer_visibility(self, key: str, enabled: bool) -> None:
+        if key == "satellite":
+            if bool(enabled) == self.layer_visibility[key]:
+                return
+            if enabled:
+                from .satellite_image import ensure_satellite, INTERFERING_LAYERS
+                ensure_satellite(self.document, progress=lambda pct, msg: self._emit("progress", pct, msg))
+                self._satellite_previous_layers = dict(self.layer_visibility)
+                self.layer_visibility.update({name: False for name in INTERFERING_LAYERS})
+            elif self._satellite_previous_layers is not None:
+                self.layer_visibility.update(self._satellite_previous_layers)
+                self._satellite_previous_layers = None
+            self.layer_visibility[key] = bool(enabled)
+            return
         if key in self.layer_visibility:
             self.layer_visibility[key] = bool(enabled)
             self._schedule_settings_save()
@@ -1380,10 +1433,44 @@ class GuirBackend:
     # 设置 / 状态
     # ------------------------------------------------------------------
 
+    @property
+    def terrain(self) -> dict:
+        """主窗口状态直接读取当前主题，不另外保存一套光照和模式。"""
+        return terrain_ui_state(self.current_style_data().get("terrain", {}))
+
+    @terrain.setter
+    def terrain(self, state: dict) -> None:
+        data = self._style_data_mut()
+        data["terrain"] = resolve_terrain_config(data.get("terrain", {}), state)
+
+    def _migrate_terrain_settings(self) -> None:
+        state = self.terrain
+        values = self._settings["values"]
+        if "terrain_mode_var" in values:
+            state["mode"] = normalize_terrain_mode(values["terrain_mode_var"])
+        if "terrain_intensity_var" in values:
+            state["shade"] = self._saved_float("terrain_intensity_var", state["shade"])
+            if 0 < state["shade"] <= 1:
+                state["shade"] *= 100
+        if "terrain_azimuth_var" in values:
+            state["sun"] = self._saved_float("terrain_azimuth_var", state["sun"])
+        if state != self.terrain:
+            data = self._style_data_mut()
+            data["terrain"] = resolve_terrain_config(data.get("terrain", {}), state)
+
     def set_theme(self, value: str, persist: bool = True) -> bool:
-        stem = _theme_stem_for((value or "").strip())
+        value = (value or "").strip()
+        stem = value if value in self.user_themes or value in self._legacy_themes else _theme_stem_for(value)
         if stem is None:
             return False
+        try:
+            self.theme_data(stem)
+        except theme_library.ThemeReadError as error:
+            if persist:
+                raise
+            self.theme_load_error = str(error)
+        else:
+            self.theme_load_error = ""
         self.theme_stem = stem
         if persist:
             self._schedule_settings_save()
@@ -1393,6 +1480,10 @@ class GuirBackend:
         """当前主题的显示名（按当前语言翻译过）；持久化一律存 ``theme_stem``。"""
         from .i18n import tr
 
+        if self.theme_stem in self.user_themes:
+            return self.user_themes[self.theme_stem]["name"]
+        if self.theme_stem in self._legacy_themes:
+            return self._legacy_themes[self.theme_stem]["name"]
         for name_key, stem in THEME_CHOICES:
             if stem == self.theme_stem:
                 return tr(name_key)
@@ -1551,7 +1642,8 @@ class GuirBackend:
         if callbacks is not None:
             self._callbacks = callbacks
         self.invalidate_preview_compile()
-        open_revision = self._preview_revision
+        self._open_revision += 1
+        open_revision = self._open_revision
         callback_map = dict(self._callbacks or {})
         if not self._settings_dir_explicit and self.source_file is None:
             # 单独运行时，地图选定后将用户数据写在地图旁，而非渲染器版本目录。
@@ -1563,12 +1655,12 @@ class GuirBackend:
             pass
 
         def check_cancel():
-            if open_revision != self._preview_revision:
+            if open_revision != self._open_revision:
                 raise OpenCancelled()
 
         def emit_current(name, *args):
             def deliver():
-                if open_revision == self._preview_revision:
+                if open_revision == self._open_revision:
                     fn = callback_map.get(name)
                     if fn is not None:
                         fn(*args)
@@ -1607,13 +1699,17 @@ class GuirBackend:
                 return
 
             def on_parsed() -> None:
-                if open_revision != self._preview_revision:
+                if open_revision != self._open_revision:
                     return
                 self._switch_settings_dir_for_city(path)
                 self.source_file = path
                 self._output_dir = str(Path(path).resolve().parent)
                 self.document = document
                 self.session = session
+                if self._satellite_previous_layers is not None:
+                    self.layer_visibility.update(self._satellite_previous_layers)
+                self._satellite_previous_layers = None
+                self.layer_visibility["satellite"] = False
                 self._transit_line_catalog_cache = transit_catalog
                 # 公共交通视图的线路勾选不落盘（会话级），地铁白名单则要跟
                 # 当前存档对齐；settings.json 与存档同目录共享，上一座城市
@@ -1653,6 +1749,9 @@ class GuirBackend:
         self._settings_dir = target
         self.poi_mapping_override = poi_mapping_override_path(target)
         self._settings = load_settings(target)
+        self._legacy_themes = {}
+        self._migrated_file_themes = {}
+        self._load_theme_library(migrate=False)
         self._recent_files = self._load_recent_files()
         self._output_dir = str(target)
         self._load_persisted_state()
@@ -1935,10 +2034,14 @@ class GuirBackend:
 
     def cancel(self) -> None:
         """取消当前任务并停止 worker，防止旧结果冒充新任务。"""
+        if self._web_export_active:
+            self._export_cancelled.set()
+            return
         if self._local_png_active:
             self._local_render_stop.set()
             return
         self._cancelled = True
+        self._open_revision += 1
         self.invalidate_preview_compile()
         self._local_render_stop.set()
         self._serial += 1
@@ -1957,7 +2060,8 @@ class GuirBackend:
     def _capture_ui_state(self) -> dict:
         return {
             "accurate_intersections": bool(self.accurate_intersections),
-            "style_overrides": copy.deepcopy(self.style_overrides),
+            "style_overrides": {**copy.deepcopy(self.style_overrides),
+                                self.theme_stem: self.current_style_data()},
             "rotation": self.rotation,
             "terrain": dict(self.terrain),
             "poi_names": bool(self.poi_names),
@@ -2100,7 +2204,7 @@ class GuirBackend:
 
     def preview_theme(self, style_data: dict | None = None) -> dict:
         result = preview_theme(
-            self._preview_style(style_data), self._preview_source_options())
+            self._preview_style(style_data), self._preview_source_options(style_data))
         if self.watermark_text.strip():
             result["watermark"]["text"] = self.watermark_text.strip()
         return result
@@ -2141,19 +2245,21 @@ class GuirBackend:
         built.setdefault("smooth_blur", 2.0)
         return data
 
-    def _preview_source_options(self) -> dict:
-        station = self.current_style_data().get(
-            "transports", {}).get("station", {}) or {}
-
-
-        transit_options = getattr(self, "_preview_transit_options", None) or self.transit_options()
+    def _preview_source_options(self, style_data=None) -> dict:
+        transit_options = self.transit_options()
+        transit_options.update(getattr(self, "_preview_transit_options", None) or {})
         return {
             "bounds": document_city_bounds(self.document),
+            "satelliteReady": bool(self.layer_visibility.get("satellite")
+                                   or (getattr(self, "_preview_bundle_session", None) is self.session
+                                       and getattr(self, "_preview_bundle", None)
+                                       and self._preview_bundle.manifest["sources"].get("satellite"))),
             "poi_transit_types": list(self.transit_types),
             "poi_transit_line_ids": copy.deepcopy(transit_options.get("line_ids")),
             "transit_view_types": copy.deepcopy(transit_options.get("types")),
             "transit_view_line_ids": copy.deepcopy(transit_options.get("line_ids")),
-            "terrain": dict(self.terrain),
+            "terrain": (self.terrain if style_data is None else
+                        terrain_ui_state(style_data.get("terrain", {}))),
             "poi_mapping_revision": getattr(self, "_poi_mapping_revision", 0),
             "poi_hidden_categories": sorted(self.poi_hidden_categories),
             "show_decorative_pois": self.show_decorative_pois,
@@ -2166,8 +2272,8 @@ class GuirBackend:
             "poi_transit_names": bool(self.transport_names),
             "road_player_names": bool(self.road_player_names),
             "road_asset_names": False,
-            "station_merge_enabled": bool(station.get("merge_enabled", True)),
-            "station_merge_range": style_scalar(station.get("merge_range"), 48.0),
+            "station_merge_enabled": bool(transit_options["merge_enabled"]),
+            "station_merge_range": float(transit_options["merge_range"]),
             "facility_poi_overrides": dict(self.facility_poi_overrides),
             "facility_hierarchy_enabled": bool(
                 self.facility_hierarchy_enabled),
@@ -2187,7 +2293,7 @@ class GuirBackend:
                 or getattr(self, "_preview_bundle_session", None) is not self.session):
             return True
         style = self._preview_style(style_data)
-        options = self._preview_source_options()
+        options = self._preview_source_options(style_data)
         from .preview_scene import preview_source_signatures
         return (previous.manifest.get("sourceSignatures")
                 != preview_source_signatures(style, options))
@@ -2198,6 +2304,14 @@ class GuirBackend:
         if self._preview_base_presentation is not None:
             self._preview_base_presentation[1].set()
             self._preview_base_presentation = None
+
+    def _suspend_preview_compile(self, callbacks):
+        thread = self._preview_compile_thread
+        if thread is not None and thread.is_alive():
+            self.invalidate_preview_compile()
+            if self.preview_enabled:
+                self._pending_preview = (dict(callbacks), None, True, False)
+        return thread
 
     def acknowledge_preview_base(self, revision: int) -> None:
         pending = self._preview_base_presentation
@@ -2211,7 +2325,9 @@ class GuirBackend:
                               *, force: bool = False,
                               _opening: bool = False) -> bool:
         """从当前 DocumentSession 异步编译版本化完整 Scene。"""
-        if self._local_png_active:
+        if not self.preview_enabled:
+            return False
+        if self._local_png_active or self._web_export_active:
             self._pending_preview = (callbacks, copy.deepcopy(style_data), force, _opening)
             return True
         if self.session is None:
@@ -2222,7 +2338,7 @@ class GuirBackend:
         previous = getattr(self, "_preview_bundle", None)
         if getattr(self, "_preview_bundle_session", None) is not session:
             previous = None
-        options = self._preview_source_options()
+        options = self._preview_source_options(style_data)
         from .preview_scene import preview_source_signatures
         source_signatures = preview_source_signatures(style, options)
         if (not force and previous
@@ -2559,6 +2675,26 @@ class GuirBackend:
         if context != "transit" and not job["ui"]["text_enabled"]:
             job["ui"]["poi_visibility_snapshot"]["icons"] = {
                 group: False for group in job["ui"]["poi_visibility_snapshot"]["icons"]}
+        if self.layer_visibility.get("satellite") and context != "transit":
+            from .satellite_image import ensure_satellite
+            import tempfile
+            def satellite_asset():
+                directory = tempfile.TemporaryDirectory(prefix="cmm-satellite-")
+                Path(directory.name, "satellite.png").write_bytes(ensure_satellite(self.document))
+                return directory
+            directory = self.session.service_cache.get_or_compute("satellite.export", {}, satellite_asset)
+            job["satellite_composite_path"] = str(Path(directory.name, "satellite.png"))
+            from .satellite_filter import filter_key, satellite_image
+            filter_style = job["ui"]["style_overrides"].get(job["style"], self.current_style_data())
+            key = filter_key(filter_style)
+            if key[0] != "original":
+                import hashlib
+                name = hashlib.sha256(repr(key).encode()).hexdigest()[:16] + ".png"
+                path = Path(directory.name, name)
+                if not path.exists():
+                    path.write_bytes(satellite_image(self.document, filter_style))
+                job["satellite_filtered_path"] = str(path)
+                job["satellite_filter_key"] = key
         return copy.deepcopy(job)
 
     def render_png_export(self, request, callbacks=None, *, transit_options=None,
@@ -2598,16 +2734,16 @@ class GuirBackend:
             return False
         callbacks = dict(callbacks or {})
         preview_callbacks = dict(self._callbacks)
-        self._callbacks = callbacks
         self._serial += 1
         serial, session = self._serial, self.session
-        preview_thread = self._preview_compile_thread
         stop = self._local_render_stop = threading.Event()
         self.discard_png_result()
         parent = Path(target).parent
         parent.mkdir(parents=True, exist_ok=True)
         self._png_tempdir = Path(tempfile.mkdtemp(prefix=".csl-png-", dir=parent))
         job["png_path"] = str(self._png_tempdir / "result.png")
+        preview_thread = self._suspend_preview_compile(preview_callbacks)
+        self._callbacks = callbacks
         self._local_png_active = self._busy = True
         self._emit("busy", True)
 
@@ -2853,14 +2989,13 @@ class GuirBackend:
     def export_web(self, out_dir: str | None = None,
                    callbacks: dict | None = None, *, region=None,
                    target: str | Path | None = None, request=None) -> bool:
-        """把中央实时预览的当前快照直接保存成单文件 HTML。"""
+        """复用可用场景或从当前文档独立生成单文件 HTML。"""
         bundle = getattr(self, "_preview_bundle", None)
-        if (not self.source_file or not Path(self.source_file).exists()
-                or bundle is None
-                or getattr(self, "_preview_bundle_session", None) is not self.session):
+        if self.session is None or self._busy:
             return False
-        if callbacks is not None:
-            self._callbacks = callbacks
+        if getattr(self, "_preview_bundle_session", None) is not self.session:
+            bundle = None
+        preview_callbacks = dict(self._callbacks)
         self._export_cancelled.clear()
         target_dir = out_dir or self._output_dir
         # 这几项都可能在场景编译完成后被实时修改，必须与屏幕当前状态对齐
@@ -2879,35 +3014,41 @@ class GuirBackend:
             elif hasattr(self, "range_n"):
                 bounds, _auto, policy = self._resolve_range()
                 range_snapshot = {"region": bounds, "region_policy": policy, "size": self.size}
-        gui_cb = dict(self._callbacks or {})
+        gui_cb = dict(callbacks if callbacks is not None else self._callbacks or {})
         export_document = getattr(self.session, "document", self.document)
         export_session = self.session
         from .preview_scene import PreviewSceneBundle, preview_source_signatures
-        needs_complete = getattr(bundle, "manifest", {}).get("completion") == "base"
+        needs_complete = bundle is None or getattr(bundle, "manifest", {}).get("completion") == "base"
         source_style = source_options = None
-        if isinstance(bundle, PreviewSceneBundle):
+        if bundle is None or isinstance(bundle, PreviewSceneBundle):
             source_style = self._preview_style(request.theme_snapshot.get("data") if request else None)
-            source_options = self._preview_source_options()
+            source_options = self._preview_source_options(source_style)
             source_options["bounds"] = (export_region or
                 (range_snapshot or {}).get("region") or self.world_rect())
             needs_complete = (needs_complete or bundle.manifest.get("sourceSignatures") !=
                               preview_source_signatures(source_style, source_options))
         if hasattr(bundle, "retain"):
             bundle.retain()
+        preview_thread = self._suspend_preview_compile(preview_callbacks) if needs_complete else None
+        revision = bundle.revision if bundle is not None else self._preview_revision
+        self._web_export_active = self._busy = True
+        self._emit("busy", True)
 
         def worker() -> None:
             export_bundle = bundle
             try:
                 from .web_export_v2 import export_preview_bundle
 
-                if self._export_cancelled.is_set():
-                    raise RuntimeError(tr("gui.error.export_cancelled"))
+                def check_cancel():
+                    if self._export_cancelled.is_set():
+                        raise RuntimeError(tr("gui.error.export_cancelled"))
+                while preview_thread is not None and preview_thread.is_alive():
+                    check_cancel()
+                    preview_thread.join(0.05)
+                check_cancel()
                 if needs_complete:
-                    def check_cancel():
-                        if self._export_cancelled.is_set():
-                            raise RuntimeError(tr("gui.error.export_cancelled"))
                     export_bundle = PreviewSceneCompiler.compile_full(export_session, source_style,
-                        bundle.revision, visibility=visibility,
+                        revision, visibility=visibility,
                         options={**source_options, "phase": "full", "check_cancel": check_cancel}, previous=bundle)
                 document = export_document
                 selected_region = export_region
@@ -2934,31 +3075,414 @@ class GuirBackend:
                 elif (done := gui_cb.get("web_done")) is not None:
                     self._post(lambda: done(saved))
             except Exception as exc:  # noqa: BLE001
-                traceback.print_exc()
-                err = gui_cb.get("error")
-                if err is not None:
-                    self._post(lambda error=exc: err(error))
+                if self._export_cancelled.is_set() and (cancelled := gui_cb.get("cancelled")) is not None:
+                    self._post(cancelled)
                 else:
-                    self._emit("error", exc)
+                    traceback.print_exc()
+                    err = gui_cb.get("error")
+                    if err is not None:
+                        self._post(lambda error=exc: err(error))
+                    else:
+                        self._post(lambda error=exc: self._emit("error", error))
             finally:
                 if export_bundle is not bundle:
                     export_bundle.close()
                 if hasattr(bundle, "release"):
                     bundle.release()
+                def finish():
+                    self._web_export_active = self._busy = False
+                    self._web_export_thread = None
+                    self._emit("busy", False)
+                    pending, self._pending_preview = self._pending_preview, None
+                    if pending is not None:
+                        cb, style_data, force, opening = pending
+                        self.compile_preview_scene(cb, style_data, force=force,
+                                                   _opening=opening)
+                self._post(finish)
 
-        threading.Thread(target=worker, name="guir-web", daemon=True).start()
+        self._web_export_thread = threading.Thread(target=worker, name="guir-web", daemon=True)
+        self._web_export_thread.start()
         return True
 
     # ------------------------------------------------------------------
     # 样式覆盖 / 样式编辑器
     # ------------------------------------------------------------------
 
+    def _load_theme_library(self, *, migrate: bool = True) -> None:
+        from .theme_contract import cleanup_theme
+        records = self._setting("user_themes", {})
+        if not isinstance(records, dict):
+            raise ValueError("user_themes: expected an object")
+        self.user_themes = copy.deepcopy(records)
+        builtins = {stem for _, stem in THEME_CHOICES}
+        for identity, record in self.user_themes.items():
+            if not isinstance(record, dict) or not identity.startswith("user_"):
+                raise ValueError("user_themes: invalid theme record")
+            theme_library.validate_name(record.get("name"))
+            base = record.get("base")
+            if base is not None and base not in builtins:
+                raise ValueError(f"{identity}: unknown base theme {base}")
+            if base is None:
+                if not isinstance(record.get("data"), dict):
+                    raise ValueError(f"{identity}: expected theme data")
+                record["data"] = cleanup_theme(record["data"])
+            elif not isinstance(record.get("overrides"), dict) or not isinstance(record.get("removed"), list) or any(
+                    not isinstance(path, list) or not path or any(not isinstance(key, str) for key in path)
+                    for path in record["removed"]):
+                raise ValueError(f"{identity}: invalid preset changes")
+        self._theme_file_imports = copy.deepcopy(self._setting("theme_file_imports", {}))
+        self.theme_update_notice = copy.deepcopy(self._setting("theme_update_notice", {})) or None
+        if not migrate:
+            self._theme_migration_complete = bool(self._setting("theme_library_version", 0))
+            return
+        original_records = copy.deepcopy(self.user_themes)
+        original_imports = copy.deepcopy(self._theme_file_imports)
+        self._theme_migration_complete = True
+        self._theme_migration_aborted = False
+        try:
+            fallback_ids = self._migrate_theme_files()
+            values = dict(self._settings["values"])
+            values.update(user_themes=self.user_themes, theme_file_imports=self._theme_file_imports)
+            if self._theme_migration_complete:
+                values["theme_library_version"] = 1
+                values.pop("guir_style_overrides", None)
+            selected = str(values.get("style_var", "modern")).split("·", 1)[0].strip()
+            if not self._setting("theme_library_version", 0):
+                selected = self._migrated_file_themes.get(_theme_stem_for(selected), selected)
+            selected = self._update_preset_themes(selected)
+            if self.theme_update_notice:
+                values["theme_update_notice"] = self.theme_update_notice
+            if selected not in self._legacy_themes or selected in self.user_themes:
+                values["style_var"] = selected
+            if values != self._settings["values"]:
+                if not save_settings(values, self._settings_dir):
+                    raise OSError("Could not save the migrated theme library")
+                self._settings["values"] = copy.deepcopy(values)
+            self._legacy_themes = {key: value for key, value in self._legacy_themes.items()
+                                   if key not in self.user_themes and key in fallback_ids}
+        except (OSError, ValueError, TypeError) as error:
+            self.user_themes = original_records
+            self._theme_file_imports = original_imports
+            self.theme_update_notice = copy.deepcopy(self._setting("theme_update_notice", {})) or None
+            self._theme_migration_aborted = True
+            self._theme_migration_complete = False
+            self._theme_migration_issue(self._settings_dir, error)
+
+    def _update_preset_themes(self, selected: str) -> str:
+        """有可信旧基准时合并预设更新，同时留下完整旧版。"""
+        import hashlib
+        styles = bundle_root() / "styles"
+        current = json.loads((styles / "presets.current.json").read_text(encoding="utf-8"))
+        previous = json.loads((styles / "presets.previous.json").read_text(encoding="utf-8"))
+        if not isinstance(current, dict) or any(not isinstance(data, dict) for data in current.values()):
+            raise ValueError("Invalid current preset baseline")
+        if not isinstance(previous, dict) or any(not isinstance(entry, dict) or not isinstance(entry.get("data"), dict)
+                                                or entry.get("preset") not in current for entry in previous.values()):
+            raise ValueError("Invalid previous preset baseline")
+        for identity, record in list(self.user_themes.items()):
+            if record.get("upgradeTo"):
+                continue
+            stem = record.get("base") or record.get("legacyBase")
+            if stem not in current:
+                continue
+            baseline = record.get("presetData")
+            if baseline is None:
+                source = Path(record.get("sourceFile", "")).stem
+                historic = previous.get(source)
+                if historic is None and identity.startswith("user_legacy_"):
+                    historic = next((entry for entry in previous.values() if entry["preset"] == stem), None)
+                data = record.get("data", {})
+                if historic and all(key in data for key in ("canvas", "terrain", "roads")):
+                    baseline = historic["data"]
+                else:
+                    # 老差异记录缺少上次预设内容，只从本版起记录基准。
+                    if record.get("base"):
+                        record["presetData"] = copy.deepcopy(current[stem])
+                    continue
+            old_data = theme_library.resolve(record, baseline if record.get("base") else None)
+            merged, changes, preserved = theme_library.preset_update(baseline, old_data, current[stem])
+            if not changes:
+                record["presetData"] = copy.deepcopy(current[stem])
+                continue
+            archive_id = "user_previous_" + theme_library.content_digest(old_data)
+            archive_name = self.suggest_theme_name(record["name"] + " · " + tr("gui.theme.legacy"))
+            if record.get("base") is None:
+                archive_id = identity
+            elif archive_id not in self.user_themes:
+                self.user_themes[archive_id] = {"name": archive_name, "base": None, "data": old_data, "legacyBase": stem}
+            merged_id = identity if record.get("base") else "user_updated_" + hashlib.sha256((identity + theme_library.content_digest(current[stem])).encode()).hexdigest()
+            title = next(tr(label) for label, builtin in THEME_CHOICES if builtin == stem)
+            name = record["name"] if record.get("base") else self.suggest_theme_name(title + " · " + tr("gui.theme.personal"))
+            updated = theme_library.make_record(name, merged, stem, current[stem])
+            updated["presetData"] = copy.deepcopy(current[stem])
+            updated["previousTheme"] = archive_id
+            self.user_themes[merged_id] = updated
+            self.user_themes[archive_id]["upgradeTo"] = merged_id
+            if selected == identity:
+                selected = merged_id
+                self.theme_update_notice = {"theme": merged_id, "previousTheme": archive_id, "name": title,
+                    "changes": changes, "preserved": preserved}
+        return selected
+
+    def acknowledge_theme_update(self, use_previous: bool) -> None:
+        notice = self.theme_update_notice
+        if not notice:
+            return
+        selected = notice["previousTheme"] if use_previous else self.theme_stem
+        self.theme_data(selected)
+        values = self._collect_settings_values()
+        values.pop("theme_update_notice", None)
+        values["style_var"] = selected
+        if not save_settings(values, self._settings_dir):
+            raise OSError(tr("gui.error.theme_save_failed", error=tr("gui.theme.error.write")))
+        self._settings["values"] = values
+        self.theme_update_notice = None
+        self.set_theme(selected, persist=False)
+
+    def _theme_migration_issue(self, path, error) -> None:
+        self._theme_migration_complete = False
+        message = f"{path}: {error}"
+        self.theme_migration_issues.append(message)
+        logging.getLogger(__name__).warning("Theme migration skipped: %s", message)
+
+    def _backup_theme(self, name: str, raw: bytes) -> None:
+        backup = self._settings_dir / "theme-backups" / name
+        if backup.exists():
+            if backup.read_bytes() != raw:
+                raise OSError(f"Theme backup has different contents: {backup}")
+            return
+        backup.parent.mkdir(parents=True, exist_ok=True)
+        temporary = backup.with_suffix(backup.suffix + ".tmp")
+        try:
+            temporary.write_bytes(raw)
+            os.replace(temporary, backup)
+        finally:
+            temporary.unlink(missing_ok=True)
+
+    def _migrate_theme_files(self) -> set[str]:
+        import hashlib
+        import yaml
+        from .theme_contract import cleanup_theme, normalize_theme, validate_theme_values
+        from .theme_metadata import validate_theme_fields
+        bundled = (bundle_root() / "styles").resolve()
+        roots = [self._settings_dir / "styles"]
+        sources = json.loads(os.environ.get("CSLMM_THEME_SOURCE_DIRS", "[]"))
+        if not isinstance(sources, list) or any(not isinstance(root, str) for root in sources):
+            raise ValueError("CSLMM_THEME_SOURCE_DIRS: expected a list of directories")
+        roots.extend(Path(root) / "styles" for root in sources)
+        roots.extend((self._settings_dir / "legacy-themes", bundled))
+        pending = []
+        fallback_ids = set()
+        legacy = self._setting("guir_style_overrides", {})
+        for key, value in legacy.items():
+            stem = _theme_stem_for(key)
+            if stem is None or not isinstance(value, dict):
+                self._theme_migration_issue(key, ValueError("Invalid legacy theme snapshot"))
+                continue
+            identity = "user_legacy_" + stem
+            previous = self.user_themes.get(identity) or self._legacy_themes.get(identity)
+            if previous is not None and previous.get("data") != cleanup_theme(value):
+                identity += "_" + hashlib.sha256(json.dumps([key, value], sort_keys=True).encode()).hexdigest()
+            name = self.suggest_theme_name(next(tr(label) for label, builtin in THEME_CHOICES if builtin == stem) + " · " + tr("gui.theme.legacy"))
+            record = {"name": name, "base": None, "legacyBase": stem, "data": cleanup_theme(value)}
+            self._legacy_themes[identity] = record
+            self._migrated_file_themes.setdefault(stem, identity)
+            pending.append((identity, record, None, None))
+        visited = set()
+        for root in dict.fromkeys(root.resolve() for root in roots):
+            try:
+                if not root.is_dir():
+                    continue
+                paths = sorted(path for path in root.rglob("*") if path.suffix.lower() in {".yaml", ".yml"})
+            except OSError as error:
+                self._theme_migration_issue(root, error)
+                continue
+            for path in paths:
+                if path.stem == "metro_map" or path.resolve() in visited:
+                    continue
+                visited.add(path.resolve())
+                key = str(path.resolve())
+                stem = _theme_stem_for(path.stem)
+                try:
+                    raw = path.read_bytes()
+                    digest = hashlib.sha256(raw).hexdigest()
+                    data = yaml.safe_load(raw.decode("utf-8-sig"))
+                    if not isinstance(data, dict):
+                        raise ValueError("expected a theme object")
+                    data = normalize_theme(data)
+                    validate_theme_values(data)
+                    validate_theme_fields(data, data)
+                except (OSError, UnicodeError, yaml.YAMLError, ValueError, TypeError) as error:
+                    self._theme_migration_issue(path, error)
+                    if stem is not None:
+                        identity = "user_source_" + hashlib.sha256(key.encode()).hexdigest()
+                        title = next(tr(label) for label, builtin in THEME_CHOICES if builtin == stem)
+                        self._legacy_themes[identity] = {"name": self.suggest_theme_name(title + " · " + tr("gui.theme.legacy")), "base": None,
+                            "legacyBase": stem, "sourceFile": key}
+                        fallback_ids.add(identity)
+                        self._migrated_file_themes.setdefault(stem, identity)
+                    continue
+                identity = "user_file_" + digest
+                name = self.suggest_theme_name(str(data.get("name") or path.stem) + " · " + tr("gui.theme.legacy"))
+                record = {"name": name, "base": None, "data": data, "sourceFile": key}
+                if stem is not None:
+                    record["legacyBase"] = stem
+                    self._migrated_file_themes.setdefault(stem, identity)
+                self._legacy_themes.setdefault(identity, record)
+                pending.append((identity, record, path, raw))
+
+        # 随包记录规范化内容，程序目录中的预设被改过时也不会拿它自己作比较基准。
+        shipped = json.loads((bundled / "presets.sha256.json").read_text(encoding="utf-8"))
+        if not isinstance(shipped, dict) or any(not isinstance(entry, dict) or not isinstance(entry.get("content"), str)
+                                                for entry in shipped.values()):
+            raise ValueError("Invalid shipped theme content manifest")
+        known = {entry["content"]: Path(name).stem for name, entry in shipped.items()}
+        for identity, record in self.user_themes.items():
+            known.setdefault(theme_library.content_digest(self.theme_data(identity)), identity)
+        for identity, record, path, raw in pending:
+            stem = record.get("legacyBase")
+            try:
+                signature = theme_library.content_digest(record["data"])
+                matched = known.get(signature)
+                if matched is None:
+                    if path is None:
+                        source = self._settings_dir / "settings.json"
+                        settings_raw = source.read_bytes()
+                        self._backup_theme("settings-" + hashlib.sha256(settings_raw).hexdigest() + ".json", settings_raw)
+                    else:
+                        self._backup_theme(hashlib.sha256(raw).hexdigest() + ".yaml", raw)
+                    self.user_themes[identity] = record
+                    known[signature] = identity
+                    matched = identity
+                if stem is not None and self._migrated_file_themes.get(stem) == identity:
+                    self._migrated_file_themes[stem] = matched
+                if path is not None:
+                    self._theme_file_imports[str(path.resolve())] = {"sha256": hashlib.sha256(raw).hexdigest(), "theme": matched}
+            except (OSError, ValueError, TypeError) as error:
+                fallback_ids.add(identity)
+                self._theme_migration_issue(path or identity, error)
+        return fallback_ids
+
+    def theme_choices(self) -> list[dict]:
+        return [{"id": stem, "name": tr(label), "builtin": True, "preview": stem}
+                for label, stem in THEME_CHOICES] + [
+            {"id": identity, "name": record["name"], "builtin": False,
+             "preview": record.get("base") or record.get("legacyBase"),
+             "legacy": "legacyBase" in record}
+            for identity, record in {**self._legacy_themes, **self.user_themes}.items()]
+
+    def suggest_theme_name(self, value: str) -> str:
+        return theme_library.unique_name(value, [item["name"] for item in self.theme_choices()])
+
+    def theme_defaults(self, identity: str | None = None) -> dict:
+        identity = identity or self.theme_stem
+        record = self.user_themes.get(identity) or self._legacy_themes.get(identity)
+        if record is not None:
+            if record["base"] is None:
+                if "data" not in record:
+                    import yaml
+                    from .theme_contract import normalize_theme, validate_theme_values
+                    from .theme_metadata import validate_theme_fields
+                    try:
+                        raw = yaml.safe_load(Path(record["sourceFile"]).read_text(encoding="utf-8-sig"))
+                        if not isinstance(raw, dict):
+                            raise ValueError("Expected a theme object")
+                        data = normalize_theme(Style(raw).data)
+                        validate_theme_values(data)
+                        validate_theme_fields(data, data)
+                        return data
+                    except (OSError, UnicodeError, yaml.YAMLError, ValueError, TypeError) as error:
+                        raise theme_library.ThemeReadError(f"{record['sourceFile']}: {error}") from error
+                return Style(copy.deepcopy(record["data"])).data
+            if "presetData" in record:
+                return copy.deepcopy(record["presetData"])
+            identity = record["base"]
+        from .theme_contract import normalize_theme
+        import yaml
+        path = resource_dir("styles") / f"{identity}.yaml"
+        try:
+            return normalize_theme(load_style(str(path)).data)
+        except (OSError, UnicodeError, yaml.YAMLError, ValueError, TypeError) as error:
+            raise theme_library.ThemeReadError(f"{path}: {error}") from error
+
+    def theme_data(self, identity: str) -> dict:
+        from .theme_contract import cleanup_theme
+        record = self.user_themes.get(identity) or self._legacy_themes.get(identity)
+        if record is not None:
+            if "data" not in record and record["base"] is None:
+                return self.theme_defaults(identity)
+            base = self.theme_defaults(identity) if record["base"] else None
+            return Style(cleanup_theme(theme_library.resolve(record, base))).data
+        if identity not in {stem for _, stem in THEME_CHOICES}:
+            raise ValueError(f"Unknown theme: {identity}")
+        return self.theme_defaults(identity)
+
+    def _saved_theme_records(self) -> dict:
+        from .theme_contract import normalize_theme, sanitize_theme_data
+        records = copy.deepcopy(self.user_themes)
+        for identity in self._style_dirty:
+            record = records[identity]
+            data = self.style_overrides[identity]
+            base = self.theme_defaults(identity) if record["base"] else None
+            if base is not None:
+                data = normalize_theme(sanitize_theme_data(data))
+                base = normalize_theme(sanitize_theme_data(base))
+            updated = theme_library.make_record(record["name"], data, record["base"], base)
+            for key in ("legacyBase", "sourceFile", "presetData", "previousTheme", "upgradeTo"):
+                if key in record:
+                    updated[key] = record[key]
+            records[identity] = updated
+        return records
+
+    def save_personal_theme(self, data: dict, *, identity: str | None,
+                            base_id: str | None, name: str) -> str:
+        from .theme_contract import cleanup_theme, normalize_theme, sanitize_theme_data
+        existing = self.user_themes.get(identity) or self._legacy_themes.get(identity)
+        if identity is not None and existing is None:
+            raise ValueError(f"Unknown personal theme: {identity}")
+        name = theme_library.validate_name(name, [item["name"] for item in self.theme_choices() if item["id"] != identity])
+        if existing is not None:
+            base_id = existing["base"]
+        if base_id is not None and base_id not in {stem for _, stem in THEME_CHOICES}:
+            raise ValueError(f"Unknown base theme: {base_id}")
+        data = cleanup_theme(copy.deepcopy(data))
+        data["name"] = name
+        base = self.theme_defaults(base_id) if base_id else None
+        if base is not None:
+            data = normalize_theme(sanitize_theme_data(data))
+            base = normalize_theme(sanitize_theme_data(base))
+        record = theme_library.make_record(name, data, base_id, base)
+        if base_id is not None:
+            record["presetData"] = copy.deepcopy(self.theme_defaults(base_id))
+        if existing:
+            for key in ("legacyBase", "sourceFile", "previousTheme", "upgradeTo"):
+                if key in existing:
+                    record[key] = existing[key]
+        identity = identity or theme_library.new_id()
+        previous = (self.user_themes, self.style_overrides, self._style_dirty, self.theme_stem)
+        self.user_themes = {**self._saved_theme_records(), identity: record}
+        self.style_overrides = {key: value for key, value in self.style_overrides.items() if key != identity}
+        self._style_dirty = set()
+        self.theme_stem = identity
+        values = self._collect_settings_values()
+        if not save_settings(values, self._settings_dir):
+            self.user_themes, self.style_overrides, self._style_dirty, self.theme_stem = previous
+            raise OSError(tr("gui.error.theme_save_failed", error=tr("gui.theme.error.write")))
+        self._settings["values"] = values
+        self._legacy_themes.pop(identity, None)
+        return identity
+
     def _style_data_mut(self) -> dict:
         """返回当前主题的可变覆盖字典（缺省时以 yaml 为基础）。"""
+        if self.theme_stem not in self.user_themes:
+            base_id = None if self.theme_stem in self._legacy_themes else self.theme_stem
+            data = self.current_style_data()
+            name = self.suggest_theme_name(self.theme_display() + " · " + tr("gui.theme.personal"))
+            self.theme_stem = theme_library.new_id()
+            self.user_themes[self.theme_stem] = theme_library.make_record(name, data, base_id, self.theme_defaults(base_id) if base_id else None)
         if self.theme_stem not in self.style_overrides:
-            style_path = resource_dir("styles") / f"{self.theme_stem}.yaml"
-            base = load_style(str(style_path)).data
-            self.style_overrides[self.theme_stem] = copy.deepcopy(base)
+            self.style_overrides[self.theme_stem] = self.theme_data(self.theme_stem)
+        self._style_dirty.add(self.theme_stem)
         data = strip_retired_region_palette_fields(self.style_overrides[self.theme_stem])
         self.style_overrides[self.theme_stem] = Style(data).data
         return self.style_overrides[self.theme_stem]
@@ -2968,6 +3492,10 @@ class GuirBackend:
         field_key = str(field_key or "").strip()
         if not field_key:
             return
+        if field_key in {"satellite.preset", "satellite.intensity"}:
+            from .satellite_filter import filter_key
+            config = {**self.current_style_data().get("satellite", {}), field_key.split(".")[1]: value}
+            filter_key({"satellite": config})
         handler = self._UI_FIELD_HANDLERS.get(field_key)
         if handler is not None:
             handler(self, value)
@@ -3017,14 +3545,14 @@ class GuirBackend:
             return self._transport_width_value(default, data)
         roads_now = data.get("roads", {}) or {}
         special = {
-            "terrain.mode": self.terrain["mode"],
-            "terrain.shade": self.terrain["shade"],
-            "terrain.sun": self.terrain["sun"],
+            "terrain.mode": resolve_terrain_config(data.get("terrain", {}))["mode"],
+            "terrain.shade": float(data.get("terrain", {}).get("hillshade", {}).get("intensity", .3)) * 100,
+            "terrain.sun": float(data.get("terrain", {}).get("hillshade", {}).get("azimuth", 315)),
             "road.names": self.road_names,
             "road.accurate_intersections": self.accurate_intersections,
             # 旧的「普通道路 / 道路描边」已被等级分项取代、从面板撤下，这里只作
             # 兼容保留：它们当初一把写进 main/primary/branch/... 各等级，读回就按
-            # 主干道取。（原先固定读 ``roads.secondary``，而 amap/google/dark/vintage
+            # 主干道取。（原先固定读 ``roads.secondary``，而 bright/warm_natural/dark/vintage
             # 主题根本没有这个等级 → 面板显示的颜色和地图上画的长期对不上。）
             "road.color": road_level_read(roads_now, "main", "fill", default),
             "road.border": road_level_read(roads_now, "main", "border", default),
@@ -3041,7 +3569,6 @@ class GuirBackend:
             "poi.distance": self.merge_distance,
             "watermark.text": self.watermark_text,
         }
-        # 道路等级分项：一条推导式补 15 个键，读的是主题里该等级真实使用的键。
         special.update({
             f"road.level.{level}.{attr}": road_level_read(
                 roads_now, level, attr, default)
@@ -3074,9 +3601,7 @@ class GuirBackend:
         data = self.current_style_data() if style_data is None else style_data
         current = float(data.get(
             "roads", {}).get("width_scale", 0.15) or 0.15)
-        style_path = resource_dir("styles") / f"{self.theme_stem}.yaml"
-        base = float(load_style(str(style_path)).get(
-            "roads.width_scale", 0.15) or 0.15)
+        base = float(self.theme_defaults().get("roads", {}).get("width_scale", 0.15) or 0.15)
         return current / base * 100.0
 
     def _transport_width_value(self, default=3, style_data=None) -> float:
@@ -3091,9 +3616,8 @@ class GuirBackend:
 
     def theme_default_field_value(self, field_key: str, default=None):
         """返回当前主题原始 YAML 中的字段值。"""
-        style_path = resource_dir("styles") / f"{self.theme_stem}.yaml"
-        node = load_style(str(style_path)).data
-        if field_key == "terrain.color":
+        node = self.theme_defaults()
+        if field_key in {"terrain.color", "terrain.mode", "terrain.shade", "terrain.sun"}:
             return self.field_value(field_key, default, style_data=node)
         outline = _outline_field_value(node, field_key)
         if outline is not None:
@@ -3134,8 +3658,7 @@ class GuirBackend:
         if self.theme_stem in self.style_overrides:
             data = copy.deepcopy(self.style_overrides[self.theme_stem])
             return Style(strip_retired_region_palette_fields(data)).data
-        style_path = resource_dir("styles") / f"{self.theme_stem}.yaml"
-        return load_style(str(style_path)).data
+        return self.theme_data(self.theme_stem)
 
     def style_preview_render(self, style_data: dict, size: int,
                              scene: str = "overall"):
@@ -3147,21 +3670,38 @@ class GuirBackend:
         style.data["_poi_mapping_override"] = str(self.poi_mapping_override)
         renderer = Renderer(style, width=size, height=size,
                             rotation=self.rotation)
+        if scene == "satellite":
+            from .layers.satellite_layer import SatelliteLayer
+            if self.document._satellite_info is None:
+                raise ValueError(tr("gui.satellite.unavailable"))
+            renderer.add_layer(SatelliteLayer())
+            return renderer.render(self.document, region=self._style_editor_region("buildings"),
+                                   final_size=size, session=self.session)
         scene_layers = _STYLE_SCENE_LAYERS.get(scene)
         if scene_layers is None:  # overall：全部注册图层（除建成区）
             scene_layers = [
                 cls for _key, cls, _default, _title in gui_layer_registry()
-                if cls is not BuiltAreaLayer
+                if cls is not BuiltAreaLayer and _key != "satellite"
             ]
         else:
             scene_layers = list(scene_layers)
+        if self.layer_visibility.get("satellite"):
+            from .layers.satellite_layer import SatelliteLayer
+            from .satellite_image import INTERFERING_LAYERS
+            renderer.add_layer(SatelliteLayer())
+            hidden = {cls for key, cls, _default, _title in gui_layer_registry()
+                      if key in INTERFERING_LAYERS and key not in {"road", "railway", "traffic"}}
+            if scene == "overall":
+                hidden.update(cls for key, cls, _default, _title in gui_layer_registry()
+                              if not self.layer_visibility.get(key, False))
+            scene_layers = [cls for cls in scene_layers if cls not in hidden]
         for cls in scene_layers:
             if cls is WaterLayer:
                 renderer.add_layer(WaterLayer(
                     upscale=1, smooth_iters=2, rdp_epsilon=6.0, min_area=250))
             else:
                 renderer.add_layer(cls())
-        region = self._style_editor_region(scene)
+        region = self._style_editor_region("roads" if scene == "labels" else scene)
         return renderer.render(
             self.document, region=region, final_size=size,
             session=self.session)
@@ -3186,39 +3726,28 @@ class GuirBackend:
 
     def on_style_applied(self, data: dict, save_path: str | None = None,
                          new_name: str | None = None, *, persist: bool = False) -> bool:
-        """样式编辑器回调：应用覆盖、持久化个人设置或导出 YAML。"""
+        """兼容旧编辑器；导出不应用，临时覆盖不参与设置持久化。"""
         from .theme_contract import cleanup_theme
-        data = cleanup_theme(data)
-        data = strip_retired_region_palette_fields(copy.deepcopy(data))
-        saved_stem = None
+        data = cleanup_theme(copy.deepcopy(data))
         if save_path:
             try:
-                import yaml
-                with open(save_path, "w", encoding="utf-8") as f:
-                    yaml.safe_dump(data, f, allow_unicode=True,
-                                   sort_keys=False)
-            except OSError as exc:
+                theme_library.export_file(save_path, data)
+            except (OSError, ValueError) as exc:
                 self._emit("error", RuntimeError(tr("gui.error.theme_save_failed", error=exc)))
                 return False
-            saved_stem = Path(save_path).stem
-        if new_name:
-            self._emit("styles_changed", new_name)
-        name = self.theme_stem
-        previous = self.style_overrides.get(name)
-        built_in_path = resource_dir("styles") / f"{name}.yaml"
-        if saved_stem == name and Path(save_path).resolve() == built_in_path.resolve():
-            self.style_overrides.pop(name, None)
-        else:
-            self.style_overrides[name] = copy.deepcopy(data)
-        if persist:
-            values = self._collect_settings_values()
-            if not save_settings(values, self._settings_dir):
-                if previous is None:
-                    self.style_overrides.pop(name, None)
-                else:
-                    self.style_overrides[name] = previous
+        elif persist:
+            identity = self.theme_stem if self.theme_stem in self.user_themes or self.theme_stem in self._legacy_themes else None
+            name = data.get("name")
+            if not identity and name == self.current_style_data().get("name"):
+                name = self.suggest_theme_name(self.theme_display() + " · " + tr("gui.theme.personal"))
+            try:
+                self.save_personal_theme(data, identity=identity,
+                    base_id=None if identity else self.theme_stem, name=name)
+            except (OSError, ValueError) as exc:
+                self._emit("error", exc)
                 return False
-            self._settings["values"] = values
+        else:
+            self.style_overrides[self.theme_stem] = data
         return True
 
     def clear_cache(self) -> None:
@@ -3230,6 +3759,10 @@ class GuirBackend:
         self._local_render_stop.set()
         self._serial += 1
         self._pending_preview = None
+        self._open_revision += 1
+        self._export_cancelled.set()
+        if self._web_export_thread is not None:
+            self._web_export_thread.join()
         if self._settings_save_job is not None:
             self.scheduler.cancel(self._settings_save_job)
         self.save_settings_now()
@@ -3249,19 +3782,16 @@ class GuirBackend:
     # ------------------------------------------------------------------
 
     def _handler_terrain_mode(self, value) -> None:
-        self.terrain["mode"] = normalize_terrain_mode(value)
+        data = self._style_data_mut()
+        data["terrain"] = resolve_terrain_config(data.get("terrain", {}), {"mode": value})
 
     def _handler_terrain_shade(self, value) -> None:
-        try:
-            self.terrain["shade"] = float(value)
-        except (TypeError, ValueError):
-            pass
+        data = self._style_data_mut()
+        data["terrain"] = resolve_terrain_config(data.get("terrain", {}), {"shade": value})
 
     def _handler_terrain_sun(self, value) -> None:
-        try:
-            self.terrain["sun"] = float(value)
-        except (TypeError, ValueError):
-            pass
+        data = self._style_data_mut()
+        data["terrain"] = resolve_terrain_config(data.get("terrain", {}), {"sun": value})
 
     def _handler_road_names(self, value) -> None:
         self.road_names = bool(value)
@@ -3287,8 +3817,7 @@ class GuirBackend:
         if not bool(value):
             section["border_width"] = 0
         elif not _width_enabled(section.get("border_width", 0)):
-            path = resource_dir("styles") / f"{self.theme_stem}.yaml"
-            width = load_style(str(path)).data.get("procedural_objects", {}).get("border_width", 0.2)
+            width = self.theme_defaults().get("procedural_objects", {}).get("border_width", 0.2)
             section["border_width"] = copy.deepcopy(width) if _width_enabled(width) else 0.2
 
     def _handler_label_kind_outline(self, kind: str, value) -> None:
@@ -3411,9 +3940,7 @@ class GuirBackend:
             percent = max(25.0, min(200.0, float(value))) / 100.0
         except (TypeError, ValueError):
             return
-        style_path = resource_dir("styles") / f"{self.theme_stem}.yaml"
-        base = float(load_style(str(style_path)).get(
-            "roads.width_scale", 0.15) or 0.15)
+        base = float(self.theme_defaults().get("roads", {}).get("width_scale", 0.15) or 0.15)
         self._style_data_mut().setdefault("roads", {})["width_scale"] = (
             base * percent)
 
@@ -3439,7 +3966,6 @@ class GuirBackend:
         "road.width": _handler_road_width,
         "road.color": _handler_road_color,
         "road.border": _handler_road_border,
-        # 道路等级分项（填色 / 描边 / 宽度），一条推导式注册 15 个键。
         # 只能引用**模块级**名字：类体里的推导式看不到类体自己的作用域。
         **{f"road.level.{level}.{attr}": _road_level_handler(level, attr)
            for level in _ROAD_LEVEL_ENUM

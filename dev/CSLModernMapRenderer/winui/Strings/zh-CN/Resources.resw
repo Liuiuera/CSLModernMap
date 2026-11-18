@@ -4472,8 +4472,87 @@ Esc  取消当前任务</value>
   <data name="Ribbon_IntroLater" xml:space="preserve"><value>暂不</value></data>
   <data name="RmpEditor_showNames" xml:space="preserve"><value>显示站名</value></data>
   <data name="RmpEditor_showDefaultNames" xml:space="preserve"><value>显示默认站名</value></data>
-  <data name="BuildingCategory_Help" xml:space="preserve"><value>选择“分类上色”后生效。开启“指定颜色”影响该类别的全部建筑；关闭可恢复自动 POI 取色。分类依据现有游戏字段，未分类对象不会按名称猜测。</value></data>
+  <data name="BuildingCategory_Help" xml:space="preserve"><value>选择“分类上色”后生效。开启“指定颜色”可统一设置该类别建筑的颜色；关闭后恢复自动 POI 取色。</value></data>
   <data name="Poi_ShowDecorative" xml:space="preserve"><value>显示装饰物 POI</value></data>
   <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>控制已收录装饰物的图标与名称，保留建筑和地物。</value></data>
   <data name="MetroSettings_Reset" xml:space="preserve"><value>恢复默认</value></data>
+  <data name="BuildingList_NoName" xml:space="preserve"><value>未提供名称</value></data>
+  <data name="ThemeEditor_New" xml:space="preserve"><value>新建主题</value></data>
+  <data name="BuildingList_OfficialName" xml:space="preserve"><value>游戏官方分类</value></data>
+  <data name="ThemeEditor_Name" xml:space="preserve"><value>主题名称</value></data>
+  <data name="BuildingList_Search" xml:space="preserve"><value>搜索建筑名称</value></data>
+  <data name="Preview_AutoStart" xml:space="preserve"><value>启动时加载内嵌预览</value></data>
+  <data name="BuildingList_DetailHint" xml:space="preserve"><value>选择建筑查看详细信息。</value></data>
+  <data name="BuildingList_Height" xml:space="preserve"><value>建筑高度</value></data>
+  <data name="Satellite_LayerTitle" xml:space="preserve"><value>卫星影像</value></data>
+  <data name="BuildingList_Open" xml:space="preserve"><value>建筑列表</value></data>
+  <data name="BuildingList_Name" xml:space="preserve"><value>建筑名称</value></data>
+  <data name="Preview_Continue.Content" xml:space="preserve"><value>继续等待</value></data>
+  <data name="ThemeUpdate_Intro" xml:space="preserve"><value>“{0}”已合并本次预设更新。</value></data>
+  <data name="BuildingList_Id" xml:space="preserve"><value>ID</value></data>
+  <data name="ThemeUpdate_Off" xml:space="preserve"><value>关闭</value></data>
+  <data name="BuildingList_CategoryDesc" xml:space="preserve"><value>类别：降序</value></data>
+  <data name="ThemeEditor_Unsaved" xml:space="preserve"><value>未保存</value></data>
+  <data name="BuildingList_IdDesc" xml:space="preserve"><value>ID：降序</value></data>
+  <data name="ThemeEditor_MigrationWarning" xml:space="preserve"><value>部分旧主题无法读取，原文件已备份：</value></data>
+  <data name="Satellite_Composing" xml:space="preserve"><value>正在合成卫星影像…</value></data>
+  <data name="ThemeEditor_Select" xml:space="preserve"><value>选择主题</value></data>
+  <data name="ThemeEditor_Copy" xml:space="preserve"><value>复制主题</value></data>
+  <data name="BuildingList_Info" xml:space="preserve"><value>建筑信息</value></data>
+  <data name="BuildingList_Unnamed" xml:space="preserve"><value>未命名建筑</value></data>
+  <data name="BuildingList_CustomName" xml:space="preserve"><value>玩家自定义</value></data>
+  <data name="ThemeEditor_Cancel" xml:space="preserve"><value>取消</value></data>
+  <data name="ThemeUpdate_Continue" xml:space="preserve"><value>继续使用</value></data>
+  <data name="BuildingList_NameSource" xml:space="preserve"><value>名称来源</value></data>
+  <data name="BuildingList_Details" xml:space="preserve"><value>建筑详细信息</value></data>
+  <data name="ThemeUpdate_UsePrevious" xml:space="preserve"><value>切换旧版</value></data>
+  <data name="ThemeUpdate_Archived" xml:space="preserve"><value>原主题已保留，可随时从主题列表切换。</value></data>
+  <data name="BuildingList_All" xml:space="preserve"><value>全部</value></data>
+  <data name="ThemeEditor_Exported" xml:space="preserve"><value>主题已导出</value></data>
+  <data name="BuildingList_Empty" xml:space="preserve"><value>没有符合条件的建筑</value></data>
+  <data name="ThemeUpdate_Kept" xml:space="preserve"><value>保留了你的修改</value></data>
+  <data name="BuildingList_Count" xml:space="preserve"><value>显示 {0:N0} / {1:N0} 栋建筑（组合建筑合并计数）</value></data>
+  <data name="BuildingList_Back" xml:space="preserve"><value>返回地图概况</value></data>
+  <data name="Preview_DataAvailable" xml:space="preserve"><value>地图数据已读取，可以选择主题并继续导出。</value></data>
+  <data name="ThemeEditor_Personal" xml:space="preserve"><value>我的主题</value></data>
+  <data name="ThemeUpdate_ColorRamp" xml:space="preserve"><value>高程色带</value></data>
+  <data name="ThemeEditor_Export" xml:space="preserve"><value>导出主题…</value></data>
+  <data name="ThemeEditor_Import" xml:space="preserve"><value>导入主题…</value></data>
+  <data name="BuildingList_OutsideFilter" xml:space="preserve"><value>所选建筑不在当前筛选结果中。</value></data>
+  <data name="ThemeEditor_Base" xml:space="preserve"><value>基础预设</value></data>
+  <data name="BuildingList_NameAsc" xml:space="preserve"><value>名称：升序</value></data>
+  <data name="BuildingList_GroupCount" xml:space="preserve"><value>{0} 栋（含主建筑）</value></data>
+  <data name="ThemeEditor_CurrentUnreadable" xml:space="preserve"><value>当前主题无法读取，请选择其他主题。原文件已保留。</value></data>
+  <data name="Preview_OpenFailed" xml:space="preserve"><value>网页已生成，但无法打开浏览器。可以打开输出目录，手动打开 HTML 文件。</value></data>
+  <data name="ThemeEditor_Rename" xml:space="preserve"><value>重命名</value></data>
+  <data name="Preview_OpenMap" xml:space="preserve"><value>可以打开地图文件，读取成功后继续导出。</value></data>
+  <data name="Preview_Slow" xml:space="preserve"><value>地图预览耗时较长</value></data>
+  <data name="ThemeUpdate_AllChanges" xml:space="preserve"><value>全部变化</value></data>
+  <data name="ThemeEditor_Builtins" xml:space="preserve"><value>内置主题</value></data>
+  <data name="BuildingList_OpenButton.Content" xml:space="preserve"><value>建筑列表</value></data>
+  <data name="ThemeUpdate_Custom" xml:space="preserve"><value>自定义配置</value></data>
+  <data name="BuildingList_GameCategory" xml:space="preserve"><value>游戏分类</value></data>
+  <data name="Preview_Retry.Content" xml:space="preserve"><value>重新加载预览</value></data>
+  <data name="BuildingList_Members" xml:space="preserve"><value>附属建筑</value></data>
+  <data name="BuildingList_NameDesc" xml:space="preserve"><value>名称：降序</value></data>
+  <data name="BuildingList_IdAsc" xml:space="preserve"><value>ID：升序</value></data>
+  <data name="BuildingList_Group" xml:space="preserve"><value>组合建筑</value></data>
+  <data name="ThemeEditor_Save" xml:space="preserve"><value>保存</value></data>
+  <data name="ThemeUpdate_On" xml:space="preserve"><value>开启</value></data>
+  <data name="BuildingList_GameName" xml:space="preserve"><value>游戏随机名</value></data>
+  <data name="ThemeUpdate_Conflict" xml:space="preserve"><value>你也修改过此项，本次采用新版预设。</value></data>
+  <data name="Preview_Html.Content" xml:space="preserve"><value>在浏览器中打开</value></data>
+  <data name="ThemeEditor_InvalidName" xml:space="preserve"><value>名称须为 1–64 个字符，不能包含控制字符。</value></data>
+  <data name="Preview_Stopped" xml:space="preserve"><value>内嵌预览已停止</value></data>
+  <data name="ThemeUpdate_MoreKept" xml:space="preserve"><value>另有 {0} 项修改已保留</value></data>
+  <data name="BuildingList_GameNames" xml:space="preserve"><value>使用游戏随机名</value></data>
+  <data name="Preview_Png.Content" xml:space="preserve"><value>导出 PNG（2048 像素）</value></data>
+  <data name="BuildingList_CategoryAsc" xml:space="preserve"><value>类别：升序</value></data>
+  <data name="BuildingList_Category" xml:space="preserve"><value>建筑类别</value></data>
+  <data name="ThemeUpdate_Unset" xml:space="preserve"><value>未设置</value></data>
+  <data name="Preview_Failed" xml:space="preserve"><value>地图预览无法加载</value></data>
+  <data name="ThemeUpdate_Title" xml:space="preserve"><value>主题已更新</value></data>
+  <data name="BuildingList_Sort" xml:space="preserve"><value>排序</value></data>
+  <data name="BuildingList_NameHint" xml:space="preserve"><value>名称设置与地图同步；玩家自定义名称始终保留。</value></data>
+  <data name="BuildingList_Clear" xml:space="preserve"><value>清除筛选</value></data>
 </root>

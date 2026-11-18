@@ -264,6 +264,8 @@ def main() -> int:
         print(f"错误：入口不存在：{MAIN}")
         return 1
     try:
+        subprocess.run([sys.executable, str(PROJECT_ROOT / "tools/renderer/update_theme_manifest.py")],
+                       cwd=PROJECT_ROOT, check=True)
         subprocess.run([sys.executable, str(PROJECT_ROOT / "tools/renderer/compile_locales.py")],
                        cwd=PROJECT_ROOT, check=True)
         # Viewer 构建是 standalone 的强制前置：运行包不依赖 Node，也不允许

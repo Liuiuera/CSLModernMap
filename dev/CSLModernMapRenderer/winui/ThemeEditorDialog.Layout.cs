@@ -23,8 +23,11 @@ internal sealed partial class ThemeEditorDialog
     private readonly ComboBox _pageChoice = new() { HorizontalAlignment = HorizontalAlignment.Stretch, FontSize = 14 };
     private readonly Dictionary<string, NavigationViewItem> _navItems = new();
     private readonly Dictionary<string, NavigationViewItem> _navSections = new();
-    private readonly TextBlock _source = new() { FontSize = 12, TextTrimming = TextTrimming.CharacterEllipsis };
+    private readonly ComboBox _themeChoice = new() { HorizontalAlignment = HorizontalAlignment.Stretch, MinWidth = 0 };
+    private readonly TextBlock _dirtyMark = new() { VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(8, 0, 0, 0) };
     private FrameworkElement _editingSurface = null!, _previewSurface = null!;
+    private Border _sampleSurface = null!;
+    private ScrollViewer _fieldsScroll = null!;
     private StackPanel _commands = null!;
     private int _layoutMode = -1;
 
@@ -41,9 +44,13 @@ internal sealed partial class ThemeEditorDialog
         body.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
         body.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
         body.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
-        _source.Text = UiLanguage.Format("ThemeEditorDialog_Layout_BuildWorkbench_B3A22B5C00", _theme); ToolTipService.SetToolTip(_source, _savePath);
-        var heading = new StackPanel { Spacing = 4 };
-        heading.Children.Add(_source); heading.Children.Add(new TextBlock { Text = UiLanguage.Text("ThemeEditorDialog_Layout_BuildWorkbench_EC9A1CEB6D"), FontSize = 24 });
+        var heading = new Grid();
+        heading.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        heading.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        heading.Children.Add(_themeChoice); Grid.SetColumn(_dirtyMark, 1); heading.Children.Add(_dirtyMark);
+        Name(_themeChoice, UiLanguage.Text("ThemeEditor_Select"), "theme.choice");
+        Name(_dirtyMark, UiLanguage.Text("ThemeEditor_Unsaved"));
+        _themeChoice.SelectionChanged += async (_, _) => await SelectThemeAsync();
         _header.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
         _header.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
         _header.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
@@ -56,10 +63,19 @@ internal sealed partial class ThemeEditorDialog
         _restore.Click += (_, _) => RestoreSection();
         var more = new Button { Content = UiLanguage.Text("ThemeEditorDialog_Layout_BuildWorkbench_38844B135C") }; Name(more, UiLanguage.Text("ThemeEditorDialog_Layout_BuildWorkbench_9DF1CDC60C"));
         var menu = new MenuFlyout();
-        var saveAs = new MenuFlyoutItem { Text = UiLanguage.Text("ThemeEditorDialog_Layout_BuildWorkbench_7BB3396904") }; saveAs.Click += async (_, _) => await SaveAsAsync();
-        var reload = new MenuFlyoutItem { Text = UiLanguage.Text("ThemeEditorDialog_Layout_BuildWorkbench_7BDD5CE1E2") }; reload.Click += async (_, _) => await ReloadAsync();
-        var raw = new MenuFlyoutItem { Text = UiLanguage.Text("ThemeEditorDialog_Layout_BuildWorkbench_BA1125B2AC") }; raw.Click += async (_, _) => await EditJsonAsync();
-        menu.Items.Add(saveAs); menu.Items.Add(reload); menu.Items.Add(new MenuFlyoutSeparator()); menu.Items.Add(raw);
+        void Action(string label, Func<Task> run)
+        {
+            var item = new MenuFlyoutItem { Text = UiLanguage.Text(label) };
+            item.Click += async (_, _) => await run(); menu.Items.Add(item);
+        }
+        Action("ThemeEditor_New", NewThemeAsync);
+        Action("ThemeEditor_Copy", CopyThemeAsync);
+        Action("ThemeEditor_Rename", RenameThemeAsync);
+        menu.Items.Add(new MenuFlyoutSeparator());
+        Action("ThemeEditor_Import", ImportThemeAsync);
+        Action("ThemeEditor_Export", ExportThemeAsync);
+        menu.Items.Add(new MenuFlyoutSeparator());
+        Action("ThemeEditorDialog_Layout_BuildWorkbench_BA1125B2AC", EditJsonAsync);
         more.Flyout = menu; _commands.Children.Add(more);
         Grid.SetColumn(_commands, 1); _header.Children.Add(_commands); body.Children.Add(_header);
         _compactNavigation.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
@@ -85,21 +101,19 @@ internal sealed partial class ThemeEditorDialog
             if (args.SelectedItem is NavigationViewItem item && item.Tag is string key) SelectSection(key);
         };
         Grid.SetRow(_navigation, 1); _navigationArea.Children.Add(_navigation);
-        var fieldsScroll = new ScrollViewer { Content = _fieldsPanel, VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+        var fieldsScroll = _fieldsScroll = new ScrollViewer { Content = _fieldsPanel, VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
             HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled, HorizontalContentAlignment = HorizontalAlignment.Stretch };
         _editingSurface = Surface(fieldsScroll, "LayerFillColorDefaultBrush");
         BuildPreviewLayout();
         _previewSurface = Surface(_previewLayout, "ApplicationPageBackgroundThemeBrush", new Thickness(12, 16, 12, 12));
         Grid.SetRow(_workspace, 2); body.Children.Add(_workspace);
         _window.SetBody(body);
-        _applyButton = new Button { Content = UiLanguage.Text("ThemeEditorDialog_Layout_BuildWorkbench_13381EB64C") };
-        _saveButton = new Button { Content = UiLanguage.Text("ThemeEditorDialog_Layout_BuildWorkbench_6997A520F0"), Style = (Style)Application.Current.Resources["AccentButtonStyle"] };
-        Name(_applyButton, UiLanguage.Text("ThemeEditorDialog_Layout_BuildWorkbench_13381EB64C"), "theme.apply"); Name(_saveButton, UiLanguage.Text("ThemeEditorDialog_Layout_BuildWorkbench_6997A520F0"), "theme.save");
-        _applyButton.Click += async (_, _) => await CommitAsync(null);
-        _saveButton.Click += async (_, _) => await CommitAsync(null, true);
+        _saveButton = new Button { Content = UiLanguage.Text("ThemeEditor_Save"), Style = (Style)Application.Current.Resources["AccentButtonStyle"] };
+        Name(_saveButton, UiLanguage.Text("ThemeEditor_Save"), "theme.save");
+        _saveButton.Click += async (_, _) => await CommitAsync();
         _window.InputCommitTarget = _saveButton;
         var actions = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, HorizontalAlignment = HorizontalAlignment.Right };
-        actions.Children.Add(_applyButton); actions.Children.Add(_saveButton);
+        actions.Children.Add(_saveButton);
         _footer.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
         _footer.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
         _footer.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
@@ -117,7 +131,7 @@ internal sealed partial class ThemeEditorDialog
         _previewLayout.Children.Add(new TextBlock { Text = UiLanguage.Text("ThemeEditorDialog_Layout_BuildPreviewLayout_07C73EBABF"), FontSize = 14, FontWeight = Microsoft.UI.Text.FontWeights.SemiBold });
         Grid.SetRow(_previewStatus, 1); _previewLayout.Children.Add(_previewStatus);
         Grid.SetRow(_preview, 2); _previewLayout.Children.Add(_preview);
-        var sampleBorder = Surface(_samplePanel, "LayerFillColorDefaultBrush", new Thickness(12));
+        var sampleBorder = _sampleSurface = Surface(_samplePanel, "LayerFillColorDefaultBrush", new Thickness(12));
         sampleBorder.BorderThickness = new Thickness(1); sampleBorder.CornerRadius = new CornerRadius(5);
         Grid.SetRow(sampleBorder, 3); _previewLayout.Children.Add(sampleBorder);
     }
@@ -194,7 +208,7 @@ internal sealed partial class ThemeEditorDialog
             {
                 (UiLanguage.Text("ThemeEditorDialog_Layout_RebuildNavigation_AA6507D6F0"), new[] { "canvas", "terrain", "water", "forest", "built_area" }),
                 (UiLanguage.Text("ThemeEditorDialog_Layout_RebuildNavigation_2BE8A26742"), new[] { "roads", "buildings", "zone", "land_use", "district", "procedural_objects" }),
-                (UiLanguage.Text("ThemeEditorDialog_Layout_RebuildNavigation_57F78BA1F9"), new[] { "railway", "transports" }),
+                (UiLanguage.Text("ThemeEditorDialog_Layout_RebuildNavigation_57F78BA1F9"), new[] { "railway", "traffic", "transports" }),
                 (UiLanguage.Text("ThemeEditorDialog_Layout_RebuildNavigation_4F0C1E4BF0"), new[] { "labels", "poi_icons", "watermark" }),
                 (UiLanguage.Text("ThemeEditorDialog_Layout_RebuildNavigation_E2B12D8F0A"), sections.Where(key => !SectionNames.ContainsKey(key)).ToArray()),
             })

@@ -4,21 +4,41 @@
 from __future__ import annotations
 
 from typing import Any
+import math
 
 import numpy as np
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
 
 from ..fonts import load_pillow_font, resolve_text_font
 from ..cmm.model import RenderJob
 from ..labeling import LabelPipeline, visibility_overrides
+from ..style import hex_to_rgba
 from .base import Layer, RenderContext
 
 
-def _hex_to_rgb(color: str):
-    c = str(color or "").strip().lstrip("#")
-    if len(c) == 3:
-        c = "".join(ch * 2 for ch in c)
-    return (int(c[0:2], 16), int(c[2:4], 16), int(c[4:6], 16))
+def _text_image(font, text, bbox, stroke, fill, stroke_fill, pad, blur):
+    image = Image.new("RGBA", (bbox[2]-bbox[0]+2*pad, bbox[3]-bbox[1]+2*pad))
+    pos = (pad-bbox[0], pad-bbox[1])
+    fill_rgba, stroke_rgba = hex_to_rgba(fill), hex_to_rgba(stroke_fill)
+    if blur == 0 and fill_rgba[3] == stroke_rgba[3] == 255:
+        ImageDraw.Draw(image).text(pos, text, font=font, fill=fill_rgba,
+                                  stroke_width=stroke, stroke_fill=stroke_rgba)
+        return image
+    glyph = Image.new("L", image.size)
+    ImageDraw.Draw(glyph).text(pos, text, font=font, fill=255)
+    if stroke or blur:
+        halo = Image.new("L", image.size)
+        ImageDraw.Draw(halo).text(pos, text, font=font, fill=255,
+                                 stroke_width=stroke, stroke_fill=255)
+        # 硬描边排除字身；柔光晕保留完整轮廓，模糊后再叠加清晰文字。
+        halo = (halo.filter(ImageFilter.GaussianBlur(blur)) if blur
+                else ImageChops.subtract(halo, glyph))
+        image.paste(stroke_rgba[:3] + (0,), (0, 0, image.width, image.height))
+        image.putalpha(halo.point(lambda value: round(value * stroke_rgba[3] / 255)))
+    ink = Image.new("RGBA", image.size, fill_rgba[:3] + (0,))
+    ink.putalpha(glyph.point(lambda value: round(value * fill_rgba[3] / 255)))
+    image.alpha_composite(ink)
+    return image
 
 
 def _resolve_size(val: Any, render_scale: float) -> float:
@@ -105,6 +125,9 @@ class LabelLayer(Layer):
         for placed in ordered:
             label = placed.label
             cfg = dict(placed.style)
+            blur = _resolve_size(cfg.get("stroke_blur", 0), self.render_scale)
+            if not math.isfinite(blur) or blur < 0:
+                raise ValueError("labels stroke_blur must be finite and nonnegative")
             if label.type == "DISTRICT_NAME":
                 floor_final = 12.0 * min(self.ctx.final_zoom, 1.0)
                 size = max(_resolve_size(cfg.get("size", 20), self.render_scale),
@@ -115,6 +138,7 @@ class LabelLayer(Layer):
                     cfg.get("color", "#32415A"), stroke,
                     cfg.get("stroke", "#FFFFFF"),
                     font_family=cfg.get("font"), bold=bool(cfg.get("bold", False)),
+                    stroke_blur=blur,
                 )
             elif label.type == "ROAD_NAME":
                 metadata = placed.metadata
@@ -125,6 +149,7 @@ class LabelLayer(Layer):
                     cfg.get("color", "#505564"), stroke,
                     cfg.get("stroke", "#FFFFFF"),
                     font_family=cfg.get("font"),
+                    stroke_blur=blur,
                 )
 
     def _text_width_px(self, text: str, size: float,
@@ -135,17 +160,16 @@ class LabelLayer(Layer):
         return float(bbox[2] - bbox[0])
 
     def _render_text_run(self, strips, bounds, text, size, fill, stroke_w,
-                         stroke_fill, font_family=None):
+                         stroke_fill, font_family=None, stroke_blur=0.0):
         font = self._get_font(size, font_family, text=text)
         stroke = max(int(round(stroke_w)), 0)
         bbox = font.getbbox(text, stroke_width=stroke)
         tw, th = bbox[2]-bbox[0], bbox[3]-bbox[1]
-        run = Image.new("RGBA", (tw, th))
-        ImageDraw.Draw(run).text((-bbox[0], -bbox[1]), text, font=font,
-            fill=_hex_to_rgb(fill)+(255,), stroke_width=stroke,
-            stroke_fill=_hex_to_rgb(stroke_fill)+(255,))
-        left, top = int(np.floor(bounds[0])), int(np.floor(bounds[1]))
-        right, bottom = int(np.ceil(bounds[2])), int(np.ceil(bounds[3]))
+        pad = math.ceil(3 * stroke_blur)
+        run = _text_image(font, text, bbox, stroke, fill, stroke_fill, pad, stroke_blur)
+        bleed = math.ceil(pad * math.sqrt(2))
+        left, top = int(np.floor(bounds[0]))-bleed, int(np.floor(bounds[1]))-bleed
+        right, bottom = int(np.ceil(bounds[2]))+bleed, int(np.ceil(bounds[3]))+bleed
         yy, xx = np.mgrid[top:bottom, left:right].astype(float)
         best = np.full(xx.shape, np.inf)
         u = np.zeros(xx.shape)
@@ -159,6 +183,9 @@ class LabelLayer(Layer):
             u[chosen] = offset+span/2 + dx[chosen]*np.cos(a)+dy[chosen]*np.sin(a)
             v[chosen] = th/2 - dx[chosen]*np.sin(a)+dy[chosen]*np.cos(a)
             best[chosen] = distance[chosen]
+        u += pad
+        v += pad
+        tw, th = run.size
         valid = (u >= 0) & (v >= 0) & (u < tw-1) & (v < th-1)
         sx, sy = np.clip(u, 0, tw-1), np.clip(v, 0, th-1)
         ix, iy = sx.astype(int), sy.astype(int)
@@ -196,26 +223,26 @@ class LabelLayer(Layer):
 
     def _render_text(self, pos, text: str, size: float, fill: str,
                      stroke_w: float, stroke_fill: str, angle: float = 0.0,
-                     font_family: str | None = None, bold: bool = False) -> None:
+                     font_family: str | None = None, bold: bool = False,
+                     stroke_blur: float = 0.0) -> None:
         font = self._get_font(size, font_family, text=text, bold=bold)
         stroke = max(int(round(stroke_w)), 0)
-        fill_rgb = _hex_to_rgb(fill) + (255,)
-        stroke_rgb = _hex_to_rgb(stroke_fill) + (255,)
         probe = ImageDraw.Draw(Image.new("RGBA", (4, 4), (0, 0, 0, 0)))
         bbox = probe.textbbox((0, 0), text, font=font, stroke_width=stroke)
         tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
         if tw <= 0 or th <= 0:
             return
-        pad = stroke + 4
-        img = Image.new("RGBA", (tw + pad * 2, th + pad * 2), (0, 0, 0, 0))
-        draw = ImageDraw.Draw(img)
-        draw.text(
-            (pad - bbox[0], pad - bbox[1]), text, font=font, fill=fill_rgb,
-            stroke_width=stroke, stroke_fill=stroke_rgb,
-        )
+        pad = stroke + 4 + math.ceil(3 * stroke_blur)
+        img = _text_image(font, text, bbox, stroke, fill, stroke_fill, pad, stroke_blur)
         if angle:
-            img = img.rotate(-angle, expand=True, resample=Image.BICUBIC)
+            # 双三次插值会使半透明文字的透明度过冲；旧版不透明路径保持原样。
+            translucent = hex_to_rgba(fill)[3] < 255 or hex_to_rgba(stroke_fill)[3] < 255
+            resample = Image.BILINEAR if translucent or stroke_blur else Image.BICUBIC
+            img = img.rotate(-angle, expand=True, resample=resample)
         px, py = pos
         x = int(round(px - img.width / 2))
         y = int(round(py - img.height / 2))
-        self.ctx.image.paste(img, (x, y), img)
+        if self.ctx.image.mode == "RGB":
+            self.ctx.image.paste(img, (x, y), img)
+        else:
+            self.ctx.image.alpha_composite(img, (x, y))

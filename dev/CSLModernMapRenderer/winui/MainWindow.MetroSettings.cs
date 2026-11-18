@@ -107,7 +107,12 @@ public sealed partial class MainWindow
             {
                 if (args.Key == VirtualKey.Enter) await Commit(args.OriginalSource as TextBox);
             }), handledEventsToo: true);
-            if (range is null) { input.Header = Label(label); return input; }
+            if (range is null)
+            {
+                input.ValueChanged += async (_, _) => await Commit();
+                input.Header = Label(label);
+                return input;
+            }
             input.Width = 76;
             AutomationProperties.SetName(range, label);
             Bind(range, (child ?? key) + "-slider", () => range.Value = input.Value, enabled);

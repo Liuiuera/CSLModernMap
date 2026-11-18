@@ -28,8 +28,9 @@ def check_version(value, *, format: str, supported: str, pattern: str) -> None:
 def check_cmm(raw) -> None:
     if not isinstance(raw, dict) or ("schema_version" not in raw and "metadata" not in raw):
         raise MapFileError("invalid_cmm")
-    check_version(raw.get("schema_version"), format="CMM", supported="cmm-v1",
-                  pattern=r"cmm-v[0-9]+")
+    if raw.get("schema_version") != "cmm-v1":
+        check_version(raw.get("schema_version"), format="CMM", supported="cmm1.1",
+                      pattern=r"(?:cmm-v[0-9]+|cmm[0-9]+\.[0-9]+)")
     # 空城市允许空数组；配置文件或错误的顶层结构不能被默认值变成空地图。
     metadata = raw.get("metadata")
     if not isinstance(metadata, dict) or not isinstance(metadata.get("origin"), dict):

@@ -214,5 +214,7 @@
   "preview3d_title": "3D-Vorschau",
   "preview3d_help": "Mittlere Maustaste halten: seitlich zum Drehen, auf/ab zum Neigen ziehen.",
   "preview3d_missing": "Einige Gebäude haben keine Modellhöhe und bleiben flach. Exportieren Sie mit dem aktuellen Mod erneut.",
-  "roads_local_flat_fallback": "Einige Straßenkreuzungen werden flach dargestellt. Überlagerungen von Brücken und Tunneln können dort ungenau sein."
+  "roads_local_flat_fallback": "Einige Straßenkreuzungen werden flach dargestellt. Überlagerungen von Brücken und Tunneln können dort ungenau sein.",
+  "satellite_texture_limit": "Satellite image size {{size}} exceeds the device texture limit {{limit}}",
+  "controls_satellite": "Satellitenbild"
 }

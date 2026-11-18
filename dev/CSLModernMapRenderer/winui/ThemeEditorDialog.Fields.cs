@@ -65,7 +65,6 @@ internal sealed partial class ThemeEditorDialog
                 _fieldsPanel.Children.Add(clear); return;
             }
             _fieldsPanel.Children.Add(new TextBlock { Text = SectionLabel(_section), FontSize = 20, FontWeight = Microsoft.UI.Text.FontWeights.SemiBold });
-            _fieldsPanel.Children.Add(new TextBlock { Text = PageDescription(), FontSize = 12, TextWrapping = TextWrapping.Wrap, Opacity = .8 });
             ToolTipService.SetToolTip(_restore, _search.Text.Trim().Length == 0 ? UiLanguage.Text("ThemeEditorDialog_Fields_RebuildFields_AFF535F598") : UiLanguage.Text("ThemeEditorDialog_Fields_RebuildFields_04016999A1"));
             _restore.Content = _search.Text.Trim().Length == 0 ? UiLanguage.Text("ThemeEditorDialog_Fields_RebuildFields_AC9EA45E9D") : UiLanguage.Text("ThemeEditorDialog_Fields_RebuildFields_3B5E729BF4");
             if (_section == "__basic__") BuildBasicPage();
@@ -229,8 +228,18 @@ internal sealed partial class ThemeEditorDialog
             {
                 var input = new TextBox { Text = value.ValueKind == JsonValueKind.String ? value.GetString() : value.GetRawText(),
                     AcceptsReturn = path[^1] == "description", TextWrapping = TextWrapping.Wrap, MinHeight = path[^1] == "description" ? 76 : 32 };
-                Name(input, label, key); input.LostFocus += (_, _) => Change(path, JsonValue.Create(input.Text));
-                _checks[key] = () => Change(path, JsonValue.Create(input.Text)); panel.Children.Add(input);
+                void CommitText()
+                {
+                    var text = input.Text ?? "";
+                    if (key == "name")
+                    {
+                        var name = text.Trim();
+                        if (name.Length is 0 or > 64 || name.Any(char.IsControl)) { Error(UiLanguage.Text("ThemeEditor_InvalidName")); return; }
+                    }
+                    Error(null); Change(path, JsonValue.Create(key == "name" ? text.Trim() : text));
+                }
+                Name(input, label, key); input.LostFocus += (_, _) => CommitText();
+                _checks[key] = CommitText; panel.Children.Add(input);
                 input.TextChanged += (_, _) => InvalidateInputPreview();
             }
         }

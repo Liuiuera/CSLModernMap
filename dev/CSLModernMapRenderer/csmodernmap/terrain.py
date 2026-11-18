@@ -6,6 +6,57 @@ from typing import List, Optional, Tuple
 import numpy as np
 
 
+TERRAIN_MODES = ("simple", "continuous", "shade")
+_TERRAIN_MODE_ALIASES = {
+    "stepped": "simple",
+    "gradient": "shade", "linear": "shade", "smooth": "shade",
+    "facets": "shade", "faceted": "shade", "polygon": "shade",
+    "low-poly": "shade", "low_poly": "shade",
+}
+
+
+def normalize_terrain_mode(value) -> str:
+    """主界面的历史模式值保留原含义；未知值使用默认分层设色。"""
+    text = str(value if value is not None else "").strip().lower()
+    text = _TERRAIN_MODE_ALIASES.get(text, text)
+    return text if text in TERRAIN_MODES else TERRAIN_MODES[0]
+
+
+def resolve_terrain_config(terrain: dict, state: dict | None = None) -> dict:
+    """统一三态模式；旧主题仅在没有 mode 时由设色与光影字段迁入。"""
+    cfg = dict(terrain)
+    shade = cfg["hillshade"] = dict(terrain.get("hillshade", {}))
+    if state is not None and "mode" in state:
+        mode = normalize_terrain_mode(state["mode"])
+    elif "mode" in terrain:
+        mode = terrain["mode"]
+        if mode not in TERRAIN_MODES:
+            raise ValueError("terrain.mode: expected simple, continuous or shade")
+    elif shade.get("enabled", False):
+        mode = "shade"
+    else:
+        legacy = str(terrain.get("elevation_mode", "stepped")).strip().lower()
+        mode = "continuous" if legacy in {"continuous", "gradient", "linear"} else "simple"
+    cfg["mode"] = mode
+    cfg["elevation_mode"] = "stepped" if mode == "simple" else "continuous"
+    shade["enabled"] = mode == "shade"
+    for key in ("mode", "facet_size_meters", "facet_jitter"):
+        shade.pop(key, None)
+    if state is not None:
+        if "shade" in state:
+            shade["intensity"] = max(0.0, min(1.0, float(state["shade"]) / 100.0))
+        if "sun" in state:
+            shade["azimuth"] = float(state["sun"])
+    return cfg
+
+
+def terrain_ui_state(terrain: dict) -> dict:
+    cfg = resolve_terrain_config(terrain)
+    shade = cfg["hillshade"]
+    return {"mode": cfg["mode"], "shade": float(shade.get("intensity", .3)) * 100,
+            "sun": float(shade.get("azimuth", 315))}
+
+
 def elevation_rgb(values, thresholds: np.ndarray, colors: np.ndarray,
                   continuous: bool) -> np.ndarray:
     """海拔色带共用取色：连续插值或阈值分段，端点钳制。"""

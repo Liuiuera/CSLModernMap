@@ -4472,8 +4472,87 @@ Do you want to save your current changes?</value></data>
   <data name="Ribbon_IntroLater" xml:space="preserve"><value>Not now</value></data>
   <data name="RmpEditor_showNames" xml:space="preserve"><value>Show station names</value></data>
   <data name="RmpEditor_showDefaultNames" xml:space="preserve"><value>Show default station names</value></data>
-  <data name="BuildingCategory_Help" xml:space="preserve"><value>Select Category colors to apply these settings. Enable Override color for all buildings in a category; disable it to restore automatic POI colors. Unknown uses remain unclassified.</value></data>
+  <data name="BuildingCategory_Help" xml:space="preserve"><value>These settings apply when Category colors is selected. Enable Override color to set a color for all buildings in the category, or disable it to use automatic POI colors.</value></data>
   <data name="Poi_ShowDecorative" xml:space="preserve"><value>Show decorative POIs</value></data>
   <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>Show icons and names for listed decorations. Buildings and map features remain visible.</value></data>
   <data name="MetroSettings_Reset" xml:space="preserve"><value>Restore defaults</value></data>
+  <data name="BuildingList_NoName" xml:space="preserve"><value>No name provided</value></data>
+  <data name="ThemeEditor_New" xml:space="preserve"><value>New theme</value></data>
+  <data name="BuildingList_OfficialName" xml:space="preserve"><value>Official game category</value></data>
+  <data name="ThemeEditor_Name" xml:space="preserve"><value>Theme name</value></data>
+  <data name="BuildingList_Search" xml:space="preserve"><value>Search building names</value></data>
+  <data name="Preview_AutoStart" xml:space="preserve"><value>Load embedded preview at startup</value></data>
+  <data name="BuildingList_DetailHint" xml:space="preserve"><value>Select a building to view its details.</value></data>
+  <data name="BuildingList_Height" xml:space="preserve"><value>Building height</value></data>
+  <data name="Satellite_LayerTitle" xml:space="preserve"><value>Satellite imagery</value></data>
+  <data name="BuildingList_Open" xml:space="preserve"><value>Building list</value></data>
+  <data name="BuildingList_Name" xml:space="preserve"><value>Building name</value></data>
+  <data name="Preview_Continue.Content" xml:space="preserve"><value>Keep waiting</value></data>
+  <data name="ThemeUpdate_Intro" xml:space="preserve"><value>“{0}” now includes the preset update.</value></data>
+  <data name="BuildingList_Id" xml:space="preserve"><value>ID</value></data>
+  <data name="ThemeUpdate_Off" xml:space="preserve"><value>Off</value></data>
+  <data name="BuildingList_CategoryDesc" xml:space="preserve"><value>Category: descending</value></data>
+  <data name="ThemeEditor_Unsaved" xml:space="preserve"><value>Unsaved</value></data>
+  <data name="BuildingList_IdDesc" xml:space="preserve"><value>ID: descending</value></data>
+  <data name="ThemeEditor_MigrationWarning" xml:space="preserve"><value>Some older themes could not be read. Original files were backed up:</value></data>
+  <data name="Satellite_Composing" xml:space="preserve"><value>Compositing satellite imagery…</value></data>
+  <data name="ThemeEditor_Select" xml:space="preserve"><value>Select theme</value></data>
+  <data name="ThemeEditor_Copy" xml:space="preserve"><value>Duplicate theme</value></data>
+  <data name="BuildingList_Info" xml:space="preserve"><value>Building information</value></data>
+  <data name="BuildingList_Unnamed" xml:space="preserve"><value>Unnamed building</value></data>
+  <data name="BuildingList_CustomName" xml:space="preserve"><value>Player-defined</value></data>
+  <data name="ThemeEditor_Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="ThemeUpdate_Continue" xml:space="preserve"><value>Continue</value></data>
+  <data name="BuildingList_NameSource" xml:space="preserve"><value>Name source</value></data>
+  <data name="BuildingList_Details" xml:space="preserve"><value>Building details</value></data>
+  <data name="ThemeUpdate_UsePrevious" xml:space="preserve"><value>Use previous</value></data>
+  <data name="ThemeUpdate_Archived" xml:space="preserve"><value>Your previous theme is saved. You can switch back from the theme list.</value></data>
+  <data name="BuildingList_All" xml:space="preserve"><value>All</value></data>
+  <data name="ThemeEditor_Exported" xml:space="preserve"><value>Theme exported</value></data>
+  <data name="BuildingList_Empty" xml:space="preserve"><value>No matching buildings</value></data>
+  <data name="ThemeUpdate_Kept" xml:space="preserve"><value>Your changes kept</value></data>
+  <data name="BuildingList_Count" xml:space="preserve"><value>Showing {0:N0} / {1:N0} buildings (combined buildings counted together)</value></data>
+  <data name="BuildingList_Back" xml:space="preserve"><value>Back to overview</value></data>
+  <data name="Preview_DataAvailable" xml:space="preserve"><value>Map data is loaded. You can choose a theme and export.</value></data>
+  <data name="ThemeEditor_Personal" xml:space="preserve"><value>My themes</value></data>
+  <data name="ThemeUpdate_ColorRamp" xml:space="preserve"><value>Elevation colors</value></data>
+  <data name="ThemeEditor_Export" xml:space="preserve"><value>Export theme…</value></data>
+  <data name="ThemeEditor_Import" xml:space="preserve"><value>Import theme…</value></data>
+  <data name="BuildingList_OutsideFilter" xml:space="preserve"><value>The selected building is outside the current filter.</value></data>
+  <data name="ThemeEditor_Base" xml:space="preserve"><value>Base preset</value></data>
+  <data name="BuildingList_NameAsc" xml:space="preserve"><value>Name: ascending</value></data>
+  <data name="BuildingList_GroupCount" xml:space="preserve"><value>{0} buildings (including the main building)</value></data>
+  <data name="ThemeEditor_CurrentUnreadable" xml:space="preserve"><value>The current theme could not be read. Select another theme. Original files have been kept.</value></data>
+  <data name="Preview_OpenFailed" xml:space="preserve"><value>The HTML was saved, but could not open in a browser. Open the output folder to open the file manually.</value></data>
+  <data name="ThemeEditor_Rename" xml:space="preserve"><value>Rename</value></data>
+  <data name="Preview_OpenMap" xml:space="preserve"><value>Open a map file to choose a theme and export.</value></data>
+  <data name="Preview_Slow" xml:space="preserve"><value>Map preview is taking longer</value></data>
+  <data name="ThemeUpdate_AllChanges" xml:space="preserve"><value>All changes</value></data>
+  <data name="ThemeEditor_Builtins" xml:space="preserve"><value>Built-in themes</value></data>
+  <data name="BuildingList_OpenButton.Content" xml:space="preserve"><value>Building list</value></data>
+  <data name="ThemeUpdate_Custom" xml:space="preserve"><value>Custom settings</value></data>
+  <data name="BuildingList_GameCategory" xml:space="preserve"><value>Game category</value></data>
+  <data name="Preview_Retry.Content" xml:space="preserve"><value>Reload preview</value></data>
+  <data name="BuildingList_Members" xml:space="preserve"><value>Attached buildings</value></data>
+  <data name="BuildingList_NameDesc" xml:space="preserve"><value>Name: descending</value></data>
+  <data name="BuildingList_IdAsc" xml:space="preserve"><value>ID: ascending</value></data>
+  <data name="BuildingList_Group" xml:space="preserve"><value>Building group</value></data>
+  <data name="ThemeEditor_Save" xml:space="preserve"><value>Save</value></data>
+  <data name="ThemeUpdate_On" xml:space="preserve"><value>On</value></data>
+  <data name="BuildingList_GameName" xml:space="preserve"><value>Game-generated name</value></data>
+  <data name="ThemeUpdate_Conflict" xml:space="preserve"><value>You also changed this setting. The new preset takes priority.</value></data>
+  <data name="Preview_Html.Content" xml:space="preserve"><value>Open in browser</value></data>
+  <data name="ThemeEditor_InvalidName" xml:space="preserve"><value>Use 1–64 characters without control characters.</value></data>
+  <data name="Preview_Stopped" xml:space="preserve"><value>Embedded preview is stopped</value></data>
+  <data name="ThemeUpdate_MoreKept" xml:space="preserve"><value>{0} more changes kept</value></data>
+  <data name="BuildingList_GameNames" xml:space="preserve"><value>Use game-generated names</value></data>
+  <data name="Preview_Png.Content" xml:space="preserve"><value>Export PNG (2048 px)</value></data>
+  <data name="BuildingList_CategoryAsc" xml:space="preserve"><value>Category: ascending</value></data>
+  <data name="BuildingList_Category" xml:space="preserve"><value>Building category</value></data>
+  <data name="ThemeUpdate_Unset" xml:space="preserve"><value>Not set</value></data>
+  <data name="Preview_Failed" xml:space="preserve"><value>Map preview could not load</value></data>
+  <data name="ThemeUpdate_Title" xml:space="preserve"><value>Theme updated</value></data>
+  <data name="BuildingList_Sort" xml:space="preserve"><value>Sort by</value></data>
+  <data name="BuildingList_NameHint" xml:space="preserve"><value>Names follow the map setting. Player-defined names are always preserved.</value></data>
+  <data name="BuildingList_Clear" xml:space="preserve"><value>Clear filters</value></data>
 </root>

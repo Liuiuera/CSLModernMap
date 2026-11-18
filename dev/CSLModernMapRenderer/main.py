@@ -88,9 +88,9 @@ def cmd_parse(args: argparse.Namespace) -> int:
 def _load_style(args: argparse.Namespace):
     """按 --style 加载主题，不存在时提示并返回 None。"""
     from csmodernmap._paths import resource_dir
-    from csmodernmap.style import METRO_STYLE_FILE, load_style
+    from csmodernmap.style import METRO_STYLE_FILE, load_style, canonical_theme_id
 
-    style_path = resource_dir("styles") / f"{args.style}.yaml"
+    style_path = resource_dir("styles") / f"{canonical_theme_id(args.style)}.yaml"
     if not style_path.exists():
         # 列出可用主题及其友好名，便于用户选择（排除地铁图专用配置）
         styles_dir = resource_dir("styles")
@@ -894,7 +894,7 @@ def main(argv=None) -> int:
 
     p_render = sub.add_parser("render", help="渲染地图为 PNG")
     p_render.add_argument("file", help=".mmap 或 .mmap.gz 文件路径")
-    p_render.add_argument("--style", default="amap", help="主题名（默认 amap，可用 list-styles 查看）")
+    p_render.add_argument("--style", default="bright", help="主题名（默认 bright，可用 list-styles 查看）")
     p_render.add_argument("--size", type=int, default=4096, help="输出边长像素（默认 4096）")
     p_render.add_argument(
         "--detail", default="auto",
@@ -975,7 +975,7 @@ def main(argv=None) -> int:
         "transit",
         help="公共交通图：全图 → 淡白遮罩 → 叠加全部公共交通线路/站点")
     p_transit.add_argument("file", help=".mmap 或 .mmap.gz 文件路径")
-    p_transit.add_argument("--style", default="amap", help="主题名（默认 amap）")
+    p_transit.add_argument("--style", default="bright", help="主题名（默认 bright）")
     p_transit.add_argument("--size", type=int, default=4096,
                            help="输出边长像素（默认 4096）")
     p_transit.add_argument(
@@ -1028,7 +1028,7 @@ def main(argv=None) -> int:
 
     p_random = sub.add_parser("random", help="随机特写：随机渲染一块城市建成区")
     p_random.add_argument("file", help=".mmap 或 .mmap.gz 文件路径")
-    p_random.add_argument("--style", default="amap", help="主题名（默认 amap）")
+    p_random.add_argument("--style", default="bright", help="主题名（默认 bright）")
     p_random.add_argument("--size", type=int, default=2048, help="输出边长像素（默认 2048）")
     p_random.add_argument("--aa", action="store_true", help="抗锯齿：按 2× 尺寸渲染后下采样")
     p_random.add_argument("--seed", type=int, default=None, help="随机种子（固定可复现）")
@@ -1087,7 +1087,7 @@ def main(argv=None) -> int:
 
     p_int = sub.add_parser("interchange", help="立交特写：识别立交桥并逐处特写拼图")
     p_int.add_argument("file", help=".mmap 或 .mmap.gz 文件路径")
-    p_int.add_argument("--style", default="amap", help="主题名（默认 amap）")
+    p_int.add_argument("--style", default="bright", help="主题名（默认 bright）")
     p_int.add_argument("--tile", type=int, default=1024, help="单格立交图边长像素（拼图每格，默认 1024）")
     p_int.add_argument("--top", type=int, default=16, help="最多拼入的立交数（默认 16）")
     p_int.add_argument("--aa", action="store_true", help="抗锯齿：按 2× 尺寸渲染后下采样")
@@ -1149,7 +1149,7 @@ def main(argv=None) -> int:
         help="特写拼图：随机/堵车取景多块区域，拼成网格图（数量、种子、标注、交通对比可调）",
     )
     p_spot.add_argument("file", help=".mmap 或 .mmap.gz 文件路径")
-    p_spot.add_argument("--style", default="amap", help="主题名（默认 amap）")
+    p_spot.add_argument("--style", default="bright", help="主题名（默认 bright）")
     p_spot.add_argument(
         "--mode", default="random",
         choices=["random", "congestion", "top"],
@@ -1230,7 +1230,7 @@ def main(argv=None) -> int:
         "export-web", help="导出 MapLibre 单文件网页地图 HTML（资源全部内嵌，双击即看）"
     )
     p_export.add_argument("file", help=".mmap 或 .mmap.gz 存档文件路径")
-    p_export.add_argument("--style", default="amap", help="主题名（默认 amap，可用 list-styles 查看）")
+    p_export.add_argument("--style", default="bright", help="主题名（默认 bright，可用 list-styles 查看）")
     p_export.add_argument(
         "--no-poi", action="store_true",
         help="不导出 POI 图标层（默认导出）",

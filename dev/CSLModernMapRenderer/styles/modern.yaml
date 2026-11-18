@@ -3,24 +3,25 @@ description: 一种现代化、优雅美观的地图风格。
 canvas:
   width: 4096
   height: 4096
-  background: '#EBF0CF'
+  background: '#F2F0E6'
 terrain:
   elevation_colors:
   - threshold: 0
-    color: '#EBF0CF'
+    color: '#F2F0E6'
   - threshold: 80
-    color: '#DDE8BD'
+    color: '#EEF0DF'
   - threshold: 220
-    color: '#CADCAD'
+    color: '#E2EBC2'
   - threshold: 400
-    color: '#B5CCA0'
+    color: '#CEE3A6'
   - threshold: 600
-    color: '#A4BC90'
+    color: '#B9D88F'
   - threshold: 900
-    color: '#91AA80'
+    color: '#E7EDD7'
   - threshold: 1300
-    color: '#819875'
-  elevation_mode: continuous
+    color: '#F1F0E7'
+  mode: simple
+  elevation_mode: stepped
   hillshade:
     enabled: false
     intensity: 0.3
@@ -42,6 +43,7 @@ built_area:
   smooth_blur: 2.0
   smooth_iters: 6
   contour_upscale: 2
+  edge_meters: 8.0
 forest:
   color: '#BFE89D'
 land_use:
@@ -292,7 +294,7 @@ poi_icons:
   enabled: true
   icons_dir: cn_icons
   icon_size:
-    # 对齐 amap 的 fixed+scaled 配比：4096 基准仍在 24px，但高分辨率下放缓增长，
+    # 对齐 bright 的 fixed+scaled 配比：4096 基准仍在 24px，但高分辨率下放缓增长，
     # 避免区域放大/高分辨率时图标涨得比文字快（POI 过大、名称相对过小）。
     fixed: 20.0
     scaled: 4.0
@@ -327,7 +329,7 @@ labels:
   district:
     font: PingFang SC
     size:
-      # 对齐 amap 的区划字号：fixed/scaled 略大于原值，保证高分辨率下名称不显小。
+      # 对齐 bright 的区划字号：fixed/scaled 略大于原值，保证高分辨率下名称不显小。
       fixed: 2.4
       scaled: 18.0
     color: '#344054'

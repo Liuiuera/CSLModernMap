@@ -214,5 +214,7 @@
   "preview3d_title": "Vista previa 3D",
   "preview3d_help": "Mantén pulsado el botón central: arrastra de lado para girar y arriba/abajo para inclinar.",
   "preview3d_missing": "Algunos edificios no tienen altura de modelo y permanecen planos. Vuelve a exportar con el mod actualizado.",
-  "roads_local_flat_fallback": "Algunos cruces se dibujan planos. La superposición de puentes y túneles puede ser inexacta en esos lugares."
+  "roads_local_flat_fallback": "Algunos cruces se dibujan planos. La superposición de puentes y túneles puede ser inexacta en esos lugares.",
+  "satellite_texture_limit": "Satellite image size {{size}} exceeds the device texture limit {{limit}}",
+  "controls_satellite": "Imagen de satélite"
 }

@@ -35,9 +35,9 @@ SECTION_TO_LAYER = {
 
 # 分组显示顺序（与旧版编辑器一致：画布 → … → 水印）。
 SECTION_ORDER = (
-    "canvas", "terrain", "water", "forest", "built_area",
+    "canvas", "satellite", "terrain", "water", "forest", "built_area",
     "zone", "land_use", "district", "roads", "buildings",
-    "procedural_objects", "railway", "transports", "poi_icons",
+    "procedural_objects", "railway", "traffic", "transports", "poi_icons",
     "labels", "watermark",
 )
 
@@ -46,13 +46,13 @@ SECTION_ORDER = (
 # 隐藏只影响展示；``collect()`` 从工作副本深拷贝重建，这些字段仍会原样保留。
 HIDDEN_LEAF_KEYS = {
     "poi_icons": {"icons_dir", "sprite"},
-    "terrain": {"ground"},  # 旧距离配色仅保留数据，全部主题改用海拔色带。
+    "terrain": {"ground", "elevation_mode"},
     "buildings": {"residential", "commercial", "industrial", "office", "shadow"},
     "canvas": {"width", "height"},  # 画布尺寸由渲染分辨率决定，不读主题
     # 「立体棱角」已从产品里删除：山体光影只剩连续晕染一种画法，面片尺寸 /
     # 扰动 / 模式三个键对渲染不再有任何影响。老自建主题里可能还留着它们，
     # 编辑器不再展示（隐藏只影响展示，collect() 仍会原样保留这些键）。
-    "hillshade": {"mode", "facet_size_meters", "facet_jitter"},
+    "hillshade": {"enabled", "mode", "facet_size_meters", "facet_jitter"},
     # 旧自定义主题的区划分类配色已停用，样式加载器会在进入编辑器前移除。
     "district": {"specialization", "specialization_colors"},
     "zone": {"colors"},
@@ -97,6 +97,7 @@ LABELS = {
     "main": "gui.style_editor.field.main",
     "branch": "gui.style_editor.field.branch",
     "special": "gui.style_editor.field.special",
+    "quay": "gui.style_editor.field.quay",
     "beautification": "gui.style_editor.field.beautification",
     "primary": "gui.style_editor.field.primary",
     "secondary": "gui.style_editor.field.secondary",
@@ -104,13 +105,16 @@ LABELS = {
     "pedestrian": "gui.style_editor.field.pedestrian",
     "road_elevated": "gui.style_editor.field.road_elevated",
     "highway_elevated": "gui.style_editor.field.highway_elevated",
+    "quay_elevated": "gui.style_editor.field.quay_elevated",
     "beautification_elevated": "gui.style_editor.field.beautification_elevated",
     "road_tunnel": "gui.style_editor.field.road_tunnel",
     "highway_tunnel": "gui.style_editor.field.highway_tunnel",
+    "quay_tunnel": "gui.style_editor.field.quay_tunnel",
     "beautification_tunnel": "gui.style_editor.field.beautification_tunnel",
     "tunnel": "gui.style_editor.field.tunnel",
     "bridge": "gui.style_editor.field.bridge",
     "min_fill_px": "gui.style_editor.field.min_fill_px",
+    "footprint_scale": "style.road.level.quay.width.label",
     "smooth": "gui.style_editor.field.smooth",
     "label": "gui.style_editor.field.label",
     "font": "gui.style_editor.field.font",
@@ -134,6 +138,8 @@ LABELS = {
     "line": "gui.style_editor.field.line",
     "stroke": "gui.style_editor.field.stroke",
     "stroke_width": "gui.style_editor.field.stroke_width",
+    "stroke_blur": "gui.style_editor.field.stroke_blur",
+    "opacity": "gui.style_editor.field.opacity",
     "bold": "gui.style_editor.field.bold",
     "district": "gui.style_editor.field.district",
     "park": "gui.style_editor.field.park",
@@ -243,6 +249,8 @@ FIELD_UNIT_KEYS = {
     "padding": "px",
     "border_width": "px",
     "stroke_width": "px",
+    "stroke_blur": "px",
+    "opacity": "ratio",
     "icon_size": "px",
     "grid_size": "px",
     "bg_circle_size": "px",
@@ -302,6 +310,9 @@ _UNIT_KEYS = {
 NUMERIC_FIELD_SPECS = {
     "water.border_width": ((0.0, 50.0, 0.1), "px"),
     "roads.width_scale": ((0.0, 5.0, 0.01), "meter_to_pixel"),
+    "roads.opacity": ((0.0, 1.0, 0.01), "ratio"),
+    "labels.road.stroke_blur": ((0.0, 8.0, 0.1), "px"),
+    "labels.district.stroke_blur": ((0.0, 8.0, 0.1), "px"),
     "terrain.hillshade.intensity": ((0.0, 1.0, 0.01), "ratio"),
     "district.fill_alpha": ((0, 255, 1), "alpha255"),
     "zone.fill_alpha": ((0, 255, 1), "alpha255"),
@@ -314,6 +325,7 @@ NUMERIC_FIELD_SPECS = {
     "buildings.poi_tint.contrast": ((0.0, 1.0, 0.01), "ratio"),
     "procedural_objects.custom_color_alpha": ((0.0, 1.0, 0.01), "ratio"),
     "roads.*.min_fill_px": ((0.0, 20.0, 0.1), "px"),
+    "roads.quay.footprint_scale": ((0.05, 1.0, 0.05), "ratio"),
     "roads.*.border_width": ((0.0, 50.0, 0.1), "px"),
     "roads.*.dash.*": ((0.0, 2000.0, 0.1), "px"),
     "transports.types.*.dash.*": ((0.0, 2000.0, 0.1), "px"),
@@ -339,12 +351,14 @@ def numeric_spec(path: tuple):
 FIELD_KINDS = {
     "canvas.background": "color", "water.color": "color", "water.border": "color",
     "water.border_width": "size", "forest.color": "color",
-    "terrain.elevation_mode": "choice", "terrain.*colors": "ramp",
+    "terrain.mode": "choice", "terrain.elevation_mode": "choice", "terrain.*colors": "ramp",
     "terrain.*colors.*.color": "color",
     "terrain.ground.enabled": "toggle", "terrain.ground.near_green": "color",
     "terrain.ground.far_green": "color", "terrain.hillshade.enabled": "toggle",
     "roads.width_scale": "number", "roads.*.fill": "color", "roads.*.border": "color",
+    "roads.opacity": "number",
     "roads.*.min_fill_px": "number", "roads.*.border_width": "size", "roads.*.dash": "numbers",
+    "roads.quay.footprint_scale": "number",
     "buildings.color_mode": "choice", "buildings.default": "color", "buildings.border": "color",
     "buildings.border_width": "size", "buildings.poi_tint.contrast": "number",
     "district.border": "color", "district.border_width": "size", "district.fill_colors": "colors",
@@ -362,6 +376,7 @@ FIELD_KINDS = {
     "poi_icons.bg_circle": "toggle", "poi_icons.font": "font",
     "labels.*.font": "font", "labels.*.size": "size", "labels.*.color": "color",
     "labels.*.stroke": "color", "labels.*.stroke_width": "size", "labels.*.bold": "toggle",
+    "labels.road.stroke_blur": "size", "labels.district.stroke_blur": "size",
     "watermark.enabled": "toggle", "watermark.position": "choice", "watermark.font": "font",
     "watermark.font_size": "size", "watermark.margin.*": "size", "watermark.padding.*": "size",
     "watermark.city_color": "color", "watermark.info_color": "color", "watermark.meta_color": "color",
@@ -423,6 +438,9 @@ FIELD_DESC_FALLBACK = {
     "zone.fill_alpha": "gui.style_editor.desc.zone.fill_alpha",
     "zone.fill": "gui.style_editor.desc.zone.fill",
     "roads.width_scale": "gui.style_editor.desc.roads.width_scale",
+    "roads.opacity": "gui.style_editor.desc.roads.opacity",
+    "labels.road.stroke_blur": "gui.style_editor.desc.labels.stroke_blur",
+    "labels.district.stroke_blur": "gui.style_editor.desc.labels.stroke_blur",
     "roads.highway.fill": "gui.style_editor.desc.roads.highway.fill",
     "transports.auto_color": "gui.style_editor.desc.transports.auto_color",
     "transports.smooth": "gui.style_editor.desc.transports.smooth",
@@ -502,7 +520,7 @@ CATEGORY_SCENE = {
     "zone": "zones",
     "land_use": "zones",
     "poi_icons": "buildings",
-    "labels": "roads",
+    "labels": "labels",
 }
 
 # YAML 路径 → 字段键（_STYLE_FIELD_PATHS 的反向查询，用于借 schema 的中文名/范围）
@@ -720,7 +738,7 @@ def describe_theme(data: dict) -> dict:
         field_key = field_key_for(path)
         schema = FIELDS.get(field_key) if field_key else None
         declared_kind = field_kind(path)
-        condition = ("terrain.hillshade.enabled == true" if dotted.startswith("terrain.hillshade.") and key != "enabled"
+        condition = ("terrain.mode == shade" if dotted.startswith("terrain.hillshade.") and key != "enabled"
                      else "buildings.color_mode != uniform" if dotted.startswith("buildings.poi_tint.") else None)
         default = field_default(path)
         required = default is not None

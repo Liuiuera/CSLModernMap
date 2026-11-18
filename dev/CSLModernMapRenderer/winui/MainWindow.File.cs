@@ -44,6 +44,7 @@ public sealed partial class MainWindow
         _workspaceExportMenu = Action(RmpText("Export"), "workspace.export", shortcut: "Ctrl+Shift+E");
         file.Items.Add(new MenuFlyoutSeparator());
         Action(UiLanguage.Text("MainWindow_File_BuildFileMenu_02E61DEAD2"), "app.language");
+        Action(UiLanguage.Text("MainWindow_PreviewSettings_ShowPreviewSettingsAsync_3279E8322A"), "settings.preview");
         var appearance = new MenuFlyoutSubItem { Text = UiLanguage.Text("MainWindow_File_BuildFileMenu_86A63F23A0") };
         foreach (var (label, theme) in new[] { (UiLanguage.Text("MainWindow_File_BuildFileMenu_5B50D7C4B5"), ElementTheme.Default), (UiLanguage.Text("MainWindow_File_BuildFileMenu_AA0819DFC4"), ElementTheme.Light), (UiLanguage.Text("MainWindow_File_BuildFileMenu_A6B75D0680"), ElementTheme.Dark) })
         {

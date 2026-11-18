@@ -214,5 +214,7 @@
   "controls_actions": "操作",
   "preview3d_title": "3D 预览",
   "preview3d_help": "按住鼠标中键：左右旋转，上下调整倾斜。",
-  "preview3d_missing": "部分建筑没有模型高度，仍以平面显示。请使用新版模组重新导出。"
+  "preview3d_missing": "部分建筑没有模型高度，仍以平面显示。请使用新版模组重新导出。",
+  "satellite_texture_limit": "卫星影像尺寸 {{size}} 超过设备纹理限制 {{limit}}",
+  "controls_satellite": "卫星影像"
 }

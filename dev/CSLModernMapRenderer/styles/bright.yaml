@@ -17,9 +17,10 @@ terrain:
   - threshold: 850
     color: '#417837'
   # 独立的立体山体图开关；开启后在原始高度网格上生成多尺度山影。
-  elevation_mode: continuous
+  mode: simple
+  elevation_mode: stepped
   hillshade:
-    enabled: true
+    enabled: false
     intensity: 0.35
     azimuth: 315
     altitude: 45
@@ -247,6 +248,7 @@ transports:
     label_candidate_limit: 72
     label_clearance_padding: 14
     # ---- 线路标签视觉规范（导出与预览共用同一组值）----
+    # 规范全文见 docs/tasks/公共交通视图-整改-20260910/01-线路标签视觉统一-20260914.md
     # 尺寸基准 = 长边 1024px 的成图；换算系数 k = 输出长边 / 1024。
     # render_scale = 输出宽 / 4096 = k / 4，故 scaled 填「期望值(@1024) × 4」。
     # 预览侧读同一组值（preview_scene 下发 transit.labelStyle），改这里要同时重建 viewer。

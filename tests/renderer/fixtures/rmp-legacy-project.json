@@ -1,0 +1,808 @@
+{
+  "version": 77,
+  "svgViewBoxZoom": 100,
+  "svgViewBoxMin": {
+    "x": -20,
+    "y": -20
+  },
+  "graph": {
+    "options": {
+      "type": "directed",
+      "multi": true,
+      "allowSelfLoops": true
+    },
+    "attributes": {},
+    "nodes": [
+      {
+        "key": "stn_cmm_a",
+        "attributes": {
+          "x": 100.0,
+          "y": 100.0,
+          "type": "shmetro-basic",
+          "shmetro-basic": {
+            "names": [
+              "机场站",
+              ""
+            ],
+            "nameOffsetX": "right",
+            "nameOffsetY": "top",
+            "preciseNameOffsets": {
+              "x": 15,
+              "y": -13.33,
+              "anchor": "start"
+            }
+          },
+          "visible": true,
+          "zIndex": 5
+        }
+      },
+      {
+        "key": "stn_cmm_b",
+        "attributes": {
+          "x": 400.0,
+          "y": 100.0,
+          "type": "shmetro-int",
+          "shmetro-int": {
+            "names": [
+              "港口站",
+              ""
+            ],
+            "nameOffsetX": "right",
+            "nameOffsetY": "top",
+            "preciseNameOffsets": {
+              "x": 15,
+              "y": -13.33,
+              "anchor": "start"
+            },
+            "rotate": 0,
+            "height": 10,
+            "width": 15
+          },
+          "visible": true,
+          "zIndex": 5
+        }
+      },
+      {
+        "key": "misc_node_water_0_0",
+        "attributes": {
+          "x": 100.0,
+          "y": 325.0,
+          "type": "fill",
+          "fill": {
+            "color": [
+              "other",
+              "other",
+              "#0064FF",
+              "#FFFFFF"
+            ],
+            "opacity": 1,
+            "selectedPatterns": []
+          },
+          "visible": true,
+          "zIndex": -10
+        }
+      },
+      {
+        "key": "misc_node_water_0_1",
+        "attributes": {
+          "x": 100.0,
+          "y": 450.0,
+          "type": "virtual",
+          "virtual": {},
+          "visible": true,
+          "zIndex": -10
+        }
+      },
+      {
+        "key": "misc_node_water_0_2",
+        "attributes": {
+          "x": 400.0,
+          "y": 450.0,
+          "type": "virtual",
+          "virtual": {},
+          "visible": true,
+          "zIndex": -10
+        }
+      },
+      {
+        "key": "misc_node_water_0_3",
+        "attributes": {
+          "x": 400.0,
+          "y": 325.0,
+          "type": "virtual",
+          "virtual": {},
+          "visible": true,
+          "zIndex": -10
+        }
+      },
+      {
+        "key": "misc_node_water_0_4",
+        "attributes": {
+          "x": 300.0,
+          "y": 325.0,
+          "type": "virtual",
+          "virtual": {},
+          "visible": true,
+          "zIndex": -10
+        }
+      },
+      {
+        "key": "misc_node_water_0_5",
+        "attributes": {
+          "x": 300.0,
+          "y": 370.0,
+          "type": "virtual",
+          "virtual": {},
+          "visible": true,
+          "zIndex": -10
+        }
+      },
+      {
+        "key": "misc_node_water_0_6",
+        "attributes": {
+          "x": 200.0,
+          "y": 370.0,
+          "type": "virtual",
+          "virtual": {},
+          "visible": true,
+          "zIndex": -10
+        }
+      },
+      {
+        "key": "misc_node_water_0_7",
+        "attributes": {
+          "x": 200.0,
+          "y": 325.0,
+          "type": "virtual",
+          "virtual": {},
+          "visible": true,
+          "zIndex": -10
+        }
+      },
+      {
+        "key": "misc_node_water_1_0",
+        "attributes": {
+          "x": 400.0,
+          "y": 325.0,
+          "type": "fill",
+          "fill": {
+            "color": [
+              "other",
+              "other",
+              "#0064FF",
+              "#FFFFFF"
+            ],
+            "opacity": 1,
+            "selectedPatterns": []
+          },
+          "visible": true,
+          "zIndex": -10
+        }
+      },
+      {
+        "key": "misc_node_water_1_1",
+        "attributes": {
+          "x": 400.0,
+          "y": 200.0,
+          "type": "virtual",
+          "virtual": {},
+          "visible": true,
+          "zIndex": -10
+        }
+      },
+      {
+        "key": "misc_node_water_1_2",
+        "attributes": {
+          "x": 100.0,
+          "y": 200.0,
+          "type": "virtual",
+          "virtual": {},
+          "visible": true,
+          "zIndex": -10
+        }
+      },
+      {
+        "key": "misc_node_water_1_3",
+        "attributes": {
+          "x": 100.0,
+          "y": 325.0,
+          "type": "virtual",
+          "virtual": {},
+          "visible": true,
+          "zIndex": -10
+        }
+      },
+      {
+        "key": "misc_node_water_1_4",
+        "attributes": {
+          "x": 200.0,
+          "y": 325.0,
+          "type": "virtual",
+          "virtual": {},
+          "visible": true,
+          "zIndex": -10
+        }
+      },
+      {
+        "key": "misc_node_water_1_5",
+        "attributes": {
+          "x": 200.0,
+          "y": 280.0,
+          "type": "virtual",
+          "virtual": {},
+          "visible": true,
+          "zIndex": -10
+        }
+      },
+      {
+        "key": "misc_node_water_1_6",
+        "attributes": {
+          "x": 300.0,
+          "y": 280.0,
+          "type": "virtual",
+          "virtual": {},
+          "visible": true,
+          "zIndex": -10
+        }
+      },
+      {
+        "key": "misc_node_water_1_7",
+        "attributes": {
+          "x": 300.0,
+          "y": 325.0,
+          "type": "virtual",
+          "virtual": {},
+          "visible": true,
+          "zIndex": -10
+        }
+      },
+      {
+        "key": "misc_node_facility_0",
+        "attributes": {
+          "x": 480.0,
+          "y": 200.0,
+          "type": "facilities",
+          "facilities": {
+            "type": "airport"
+          },
+          "visible": true,
+          "zIndex": 6
+        }
+      },
+      {
+        "key": "misc_node_facility_name_0",
+        "attributes": {
+          "x": 495.0,
+          "y": 200.0,
+          "type": "text",
+          "text": {
+            "content": "机场",
+            "fontSize": 10,
+            "lineHeight": 12,
+            "textAnchor": "start",
+            "dominantBaseline": "middle",
+            "language": "zh",
+            "rotate": 0,
+            "italic": "normal",
+            "bold": "normal",
+            "outline": 0,
+            "color": [
+              "other",
+              "other",
+              "#333333",
+              "#FFFFFF"
+            ]
+          },
+          "visible": true,
+          "zIndex": 6
+        }
+      },
+      {
+        "key": "misc_node_facility_1",
+        "attributes": {
+          "x": 480.0,
+          "y": 270.0,
+          "type": "facilities",
+          "facilities": {
+            "type": "railway"
+          },
+          "visible": true,
+          "zIndex": 6
+        }
+      },
+      {
+        "key": "misc_node_facility_name_1",
+        "attributes": {
+          "x": 495.0,
+          "y": 270.0,
+          "type": "text",
+          "text": {
+            "content": "铁路客站",
+            "fontSize": 10,
+            "lineHeight": 12,
+            "textAnchor": "start",
+            "dominantBaseline": "middle",
+            "language": "zh",
+            "rotate": 0,
+            "italic": "normal",
+            "bold": "normal",
+            "outline": 0,
+            "color": [
+              "other",
+              "other",
+              "#333333",
+              "#FFFFFF"
+            ]
+          },
+          "visible": true,
+          "zIndex": 6
+        }
+      },
+      {
+        "key": "misc_node_facility_2",
+        "attributes": {
+          "x": 480.0,
+          "y": 340.0,
+          "type": "facilities",
+          "facilities": {
+            "type": "cruise_centre"
+          },
+          "visible": true,
+          "zIndex": 6
+        }
+      },
+      {
+        "key": "misc_node_facility_name_2",
+        "attributes": {
+          "x": 495.0,
+          "y": 340.0,
+          "type": "text",
+          "text": {
+            "content": "客运港",
+            "fontSize": 10,
+            "lineHeight": 12,
+            "textAnchor": "start",
+            "dominantBaseline": "middle",
+            "language": "zh",
+            "rotate": 0,
+            "italic": "normal",
+            "bold": "normal",
+            "outline": 0,
+            "color": [
+              "other",
+              "other",
+              "#333333",
+              "#FFFFFF"
+            ]
+          },
+          "visible": true,
+          "zIndex": 6
+        }
+      }
+    ],
+    "edges": [
+      {
+        "key": "line_route_0_0_0",
+        "source": "stn_cmm_a",
+        "target": "stn_cmm_b",
+        "attributes": {
+          "visible": true,
+          "zIndex": 0,
+          "type": "diagonal",
+          "diagonal": {
+            "startFrom": "from",
+            "offsetFrom": 0,
+            "offsetTo": 0,
+            "roundCornerFactor": 10
+          },
+          "style": "generic",
+          "generic": {
+            "layers": [
+              {
+                "id": "cmm_0",
+                "color": [
+                  "other",
+                  "other",
+                  "#FF0000",
+                  "#FFFFFF"
+                ],
+                "width": 6,
+                "opacity": 1,
+                "linecap": "round",
+                "dash": 0,
+                "gap": 0
+              }
+            ]
+          },
+          "reconcileId": "",
+          "parallelIndex": 0,
+          "cmmSourceLineId": 1
+        }
+      },
+      {
+        "key": "line_water_0_0",
+        "source": "misc_node_water_0_0",
+        "target": "misc_node_water_0_1",
+        "attributes": {
+          "visible": false,
+          "zIndex": -10,
+          "type": "simple",
+          "simple": {
+            "offset": 0
+          },
+          "style": "single-color",
+          "single-color": {
+            "color": [
+              "other",
+              "other",
+              "#0064FF",
+              "#FFFFFF"
+            ]
+          },
+          "reconcileId": "",
+          "parallelIndex": -1
+        }
+      },
+      {
+        "key": "line_water_0_1",
+        "source": "misc_node_water_0_1",
+        "target": "misc_node_water_0_2",
+        "attributes": {
+          "visible": false,
+          "zIndex": -10,
+          "type": "simple",
+          "simple": {
+            "offset": 0
+          },
+          "style": "single-color",
+          "single-color": {
+            "color": [
+              "other",
+              "other",
+              "#0064FF",
+              "#FFFFFF"
+            ]
+          },
+          "reconcileId": "",
+          "parallelIndex": -1
+        }
+      },
+      {
+        "key": "line_water_0_2",
+        "source": "misc_node_water_0_2",
+        "target": "misc_node_water_0_3",
+        "attributes": {
+          "visible": false,
+          "zIndex": -10,
+          "type": "simple",
+          "simple": {
+            "offset": 0
+          },
+          "style": "single-color",
+          "single-color": {
+            "color": [
+              "other",
+              "other",
+              "#0064FF",
+              "#FFFFFF"
+            ]
+          },
+          "reconcileId": "",
+          "parallelIndex": -1
+        }
+      },
+      {
+        "key": "line_water_0_3",
+        "source": "misc_node_water_0_3",
+        "target": "misc_node_water_0_4",
+        "attributes": {
+          "visible": false,
+          "zIndex": -10,
+          "type": "simple",
+          "simple": {
+            "offset": 0
+          },
+          "style": "single-color",
+          "single-color": {
+            "color": [
+              "other",
+              "other",
+              "#0064FF",
+              "#FFFFFF"
+            ]
+          },
+          "reconcileId": "",
+          "parallelIndex": -1
+        }
+      },
+      {
+        "key": "line_water_0_4",
+        "source": "misc_node_water_0_4",
+        "target": "misc_node_water_0_5",
+        "attributes": {
+          "visible": false,
+          "zIndex": -10,
+          "type": "simple",
+          "simple": {
+            "offset": 0
+          },
+          "style": "single-color",
+          "single-color": {
+            "color": [
+              "other",
+              "other",
+              "#0064FF",
+              "#FFFFFF"
+            ]
+          },
+          "reconcileId": "",
+          "parallelIndex": -1
+        }
+      },
+      {
+        "key": "line_water_0_5",
+        "source": "misc_node_water_0_5",
+        "target": "misc_node_water_0_6",
+        "attributes": {
+          "visible": false,
+          "zIndex": -10,
+          "type": "simple",
+          "simple": {
+            "offset": 0
+          },
+          "style": "single-color",
+          "single-color": {
+            "color": [
+              "other",
+              "other",
+              "#0064FF",
+              "#FFFFFF"
+            ]
+          },
+          "reconcileId": "",
+          "parallelIndex": -1
+        }
+      },
+      {
+        "key": "line_water_0_6",
+        "source": "misc_node_water_0_6",
+        "target": "misc_node_water_0_7",
+        "attributes": {
+          "visible": false,
+          "zIndex": -10,
+          "type": "simple",
+          "simple": {
+            "offset": 0
+          },
+          "style": "single-color",
+          "single-color": {
+            "color": [
+              "other",
+              "other",
+              "#0064FF",
+              "#FFFFFF"
+            ]
+          },
+          "reconcileId": "",
+          "parallelIndex": -1
+        }
+      },
+      {
+        "key": "line_water_0_7",
+        "source": "misc_node_water_0_7",
+        "target": "misc_node_water_0_0",
+        "attributes": {
+          "visible": false,
+          "zIndex": -10,
+          "type": "simple",
+          "simple": {
+            "offset": 0
+          },
+          "style": "single-color",
+          "single-color": {
+            "color": [
+              "other",
+              "other",
+              "#0064FF",
+              "#FFFFFF"
+            ]
+          },
+          "reconcileId": "",
+          "parallelIndex": -1
+        }
+      },
+      {
+        "key": "line_water_1_0",
+        "source": "misc_node_water_1_0",
+        "target": "misc_node_water_1_1",
+        "attributes": {
+          "visible": false,
+          "zIndex": -10,
+          "type": "simple",
+          "simple": {
+            "offset": 0
+          },
+          "style": "single-color",
+          "single-color": {
+            "color": [
+              "other",
+              "other",
+              "#0064FF",
+              "#FFFFFF"
+            ]
+          },
+          "reconcileId": "",
+          "parallelIndex": -1
+        }
+      },
+      {
+        "key": "line_water_1_1",
+        "source": "misc_node_water_1_1",
+        "target": "misc_node_water_1_2",
+        "attributes": {
+          "visible": false,
+          "zIndex": -10,
+          "type": "simple",
+          "simple": {
+            "offset": 0
+          },
+          "style": "single-color",
+          "single-color": {
+            "color": [
+              "other",
+              "other",
+              "#0064FF",
+              "#FFFFFF"
+            ]
+          },
+          "reconcileId": "",
+          "parallelIndex": -1
+        }
+      },
+      {
+        "key": "line_water_1_2",
+        "source": "misc_node_water_1_2",
+        "target": "misc_node_water_1_3",
+        "attributes": {
+          "visible": false,
+          "zIndex": -10,
+          "type": "simple",
+          "simple": {
+            "offset": 0
+          },
+          "style": "single-color",
+          "single-color": {
+            "color": [
+              "other",
+              "other",
+              "#0064FF",
+              "#FFFFFF"
+            ]
+          },
+          "reconcileId": "",
+          "parallelIndex": -1
+        }
+      },
+      {
+        "key": "line_water_1_3",
+        "source": "misc_node_water_1_3",
+        "target": "misc_node_water_1_4",
+        "attributes": {
+          "visible": false,
+          "zIndex": -10,
+          "type": "simple",
+          "simple": {
+            "offset": 0
+          },
+          "style": "single-color",
+          "single-color": {
+            "color": [
+              "other",
+              "other",
+              "#0064FF",
+              "#FFFFFF"
+            ]
+          },
+          "reconcileId": "",
+          "parallelIndex": -1
+        }
+      },
+      {
+        "key": "line_water_1_4",
+        "source": "misc_node_water_1_4",
+        "target": "misc_node_water_1_5",
+        "attributes": {
+          "visible": false,
+          "zIndex": -10,
+          "type": "simple",
+          "simple": {
+            "offset": 0
+          },
+          "style": "single-color",
+          "single-color": {
+            "color": [
+              "other",
+              "other",
+              "#0064FF",
+              "#FFFFFF"
+            ]
+          },
+          "reconcileId": "",
+          "parallelIndex": -1
+        }
+      },
+      {
+        "key": "line_water_1_5",
+        "source": "misc_node_water_1_5",
+        "target": "misc_node_water_1_6",
+        "attributes": {
+          "visible": false,
+          "zIndex": -10,
+          "type": "simple",
+          "simple": {
+            "offset": 0
+          },
+          "style": "single-color",
+          "single-color": {
+            "color": [
+              "other",
+              "other",
+              "#0064FF",
+              "#FFFFFF"
+            ]
+          },
+          "reconcileId": "",
+          "parallelIndex": -1
+        }
+      },
+      {
+        "key": "line_water_1_6",
+        "source": "misc_node_water_1_6",
+        "target": "misc_node_water_1_7",
+        "attributes": {
+          "visible": false,
+          "zIndex": -10,
+          "type": "simple",
+          "simple": {
+            "offset": 0
+          },
+          "style": "single-color",
+          "single-color": {
+            "color": [
+              "other",
+              "other",
+              "#0064FF",
+              "#FFFFFF"
+            ]
+          },
+          "reconcileId": "",
+          "parallelIndex": -1
+        }
+      },
+      {
+        "key": "line_water_1_7",
+        "source": "misc_node_water_1_7",
+        "target": "misc_node_water_1_0",
+        "attributes": {
+          "visible": false,
+          "zIndex": -10,
+          "type": "simple",
+          "simple": {
+            "offset": 0
+          },
+          "style": "single-color",
+          "single-color": {
+            "color": [
+              "other",
+              "other",
+              "#0064FF",
+              "#FFFFFF"
+            ]
+          },
+          "reconcileId": "",
+          "parallelIndex": -1
+        }
+      }
+    ]
+  }
+}

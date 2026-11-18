@@ -31,7 +31,7 @@ from ..services.poi.facility import (
     facility_container_building_ids,
 )
 
-# 渲染类别 → YAML 颜色 key（对应 amap.cmvstyle 的 Building 色板）
+# 渲染类别 → YAML 颜色 key（对应 bright.cmvstyle 的 Building 色板）
 CATEGORIES = [
     "residential",
     "commercial",
@@ -42,7 +42,7 @@ CATEGORIES = [
     "public",
 ]
 
-# 缺省颜色（与 amap.cmvstyle 一致）
+# 缺省颜色（与 bright.cmvstyle 一致）
 DEFAULT_COLORS = {
     "residential": "#EBEDF2",
     "commercial": "#E9EBF0",

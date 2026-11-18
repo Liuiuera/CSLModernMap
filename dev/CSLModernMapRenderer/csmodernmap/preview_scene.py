@@ -25,9 +25,16 @@ from urllib.parse import unquote, urlsplit
 
 import numpy as np
 from PIL import Image, ImageFilter
-from .road_geometry import clip_polyline_span
-from .road_hierarchy import RoadLevel, road_style_candidates
-from .preview_road_order import VERSION as ROAD_ORDER_VERSION, build_road_order, flat_piece_key
+
+from .road_geometry import clip_polyline_span, quay_centerlines
+from .road_hierarchy import (
+    RoadLevel,
+    road_style_candidates,
+    road_style_config,
+)
+from .preview_road_order import (VERSION as ROAD_ORDER_VERSION, build_road_order,
+                                 display_paint_regions, flat_piece_key)
+from .theme_contract import QUAY_FOOTPRINT_SCALE
 from .traffic import DIRECTION_BACKWARD, DIRECTION_FORWARD
 from .i18n import tr
 from .building_categories import building_categories, category_palette
@@ -43,17 +50,19 @@ SCHEMA_VERSION = 1
 WORLD_HALF = 8640.0
 METERS_PER_DEGREE = 111_195.0
 _LEVEL_RANK = {
-    RoadLevel.BEAUTIFICATION: 0,
-    RoadLevel.SPECIAL: 1,
-    RoadLevel.BRANCH: 2,
-    RoadLevel.MAIN: 3,
-    RoadLevel.HIGHWAY: 4,
+    RoadLevel.QUAY: 0,
+    RoadLevel.BEAUTIFICATION: 1,
+    RoadLevel.SPECIAL: 2,
+    RoadLevel.BRANCH: 3,
+    RoadLevel.MAIN: 4,
+    RoadLevel.HIGHWAY: 5,
 }
 _LEVEL_MIN_FILL_PX = {
     RoadLevel.HIGHWAY: 1.8,
     RoadLevel.MAIN: 1.4,
     RoadLevel.BRANCH: 0.8,
     RoadLevel.SPECIAL: 0.8,
+    RoadLevel.QUAY: 2.0,
     RoadLevel.BEAUTIFICATION: 0.5,
 }
 
@@ -156,12 +165,7 @@ def road_theme(style: Any) -> dict:
     levels = {}
     for level in RoadLevel:
         for mode in ("ground", "elevated", "tunnel"):
-            cfg = {}
-            for key in road_style_candidates(level, mode):
-                candidate = roads.get(key, {})
-                if candidate:
-                    cfg = candidate
-                    break
+            cfg = road_style_config(roads, level, mode)
             fixed, scaled = _border_width(cfg)
             mode_enabled = True
             if mode == "tunnel":
@@ -170,11 +174,12 @@ def road_theme(style: Any) -> dict:
             elif mode == "elevated":
                 mode_enabled = bool(roads.get("bridge", {}).get(
                     "enabled", True))
+            minimum = float(cfg.get(
+                "min_fill_px", _LEVEL_MIN_FILL_PX[level]))
             levels[f"{level.value}:{mode}"] = {
                 "fill": cfg.get("fill", "#FFFFFF"),
                 "border": cfg.get("border", "#C3C8D2"),
-                "minFillPx": float(cfg.get(
-                    "min_fill_px", _LEVEL_MIN_FILL_PX[level])),
+                "minFillPx": minimum,
                 "borderFixedPx": fixed,
                 "borderScale": scaled,
                 "dash": cfg.get("dash"),
@@ -183,6 +188,7 @@ def road_theme(style: Any) -> dict:
     return {
         "background": data.get("canvas", {}).get("background", "#F6F7F9"),
         "widthScale": float(roads.get("width_scale", 0.15)),
+        "opacity": min(1.0, max(0.0, float(roads.get("opacity", 1.0)))),
         "levels": levels,
     }
 
@@ -265,7 +271,7 @@ def _label_halo(section: Any) -> bool:
     """该文字类别是否画描边。
 
     主题里描边由 ``stroke``（颜色）+ ``stroke_width`` 一起表达：颜色缺失、或宽度
-    解析出来是 0，都算关闭（例如 apple_maps 的 building / park / stop 就没有这两项）。
+    解析出来是 0，都算关闭（例如 modern 的 building / park / stop 就没有这两项）。
 
     注意：这条规则对 POI 名字**不适用** —— 它的描边在导出侧是内置的、不读主题，
     单独走 :func:`_poi_name_halo`。
@@ -290,11 +296,12 @@ def _label_stroke(section: Any, default_color: str = "#FFFFFF",
     ``stroke_width``）。没有颜色或宽度为 0 视为关闭，Viewer 直接不画。
     """
     if not isinstance(section, dict) or not section.get("stroke"):
-        return {"color": default_color, "width": 0.0}
+        return {"color": default_color, "width": 0.0, "blur": 0.0}
     return {
         "color": str(section.get("stroke")),
         "width": float(_preview_baseline_size(
             section.get("stroke_width"), default_width)),
+        "blur": max(0.0, _preview_baseline_size(section.get("stroke_blur"), 0.0)),
     }
 
 
@@ -304,6 +311,8 @@ def preview_theme(style: Any, options: dict[str, Any] | None = None) -> dict:
     from .style import Style
     data = Style(data).data
     options = options or {}
+    from .terrain import resolve_terrain_config
+    terrain = resolve_terrain_config(data.get("terrain", {}), options.get("terrain"))
     buildings = data.get("buildings", {})
     land_use = data.get("land_use", {})
     district = data.get("district", {})
@@ -354,7 +363,8 @@ def preview_theme(style: Any, options: dict[str, Any] | None = None) -> dict:
             "fill": built_area.get("color", "#F1F0EB"),
             "opacity": float(built_area.get("opacity", 1)),
             "bufferMeters": float(built_area.get("buffer_meters", 60.0)),
-            "edgeMeters": float(built_area.get("edge_meters", 0.0) or 0.0),
+            "edgeMeters": (float(built_area.get("edge_meters", 0.0) or 0.0)
+                           if terrain["mode"] != "simple" else 0.0),
         },
         "land_use": {"opacity": float(land_use.get("alpha", 110)) / 255.0,
                      "colors": land_use.get("colors", {})},
@@ -409,6 +419,8 @@ def preview_theme(style: Any, options: dict[str, Any] | None = None) -> dict:
                                 "poi": poi.get("name_size", {"fixed": 11, "scaled": 2})},
                       "strokeWidths": {key: section.get("stroke_width", 0)
                                        for key, section in label_sections.items()},
+                      "strokeBlurs": {key: section.get("stroke_blur", 0)
+                                      for key, section in label_sections.items()},
                       "poiMaxSize": poi.get("name_max_size"),
                       "poiStrokeRatio": float(poi.get("name_stroke_ratio", .12)),
                       "poiTransitScale": min(2.0, max(1.05, float(poi.get("transit_view_scale", 1.15)))),
@@ -434,11 +446,11 @@ def preview_theme(style: Any, options: dict[str, Any] | None = None) -> dict:
                       key: str(section.get("font") or "").strip()
                       for key, section in label_sections.items()
                   }, "poi": str(poi.get("font") or "").strip()},
-                  "colors": {
+                  "colors": {**{
                       key: section.get("color", label_default.get(
                           "color", "#39424C"))
                       for key, section in label_sections.items()
-                  },
+                  }, **({"poi": poi["name_color"]} if "name_color" in poi else {})},
                   # 描边开关也按类别下发（Viewer 用它决定要不要画 text-shadow）。
                   # POI 走 _poi_name_halo：导出侧那圈白色描边是内置的，不看主题。
                   "halo": bool(label_default.get("stroke", True)),
@@ -518,7 +530,7 @@ def _preview_transit_model(mapdata, style: Any, options: dict[str, Any], *, sess
     merge_enabled = bool(options.get(
         "station_merge_enabled", station_cfg.get("merge_enabled", True)))
     merge_range = float(options.get(
-        "station_merge_range", station_cfg.get("merge_range", 48.0)) or 48.0)
+        "station_merge_range", station_cfg.get("merge_range", 48.0)))
     params = selection.to_job_params(
         station_merge=StationMergeParams(
             merge_enabled=merge_enabled,
@@ -796,13 +808,16 @@ def _road_chain_feature(records, points, chain_index: int):
                or getattr(item.segment, "custom_name", "") or "").strip()
     ), "")
     feature_id = f"road-chain:{chain_index}:{min(item.id for item in records)}"
-    return _feature(
+    feature = _feature(
         feature_id, _line_geometry(points), roadId=int(road.id),
         segmentCount=len(records), level=road.level.value, mode=road.mode,
         styleKey=_road_style_key(road), physicalWidth=physical_width,
         lengthMeters=total_length, name=road_name,
         meanHeight=mean_y, sortKey=_road_sort_value(road, mean_y),
         geometryRole="road-edge", navigationAnchor=_road_navigation_anchor(points))
+    if road.level is RoadLevel.QUAY:
+        feature["properties"]["quayLine"] = True
+    return feature
 
 
 def _road_surface_feature(road, navigation_anchor=None):
@@ -831,8 +846,9 @@ def _road_navigation_anchor(points):
     return world_to_geo(point.x, point.y)
 
 
-def _ordered_road_features(scene, order=None):
+def _ordered_road_features(scene, order=None, *, quay_scale=QUAY_FOOTPRINT_SCALE):
     order = build_road_order(scene) if order is None else order
+    centerlines = quay_centerlines(scene)
     flat_pieces = sorted((piece for pieces in order.pieces.values() for piece in pieces
                           if piece.flat_group is not None), key=flat_piece_key)
     flat_order = {(piece.road.id, piece.index): index for index, piece in enumerate(flat_pieces)}
@@ -841,7 +857,8 @@ def _ordered_road_features(scene, order=None):
     fallback_ids = set()
     for road in scene.roads:
         pieces = order.pieces[road.id]
-        surface = road.footprint is not None and len(road.footprint.points) >= 3
+        surface = (road.footprint is not None
+                   and len(road.footprint.points) >= 3)
         navigation_anchor = _road_navigation_anchor(road.points) if surface else None
         if not surface and len(pieces) == 1:
             fallback_ids.add(road.id)
@@ -849,7 +866,7 @@ def _ordered_road_features(scene, order=None):
                 fallback_by_rank.setdefault(pieces[0].rank, []).append(road)
                 continue
         for piece in pieces:
-            for paint_index, region in enumerate(piece.paint_regions):
+            for paint_index, region in enumerate(display_paint_regions(piece, quay_scale, centerlines)):
                 if surface:
                     if not region.rings:
                         continue
@@ -900,6 +917,9 @@ def _ordered_road_features(scene, order=None):
         if piece.flat_group is not None:
             feature['properties'].update(flatGroup=piece.flat_group, sortKey=flat_order[road_id, piece.index])
         features.append(feature)
+    for feature in features:
+        if feature['properties'].get('quayLine'):
+            feature['properties']['physicalWidth'] *= quay_scale
     return features, order.diagnostics
 
 
@@ -949,7 +969,9 @@ def _legacy_width_transition_features(scene, road_ids=None):
                         mode=narrow.mode, styleKey=_road_style_key(narrow),
                         physicalWidth=width, meanHeight=float(junction.mean_y),
                         sortKey=_road_sort_value(narrow, junction.mean_y),
-                        geometryRole="road-transition"))
+                        geometryRole="road-transition",
+                        **({"quayLine": True}
+                           if narrow.level is RoadLevel.QUAY else {})))
     return features
 
 
@@ -1145,6 +1167,7 @@ def preview_source_signatures(style, options):
     """只把几何依赖计入数据身份，绘制和可见性变化不重新编译数据。"""
     data = getattr(style, "data", style)
     from .built_area import DEFAULT_EXCLUDE_SERVICES
+    from .satellite_filter import filter_key
     transit_selection = _preview_transit_selection(style, options)
     built_cfg = data.get("built_area", {})
     if (str(built_cfg.get("backend", "surface")).lower() == "legacy"
@@ -1177,6 +1200,8 @@ def preview_source_signatures(style, options):
         )},
     }
     road_geometry = {"navigationAnchor": 1, "chainVersion": _ROAD_CHAIN_VERSION,
+                     "quayFootprintVersion": 1,
+                     "quayScale": data.get("roads", {}).get("quay", {}).get("footprint_scale", QUAY_FOOTPRINT_SCALE),
                      "orderVersion": ROAD_ORDER_VERSION,
                      "accurateIntersections": bool(data.get("roads", {}).get("accurate_intersections", True)),
                      "widthEpsilon": _ROAD_WIDTH_EPSILON,
@@ -1189,6 +1214,9 @@ def preview_source_signatures(style, options):
                       "minArea": _WATER_PREVIEW_MIN_AREA}
     station_cfg = (data.get("transports") or {}).get("station", {}) or {}
     dependencies = {
+        "satellite": [options.get("satelliteReady", False),
+                      filter_key(data)
+                      if options.get("satelliteReady", False) else None],
         "terrain": [data.get("terrain", {}), options.get("terrain", {}), options.get("bounds")],
         "roads": road_geometry,
         "builtArea": built,
@@ -1239,7 +1267,6 @@ def preview_source_signatures(style, options):
     poi_icon_colors["mappingOverride"] = data.get("_poi_mapping_override")
     dependencies["buildings"] = ["navigation-anchor-v1", "building-categories-v1", poi_icon_colors, options.get("poi_mapping_revision", 0),
                                  data.get("poi_icons", {}).get("use_game_names", False)]
-    dependencies["landUse"] = 2
     dependencies["traffic"] = "edge-bands-v3"
     for key in ("forest", "railway", "proceduralObjects"):
         dependencies[key] = 1
@@ -1367,6 +1394,11 @@ class PreviewSceneCompiler:
         check_cancel = options.get("check_cancel", lambda: None)
         check_cancel()
         document = session.document
+        if (visibility or {}).get("satellite", False):
+            from .satellite_image import ensure_satellite
+            ensure_satellite(document)
+        options["satelliteReady"] = bool((visibility or {}).get("satellite", False)
+                                         or (previous and previous.manifest["sources"].get("satellite")))
         # 这些字符串会原样出现在状态栏里 —— 只写用户看得懂的动作，
         # 不带 WebGL / 场景 / 编译 / 版本号这类内部词。
         report(3, tr("gui.progress.scene.roads"))
@@ -1379,7 +1411,7 @@ class PreviewSceneCompiler:
         try:
             signatures = preview_source_signatures(options["style"], options)
             if phase == "base":
-                signatures = {key: value for key, value in signatures.items() if key in {"roads", "buildings", "landUse"}}
+                signatures = {key: value for key, value in signatures.items() if key in {"roads", "buildings"}}
             previous_manifest = previous.manifest if previous else {}
             old_signatures = previous_manifest.get("sourceSignatures", {})
             changed = ({key for key, value in signatures.items()
@@ -1398,6 +1430,9 @@ class PreviewSceneCompiler:
             # 路口由道路描边的圆形端点组合，渐进链接时也必须移除旧版点圆源。
             sources.pop("roadJunctions", None)
             (root / "road-junctions.geojson").unlink(missing_ok=True)
+            # 新快照的土地利用直接读取建筑，不能继承旧快照的重复几何。
+            sources.pop("landUse", None)
+            (root / "landUse.geojson").unlink(missing_ok=True)
             options["changed"] = changed
             options["terrainCorners"] = previous_manifest.get("terrainCorners")
             options["surfaceFields"] = surface_fields
@@ -1413,7 +1448,10 @@ class PreviewSceneCompiler:
             if "roads" in changed:
                 report(16, tr("gui.progress.scene.draw_roads"))
                 accurate = bool(options["style"].get("roads", {}).get("accurate_intersections", True))
-                line_features, road_order = _ordered_road_features(scene, session.road_order(accurate=accurate))
+                quay_scale = float(options["style"].get("roads", {}).get("quay", {}).get(
+                    "footprint_scale", QUAY_FOOTPRINT_SCALE))
+                line_features, road_order = _ordered_road_features(
+                    scene, session.road_order(accurate=accurate), quay_scale=quay_scale)
                 check_cancel()
                 options["roadOrder"] = road_order
 
@@ -1455,10 +1493,13 @@ class PreviewSceneCompiler:
                 "sourceRevisions": {key: (int(revision) * 2 + (phase == "full") if "phase" in options else int(revision)) if key in changed else
                     previous_manifest.get("sourceRevisions", {}).get(key, int(revision)) for key in signatures},
                 "terrainCorners": terrain_corners,
+                "satelliteAvailable": document._satellite_info is not None,
+                "satelliteSize": options.get("satelliteSize", previous_manifest.get("satelliteSize")),
+                "satelliteCorners": options.get("satelliteCorners", previous_manifest.get("satelliteCorners")),
                 "surfaceFields": surface_fields,
                 "poiAtlas": {"image": "poi-sprite.png", "index": "poi-sprite.json"},
                 "poiIconDiagnostics": options.get("poiIconDiagnostics", {}),
-                "layers": {**{key: True for key in (
+                "layers": {"satellite": False, **{key: True for key in (
                     "terrain", "built_area", "poi_area", "land_use", "water",
                     "building", "road", "railway", "traffic",
                     "procedural_objects", "transit", "district", "zone", "poi",
@@ -1468,18 +1509,6 @@ class PreviewSceneCompiler:
                 "theme": preview_theme(style, options),
                 "fonts": fonts,
                 "navigation": {"schemaVersion": 1, "url": "navigation.json"},
-                "capabilities": {
-                    "nativeText": True,
-                    "pan": True,
-                    "zoom": True,
-                    "fitBounds": True,
-                    "selection": True,
-                    "roadTheme": True,
-                    "roadVisibility": True,
-                    "fullScene": True,
-                    "layerVisibility": True,
-                    "liveTheme": True,
-                },
             }
             if not (root / "poi-sprite.png").exists():
                 Image.new("RGBA", (1, 1)).save(root / "poi-sprite.png")
@@ -1558,6 +1587,14 @@ class PreviewSceneCompiler:
             total = max(len(active_domains), 1)
             report(28 + 64 * index / total, tr("gui.progress.scene.draw_layer", label=label))
 
+        if "satellite" in options["changed"] and options.get("satelliteReady"):
+            from .satellite_image import compile_satellite
+            options["satelliteCorners"] = compile_satellite(
+                document, root, options["style"],
+                progress=lambda pct, message: report(28 + pct*.3, message))
+            with Image.open(root / "satellite.png") as image:
+                options["satelliteSize"] = list(image.size)
+            sources["satellite"] = f"satellite.png?revision={revision}"
         if "terrain" in options["changed"]:
             start_domain("terrain", "地形纹理")
             from .preview_terrain import PreviewTerrainCompiler
@@ -1576,7 +1613,6 @@ class PreviewSceneCompiler:
                 {**(options["style"].get("poi_icons", {}) or {}),
                  "_poi_mapping_override": options["style"].get("_poi_mapping_override")})
             buildings = []
-            land_use = []
             categories = building_categories(document)
             for item in document.buildings:
                 if int(item.id) in facility_container_ids:
@@ -1608,11 +1644,7 @@ class PreviewSceneCompiler:
                     areaId=area_id, groupMemberCount=group_member_count,
                     groupRootCount=group_root_count,
                     geometryRole="building"))
-                land_use.append(_feature(
-                    f"land-use:{item.id}", geometry, category=category,
-                    geometryRole="land-use"))
             _write_geojson(root, "buildings", buildings, revision, sources)
-            _write_geojson(root, "landUse", land_use, revision, sources)
 
         if "builtArea" in options["changed"]:
             start_domain("builtArea", "建成区")
@@ -1681,6 +1713,7 @@ class PreviewSceneCompiler:
 
         if "water" in options["changed"]:
             start_domain("water", "平滑水域")
+            water_features = []
             from .built_area import _poly_area
             from .layers.water_layer import prepare_water_ring
             from .shoreline import smooth_shoreline

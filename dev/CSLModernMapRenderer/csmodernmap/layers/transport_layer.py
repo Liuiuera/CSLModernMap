@@ -65,7 +65,7 @@ def _natural_text_key(value: str) -> tuple:
 
 
 #: ``render_scale`` 中对应「长边 1024px 成图」的取值（= 1024 / 4096）。
-#: 线路标签的视觉规范以该成图尺寸为基准书写，换算见 ``styles/amap.yaml``
+#: 线路标签的视觉规范以该成图尺寸为基准书写，换算见 ``styles/bright.yaml``
 #: 的 ``transports.transit_view`` 段。
 _BASELINE_1024_SCALE = 0.25
 

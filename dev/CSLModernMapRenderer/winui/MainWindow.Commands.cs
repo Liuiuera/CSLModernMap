@@ -240,6 +240,7 @@ public sealed partial class MainWindow
     }
     private async Task<bool> CloseEditorsAsync()
     {
+        CloseBuildingList();
         if (_exportWindow is { } export && !await export.RequestCloseAsync()) return false;
         if (_themeEditor is { } theme && !await theme.RequestCloseAsync()) return false;
         if (_poiEditor is { } poi && !await poi.RequestCloseAsync()) return false;
@@ -247,7 +248,7 @@ public sealed partial class MainWindow
         return true;
     }
     private ExportWindow? _exportWindow;
-    private async Task ShowExportAsync(string? format = null, string? contextOverride = null, object? regionOverride = null)
+    private async Task ShowExportAsync(string? format = null, string? contextOverride = null, object? regionOverride = null, bool quickPng = false)
     {
         var context = contextOverride ?? (_context == "map" ? "normal" : _context);
         if (context == "metro" && format == "RMP")
@@ -282,7 +283,7 @@ public sealed partial class MainWindow
         var window = _exportWindow = new ExportWindow(_engine, profile, regionOverride, format,
             owner: this, editMapSettings: ShowMapPoiSettingsAsync, appearancePalettes: _appearancePalettes,
             settingsChanged: ApplyEditorChangesAsync, rotationChanged: RefreshSnapshotAsync,
-            exportRmp: rmp ? _rmpView!.ExportFileAsync : null);
+            exportRmp: rmp ? _rmpView!.ExportFileAsync : null, quickPng: quickPng);
         try { await window.ShowAsync(); }
         finally
         {
@@ -320,7 +321,7 @@ public sealed partial class MainWindow
     {
         var busy = _engineBusy || _engineUnavailable;
         if (_closing) return false;
-        if (id == "app.cancel") return !_engineUnavailable && (_generatingRmp ? _mapTask.CanCancel && !_cancellingRmp : busy);
+        if (id == "app.cancel") return !_engineUnavailable && (_generatingRmp ? _mapTask.CanCancel && !_cancellingRmp : busy || _mapTask.Active);
         if (RmpBlocked) return false;
         if (id == "view.metro.refresh") return _context == "metro" && _documentEnabled && !busy;
         if (id == "rmp.open") return _context == "metro" && !busy;
@@ -335,7 +336,8 @@ public sealed partial class MainWindow
         if (command.Document && !_documentEnabled) return false;
         if (id is "view.transit.lines" or "layer.poi.facilities")
             return !busy && (id != "layer.poi.facilities" || _context == "map" && HasCs2Document);
-        if (id is "map.select_region" or "create.web_map") return _documentEnabled && _context != "metro" && (id != "create.web_map" || _context == "map");
+        if (id == "map.select_region") return _documentEnabled && PreviewInteractive && _context != "metro";
+        if (id == "create.web_map") return _documentEnabled && _context == "map";
         if (id is "map.render_selection" or "map.clear_selection") return _documentEnabled && _selectedBounds is not null && _context != "metro";
         return true;
     }
@@ -388,6 +390,7 @@ public sealed partial class MainWindow
     private void BuildWorkspaceCommands()
     {
         OverviewButton.Click += (_, _) => ShowMapOverview();
+        BuildingListButton.Click += (_, _) => _ = RunAsync(ShowBuildingListAsync);
         ViewerToolbar.SizeChanged += (_, _) => LayoutToolbar();
         SettingsPanel.LostFocus += (_, _) => Root.DispatcherQueue.TryEnqueue(ApplyPendingSettingsSnapshot);
         InspectorPanel.LostFocus += (_, _) => Root.DispatcherQueue.TryEnqueue(ApplyPendingSettingsSnapshot);

@@ -194,6 +194,7 @@ class LegacyBaseTextPlacer:
         size_z.setdefault("branch", size_z.get("road", 1.0))
         size_z.setdefault("special", size_z.get("walk", 0.75))
         size_z.setdefault("beautification", size_z.get("walk", 0.75))
+        size_z.setdefault("quay", size_z["beautification"])
         # road_repeat 和 road_min_gap 在 YAML 中与 labels.road 同级。
         labels_cfg = getattr(self.ctx.style, "get", lambda *_: {})
         spacing_base = float(labels_cfg("labels.road_repeat", 400.0))

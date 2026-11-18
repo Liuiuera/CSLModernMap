@@ -22,6 +22,7 @@ internal sealed partial class ExportWindow
     private readonly string _context;
     private readonly string _cityName;
     private readonly string _profileTarget;
+    private readonly bool _quickPng;
     private string _outputDirectory;
     private readonly JsonObject? _initialRegion;
     private JsonObject? _customRegion;
@@ -73,11 +74,12 @@ internal sealed partial class ExportWindow
         Window? owner = null,
         Func<Task>? editMapSettings = null, Func<Uri, Task<bool>>? openUri = null,
         JsonElement? appearancePalettes = null, Func<Task>? settingsChanged = null,
-        Func<string, string, RmpExportOptions, Task>? exportRmp = null, Func<Task>? rotationChanged = null)
+        Func<string, string, RmpExportOptions, Task>? exportRmp = null, Func<Task>? rotationChanged = null, bool quickPng = false)
     {
         _window = new(UiLanguage.Text("ExportWindow_View_456F962F93"), 1000, 760, translucent: true, owner: owner, modal: owner is not null) { ActionsRightAligned = true };
         _engine = engine;
         _exportRmp = exportRmp;
+        _quickPng = quickPng;
         if (exportRmp is not null) profile = RmpExportProfile(profile);
         _editMapSettings = editMapSettings;
         _settingsChanged = settingsChanged;
@@ -106,6 +108,7 @@ internal sealed partial class ExportWindow
             ? format : _format.Items.Contains(currentFormat) ? currentFormat : _format.Items[0];
         _size.Minimum = metro ? 0 : 512;
         _size.Value = (_output["size"] ?? throw new JsonException("Export profile requires size.")).GetValue<double>();
+        if (_quickPng) { _size.Value = 2048; _output["size"] = 2048; }
         _rotation.SelectedItem = (int)(_output["rotation"] ?? throw new JsonException("Export profile requires rotation.")).GetValue<double>();
         _useActionRegion.IsEnabled = _initialRegion is not null && !metro;
         _useActionRegion.IsChecked = _useActionRegion.IsEnabled;
@@ -404,6 +407,7 @@ internal sealed partial class ExportWindow
 
     private void UpdateFormat()
     {
+        _autoOpen.Content = UiLanguage.Text(SelectedFormat == "HTML" ? "Preview_Html/Content" : "ExportWindow__autoOpen_4986B00E95");
         var png = (string?)_format.SelectedItem == "PNG";
         _pngSection.Visibility = png && ShowsPoiProfile ? Visibility.Visible : Visibility.Collapsed;
         if (_densitySection is not null) _densitySection.Visibility = png && ShowsPoiProfile ? Visibility.Visible : Visibility.Collapsed;
@@ -605,6 +609,7 @@ internal sealed partial class ExportWindow
 
     private async Task SaveOutputOptionAsync(string key, object value)
     {
+        if (_quickPng && key == "size") return;
         if (_context == "metro")
         {
             await _engine.RequestAsync("setTransitOption", new { metro = true, key = "size", value });
@@ -784,6 +789,7 @@ internal sealed partial class ExportWindow
                 ["target"] = target,
                 ["auto_open"] = false,
             };
+            if (_quickPng && format == "PNG") request["quickPng"] = true;
             if (OutputProfileTarget is { } outputTarget)
             {
                 request["profileTarget"] = outputTarget;
@@ -920,7 +926,11 @@ internal sealed partial class ExportWindow
                 foreach (var warning in renderWarnings.EnumerateArray()) _status.Text += "\n" + warning.GetString();
             if (_autoOpen.IsChecked == true && resultPath is not null)
             {
-                try { await Windows.System.Launcher.LaunchFolderPathAsync(Path.GetDirectoryName(resultPath)!); }
+                try
+                {
+                    if (_activeFormat == "HTML") await OpenHtmlAsync(resultPath);
+                    else await Windows.System.Launcher.LaunchFolderPathAsync(Path.GetDirectoryName(resultPath)!);
+                }
                 catch (Exception error) { ShowFailure(error); }
             }
         }
@@ -976,6 +986,7 @@ internal sealed partial class ExportWindow
     private async Task ViewResultAsync()
     {
         if (_latestResultPath is null) return;
+        if (_latestResultFormat == "HTML") { await OpenHtmlAsync(_latestResultPath); return; }
         try
         {
             if (_latestResultFormat is "RMG" or "RMP")
@@ -984,6 +995,24 @@ internal sealed partial class ExportWindow
                 await Windows.System.Launcher.LaunchFileAsync(await StorageFile.GetFileFromPathAsync(_latestResultPath));
         }
         catch (Exception error) { ShowFailure(error); }
+    }
+
+    private async Task OpenHtmlAsync(string path)
+    {
+        try
+        {
+            if (!await Windows.System.Launcher.LaunchFileAsync(await StorageFile.GetFileFromPathAsync(path)))
+                throw new IOException("No application could open the exported HTML.");
+        }
+        catch (Exception error)
+        {
+            _feedback.IsOpen = true;
+            _feedback.Severity = InfoBarSeverity.Warning;
+            _feedback.Message = UiLanguage.Text("Preview_OpenFailed");
+            var failure = TaskError.FromException(error, UiLanguage.Text("Preview_Html/Content"), "openHtml");
+            _feedback.Content = ErrorFeedback.Actions(failure, _window.Root);
+            StartupTrace.Write(failure.Details);
+        }
     }
 
     private async Task CopyResultAsync()

@@ -124,6 +124,7 @@ class EngineTests(unittest.TestCase):
             {"id":1,"method":"hello","params":{"protocolVersion":1}},
             {"id":2,"method":"getSnapshot","params":{}},
             {"id":3,"method":"hello","params":{"protocolVersion":999}},
+            {"id":5,"method":"startPreview","params":{}},
             {"id":4,"method":"close","params":{}},
         ]
         result = subprocess.run([sys.executable, str(ENGINE / "main.py"), "engine"],
@@ -134,7 +135,7 @@ class EngineTests(unittest.TestCase):
         frames = [json.loads(line) for line in result.stdout.splitlines() if line.strip()]
         replies = {f["id"]: f for f in frames if "id" in f}
         self.assertEqual(replies[1]["result"]["protocolVersion"], 1)
-        self.assertRegex(replies[1]["result"]["viewerUrl"], r"^http://127\.0\.0\.1:")
+        self.assertRegex(replies[5]["result"]["viewerUrl"], r"^http://127\.0\.0\.1:")
         self.assertFalse(replies[2]["result"]["hasDocument"])
         self.assertEqual(replies[3]["error"]["code"], "ValueError")
         self.assertTrue(replies[4]["result"]["closed"])

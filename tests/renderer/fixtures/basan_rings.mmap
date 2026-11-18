@@ -1,0 +1,1430 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CSLExportXML version="4.1">
+  <City>巴山</City>
+  <Generated>2026-08-31 23:14:50</Generated>
+  <SeaLevel>0</SeaLevel>
+  <SegmentTypes>
+    <ST name="2995178699.单 轨 双 向 轨 道_Elevated" highway="false">
+      <Lanes>
+        <Lane type="Vehicle" vType="Metro" dir="Backward" pos="-1.85" width="4" speed="3" />
+        <Lane type="Vehicle" vType="Metro" dir="Forward" pos="1.85" width="4" speed="3" />
+        <Lane type="None" vType="None" dir="Forward" pos="0" width="3" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="Four Lane Two Way Highway Tunnel" highway="true">
+      <Lanes>
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="2" width="3.85" speed="2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="5.7" width="3.85" speed="2" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-2" width="3.85" speed="2" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-5.7" width="3.85" speed="2" />
+      </Lanes>
+    </ST>
+    <ST name="3064947487.新双向4车道+公交站_Data" highway="false">
+      <Lanes>
+        <Lane type="None" vType="None" dir="Both" pos="0" width="1" speed="1" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="-16.25" width="3" speed="0.25" />
+        <Lane type="None" vType="Car" dir="Both" pos="-16.25" width="3" speed="1" />
+        <Lane type="None" vType="Car" dir="Both" pos="-14.125" width="1.25" speed="1" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-12" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-9" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-6" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-3" width="3" speed="1.2" />
+        <Lane type="None" vType="Car" dir="Both" pos="0" width="3" speed="1" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="3" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="6" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="9" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="12" width="3" speed="1.2" />
+        <Lane type="None" vType="Car" dir="Both" pos="14.125" width="1.25" speed="1" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="16.25" width="3" speed="0.25" />
+        <Lane type="None" vType="Car" dir="Both" pos="16.25" width="3" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="Large Oneway" highway="false">
+      <Lanes>
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="-14" width="4" speed="0.25" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="14" width="4" speed="0.25" />
+        <Lane type="Parking" vType="Car" dir="Forward" pos="-10" width="2" speed="1.2" />
+        <Lane type="Parking" vType="Car" dir="Forward" pos="10" width="2" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="-7.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="7.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="-4.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="4.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="-1.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="1.5" width="3" speed="1.2" />
+      </Lanes>
+    </ST>
+    <ST name="2995178699.单 轨 双 向 轨 道_Tunnel" highway="false">
+      <Lanes>
+        <Lane type="Vehicle" vType="Metro" dir="Backward" pos="-1.85" width="4" speed="3" />
+        <Lane type="Vehicle" vType="Metro" dir="Forward" pos="1.85" width="4" speed="3" />
+        <Lane type="None" vType="None" dir="Forward" pos="0" width="3" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="Train Track Elevated" highway="false">
+      <Lanes>
+        <Lane type="Vehicle" vType="Train" dir="Backward" pos="-2" width="4" speed="3" />
+        <Lane type="Vehicle" vType="Train" dir="Forward" pos="2" width="4" speed="3" />
+      </Lanes>
+    </ST>
+    <ST name="Train Track Slope" highway="false">
+      <Lanes>
+        <Lane type="Vehicle" vType="Train" dir="Backward" pos="-2" width="4" speed="3" />
+        <Lane type="Vehicle" vType="Train" dir="Forward" pos="2" width="4" speed="3" />
+      </Lanes>
+    </ST>
+    <ST name="HighwayRamp" highway="true">
+      <Lanes>
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="0" width="4" speed="1.6" />
+        <Lane type="None" vType="None" dir="None" pos="5" width="2" speed="1" />
+        <Lane type="None" vType="None" dir="None" pos="-5" width="2" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="ccp8-hstrail Elevated" highway="false">
+      <Lanes>
+        <Lane type="Vehicle" vType="Train" dir="Backward" pos="-2" width="4" speed="4.4" />
+        <Lane type="Vehicle" vType="Train" dir="Forward" pos="2" width="4" speed="4.4" />
+      </Lanes>
+    </ST>
+    <ST name="Small 4 Lane Road" highway="false">
+      <Lanes>
+        <Lane type="None" vType="None" dir="None" pos="0" width="0" speed="0" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="-7" width="2" speed="0.25" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="7" width="2" speed="0.25" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-1.4" width="2.8" speed="0.8" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-4.2" width="2.8" speed="0.8" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="1.4" width="2.8" speed="0.8" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="4.2" width="2.8" speed="0.8" />
+      </Lanes>
+    </ST>
+    <ST name="Large Road" highway="false">
+      <Lanes>
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="-14" width="4" speed="0.25" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="14" width="4" speed="0.25" />
+        <Lane type="Parking" vType="Car" dir="Backward" pos="-10" width="2" speed="1.2" />
+        <Lane type="Parking" vType="Car" dir="Forward" pos="10" width="2" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-7.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="7.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-4.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="4.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-1.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="1.5" width="3" speed="1.2" />
+      </Lanes>
+    </ST>
+    <ST name="Train Track Tunnel" highway="false">
+      <Lanes>
+        <Lane type="Vehicle" vType="Train" dir="Backward" pos="-2" width="4" speed="3" />
+        <Lane type="Vehicle" vType="Train" dir="Forward" pos="2" width="4" speed="3" />
+      </Lanes>
+    </ST>
+    <ST name="Large Road with Tree Median" highway="false">
+      <Lanes>
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="-15" width="2" speed="0.25" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="15" width="2" speed="0.25" />
+        <Lane type="None" vType="None" dir="Both" pos="0" width="0" speed="0.25" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-9.1" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-6.1" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-3.1" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="3.1" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="6.1" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="9.1" width="3" speed="1.2" />
+      </Lanes>
+    </ST>
+    <ST name="Highway Tunnel" highway="true">
+      <Lanes>
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="-4" width="4" speed="2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="0" width="4" speed="2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="4" width="4" speed="2" />
+        <Lane type="None" vType="None" dir="None" pos="-9.6" width="1.2" speed="1" />
+        <Lane type="None" vType="None" dir="None" pos="0" width="22" speed="1" />
+        <Lane type="None" vType="None" dir="None" pos="9.6" width="1.2" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="Highway Elevated" highway="true">
+      <Lanes>
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="-4" width="4" speed="2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="0" width="4" speed="2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="4" width="4" speed="2" />
+        <Lane type="None" vType="None" dir="None" pos="-9.6" width="1.2" speed="1" />
+        <Lane type="None" vType="None" dir="None" pos="0" width="22" speed="1" />
+        <Lane type="None" vType="None" dir="None" pos="9.6" width="1.2" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="Large Oneway Decoration Trees" highway="false">
+      <Lanes>
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="-14.5" width="3" speed="0.25" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="14.5" width="3" speed="0.25" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="-1.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="1.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="-7.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="7.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="-4.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="4.5" width="3" speed="1.2" />
+      </Lanes>
+    </ST>
+    <ST name="Basic Road" highway="false">
+      <Lanes>
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="-7" width="2" speed="0.25" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="7" width="2" speed="0.25" />
+        <Lane type="Parking" vType="Car" dir="Backward" pos="-4" width="2" speed="0.8" />
+        <Lane type="Parking" vType="Car" dir="Forward" pos="4" width="2" speed="0.8" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-1.5" width="3" speed="0.8" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="1.5" width="3" speed="0.8" />
+      </Lanes>
+    </ST>
+    <ST name="Highway" highway="true">
+      <Lanes>
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="-4" width="4" speed="2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="0" width="4" speed="2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="4" width="4" speed="2" />
+        <Lane type="None" vType="None" dir="None" pos="-10" width="2" speed="1" />
+        <Lane type="None" vType="None" dir="None" pos="0" width="22" speed="1" />
+        <Lane type="None" vType="None" dir="None" pos="10" width="2" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="ccp8-eurorail1 Elevated" highway="false">
+      <Lanes>
+        <Lane type="Vehicle" vType="Train" dir="Forward" pos="0" width="4" speed="3" />
+      </Lanes>
+    </ST>
+    <ST name="Airplane Runway" highway="false">
+      <Lanes>
+        <Lane type="Vehicle" vType="Plane" dir="Forward" pos="0" width="28" speed="3" />
+        <Lane type="None" vType="None" dir="None" pos="-15" width="2" speed="1" />
+        <Lane type="None" vType="None" dir="None" pos="15" width="2" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="2995178699.单 轨 双 向 轨 道_Bridge" highway="false">
+      <Lanes>
+        <Lane type="Vehicle" vType="Metro" dir="Backward" pos="-1.85" width="4" speed="3" />
+        <Lane type="Vehicle" vType="Metro" dir="Forward" pos="1.85" width="4" speed="3" />
+        <Lane type="None" vType="None" dir="Forward" pos="0" width="3" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="Zoo Path 02" highway="false">
+      <Lanes>
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="0" width="4" speed="0.4" />
+      </Lanes>
+    </ST>
+    <ST name="Four Lane Two Way Highway Elevated" highway="true">
+      <Lanes>
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="2" width="3.85" speed="2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="5.7" width="3.85" speed="2" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-2" width="3.85" speed="2" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-5.7" width="3.85" speed="2" />
+        <Lane type="None" vType="None" dir="None" pos="-11.7" width="2" speed="1" />
+        <Lane type="None" vType="None" dir="None" pos="11.7" width="2" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="Highway Slope" highway="true">
+      <Lanes>
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="-4" width="4" speed="2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="0" width="4" speed="2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="4" width="4" speed="2" />
+        <Lane type="None" vType="None" dir="None" pos="-9.6" width="1.2" speed="1" />
+        <Lane type="None" vType="None" dir="None" pos="0" width="22" speed="1" />
+        <Lane type="None" vType="None" dir="None" pos="9.6" width="1.2" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="Zoo Path 01 Propless" highway="false">
+      <Lanes>
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="0" width="4" speed="0.4" />
+      </Lanes>
+    </ST>
+    <ST name="Castle Wall 1" highway="false">
+      <Lanes />
+    </ST>
+    <ST name="HighwayRampElevated" highway="true">
+      <Lanes>
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="0" width="4" speed="1.6" />
+        <Lane type="None" vType="None" dir="None" pos="4.6" width="1.2" speed="1" />
+        <Lane type="None" vType="None" dir="None" pos="-4.6" width="1.2" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="Two Lane Highway Elevated" highway="true">
+      <Lanes>
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="2.3" width="3.85" speed="2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="-2.3" width="3.85" speed="2" />
+        <Lane type="None" vType="None" dir="None" pos="-7.3" width="2" speed="1" />
+        <Lane type="None" vType="None" dir="None" pos="7.3" width="2" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="Large Oneway Road Tunnel" highway="false">
+      <Lanes>
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="-12" width="3.5" speed="0.25" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="12" width="3.5" speed="0.25" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="-7.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="7.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="-4.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="4.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="-1.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="1.5" width="3" speed="1.2" />
+      </Lanes>
+    </ST>
+    <ST name="Metro Line" highway="false">
+      <Lanes>
+        <Lane type="PublicTransport" vType="None" dir="Forward" pos="0" width="2" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="Large Oneway Road Slope" highway="false">
+      <Lanes>
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="-12" width="3.5" speed="0.25" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="12" width="3.5" speed="0.25" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="-7.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="7.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="-4.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="4.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="-1.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="1.5" width="3" speed="1.2" />
+      </Lanes>
+    </ST>
+    <ST name="2907219973.mcw_MSE_1LC E" highway="true">
+      <Lanes>
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="0" width="3" speed="1.6" />
+        <Lane type="None" vType="None" dir="None" pos="3.2" width="1.2" speed="1" />
+        <Lane type="None" vType="None" dir="None" pos="-3.2" width="1.2" speed="1" />
+        <Lane type="None" vType="None" dir="Forward" pos="0" width="3" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="3064947487.新双向4车道+公交站 E" highway="false">
+      <Lanes>
+        <Lane type="None" vType="None" dir="Both" pos="0" width="1" speed="1" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="-16.25" width="3" speed="0.25" />
+        <Lane type="None" vType="Car" dir="Both" pos="-16.25" width="3" speed="1" />
+        <Lane type="None" vType="Car" dir="Both" pos="-14.125" width="1.25" speed="1" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-12" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-9" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-6" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-3" width="3" speed="1.2" />
+        <Lane type="None" vType="Car" dir="Both" pos="0" width="3" speed="1" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="3" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="6" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="9" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="12" width="3" speed="1.2" />
+        <Lane type="None" vType="Car" dir="Both" pos="14.125" width="1.25" speed="1" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="16.25" width="3" speed="0.25" />
+        <Lane type="None" vType="Car" dir="Both" pos="16.25" width="3" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="Train Line" highway="false">
+      <Lanes>
+        <Lane type="PublicTransport" vType="None" dir="Forward" pos="0" width="2" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="2995178699.单轨高架站台轨 道_Data" highway="false">
+      <Lanes>
+        <Lane type="Vehicle" vType="Metro" dir="AvoidBackward" pos="1.85" width="4" speed="3" />
+        <Lane type="Pedestrian" vType="None" dir="AvoidForward" pos="-5.85" width="3.5" speed="0.05" />
+        <Lane type="None" vType="None" dir="Forward" pos="0" width="3" speed="1" />
+        <Lane type="Vehicle" vType="Metro" dir="AvoidForward" pos="-1.85" width="4" speed="3" />
+        <Lane type="Pedestrian" vType="None" dir="AvoidBackward" pos="5.85" width="3.5" speed="0.05" />
+      </Lanes>
+    </ST>
+    <ST name="Small 4 Lane Road Elevated" highway="false">
+      <Lanes>
+        <Lane type="None" vType="None" dir="None" pos="0" width="0" speed="0" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="-7" width="2" speed="0.25" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="7" width="2" speed="0.25" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-1.4" width="2.8" speed="0.8" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-4.2" width="2.8" speed="0.8" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="1.4" width="2.8" speed="0.8" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="4.2" width="2.8" speed="0.8" />
+      </Lanes>
+    </ST>
+    <ST name="2907219973.mcw_MSE_1LC B" highway="true">
+      <Lanes>
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="0" width="3" speed="1.6" />
+        <Lane type="None" vType="None" dir="None" pos="3.2" width="1.2" speed="1" />
+        <Lane type="None" vType="None" dir="None" pos="-3.2" width="1.2" speed="1" />
+        <Lane type="None" vType="None" dir="Forward" pos="0" width="3" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="Metro Station Track" highway="false">
+      <Lanes>
+        <Lane type="Vehicle" vType="Metro" dir="AvoidForward" pos="-2" width="4" speed="2" />
+        <Lane type="Vehicle" vType="Metro" dir="AvoidBackward" pos="2" width="4" speed="2" />
+        <Lane type="Pedestrian" vType="None" dir="AvoidForward" pos="-6" width="4" speed="0.25" />
+        <Lane type="Pedestrian" vType="None" dir="AvoidBackward" pos="6" width="4" speed="0.25" />
+      </Lanes>
+    </ST>
+    <ST name="Airplane Taxiway" highway="false">
+      <Lanes>
+        <Lane type="Vehicle" vType="Plane" dir="Forward" pos="0" width="20" speed="1" />
+        <Lane type="None" vType="None" dir="None" pos="-9" width="2" speed="1" />
+        <Lane type="None" vType="None" dir="None" pos="9" width="2" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="Pedestrian Elevated" highway="false">
+      <Lanes>
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="0" width="4" speed="0.5" />
+      </Lanes>
+    </ST>
+    <ST name="Pedestrian Pavement" highway="false">
+      <Lanes>
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="0" width="4" speed="0.4" />
+      </Lanes>
+    </ST>
+    <ST name="Pedestrian Tunnel" highway="false">
+      <Lanes>
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="0" width="4" speed="0.5" />
+      </Lanes>
+    </ST>
+    <ST name="Dam" highway="false">
+      <Lanes>
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="-7.5" width="5" speed="0.25" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="7.5" width="5" speed="0.25" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-2" width="4" speed="1" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="2" width="4" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="2995178699.单轨单向偏移轨道_Elevated" highway="false">
+      <Lanes>
+        <Lane type="Vehicle" vType="Metro" dir="Forward" pos="1.85" width="4" speed="3" />
+        <Lane type="None" vType="None" dir="Forward" pos="0" width="3" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="Small 4 Lane Road Slope" highway="false">
+      <Lanes>
+        <Lane type="None" vType="None" dir="None" pos="0" width="0" speed="0" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="-7" width="2" speed="0.25" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="7" width="2" speed="0.25" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-1.4" width="2.8" speed="0.8" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-4.2" width="2.8" speed="0.8" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="1.4" width="2.8" speed="0.8" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="4.2" width="2.8" speed="0.8" />
+      </Lanes>
+    </ST>
+    <ST name="Pedestrian Slope" highway="false">
+      <Lanes>
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="0" width="4" speed="0.5" />
+      </Lanes>
+    </ST>
+    <ST name="Zoo Path 01 Propless Elevated" highway="false">
+      <Lanes>
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="0" width="4" speed="0.5" />
+      </Lanes>
+    </ST>
+    <ST name="Train Station Track" highway="false">
+      <Lanes>
+        <Lane type="Vehicle" vType="Train" dir="AvoidForward" pos="-2" width="4" speed="3" />
+        <Lane type="Vehicle" vType="Train" dir="AvoidBackward" pos="2" width="4" speed="3" />
+        <Lane type="Pedestrian" vType="None" dir="AvoidForward" pos="-6" width="4" speed="0.25" />
+        <Lane type="Pedestrian" vType="None" dir="AvoidBackward" pos="6" width="4" speed="0.25" />
+      </Lanes>
+    </ST>
+    <ST name="Large Road with Median Tunnel" highway="false">
+      <Lanes>
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="-15" width="2" speed="0.25" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="15" width="2" speed="0.25" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-9.1" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-6.1" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-3.1" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="3.1" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="6.1" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="9.1" width="3" speed="1.2" />
+      </Lanes>
+    </ST>
+    <ST name="3064947487.新双向4车道+公交站 T" highway="false">
+      <Lanes>
+        <Lane type="None" vType="None" dir="Both" pos="0" width="1" speed="1" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="-16.25" width="3" speed="0.25" />
+        <Lane type="None" vType="Car" dir="Both" pos="-16.25" width="3" speed="1" />
+        <Lane type="None" vType="Car" dir="Both" pos="-14.125" width="1.25" speed="1" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-12" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-9" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-6" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-3" width="3" speed="1.2" />
+        <Lane type="None" vType="Car" dir="Both" pos="0" width="3" speed="1" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="3" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="6" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="9" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="12" width="3" speed="1.2" />
+        <Lane type="None" vType="Car" dir="Both" pos="14.125" width="1.25" speed="1" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="16.25" width="3" speed="0.25" />
+        <Lane type="None" vType="Car" dir="Both" pos="16.25" width="3" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="Airplane Line" highway="false">
+      <Lanes>
+        <Lane type="PublicTransport" vType="None" dir="Forward" pos="0" width="2" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="Large Oneway Elevated" highway="false">
+      <Lanes>
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="-12" width="3.5" speed="0.25" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="12" width="3.5" speed="0.25" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="-7.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="7.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="-4.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="4.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="-1.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="1.5" width="3" speed="1.2" />
+      </Lanes>
+    </ST>
+    <ST name="2995730929.单轨单向偏移站台轨道_Data" highway="false">
+      <Lanes>
+        <Lane type="Vehicle" vType="Metro" dir="AvoidBackward" pos="1.85" width="4" speed="3" />
+        <Lane type="Pedestrian" vType="None" dir="AvoidForward" pos="-2.15" width="3.5" speed="0.2" />
+      </Lanes>
+    </ST>
+    <ST name="Train Track" highway="false">
+      <Lanes>
+        <Lane type="Vehicle" vType="Train" dir="Backward" pos="-2" width="4" speed="3" />
+        <Lane type="Vehicle" vType="Train" dir="Forward" pos="2" width="4" speed="3" />
+      </Lanes>
+    </ST>
+    <ST name="Castle Wall 3" highway="false">
+      <Lanes />
+    </ST>
+    <ST name="2995178699.单 轨 双 向 轨 道_Slope" highway="false">
+      <Lanes>
+        <Lane type="Vehicle" vType="Metro" dir="Backward" pos="-1.85" width="4" speed="3" />
+        <Lane type="Vehicle" vType="Metro" dir="Forward" pos="1.85" width="4" speed="3" />
+        <Lane type="None" vType="None" dir="Forward" pos="0" width="3" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="HighwayRamp Slope" highway="true">
+      <Lanes>
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="0" width="4" speed="1.6" />
+        <Lane type="None" vType="None" dir="None" pos="4.6" width="1.2" speed="1" />
+        <Lane type="None" vType="None" dir="None" pos="-4.6" width="1.2" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="HighwayRamp Tunnel" highway="true">
+      <Lanes>
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="0" width="4" speed="1.6" />
+        <Lane type="None" vType="None" dir="None" pos="4.6" width="1.2" speed="1" />
+        <Lane type="None" vType="None" dir="None" pos="-4.6" width="1.2" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="2995178699.单 轨 双 向 轨 道_Data" highway="false">
+      <Lanes>
+        <Lane type="Vehicle" vType="Metro" dir="Backward" pos="-1.85" width="4" speed="1" />
+        <Lane type="Vehicle" vType="Metro" dir="Forward" pos="1.85" width="4" speed="1" />
+        <Lane type="None" vType="None" dir="Forward" pos="0" width="3" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="Zoo Fence 01" highway="false">
+      <Lanes />
+    </ST>
+    <ST name="Bus Depot Road" highway="false">
+      <Lanes>
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="-6" width="4" speed="0.25" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="6" width="4" speed="0.25" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-1.5" width="3" speed="0.8" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="1.5" width="3" speed="0.8" />
+      </Lanes>
+    </ST>
+    <ST name="Train Station Track Elevated" highway="false">
+      <Lanes>
+        <Lane type="Vehicle" vType="Train" dir="AvoidForward" pos="-2" width="4" speed="3" />
+        <Lane type="Vehicle" vType="Train" dir="AvoidBackward" pos="2" width="4" speed="3" />
+        <Lane type="Pedestrian" vType="None" dir="AvoidForward" pos="-6" width="4" speed="0.25" />
+        <Lane type="Pedestrian" vType="None" dir="AvoidBackward" pos="6" width="4" speed="0.25" />
+      </Lanes>
+    </ST>
+    <ST name="Large Road with Median Slope" highway="false">
+      <Lanes>
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="-15" width="2" speed="0.25" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="15" width="2" speed="0.25" />
+        <Lane type="None" vType="None" dir="None" pos="0" width="0" speed="0" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-9.1" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-6.1" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-3.1" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="3.1" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="6.1" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="9.1" width="3" speed="1.2" />
+      </Lanes>
+    </ST>
+    <ST name="Large Oneway Bridge" highway="false">
+      <Lanes>
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="-12" width="3.5" speed="0.25" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="12" width="3.5" speed="0.25" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="-7.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="7.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="-4.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="4.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="-1.5" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="1.5" width="3" speed="1.2" />
+      </Lanes>
+    </ST>
+    <ST name="Helicopter Stop" highway="false">
+      <Lanes>
+        <Lane type="Vehicle" vType="Helicopter" dir="Both" pos="0" width="16" speed="20" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="10" width="6" speed="0.25" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="-10" width="6" speed="0.25" />
+      </Lanes>
+    </ST>
+    <ST name="Airplane Stop" highway="false">
+      <Lanes>
+        <Lane type="Vehicle" vType="Plane" dir="Both" pos="0" width="20" speed="0.25" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="-5" width="2" speed="0.25" />
+        <Lane type="None" vType="None" dir="None" pos="-9" width="2" speed="1" />
+        <Lane type="None" vType="None" dir="None" pos="9" width="2" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="Airplane Cargo Stop" highway="false">
+      <Lanes>
+        <Lane type="Vehicle" vType="Plane" dir="Both" pos="0" width="20" speed="0.25" />
+        <Lane type="None" vType="None" dir="None" pos="-15" width="2" speed="1" />
+        <Lane type="None" vType="None" dir="None" pos="15" width="2" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="Castle Wall 2" highway="false">
+      <Lanes />
+    </ST>
+    <ST name="3064947487.新双向4车道+公交站 S" highway="false">
+      <Lanes>
+        <Lane type="None" vType="None" dir="Both" pos="0" width="1" speed="1" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="-16.25" width="3" speed="0.25" />
+        <Lane type="None" vType="Car" dir="Both" pos="-16.25" width="3" speed="1" />
+        <Lane type="None" vType="Car" dir="Both" pos="-14.125" width="1.25" speed="1" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-12" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-9" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-6" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-3" width="3" speed="1.2" />
+        <Lane type="None" vType="Car" dir="Both" pos="0" width="3" speed="1" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="3" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="6" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="9" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="12" width="3" speed="1.2" />
+        <Lane type="None" vType="Car" dir="Both" pos="14.125" width="1.25" speed="1" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="16.25" width="3" speed="0.25" />
+        <Lane type="None" vType="Car" dir="Both" pos="16.25" width="3" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="Two Lane Highway" highway="true">
+      <Lanes>
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="2.3" width="3.85" speed="2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="-2.3" width="3.85" speed="2" />
+        <Lane type="None" vType="None" dir="None" pos="-7.3" width="2" speed="1" />
+        <Lane type="None" vType="None" dir="None" pos="7.3" width="2" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="Amusement Park Fence" highway="false">
+      <Lanes />
+    </ST>
+    <ST name="Train Cargo Track" highway="false">
+      <Lanes>
+        <Lane type="Vehicle" vType="Train" dir="AvoidForward" pos="-2" width="4" speed="3" />
+        <Lane type="Vehicle" vType="Train" dir="AvoidBackward" pos="2" width="4" speed="3" />
+      </Lanes>
+    </ST>
+    <ST name="Harbor Road" highway="false">
+      <Lanes>
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="-7" width="2" speed="0.25" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="7" width="2" speed="0.25" />
+        <Lane type="Parking" vType="Car" dir="Backward" pos="-4" width="2" speed="0.8" />
+        <Lane type="Parking" vType="Car" dir="Forward" pos="4" width="2" speed="0.8" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-1.5" width="3" speed="0.8" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="1.5" width="3" speed="0.8" />
+      </Lanes>
+    </ST>
+    <ST name="Four Lane Two Way Highway Bridge" highway="true">
+      <Lanes>
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="2" width="3.85" speed="2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="5.7" width="3.85" speed="2" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-2" width="3.85" speed="2" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-5.7" width="3.85" speed="2" />
+        <Lane type="None" vType="None" dir="None" pos="-11.7" width="2" speed="1" />
+        <Lane type="None" vType="None" dir="None" pos="11.7" width="2" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="Four Lane Two Way Highway Slope" highway="true">
+      <Lanes>
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="2" width="3.85" speed="2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="5.7" width="3.85" speed="2" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-2" width="3.85" speed="2" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-5.7" width="3.85" speed="2" />
+        <Lane type="None" vType="None" dir="None" pos="-11.3" width="2" speed="1" />
+        <Lane type="None" vType="None" dir="None" pos="11.3" width="2" speed="1" />
+      </Lanes>
+    </ST>
+    <ST name="Amusement Park Path 02" highway="false">
+      <Lanes>
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="0" width="4" speed="0.4" />
+      </Lanes>
+    </ST>
+    <ST name="Train Track Bridge" highway="false">
+      <Lanes>
+        <Lane type="Vehicle" vType="Train" dir="Backward" pos="-2" width="4" speed="3" />
+        <Lane type="Vehicle" vType="Train" dir="Forward" pos="2" width="4" speed="3" />
+      </Lanes>
+    </ST>
+    <ST name="Trench Ruins 01" highway="false">
+      <Lanes />
+    </ST>
+    <ST name="Helicopter Path" highway="false">
+      <Lanes>
+        <Lane type="Vehicle" vType="Helicopter" dir="Backward" pos="-16" width="16" speed="20" />
+        <Lane type="Vehicle" vType="Helicopter" dir="Forward" pos="16" width="16" speed="20" />
+      </Lanes>
+    </ST>
+    <ST name="Parking Lot 01" highway="false">
+      <Lanes>
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="-11" width="2" speed="0.25" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="11" width="2" speed="0.25" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-1.5" width="3" speed="0.5" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="1.5" width="3" speed="0.5" />
+      </Lanes>
+    </ST>
+    <ST name="Large Road with Median Elevated" highway="false">
+      <Lanes>
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="-15" width="2" speed="0.25" />
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="15" width="2" speed="0.25" />
+        <Lane type="None" vType="None" dir="None" pos="0" width="0" speed="0" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-9.1" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-6.1" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Backward" pos="-3.1" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="3.1" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="6.1" width="3" speed="1.2" />
+        <Lane type="Vehicle" vType="Car" dir="Forward" pos="9.1" width="3" speed="1.2" />
+      </Lanes>
+    </ST>
+    <ST name="Pedestrian Gravel" highway="false">
+      <Lanes>
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="0" width="6" speed="0.3" />
+      </Lanes>
+    </ST>
+    <ST name="Amusement Park Path 01 Propless" highway="false">
+      <Lanes>
+        <Lane type="Pedestrian" vType="None" dir="Both" pos="0" width="4" speed="0.4" />
+      </Lanes>
+    </ST>
+  </SegmentTypes>
+  <Nodes>
+    <Node id="1270" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportTrain" dist="127">
+      <Pos x="65.4703" y="197.9" z="-413.3868" />
+    </Node>
+    <Node id="1769" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="192.694611" y="223.884872" z="1212.621" />
+    </Node>
+    <Node id="1770" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="125">
+      <Pos x="-2346.30981" y="228.613235" z="992.8366" />
+    </Node>
+    <Node id="9843" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="363.280182" y="201.928131" z="1531.77478" />
+    </Node>
+    <Node id="11102" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportTrain" dist="127">
+      <Pos x="70.66383" y="197.9" z="-497.2262" />
+    </Node>
+    <Node id="11110" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportTrain" dist="125">
+      <Pos x="-2960.93726" y="195.9633" z="3424.99023" />
+    </Node>
+    <Node id="11111" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportTrain" dist="0">
+      <Pos x="4245.881" y="178.306778" z="29.2708359" />
+    </Node>
+    <Node id="12549" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="-746.7887" y="191.093719" z="900.378967" />
+    </Node>
+    <Node id="12550" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="-746.1763" y="191.093719" z="896.730042" />
+    </Node>
+    <Node id="12568" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="125">
+      <Pos x="-1755.721" y="212.876266" z="2186.30737" />
+    </Node>
+    <Node id="12569" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="125">
+      <Pos x="-2103.4314" y="221.488968" z="1944.44128" />
+    </Node>
+    <Node id="12570" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="125">
+      <Pos x="-2240.93628" y="220.221924" z="1520.33813" />
+    </Node>
+    <Node id="12571" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="125">
+      <Pos x="-2143.10034" y="201.006592" z="416.340057" />
+    </Node>
+    <Node id="12577" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="-263.782379" y="205.812958" z="988.375" />
+    </Node>
+    <Node id="12578" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="292.862152" y="200.39006" z="1900.14661" />
+    </Node>
+    <Node id="12579" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="255.413269" y="188.337173" z="2276.0332" />
+    </Node>
+    <Node id="12581" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="296.507233" y="200.39006" z="1900.78162" />
+    </Node>
+    <Node id="12582" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="-252.089569" y="205.812958" z="956.842468" />
+    </Node>
+    <Node id="12584" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="125">
+      <Pos x="-2146.199" y="201.006592" z="413.8108" />
+    </Node>
+    <Node id="12585" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="125">
+      <Pos x="-2244.22339" y="220.221924" z="1522.03687" />
+    </Node>
+    <Node id="12586" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="125">
+      <Pos x="-2104.25122" y="221.488968" z="1948.04944" />
+    </Node>
+    <Node id="12587" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="125">
+      <Pos x="-1759.39746" y="212.876266" z="2186.72339" />
+    </Node>
+    <Node id="12588" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="125">
+      <Pos x="-2951.25684" y="197.302277" z="3268.845" />
+    </Node>
+    <Node id="12600" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="125">
+      <Pos x="-1655.22925" y="190.647873" z="377.9157" />
+    </Node>
+    <Node id="16089" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportTrain" dist="0">
+      <Pos x="4211.32" y="178.306778" z="39.3473549" />
+    </Node>
+    <Node id="26957" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="1085.10852" y="206.302734" z="-377.771" />
+    </Node>
+    <Node id="26960" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="1083.96606" y="206.302734" z="-381.290222" />
+    </Node>
+    <Node id="26962" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="1782.13" y="210.466354" z="-743.566162" />
+    </Node>
+    <Node id="27007" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="898.575745" y="172.960266" z="86.74789" />
+    </Node>
+    <Node id="27009" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="897.00116" y="172.960266" z="83.07085" />
+    </Node>
+    <Node id="27029" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="126">
+      <Pos x="-2123.92041" y="225.026581" z="-1177.74963" />
+    </Node>
+    <Node id="27031" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="126">
+      <Pos x="-2120.712" y="225.026581" z="-1179.59216" />
+    </Node>
+    <Node id="27038" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="-1448.29187" y="211.46875" z="-521.9344" />
+    </Node>
+    <Node id="27040" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="-1446.90051" y="211.46875" z="-525.362732" />
+    </Node>
+    <Node id="27048" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="-605.4238" y="166.09375" z="-43.1995735" />
+    </Node>
+    <Node id="27049" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="-604.189" y="166.09375" z="-47.0042038" />
+    </Node>
+    <Node id="27072" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="126">
+      <Pos x="-2128.56226" y="202.526855" z="-789.543945" />
+    </Node>
+    <Node id="27078" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="126">
+      <Pos x="-2589.74438" y="272.484375" z="-2335.17261" />
+    </Node>
+    <Node id="27080" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="126">
+      <Pos x="-2585.7854" y="272.484375" z="-2335.74316" />
+    </Node>
+    <Node id="27085" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="126">
+      <Pos x="-2237.78418" y="550.9524" z="-5450.774" />
+    </Node>
+    <Node id="27152" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="58.30217" y="185.9353" z="-299.217682" />
+    </Node>
+    <Node id="27153" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="494.897644" y="162.093262" z="-85.01349" />
+    </Node>
+    <Node id="27155" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="491.3188" y="162.093262" z="-83.22695" />
+    </Node>
+    <Node id="27156" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="-1014.77484" y="181.829819" z="-358.029724" />
+    </Node>
+    <Node id="27157" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="58.58323" y="185.9353" z="-303.2078" />
+    </Node>
+    <Node id="27158" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="-1013.26569" y="181.829819" z="-361.734161" />
+    </Node>
+    <Node id="27918" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="189.223145" y="223.884872" z="1213.90125" />
+    </Node>
+    <Node id="28354" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="125">
+      <Pos x="-1652.9812" y="190.647873" z="374.977051" />
+    </Node>
+    <Node id="28834" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="366.517181" y="201.928131" z="1529.98254" />
+    </Node>
+    <Node id="31072" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="0">
+      <Pos x="3523.216" y="393.598419" z="-1905.39343" />
+    </Node>
+    <Node id="31074" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="0">
+      <Pos x="4307.073" y="166.156784" z="17.6478119" />
+    </Node>
+    <Node id="31455" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportTrain" dist="125">
+      <Pos x="-2979.273" y="196.1133" z="3376.32935" />
+    </Node>
+    <Node id="31762" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="125">
+      <Pos x="-2047.539" y="184.703125" z="1965.17322" />
+    </Node>
+    <Node id="31764" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="125">
+      <Pos x="-2047.50574" y="184.703125" z="1969.1731" />
+    </Node>
+    <Node id="31766" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="125">
+      <Pos x="-2727.04248" y="192.16832" z="1340.22253" />
+    </Node>
+    <Node id="31768" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="125">
+      <Pos x="-1551.41553" y="196.113373" z="974.835754" />
+    </Node>
+    <Node id="31770" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="125">
+      <Pos x="-1548.37061" y="196.113373" z="972.733948" />
+    </Node>
+    <Node id="31781" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="126">
+      <Pos x="-2569.949" y="272.484375" z="-2338.02515" />
+    </Node>
+    <Node id="31784" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="126">
+      <Pos x="-2565.98975" y="272.484375" z="-2338.59546" />
+    </Node>
+    <Node id="31786" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="0">
+      <Pos x="-2226.26514" y="562.9524" z="-5472.902" />
+    </Node>
+    <Node id="31853" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="126">
+      <Pos x="-2229.02222" y="251.489868" z="-1988.67236" />
+    </Node>
+    <Node id="31855" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="126">
+      <Pos x="-1843.50488" y="247.405731" z="-1762.68665" />
+    </Node>
+    <Node id="31857" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="126">
+      <Pos x="-1553.73193" y="242.703125" z="-1404.42993" />
+    </Node>
+    <Node id="31859" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="126">
+      <Pos x="-1572.059" y="227.2174" z="-959.9473" />
+    </Node>
+    <Node id="31861" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="126">
+      <Pos x="-758.3545" y="227.222153" z="-978.661865" />
+    </Node>
+    <Node id="31863" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="-115.7554" y="204.478592" z="-191.285339" />
+    </Node>
+    <Node id="31864" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="-214.996735" y="207.522736" z="319.359955" />
+    </Node>
+    <Node id="31867" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="-427.3713" y="206.913528" z="574.743958" />
+    </Node>
+    <Node id="31869" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="-258.751953" y="205.812958" z="974.407349" />
+    </Node>
+    <Node id="31872" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="230.003525" y="201.441452" z="790.564148" />
+    </Node>
+    <Node id="31875" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="835.946838" y="201.747131" z="862.987061" />
+    </Node>
+    <Node id="31880" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="764.581848" y="199.897919" z="1488.79407" />
+    </Node>
+    <Node id="31883" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="633.001" y="196.4125" z="1874.9115" />
+    </Node>
+    <Node id="31885" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="266.2206" y="188.337173" z="2265.50635" />
+    </Node>
+    <Node id="31889" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="-215.689835" y="209.5624" z="1740.45837" />
+    </Node>
+    <Node id="31891" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="-429.473175" y="210.568756" z="1444.85645" />
+    </Node>
+    <Node id="31900" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="125">
+      <Pos x="-2013.3866" y="187.18454" z="1002.2428" />
+    </Node>
+    <Node id="31902" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="125">
+      <Pos x="-1868.51062" y="199.36142" z="1522.438" />
+    </Node>
+    <Node id="31906" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="125">
+      <Pos x="-1864.99109" y="199.36142" z="1520.53711" />
+    </Node>
+    <Node id="31907" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="125">
+      <Pos x="-2011.43982" y="187.18454" z="1005.73694" />
+    </Node>
+    <Node id="31918" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="-430.3621" y="210.568756" z="1448.448" />
+    </Node>
+    <Node id="31922" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="-218.383026" y="209.5624" z="1737.92126" />
+    </Node>
+    <Node id="31924" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="-163.008423" y="200.1" z="2149.7207" />
+    </Node>
+    <Node id="31926" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="242.418671" y="188.337173" z="2289.26514" />
+    </Node>
+    <Node id="31928" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="635.0786" y="196.4125" z="1877.973" />
+    </Node>
+    <Node id="31931" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="766.9731" y="199.897919" z="1485.97058" />
+    </Node>
+    <Node id="31937" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="837.489563" y="201.747131" z="859.624" />
+    </Node>
+    <Node id="31939" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="228.44664" y="201.441452" z="787.2076" />
+    </Node>
+    <Node id="31941" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="-257.5078" y="205.812958" z="970.9228" />
+    </Node>
+    <Node id="31943" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="-423.671539" y="206.913528" z="574.7846" />
+    </Node>
+    <Node id="31947" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="-213.5084" y="207.522736" z="322.7474" />
+    </Node>
+    <Node id="31950" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="-112.5418" y="204.478592" z="-189.451569" />
+    </Node>
+    <Node id="31954" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="126">
+      <Pos x="-756.0498" y="227.222153" z="-981.5564" />
+    </Node>
+    <Node id="31955" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="126">
+      <Pos x="-1570.61169" y="227.2174" z="-963.676331" />
+    </Node>
+    <Node id="31957" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="126">
+      <Pos x="-1549.92188" y="242.703125" z="-1405.64771" />
+    </Node>
+    <Node id="31959" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="126">
+      <Pos x="-1840.23169" y="247.405731" z="-1764.98572" />
+    </Node>
+    <Node id="31961" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="126">
+      <Pos x="-2228.22485" y="251.489868" z="-1992.2854" />
+    </Node>
+    <Node id="32709" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="126">
+      <Pos x="-2131.88452" y="202.526855" z="-787.9155" />
+    </Node>
+    <Node id="32741" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="125">
+      <Pos x="-2349.81567" y="228.613235" z="994.0198" />
+    </Node>
+    <Node id="32749" elev="0" ug="false" og="false" srv="PublicTransport" subsrv="PublicTransportMetro" dist="127">
+      <Pos x="-161.051727" y="200.1" z="2146.58057" />
+    </Node>
+  </Nodes>
+  <Segments>
+    <Seg id="664" sn="12568" en="12588" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="1784" sn="31880" en="31875" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="2453" sn="11111" en="11110" icls="Train Line" width="2">
+      <Name>Train Line</Name>
+    </Seg>
+    <Seg id="3470" sn="27031" en="27072" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="3751" sn="12582" en="1769" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="4120" sn="28354" en="12550" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="4215" sn="31867" en="31864" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="4217" sn="31883" en="31880" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="4218" sn="12586" en="12585" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="4384" sn="12550" en="12582" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="4572" sn="12549" en="12600" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="5528" sn="31861" en="31859" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="5536" sn="31924" en="31922" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="5539" sn="31941" en="31939" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="5715" sn="12600" en="12571" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="5913" sn="32749" en="31885" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="6246" sn="31937" en="31931" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="6777" sn="27009" en="26960" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="7166" sn="27155" en="27152" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="7208" sn="31885" en="31883" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="7315" sn="27072" en="27040" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="8114" sn="31947" en="31943" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="8210" sn="12584" en="28354" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="8279" sn="31784" en="31961" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="9361" sn="31781" en="31786" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="9371" sn="31864" en="31863" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="11041" sn="27007" en="27155" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="11391" sn="31900" en="31770" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="12061" sn="26957" en="27007" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="12661" sn="31770" en="31891" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="13381" sn="31872" en="31869" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="13915" sn="31762" en="31902" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="14209" sn="12578" en="9843" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="14694" sn="11110" en="11102" icls="Train Line" width="2">
+      <Name>Train Line</Name>
+    </Seg>
+    <Seg id="15592" sn="12569" en="12568" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="15603" sn="12579" en="12578" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="15614" sn="12587" en="12586" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="15617" sn="31907" en="31906" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="15635" sn="31955" en="31954" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="15770" sn="31857" en="31855" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="15803" sn="12585" en="32741" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="16828" sn="31766" en="31762" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="16884" sn="27157" en="27153" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="16977" sn="28834" en="12581" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="17851" sn="1770" en="12570" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="18151" sn="12588" en="12587" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="18304" sn="12577" en="12549" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="18890" sn="27038" en="32709" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="20650" sn="1270" en="31455" icls="Train Line" width="2">
+      <Name>Train Line</Name>
+    </Seg>
+    <Seg id="21785" sn="31768" en="31907" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="23852" sn="27156" en="27038" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="25701" sn="27152" en="27048" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="26183" sn="27029" en="27078" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="26448" sn="27153" en="27009" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="26460" sn="32709" en="27029" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="26759" sn="1769" en="28834" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="27217" sn="31922" en="31918" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="27227" sn="31931" en="31928" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="27240" sn="31954" en="31950" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="27383" sn="11102" en="11111" icls="Train Line" width="2">
+      <Name>Train Line</Name>
+    </Seg>
+    <Seg id="27447" sn="27918" en="12577" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="28134" sn="26960" en="26962" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="28181" sn="31764" en="31766" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="28214" sn="31786" en="31784" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="28263" sn="31855" en="31853" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="28266" sn="31859" en="31857" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="28271" sn="31863" en="31861" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="28292" sn="31891" en="31889" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="28305" sn="31902" en="31900" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="28306" sn="31072" en="31074" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="28308" sn="31074" en="31072" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="28324" sn="26962" en="26957" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="28329" sn="31926" en="31924" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="28339" sn="31939" en="31937" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="28344" sn="31943" en="31941" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="28354" sn="31959" en="31957" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="28503" sn="32741" en="12584" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="29554" sn="27085" en="27080" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="29652" sn="31950" en="31947" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="30160" sn="31889" en="32749" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="30505" sn="27040" en="27158" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="30576" sn="12571" en="1770" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="31401" sn="27080" en="27031" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="31745" sn="16089" en="1270" icls="Train Line" width="2">
+      <Name>Train Line</Name>
+    </Seg>
+    <Seg id="31885" sn="31906" en="31764" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="31887" sn="31918" en="31768" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="32115" sn="27078" en="27085" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="33079" sn="27048" en="27156" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="33104" sn="27049" en="27157" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="33488" sn="31928" en="31926" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="33516" sn="31961" en="31959" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="33755" sn="31853" en="31781" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="33790" sn="31455" en="16089" icls="Train Line" width="2">
+      <Name>Train Line</Name>
+    </Seg>
+    <Seg id="34375" sn="27158" en="27049" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="36728" sn="9843" en="27918" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="36810" sn="31957" en="31955" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="36816" sn="12570" en="12569" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="36828" sn="31869" en="31867" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="36831" sn="31875" en="31872" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+    <Seg id="36839" sn="12581" en="12579" icls="Metro Line" width="2">
+      <Name>Metro Line</Name>
+    </Seg>
+  </Segments>
+  <Transports>
+    <Trans id="108" name="C2" type="Train">
+      <color a="255" r="0" g="165" b="80" />
+      <Stops>
+        <Stop node="11102" />
+        <Stop node="11111" />
+        <Stop node="11110" />
+      </Stops>
+    </Trans>
+    <Trans id="150" name="3号线" type="Metro">
+      <color a="255" r="148" g="0" b="151" />
+      <Stops>
+        <Stop node="27085" />
+        <Stop node="27080" />
+        <Stop node="27031" />
+        <Stop node="27072" />
+        <Stop node="27040" />
+        <Stop node="27158" />
+        <Stop node="27049" />
+        <Stop node="27157" />
+        <Stop node="27153" />
+        <Stop node="27009" />
+        <Stop node="26960" />
+        <Stop node="26962" />
+        <Stop node="26957" />
+        <Stop node="27007" />
+        <Stop node="27155" />
+        <Stop node="27152" />
+        <Stop node="27048" />
+        <Stop node="27156" />
+        <Stop node="27038" />
+        <Stop node="32709" />
+        <Stop node="27029" />
+        <Stop node="27078" />
+      </Stops>
+    </Trans>
+    <Trans id="168" name="C1" type="Train">
+      <color a="255" r="137" g="30" b="64" />
+      <Stops>
+        <Stop node="1270" />
+        <Stop node="31455" />
+        <Stop node="16089" />
+      </Stops>
+    </Trans>
+    <Trans id="169" name="2号线" type="Metro">
+      <color a="255" r="39" g="192" b="232" />
+      <Stops>
+        <Stop node="12588" />
+        <Stop node="12587" />
+        <Stop node="12586" />
+        <Stop node="12585" />
+        <Stop node="32741" />
+        <Stop node="12584" />
+        <Stop node="28354" />
+        <Stop node="12550" />
+        <Stop node="12582" />
+        <Stop node="1769" />
+        <Stop node="28834" />
+        <Stop node="12581" />
+        <Stop node="12579" />
+        <Stop node="12578" />
+        <Stop node="9843" />
+        <Stop node="27918" />
+        <Stop node="12577" />
+        <Stop node="12549" />
+        <Stop node="12600" />
+        <Stop node="12571" />
+        <Stop node="1770" />
+        <Stop node="12570" />
+        <Stop node="12569" />
+        <Stop node="12568" />
+      </Stops>
+    </Trans>
+    <Trans id="191" name="1号线" type="Metro">
+      <color a="255" r="98" g="54" b="27" />
+      <Stops>
+        <Stop node="31786" />
+        <Stop node="31784" />
+        <Stop node="31961" />
+        <Stop node="31959" />
+        <Stop node="31957" />
+        <Stop node="31955" />
+        <Stop node="31954" />
+        <Stop node="31950" />
+        <Stop node="31947" />
+        <Stop node="31943" />
+        <Stop node="31941" />
+        <Stop node="31939" />
+        <Stop node="31937" />
+        <Stop node="31931" />
+        <Stop node="31928" />
+        <Stop node="31926" />
+        <Stop node="31924" />
+        <Stop node="31922" />
+        <Stop node="31918" />
+        <Stop node="31768" />
+        <Stop node="31907" />
+        <Stop node="31906" />
+        <Stop node="31764" />
+        <Stop node="31766" />
+        <Stop node="31762" />
+        <Stop node="31902" />
+        <Stop node="31900" />
+        <Stop node="31770" />
+        <Stop node="31891" />
+        <Stop node="31889" />
+        <Stop node="32749" />
+        <Stop node="31885" />
+        <Stop node="31883" />
+        <Stop node="31880" />
+        <Stop node="31875" />
+        <Stop node="31872" />
+        <Stop node="31869" />
+        <Stop node="31867" />
+        <Stop node="31864" />
+        <Stop node="31863" />
+        <Stop node="31861" />
+        <Stop node="31859" />
+        <Stop node="31857" />
+        <Stop node="31855" />
+        <Stop node="31853" />
+        <Stop node="31781" />
+      </Stops>
+    </Trans>
+    <Trans id="246" name="S1" type="Metro">
+      <color a="255" r="37" g="74" b="0" />
+      <Stops>
+        <Stop node="31074" />
+        <Stop node="31072" />
+      </Stops>
+    </Trans>
+  </Transports>
+</CSLExportXML>

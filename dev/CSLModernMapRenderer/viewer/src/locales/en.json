@@ -214,5 +214,7 @@
   "controls_actions": "View",
   "preview3d_title": "3D preview",
   "preview3d_help": "Hold the middle mouse button: drag sideways to rotate, up/down to tilt.",
-  "preview3d_missing": "Some buildings have no model height and remain flat. Export again with the updated mod."
+  "preview3d_missing": "Some buildings have no model height and remain flat. Export again with the updated mod.",
+  "satellite_texture_limit": "Satellite image size {{size}} exceeds the device texture limit {{limit}}",
+  "controls_satellite": "Satellite imagery"
 }

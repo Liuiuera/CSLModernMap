@@ -91,11 +91,17 @@ public sealed partial class MainWindow
         _updatingOverview = true;
         try
         {
-            if (_overviewTheme!.Items.Count == 0)
-                foreach (var theme in _snapshot.GetProperty("themes").EnumerateArray())
+            _overviewTheme!.Items.Clear();
+            foreach (var builtin in new[] { true, false })
+            {
+                var themes = _snapshot.GetProperty("themes").EnumerateArray().Where(theme => theme.GetProperty("builtin").GetBoolean() == builtin).ToArray();
+                if (themes.Length == 0) continue;
+                _overviewTheme.Items.Add(new ComboBoxItem { Content = UiLanguage.Text(builtin ? "ThemeEditor_Builtins" : "ThemeEditor_Personal"), IsEnabled = false });
+                foreach (var theme in themes)
                     _overviewTheme.Items.Add(new ComboBoxItem { Content = theme.GetProperty("name").GetString(), Tag = theme.GetProperty("id").GetString() });
+            }
             foreach (ComboBoxItem item in _overviewTheme.Items)
-                if ((string)item.Tag == _snapshot.GetProperty("theme").GetString()) _overviewTheme.SelectedItem = item;
+                if (item.Tag is string id && id == _snapshot.GetProperty("theme").GetString()) _overviewTheme.SelectedItem = item;
             var info = _snapshot.GetProperty("cityInfo");
             // 六项统计由引擎算好下发；未装城市时不编数字。
             var stats = _snapshot.TryGetProperty("stats", out var node) ? node : default;
@@ -126,6 +132,8 @@ public sealed partial class MainWindow
     {
         _inspectorRequest++;
         _inspectorSelection = null;
+        _buildingList?.SelectBuilding(null);
+        _buildingList?.ClearDetails();
         _objectInspector = null;
         ClearLayerPanel(InspectorPanel);
         if (_inspectorHome is null)

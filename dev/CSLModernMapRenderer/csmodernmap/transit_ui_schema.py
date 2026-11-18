@@ -57,9 +57,7 @@ LAYER_OPTIONS = {'stations': 'stations',
 RESERVED = {"types", "line_ids", "station_line_ids", "metro_edits", "pure", "abstract"}
 STYLE_FIELDS = {'line_width': 'transport.width',
  'station_size': 'transport.size',
- 'line_label_interval': 'transport.label.interval',
- 'merge_range': 'transport.distance',
- 'merge_enabled': 'transport.merge'}
+ 'line_label_interval': 'transport.label.interval'}
 
 
 def option_schema(options):

@@ -1,8 +1,8 @@
-"""Run the regression suite and keep a readable test log."""
+"""Run the public regression suite and keep a readable test log."""
 from pathlib import Path
-import io
+import os
+import subprocess
 import sys
-import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -10,13 +10,16 @@ ROOT = Path(__file__).resolve().parents[2]
 def main() -> int:
     output = ROOT / "artifacts"
     output.mkdir(exist_ok=True)
-    stream = io.StringIO()
-    suite = unittest.defaultTestLoader.discover(str(ROOT / "tests"))
-    result = unittest.TextTestRunner(stream=stream, verbosity=2).run(suite)
-    report = stream.getvalue()
-    (output / "tests.txt").write_text(report, encoding="utf-8")
-    print(report, end="")
-    return 0 if result.wasSuccessful() and result.testsRun > 0 else 1
+    report = output / "tests.txt"
+    with report.open("w", encoding="utf-8") as stream:
+        result = subprocess.run(
+            [sys.executable, "-m", "pytest", str(ROOT / "tests"), "-q",
+             "-p", "no:cacheprovider", "--basetemp", str(output / "pytest")],
+            cwd=ROOT, stdout=stream, stderr=subprocess.STDOUT,
+            env={**os.environ, "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"},
+        )
+    print(report.read_text(encoding="utf-8"), end="")
+    return result.returncode
 
 
 if __name__ == "__main__":

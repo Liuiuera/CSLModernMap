@@ -90,8 +90,12 @@ def parse_traffic_ramp(raw) -> list | None:
 def resolve_traffic_style(raw) -> dict:
     """返回 PNG 和预览共享的交通绘制参数。"""
     cfg = raw if isinstance(raw, dict) else {}
+    ramp = parse_traffic_ramp(cfg.get("ramp")) or list(DEFAULT_TRAFFIC_RAMP)
+    # 兼容现有功能区写入的三档颜色，最终仍交给同一条色带绘制。
+    ramp = [(value, cfg.get("free" if value < .3 else "slow" if value < .6 else "busy", color))
+            for value, color in ramp]
     return {
-        "ramp": parse_traffic_ramp(cfg.get("ramp")) or list(DEFAULT_TRAFFIC_RAMP),
+        "ramp": ramp,
         "no_data_color": cfg.get("no_data_color", DEFAULT_TRAFFIC_NO_DATA),
         "width_scale": float(cfg.get(
             "width_scale", DEFAULT_TRAFFIC_WIDTH_SCALE)),

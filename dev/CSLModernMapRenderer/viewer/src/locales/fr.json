@@ -214,5 +214,7 @@
   "preview3d_title": "Aperçu 3D",
   "preview3d_help": "Maintenez le bouton du milieu : glissez latéralement pour tourner, verticalement pour incliner.",
   "preview3d_missing": "Certains bâtiments n’ont pas de hauteur de modèle et restent plats. Réexportez avec le mod à jour.",
-  "roads_local_flat_fallback": "Certains croisements sont dessinés à plat. La superposition des ponts et tunnels peut y être inexacte."
+  "roads_local_flat_fallback": "Certains croisements sont dessinés à plat. La superposition des ponts et tunnels peut y être inexacte.",
+  "satellite_texture_limit": "Satellite image size {{size}} exceeds the device texture limit {{limit}}",
+  "controls_satellite": "Image satellite"
 }

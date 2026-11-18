@@ -1727,6 +1727,12 @@ class MapDocument(_Serializable):
     issues: list[MapIssue] = field(default_factory=list)
     # 尚未提升为独立 CMM 实体的源细节仍以可往返的 JSON 值保存，保证迁移期间无损。
     extensions: dict[str, Any] = field(default_factory=dict)
+    _satellite_png: bytes | None = field(default=None, repr=False, compare=False)
+    _satellite_layers: dict = field(default_factory=dict, repr=False, compare=False)
+    _satellite_composite: bytes | None = field(default=None, repr=False, compare=False)
+    _satellite_filtered: tuple | None = field(default=None, repr=False, compare=False)
+    _satellite_info: dict | None = field(default=None, repr=False, compare=False)
+    _archive_edits: dict | None = field(default=None, repr=False, compare=False)
     _index: DocumentIndex = field(default_factory=DocumentIndex, init=False, repr=False, compare=False)
     _index_built: bool = field(default=False, init=False, repr=False, compare=False)
     _issue_keys: set = field(default_factory=set, init=False, repr=False, compare=False)
@@ -1877,7 +1883,7 @@ class MapDocument(_Serializable):
 
     def validate(self) -> list[MapIssue]:
         """校验核心引用并返回完整问题列表；可选引用缺失不构成错误。"""
-        if self.schema_version != "cmm-v1":
+        if self.schema_version not in ("cmm-v1", "cmm1.1"):
             self._append_issue(MapIssue("error", "SCHEMA_VERSION", f"unsupported schema: {self.schema_version}"))
 
         collections = (
@@ -2017,6 +2023,8 @@ class MapDocument(_Serializable):
             "issues": [item.to_dict() for item in self.issues],
             "extensions": self.extensions,
         }
+        if self._satellite_info is not None:
+            result["satellite"] = self._satellite_info
         if self.traffic is not None:
             result["traffic"] = _json_value(self.traffic)
         return result
@@ -2049,20 +2057,32 @@ class MapDocument(_Serializable):
 
     @classmethod
     def from_json(cls, value: str | Path) -> "MapDocument":
+        satellite = None
         if isinstance(value, Path):
-            text = _read_document_text(value)
+            from .archive import read_archive
+            satellite = read_archive(value)
+            text = satellite[0] if satellite else _read_document_text(value)
         elif isinstance(value, str) and not value.lstrip().startswith(("{", "[")) and Path(value).exists():
-            text = _read_document_text(Path(value))
+            return cls.from_json(Path(value))
         else:
             text = value
         raw = json.loads(text)
         from .file_format import check_cmm
         check_cmm(raw)
-        return cls.from_dict(raw)
+        document = cls.from_dict(raw)
+        if satellite:
+            document._satellite_png, document._satellite_info, document._archive_edits, document._satellite_layers = satellite[1:]
+        return document
 
 
 def dump_json(document: MapDocument, path: str | Path, *, indent: int | None = 2) -> None:
-    Path(path).write_text(document.to_json(indent=indent), encoding="utf-8")
+    if Path(path).suffix.casefold() == ".cmm":
+        from .archive import write_archive
+        write_archive(document, path)
+    else:
+        if document._satellite_info is not None or document._archive_edits is not None:
+            raise ValueError("Use .cmm to preserve satellite images and edits")
+        Path(path).write_text(document.to_json(indent=indent), encoding="utf-8")
 
 
 def load_json(path: str | Path) -> MapDocument:

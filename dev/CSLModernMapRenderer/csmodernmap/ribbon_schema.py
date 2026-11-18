@@ -17,6 +17,7 @@
 from dataclasses import dataclass
 
 from csmodernmap.i18n import tr
+from csmodernmap.terrain import TERRAIN_MODES, normalize_terrain_mode
 
 
 @dataclass(frozen=True)
@@ -62,33 +63,10 @@ def color(key, value):
     return Field(key, value, 'color')
 
 
-# 「地形表现」只有两种画法：只按海拔分层设色，或在色带之上再叠一层山影。
-# 曾经存在过的「海拔渐变 / 立体棱角」已下线（后者会把地形切成多边形面片）。
-TERRAIN_MODES = ('simple', 'shade')
-
-# 旧取值 → 现取值。老设置文件与老主题里都可能还留着这些词，读到时归一，
-# 否则下拉框会读出一个已经不存在的选项、渲染端也会拿到认不出的模式。
-_TERRAIN_MODE_ALIASES = {
-    'gradient': 'shade',   # 旧「海拔渐变」：本来也是叠山影的那一档
-    'linear': 'shade',
-    'facets': 'shade',     # 旧「立体棱角」：功能已删除，视觉上并入带山影那档
-    'faceted': 'shade',
-    'polygon': 'shade',
-    'low-poly': 'shade',
-    'low_poly': 'shade',
-    'smooth': 'shade',     # 旧主题里 hillshade.mode 的词，一并当"带山影"
-}
-
-
-def normalize_terrain_mode(value) -> str:
-    """把任意外部取值归一到 ``TERRAIN_MODES`` 之一；认不出来就按"分层设色"。"""
-    text = str(value if value is not None else '').strip().lower()
-    text = _TERRAIN_MODE_ALIASES.get(text, text)
-    return text if text in TERRAIN_MODES else TERRAIN_MODES[0]
-
-
 FIELDS = {
- 'theme': choice('theme', 'modern', 'amap', 'google', 'dark', 'paper'),
+ 'satellite.preset': choice('satellite.preset', 'original', 'haze', 'grain', 'resolution', 'distortion', 'combined'),
+ 'satellite.intensity': number('satellite.intensity', 100, 0, 100),
+ 'theme': choice('theme', 'modern', 'bright', 'warm_natural', 'dark', 'paper'),
  'size': choice('size', '4k', '2k', '8k', 'custom'),
  'range': choice('range', 'city', 'center', 'selection', 'custom'),
  'rotation': choice('rotation', '0', '90', '180', '270'),
@@ -96,7 +74,7 @@ FIELDS = {
  'terrain.mode': choice('terrain.mode', *TERRAIN_MODES),
  'terrain.color': color('terrain.color', '#EBF0CF'),
  'terrain.forest': color('terrain.forest', '#BFE89D'),
- 'terrain.shade': number('terrain.shade', 35, 0, 100),
+ 'terrain.shade': number('terrain.shade', 30, 0, 100),
  'terrain.sun': number('terrain.sun', 315, 0, 360),
  'water.color': color('water.color', '#8DDBF6'),
  'water.border': color('water.border', '#72C3E2'),
@@ -220,16 +198,20 @@ for _kind in LABEL_KINDS:
 # 挑样式、预览侧 ``preview_scene.road_theme`` 也按它下发 paint tokens。
 # 整改前 GUI 只把「普通道路」「高速公路」两个颜色摊出来，而且「普通道路」是
 # 一个色刷遍所有等级、「道路描边」连高架和隧道一起刷 —— 等级之间没法分别调。
-ROAD_LEVELS: tuple = ('highway', 'main', 'branch', 'special', 'beautification',)
+ROAD_LEVELS: tuple = (
+    'highway', 'main', 'branch', 'special', 'quay', 'beautification',
+)
 
 # 各等级默认的最小路面宽度，与导出侧 ``road_layer._LEVEL_MIN_PIX`` 同源。
 _ROAD_LEVEL_MIN_PX = {"highway": 1.8, "main": 1.4, "branch": 0.8,
-                      "special": 0.8, "beautification": 0.5}
+                      "special": 0.8, "quay": 2.0, "beautification": 0.5}
 # 兜底配色（只在主题缺该等级的配置时用得上，五个内置主题都带这些键）。
 _ROAD_LEVEL_FILL = {"highway": "#CDCFD5", "main": "#ECEEF2", "branch": "#FFFFFF",
-                    "special": "#F0F2F5", "beautification": "#F0F2F5"}
+                    "special": "#F0F2F5", "quay": "#F0F2F5",
+                    "beautification": "#F0F2F5"}
 _ROAD_LEVEL_BORDER = {"highway": "#AFB1B7", "main": "#BAC0CA", "branch": "#C3C8D2",
-                      "special": "#E1E3E9", "beautification": "#E1E3E9"}
+                      "special": "#E1E3E9", "quay": "#E1E3E9",
+                      "beautification": "#E1E3E9"}
 for _lvl in ROAD_LEVELS:
     FIELDS['road.level.highway.fill'] = color(
         'road.level.highway.fill', _ROAD_LEVEL_FILL['highway'])
@@ -255,6 +237,12 @@ for _lvl in ROAD_LEVELS:
         'road.level.special.border', _ROAD_LEVEL_BORDER['special'])
     FIELDS['road.level.special.width'] = number(
         'road.level.special.width', _ROAD_LEVEL_MIN_PX['special'], 0.2, 6.0)
+    FIELDS['road.level.quay.fill'] = color(
+        'road.level.quay.fill', _ROAD_LEVEL_FILL['quay'])
+    FIELDS['road.level.quay.border'] = color(
+        'road.level.quay.border', _ROAD_LEVEL_BORDER['quay'])
+    FIELDS['road.level.quay.width'] = number(
+        'road.level.quay.width', 0.5, 0.05, 1.0)
     FIELDS['road.level.beautification.fill'] = color(
         'road.level.beautification.fill', _ROAD_LEVEL_FILL['beautification'])
     FIELDS['road.level.beautification.border'] = color(
@@ -263,6 +251,7 @@ for _lvl in ROAD_LEVELS:
         'road.level.beautification.width', _ROAD_LEVEL_MIN_PX['beautification'], 0.2, 6.0)
 
 LAYER_FIELDS = {
+ 'satellite': ('satellite.preset', 'satellite.intensity'),
  'terrain':('terrain.mode','terrain.color','terrain.forest','terrain.shade','terrain.sun'),
  'water':('water.color','water.border','water.width'),
  # 整体项在前，再按等级排（每级 填色 / 描边 / 宽度 挨在一起）。
@@ -334,6 +323,7 @@ TRANSIT_TYPES: tuple = (
 
 # 图层分组的显示名 → 翻译键。侧栏标题与主题编辑器共用同一份，避免两处各写一套。
 LAYER_TITLE_KEYS = {
+ 'satellite': 'gui.layer.title.satellite',
  'terrain': 'gui.layer.title.terrain',
  'water': 'gui.layer.title.water',
  'road': 'gui.layer.title.road',

@@ -284,7 +284,10 @@ def _read_segments(
         level = None
         if kind in (NetworkKind.ROAD, NetworkKind.BEAUTIFICATION):
             legacy_level = classify_segment(raw, seg_type)
-            level = RoadLevel[legacy_level.name]
+            # QUAY 仅用于渲染显示；CMM 保持 BEAUTIFICATION，加载场景时再从源数据派生。
+            level = (RoadLevel.BEAUTIFICATION
+                     if legacy_level.value == "quay"
+                     else RoadLevel[legacy_level.name])
         width = segment_physical_width(raw, seg_type)
         start_mode = mode_by_node.get(raw.start_node_id, SegmentMode.GROUND)
         end_mode = mode_by_node.get(raw.end_node_id, SegmentMode.GROUND)

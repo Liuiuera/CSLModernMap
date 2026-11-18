@@ -214,5 +214,7 @@
   "preview3d_title": "3D 미리 보기",
   "preview3d_help": "가운데 버튼을 누른 채 좌우로 드래그하면 회전하고 위아래로 드래그하면 기울입니다.",
   "preview3d_missing": "일부 건물에 모델 높이가 없어 평면으로 표시됩니다. 최신 모드로 다시 내보내세요.",
-  "roads_local_flat_fallback": "일부 도로 교차 지점은 평면으로 표시됩니다. 이 지점에서 교량과 터널의 겹침이 부정확할 수 있습니다."
+  "roads_local_flat_fallback": "일부 도로 교차 지점은 평면으로 표시됩니다. 이 지점에서 교량과 터널의 겹침이 부정확할 수 있습니다.",
+  "satellite_texture_limit": "Satellite image size {{size}} exceeds the device texture limit {{limit}}",
+  "controls_satellite": "위성 영상"
 }

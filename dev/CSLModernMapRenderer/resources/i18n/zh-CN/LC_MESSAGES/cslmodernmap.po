@@ -3443,17 +3443,8 @@ msgstr "公共交通视图"
 msgid "gui.terrain_relief.unit.degree"
 msgstr "°"
 
-msgid "gui.theme.choice.amap"
-msgstr "明亮地图"
-
-msgid "gui.theme.choice.apple_maps"
-msgstr "轻简现代"
-
 msgid "gui.theme.choice.dark"
 msgstr "暗黑风格"
-
-msgid "gui.theme.choice.google"
-msgstr "暖色自然"
 
 msgid "gui.theme.choice.vintage"
 msgstr "复古风格"
@@ -4292,9 +4283,6 @@ msgstr "植被颜色"
 msgid "style.terrain.mode.label"
 msgstr "地形表现"
 
-msgid "style.terrain.mode.value.shade"
-msgstr "分层设色 + 山影"
-
 msgid "style.terrain.mode.value.simple"
 msgstr "分层设色"
 
@@ -4307,14 +4295,8 @@ msgstr "光照方向"
 msgid "style.theme.label"
 msgstr "地图主题"
 
-msgid "style.theme.value.amap"
-msgstr "明亮地图"
-
 msgid "style.theme.value.dark"
 msgstr "暗黑风格"
-
-msgid "style.theme.value.google"
-msgstr "暖色自然"
 
 msgid "style.theme.value.modern"
 msgstr "轻简现代"
@@ -5391,87 +5373,11 @@ msgstr "存档"
 msgid "watermark.traffic_at"
 msgstr "路况"
 
-msgid "gui.language.notice"
-msgstr "简体中文为原文，其他语言由 ChatGPT 自动翻译，可能存在不准确或不清晰的表达。"
-
-msgid "gui.language.contribute"
-msgstr "欢迎在 GitHub 提交本地语言翻译，帮助改进。"
-
 msgid "gui.transit.water_degraded"
 msgstr "水域已保留，但部分岸线美化未完成。"
 
 msgid "gui.transit.rmp_water_omitted"
 msgstr "RMP 水域组件 {component} 未能转换，已保留站线、设施及其他可用水域：{reason}"
-
-msgid "gui.transit.water_unverified"
-msgstr "水域未验证，已生成不含水面的示意图。"
-
-#: csmodernmap/object_inspector.py
-msgid "ui.poi_density.extremely_sparse"
-msgstr "极少"
-
-#: csmodernmap/object_inspector.py
-msgid "ui.poi_density.very_sparse"
-msgstr "很少"
-
-#: csmodernmap/object_inspector.py
-msgid "ui.poi_density.very_dense"
-msgstr "很多"
-
-#: csmodernmap/object_inspector.py
-msgid "ui.poi_density.extremely_dense"
-msgstr "极多"
-
-msgid "style.road.game_names.label"
-msgstr "使用游戏自动道路名"
-
-msgid "gui.layer.poi_area"
-msgstr "建筑区上色"
-
-msgid "gui.layer.poi_area_desc"
-msgstr "复用建筑轮廓和颜色，仅填充建筑内部，不绘制边框。可独立于建筑图层显示。"
-
-msgid "gui.layer.title.poi_area"
-msgstr "建筑用途上色"
-
-msgid "gui.poi_shared.all_games"
-msgstr "全部游戏"
-
-msgid "gui.poi_shared.search"
-msgstr "搜索名称或原生 ID"
-
-msgid "gui.poi_shared.display"
-msgstr "显示图标"
-
-msgid "gui.poi_shared.image_search"
-msgstr "搜索图标"
-
-msgid "gui.poi_shared.restore"
-msgstr "恢复默认"
-
-msgid "gui.poi_shared.save"
-msgstr "保存"
-
-msgid "gui.poi_shared.close"
-msgstr "关闭"
-
-msgid "gui.poi_shared.no_image"
-msgstr "不显示图标"
-
-msgid "gui.poi_shared.external_change"
-msgstr "映射已被外部修改，请关闭窗口后重新打开。"
-
-msgid "gui.poi_shared.saved"
-msgstr "已保存，所有地图共用此配置。"
-
-msgid "gui.poi_shared.unsaved"
-msgstr "保存未保存的修改？"
-
-msgid "style.poi.set.value.modern"
-msgstr "浅色"
-
-msgid "style.poi.set.value.modern-dark"
-msgstr "深色"
 
 msgid "ui.export.possible_memory_exhaustion"
 msgstr "可能是内存不足，渲染进程已意外退出。如果游戏仍在运行，请先关闭游戏，并关闭其他占用内存较多的程序，或减小导出尺寸后重试。"
@@ -5652,3 +5558,132 @@ msgstr "操作失败"
 
 msgid "ui.failure.city_json"
 msgstr "城市文件的 JSON 格式无效，请从游戏重新导出；若仍失败，可将错误详情反馈给作者"
+
+msgid "style.road.level.quay.width.label"
+msgstr "护岸宽度比例"
+
+msgid "gui.satellite.unavailable"
+msgstr "当前地图没有卫星影像"
+
+msgid "gui.style_editor.field.opacity"
+msgstr "道路不透明度"
+
+msgid "gui.layer.title.satellite"
+msgstr "卫星影像"
+
+msgid "style.satellite.preset.value.combined"
+msgstr "组合成像"
+
+msgid "gui.style_editor.field.stroke_blur"
+msgstr "光晕柔化"
+
+msgid "satellite_texture_limit"
+msgstr "卫星影像尺寸 {size} 超过设备纹理限制 {limit}"
+
+msgid "gui.theme.error.write"
+msgstr "无法写入用户设置。"
+
+msgid "style.terrain.mode.value.continuous"
+msgstr "连续过渡"
+
+msgid "style.satellite.preset.desc"
+msgstr "仅处理卫星底图，道路、POI、文字等叠加内容不受影响。"
+
+msgid "style.satellite.preset.value.resolution"
+msgstr "模糊与采样损失"
+
+msgid "gui.theme.choice.modern"
+msgstr "轻简现代"
+
+msgid "gui.theme.copy"
+msgstr "副本"
+
+msgid "style.road.level.quay.border.label"
+msgstr "护岸描边"
+
+msgid "gui.satellite.filtering"
+msgstr "正在处理卫星影像质感…"
+
+msgid "gui.satellite.ready"
+msgstr "卫星影像已就绪"
+
+msgid "gui.style_editor.field.quay"
+msgstr "护岸"
+
+msgid "gui.theme.error.builtin"
+msgstr "不能覆盖内置主题文件。"
+
+msgid "gui.theme.choice.satellite"
+msgstr "卫星暖色"
+
+msgid "gui.theme.error.duplicate"
+msgstr "该主题名称已存在。"
+
+msgid "gui.style_editor.desc.labels.stroke_blur"
+msgstr "柔化文字周围的光晕，保持字面清晰。"
+
+msgid "style.satellite.intensity.label"
+msgstr "质感强度（%）"
+
+msgid "style.road.level.quay.fill.label"
+msgstr "护岸颜色"
+
+msgid "gui.satellite.composing"
+msgstr "正在合成卫星影像…"
+
+msgid "gui.layer.satellite"
+msgstr "卫星影像"
+
+msgid "gui.theme.error.file"
+msgstr "请选择 YAML 主题文件。"
+
+msgid "style.satellite.preset.value.grain"
+msgstr "感光颗粒"
+
+msgid "gui.theme.error.name"
+msgstr "名称须为 1–64 个字符，不能包含控制字符。"
+
+msgid "style.satellite.preset.value.haze"
+msgstr "薄雾与散射"
+
+msgid "style.theme.value.warm_natural"
+msgstr "暖色自然"
+
+msgid "gui.theme.legacy"
+msgstr "旧版"
+
+msgid "style.satellite.preset.value.distortion"
+msgstr "成像失真"
+
+msgid "gui.theme.choice.warm_natural"
+msgstr "暖色自然"
+
+msgid "gui.theme.choice.bright"
+msgstr "明亮地图"
+
+msgid "gui.theme.personal"
+msgstr "我的主题"
+
+msgid "style.theme.value.bright"
+msgstr "明亮地图"
+
+msgid "style.terrain.mode.value.shade"
+msgstr "连续过渡加光影"
+
+msgid "style.satellite.preset.value.original"
+msgstr "原图"
+
+msgid "gui.style_editor.desc.roads.opacity"
+msgstr "道路叠加的不透明度：0 为完全透明，1 为不透明。"
+
+msgid "style.satellite.intensity.desc"
+msgstr "0 恢复原图，100 使用完整预设效果。"
+
+msgid "gui.style_editor.field.quay_elevated"
+msgstr "高架护岸"
+
+msgid "gui.style_editor.field.quay_tunnel"
+msgstr "隧道护岸"
+
+msgid "style.satellite.preset.label"
+msgstr "影像质感"

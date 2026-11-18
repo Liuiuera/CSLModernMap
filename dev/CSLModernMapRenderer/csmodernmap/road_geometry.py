@@ -18,6 +18,7 @@ from .data import MapData, Point, Segment, SegmentType
 from .road_hierarchy import (
     RoadLevel,
     classify_segment,
+    is_quay_network,
     road_level_rank,
     segment_physical_width,
 )
@@ -26,6 +27,36 @@ from .road_hierarchy import (
 GRID_SIZE = 32.0
 HEIGHT_EPSILON = 1.5
 _EPS = 1e-7
+
+
+def scale_footprint_width(points, centerline, factor):
+    """沿中心线横向缩放占地；端点外伸的纵向距离保持不变。"""
+    if factor == 1.0:
+        return points
+    edges = [(a.x, a.z, b.x-a.x, b.z-a.z)
+             for a, b in zip(centerline, centerline[1:])
+             if math.hypot(b.x-a.x, b.z-a.z) > _EPS]
+    result = []
+    for x, z in points:
+        best_error = math.inf
+        best_index = -1
+        for index, (ax, az, dx, dz) in enumerate(edges):
+            t = ((x-ax)*dx + (z-az)*dz) / (dx*dx + dz*dz)
+            clipped = max(0.0, min(1.0, t))
+            error = (x-ax-clipped*dx)**2 + (z-az-clipped*dz)**2
+            if (best_index == index-1 and abs(error-best_error) <= 1e-9
+                    and (qx-ax-clipped*dx)**2 + (qz-az-clipped*dz)**2 > _EPS):
+                # 内侧斜接角同时属于相邻两边，围绕公共顶点收窄。
+                qx, qz = ax, az
+            elif error < best_error:
+                best_error = error
+                best_index = index
+                # 内部转角收向顶点，真实端点只收窄横向分量。
+                if (index == 0 and t < 0) or (index == len(edges)-1 and t > 1):
+                    clipped = t
+                qx, qz = ax + clipped*dx, az + clipped*dz
+        result.append((qx + (x-qx)*factor, qz + (z-qz)*factor))
+    return tuple(result)
 
 # CMM RoadLevel → 渲染道路层级（同名枚举，逐成员映射）。
 _CMM_LEVEL_MAP = {
@@ -117,6 +148,29 @@ class RoadScene:
     def junctions_in(self, bbox) -> list[Junction]:
         return [j for j in self.junctions if _bbox_intersects(j.bbox, bbox)]
 
+
+def quay_centerlines(scene):
+    """跨护岸二度节点延伸投影轴，使相邻占地在接缝处使用相同的横向方向。"""
+    extensions = {}
+    for junction in scene.junctions:
+        if len(junction.segment_ids) != 2:
+            continue
+        a, b = (scene.roads_by_id[sid] for sid in junction.segment_ids)
+        if a.level is not RoadLevel.QUAY or b.level is not RoadLevel.QUAY or a.mode != b.mode:
+            continue
+        for road, neighbor in ((a, b), (b, a)):
+            oriented = (neighbor.points if neighbor.end_node_id == junction.node_id
+                        else tuple(reversed(neighbor.points)))
+            prefix, suffix = extensions.setdefault(road.id, [(), ()])
+            if road.start_node_id == junction.node_id:
+                prefix = oriented[:-1]
+            else:
+                suffix = tuple(reversed(oriented))[1:]
+            extensions[road.id] = prefix, suffix
+    return {road.id: extensions.get(road.id, ((), ()))[0] + road.points
+            + extensions.get(road.id, ((), ()))[1]
+            for road in scene.roads if road.level is RoadLevel.QUAY}
+
 @dataclass(frozen=True)
 class JunctionMesh:
     outer: tuple[tuple[tuple[float, float], ...], ...]
@@ -155,6 +209,9 @@ def build_road_scene(source) -> RoadScene:
 
 
 def _cmm_classify(network) -> RoadLevel:
+    if (network.level is CmmRoadLevel.BEAUTIFICATION
+            and is_quay_network(network.name, network.source_raw)):
+        return RoadLevel.QUAY
     return _CMM_LEVEL_MAP[network.level]
 
 

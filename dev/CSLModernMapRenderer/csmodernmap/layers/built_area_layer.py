@@ -85,6 +85,9 @@ class BuiltAreaLayer(Layer):
                     "canvas.background", "#F6F7F9")
                 # 旧版轮廓路径使用 smooth_blur 平滑几何，表面图层不得将其变成透明度羽化。
                 edge_meters = float(cfg.get("edge_meters", 0.0) or 0.0)
+                elevation_mode = str(ctx.style.get("terrain.elevation_mode", "stepped")).strip().lower()
+                if elevation_mode not in {"continuous", "gradient", "linear"}:
+                    edge_meters = 0.0
                 composite_distance_fill(
                     ctx.image,
                     model.built_area_distance,

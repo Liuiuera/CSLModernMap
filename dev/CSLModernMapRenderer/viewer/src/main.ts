@@ -31,7 +31,7 @@ if (EMBEDDED) {
 
 type RoadPaint = { fill: string; border: string; minFillPx: number; borderFixedPx: number;
   borderScale: number; dash?: number[] | null; enabled: boolean };
-type RoadTheme = { background: string; widthScale: number; levels: Record<string, RoadPaint> };
+type RoadTheme = { background: string; widthScale: number; opacity?: number; levels: Record<string, RoadPaint> };
 type FullTheme = Record<string, any> & { road: RoadTheme };
 type SceneManifest = { schemaVersion: number; sceneId: string; revision: number;
   roadOrder?: {flatGroups?: unknown[]};
@@ -46,6 +46,9 @@ type SceneManifest = { schemaVersion: number; sceneId: string; revision: number;
   rotation?: number;
   view?: { mode: string; options: Record<string, any> };
   terrainCorners?: [number, number][] | null;
+  satelliteCorners?: [number, number][] | null;
+  satelliteAvailable?: boolean;
+  satelliteSize?: number[];
   surfaceFields?: {
     builtArea?: SurfaceDistanceSpec & { url: string; color?: string; bufferMeters?: number; edgeMeters?: number };
   };
@@ -55,7 +58,8 @@ type PreviewCommand = { type: string; sceneId?: string; revision?: number; manif
   preset?: string; bounds?: [[number, number], [number, number]];
   options?: Record<string, any>; appearance?: 'light' | 'dark';
   text?: string; language?: string; rotation?: number; worldBounds?: [number, number, number, number];
-  featureId?: string; selection?: any; layers?: Record<string, boolean>; enabled?: boolean; guideAvailable?: boolean; pendingLayers?: string[] };
+  featureId?: string; selection?: any; locate?: boolean; data?: GeoJSON.FeatureCollection;
+  layers?: Record<string, boolean>; enabled?: boolean; guideAvailable?: boolean; pendingLayers?: string[] };
 // 单文件导出：整份场景内联数据的结构（与 web_export_v2.py 的 payload 对应）
 type EmbeddedPayload = {
   manifest: SceneManifest;
@@ -130,9 +134,11 @@ const sourceIds: Record<string, string> = { roads: 'roads',
   water: 'water', railway: 'railway', transit: 'transit', stations: 'stations', traffic: 'traffic',
   districts: 'districts', zones: 'zones', pois: 'pois',
   transitViewPois: 'transit-view-pois', labels: 'labels',
-  proceduralObjects: 'procedural-objects', inspectorSelection: 'inspector-selection', searchSelection: 'search-selection' };
+  proceduralObjects: 'procedural-objects', inspectorSelection: 'inspector-selection', searchSelection: 'search-selection',
+  buildingHighlight: 'building-highlight' };
+const sourceTolerances: Record<string, number> = {roads: 1, labels: 1, railway: 1, buildings: .375, zones: .375};
 const groups: Record<string, string[]> = {
-  terrain: ['terrain', 'forest'], built_area: ['built-area', 'built-area-surface'], poi_area: ['poi-area'], land_use: ['land-use'],
+  satellite: ['satellite'], terrain: ['terrain', 'forest'], built_area: ['built-area', 'built-area-surface'], poi_area: ['poi-area'], land_use: ['land-use'],
   water: ['water-fill', 'water-shore'], building: ['buildings'],
   road: [], railway: [
       'railway-base', 'railway-dash-metro', 'railway-dash-tram',
@@ -145,7 +151,7 @@ const groups: Record<string, string[]> = {
   poi: ['pois', 'transit-pois'], label: ['district-labels', 'zone-labels', 'road-labels'], procedural_objects: ['procedural-objects'], watermark: [] };
 // 后端分组只用于绘制顺序；可见性和上下文分组有独立语义，不能成为第二套图层堆叠。
 const renderGroups: Record<string, string[]> = {
-  terrain: ['terrain', 'forest'], built_area: ['built-area', 'built-area-surface'],
+  satellite: ['satellite'], terrain: ['terrain', 'forest'], built_area: ['built-area', 'built-area-surface'],
   poi_area: ['poi-area'], land_use: ['land-use'],
   water: ['water-fill', 'water-shore'], building: ['buildings'],
   road: [],
@@ -206,22 +212,25 @@ function postEvent(type: string, payload: Record<string, unknown> = {}): void {
   if (window.chrome?.webview) window.chrome.webview.postMessage(JSON.stringify(event));
   else window.webkit?.messageHandlers?.cslPreview?.postMessage(event);
 }
-function reportError(error: unknown): void { const message = error instanceof Error ? error.message : String(error);
-  setError(i18n.t("main_reportError_8a023d6da8", { p0: message })); postEvent('renderError', { message }); }
+function reportError(error: unknown, identity?: {sceneId?: string; revision?: number; stage?: string}, fatal = true): void {
+  const message = error instanceof Error ? error.message : String(error);
+  setError(i18n.t("main_reportError_8a023d6da8", { p0: message }));
+  postEvent('renderError', { message, fatal, details: error instanceof Error ? error.stack : message, ...identity });
+}
 const map: MapLibreMap = new maplibregl.Map({ container: 'map', style: { version: 8, sources: {},
   layers: [{ id: 'background', type: 'background', paint: { 'background-color': '#eef1f4' } }] },
   center: [0, 0], zoom: 12, minZoom: 8, maxZoom: 24, attributionControl: false,
   renderWorldCopies: false, pitchWithRotate: false, dragRotate: false, maxPitch: 60,
   localIdeographFontFamily: false });
+map.on('error', event => reportError(event.error, undefined, false));
+map.on('webglcontextlost', () => postEvent('previewContextLost'));
+map.on('webglcontextrestored', () => postEvent('previewContextRestored'));
 map.addControl(new maplibregl.ScaleControl({ maxWidth: 140, unit: 'metric' }), 'bottom-left');
 const preview3d = new Preview3D(() => outputBearing(outputRotation), dismissHint);
 map.addControl(preview3d, 'bottom-right');
 const navigation: NavigationControl = new NavigationControl(map,
-  () => selectionMode || selectionStart !== null, () => {
-    if (!currentManifest || currentManifest.layers.traffic === false) return;
-    void setLayerVisibility('traffic', false).catch(reportError);
-    postEvent('navigationStarted');
-  }, navigationPlaceAt, {properties: navigationRoadStyle, width: navigationWidth, widthMeters: navigationWidthMeters}, preview3d);
+  () => selectionMode || selectionStart !== null, dismissHint,
+  navigationPlaceAt, {properties: navigationRoadStyle, width: navigationWidth, widthMeters: navigationWidthMeters}, preview3d);
 preview3d.onToggle = enabled => navigation.simulation.set3DEnabled(enabled);
 let quickLayersEnabled = EMBEDDED;
 const previewControls = new PreviewControls(navigation, feature => {
@@ -248,7 +257,7 @@ function updateQuickLayers(settled = false, pending?: string[]): void {
   const sources = currentManifest.sources;
   const available = new Set<string>(['label', 'watermark']);
   const sourceGroups: Record<string, string[]> = {
-    terrain: ['terrain', 'forest'], built_area: ['builtArea'], land_use: ['landUse'], water: ['water'],
+    satellite: ['satellite'], terrain: ['terrain', 'forest'], built_area: ['builtArea'], land_use: ['landUse', 'buildings'], water: ['water'],
     road: ['roads'], building: ['buildings'], railway: ['railway'], traffic: ['traffic'],
     metro: ['transit', 'stations'], transit: ['transit', 'stations'], poi_area: ['buildings'],
     poi: ['pois', 'transitViewPois'], district: ['districts'], zone: ['zones'], procedural_objects: ['proceduralObjects'],
@@ -256,6 +265,7 @@ function updateQuickLayers(settled = false, pending?: string[]): void {
   for (const [key, names] of Object.entries(sourceGroups)) if (names.some(name => name in sources)) available.add(key);
   available.delete(contextMode === 'transit' ? 'metro' : 'transit');
   if (currentManifest.terrainCorners?.length) available.add('terrain');
+  if (currentManifest.satelliteAvailable || sources.satellite) available.add('satellite');
   if (currentManifest.surfaceFields?.builtArea) available.add('built_area');
   previewControls.setLayers(currentManifest.layers, available, quickLayersEnabled, settled, pending);
 }
@@ -302,14 +312,21 @@ function renderScaleAt(z: number): number {
   // 与 Python 渲染比例一致：世界米对应的像素数除以全图基准密度，并计入局部坐标投影比例。
   return Math.pow(2, z) / MPP0 * RENDER_SCALE_PER_PPM;
 }
-function widthAt(z: number, casing = false): ExpressionSpecification {
-  const renderScale = renderScaleAt(z);
-  const fill: ExpressionSpecification = ['max',
+function naturalWidthAt(z: number): ExpressionSpecification {
+  return ['max',
     roadToken('minFillPx', .8),
     ['+', .5, ['*', ['get', 'physicalWidth'], currentTheme?.road.widthScale ?? .15,
-      renderScale]]];
+      renderScaleAt(z)]]];
+}
+function quayWidthAt(z: number): ExpressionSpecification {
+  return ['*', ['get', 'physicalWidth'],
+    RENDER_SCALE_PER_PPM, renderScaleAt(z)];
+}
+function widthAt(z: number, casing = false): ExpressionSpecification {
+  const fill = ['case', ['has', 'quayLine'],
+    quayWidthAt(z), naturalWidthAt(z)] as ExpressionSpecification;
   return casing ? ['+', fill, roadToken('borderFixedPx', 1),
-    ['*', roadToken('borderScale', 0), renderScale]] : fill;
+    ['*', roadToken('borderScale', 0), renderScaleAt(z)]] : fill;
 }
 function fillWidth(): ExpressionSpecification {
   return ['interpolate', ['exponential', 2], ['zoom'], ...Array.from({length: 25}, (_, z) => [z, widthAt(z)]).flat()] as ExpressionSpecification;
@@ -356,6 +373,15 @@ function roadLineWidth(width: RoadLayer['width']): ExpressionSpecification {
   return width === 'border' ? borderWidth() : width === 'casing' ? casingWidth() : fillWidth();
 }
 let roadLayers: RoadLayer[] = [];
+function contextFade(): number {
+  return contextMode === 'transit'
+    ? Math.max(.08, 1 - Math.max(0, Math.min(1, Number(contextOptions.transit_mask ?? .6)))) : 1;
+}
+function roadOpacity(): number {
+  // MapLibre 5 按图层混合透明度；道路交叠处会叠加，不能等同于整组离屏合成。
+  return contextMode === 'transit' && contextOptions.base_road === false ? 0
+    : (currentTheme?.road.opacity ?? 1) * contextFade();
+}
 function roadFilter(layer: RoadLayer): ExpressionSpecification {
   return ['all', role(layer.role), ['==', ['coalesce', ['get', 'rank'], 0], layer.rank],
     layer.flatOrder === undefined ? ['!', ['has', 'flatGroup']]
@@ -409,9 +435,11 @@ function addRoads(): void {
           'line-cap': geometryRole === 'road-edge' ? 'round' : 'butt',
           'line-join': 'round', 'line-sort-key': ['get', 'sortKey']},
         paint: type === 'fill' ? {'fill-color': roadToken('fill', '#fff'),
+          'fill-opacity': roadOpacity(),
           // 人为多边形切口不能获得 MapLibre 隐式轮廓。
           'fill-antialias': false} : {
           'line-color': roadToken(paint, paint === 'border' ? '#c3c8d2' : '#fff'),
+          'line-opacity': roadOpacity(),
           'line-width': roadLineWidth(width)}});
       if (paint === 'fill') selectableObjects[layer.id] = {
         objectType: 'road', styleLayer: 'road', priority: 75};
@@ -728,14 +756,15 @@ function trafficMetric(direction?: TrafficDirection, casing = false, offset = fa
     }).flat()] as ExpressionSpecification;
 }
 function trafficColor(direction: TrafficDirection): ExpressionSpecification {
-  return trafficColorExpression(['get', `${direction}Congestion`]);
+  return trafficColorExpression(['get', `${direction}Congestion`],
+    token('traffic').noDataColor, token('traffic').ramp);
 }
 function addTrafficLayers(): void {
   // 描边统一先于色带，不为路况构建独立高低层级。
   for (const layer of trafficLayers) {
     add({id: layer.id, type: 'line', source: 'traffic', filter: trafficFilter(layer.direction),
       layout: {'line-cap': 'round', 'line-join': 'round'},
-      paint: {'line-color': layer.direction ? (layer.casing ? '#52635B' : trafficColor(layer.direction)) : '#D9DDDA',
+      paint: {'line-color': layer.direction ? (layer.casing ? '#52635B' : trafficColor(layer.direction)) : token('traffic').noDataColor,
         'line-width': trafficMetric(layer.direction, layer.casing),
         'line-offset': layer.direction ? trafficMetric(layer.direction, false, true) : 0}});
   }
@@ -744,6 +773,8 @@ function addTrafficLayers(): void {
 function updateTrafficPaint(): void {
   if (!map.getSource('traffic')) return;
   for (const layer of trafficLayers) {
+    map.setPaintProperty(layer.id, 'line-color', layer.direction
+      ? (layer.casing ? '#52635B' : trafficColor(layer.direction)) : token('traffic').noDataColor);
     map.setLayoutProperty(layer.id, 'visibility', layer.direction || currentManifest?.layers.road === false
       ? 'visible' : 'none');
     map.setFilter(layer.id, trafficFilter(layer.direction));
@@ -829,10 +860,16 @@ function addRailways(): void {
       'line-opacity': railTypePaint('baseOpacity', 1),
       'line-width': railWidth('stationWidth')}});
 }
+function addLandUseLayer(): void {
+  const use = token('land_use');
+  add({id: 'land-use', type: 'fill', source: currentManifest?.sources.landUse ? 'land-use' : 'buildings', paint: {
+    'fill-color': categoryColor(use.colors ?? {}, '#D8D0C8'),
+    'fill-opacity': use.opacity ?? .35}});
+}
 function addDomains(): void {
   const land = token('terrain'), water = token('water'), building = token('building');
   const district = token('district'), zone = token('zone');
-  const transit = token('transit'), use = token('land_use');
+  const transit = token('transit');
   updateTransitViewLayout();
   if (!map.getSource('transit-view-stations')) map.addSource('transit-view-stations', {
     type: 'geojson', data: {type: 'FeatureCollection', features: contextMode === 'transit' ? transitStationDisplayFeatures : []},
@@ -846,6 +883,7 @@ function addDomains(): void {
     type: 'geojson', data: {type: 'FeatureCollection', features: mapPoiDisplayFeatures},
     maxzoom: 24, buffer: 256, tolerance: 0, promoteId: 'featureId',
   });
+  if (map.getSource('satellite-image')) add({id: 'satellite', type: 'raster', source: 'satellite-image', paint: {'raster-fade-duration': 0}});
   if (map.getSource('terrain-image')) add({ id: 'terrain', type: 'raster', source: 'terrain-image',
     paint: { 'raster-opacity': land.opacity ?? 1, 'raster-fade-duration': 0 } });
   add({ id: 'forest', type: 'circle', source: 'forest', paint: {
@@ -860,9 +898,7 @@ function addDomains(): void {
     add(builtSurfaceLayer);
   } else if (map.getSource('built-area')) add({ id: 'built-area', type: 'fill', source: 'built-area', paint: {
     'fill-color': token('built_area').fill ?? '#F1F0EB', 'fill-opacity': token('built_area').opacity ?? 1 } });
-  add({ id: 'land-use', type: 'fill', source: 'land-use', paint: {
-    'fill-color': categoryColor(use.colors ?? {}, '#D8D0C8'),
-    'fill-opacity': use.opacity ?? .35 } });
+  addLandUseLayer();
   add({ id: 'poi-area', type: 'fill', source: 'buildings', paint: {
     'fill-color': buildingColor(), 'fill-outline-color': 'rgba(0,0,0,0)' } });
   add({ id: 'water-fill', type: 'fill', source: 'water', filter: ['==', ['get', 'geometryRole'], 'water'],
@@ -916,7 +952,7 @@ function addDomains(): void {
       'symbol-sort-key': ['*', -1, ['get', 'transitPriority']], 'symbol-z-order': 'source',
       'icon-allow-overlap': true, 'icon-ignore-placement': true, 'icon-padding': 0, 'icon-offset': stationIconOffset(...poiDimensions(true)), 'icon-rotation-alignment': 'viewport', 'icon-pitch-alignment': 'viewport' } });
   addBaseTextLayers();
-  for (const source of ['inspector-selection', 'search-selection']) {
+  for (const source of ['building-highlight', 'inspector-selection', 'search-selection']) {
     add({ id: `${source}-fill`, type: 'fill', source,
       filter: ['==', ['geometry-type'], 'Polygon'], paint: {
         'fill-color': '#2772E2', 'fill-opacity': .16,
@@ -939,6 +975,7 @@ function applyTheme(theme: FullTheme): void {
   const layout = (id: string, prop: Parameters<MapLibreMap['setLayoutProperty']>[1], value: any) => { if (map.getLayer(id)) map.setLayoutProperty(id, prop, value); };
   for (const layer of roadLayers) {
     filter(layer.id, roadFilter(layer));
+    set(layer.id, `${layer.type}-opacity`, roadOpacity());
     set(layer.id, `${layer.type}-color`, roadToken(layer.paint,
       layer.paint === 'border' ? '#c3c8d2' : '#fff'));
     if (layer.type === 'line') set(layer.id, 'line-width',
@@ -1013,7 +1050,18 @@ function applyTheme(theme: FullTheme): void {
   navigation.refreshStyle();
   scheduleLabels();
 }
+let satellitePreviousLayers: Record<string, boolean> | null = null;
 async function setLayerVisibility(layer: string, visible: boolean): Promise<void> {
+  if (EMBEDDED && layer === 'satellite' && currentManifest && visible !== currentManifest.layers.satellite) {
+    if (visible) {
+      satellitePreviousLayers = {...currentManifest.layers};
+      for (const name of ['terrain', 'water', 'building', 'built_area', 'land_use', 'poi_area', 'procedural_objects', 'road', 'railway', 'traffic'])
+        await setLayerVisibility(name, false);
+    } else if (satellitePreviousLayers) {
+      const previous = satellitePreviousLayers; satellitePreviousLayers = null;
+      for (const [name, enabled] of Object.entries(previous)) if (name !== 'satellite') await setLayerVisibility(name, enabled);
+    }
+  }
   for (const id of groups[layer] ?? []) if (map.getLayer(id)) {
     let layerVisible = visible;
     if (layerVisible && layer === 'railway' && id.startsWith('railway-dash-')) {
@@ -1044,10 +1092,7 @@ function applyContextStyling(): void {
   const transitLayers = (contextOptions.layers ?? {}) as Record<string, unknown>;
   const transitLayerVisible = (key: string, fallback = true): boolean =>
     transitLayers[key] == null ? fallback : transitLayers[key] !== false;
-  const mask = Math.max(0, Math.min(1, Number(contextOptions.transit_mask ?? .6)));
-  const fade = active ? Math.max(.08, 1-mask) : 1;
-  const baseRoadAllowed = !active
-    || (contextOptions.base_road !== false);
+  const fade = contextFade();
   builtSurfaceLayer?.setFade(fade);
   const set = (id: string, prop: Parameters<MapLibreMap['setPaintProperty']>[1], value: any) => {
     if (map.getLayer(id)) map.setPaintProperty(id, prop, value);
@@ -1077,7 +1122,7 @@ function applyContextStyling(): void {
       : true);
     set(id, 'line-opacity', allowed ? fade : 0);
   }
-  for (const layer of roadLayers) set(layer.id, `${layer.type}-opacity`, baseRoadAllowed ? fade : 0);
+  for (const layer of roadLayers) set(layer.id, `${layer.type}-opacity`, roadOpacity());
   const ordinaryPoiMode = String(contextOptions.ordinary_pois ?? 'hidden');
   set('pois', 'icon-opacity', active ? ordinaryPoiMode === 'visible' ? 1 : ordinaryPoiMode === 'dim' ? fade : 0 : 1);
   set('transit-pois', 'icon-opacity', active ? 0 : 1);
@@ -1216,6 +1261,12 @@ function clearInspectorSelection(report = true): void {
 }
 function restoreInspectorSelection(selection: any): void {
   if (!selection) return;
+  if (selection.source === 'building-catalog' && selection.feature) {
+    inspectorSelectionId = selection.featureId;
+    inspectorSelectedFeature = selection.feature;
+    setInspectorHighlight(selection.feature);
+    return;
+  }
   const sourceKey = ({'transit-view-pois-displaced': 'transitViewPois', 'map-pois-displaced': 'pois',
     'transit-view-lines': 'transit', 'transit-view-stations': 'stations'} as Record<string, string>)[selection.source]
     ?? Object.keys(sourceIds).find(key => sourceIds[key] === selection.source);
@@ -1365,11 +1416,12 @@ function setZoomPreset(preset: string): void {
   map.easeTo({ zoom: ZOOM_PRESETS[preset] ?? ZOOM_PRESETS.city, duration: 220 });
 }
 function clearScene(): void {
-  releaseTraffic(); navigation.clear(); preview3d.reset(); cancelLabelLayout();
+  releaseTraffic(); navigation.clear(); preview3d.reset(); cancelLabelLayout(); satellitePreviousLayers = null;
   for (const item of markers.values()) item.marker.remove();
   markers.clear(); poiAnchorInputs = []; labelWidths.clear();
   for (const id of [...customLayers].reverse()) if (map.getLayer(id)) map.removeLayer(id); customLayers.length = 0;
   if (map.getSource('terrain-image')) map.removeSource('terrain-image');
+  if (map.getSource('satellite-image')) map.removeSource('satellite-image');
   for (const id of Object.values(sourceIds)) if (map.getSource(id)) map.removeSource(id);
   if (map.getSource('transit-view-stations')) map.removeSource('transit-view-stations');
   if (map.getSource('transit-view-pois-displaced')) map.removeSource('transit-view-pois-displaced');
@@ -1457,8 +1509,9 @@ function resolveTextSize(value: number | {fixed?: number; scaled?: number}): num
   return typeof value === 'number' ? value : Number(value.fixed ?? 0) + Number(value.scaled ?? 0) * scale;
 }
 function labelColor(labelType: string, featureColor?: string): string {
-  if (featureColor) return featureColor;
   const label = token('label');
+  if (labelType === 'poi' && label.colors?.poi) return String(label.colors.poi);
+  if (featureColor) return featureColor;
   if (labelType === 'stop' && label.metrics) return String(label.metrics.station?.color ?? '#344054');
   return String(label.colors?.[labelType] ?? label.color ?? '#39424C');
 }
@@ -1501,10 +1554,17 @@ function labelStroke(labelType: string): {color: string; width: number} {
 function applyLabelHalo(el: HTMLElement, labelType: string): void {
   const stroke = labelStroke(labelType);
   const width = labelHalo(labelType) ? stroke.width : 0;
+  const label = token('label');
+  const blur = Math.max(0, label.metrics && labelType !== 'poi'
+    ? resolveTextSize(label.metrics.strokeBlurs?.[labelType] ?? 0)
+    : Number(label.strokes?.[labelType]?.blur ?? 0));
   el.classList.toggle('map-label-no-halo', width <= 0);
+  el.classList.toggle('map-label-blurred-halo', width > 0 && blur > 0);
+  el.dataset.haloText = el.textContent ?? '';
   if (width <= 0) return;
   el.style.setProperty('--label-stroke-width', `${width * 2}px`);
   el.style.setProperty('--label-stroke-c', stroke.color);
+  el.style.setProperty('--label-stroke-blur', `${blur}px`);
 }
 const baseTextLayers = [
   {id: 'district-labels', scope: 'district', labelType: 'district'},
@@ -1519,9 +1579,10 @@ function nativeTextFont(labelType: string): string[] {
   return asset ? [asset.family, 'Microsoft YaHei']
     : [...(bold ? [`${family} Bold`] : []), family, 'Microsoft YaHei'];
 }
-function nativeTextSize(labelType: string, stroke = false): ExpressionSpecification {
+function nativeTextSize(labelType: string, stroke: 'width' | 'blur' | null = null): ExpressionSpecification {
   const label = token('label');
-  const value = stroke ? label.metrics?.strokeWidths?.[labelType] ?? 0
+  const value = stroke ? label.metrics?.[stroke === 'width' ? 'strokeWidths' : 'strokeBlurs']?.[labelType]
+      ?? label.strokes?.[labelType]?.[stroke] ?? 0
     : label.metrics?.sizes?.[labelType] ?? label.sizes?.[labelType] ?? label.size ?? 12;
   const cfg = token('baseText').road?.size_z ?? {};
   const multiplier: ExpressionSpecification = ['match', ['get', 'roadLevel'],
@@ -1535,7 +1596,7 @@ function nativeTextSize(labelType: string, stroke = false): ExpressionSpecificat
     const size = typeof value === 'number' ? value
       : Number(value.fixed ?? 0) + Number(value.scaled ?? 0) * 2 * renderScaleAt(z);
     const scaled = labelType === 'road' ? ['*', size, multiplier] : size;
-    return [z, stroke ? scaled : ['max', 6, scaled]];
+    return [z, stroke ? ['max', 0, scaled] : ['max', 6, scaled]];
   }).flat();
   return ['interpolate', ['exponential', 2], ['zoom'], ...stops] as ExpressionSpecification;
 }
@@ -1582,7 +1643,8 @@ function updateBaseTextLayers(): void {
     map.setLayoutProperty(id, 'symbol-spacing', Number(token('baseText').road_repeat ?? 320));
     map.setPaintProperty(id, 'text-color', labelColor(labelType));
     map.setPaintProperty(id, 'text-halo-color', labelStroke(labelType).color);
-    map.setPaintProperty(id, 'text-halo-width', labelHalo(labelType) ? nativeTextSize(labelType, true) : 0);
+    map.setPaintProperty(id, 'text-halo-width', labelHalo(labelType) ? nativeTextSize(labelType, 'width') : 0);
+    map.setPaintProperty(id, 'text-halo-blur', labelHalo(labelType) ? nativeTextSize(labelType, 'blur') : 0);
   }
 }
 async function loadSceneFonts(manifest: SceneManifest, base: string): Promise<void> {
@@ -1871,7 +1933,7 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number):
   const manifestUrl = provider.base;
   const manifest = await provider.json(new URL(manifestUrl)) as SceneManifest;
   if (generation !== loadGeneration || manifest.revision < currentRevision || manifest.revision !== requestedRevision) {
-    postEvent('sceneDiscarded', { revision: requestedRevision, outcome: 'stale' }); return;
+    postEvent('sceneDiscarded', { sceneId: manifest.sceneId, revision: requestedRevision, outcome: 'stale' }); return;
   }
   if (manifest.schemaVersion !== 1) throw new Error(i18n.t("main_loadScene_2197b880cc", { p0: manifest.schemaVersion }));
   // 早期导出只保存 transit；普通地图的交通显隐使用 metro 分组。
@@ -1887,22 +1949,21 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number):
     for (const id of registeredIcons) if (map.hasImage(id)) map.removeImage(id);
     registeredIcons.clear(); currentSceneId = ''; currentManifest = null; sceneProvider = null;
   }
-  const entries = Object.entries(manifest.sources).filter(([key]) => key !== 'terrain' && key !== 'traffic' && needs(key));
+  const entries = Object.entries(manifest.sources).filter(([key]) => key !== 'terrain' && key !== 'satellite' && key !== 'traffic' && needs(key));
   const fetched = Object.fromEntries(await Promise.all(entries.map(async ([key, url]) => [key, await provider.json(new URL(url, manifestUrl))])));
   let atlas: ImageBitmap | null = null, atlasIndex: Record<string, any> = {};
-  let terrain: ImageBitmap | null = null, terrainUrl: string | null = null;
+  let terrainUrl: string | null = null;
   let builtSurface: ImageBitmap | null = null;
   try {
     if (needs('pois') || needs('transitViewPois')) { [atlas, atlasIndex] = await Promise.all([provider.image(manifest.poiAtlas.image), provider.json(new URL(manifest.poiAtlas.index, manifestUrl))]); }
     if (needs('terrain') && manifest.sources.terrain) {
       terrainUrl = provider.imageUrlFor(manifest.sources.terrain);
-      terrain = await provider.image(manifest.sources.terrain);
     }
     if (needs('builtArea') && manifest.surfaceFields?.builtArea)
       builtSurface = await provider.image(manifest.surfaceFields.builtArea.url);
     if (needs('labelFonts')) await loadSceneFonts(manifest, manifestUrl);
     if (generation !== loadGeneration || manifest.revision < currentRevision) {
-      postEvent('sceneDiscarded', { revision: requestedRevision, outcome: 'stale' }); return;
+      postEvent('sceneDiscarded', { sceneId: manifest.sceneId, revision: requestedRevision, outcome: 'stale' }); return;
     }
     if (atlas) {
       const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d', {willReadFrequently: true})!;
@@ -1948,7 +2009,21 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number):
           'fill-opacity': token('built_area').opacity ?? 1}},
         map.getLayer('land-use') ? 'land-use' : undefined);
     }
-    if (terrain && terrainUrl && manifest.terrainCorners?.length === 4) {
+    if (needs('satellite') && manifest.sources.satellite && manifest.satelliteCorners?.length === 4) {
+      const url = provider.imageUrlFor(manifest.sources.satellite);
+      const gl = map.getCanvas().getContext('webgl2')!;
+      const limit = gl.getParameter(gl.MAX_TEXTURE_SIZE) as number;
+      if (manifest.satelliteSize && manifest.satelliteSize.some(size => size > limit))
+        throw new Error(i18n.t('satellite_texture_limit', {size: Math.max(...manifest.satelliteSize), limit}));
+      const image = {url, coordinates: manifest.satelliteCorners as [[number, number], [number, number], [number, number], [number, number]]};
+      const source = map.getSource('satellite-image') as maplibregl.ImageSource | undefined;
+      if (source) source.updateImage(image); else map.addSource('satellite-image', {type: 'image', ...image});
+      if (!changed && !map.getLayer('satellite')) {
+        map.addLayer({id: 'satellite', type: 'raster', source: 'satellite-image', paint: {'raster-fade-duration': 0}}, customLayers[0]);
+        customLayers.unshift('satellite');
+      }
+    }
+    if (terrainUrl && manifest.terrainCorners?.length === 4) {
       // ImageSource 保持场景原点地址；MapLibre 自行读取，改为 data 地址会违反预览的连接安全策略。
       const image = {url: terrainUrl, coordinates: manifest.terrainCorners as [[number, number], [number, number], [number, number], [number, number]]};
       const source = map.getSource('terrain-image') as maplibregl.ImageSource | undefined;
@@ -1958,10 +2033,22 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number):
         customLayers.unshift('terrain');
       }
     }
+    const landUseChanged = !changed && Boolean(manifest.sources.landUse) !== Boolean(previousManifest?.sources.landUse);
+    if (landUseChanged) {
+      map.removeLayer('land-use');
+      customLayers.splice(customLayers.indexOf('land-use'), 1);
+    }
+    if (!manifest.sources.landUse) {
+      delete sourceData.landUse;
+      if (map.getSource('land-use')) map.removeSource('land-use');
+    }
     for (const [key, id] of Object.entries(sourceIds)) {
       if (key === 'traffic') continue;
+      if (key === 'landUse' && !manifest.sources.landUse) continue;
       if (!changed && !needsFromData(key, fetched)) continue;
       const data = fetched[key] ?? {type: 'FeatureCollection', features: []}; sourceData[key] = data;
+      // 原始 POI 供搜索、检查和锚定使用，绘制只为 displaced 数据建立索引。
+      if (key === 'pois' || key === 'transitViewPois') continue;
       if (key === 'roads') {
         navigationRoadProperties.clear();
         for (const feature of data.features) {
@@ -1971,10 +2058,11 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number):
         }
       }
       const source = map.getSource(id) as maplibregl.GeoJSONSource | undefined;
-      if (source) source.setData(data); else map.addSource(id, {type: 'geojson', data, maxzoom: key === 'labels' ? 14 : 18, buffer: 256, tolerance: 0, promoteId: 'featureId'});
+      if (source) source.setData(data); else map.addSource(id, {type: 'geojson', data, maxzoom: key === 'labels' ? 14 : 18, buffer: 256, tolerance: sourceTolerances[key] ?? 0, promoteId: 'featureId'});
     }
-    if (changed) { addDomains(); pendingBuiltSurface = null; }
-    else if (needsFromData('roads', fetched)) rebuildRoadLayers();
+      if (changed) { addDomains(); pendingBuiltSurface = null; }
+      else if (needsFromData('roads', fetched)) rebuildRoadLayers();
+    if (landUseChanged) addLandUseLayer();
     if (needsFromData('buildings', fetched)) preview3d.setBuildings(sourceData.buildings?.features ?? []);
     applyRenderStack();
     applyTheme(manifest.theme);
@@ -2002,7 +2090,7 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number):
       map.on('idle', idle); map.on('render', stale); map.triggerRepaint();
     });
     if (generation !== loadGeneration) {
-      postEvent('sceneDiscarded', {revision: requestedRevision, outcome: 'stale'}); return;
+      postEvent('sceneDiscarded', {sceneId: manifest.sceneId, revision: requestedRevision, outcome: 'stale'}); return;
     }
     updateRoadWarning();
     if (changed || ['buildings', 'roads', 'districts', 'zones', 'pois', 'transitViewPois', 'stations'].some(key => needsFromData(key, fetched)))
@@ -2014,7 +2102,7 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number):
       if (generation === loadGeneration) postEvent('scenePresentationReady', {completion: (manifest as any).completion ?? 'complete'});
     });
   } finally {
-    atlas?.close(); terrain?.close(); builtSurface?.close();
+    atlas?.close(); builtSurface?.close();
   }
 }
 function needsFromData(key: string, data: Record<string, any>): boolean { return Object.prototype.hasOwnProperty.call(data, key); }
@@ -2024,13 +2112,13 @@ async function dispatch(command: PreviewCommand): Promise<void> {
   if (typeof command.revision === 'number' && command.revision < currentRevision) {
     outcome = 'stale';
     if (command.type === 'loadScene') postEvent(
-      'sceneDiscarded', { revision: command.revision, outcome });
+      'sceneDiscarded', { sceneId: command.sceneId, revision: command.revision, outcome });
     return;
   }
   if (command.type !== 'loadScene' && currentSceneId && command.sceneId &&
       (command.sceneId !== currentSceneId || command.revision !== currentRevision)) { outcome = 'stale'; return; }
   if (['setZoomPreset', 'fitBounds', 'fitGeoBounds',
-    'focusGeoBounds', 'beginSelection', 'locateObject'].includes(command.type)) navigation.simulation.stop();
+    'focusGeoBounds', 'beginSelection', 'locateObject', 'selectCatalogBuilding'].includes(command.type)) navigation.simulation.stop();
   switch (command.type) {
     case 'loadScene': if (command.manifestUrl && typeof command.revision === 'number') await loadScene(httpProvider(command.manifestUrl), command.revision); break;
     case 'applyTheme': if (command.theme) applyTheme(command.theme as FullTheme); break;
@@ -2050,6 +2138,14 @@ async function dispatch(command: PreviewCommand): Promise<void> {
     case 'setSelection': selectedWorldBounds = command.worldBounds ?? null; drawWorldSelection(); break;
     case 'clearObjectSelection': clearInspectorSelection(); break;
     case 'restoreObjectSelection': restoreInspectorSelection(command.selection); break;
+    case 'selectCatalogBuilding':
+      restoreInspectorSelection(command.selection);
+      if (command.locate) locateInspectorObject();
+      break;
+    case 'setBuildingHighlight':
+      (map.getSource('building-highlight') as maplibregl.GeoJSONSource | undefined)?.setData(
+        command.data ?? {type: 'FeatureCollection', features: []});
+      break;
     case 'locateObject': locateInspectorObject(); break;
     case 'showHint': showHint(String(command.text ?? '')); break;
     case 'setPreviewUiState':
@@ -2059,9 +2155,10 @@ async function dispatch(command: PreviewCommand): Promise<void> {
     case 'showMapInteractionGuide': previewControls.showGuide(true); break;
     case 'dispose': ++loadGeneration; releaseTraffic(); previewControls.dispose(); navigation.dispose(); cancelLabelLayout(); map.remove(); break;
   }
-} catch (error) { outcome = 'error'; reportError(error);
+} catch (error) { outcome = 'error'; reportError(error, {sceneId: command.sceneId,
+    revision: command.revision, stage: command.type});
   if (command.type === 'loadScene' && typeof command.revision === 'number') {
-    postEvent('sceneDiscarded', { revision: command.revision, outcome: 'error',
+    postEvent('sceneDiscarded', { sceneId: command.sceneId, revision: command.revision, outcome: 'error',
       message: error instanceof Error ? error.message : String(error) });
   }
 }

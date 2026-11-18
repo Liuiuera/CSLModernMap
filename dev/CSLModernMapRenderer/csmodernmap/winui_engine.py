@@ -46,7 +46,7 @@ from .winui_workflows import WinuiWorkflows, METHODS as WORKFLOW_METHODS
 from csmodernmap.ui_contracts import (ExportRequest, ContextMode, RenderRegion,
                             export_capabilities)
 from .ribbon_schema import FIELDS, FIELD_DEPENDENCIES, LAYER_FIELDS, TRANSIT_TYPES
-from .theme_contract import normalize_theme, validate_theme_values
+from .theme_contract import normalize_theme, sanitize_theme_data, validate_theme_values
 
 PROTOCOL_VERSION = 1
 TEXT_ICON_FIELDS = ("label.roads", "label.districts", "road.game_names", "poi.game_names",
@@ -72,48 +72,14 @@ LABEL_CHILDREN = {
     "ordinary_icon_text": ("poi_names", "ordinary"),
 }
 THEME_SECTIONS = (
-    "canvas", "terrain", "water", "forest", "built_area",
+    "canvas", "satellite", "terrain", "water", "forest", "built_area",
     "zone", "land_use", "district", "roads", "buildings",
-    "procedural_objects", "railway", "transports", "poi_icons",
+    "procedural_objects", "railway", "traffic", "transports", "poi_icons",
     "labels", "watermark",
 )
 HEX_COLOR = re.compile(r"^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$")
 COLOR_PATHS = {tuple(path) for key, path in STYLE_FIELD_PATHS.items()
                if key in FIELDS and FIELDS[key].kind == "color"}
-_POI_ICON_PROCESSING_KEYS = {
-    "show_decorative_pois",
-    "enabled", "merge_enabled", "merge_distance", "facility_hierarchy",
-    "grid_size", "max_per_cell", "min_priority", "categories",
-    "hidden_categories", "show_name", "name_filters", "visual_merge_enabled",
-    "visual_merge_distance", "active_profile", "visibility_snapshot",
-    "target", "building", "transit", "use_game_names",
-}
-def sanitize_theme_data(raw: Any) -> dict:
-    """只保留主题外观设置，移除临时状态。"""
-    if not isinstance(raw, dict):
-        raise ValueError("theme data must be an object")
-    from .theme_contract import cleanup_theme
-    data = cleanup_theme(raw)
-    buildings = data.setdefault("buildings", {})
-    if isinstance(buildings, dict):
-        for key in ("residential", "commercial", "industrial", "office",
-                    "publictransport", "beautification", "public"):
-            buildings.pop(key, None)
-        buildings.setdefault("color_mode", "poi")
-        buildings.setdefault("default", FIELDS["building.default"].default)
-        tint = buildings.setdefault("poi_tint", {})
-        if isinstance(tint, dict):
-            for key in ("enabled", "mix_white", "categories"):
-                tint.pop(key, None)
-            tint.setdefault("contrast", 0.30)
-    data.pop("poi_area", None)
-    icons = data.setdefault("poi_icons", {})
-    if isinstance(icons, dict):
-        for key in _POI_ICON_PROCESSING_KEYS:
-            icons.pop(key, None)
-        icons.setdefault("font", "SimHei")
-    return data
-
 
 def _polyline_length(points) -> float:
     """水平面 (x, z) 折线长。"""
@@ -197,6 +163,7 @@ class EngineServer:
         self.scheduler = LoopScheduler()
         self.backend = backend or GuirBackend(self.scheduler)
         self.backend.preview_waits_for_presentation = True
+        self.backend.preview_enabled = False
         self.requests: queue.Queue[dict | None] = queue.Queue()
         self.write_lock = threading.Lock()
         self._output_failed = False
@@ -460,9 +427,14 @@ class EngineServer:
         """冻结当前文档和设置，形成可供命令处理的状态快照。"""
         backend = self.backend
         from .fonts import available_font_options
-        style_data = backend.current_style_data()
-        fields = {key: backend.field_value(key, field.default, style_data=style_data)
-                  for key, field in FIELDS.items()}
+        # 当前主题损坏时仍允许进入工作区重新选择；绘图路径继续报告原始读取错误。
+        if backend.theme_load_error:
+            style_data = {}
+            fields = {key: field.default for key, field in FIELDS.items()}
+        else:
+            style_data = backend.current_style_data()
+            fields = {key: backend.field_value(key, field.default, style_data=style_data)
+                      for key, field in FIELDS.items()}
         transit_options = self.transit_options()
         metro_options = self.metro_options()
         if getattr(backend, "has_document", False):
@@ -483,12 +455,16 @@ class EngineServer:
         return {
             "fonts": [{"value": value, "label": label} for value, label in available_font_options()],
             "hasDocument": backend.has_document,
+            "satelliteAvailable": getattr(backend.document, "_satellite_info", None) is not None,
             "sourceGame": document_game(backend.document),
             "sourceFile": backend.source_file,
             "cityInfo": dict(backend.city_info),
             "stats": self.map_statistics(),
             "theme": backend.theme_stem,
-            "themes": [{"id": stem, "name": tr(name_key)} for name_key, stem in THEME_CHOICES],
+            "themes": backend.theme_choices(),
+            "themeMigrationIssues": [],
+            "themeLoadError": backend.theme_load_error,
+            "themeUpdate": self.theme_update_notice(),
             "layers": visible_layers,
             "poiVisibility": poi_visibility,
             "showDecorativePois": self.backend.show_decorative_pois,
@@ -551,20 +527,66 @@ class EngineServer:
         return {"selected": len(selected), "total": len(eligible),
             "types": [kind for kind, _ in TRANSIT_TYPES if any(line["type"] == kind for line in selected)]}
 
-    def theme_draft(self) -> dict:
+    def theme_update_notice(self) -> dict | None:
+        notice = getattr(self.backend, "theme_update_notice", None)
+        if not notice:
+            return None
+        from .theme_metadata import field_label, field_kind, section_title, field_key_for, SECTION_ORDER
+        from .ribbon_schema import FIELDS
+        old = self.backend.theme_data(notice["previousTheme"])
+        new = self.backend.theme_data(notice["theme"])
+
+        def value(data, path):
+            for key in path:
+                if not isinstance(data, dict) or key not in data:
+                    return None
+                data = data[key]
+            return data
+
+        def row(path, conflict=False):
+            def display(item):
+                spec = FIELDS.get(field_key_for(tuple(path)))
+                if spec and spec.choices and item in spec.choices:
+                    return spec.option_label(item)
+                if path == ["terrain", "elevation_mode"] and isinstance(item, str):
+                    return tr("gui.style_editor.value." + item)
+                return None
+            section = section_title(path[0]) if path[0] in SECTION_ORDER else None
+            label = field_label(path[-1], tuple(path))
+            return {"label": (section + " · " + label if label != path[-1] else section) if section else None,
+                    "before": value(old, path), "after": value(new, path),
+                    "beforeLabel": display(value(old, path)), "afterLabel": display(value(new, path)),
+                    "kind": field_kind(tuple(path)), "conflict": conflict}
+
+        return {"theme": notice["theme"], "previousTheme": notice["previousTheme"], "name": notice["name"],
+                "changes": [row(item["path"], item["conflict"]) for item in notice["changes"]],
+                "preserved": [row(path) for path in notice["preserved"]]}
+
+    def theme_revision(self) -> str:
+        return hashlib.sha256(json.dumps({"theme": self.backend.theme_stem,
+            "data": self.backend.current_style_data(), "themes": self.backend._saved_theme_records()},
+            sort_keys=True, default=str).encode()).hexdigest()
+
+    def theme_draft(self, *, data=None, base_id=None, new=False) -> dict:
         from csmodernmap import theme_metadata as theme_meta
-        raw = self.backend.current_style_data()
+        backend = self.backend
+        raw = backend.current_style_data() if data is None else data
         data = normalize_theme(self.validate_theme_draft(raw, raw))
-        from .style import load_style
-        theme_path = resource_dir("styles") / f"{self.backend.theme_stem}.yaml"
-        defaults = (normalize_theme(sanitize_theme_data(load_style(str(theme_path)).data))
-                    if theme_path.is_file() else copy.deepcopy(data))
-        saved = self.backend._settings["values"].get("guir_style_overrides", {}).get(self.backend.theme_stem, defaults)
+        record = backend.user_themes.get(backend.theme_stem) or backend._legacy_themes.get(backend.theme_stem)
+        if not new:
+            base_id = record["base"] if record else backend.theme_stem
+        defaults = normalize_theme(sanitize_theme_data(backend.theme_defaults(base_id))) if base_id else copy.deepcopy(data)
+        saved = backend.theme_data(backend.theme_stem)
         fields = theme_meta.describe_theme(data)
-        return {"theme": self.backend.theme_stem, "data": data,
-                "defaults": defaults,
+        return {"theme": backend.theme_stem, "data": data,
+                "defaults": defaults, "baseTheme": base_id,
+                "isNew": new, "isBuiltin": record is None and not new,
+                "suggestedName": backend.suggest_theme_name(backend.theme_display() + " · " + tr("gui.theme.personal")),
+                "themes": backend.theme_choices(),
+                "migrationIssues": [],
                 "savedData": normalize_theme(sanitize_theme_data(saved)),
-                "savePath": str(theme_path),
+                "savePath": "", "documentEpoch": self._document_epoch,
+                "settingsRevision": self.theme_revision(),
                 "sections": ["__basic__"] + [key for key in THEME_SECTIONS if key in data]
                             + [key for key, value in data.items()
                                if key not in THEME_SECTIONS and isinstance(value, dict)],
@@ -572,11 +594,13 @@ class EngineServer:
                 "sectionNames": {key: theme_meta.section_title(key) for key in data
                                  if isinstance(data[key], dict)},
                 "scenes": {"__basic__": "overall", "canvas": "overall",
+                           "satellite": "satellite",
                            "forest": "terrain", "district": "zones",
                            "zone": "zones", "land_use": "zones",
                            "poi_icons": "buildings",
                            "labels": "roads", "built_area": "built_area",
                            "watermark": "overall"}}
+
 
     def range_profile(self) -> dict:
         backend = self.backend
@@ -706,19 +730,22 @@ class EngineServer:
         if kind == "district":
             size = max(size, 12 * min(scale, 1))
         stroke = _resolve_size(cfg.get("stroke_width", 1.5 if kind == "park" else 2), scale) if kind in {"road", "district", "park"} else 0
-        if not 0 <= size <= 1600 or not 0 <= stroke <= 100:
+        blur = _resolve_size(cfg.get("stroke_blur", 0), scale) if kind in {"road", "district"} else 0
+        if not 0 <= size <= 1600 or not 0 <= stroke <= 100 or not 0 <= blur <= 100:
             raise ValueError("sample size or stroke is too large")
         painter = LabelLayer()
         font_name = cfg.get("font")
         bold = kind == "district" and bool(cfg.get("bold", False))
         font = painter._get_font(size, font_name, text=text, bold=bold)
         bbox = font.getbbox(text, stroke_width=round(stroke))
-        width, height = bbox[2] - bbox[0] + 24, bbox[3] - bbox[1] + 24
+        padding = 24 + 2 * math.ceil(blur * 3)
+        width, height = bbox[2] - bbox[0] + padding, bbox[3] - bbox[1] + padding
         image = Image.new("RGBA", (max(width, 1), max(height, 1)), (0, 0, 0, 0))
         painter.ctx = SimpleNamespace(image=image)
         painter._render_text((width / 2, height / 2), text, size,
                              cfg.get("color", colors[kind]), stroke,
-                             cfg.get("stroke", "#FFFFFF"), font_family=font_name, bold=bold)
+                             cfg.get("stroke", "#FFFFFF"), font_family=font_name, bold=bold,
+                             stroke_blur=blur)
         path = Path(self._preview_files.name) / f"text-{uuid.uuid4().hex}.png"
         image.save(path)
         resolved = resolve_text_font(font_name, text=text, bold=bold)
@@ -726,7 +753,7 @@ class EngineServer:
         substituted = bool(font_name) and (resolved not in requested or not font_covers(resolved, text))
         return {"url": path.as_uri(), "fontSubstituted": substituted,
                 "requestedFont": font_name, "resolvedFont": resolved.stem if resolved else "",
-                "size": size, "strokeWidth": stroke}
+                "size": size, "strokeWidth": stroke, "strokeBlur": blur}
 
     def _render_theme_previews(self) -> None:
         while True:
@@ -832,7 +859,7 @@ class EngineServer:
                 "rangeAnchor": self.backend.range_anchor,
                 "outputDir": self.backend.output_dir,
                 "theme": self.backend.theme_stem,
-                "themeName": next((tr(key) for key, stem in THEME_CHOICES if stem == self.backend.theme_stem), self.backend.theme_stem),
+                "themeName": self.backend.theme_display(),
                 "bounds": list(self.backend.world_rect()),
                 "layers": visible_layers, "types": selected.get("types", []),
                 "metroOptions": copy.deepcopy(selected),
@@ -887,7 +914,7 @@ class EngineServer:
             "profileTarget": poi_target,
             "sharedFingerprint": shared_fingerprint,
             "output": output_snapshot,
-            "themeName": next((tr(key) for key, stem in THEME_CHOICES if stem == self.backend.theme_stem), self.backend.theme_stem),
+            "themeName": self.backend.theme_display(),
             "poiProfile": poi_profile,
             "poiVisibility": poi_visibility,
             "showDecorativePois": self.backend.show_decorative_pois,
@@ -987,6 +1014,9 @@ class EngineServer:
                 raise ValueError("export profile target does not match the selected context")
             output = validate_output_profile({**backend.get_output_profile(target),
                 **{key: raw_output[key] for key in capability["outputFields"] if key in raw_output}}, target)
+            quick_png = params.get("quickPng", False)
+            if not isinstance(quick_png, bool) or quick_png and output_format != "PNG":
+                raise ValueError("quickPng requires a PNG export and a boolean value")
             # 导出窗口可能仍持有旧快照；任务方向只取当前地图，随后随任务冻结。
             output["rotation"] = backend.rotation
             poi_target = "preview" if output_format == "HTML" else target
@@ -996,6 +1026,9 @@ class EngineServer:
                 output_profile=output, poi_profile=poi,
                 poi_visibility_snapshot=visibility, poi_profile_target=poi_target,
                 full_city_default=region is None)
+            if quick_png:
+                output["aa"] = False
+                job["aa"] = 1 if context == ContextMode.TRANSIT else False
             job["output_profile"] = copy.deepcopy(output)
             job["poi_profile"] = copy.deepcopy(poi)
             job["poi_visibility_snapshot"] = copy.deepcopy(visibility)
@@ -1125,7 +1158,8 @@ class EngineServer:
     def dispatch(self, method: str, params: dict) -> Any:
         """校验并分派 WinUI 协议命令，统一返回结果或边界错误。"""
         backend = self.backend
-        if (self._external_busy or self._saving_export) and method in {
+        if (self._external_busy or self._saving_export or
+                (self._export.request_id and self._export.format == "HTML")) and method in {
             "openDocument", "setTheme", "setLayerVisibility", "setField", "resetLayer",
             "setLabelChild", "setTransitOption", "setTransitType", "setTransitLines",
             "setMetroOutline", "renderMetro", "resetMetroGenerationOptions",
@@ -1139,13 +1173,41 @@ class EngineServer:
         if method == "hello":
             if params.get("protocolVersion") != PROTOCOL_VERSION:
                 raise ValueError("incompatible protocol version")
-            return {"protocolVersion": PROTOCOL_VERSION, "viewerUrl": backend.start_preview_server()}
+            return {"protocolVersion": PROTOCOL_VERSION}
+        if method == "startPreview":
+            return {"viewerUrl": backend.start_preview_server()}
+        if method == "setPreviewEnabled":
+            enabled = params["enabled"]
+            if not isinstance(enabled, bool):
+                raise ValueError("preview enabled must be a boolean")
+            if "documentEpoch" in params:
+                self._require_document_epoch(params)
+            backend.preview_enabled = enabled
+            if not enabled:
+                backend.invalidate_preview_compile()
+                backend._pending_preview = None
+            return {"enabled": enabled}
         if method in WORKFLOW_METHODS:
             if method == "setRegionSelection" and "documentEpoch" in params:
                 self._require_document_epoch(params)
             return self.workflows.dispatch(method, params)
         if method == "getSnapshot":
             return self.snapshot()
+        if method in {"getBuildingCatalog", "getBuildingSelection", "getBuildingHighlight"}:
+            from .building_catalog import BuildingCatalog
+            self._require_document_epoch(params)
+            if not backend.has_document:
+                raise RuntimeError(i18n.tr('ui.winui_engine.dispatch.ae3f8c8a07'))
+            use_names = bool(backend.poi_game_names)
+            catalog = getattr(self, "_building_catalog", None)
+            if (catalog is None or catalog.document is not backend.document
+                    or catalog.use_game_names != use_names):
+                catalog = self._building_catalog = BuildingCatalog(backend.document, use_names)
+            if method == "getBuildingCatalog":
+                return {"items": catalog.rows(backend.current_style_data()), "useGameNames": use_names}
+            if method == "getBuildingSelection":
+                return catalog.selection(params.get("buildingId"), backend.current_style_data())
+            return catalog.highlight(params.get("category"))
         if method in {"getObjectInspector", "setInspectorField", "resetInspectorGroup", "undoInspector", "redoInspector"}:
             from .object_inspector import describe, apply, capture, restore
             self._require_document_epoch(params)
@@ -1252,8 +1314,44 @@ class EngineServer:
             return {"saved": count}
         if method == "getThemeDraft":
             self.backend.reset_style_preview_regions()
-            revision = hashlib.sha256(json.dumps(backend.current_style_data(), sort_keys=True, default=str).encode()).hexdigest()
-            return {**self.theme_draft(), "documentEpoch": self._document_epoch, "settingsRevision": revision}
+            return self.theme_draft()
+        if method == "newThemeDraft":
+            base_id = params.get("baseTheme")
+            if base_id not in {stem for _, stem in THEME_CHOICES}:
+                raise ValueError("Unknown base theme")
+            data = backend.theme_data(base_id)
+            data["name"] = backend.suggest_theme_name(tr("gui.theme.personal"))
+            return self.theme_draft(data=data, base_id=base_id, new=True)
+        if method == "copyThemeDraft":
+            data = self.validate_theme_draft(params["data"], backend.current_style_data())
+            record = backend.user_themes.get(backend.theme_stem) or backend._legacy_themes.get(backend.theme_stem)
+            base_id = params.get("baseTheme", record["base"] if record else backend.theme_stem)
+            data["name"] = backend.suggest_theme_name(str(data.get("name", "")) + " · " + tr("gui.theme.copy"))
+            return self.theme_draft(data=data, base_id=base_id, new=True)
+        if method == "validateThemeName":
+            from .theme_library import validate_name
+            return {"name": validate_name(params["name"], [item["name"] for item in backend.theme_choices() if item["id"] != params.get("theme")])}
+        if method == "importThemeDraft":
+            import yaml
+            path = Path(params["path"])
+            if path.suffix.lower() not in {".yaml", ".yml"}:
+                raise ValueError(tr("gui.theme.error.file"))
+            with path.open("r", encoding="utf-8") as stream:
+                try:
+                    data = yaml.safe_load(stream)
+                except yaml.YAMLError as error:
+                    raise ValueError(tr("gui.theme.error.file")) from error
+            data = normalize_theme(self.validate_theme_draft(data))
+            from .theme_library import validate_name
+            name = validate_name(data.get("name", path.stem))
+            data["name"] = backend.suggest_theme_name(name)
+            return self.theme_draft(data=data, new=True)
+        if method == "exportThemeDraft":
+            from .theme_library import export_file, validate_name
+            data = self.validate_theme_draft(params["data"], backend.current_style_data())
+            data["name"] = validate_name(data.get("name"))
+            export_file(str(params["path"]), data)
+            return {"exported": True}
         if method == "describeThemeDraft":
             from .theme_metadata import describe_theme
             data = normalize_theme(self.validate_theme_draft(params["data"], backend.current_style_data()))
@@ -1270,26 +1368,29 @@ class EngineServer:
             return {"cancelled": True}
         if method == "commitThemeDraft":
             self._require_document_epoch(params)
-            revision = hashlib.sha256(json.dumps(backend.current_style_data(), sort_keys=True, default=str).encode()).hexdigest()
-            if params.get("settingsRevision") is not None and params["settingsRevision"] != revision:
+            if params.get("settingsRevision") is not None and params["settingsRevision"] != self.theme_revision():
                 raise RuntimeError(i18n.tr('ui.winui_engine.dispatch.69d8708938'))
             if str(params["theme"]) != backend.theme_stem:
                 raise RuntimeError(i18n.tr('ui.winui_engine.dispatch.43f245906a'))
             data = self.validate_theme_draft(params["data"], backend.current_style_data())
-            save_path = params.get("savePath")
-            if save_path is not None:
-                save_path = str(save_path)
-                if Path(save_path).suffix.lower() not in {".yaml", ".yml"}:
-                    raise ValueError(i18n.tr('ui.winui_engine.dispatch.73db60d7fc'))
-            persist = params.get("persist", False)
-            if not isinstance(persist, bool):
-                raise ValueError("persist must be a boolean")
-            options = {"persist": True} if persist else {}
-            if not backend.on_style_applied(data, save_path=save_path, **options):
-                raise RuntimeError(i18n.tr('ui.winui_engine.dispatch.837a5ba76c'))
-            revision = hashlib.sha256(json.dumps(backend.current_style_data(), sort_keys=True, default=str).encode()).hexdigest()
-            return {"applied": True, "saved": persist or save_path is not None,
-                    "theme": backend.theme_stem, "settingsRevision": revision}
+            if params.get("savePath") is not None:
+                from .theme_library import export_file
+                export_file(str(params["savePath"]), data)
+                return {"applied": False, "saved": False, "exported": True,
+                        "theme": backend.theme_stem, "settingsRevision": self.theme_revision()}
+            record = backend.user_themes.get(backend.theme_stem) or backend._legacy_themes.get(backend.theme_stem)
+            creating = params.get("new", False)
+            if not isinstance(creating, bool):
+                raise ValueError("new must be a boolean")
+            creating = creating or record is None
+            base_id = params.get("baseTheme", record["base"] if record else backend.theme_stem)
+            name = params.get("name", data.get("name"))
+            if record is None and name == backend.theme_display():
+                name = backend.suggest_theme_name(name + " · " + tr("gui.theme.personal"))
+            backend.save_personal_theme(data, identity=None if creating else backend.theme_stem,
+                                        base_id=base_id, name=name)
+            return {"applied": True, "saved": True, "theme": backend.theme_stem,
+                    "settingsRevision": self.theme_revision(), "draft": self.theme_draft()}
         if method == "getPreviewTheme":
             return backend.preview_theme()
         if method == "clearCache":
@@ -1302,7 +1403,9 @@ class EngineServer:
                 self._rmp_pending = None
                 self._render_mode = None
             self._document_epoch += 1
+            self.event("documentOpening", {"documentEpoch": self._document_epoch})
             self._stats_cache = None
+            self._building_catalog = None
             self._transit_session_options = None
             self._poi_editor_token = None
             self._poi_editor_mtime = None
@@ -1347,6 +1450,12 @@ class EngineServer:
         if method == "setTheme":
             changed = backend.set_theme(str(params["theme"]))
             return {"changed": changed, "snapshot": self.snapshot()}
+        if method == "acknowledgeThemeUpdate":
+            use_previous = params.get("usePrevious", False)
+            if not isinstance(use_previous, bool):
+                raise ValueError("usePrevious must be a boolean")
+            backend.acknowledge_theme_update(use_previous)
+            return {"snapshot": self.snapshot()}
         if method == "getTextIconSettings":
             target = canonical_profile_target(str(params["target"]))
             from .view_settings import default_view_settings, view_options
@@ -1454,6 +1563,20 @@ class EngineServer:
             if key not in backend.layer_visibility:
                 raise ValueError(f"unknown layer: {key}")
             enabled = bool(params["enabled"])
+            if key == "satellite" and enabled:
+                from .satellite_image import ensure_satellite
+                if backend.document is None:
+                    raise ValueError(tr("gui.satellite.unavailable"))
+                png = ensure_satellite(backend.document, progress=self._render_progress)
+                limit = params.get("maxTextureSize")
+                if limit is not None:
+                    if type(limit) is not int or limit <= 0:
+                        raise ValueError("Invalid texture size limit")
+                    import io
+                    from PIL import Image
+                    with Image.open(io.BytesIO(png)) as image:
+                        if max(image.size) > limit:
+                            raise ValueError(tr("satellite_texture_limit", size=max(image.size), limit=limit))
             if key == "poi":
                 if "documentEpoch" in params:
                     self._require_document_epoch(params)
@@ -1465,7 +1588,7 @@ class EngineServer:
                 visibility = self._current_poi_visibility()
             layers = dict(backend.layer_visibility)
             layers["poi"] = any(visibility["icons"].values())
-            return {"layers": layers, "poiVisibility": visibility}
+            return {"layers": layers, "mapLayers": backend.map_layer_visibility(), "poiVisibility": visibility}
         if method == "setField":
             key = str(params["key"])
             if key not in FIELDS:
@@ -1561,8 +1684,6 @@ class EngineServer:
             if not metro and key in STYLE_FIELDS:
                 backend.apply_style_override(STYLE_FIELDS[key], params["value"])
             options[key] = params["value"]
-            if key == "merge_enabled":
-                backend.set_merge_options(transit=bool(params["value"]))
             if not metro:
                 self._transit_session_options = options
             backend.update_transit_options(metro, options)
@@ -1744,6 +1865,9 @@ class EngineServer:
             return {"started": started}
 
         if method == "cancel":
+            if self._export.request_id and self._export.format == "HTML":
+                backend.cancel_export()
+                return {"cancelled": False, "cancelRequested": True}
             if backend._local_png_active:
                 backend.cancel()
                 return {"cancelled": False, "cancelRequested": True, "message": i18n.tr('ui.winui_engine.dispatch.e8e08b0f61')}

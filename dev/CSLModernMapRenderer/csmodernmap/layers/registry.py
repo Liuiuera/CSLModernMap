@@ -38,6 +38,7 @@ def _directory() -> tuple[LayerRegistration, ...]:
     from .railway_layer import RailwayLayer
     from .road_layer import RoadLayer
     from .terrain_layer import TerrainLayer
+    from .satellite_layer import SatelliteLayer
     from .traffic_layer import TrafficLayer
     from .transport_layer import TransportLayer
     from .water_layer import WaterLayer
@@ -45,6 +46,7 @@ def _directory() -> tuple[LayerRegistration, ...]:
     from .zone_layer import ZoneLayer
 
     rows = (
+        ("satellite", "gui.layer.satellite", "satellite", False, False, SatelliteLayer, ("卫星影像",)),
         ("terrain", "gui.layer.terrain", "terrain", True, True, TerrainLayer, ("地形",)),
         ("built_area", "gui.layer.built_area", "built_area", True, True, BuiltAreaLayer, ("建成区",)),
         ("poi_area", "gui.layer.poi_area", "poi_area", True, False, POIAreaLayer, ("POI足迹",)),

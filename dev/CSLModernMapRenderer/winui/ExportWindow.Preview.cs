@@ -100,6 +100,7 @@ internal sealed partial class ExportWindow
 
     private (string Title, string Icon) LayerPresentation(string key) => key switch
     {
+        "satellite" => (UiLanguage.Text("Satellite_LayerTitle"), "layer.terrain"),
         "lines" => (UiLanguage.Text("ExportWindow_Preview_LayerPresentation_223B24B821"), "context.lines"),
         "stations" => (UiLanguage.Text("ExportWindow_Preview_LayerPresentation_53E88DD68F"), "context.stations"),
         "facility_names" => (_context == "transit" ? UiLanguage.Text("ExportWindow_Preview_LayerPresentation_CF2382056B") : UiLanguage.Text("ExportWindow_Preview_LayerPresentation_4AA668A329"), "context.names"),

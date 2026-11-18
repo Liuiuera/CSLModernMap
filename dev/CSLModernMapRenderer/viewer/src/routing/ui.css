@@ -1,11 +1,11 @@
-.navigation-control {
+.navigation-control, .navigation-route-popup {
   --nav-surface: #fbfbfb; --nav-control: #fff; --nav-text: #202020; --nav-secondary: #666;
   --nav-border: #dedede; --nav-hover: #f3f3f3; --nav-selected: #edf3f8;
   --nav-accent: #0067c0; --nav-on-accent: #fff; --nav-shadow: #0002;
-  position: absolute; top: 12px; left: 12px; z-index: 10; max-width: calc(100% - 24px);
   font: 14px/1.45 'Segoe UI Variable Text', 'Segoe UI', 'Microsoft YaHei UI', sans-serif;
   color: var(--nav-text);
 }
+.navigation-control { position: absolute; top: 12px; left: 12px; z-index: 10; max-width: calc(100% - 24px); }
 .navigation-control *, .navigation-control *::before { box-sizing: border-box; }
 .navigation-control [hidden], .navigation-control[hidden] { display: none !important; }
 .navigation-control button, .navigation-control input {
@@ -56,6 +56,12 @@
 .navigation-actions input { width: 125px; min-width: 0; flex: 1; }
 .navigation-section-title { font-size: 12px; color: var(--nav-secondary); margin: 16px 0 8px; }
 .navigation-control .navigation-route-card { position: relative; width: 100%; display: block; text-align: start; padding: 12px 14px; margin-bottom: 8px; }
+.navigation-control .navigation-route-option { margin: 0 6px 8px 0; }
+.navigation-route-option[aria-pressed="true"] { border-color: var(--nav-accent); background: var(--nav-selected); }
+.navigation-route-option[aria-pressed="true"] .navigation-route-label { color: var(--nav-accent); }
+.navigation-route-popup .maplibregl-popup-content { padding: 0; background: var(--nav-surface); border: 1px solid var(--nav-border); border-radius: 8px; box-shadow: 0 4px 16px var(--nav-shadow); }
+.navigation-route-popup.maplibregl-popup-anchor-bottom .maplibregl-popup-tip { border-top-color: var(--nav-surface); }
+.navigation-map-card { padding: 12px 14px; min-width: 180px; }
 .navigation-control .navigation-route-card[aria-pressed="true"] { background: var(--nav-selected); }
 .navigation-route-card[aria-pressed="true"]::before { content: ''; position: absolute; width: 3px; top: 25%; height: 50%; left: 0; background: var(--nav-accent); border-radius: 2px; }
 .navigation-duration, .navigation-distance, .navigation-via { display: block; }
@@ -107,7 +113,7 @@
 .navigation-pin { border-radius: 16px; min-width: 66px; min-height: 32px; padding: 4px 8px; border: 2px solid white;
   background: #0067c0; color: white; font: 600 12px/1.4 'Segoe UI', sans-serif; cursor: grab; box-shadow: 0 1px 5px #0007; }
 .navigation-pin.destination { background: #c52a3a; }
-html[data-ui-appearance="dark"] .navigation-control {
+html[data-ui-appearance="dark"] :is(.navigation-control, .navigation-route-popup) {
   --nav-surface: #2c2c2c; --nav-control: #323232; --nav-text: #f5f5f5; --nav-secondary: #bcbcbc;
   --nav-border: #494949; --nav-hover: #3a3a3a; --nav-selected: #313e47;
   --nav-accent: #60cdff; --nav-on-accent: #17242c; --nav-shadow: #0005;

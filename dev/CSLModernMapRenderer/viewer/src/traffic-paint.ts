@@ -5,9 +5,13 @@ const missing = '#D9DDDA';
 export const missingRouteTrafficColor = '#0078D4';
 export const completedRouteColor = '#92989F';
 
-export function trafficColor(value: ExpressionSpecification, missingColor = missing): ExpressionSpecification {
+export function trafficColor(value: ExpressionSpecification, missingColor = missing,
+                             ramp?: [number, string][]): ExpressionSpecification {
+  const color = ramp ? (ramp.length === 1 ? ramp[0][1]
+    : ['interpolate', ['linear'], value, ...ramp.flat()])
+    : ['step', value, stops[0][1], ...stops.slice(1).flat()];
   return ['case', ['>=', value, 0],
-    ['step', value, stops[0][1], ...stops.slice(1).flat()] as ExpressionSpecification, missingColor];
+    color, missingColor] as ExpressionSpecification;
 }
 
 export function mixedTrafficColor(value: number, neighbor: number, blend: number, missingColor = missing): string {

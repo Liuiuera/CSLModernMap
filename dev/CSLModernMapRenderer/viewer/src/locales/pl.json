@@ -214,5 +214,7 @@
   "preview3d_title": "Podgląd 3D",
   "preview3d_help": "Przytrzymaj środkowy przycisk: przeciągnij w bok, aby obracać, w górę/dół, aby pochylać.",
   "preview3d_missing": "Niektóre budynki nie mają wysokości modelu i pozostają płaskie. Wyeksportuj ponownie aktualnym modem.",
-  "roads_local_flat_fallback": "Niektóre skrzyżowania są rysowane płasko. Nakładanie mostów i tuneli może być w tych miejscach niedokładne."
+  "roads_local_flat_fallback": "Niektóre skrzyżowania są rysowane płasko. Nakładanie mostów i tuneli może być w tych miejscach niedokładne.",
+  "satellite_texture_limit": "Satellite image size {{size}} exceeds the device texture limit {{limit}}",
+  "controls_satellite": "Zdjęcie satelitarne"
 }

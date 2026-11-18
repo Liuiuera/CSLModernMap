@@ -3442,17 +3442,8 @@ msgstr "大眾運輸檢視"
 msgid "gui.terrain_relief.unit.degree"
 msgstr "°"
 
-msgid "gui.theme.choice.amap"
-msgstr "明亮地圖"
-
-msgid "gui.theme.choice.apple_maps"
-msgstr "簡約現代"
-
 msgid "gui.theme.choice.dark"
 msgstr "深色風格"
-
-msgid "gui.theme.choice.google"
-msgstr "暖色自然"
 
 msgid "gui.theme.choice.vintage"
 msgstr "復古風格"
@@ -4291,9 +4282,6 @@ msgstr "植被顏色"
 msgid "style.terrain.mode.label"
 msgstr "地形樣式"
 
-msgid "style.terrain.mode.value.shade"
-msgstr "分層設色 + 山影"
-
 msgid "style.terrain.mode.value.simple"
 msgstr "分層設色"
 
@@ -4306,14 +4294,8 @@ msgstr "光照方向"
 msgid "style.theme.label"
 msgstr "地圖主題"
 
-msgid "style.theme.value.amap"
-msgstr "明亮地圖"
-
 msgid "style.theme.value.dark"
 msgstr "深色風格"
-
-msgid "style.theme.value.google"
-msgstr "暖色自然"
 
 msgid "style.theme.value.modern"
 msgstr "簡約現代"
@@ -5265,90 +5247,197 @@ msgstr "高度來源"
 msgid "gui.transit.water_degraded"
 msgstr "已保留水域，但部分岸線樣式未能完整處理。"
 
-
 msgid "gui.transit.rmp_water_omitted"
 msgstr "RMP 水域元件 {component} 無法轉換。已保留車站、路線、設施及其他可用水域：{reason}"
-
 
 msgid "gui.roads.local_flat_fallback"
 msgstr "部分道路交會處以平面繪製，這些位置的橋梁及隧道重疊可能不準確。"
 
-
 msgid "gui.file.missing_version"
 msgstr "{format} 檔案缺少格式版本，無法確認相容性。請使用最新版 CSLModernMap 模組重新匯出地圖。"
-
 
 msgid "gui.file.invalid_version"
 msgstr "{format} 檔案的格式版本無效。請選擇有效的地圖檔案或重新匯出。"
 
-
 msgid "gui.file.old_version"
 msgstr "{format} {version} 已過時；此檢視器支援 {supported}。請更新 CSLModernMap 模組並重新匯出地圖。"
-
 
 msgid "gui.file.unsupported_version"
 msgstr "不支援 {format} {version}；此檢視器支援 {supported}。請使用與此檔案相容的新版檢視器。"
 
-
 msgid "gui.file.invalid_cmm"
 msgstr "這不是有效的 CMM 地圖，或資料結構無效。請選擇模組匯出的地圖或重新匯出。"
-
 
 msgid "gui.file.invalid_xml"
 msgstr "這不是有效的 CSLMap XML 地圖，或檔案已損毀。請選擇有效的地圖或重新匯出。"
 
-
 msgid "gui.file.invalid_gzip"
 msgstr "壓縮地圖無效或不完整。請重新複製檔案或在遊戲中重新匯出。"
-
 
 msgid "gui.file.invalid_encoding"
 msgstr "地圖檔案的文字編碼無效。請選擇模組匯出的地圖或重新匯出。"
 
-
 msgid "gui.file.legacy_xml"
 msgstr "CSLMAP 為相容格式，可能不支援部分新功能。建議使用 CMM 格式匯出地圖。"
-
 
 msgid "gui.file.unversioned_xml"
 msgstr "此 CSLMAP 檔案沒有版本號，已以相容格式開啟。部分新功能可能無法使用，建議使用 CMM 格式匯出地圖。"
 
-
 msgid "ui.failure.internal"
 msgstr "發生未預期的錯誤。您可以向作者回報此錯誤。"
-
 
 msgid "ui.failure.permission"
 msgstr "無法存取必要的檔案。請檢查檔案或資料夾權限後重試。"
 
-
 msgid "ui.failure.missing_file"
 msgstr "找不到必要的檔案。請確認檔案仍在原本的位置後重試。"
-
 
 msgid "ui.failure.memory"
 msgstr "記憶體配置失敗。請縮小輸出尺寸，或關閉佔用大量記憶體的應用程式後重試。"
 
-
 msgid "ui.failure.operation.metro"
 msgstr "地鐵路線圖產生失敗"
-
 
 msgid "ui.failure.operation.preview"
 msgstr "地圖預覽產生失敗"
 
-
 msgid "ui.failure.operation.export"
 msgstr "地圖匯出失敗"
-
 
 msgid "ui.failure.operation.open"
 msgstr "地圖開啟失敗"
 
-
 msgid "ui.failure.operation.operation"
 msgstr "操作失敗"
 
-
 msgid "ui.failure.city_json"
 msgstr "城市檔案包含無效的 JSON。請從遊戲重新匯出；若仍失敗，請將錯誤詳細資訊回報作者。"
+
+msgid "style.road.level.quay.width.label"
+msgstr "護岸寬度比例"
+
+msgid "gui.satellite.unavailable"
+msgstr "目前地圖沒有衛星影像"
+
+msgid "gui.style_editor.field.opacity"
+msgstr "道路不透明度"
+
+msgid "gui.layer.title.satellite"
+msgstr "衛星影像"
+
+msgid "style.satellite.preset.value.combined"
+msgstr "組合成像"
+
+msgid "gui.style_editor.field.stroke_blur"
+msgstr "光暈柔化"
+
+msgid "satellite_texture_limit"
+msgstr "Satellite image size {size} exceeds the device texture limit {limit}"
+
+msgid "gui.theme.error.write"
+msgstr "無法寫入使用者設定。"
+
+msgid "style.terrain.mode.value.continuous"
+msgstr "連續過渡"
+
+msgid "style.satellite.preset.desc"
+msgstr "僅處理衛星底圖，道路、POI、文字等疊加內容不受影響。"
+
+msgid "style.satellite.preset.value.resolution"
+msgstr "模糊與取樣損失"
+
+msgid "gui.theme.choice.modern"
+msgstr "簡約現代"
+
+msgid "gui.theme.copy"
+msgstr "副本"
+
+msgid "style.road.level.quay.border.label"
+msgstr "護岸描邊"
+
+msgid "gui.satellite.filtering"
+msgstr "正在處理衛星影像質感…"
+
+msgid "gui.satellite.ready"
+msgstr "衛星影像已就緒"
+
+msgid "gui.style_editor.field.quay"
+msgstr "護岸"
+
+msgid "gui.theme.error.builtin"
+msgstr "不能覆寫內建主題檔案。"
+
+msgid "gui.theme.choice.satellite"
+msgstr "衛星暖色"
+
+msgid "gui.theme.error.duplicate"
+msgstr "此主題名稱已存在。"
+
+msgid "gui.style_editor.desc.labels.stroke_blur"
+msgstr "柔化文字周圍的光暈，保持字面清晰。"
+
+msgid "style.satellite.intensity.label"
+msgstr "質感強度（%）"
+
+msgid "style.road.level.quay.fill.label"
+msgstr "護岸顏色"
+
+msgid "gui.satellite.composing"
+msgstr "正在合成衛星影像…"
+
+msgid "gui.layer.satellite"
+msgstr "衛星影像"
+
+msgid "gui.theme.error.file"
+msgstr "請選擇 YAML 主題檔案。"
+
+msgid "style.satellite.preset.value.grain"
+msgstr "感光顆粒"
+
+msgid "gui.theme.error.name"
+msgstr "名稱須為 1–64 個字元，不能包含控制字元。"
+
+msgid "style.satellite.preset.value.haze"
+msgstr "薄霧與散射"
+
+msgid "style.theme.value.warm_natural"
+msgstr "暖色自然"
+
+msgid "gui.theme.legacy"
+msgstr "舊版"
+
+msgid "style.satellite.preset.value.distortion"
+msgstr "成像失真"
+
+msgid "gui.theme.choice.warm_natural"
+msgstr "暖色自然"
+
+msgid "gui.theme.choice.bright"
+msgstr "明亮地圖"
+
+msgid "gui.theme.personal"
+msgstr "我的主題"
+
+msgid "style.theme.value.bright"
+msgstr "明亮地圖"
+
+msgid "style.terrain.mode.value.shade"
+msgstr "連續過渡加光影"
+
+msgid "style.satellite.preset.value.original"
+msgstr "原圖"
+
+msgid "gui.style_editor.desc.roads.opacity"
+msgstr "道路疊加的不透明度：0 為完全透明，1 為不透明。"
+
+msgid "style.satellite.intensity.desc"
+msgstr "0 恢復原圖，100 使用完整預設效果。"
+
+msgid "gui.style_editor.field.quay_elevated"
+msgstr "高架護岸"
+
+msgid "gui.style_editor.field.quay_tunnel"
+msgstr "隧道護岸"
+
+msgid "style.satellite.preset.label"
+msgstr "影像質感"

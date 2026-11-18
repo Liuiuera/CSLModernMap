@@ -77,6 +77,15 @@ body.selecting #map { cursor: crosshair; }
 }
 /* 描边开关按文字类别来（preview_scene 下发 halos），关掉时抹掉默认的白色描边。 */
 .map-label-no-halo { -webkit-text-stroke-width: 0; }
+/* 单独模糊底层描边，保持前景文字清晰，并保留描边颜色的 alpha。 */
+.map-label-blurred-halo { -webkit-text-stroke-width: 0; isolation: isolate; }
+.map-label-blurred-halo::before {
+  content: attr(data-halo-text);
+  position: absolute; inset: 0; z-index: -1;
+  color: transparent;
+  -webkit-text-stroke: var(--label-stroke-width) var(--label-stroke-c);
+  filter: blur(var(--label-stroke-blur));
+}
 .maplibregl-ctrl-scale {
   border-color: #39424c; color: #39424c; background: rgba(255,255,255,.86);
   font-family: "Microsoft YaHei", sans-serif;

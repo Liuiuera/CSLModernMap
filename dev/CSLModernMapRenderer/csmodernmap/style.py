@@ -13,12 +13,27 @@ from typing import Any, Dict
 from .i18n import tr
 
 
+THEME_ALIASES = {"apple_maps": "modern", "amap": "bright", "google": "warm_natural", "paper": "vintage"}
+
+
+def canonical_theme_id(value: str) -> str:
+    return THEME_ALIASES.get(value, value)
+
+
 def hex_to_rgb(color: str):
     """解析 #RRGGBB / #RGB 为 (r,g,b)。"""
     c = color.strip().lstrip('#')
     if len(c) == 3:
         c = ''.join((ch * 2 for ch in c))
     return (int(c[0:2], 16), int(c[2:4], 16), int(c[4:6], 16))
+
+
+def hex_to_rgba(color: str):
+    """解析 #RGB / #RRGGBB / #RRGGBBAA，未指定透明度时为不透明。"""
+    c = color.strip().lstrip('#')
+    if len(c) not in (3, 6, 8):
+        raise ValueError(f"Invalid hex color: {color!r}")
+    return hex_to_rgb(color) + (int(c[6:8], 16) if len(c) == 8 else 255,)
 
 
 def style_scalar(value, default):
@@ -49,6 +64,9 @@ class Style:
         if isinstance(terrain, dict) and "ground" in terrain and "elevation_colors" not in terrain:
             from .theme_contract import migrate_terrain_colors
             self.data = {**data, "terrain": migrate_terrain_colors(terrain)}
+        if isinstance(terrain, dict):
+            from .terrain import resolve_terrain_config
+            self.data = {**self.data, "terrain": resolve_terrain_config(self.data["terrain"])}
 
     def get(self, key: str, default: Any = None) -> Any:
         """按点分路径取配置，如 style.get('terrain.elevation_colors')。"""
@@ -60,10 +78,10 @@ class Style:
                 return default
         return cur
 
-    def merged(self, other: "Style") -> "Style":
+    def merged(self, other: "Style | Dict[str, Any]") -> "Style":
         """深度合并另一个样式（other 覆盖 self）。"""
         merged = copy.deepcopy(self.data)
-        _deep_merge(merged, other.data)
+        _deep_merge(merged, other.data if isinstance(other, Style) else other)
         return Style(merged)
 
 
@@ -125,7 +143,10 @@ def load_style(path: str, font_scale: float = 1.0) -> Style:
     except ImportError:
         raise ImportError(tr("gui.error.pyyaml_missing"))
 
-    with open(path, "r", encoding="utf-8") as f:
+    source = Path(path)
+    if not source.is_file() and source.stem in THEME_ALIASES:
+        source = source.with_name(canonical_theme_id(source.stem) + source.suffix)
+    with source.open("r", encoding="utf-8") as f:
         data = yaml.safe_load(f) or {}
     strip_retired_region_palette_fields(data)
     if Path(path).name != METRO_STYLE_FILE:

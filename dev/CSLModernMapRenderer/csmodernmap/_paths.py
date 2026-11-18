@@ -71,10 +71,6 @@ def resource_dir(name: str) -> Path:
     注意：cn_icons 在源码运行位于渲染器上级目录，打包后收集进 bundle 根，
     与 styles/resources/web 的布局不同，请使用 cn_icons_dir()。
     """
-    if name == "styles" and sys.platform == "win32" and not _is_macos():
-        styles = application_settings_dir() / "styles"
-        if styles.is_dir():
-            return styles
     return bundle_root() / name
 
 

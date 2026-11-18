@@ -17,11 +17,14 @@ import {compareCandidates} from './candidates';
 import type {TransitCandidate, TransitPreference} from './types';
 import './ui.css';
 
-const routeTrafficColor: ExpressionSpecification = ['case',
+const currentRouteColor: ExpressionSpecification = ['case',
   ['boolean', ['feature-state', 'completed'], false], completedRouteColor,
   ['interpolate', ['linear'], ['get', 'trafficBlend'],
     0, trafficColor(['get', 'congestion'], missingRouteTrafficColor),
     1, trafficColor(['get', 'trafficNeighbor'], missingRouteTrafficColor)]];
+// 混入浅底色而不是降低透明度，重叠的分段不会因此加深。
+const alternativeRouteColor: ExpressionSpecification = ['interpolate', ['linear'], .55,
+  0, '#E5E9EE', 1, currentRouteColor];
 
 const text = (key: string, values: Record<string, number> = {}): string => i18n.t(`navigation_${key}`, values);
 const actionIcons: Record<string, ControlIcon> = {
@@ -108,6 +111,8 @@ export class NavigationControl {
   private picking: 'origin' | 'destination' | null = null;
   private marks: maplibregl.Marker[] = [];
   private popup: maplibregl.Popup | null = null;
+  private routePopup: maplibregl.Popup | null = null;
+  private routeCard: HTMLElement | null = null;
   private longPress = 0;
   private previewTimer = 0;
   private readonly languageChanged = () => this.translate();
@@ -405,6 +410,7 @@ export class NavigationControl {
     this.simulation.stop();
     this.panelOpened();
     this.cancel(); this.panel.hidden = false; this.picking = endpoint;
+    this.routePopup?.remove();
     this.selectedLeg = null; this.detailsOpen = false; this.updateDetailView();
     this.planningStarted();
     this.root.querySelector('button')?.setAttribute('aria-expanded', 'true');
@@ -416,8 +422,25 @@ export class NavigationControl {
   }
 
   handleClick(event: MapMouseEvent): boolean {
-    if (!this.picking || this.selectionActive()) return false;
-    void this.choose([event.lngLat.lat*111195, 0, -event.lngLat.lng*111195], this.placeAt(event.point)); return true;
+    if (this.selectionActive()) return false;
+    if (this.picking) {
+      void this.choose([event.lngLat.lat*111195, 0, -event.lngLat.lng*111195], this.placeAt(event.point)); return true;
+    }
+    if (this.profile === 'transit' || this.simulation.active || !this.result) return false;
+    const layers = [lineIds[0], lineIds[1], lineIds[11], lineIds[12]];
+    const hit = this.map.queryRenderedFeatures([
+      [event.point.x-5, event.point.y-5], [event.point.x+5, event.point.y+5],
+    ], {layers}).find(feature => feature.properties.routeProfile);
+    if (!hit) return false;
+    this.selectDrivingProfile(hit.properties.routeProfile as RoutingProfile);
+    return true;
+  }
+
+  private selectDrivingProfile(profile: RoutingProfile): void {
+    if (this.profile === profile) return;
+    this.simulation.stop(); this.popup?.remove();
+    this.profile = profile; this.selectedLeg = null;
+    this.renderCards(); this.draw(); this.displayResult();
   }
 
   private menu(location: maplibregl.LngLat): void {
@@ -556,6 +579,7 @@ export class NavigationControl {
   }
 
   private renderCards(): void {
+    this.routeCard = null; this.routePopup?.remove();
     this.summary.setAttribute('aria-label', text(this.profile === 'transit' ? 'transit' : 'driving'));
     for (const button of this.modes.querySelectorAll<HTMLButtonElement>('button'))
       button.setAttribute('aria-pressed', String((button.dataset.mode === 'transit') === (this.profile === 'transit')));
@@ -585,7 +609,8 @@ export class NavigationControl {
       : this.activeProfiles().map(profile => ({profile, result: this.routes.get(profile)}));
     for (const {profile, result, candidate} of entries) {
       if (profile === 'car-balanced' && this.client && this.client.data.costModel?.id !== 'car-balanced-v1') continue;
-      const card = document.createElement('button'); card.type = 'button'; card.className = 'navigation-route-card';
+      const card = document.createElement('button'); card.type = 'button';
+      card.className = profile === 'transit' ? 'navigation-route-card' : 'navigation-route-option';
       card.classList.toggle('transit', profile === 'transit');
       card.dataset.profile = profile;
       if (candidate) card.dataset.candidateId = candidate.candidateId;
@@ -636,15 +661,23 @@ export class NavigationControl {
           }
         }
       }
+      if (profile !== 'transit' && result && !this.busy) {
+        if (profile === this.profile) {
+          this.routeCard = document.createElement('div');
+          this.routeCard.className = 'navigation-route-card navigation-map-card';
+          this.routeCard.dataset.routeProfile = profile;
+          this.routeCard.setAttribute('aria-label', text('routeDetails'));
+          this.routeCard.append(...Array.from(card.childNodes));
+          card.append(label.cloneNode(true));
+        } else card.replaceChildren(label);
+      }
       card.addEventListener('click', () => {
         if (candidate) {
           this.selectTransitCandidate(candidate.candidateId);
           this.summary.querySelector<HTMLButtonElement>(`.navigation-route-card[data-candidate-id="${candidate.candidateId}"]`)?.focus({preventScroll: true});
           return;
         }
-        this.simulation.stop();
-        this.profile = profile; this.selectedLeg = null;
-        this.renderCards(); this.draw(); this.displayResult();
+        this.selectDrivingProfile(profile);
         this.summary.querySelector<HTMLButtonElement>(`[data-profile="${profile}"]`)?.focus();
       });
       this.summary.append(card);
@@ -657,7 +690,19 @@ export class NavigationControl {
         details.className = 'navigation-open-details'; this.summary.append(details);
       }
     }
+    this.updateRoutePopup();
     this.updateDetailView();
+  }
+
+  private updateRoutePopup(progress: number | null = this.progressMeters): void {
+    if (!this.routeCard || !this.result || this.picking || progress !== null) {
+      this.routePopup?.remove(); return;
+    }
+    this.routePopup ??= new maplibregl.Popup({closeButton: false, closeOnClick: false,
+      focusAfterOpen: false, anchor: 'bottom', offset: 14, maxWidth: '240px', className: 'navigation-route-popup'});
+    const points = this.result.geometry;
+    this.routePopup.setLngLat(geo(pointAt(points, cumulative(points), .5)))
+      .setDOMContent(this.routeCard).addTo(this.map);
   }
 
   private selectTransitCandidate(id: string): void {
@@ -838,10 +883,10 @@ export class NavigationControl {
       for (const [id, casing] of [[lineIds[11], true], [lineIds[12], false]] as const)
         this.map.addLayer({id, type: 'line', source: 'navigation', filter: ['==', ['get', 'alternative'], true],
           layout: {'line-cap': 'round', 'line-join': 'round'}, paint: {
-            'line-color': casing ? '#69717A' : routeTrafficColor, 'line-opacity': .7,
+            'line-color': casing ? '#869AAE' : alternativeRouteColor, 'line-opacity': 1,
             'line-color-transition': {duration: 0}, 'line-width': this.roadStyle.width(casing)}});
-      this.map.addLayer({id: lineIds[0], type: 'line', source: 'navigation', filter: ['all', ['!=', ['get', 'alternative'], true], ['in', ['get', 'mode'], ['literal', ['GROUND', 'ELEVATED', 'TUNNEL', 'RIDE']]]], layout: {'line-cap': 'round', 'line-join': 'round'}, paint: {'line-color': ['case', ['==', ['get', 'mode'], 'RIDE'], '#ffffff', '#69717A'], 'line-width': this.roadStyle.width(true)}});
-      this.map.addLayer({id: lineIds[1], type: 'line', source: 'navigation', filter: ['all', ['!=', ['get', 'alternative'], true], ['in', ['get', 'mode'], ['literal', ['GROUND', 'ELEVATED', 'TUNNEL']]]], layout: {'line-cap': 'round', 'line-join': 'round'}, paint: {'line-color': routeTrafficColor, 'line-color-transition': {duration: 0}, 'line-width': this.roadStyle.width(false)}});
+      this.map.addLayer({id: lineIds[0], type: 'line', source: 'navigation', filter: ['all', ['!=', ['get', 'alternative'], true], ['in', ['get', 'mode'], ['literal', ['GROUND', 'ELEVATED', 'TUNNEL', 'RIDE']]]], layout: {'line-cap': 'round', 'line-join': 'round'}, paint: {'line-color': ['case', ['==', ['get', 'mode'], 'RIDE'], '#ffffff', '#195ba5'], 'line-width': this.roadStyle.width(true)}});
+      this.map.addLayer({id: lineIds[1], type: 'line', source: 'navigation', filter: ['all', ['!=', ['get', 'alternative'], true], ['in', ['get', 'mode'], ['literal', ['GROUND', 'ELEVATED', 'TUNNEL']]]], layout: {'line-cap': 'round', 'line-join': 'round'}, paint: {'line-color': currentRouteColor, 'line-color-transition': {duration: 0}, 'line-width': this.roadStyle.width(false)}});
       this.map.addLayer({id: lineIds[2], type: 'line', source: 'navigation', filter: ['==', ['get', 'mode'], 'ACCESS'], paint: {'line-color': '#64748b', 'line-width': 2, 'line-dasharray': [2, 2]}});
       this.map.addLayer({id: lineIds[3], type: 'fill', source: 'navigation', filter: ['==', ['get', 'mode'], 'BUILDING'], paint: {'fill-color': ['get', 'color'], 'fill-opacity': .25}});
       this.map.addLayer({id: lineIds[4], type: 'line', source: 'navigation', filter: ['==', ['get', 'mode'], 'BUILDING'], paint: {'line-color': ['get', 'color'], 'line-width': 3}});
@@ -868,6 +913,7 @@ export class NavigationControl {
     if ((this.progressMeters === null) !== (meters === null)) {
       for (const id of ['navigation-alternative-casing', 'navigation-alternative-road'])
         if (this.map.getLayer(id)) this.map.setLayoutProperty(id, 'visibility', meters === null ? 'visible' : 'none');
+      this.updateRoutePopup(meters);
     }
     if (this.progressMeters === meters) return;
     this.progressMeters = meters;

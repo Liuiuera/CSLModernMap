@@ -1,2 +1,3 @@
 -r requirements.txt
 Babel==2.18.0
+pytest==9.1.1

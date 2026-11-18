@@ -6,15 +6,18 @@ from __future__ import annotations
 import copy
 import math
 
-from .road_hierarchy import RoadLevel, road_style_candidates
+from .road_hierarchy import RoadLevel, road_style_candidates, road_style_config
+from .satellite_filter import DEFAULTS as SATELLITE_DEFAULTS
 
 ROAD_MIN_FILL = {
     RoadLevel.HIGHWAY: 1.8, RoadLevel.MAIN: 1.4, RoadLevel.BRANCH: 0.8,
-    RoadLevel.SPECIAL: 0.8, RoadLevel.BEAUTIFICATION: 0.5,
+    RoadLevel.SPECIAL: 0.8, RoadLevel.QUAY: 2.0,
+    RoadLevel.BEAUTIFICATION: 0.5,
 }
 ROAD_WIDTH_SCALE = 0.15
+QUAY_FOOTPRINT_SCALE = 0.5
 ROAD_DEFAULTS = {"fill": "#FFFFFF", "border": "#C3C8D2", "border_width": 1.0}
-TERRAIN_DEFAULTS = {"elevation_mode": "stepped",
+TERRAIN_DEFAULTS = {"mode": "simple", "elevation_mode": "stepped",
                     "elevation_colors": [{"threshold": 0.0, "color": "#F6F7F9"}]}
 HILLSHADE_DEFAULTS = {
     "enabled": False, "intensity": 0.3, "azimuth": 315.0, "altitude": 45.0,
@@ -22,6 +25,7 @@ HILLSHADE_DEFAULTS = {
     "large_scale_weight": 0.35, "small_scale_weight": 0.65,
 }
 SECTION_DEFAULTS = {
+    "satellite": SATELLITE_DEFAULTS,
     "water": {"color": "#80D4FE"},
     "canvas": {"background": "#F6F7F9"},
     "district": {"border": "#B0B0B0", "border_width": 1, "fill_alpha": 64,
@@ -35,6 +39,7 @@ SECTION_DEFAULTS = {
     "built_area": {"cell_meters": 8.0, "buffer_meters": 60.0,
                    "smooth_blur": 1.0},
     "buildings": {"border": "#D7DAE1", "border_width": {"fixed": 0.25, "scaled": 0.1}},
+    "poi_icons": {"font": "SimHei"},
     "procedural_objects": {"border": "#C6CAD3", "border_width": {"fixed": 0.20, "scaled": 0.08},
                            "custom_color_alpha": 1.0},
     "watermark": {"font_size": {"fixed": 11, "scaled": 1.5},
@@ -59,6 +64,10 @@ def field_default(path: tuple):
     """保存编辑副本中实际绘图器使用的默认值。"""
     if path == ("roads", "width_scale"):
         return ROAD_WIDTH_SCALE
+    if path == ("roads", "opacity"):
+        return 1.0
+    if path == ("roads", "quay", "footprint_scale"):
+        return QUAY_FOOTPRINT_SCALE
     if len(path) == 3 and path[0] == "roads":
         level = next((level for level in RoadLevel if road_style_candidates(level)[0] == path[1]), None)
         if level is not None:
@@ -68,8 +77,46 @@ def field_default(path: tuple):
     if len(path) == 3 and path[:2] == ("terrain", "hillshade"):
         return HILLSHADE_DEFAULTS.get(path[2])
     if len(path) == 3 and path[0] == "labels":
+        if path[2] == "stroke_blur" and path[1] in {"road", "district"}:
+            return 0.0
         return LABEL_DEFAULTS.get(path[1], {}).get(path[2])
     return None
+
+
+_POI_ICON_PROCESSING_KEYS = {
+    "show_decorative_pois",
+    "enabled", "merge_enabled", "merge_distance", "facility_hierarchy",
+    "grid_size", "max_per_cell", "min_priority", "categories",
+    "hidden_categories", "show_name", "name_filters", "visual_merge_enabled",
+    "visual_merge_distance", "active_profile", "visibility_snapshot",
+    "target", "building", "transit", "use_game_names",
+}
+def sanitize_theme_data(raw: object) -> dict:
+    """只保留主题外观设置，移除临时状态。"""
+    if not isinstance(raw, dict):
+        raise ValueError("theme data must be an object")
+    from .ribbon_schema import FIELDS
+    data = cleanup_theme(raw)
+    buildings = data.setdefault("buildings", {})
+    if isinstance(buildings, dict):
+        for key in ("residential", "commercial", "industrial", "office",
+                    "publictransport", "beautification", "public"):
+            buildings.pop(key, None)
+        buildings.setdefault("color_mode", "poi")
+        buildings.setdefault("default", FIELDS["building.default"].default)
+        tint = buildings.setdefault("poi_tint", {})
+        if isinstance(tint, dict):
+            for key in ("enabled", "mix_white", "categories"):
+                tint.pop(key, None)
+            tint.setdefault("contrast", 0.30)
+    data.pop("poi_area", None)
+    icons = data.setdefault("poi_icons", {})
+    if isinstance(icons, dict):
+        for key in _POI_ICON_PROCESSING_KEYS:
+            icons.pop(key, None)
+        icons.setdefault("font", "SimHei")
+    return data
+
 
 
 def cleanup_theme(data: dict) -> dict:
@@ -115,13 +162,21 @@ def cleanup_theme(data: dict) -> dict:
                 candidates = road_style_candidates(level, mode)
                 canonical = candidates[0]
                 canonical_keys.add(canonical)
-                if canonical not in original_roads:
+                if level is RoadLevel.QUAY:
+                    cfg = road_style_config(original_roads, level, mode)
+                    if cfg:
+                        roads[canonical] = copy.deepcopy(cfg)
+                elif canonical not in original_roads:
                     alias = next((key for key in candidates[1:]
                                   if isinstance(original_roads.get(key), dict)
                                   and original_roads[key]), None)
                     if alias is not None:
                         roads[canonical] = copy.deepcopy(original_roads[alias])
                 aliases_to_remove.update(candidates[1:])
+                if level is RoadLevel.QUAY and isinstance(roads.get(canonical), dict):
+                    roads[canonical].pop("min_fill_px", None)
+                    if mode != "ground":
+                        roads[canonical].pop("footprint_scale", None)
         for alias in aliases_to_remove - canonical_keys:
             roads.pop(alias, None)
         for config in roads.values():
@@ -139,6 +194,10 @@ def cleanup_theme(data: dict) -> dict:
                 }
         railway.pop("line", None)
         railway.pop("dash", None)
+    terrain = out.get("terrain")
+    if isinstance(terrain, dict):
+        from .terrain import resolve_terrain_config
+        out["terrain"] = resolve_terrain_config(migrate_terrain_colors(terrain))
     return out
 
 
@@ -159,6 +218,15 @@ def migrate_terrain_colors(terrain: dict) -> dict:
 def normalize_theme(data: dict) -> dict:
     """返回独立的标准化编辑副本，并保留额外字段。"""
     out = cleanup_theme(data)
+    satellite = out.setdefault("satellite", {})
+    if isinstance(satellite, dict):
+        for key, value in SATELLITE_DEFAULTS.items():
+            satellite.setdefault(key, value)
+    from .ribbon_schema import FIELDS
+    traffic = out.setdefault("traffic", {})
+    if isinstance(traffic, dict) and "ramp" not in traffic:
+        for key in ("free", "slow", "busy"):
+            traffic.setdefault(key, FIELDS[f"traffic.{key}"].default)
     buildings = out.get('buildings')
     if isinstance(buildings, dict):
         from .building_categories import CATEGORIES
@@ -172,6 +240,7 @@ def normalize_theme(data: dict) -> dict:
     if isinstance(roads, dict):
         target = out["roads"]
         target.setdefault("width_scale", ROAD_WIDTH_SCALE)
+        target.setdefault("opacity", 1.0)
         # 始终依据原字典解析，避免填充新章节改变旧版特殊道路的回退外观。
         for level in RoadLevel:
             candidates = road_style_candidates(level)
@@ -180,11 +249,17 @@ def normalize_theme(data: dict) -> dict:
             cfg = copy.deepcopy(source)
             for key, value in ROAD_DEFAULTS.items():
                 cfg.setdefault(key, value)
-            cfg.setdefault("min_fill_px", ROAD_MIN_FILL[level])
+            if level is RoadLevel.QUAY:
+                cfg.pop("min_fill_px", None)
+                cfg.setdefault("footprint_scale", QUAY_FOOTPRINT_SCALE)
+            else:
+                cfg.setdefault("min_fill_px", ROAD_MIN_FILL[level])
             target[canonical] = cfg
     terrain = out.get("terrain")
     if isinstance(terrain, dict):
         terrain = out["terrain"] = migrate_terrain_colors(terrain)
+        from .terrain import resolve_terrain_config
+        terrain = out["terrain"] = resolve_terrain_config(terrain)
         for key, value in TERRAIN_DEFAULTS.items():
             terrain.setdefault(key, copy.deepcopy(value))
         shade = terrain.setdefault("hillshade", {})
@@ -204,6 +279,8 @@ def normalize_theme(data: dict) -> dict:
             if isinstance(current, dict):
                 for key, value in defaults.items():
                     current.setdefault(key, copy.deepcopy(value))
+                if kind in {"road", "district"}:
+                    current.setdefault("stroke_blur", 0.0)
     return out
 
 
@@ -211,6 +288,8 @@ def validate_theme_values(data: dict) -> None:
     """在编辑边界拒绝格式错误的数值、尺寸或渐变输入。"""
     from .theme_metadata import field_kind
     from .building_categories import validate_category_colors
+    from .satellite_filter import filter_key
+    filter_key(data)
     buildings = data.get('buildings', {})
     if isinstance(buildings, dict):
         validate_category_colors(buildings)
@@ -218,6 +297,14 @@ def validate_theme_values(data: dict) -> None:
         if path[:2] == ("terrain", "ground"):
             return
         dotted = ".".join(path)
+        if path == ("roads", "opacity"):
+            if (isinstance(value, bool) or not isinstance(value, (int, float))
+                    or not math.isfinite(value) or not 0 <= value <= 1):
+                raise ValueError(f"{dotted}: expected an opacity between 0 and 1")
+        if path == ("roads", "quay", "footprint_scale"):
+            if (isinstance(value, bool) or not isinstance(value, (int, float))
+                    or not math.isfinite(value) or not 0.05 <= value <= 1.0):
+                raise ValueError(f"{dotted}: expected a width ratio between 0.05 and 1")
         if isinstance(value, dict):
             if ("fixed" in value or "scaled" in value) and field_kind(path) in {"size", "number"}:
                 for part in ("fixed", "scaled"):

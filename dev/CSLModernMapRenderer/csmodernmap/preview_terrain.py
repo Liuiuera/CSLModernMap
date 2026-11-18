@@ -7,7 +7,7 @@ from PIL import Image, ImageDraw
 
 from .layers.base import RenderContext
 from .layers.terrain_layer import TerrainLayer
-from .ribbon_schema import normalize_terrain_mode
+from .terrain import resolve_terrain_config
 from .style import Style
 
 
@@ -50,23 +50,13 @@ class PreviewTerrainCompiler:
     def compile(session, style, state, root, bounds=None):
         from .preview_scene import world_to_geo
 
+        document = session.document
         terrain = session.document.terrain
         if terrain.height.values is None:
             return None
         data = deepcopy(getattr(style, "data", style))
-        cfg = data.setdefault("terrain", {})
-        # 与生产渲染同一套取值：认不出来的（含已下线的 facets / gradient）一律归一。
-        mode = normalize_terrain_mode(state.get("mode"))
+        cfg = data["terrain"] = resolve_terrain_config(data.get("terrain", {}), state)
         cfg["ground"] = {"enabled": False}
-        # 与 PNG 共用等高区间；只插值高度，不混合色带颜色。
-        cfg["elevation_mode"] = "stepped"
-        shade = cfg.setdefault("hillshade", {})
-        # 「立体棱角」已删除，面片参数不再有含义；旧主题覆写里可能还留着，清掉。
-        for retired in ("mode", "facet_size_meters", "facet_jitter"):
-            shade.pop(retired, None)
-        shade.update(enabled=mode == "shade",
-                     intensity=max(0., min(1., float(state.get("shade", 35)) / 100.)),
-                     azimuth=float(state.get("sun", 315)))
         # 严格沿用正式渲染的坐标变换和采样中心边界。
         x0 = float(terrain.origin.x) + terrain.cell * .5
         z0 = float(terrain.origin.z) + terrain.cell * .5

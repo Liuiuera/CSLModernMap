@@ -18,6 +18,7 @@ public sealed partial class MainWindow
         var generation = _mapTask.Begin(phase, title, canCancel, requestId, background);
         SetDocumentEnabled(false);
         ApplyMapTaskState();
+        if (waitForScene) ObservePreviewWait();
         return generation;
     }
 
@@ -47,6 +48,7 @@ public sealed partial class MainWindow
         Progress.Value = _mapTask.Percent ?? 0;
         MapOverlayCancel.Visibility = _mapTask.Active && _mapTask.CanCancel ? Visibility.Visible : Visibility.Collapsed;
         MapView.IsHitTestVisible = !_mapTask.Active || _mapTask.Background;
+        ApplyPreviewStatus();
         TryShowSimplifiedRibbonIntro();
         TryShowMapInteractionGuide();
     }
@@ -54,6 +56,8 @@ public sealed partial class MainWindow
     private void CompleteMapTask(int generation)
     {
         if (!_mapTask.Complete(generation)) return;
+        _previewWait?.Cancel();
+        _previewSlow = false;
         _awaitingScene = _waitingSceneReady = false;
         SetDocumentEnabled(_snapshot.ValueKind == JsonValueKind.Object && _snapshot.GetProperty("hasDocument").GetBoolean() && !_engineBusy);
         ApplyMapTaskState();
@@ -76,6 +80,7 @@ public sealed partial class MainWindow
 
     private async Task CompilePreviewAsync()
     {
+        if (!_viewerReady) { await RetryPreviewAsync(); return; }
         if (_engineBusy) { ShowNotice(UiLanguage.Text("MainWindow_Status_CompilePreviewAsync_2A55669135")); return; }
         var generation = BeginMapTask(MapTaskPhase.Generating, _context == "transit" ? UiLanguage.Text("MainWindow_Status_CompilePreviewAsync_058E698B71") : UiLanguage.Text("MainWindow_Status_CompilePreviewAsync_A8A3F1C48A"));
         var result = await _engine.RequestAsync("compilePreview", new { force = true });

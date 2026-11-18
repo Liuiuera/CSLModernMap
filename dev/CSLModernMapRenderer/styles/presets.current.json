@@ -1,0 +1,2919 @@
+{
+  "bright": {
+    "name": "明亮地图",
+    "description": "干净明亮的浅色底图配色，适合中国城市与日常浏览",
+    "canvas": {
+      "width": 4096,
+      "height": 4096,
+      "background": "#F6F7F9"
+    },
+    "terrain": {
+      "elevation_colors": [
+        {
+          "threshold": 0,
+          "color": "#F6F7F9"
+        },
+        {
+          "threshold": 80,
+          "color": "#AADD90"
+        },
+        {
+          "threshold": 200,
+          "color": "#8CC978"
+        },
+        {
+          "threshold": 400,
+          "color": "#6AB055"
+        },
+        {
+          "threshold": 850,
+          "color": "#417837"
+        }
+      ],
+      "mode": "simple",
+      "elevation_mode": "stepped",
+      "hillshade": {
+        "enabled": false,
+        "intensity": 0.35,
+        "azimuth": 315,
+        "altitude": 45,
+        "large_scale_meters": 320.0,
+        "small_scale_meters": 0.0,
+        "large_scale_weight": 0.35,
+        "small_scale_weight": 0.65
+      }
+    },
+    "built_area": {
+      "enabled": true,
+      "cell_meters": 8.0,
+      "buffer_meters": 60.0,
+      "smooth_blur": 2.0,
+      "smooth_iters": 6,
+      "contour_upscale": 4,
+      "color": "#F6F7F9",
+      "exclude_services": [
+        "Electricity",
+        "Water",
+        "Road",
+        "Beautification"
+      ],
+      "include_parks": false
+    },
+    "land_use": {
+      "enabled": true,
+      "detail": "base",
+      "cell_meters": 16.0,
+      "smooth_blur": 1.5,
+      "smooth_iters": 3,
+      "contour_upscale": 2,
+      "alpha": 110,
+      "colors": {
+        "green": "#B8DCA0",
+        "public": "#D8D0C8",
+        "residential": "#F2C97E",
+        "industrial": "#C9A7CC",
+        "office": "#8FB8E0",
+        "publictransport": "#A0D4B0",
+        "commercial": "#F2A07E"
+      },
+      "sub": {
+        "res_low": "#F5D9A8",
+        "res_high": "#E8B65C",
+        "com_low": "#F5B08C",
+        "com_high": "#E88A5E",
+        "off_generic": "#8FB8E0",
+        "off_hightech": "#6FA0D0",
+        "ind_generic": "#C9A7CC",
+        "ind_ore": "#B89BC4",
+        "ind_forestry": "#A8C49B",
+        "ind_farming": "#C4D89B",
+        "ind_oil": "#8FA8C4"
+      }
+    },
+    "water": {
+      "color": "#80D4FE",
+      "border": "#60C0E8",
+      "border_width": 1
+    },
+    "forest": {
+      "color": "#B8DCA0"
+    },
+    "district": {
+      "enabled": true,
+      "border": "#C9A45C",
+      "border_width": {
+        "fixed": 1.0,
+        "scaled": 0.5
+      },
+      "fill_alpha": 115,
+      "fill_colors": [
+        "#D9E8CC",
+        "#E8DCC8",
+        "#CCD8E8",
+        "#E8D4E8",
+        "#E8E8CC",
+        "#CCE8E8",
+        "#E8CCCC",
+        "#D4CCE8"
+      ],
+      "smooth_blur": 1.0,
+      "smooth_iters": 3,
+      "contour_upscale": 2
+    },
+    "zone": {
+      "enabled": true,
+      "border": "#B08A5C",
+      "border_width": {
+        "fixed": 1.0,
+        "scaled": 0.5
+      },
+      "fill_alpha": 100,
+      "fill": "#C8C8C8",
+      "smooth_blur": 1.0,
+      "smooth_iters": 3,
+      "contour_upscale": 2
+    },
+    "roads": {
+      "width_scale": 0.15,
+      "highway": {
+        "fill": "#CDCFD5",
+        "border": "#AFB1B7",
+        "min_fill_px": 1.8,
+        "border_width": {
+          "fixed": 2.5,
+          "scaled": 0.8
+        }
+      },
+      "main": {
+        "fill": "#ECEEF2",
+        "border": "#BAC0CA",
+        "min_fill_px": 1.4,
+        "border_width": {
+          "fixed": 2.2,
+          "scaled": 0.7
+        }
+      },
+      "branch": {
+        "fill": "#FFFFFF",
+        "border": "#C3C8D2",
+        "min_fill_px": 0.8,
+        "border_width": {
+          "fixed": 2.0,
+          "scaled": 0.6
+        }
+      },
+      "special": {
+        "fill": "#F0F2F5",
+        "border": "#E1E3E9",
+        "min_fill_px": 0.8,
+        "border_width": {
+          "fixed": 1.2,
+          "scaled": 0.4
+        }
+      },
+      "beautification": {
+        "fill": "#F0F2F5",
+        "border": "#E1E3E9",
+        "min_fill_px": 0.5,
+        "border_width": {
+          "fixed": 1.2,
+          "scaled": 0.4
+        }
+      },
+      "main_elevated": {
+        "fill": "#ECEEF2",
+        "border": "#B5BBC5",
+        "border_width": {
+          "fixed": 2.8,
+          "scaled": 0.9
+        }
+      },
+      "branch_elevated": {
+        "fill": "#FFFFFF",
+        "border": "#B9BEC8",
+        "border_width": {
+          "fixed": 2.6,
+          "scaled": 0.8
+        }
+      },
+      "highway_elevated": {
+        "fill": "#CDCFD5",
+        "border": "#AFB1B7",
+        "border_width": {
+          "fixed": 3.0,
+          "scaled": 1.0
+        }
+      },
+      "beautification_elevated": {
+        "fill": "#F2F4F7",
+        "border": "#E1E3E9",
+        "border_width": {
+          "fixed": 1.5,
+          "scaled": 0.5
+        }
+      },
+      "main_tunnel": {
+        "fill": "#F0F1F4",
+        "border": "#BAC0CA",
+        "border_width": {
+          "fixed": 2.2,
+          "scaled": 0.7
+        },
+        "dash": [
+          1.5,
+          2
+        ]
+      },
+      "branch_tunnel": {
+        "fill": "#FAFAFC",
+        "border": "#C3C8D2",
+        "border_width": {
+          "fixed": 2.0,
+          "scaled": 0.6
+        },
+        "dash": [
+          1.5,
+          2
+        ]
+      },
+      "highway_tunnel": {
+        "fill": "#D2D4D9",
+        "border": "#AFB1B7",
+        "border_width": {
+          "fixed": 2.5,
+          "scaled": 0.8
+        },
+        "dash": [
+          1.5,
+          2
+        ]
+      },
+      "beautification_tunnel": {
+        "fill": "#EEF0F3",
+        "border": "#E1E3E9",
+        "border_width": {
+          "fixed": 1.2,
+          "scaled": 0.4
+        },
+        "dash": [
+          1.5,
+          2
+        ]
+      },
+      "quay": {
+        "fill": "#F0F2F5",
+        "border": "#E1E3E9",
+        "border_width": {
+          "fixed": 1.2,
+          "scaled": 0.4
+        }
+      },
+      "special_elevated": {
+        "fill": "#FFFFFF",
+        "border": "#B9BEC8",
+        "border_width": {
+          "fixed": 2.6,
+          "scaled": 0.8
+        }
+      },
+      "quay_elevated": {
+        "fill": "#F2F4F7",
+        "border": "#E1E3E9",
+        "border_width": {
+          "fixed": 1.5,
+          "scaled": 0.5
+        }
+      },
+      "special_tunnel": {
+        "fill": "#FAFAFC",
+        "border": "#C3C8D2",
+        "border_width": {
+          "fixed": 2.0,
+          "scaled": 0.6
+        },
+        "dash": [
+          1.5,
+          2
+        ]
+      },
+      "quay_tunnel": {
+        "fill": "#EEF0F3",
+        "border": "#E1E3E9",
+        "border_width": {
+          "fixed": 1.2,
+          "scaled": 0.4
+        },
+        "dash": [
+          1.5,
+          2
+        ]
+      }
+    },
+    "transports": {
+      "enabled": [
+        "Metro",
+        "Train",
+        "Monorail",
+        "Tram",
+        "CableCar",
+        "Ship",
+        "Ferry",
+        "Bus",
+        "Trolleybus",
+        "Airplane",
+        "Helicopter"
+      ],
+      "auto_color": false,
+      "width": {
+        "fixed": 0.5,
+        "scaled": 2.05
+      },
+      "smooth": 10,
+      "octilinear": true,
+      "schematic": {
+        "spacing": 400,
+        "parallel_gap": 1.8
+      },
+      "transit_view": {
+        "mask_intensity": 0.6,
+        "composite_corridors": true,
+        "composite_stripe_ratio": 0.46,
+        "composite_min_stripe": 1.15,
+        "label_candidate_interval": 110,
+        "label_candidate_limit": 72,
+        "label_clearance_padding": 14,
+        "label_size": {
+          "fixed": 0.0,
+          "scaled": 60.0
+        },
+        "label_padding": {
+          "fixed": 0.0,
+          "scaled": 36.0
+        },
+        "label_border_width": {
+          "fixed": 0.0,
+          "scaled": 8.0
+        },
+        "label_seam_width": {
+          "fixed": 0.0,
+          "scaled": 12.0
+        },
+        "label_outer_border_color": "#101828",
+        "label_outer_border_alpha": 0.55,
+        "label_text_on_light": "#101828",
+        "label_text_on_dark": "#FFFFFF",
+        "label_luminance_threshold": 165.0
+      },
+      "types": {
+        "Metro": {
+          "width": {
+            "fixed": 0.5,
+            "scaled": 2.05
+          },
+          "dash": []
+        },
+        "Train": {
+          "width": {
+            "fixed": 0.5,
+            "scaled": 2.2
+          },
+          "dash": []
+        },
+        "Monorail": {
+          "width": {
+            "fixed": 0.4,
+            "scaled": 1.85
+          },
+          "dash": []
+        },
+        "Tram": {
+          "width": {
+            "fixed": 0.4,
+            "scaled": 1.7
+          },
+          "dash": []
+        },
+        "CableCar": {
+          "width": {
+            "fixed": 0.4,
+            "scaled": 1.7
+          },
+          "dash": []
+        },
+        "Ship": {
+          "width": {
+            "fixed": 0.45,
+            "scaled": 1.875
+          },
+          "dash": [
+            8,
+            6
+          ],
+          "color": "#2E86AB"
+        },
+        "Ferry": {
+          "width": {
+            "fixed": 0.45,
+            "scaled": 1.875
+          },
+          "dash": [
+            8,
+            6
+          ],
+          "color": "#2E86AB"
+        },
+        "Bus": {
+          "width": {
+            "fixed": 0.35,
+            "scaled": 1.525
+          },
+          "dash": [],
+          "color": "#5A6472"
+        },
+        "Trolleybus": {
+          "width": {
+            "fixed": 0.35,
+            "scaled": 1.525
+          },
+          "dash": [
+            4,
+            4
+          ],
+          "color": "#7A8391"
+        },
+        "Airplane": {
+          "width": {
+            "fixed": 0.4,
+            "scaled": 1.7
+          },
+          "dash": [
+            10,
+            8
+          ],
+          "color": "#8A94A6"
+        },
+        "Helicopter": {
+          "width": {
+            "fixed": 0.3,
+            "scaled": 1.35
+          },
+          "dash": [
+            6,
+            6
+          ],
+          "color": "#8A94A6"
+        }
+      },
+      "label": {
+        "enabled": true,
+        "font": "Microsoft YaHei",
+        "min_zoom": 0.5,
+        "size": {
+          "fixed": 8.0,
+          "scaled": 6.0
+        },
+        "padding": {
+          "fixed": 5.0,
+          "scaled": 3.5
+        },
+        "border_width": {
+          "fixed": 0.9,
+          "scaled": 0.6
+        },
+        "bg": "#FFFFFF",
+        "repeat_interval": 600,
+        "min_gap": 350,
+        "max_per_line": 4
+      },
+      "station": {
+        "enabled": false,
+        "merge_enabled": true,
+        "min_zoom": 0.5,
+        "merge_range": 48.0,
+        "merge_bus_tram": true,
+        "merge_train_metro": false,
+        "size": {
+          "fixed": 2.5,
+          "scaled": 5.0
+        },
+        "outline": "#3A3F4A",
+        "fill": "#FFFFFF",
+        "border_width": {
+          "fixed": 0.5,
+          "scaled": 0.5
+        },
+        "transfer_scale": 2.0
+      }
+    },
+    "buildings": {
+      "border": "#D7DAE1",
+      "border_width": {
+        "fixed": 0.25,
+        "scaled": 0.1
+      }
+    },
+    "procedural_objects": {
+      "colors": {
+        "geometry": "#C9D1DD",
+        "building": "#E4E6EC",
+        "prop": "#D5D9E1",
+        "tree": "#D2EBC8",
+        "street_furn": "#CFD3DB",
+        "sign": "#F5D58B",
+        "unknown": "#D0D4DD"
+      },
+      "border": "#C6CAD3",
+      "border_width": {
+        "fixed": 0.2,
+        "scaled": 0.08
+      },
+      "custom_color_alpha": 0.85
+    },
+    "railway": {
+      "enabled": true,
+      "train": {
+        "line": "#3A3A3A",
+        "dash": "#FFFFFF",
+        "width": {
+          "fixed": 2.5,
+          "scaled": 1.5
+        },
+        "dash_width": {
+          "fixed": 0.8,
+          "scaled": 1.5
+        },
+        "pattern": [
+          2,
+          4
+        ],
+        "station_width": {
+          "fixed": 4.5,
+          "scaled": 2.7
+        }
+      },
+      "tram": {
+        "line": "#A08CA0",
+        "dash": "#FFFFFF",
+        "width": {
+          "fixed": 2.0,
+          "scaled": 1.0
+        },
+        "dash_width": {
+          "fixed": 0.8,
+          "scaled": 1.0
+        },
+        "pattern": [
+          2,
+          4
+        ],
+        "station_width": {
+          "fixed": 3.5,
+          "scaled": 2.2
+        }
+      },
+      "metro": {
+        "line": {
+          "color": "#AA82AA",
+          "alpha": 180
+        },
+        "dash": "#FFFFFF",
+        "width": {
+          "fixed": 2.5,
+          "scaled": 1.2
+        },
+        "dash_width": {
+          "fixed": 0.8,
+          "scaled": 1.2
+        },
+        "pattern": [
+          2,
+          4
+        ],
+        "station_width": {
+          "fixed": 4.5,
+          "scaled": 2.7
+        }
+      },
+      "monorail": {
+        "line": "#A08C9B",
+        "width": {
+          "fixed": 1.0,
+          "scaled": 1.0
+        },
+        "decoration_span": {
+          "fixed": 2.0,
+          "scaled": 25.0
+        },
+        "decoration_length": {
+          "fixed": 1.0,
+          "scaled": 1.0
+        },
+        "decoration_width": {
+          "fixed": 0.6,
+          "scaled": 0.6
+        }
+      },
+      "cablecar": {
+        "line": "#8C8C96",
+        "width": {
+          "fixed": 0.5,
+          "scaled": 0.2
+        },
+        "decoration_span": {
+          "fixed": 1.0,
+          "scaled": 15.0
+        },
+        "decoration_length": {
+          "fixed": 0.5,
+          "scaled": 0.2
+        },
+        "decoration_width": {
+          "fixed": 0.2,
+          "scaled": 0.15
+        }
+      }
+    },
+    "labels": {
+      "district": {
+        "font": "SimHei",
+        "size": {
+          "fixed": 2.4,
+          "scaled": 18.0
+        },
+        "color": "#32415A",
+        "stroke": "#FFFFFF",
+        "stroke_width": {
+          "fixed": 0.8,
+          "scaled": 2.4
+        }
+      },
+      "road": {
+        "font": "SimHei",
+        "size": {
+          "fixed": 2.8,
+          "scaled": 3.0
+        },
+        "color": "#505564",
+        "stroke": "#FFFFFF",
+        "stroke_width": {
+          "fixed": 1.0,
+          "scaled": 0.2
+        },
+        "size_z": {
+          "highway": 1.6,
+          "main": 1.25,
+          "branch": 1.0,
+          "special": 0.75,
+          "beautification": 0.75
+        },
+        "name_z": {
+          "highway": 0.8,
+          "main": 1.2,
+          "branch": 1.6,
+          "special": 2.4,
+          "beautification": 2.4
+        }
+      },
+      "road_repeat": 420,
+      "road_repeat_ratio": 3,
+      "road_min_gap": 240,
+      "park": {
+        "font": "SimHei",
+        "size": {
+          "fixed": 7.0,
+          "scaled": 8.0
+        },
+        "color": "#328246",
+        "stroke": "#FFFFFF",
+        "stroke_width": {
+          "fixed": 2.4,
+          "scaled": 0.8
+        }
+      },
+      "building": {
+        "font": "SimHei",
+        "size": {
+          "fixed": 7.6,
+          "scaled": 8.0
+        },
+        "color": "#50505A",
+        "stroke": "#FFFFFF",
+        "stroke_width": {
+          "fixed": 2.4,
+          "scaled": 0.0
+        }
+      },
+      "stop": {
+        "font": "SimHei",
+        "size": {
+          "fixed": 10.0,
+          "scaled": 14.0
+        },
+        "color": "#1E6EC8",
+        "stroke": "#FFFFFF",
+        "stroke_width": {
+          "fixed": 2.4,
+          "scaled": 0.6
+        }
+      }
+    },
+    "poi_icons": {
+      "enabled": true,
+      "transit_view_scale": 1.15,
+      "merge_enabled": true,
+      "merge_distance": 48.0,
+      "facility_hierarchy": {
+        "enabled": true,
+        "children_enabled": true,
+        "child_min_zoom": 1.0,
+        "area_labels_enabled": true
+      },
+      "icon_size": {
+        "fixed": 20.0,
+        "scaled": 4.0
+      },
+      "grid_size": {
+        "fixed": 100.0,
+        "scaled": 20.0
+      },
+      "max_per_cell": 2,
+      "min_priority": 10,
+      "categories": [],
+      "bg_circle": false,
+      "bg_circle_size": {
+        "fixed": 28.0,
+        "scaled": 6.0
+      },
+      "show_name": true,
+      "name_size": {
+        "fixed": 11.0,
+        "scaled": 2.0
+      },
+      "name_offset": 3,
+      "name_stroke": "#FFFFFF",
+      "name_stroke_ratio": 0.12,
+      "icons_dir": "cn_icons"
+    },
+    "watermark": {
+      "enabled": true,
+      "mod_name": "CSLModernMap",
+      "position": "left_bottom",
+      "font_size": {
+        "fixed": 11.0,
+        "scaled": 1.5
+      },
+      "separator": " · ",
+      "margin": {
+        "x": 20,
+        "y": 20
+      },
+      "padding": {
+        "x": 12,
+        "y": 6
+      },
+      "border_radius": 6,
+      "background": "transparent",
+      "time_format": "%Y-%m-%d %H:%M:%S",
+      "city_color": "#1A1A1A",
+      "info_color": "#3A3A3A",
+      "meta_color": "#6A6A6A",
+      "content": {
+        "mod_name": true,
+        "city_name": true,
+        "render_time": true,
+        "style_name": true,
+        "resolution": true,
+        "traffic_time": true,
+        "custom_text": false
+      }
+    }
+  },
+  "dark": {
+    "name": "暗黑风格",
+    "description": "深色底地图，适合夜间使用",
+    "canvas": {
+      "width": 4096,
+      "height": 4096,
+      "background": "#1C1E22"
+    },
+    "terrain": {
+      "elevation_colors": [
+        {
+          "threshold": 0,
+          "color": "#1C1E22"
+        },
+        {
+          "threshold": 80,
+          "color": "#1C1E22"
+        },
+        {
+          "threshold": 120,
+          "color": "#23262B"
+        },
+        {
+          "threshold": 250,
+          "color": "#2A2E34"
+        },
+        {
+          "threshold": 600,
+          "color": "#33383F"
+        },
+        {
+          "threshold": 1200,
+          "color": "#3E444C"
+        }
+      ],
+      "mode": "simple",
+      "elevation_mode": "stepped",
+      "hillshade": {
+        "enabled": false,
+        "intensity": 0.3,
+        "azimuth": 315,
+        "altitude": 45,
+        "large_scale_meters": 320.0,
+        "small_scale_meters": 0.0,
+        "large_scale_weight": 0.35,
+        "small_scale_weight": 0.65
+      }
+    },
+    "built_area": {
+      "enabled": true,
+      "cell_meters": 8.0,
+      "buffer_meters": 60.0,
+      "smooth_blur": 2.0,
+      "smooth_iters": 6,
+      "contour_upscale": 4,
+      "color": "#1C1E22",
+      "exclude_services": [
+        "Electricity",
+        "Water",
+        "Road",
+        "Beautification"
+      ],
+      "include_parks": false
+    },
+    "water": {
+      "color": "#12293B",
+      "border": "#1D4057",
+      "border_width": 1
+    },
+    "forest": {
+      "color": "#1E2E1E"
+    },
+    "land_use": {
+      "enabled": true,
+      "detail": "base",
+      "cell_meters": 16.0,
+      "smooth_blur": 1.5,
+      "smooth_iters": 3,
+      "contour_upscale": 2,
+      "alpha": 90,
+      "colors": {
+        "green": "#243B24",
+        "public": "#3A3A3A",
+        "residential": "#5C4A26",
+        "industrial": "#46324E",
+        "office": "#2C4258",
+        "publictransport": "#27453A",
+        "commercial": "#5C3326"
+      }
+    },
+    "district": {
+      "enabled": true,
+      "border": "#8A8578",
+      "border_width": {
+        "fixed": 1.0,
+        "scaled": 0.5
+      },
+      "fill_alpha": 85,
+      "fill_colors": [
+        "#3A4640",
+        "#46403A",
+        "#3A404A",
+        "#463A44",
+        "#40463A",
+        "#3A4646",
+        "#46403F",
+        "#403A46"
+      ],
+      "smooth_blur": 1.0,
+      "smooth_iters": 3,
+      "contour_upscale": 2
+    },
+    "zone": {
+      "enabled": true,
+      "border": "#7A6A50",
+      "border_width": {
+        "fixed": 1.0,
+        "scaled": 0.5
+      },
+      "fill_alpha": 80,
+      "fill": "#404040",
+      "smooth_blur": 1.0,
+      "smooth_iters": 3,
+      "contour_upscale": 2
+    },
+    "roads": {
+      "width_scale": 0.15,
+      "highway": {
+        "fill": "#4A4436",
+        "border": "#6B5F3E",
+        "min_fill_px": 1.8,
+        "border_width": 1.5
+      },
+      "main": {
+        "fill": "#3C3E44",
+        "border": "#5A5E66",
+        "min_fill_px": 1.4,
+        "border_width": 1.2
+      },
+      "special": {
+        "fill": "#313338",
+        "border": "#4A4D54",
+        "min_fill_px": 0.8,
+        "border_width": 1
+      },
+      "branch": {
+        "fill": "#2A2C30",
+        "border": "#3E4046",
+        "min_fill_px": 0.8,
+        "border_width": 0.8
+      },
+      "beautification": {
+        "fill": "#24262A",
+        "border": "#36383D",
+        "min_fill_px": 0.5,
+        "border_width": 0.5
+      },
+      "quay": {
+        "fill": "#24262A",
+        "border": "#36383D",
+        "border_width": 0.5
+      }
+    },
+    "buildings": {
+      "default": "#26282D",
+      "border": "#3A3D42",
+      "border_width": 1,
+      "shadow": {
+        "enabled": true,
+        "offset": [
+          2,
+          2
+        ],
+        "color": "#00000030"
+      }
+    },
+    "procedural_objects": {
+      "colors": {
+        "geometry": "#35383E",
+        "building": "#2E3136",
+        "prop": "#323439",
+        "tree": "#2A4838",
+        "street_furn": "#3A3C40",
+        "sign": "#8A7130",
+        "unknown": "#34363B"
+      },
+      "border": "#484B50",
+      "border_width": 0.8,
+      "custom_color_alpha": 0.85
+    },
+    "railway": {
+      "enabled": true,
+      "train": {
+        "line": "#C8C8C8",
+        "dash": "#454545",
+        "pattern": [
+          2,
+          4
+        ]
+      },
+      "tram": {
+        "line": "#B9A3C4",
+        "dash": "#F0F0F0"
+      },
+      "metro": {
+        "line": {
+          "color": "#C39BCB",
+          "alpha": 200
+        },
+        "dash": "#F0F0F0"
+      },
+      "monorail": {
+        "line": "#B9A3C4"
+      },
+      "cablecar": {
+        "line": "#8E93A0"
+      }
+    },
+    "transports": {
+      "enabled": [
+        "Metro",
+        "Train",
+        "Monorail",
+        "Tram",
+        "CableCar",
+        "Ship",
+        "Ferry",
+        "Bus",
+        "Trolleybus",
+        "Airplane",
+        "Helicopter"
+      ],
+      "auto_color": false,
+      "width": {
+        "fixed": 0.5,
+        "scaled": 2.05
+      },
+      "smooth": 10,
+      "transit_view": {
+        "mask_intensity": 0.6
+      },
+      "types": {
+        "Metro": {
+          "width": {
+            "fixed": 0.5,
+            "scaled": 2.05
+          },
+          "dash": []
+        },
+        "Train": {
+          "width": {
+            "fixed": 0.5,
+            "scaled": 2.2
+          },
+          "dash": []
+        },
+        "Monorail": {
+          "width": {
+            "fixed": 0.4,
+            "scaled": 1.85
+          },
+          "dash": []
+        },
+        "Tram": {
+          "width": {
+            "fixed": 0.4,
+            "scaled": 1.7
+          },
+          "dash": []
+        },
+        "CableCar": {
+          "width": {
+            "fixed": 0.4,
+            "scaled": 1.7
+          },
+          "dash": []
+        },
+        "Ship": {
+          "width": {
+            "fixed": 0.45,
+            "scaled": 1.875
+          },
+          "dash": [
+            8,
+            6
+          ],
+          "color": "#2E86AB"
+        },
+        "Ferry": {
+          "width": {
+            "fixed": 0.45,
+            "scaled": 1.875
+          },
+          "dash": [
+            8,
+            6
+          ],
+          "color": "#2E86AB"
+        },
+        "Bus": {
+          "width": {
+            "fixed": 0.35,
+            "scaled": 1.525
+          },
+          "dash": [],
+          "color": "#5A6472"
+        },
+        "Trolleybus": {
+          "width": {
+            "fixed": 0.35,
+            "scaled": 1.525
+          },
+          "dash": [
+            4,
+            4
+          ],
+          "color": "#7A8391"
+        },
+        "Airplane": {
+          "width": {
+            "fixed": 0.4,
+            "scaled": 1.7
+          },
+          "dash": [
+            10,
+            8
+          ],
+          "color": "#8A94A6"
+        },
+        "Helicopter": {
+          "width": {
+            "fixed": 0.3,
+            "scaled": 1.35
+          },
+          "dash": [
+            6,
+            6
+          ],
+          "color": "#8A94A6"
+        }
+      },
+      "label": {
+        "enabled": true,
+        "font": "SimHei",
+        "min_zoom": 0.5,
+        "size": {
+          "fixed": 8.0,
+          "scaled": 6.0
+        },
+        "padding": {
+          "fixed": 5.0,
+          "scaled": 3.5
+        },
+        "border_width": {
+          "fixed": 0.9,
+          "scaled": 0.6
+        },
+        "bg": "#FFFFFF",
+        "repeat_interval": 600,
+        "min_gap": 350,
+        "max_per_line": 4
+      }
+    },
+    "labels": {
+      "district": {
+        "font": "SimHei",
+        "size": 28,
+        "color": "#C8CDD2",
+        "stroke": "#1C1E22",
+        "stroke_width": 1.5
+      },
+      "road": {
+        "font": "SimHei",
+        "size": 7,
+        "color": "#9A9EA4",
+        "stroke": "#1C1E22",
+        "stroke_width": 1.0
+      },
+      "building": {
+        "font": "SimHei",
+        "size": 16,
+        "color": "#7A7E84"
+      },
+      "park": {
+        "font": "SimHei",
+        "size": 14,
+        "color": "#6E9E5E",
+        "stroke": "#FFFFFF",
+        "stroke_width": 1.5
+      },
+      "stop": {
+        "font": "SimHei",
+        "size": 20,
+        "color": "#4A9AE8"
+      }
+    },
+    "watermark": {
+      "enabled": true,
+      "mod_name": "CSLModernMap",
+      "position": "left_bottom",
+      "font_size": {
+        "fixed": 11,
+        "scaled": 1.5
+      },
+      "separator": " · ",
+      "margin": {
+        "x": 20,
+        "y": 20
+      },
+      "padding": {
+        "x": 12,
+        "y": 6
+      },
+      "border_radius": 6,
+      "background": "transparent",
+      "time_format": "%Y-%m-%d %H:%M:%S",
+      "city_color": "#F0F0F0",
+      "info_color": "#C8CDD2",
+      "meta_color": "#8A8F96",
+      "content": {
+        "mod_name": true,
+        "city_name": true,
+        "render_time": true,
+        "style_name": true,
+        "resolution": true,
+        "traffic_time": true,
+        "custom_text": false
+      }
+    }
+  },
+  "modern": {
+    "name": "轻简现代",
+    "description": "一种现代化、优雅美观的地图风格。",
+    "canvas": {
+      "width": 4096,
+      "height": 4096,
+      "background": "#F2F0E6"
+    },
+    "terrain": {
+      "elevation_colors": [
+        {
+          "threshold": 0,
+          "color": "#F2F0E6"
+        },
+        {
+          "threshold": 80,
+          "color": "#EEF0DF"
+        },
+        {
+          "threshold": 220,
+          "color": "#E2EBC2"
+        },
+        {
+          "threshold": 400,
+          "color": "#CEE3A6"
+        },
+        {
+          "threshold": 600,
+          "color": "#B9D88F"
+        },
+        {
+          "threshold": 900,
+          "color": "#E7EDD7"
+        },
+        {
+          "threshold": 1300,
+          "color": "#F1F0E7"
+        }
+      ],
+      "mode": "simple",
+      "elevation_mode": "stepped",
+      "hillshade": {
+        "enabled": false,
+        "intensity": 0.3,
+        "azimuth": 315.0,
+        "altitude": 45.0,
+        "large_scale_meters": 320.0,
+        "small_scale_meters": 0.0,
+        "large_scale_weight": 0.35,
+        "small_scale_weight": 0.65
+      }
+    },
+    "water": {
+      "color": "#8DDBF6",
+      "border": "#72C3E2",
+      "border_width": 1
+    },
+    "built_area": {
+      "enabled": true,
+      "cell_meters": 8.0,
+      "color": "#F1F0EB",
+      "buffer_meters": 60.0,
+      "smooth_blur": 2.0,
+      "smooth_iters": 6,
+      "contour_upscale": 2,
+      "edge_meters": 8.0
+    },
+    "forest": {
+      "color": "#BFE89D"
+    },
+    "land_use": {
+      "enabled": false,
+      "detail": "base",
+      "cell_meters": 16.0,
+      "smooth_blur": 1.5,
+      "smooth_iters": 3,
+      "contour_upscale": 2,
+      "alpha": 110,
+      "colors": {
+        "green": "#D6ECB4",
+        "public": "#EAEAE6",
+        "residential": "#F1F0EB",
+        "industrial": "#E4E3E9",
+        "office": "#DFE6EF",
+        "publictransport": "#D6E8DE",
+        "commercial": "#EFE3D8"
+      }
+    },
+    "district": {
+      "enabled": false,
+      "border": "#A6A6AD",
+      "border_width": {
+        "fixed": 1.0,
+        "scaled": 0.5
+      },
+      "fill_alpha": 115,
+      "fill_colors": [
+        "#E0E9D6",
+        "#EAE7DA",
+        "#D9E1EB",
+        "#E6DCE8",
+        "#E8E6D2",
+        "#D5E6E3",
+        "#EADAD6",
+        "#DDD7E8"
+      ],
+      "smooth_blur": 1.0,
+      "smooth_iters": 3,
+      "contour_upscale": 2
+    },
+    "zone": {
+      "enabled": true,
+      "border": "#A89880",
+      "border_width": 0,
+      "fill_alpha": 255,
+      "fill": "#E0DFDA",
+      "smooth_blur": 1.0,
+      "smooth_iters": 3,
+      "contour_upscale": 2
+    },
+    "roads": {
+      "highway": {
+        "fill": "#A4ADBD",
+        "border": "#8995A7",
+        "border_width": {
+          "fixed": 0.3,
+          "scaled": 1.2
+        },
+        "min_fill_px": 1.8
+      },
+      "width_scale": 0.15,
+      "main": {
+        "fill": "#D1D7DF",
+        "border": "#ADB6C2",
+        "border_width": {
+          "fixed": 0.25,
+          "scaled": 0.95
+        },
+        "min_fill_px": 1.4
+      },
+      "branch": {
+        "fill": "#FFFFFF",
+        "border": "#C4C8C0",
+        "border_width": {
+          "fixed": 0.15,
+          "scaled": 0.65
+        },
+        "min_fill_px": 0.8
+      },
+      "special": {
+        "fill": "#FFFFFF",
+        "border": "#C3C8D2",
+        "min_fill_px": 0.8,
+        "border_width": 1.0
+      },
+      "beautification": {
+        "fill": "#E6E5DD",
+        "border": "#D5D5CE",
+        "border_width": {
+          "fixed": 0.1,
+          "scaled": 0.4
+        },
+        "min_fill_px": 0.5
+      },
+      "quay": {
+        "fill": "#E6E5DD",
+        "border": "#D5D5CE",
+        "border_width": {
+          "fixed": 0.1,
+          "scaled": 0.4
+        }
+      }
+    },
+    "buildings": {
+      "default": "#DADCD5",
+      "border": "#B7BDB2",
+      "poi_tint": {
+        "contrast": 0.38
+      },
+      "border_width": {
+        "fixed": 0.2,
+        "scaled": 0.8
+      },
+      "shadow": {
+        "enabled": true,
+        "offset": [
+          2,
+          2
+        ],
+        "color": "#00000012"
+      }
+    },
+    "procedural_objects": {
+      "colors": {
+        "geometry": "#DEDED8",
+        "building": "#EAEAE5",
+        "prop": "#E0E0D9",
+        "tree": "#AFDC8C",
+        "street_furn": "#D8D8D1",
+        "sign": "#D9BE8A",
+        "unknown": "#DCDCD5"
+      },
+      "border": "#BDBDB5",
+      "border_width": {
+        "fixed": 0.2,
+        "scaled": 0.7
+      },
+      "custom_color_alpha": 0.85
+    },
+    "railway": {
+      "train": {
+        "line": "#E1E1DE",
+        "dash": "#87878C"
+      }
+    },
+    "transports": {
+      "enabled": [
+        "Metro",
+        "Train",
+        "Monorail",
+        "Tram",
+        "CableCar",
+        "Ship",
+        "Ferry",
+        "Bus",
+        "Trolleybus",
+        "Airplane",
+        "Helicopter"
+      ],
+      "auto_color": false,
+      "width": {
+        "fixed": 0.5,
+        "scaled": 2.05
+      },
+      "smooth": 10,
+      "transit_view": {
+        "mask_intensity": 0.6
+      },
+      "types": {
+        "Metro": {
+          "width": {
+            "fixed": 0.5,
+            "scaled": 2.05
+          },
+          "dash": []
+        },
+        "Train": {
+          "width": {
+            "fixed": 0.5,
+            "scaled": 2.2
+          },
+          "dash": []
+        },
+        "Monorail": {
+          "width": {
+            "fixed": 0.4,
+            "scaled": 1.85
+          },
+          "dash": []
+        },
+        "Tram": {
+          "width": {
+            "fixed": 0.4,
+            "scaled": 1.7
+          },
+          "dash": []
+        },
+        "CableCar": {
+          "width": {
+            "fixed": 0.4,
+            "scaled": 1.7
+          },
+          "dash": []
+        },
+        "Ship": {
+          "width": {
+            "fixed": 0.45,
+            "scaled": 1.875
+          },
+          "dash": [
+            8,
+            6
+          ],
+          "color": "#3F7FBF"
+        },
+        "Ferry": {
+          "width": {
+            "fixed": 0.45,
+            "scaled": 1.875
+          },
+          "dash": [
+            8,
+            6
+          ],
+          "color": "#3F7FBF"
+        },
+        "Bus": {
+          "width": {
+            "fixed": 0.35,
+            "scaled": 1.525
+          },
+          "dash": [],
+          "color": "#5C6670"
+        },
+        "Trolleybus": {
+          "width": {
+            "fixed": 0.35,
+            "scaled": 1.525
+          },
+          "dash": [
+            4,
+            4
+          ],
+          "color": "#7C8590"
+        },
+        "Airplane": {
+          "width": {
+            "fixed": 0.4,
+            "scaled": 1.7
+          },
+          "dash": [
+            10,
+            8
+          ],
+          "color": "#8F98A6"
+        },
+        "Helicopter": {
+          "width": {
+            "fixed": 0.3,
+            "scaled": 1.35
+          },
+          "dash": [
+            6,
+            6
+          ],
+          "color": "#8F98A6"
+        }
+      },
+      "label": {
+        "enabled": true,
+        "font": "SimHei",
+        "min_zoom": 0.5,
+        "size": {
+          "fixed": 8.0,
+          "scaled": 6.0
+        },
+        "padding": {
+          "fixed": 5.0,
+          "scaled": 3.5
+        },
+        "border_width": {
+          "fixed": 0.9,
+          "scaled": 0.6
+        },
+        "bg": "#FFFFFF",
+        "repeat_interval": 600,
+        "min_gap": 350,
+        "max_per_line": 4
+      }
+    },
+    "poi_icons": {
+      "enabled": true,
+      "icons_dir": "cn_icons",
+      "icon_size": {
+        "fixed": 20.0,
+        "scaled": 4.0
+      },
+      "grid_size": {
+        "fixed": 100.0,
+        "scaled": 20.0
+      },
+      "max_per_cell": 2,
+      "min_priority": 10,
+      "bg_circle": false,
+      "bg_circle_size": {
+        "fixed": 28.0,
+        "scaled": 6.0
+      },
+      "show_name": true,
+      "name_size": {
+        "fixed": 11.0,
+        "scaled": 2.0
+      },
+      "name_offset": 3,
+      "merge_enabled": true,
+      "merge_distance": 48.0,
+      "facility_hierarchy": {
+        "enabled": true,
+        "children_enabled": true,
+        "child_min_zoom": 1.0,
+        "area_labels_enabled": true
+      },
+      "transit_view_scale": 1.15,
+      "categories": [],
+      "hidden_categories": [
+        "traffic_light",
+        "highway_entrance",
+        "highway_exit"
+      ]
+    },
+    "labels": {
+      "district": {
+        "font": "PingFang SC",
+        "size": {
+          "fixed": 2.4,
+          "scaled": 18.0
+        },
+        "color": "#344054",
+        "stroke": "#FFFFFF",
+        "stroke_width": {
+          "fixed": 0.8,
+          "scaled": 2.4
+        },
+        "bold": true
+      },
+      "road": {
+        "font": "PingFang SC",
+        "size": {
+          "fixed": 1.0,
+          "scaled": 6.0
+        },
+        "color": "#566579",
+        "stroke": "#FFFFFF",
+        "stroke_width": {
+          "fixed": 0.2,
+          "scaled": 0.8
+        }
+      },
+      "building": {
+        "font": "PingFang SC",
+        "size": {
+          "fixed": 2.0,
+          "scaled": 14.0
+        },
+        "color": "#596574"
+      },
+      "park": {
+        "font": "PingFang SC",
+        "size": {
+          "fixed": 2.0,
+          "scaled": 12.0
+        },
+        "color": "#557D52",
+        "stroke": "#FFFFFF",
+        "stroke_width": 1.5
+      },
+      "stop": {
+        "font": "PingFang SC",
+        "size": {
+          "fixed": 2.0,
+          "scaled": 18.0
+        },
+        "color": "#2F6FA3"
+      }
+    },
+    "watermark": {
+      "enabled": true,
+      "mod_name": "CSLModernMap",
+      "font": "PingFang SC",
+      "position": "left_bottom",
+      "font_size": {
+        "fixed": 11,
+        "scaled": 1.5
+      },
+      "separator": " · ",
+      "margin": {
+        "x": 20,
+        "y": 20
+      },
+      "padding": {
+        "x": 12,
+        "y": 6
+      },
+      "border_radius": 6,
+      "background": "transparent",
+      "time_format": "%Y-%m-%d %H:%M:%S",
+      "city_color": "#1D1D1F",
+      "info_color": "#3A3A3C",
+      "meta_color": "#8E8E93",
+      "content": {
+        "mod_name": true,
+        "city_name": true,
+        "render_time": true,
+        "style_name": true,
+        "resolution": true,
+        "traffic_time": true,
+        "custom_text": false
+      }
+    }
+  },
+  "satellite": {
+    "name": "卫星暖色",
+    "description": "暖色半透明道路与暖白标注，适合叠加卫星影像",
+    "canvas": {
+      "width": 4096,
+      "height": 4096,
+      "background": "#F2F0E9"
+    },
+    "terrain": {
+      "elevation_colors": [
+        {
+          "threshold": 0,
+          "color": "#F2F0E9"
+        },
+        {
+          "threshold": 80,
+          "color": "#F2F0E9"
+        },
+        {
+          "threshold": 120,
+          "color": "#E7E2D4"
+        },
+        {
+          "threshold": 250,
+          "color": "#DAD3BC"
+        },
+        {
+          "threshold": 600,
+          "color": "#C9BFA3"
+        },
+        {
+          "threshold": 1200,
+          "color": "#B0A88F"
+        }
+      ],
+      "mode": "simple",
+      "elevation_mode": "stepped",
+      "hillshade": {
+        "enabled": false,
+        "intensity": 0.25,
+        "azimuth": 315,
+        "altitude": 45,
+        "large_scale_meters": 320.0,
+        "small_scale_meters": 0.0,
+        "large_scale_weight": 0.35,
+        "small_scale_weight": 0.65
+      }
+    },
+    "water": {
+      "color": "#A8D5E8",
+      "border": "#89BED6",
+      "border_width": 1
+    },
+    "forest": {
+      "color": "#CFE3B8"
+    },
+    "land_use": {
+      "enabled": true,
+      "detail": "base",
+      "cell_meters": 16.0,
+      "smooth_blur": 1.5,
+      "smooth_iters": 3,
+      "contour_upscale": 2,
+      "alpha": 110,
+      "colors": {
+        "green": "#CFE3B8",
+        "public": "#E3DDD5",
+        "residential": "#F5D5A8",
+        "industrial": "#D5C3D8",
+        "office": "#A8C8E8",
+        "publictransport": "#A8D8C0",
+        "commercial": "#F5B8A0"
+      }
+    },
+    "district": {
+      "enabled": true,
+      "border": "#A5A5A5",
+      "border_width": {
+        "fixed": 1.0,
+        "scaled": 0.5
+      },
+      "fill_alpha": 0,
+      "fill_colors": [
+        "#D9E8CC",
+        "#E8DCC8",
+        "#CCD8E8",
+        "#E8D4E8",
+        "#E8E8CC",
+        "#CCE8E8",
+        "#E8CCCC",
+        "#D4CCE8"
+      ],
+      "smooth_blur": 1.0,
+      "smooth_iters": 3,
+      "contour_upscale": 2
+    },
+    "zone": {
+      "enabled": true,
+      "border": "#B08A5C",
+      "border_width": {
+        "fixed": 1.0,
+        "scaled": 0.5
+      },
+      "fill_alpha": 0,
+      "fill": "#C8C8C8",
+      "smooth_blur": 1.0,
+      "smooth_iters": 3,
+      "contour_upscale": 2
+    },
+    "roads": {
+      "width_scale": 0.15,
+      "highway": {
+        "fill": "#FFE1A8",
+        "border": "#49463E",
+        "min_fill_px": 1.8,
+        "border_width": 0.6
+      },
+      "main": {
+        "fill": "#FDE293",
+        "border": "#49463E",
+        "min_fill_px": 1.4,
+        "border_width": 0.6
+      },
+      "special": {
+        "fill": "#FFFFFF",
+        "border": "#49463E",
+        "min_fill_px": 0.8,
+        "border_width": 0.6
+      },
+      "branch": {
+        "fill": "#FFFFFF",
+        "border": "#49463E",
+        "min_fill_px": 0.8,
+        "border_width": 0.6
+      },
+      "beautification": {
+        "fill": "#F5F3EC",
+        "border": "#49463E",
+        "min_fill_px": 0.5,
+        "border_width": 0.5
+      },
+      "opacity": 0.6,
+      "quay": {
+        "fill": "#F5F3EC",
+        "border": "#49463E",
+        "border_width": 0.5
+      }
+    },
+    "buildings": {
+      "default": "#EFECE3",
+      "border": "#C9C5B8",
+      "border_width": 1,
+      "shadow": {
+        "enabled": true,
+        "offset": [
+          2,
+          2
+        ],
+        "color": "#00000018"
+      }
+    },
+    "procedural_objects": {
+      "colors": {
+        "geometry": "#D9D7CC",
+        "building": "#E6E2D4",
+        "prop": "#DCD9CA",
+        "tree": "#A7CD8F",
+        "street_furn": "#D3D0C2",
+        "sign": "#E8B865",
+        "unknown": "#D8D5C7"
+      },
+      "border": "#B8B4A4",
+      "border_width": 0.9,
+      "custom_color_alpha": 0.85
+    },
+    "railway": {
+      "train": {
+        "line": "#DCDCDC",
+        "dash": "#6E6E6E"
+      }
+    },
+    "transports": {
+      "enabled": [
+        "Metro",
+        "Train",
+        "Monorail",
+        "Tram",
+        "CableCar",
+        "Ship",
+        "Ferry",
+        "Bus",
+        "Trolleybus",
+        "Airplane",
+        "Helicopter"
+      ],
+      "auto_color": false,
+      "width": {
+        "fixed": 0.5,
+        "scaled": 2.05
+      },
+      "smooth": 10,
+      "transit_view": {
+        "mask_intensity": 0.6
+      },
+      "types": {
+        "Metro": {
+          "width": {
+            "fixed": 0.5,
+            "scaled": 2.05
+          },
+          "dash": []
+        },
+        "Train": {
+          "width": {
+            "fixed": 0.5,
+            "scaled": 2.2
+          },
+          "dash": []
+        },
+        "Monorail": {
+          "width": {
+            "fixed": 0.4,
+            "scaled": 1.85
+          },
+          "dash": []
+        },
+        "Tram": {
+          "width": {
+            "fixed": 0.4,
+            "scaled": 1.7
+          },
+          "dash": []
+        },
+        "CableCar": {
+          "width": {
+            "fixed": 0.4,
+            "scaled": 1.7
+          },
+          "dash": []
+        },
+        "Ship": {
+          "width": {
+            "fixed": 0.45,
+            "scaled": 1.875
+          },
+          "dash": [
+            8,
+            6
+          ],
+          "color": "#2E86AB"
+        },
+        "Ferry": {
+          "width": {
+            "fixed": 0.45,
+            "scaled": 1.875
+          },
+          "dash": [
+            8,
+            6
+          ],
+          "color": "#2E86AB"
+        },
+        "Bus": {
+          "width": {
+            "fixed": 0.35,
+            "scaled": 1.525
+          },
+          "dash": [],
+          "color": "#5A6472"
+        },
+        "Trolleybus": {
+          "width": {
+            "fixed": 0.35,
+            "scaled": 1.525
+          },
+          "dash": [
+            4,
+            4
+          ],
+          "color": "#7A8391"
+        },
+        "Airplane": {
+          "width": {
+            "fixed": 0.4,
+            "scaled": 1.7
+          },
+          "dash": [
+            10,
+            8
+          ],
+          "color": "#8A94A6"
+        },
+        "Helicopter": {
+          "width": {
+            "fixed": 0.3,
+            "scaled": 1.35
+          },
+          "dash": [
+            6,
+            6
+          ],
+          "color": "#8A94A6"
+        }
+      },
+      "label": {
+        "enabled": true,
+        "font": "SimHei",
+        "min_zoom": 0.5,
+        "size": {
+          "fixed": 8.0,
+          "scaled": 6.0
+        },
+        "padding": {
+          "fixed": 5.0,
+          "scaled": 3.5
+        },
+        "border_width": {
+          "fixed": 0.9,
+          "scaled": 0.6
+        },
+        "bg": "#FFFFFF",
+        "repeat_interval": 600,
+        "min_gap": 350,
+        "max_per_line": 4
+      }
+    },
+    "labels": {
+      "district": {
+        "font": "SimHei",
+        "size": 28,
+        "color": "#F7F4EA",
+        "stroke": "#25231FBF",
+        "stroke_width": {
+          "fixed": 1.5,
+          "scaled": 0.0
+        },
+        "stroke_blur": {
+          "fixed": 0.6,
+          "scaled": 0.0
+        }
+      },
+      "road": {
+        "font": "SimHei",
+        "size": 7,
+        "color": "#F7F4EA",
+        "stroke": "#25231FBF",
+        "stroke_width": {
+          "fixed": 1.2,
+          "scaled": 0.0
+        },
+        "stroke_blur": {
+          "fixed": 0.6,
+          "scaled": 0.0
+        }
+      },
+      "building": {
+        "font": "SimHei",
+        "size": 16,
+        "color": "#F7F4EA"
+      },
+      "park": {
+        "font": "SimHei",
+        "size": 14,
+        "color": "#D6E8BF",
+        "stroke": "#25231F",
+        "stroke_width": 1.5
+      },
+      "stop": {
+        "font": "SimHei",
+        "size": 20,
+        "color": "#F7F4EA"
+      }
+    },
+    "watermark": {
+      "enabled": true,
+      "mod_name": "CSLModernMap",
+      "position": "left_bottom",
+      "font_size": {
+        "fixed": 11,
+        "scaled": 1.5
+      },
+      "separator": " · ",
+      "margin": {
+        "x": 20,
+        "y": 20
+      },
+      "padding": {
+        "x": 12,
+        "y": 6
+      },
+      "border_radius": 6,
+      "background": "transparent",
+      "time_format": "%Y-%m-%d %H:%M:%S",
+      "city_color": "#F7F4EA",
+      "info_color": "#F7F4EA",
+      "meta_color": "#D5D2CA",
+      "content": {
+        "mod_name": true,
+        "city_name": true,
+        "render_time": true,
+        "style_name": true,
+        "resolution": true,
+        "traffic_time": true,
+        "custom_text": false
+      }
+    },
+    "poi_icons": {
+      "name_color": "#F7F4EA",
+      "name_stroke": "#25231F",
+      "icons_dir": "cn_icons"
+    }
+  },
+  "vintage": {
+    "name": "复古风格",
+    "description": "复古纸质地图风格（泛黄底色、棕褐线条）",
+    "canvas": {
+      "width": 4096,
+      "height": 4096,
+      "background": "#F1E8D0"
+    },
+    "terrain": {
+      "elevation_colors": [
+        {
+          "threshold": 0,
+          "color": "#F1E8D0"
+        },
+        {
+          "threshold": 80,
+          "color": "#F1E8D0"
+        },
+        {
+          "threshold": 120,
+          "color": "#E9DFC2"
+        },
+        {
+          "threshold": 250,
+          "color": "#E0D3AF"
+        },
+        {
+          "threshold": 600,
+          "color": "#D2C094"
+        },
+        {
+          "threshold": 1200,
+          "color": "#BFAA7A"
+        }
+      ],
+      "mode": "simple",
+      "elevation_mode": "stepped",
+      "hillshade": {
+        "enabled": false,
+        "intensity": 0.3,
+        "azimuth": 315,
+        "altitude": 45,
+        "large_scale_meters": 320.0,
+        "small_scale_meters": 0.0,
+        "large_scale_weight": 0.35,
+        "small_scale_weight": 0.65
+      }
+    },
+    "water": {
+      "color": "#BBD3D6",
+      "border": "#8FAFB4",
+      "border_width": 1
+    },
+    "forest": {
+      "color": "#D3D9A8"
+    },
+    "land_use": {
+      "enabled": true,
+      "detail": "base",
+      "cell_meters": 16.0,
+      "smooth_blur": 1.5,
+      "smooth_iters": 3,
+      "contour_upscale": 2,
+      "alpha": 90,
+      "colors": {
+        "green": "#D3D9A8",
+        "public": "#D8D2C0",
+        "residential": "#E8C98A",
+        "industrial": "#C8B0CC",
+        "office": "#A8C0D8",
+        "publictransport": "#A8CCB0",
+        "commercial": "#E0A88A"
+      }
+    },
+    "district": {
+      "enabled": true,
+      "border": "#9C8A62",
+      "border_width": {
+        "fixed": 1.0,
+        "scaled": 0.5
+      },
+      "fill_alpha": 105,
+      "fill_colors": [
+        "#D8D8C0",
+        "#D8CCB8",
+        "#BCC8D8",
+        "#D8C0D8",
+        "#D8D8B8",
+        "#B8D8D8",
+        "#D8C0B8",
+        "#C4B8D8"
+      ],
+      "smooth_blur": 1.0,
+      "smooth_iters": 3,
+      "contour_upscale": 2
+    },
+    "zone": {
+      "enabled": true,
+      "border": "#9C8A62",
+      "border_width": {
+        "fixed": 1.0,
+        "scaled": 0.5
+      },
+      "fill_alpha": 90,
+      "fill": "#B8B8B8",
+      "smooth_blur": 1.0,
+      "smooth_iters": 3,
+      "contour_upscale": 2
+    },
+    "roads": {
+      "width_scale": 0.15,
+      "highway": {
+        "fill": "#E8C170",
+        "border": "#B98F3E",
+        "min_fill_px": 1.8,
+        "border_width": 1.5
+      },
+      "main": {
+        "fill": "#F0DFA8",
+        "border": "#B8A062",
+        "min_fill_px": 1.4,
+        "border_width": 1.2
+      },
+      "special": {
+        "fill": "#F4E9C8",
+        "border": "#BFAF82",
+        "min_fill_px": 0.8,
+        "border_width": 1
+      },
+      "branch": {
+        "fill": "#F6EDD2",
+        "border": "#C8B894",
+        "min_fill_px": 0.8,
+        "border_width": 0.8
+      },
+      "beautification": {
+        "fill": "#F2E9D0",
+        "border": "#CDBE9C",
+        "min_fill_px": 0.5,
+        "border_width": 0.5
+      },
+      "quay": {
+        "fill": "#F2E9D0",
+        "border": "#CDBE9C",
+        "border_width": 0.5
+      }
+    },
+    "buildings": {
+      "default": "#E8DEC0",
+      "border": "#A8946A",
+      "border_width": 1,
+      "shadow": {
+        "enabled": true,
+        "offset": [
+          2,
+          2
+        ],
+        "color": "#00000014"
+      }
+    },
+    "procedural_objects": {
+      "colors": {
+        "geometry": "#D8CB9F",
+        "building": "#E9DEB8",
+        "prop": "#DCD0A8",
+        "tree": "#C2CFA2",
+        "street_furn": "#CFBF90",
+        "sign": "#C79B4A",
+        "unknown": "#D8CBA0"
+      },
+      "border": "#9A8554",
+      "border_width": 0.9,
+      "custom_color_alpha": 0.85
+    },
+    "railway": {
+      "train": {
+        "line": "#C8BCA0",
+        "dash": "#5C4F38"
+      }
+    },
+    "transports": {
+      "enabled": [
+        "Metro",
+        "Train",
+        "Monorail",
+        "Tram",
+        "CableCar",
+        "Ship",
+        "Ferry",
+        "Bus",
+        "Trolleybus",
+        "Airplane",
+        "Helicopter"
+      ],
+      "auto_color": false,
+      "width": {
+        "fixed": 0.5,
+        "scaled": 2.05
+      },
+      "smooth": 10,
+      "transit_view": {
+        "mask_intensity": 0.6,
+        "label_repeat_interval": 300,
+        "label_min_gap": 180,
+        "label_max_per_line": 12,
+        "label_size": {
+          "fixed": 18,
+          "scaled": 12
+        },
+        "label_padding": {
+          "fixed": 10,
+          "scaled": 6
+        },
+        "label_border_width": 2.2
+      },
+      "types": {
+        "Metro": {
+          "width": {
+            "fixed": 0.5,
+            "scaled": 2.05
+          },
+          "dash": []
+        },
+        "Train": {
+          "width": {
+            "fixed": 0.5,
+            "scaled": 2.2
+          },
+          "dash": []
+        },
+        "Monorail": {
+          "width": {
+            "fixed": 0.4,
+            "scaled": 1.85
+          },
+          "dash": []
+        },
+        "Tram": {
+          "width": {
+            "fixed": 0.4,
+            "scaled": 1.7
+          },
+          "dash": []
+        },
+        "CableCar": {
+          "width": {
+            "fixed": 0.4,
+            "scaled": 1.7
+          },
+          "dash": []
+        },
+        "Ship": {
+          "width": {
+            "fixed": 0.45,
+            "scaled": 1.875
+          },
+          "dash": [
+            8,
+            6
+          ],
+          "color": "#2E86AB"
+        },
+        "Ferry": {
+          "width": {
+            "fixed": 0.45,
+            "scaled": 1.875
+          },
+          "dash": [
+            8,
+            6
+          ],
+          "color": "#2E86AB"
+        },
+        "Bus": {
+          "width": {
+            "fixed": 0.35,
+            "scaled": 1.525
+          },
+          "dash": [],
+          "color": "#5A6472"
+        },
+        "Trolleybus": {
+          "width": {
+            "fixed": 0.35,
+            "scaled": 1.525
+          },
+          "dash": [
+            4,
+            4
+          ],
+          "color": "#7A8391"
+        },
+        "Airplane": {
+          "width": {
+            "fixed": 0.4,
+            "scaled": 1.7
+          },
+          "dash": [
+            10,
+            8
+          ],
+          "color": "#8A94A6"
+        },
+        "Helicopter": {
+          "width": {
+            "fixed": 0.3,
+            "scaled": 1.35
+          },
+          "dash": [
+            6,
+            6
+          ],
+          "color": "#8A94A6"
+        }
+      },
+      "label": {
+        "enabled": true,
+        "font": "SimHei",
+        "min_zoom": 0.5,
+        "size": {
+          "fixed": 8.0,
+          "scaled": 6.0
+        },
+        "padding": {
+          "fixed": 5.0,
+          "scaled": 3.5
+        },
+        "border_width": {
+          "fixed": 0.9,
+          "scaled": 0.6
+        },
+        "bg": "#FFFFFF",
+        "repeat_interval": 600,
+        "min_gap": 350,
+        "max_per_line": 4
+      }
+    },
+    "labels": {
+      "district": {
+        "font": "SimHei",
+        "size": 28,
+        "color": "#6B5A3A",
+        "stroke": "#F1E8D0",
+        "stroke_width": 1.5
+      },
+      "road": {
+        "font": "SimHei",
+        "size": 7,
+        "color": "#7A6A48",
+        "stroke": "#F1E8D0",
+        "stroke_width": 1.0
+      },
+      "building": {
+        "font": "SimHei",
+        "size": 16,
+        "color": "#8A7A58"
+      },
+      "park": {
+        "font": "SimHei",
+        "size": 14,
+        "color": "#6E8A4A",
+        "stroke": "#FFFFFF",
+        "stroke_width": 1.5
+      },
+      "stop": {
+        "font": "SimHei",
+        "size": 20,
+        "color": "#4A6A9A"
+      }
+    },
+    "watermark": {
+      "enabled": true,
+      "mod_name": "CSLModernMap",
+      "position": "left_bottom",
+      "font_size": {
+        "fixed": 11,
+        "scaled": 1.5
+      },
+      "separator": " · ",
+      "margin": {
+        "x": 20,
+        "y": 20
+      },
+      "padding": {
+        "x": 12,
+        "y": 6
+      },
+      "border_radius": 6,
+      "background": "transparent",
+      "time_format": "%Y-%m-%d %H:%M:%S",
+      "city_color": "#4A3E28",
+      "info_color": "#6B5A3A",
+      "meta_color": "#8A7A58",
+      "content": {
+        "mod_name": true,
+        "city_name": true,
+        "render_time": true,
+        "style_name": true,
+        "resolution": true,
+        "traffic_time": true,
+        "custom_text": false
+      }
+    }
+  },
+  "warm_natural": {
+    "name": "暖色自然",
+    "description": "暖米色陆地、淡蓝水域与橙黄高速，配色自然温和",
+    "canvas": {
+      "width": 4096,
+      "height": 4096,
+      "background": "#F2F0E9"
+    },
+    "terrain": {
+      "elevation_colors": [
+        {
+          "threshold": 0,
+          "color": "#F2F0E9"
+        },
+        {
+          "threshold": 80,
+          "color": "#F2F0E9"
+        },
+        {
+          "threshold": 120,
+          "color": "#E7E2D4"
+        },
+        {
+          "threshold": 250,
+          "color": "#DAD3BC"
+        },
+        {
+          "threshold": 600,
+          "color": "#C9BFA3"
+        },
+        {
+          "threshold": 1200,
+          "color": "#B0A88F"
+        }
+      ],
+      "mode": "simple",
+      "elevation_mode": "stepped",
+      "hillshade": {
+        "enabled": false,
+        "intensity": 0.25,
+        "azimuth": 315,
+        "altitude": 45,
+        "large_scale_meters": 320.0,
+        "small_scale_meters": 0.0,
+        "large_scale_weight": 0.35,
+        "small_scale_weight": 0.65
+      }
+    },
+    "water": {
+      "color": "#A8D5E8",
+      "border": "#89BED6",
+      "border_width": 1
+    },
+    "forest": {
+      "color": "#CFE3B8"
+    },
+    "land_use": {
+      "enabled": true,
+      "detail": "base",
+      "cell_meters": 16.0,
+      "smooth_blur": 1.5,
+      "smooth_iters": 3,
+      "contour_upscale": 2,
+      "alpha": 110,
+      "colors": {
+        "green": "#CFE3B8",
+        "public": "#E3DDD5",
+        "residential": "#F5D5A8",
+        "industrial": "#D5C3D8",
+        "office": "#A8C8E8",
+        "publictransport": "#A8D8C0",
+        "commercial": "#F5B8A0"
+      }
+    },
+    "district": {
+      "enabled": true,
+      "border": "#A5A5A5",
+      "border_width": {
+        "fixed": 1.0,
+        "scaled": 0.5
+      },
+      "fill_alpha": 115,
+      "fill_colors": [
+        "#D9E8CC",
+        "#E8DCC8",
+        "#CCD8E8",
+        "#E8D4E8",
+        "#E8E8CC",
+        "#CCE8E8",
+        "#E8CCCC",
+        "#D4CCE8"
+      ],
+      "smooth_blur": 1.0,
+      "smooth_iters": 3,
+      "contour_upscale": 2
+    },
+    "zone": {
+      "enabled": true,
+      "border": "#B08A5C",
+      "border_width": {
+        "fixed": 1.0,
+        "scaled": 0.5
+      },
+      "fill_alpha": 100,
+      "fill": "#C8C8C8",
+      "smooth_blur": 1.0,
+      "smooth_iters": 3,
+      "contour_upscale": 2
+    },
+    "roads": {
+      "width_scale": 0.15,
+      "highway": {
+        "fill": "#FFE1A8",
+        "border": "#F5CD90",
+        "min_fill_px": 1.8,
+        "border_width": 1.5
+      },
+      "main": {
+        "fill": "#FDE293",
+        "border": "#E8C769",
+        "min_fill_px": 1.4,
+        "border_width": 1.2
+      },
+      "special": {
+        "fill": "#FFFFFF",
+        "border": "#D6D2C4",
+        "min_fill_px": 0.8,
+        "border_width": 1
+      },
+      "branch": {
+        "fill": "#FFFFFF",
+        "border": "#E2DED2",
+        "min_fill_px": 0.8,
+        "border_width": 0.8
+      },
+      "beautification": {
+        "fill": "#F5F3EC",
+        "border": "#E2DED2",
+        "min_fill_px": 0.5,
+        "border_width": 0.5
+      },
+      "quay": {
+        "fill": "#F5F3EC",
+        "border": "#E2DED2",
+        "border_width": 0.5
+      }
+    },
+    "buildings": {
+      "default": "#EFECE3",
+      "border": "#C9C5B8",
+      "border_width": 1,
+      "shadow": {
+        "enabled": true,
+        "offset": [
+          2,
+          2
+        ],
+        "color": "#00000018"
+      }
+    },
+    "procedural_objects": {
+      "colors": {
+        "geometry": "#D9D7CC",
+        "building": "#E6E2D4",
+        "prop": "#DCD9CA",
+        "tree": "#A7CD8F",
+        "street_furn": "#D3D0C2",
+        "sign": "#E8B865",
+        "unknown": "#D8D5C7"
+      },
+      "border": "#B8B4A4",
+      "border_width": 0.9,
+      "custom_color_alpha": 0.85
+    },
+    "railway": {
+      "train": {
+        "line": "#DCDCDC",
+        "dash": "#6E6E6E"
+      }
+    },
+    "transports": {
+      "enabled": [
+        "Metro",
+        "Train",
+        "Monorail",
+        "Tram",
+        "CableCar",
+        "Ship",
+        "Ferry",
+        "Bus",
+        "Trolleybus",
+        "Airplane",
+        "Helicopter"
+      ],
+      "auto_color": false,
+      "width": {
+        "fixed": 0.5,
+        "scaled": 2.05
+      },
+      "smooth": 10,
+      "transit_view": {
+        "mask_intensity": 0.6
+      },
+      "types": {
+        "Metro": {
+          "width": {
+            "fixed": 0.5,
+            "scaled": 2.05
+          },
+          "dash": []
+        },
+        "Train": {
+          "width": {
+            "fixed": 0.5,
+            "scaled": 2.2
+          },
+          "dash": []
+        },
+        "Monorail": {
+          "width": {
+            "fixed": 0.4,
+            "scaled": 1.85
+          },
+          "dash": []
+        },
+        "Tram": {
+          "width": {
+            "fixed": 0.4,
+            "scaled": 1.7
+          },
+          "dash": []
+        },
+        "CableCar": {
+          "width": {
+            "fixed": 0.4,
+            "scaled": 1.7
+          },
+          "dash": []
+        },
+        "Ship": {
+          "width": {
+            "fixed": 0.45,
+            "scaled": 1.875
+          },
+          "dash": [
+            8,
+            6
+          ],
+          "color": "#2E86AB"
+        },
+        "Ferry": {
+          "width": {
+            "fixed": 0.45,
+            "scaled": 1.875
+          },
+          "dash": [
+            8,
+            6
+          ],
+          "color": "#2E86AB"
+        },
+        "Bus": {
+          "width": {
+            "fixed": 0.35,
+            "scaled": 1.525
+          },
+          "dash": [],
+          "color": "#5A6472"
+        },
+        "Trolleybus": {
+          "width": {
+            "fixed": 0.35,
+            "scaled": 1.525
+          },
+          "dash": [
+            4,
+            4
+          ],
+          "color": "#7A8391"
+        },
+        "Airplane": {
+          "width": {
+            "fixed": 0.4,
+            "scaled": 1.7
+          },
+          "dash": [
+            10,
+            8
+          ],
+          "color": "#8A94A6"
+        },
+        "Helicopter": {
+          "width": {
+            "fixed": 0.3,
+            "scaled": 1.35
+          },
+          "dash": [
+            6,
+            6
+          ],
+          "color": "#8A94A6"
+        }
+      },
+      "label": {
+        "enabled": true,
+        "font": "SimHei",
+        "min_zoom": 0.5,
+        "size": {
+          "fixed": 8.0,
+          "scaled": 6.0
+        },
+        "padding": {
+          "fixed": 5.0,
+          "scaled": 3.5
+        },
+        "border_width": {
+          "fixed": 0.9,
+          "scaled": 0.6
+        },
+        "bg": "#FFFFFF",
+        "repeat_interval": 600,
+        "min_gap": 350,
+        "max_per_line": 4
+      }
+    },
+    "labels": {
+      "district": {
+        "font": "SimHei",
+        "size": 28,
+        "color": "#7A7A7A",
+        "stroke": "#FFFFFF",
+        "stroke_width": 1.5
+      },
+      "road": {
+        "font": "SimHei",
+        "size": 7,
+        "color": "#6E6E6E",
+        "stroke": "#FFFFFF",
+        "stroke_width": 1.0
+      },
+      "building": {
+        "font": "SimHei",
+        "size": 16,
+        "color": "#8C8C8C"
+      },
+      "park": {
+        "font": "SimHei",
+        "size": 14,
+        "color": "#6A9E5A",
+        "stroke": "#FFFFFF",
+        "stroke_width": 1.5
+      },
+      "stop": {
+        "font": "SimHei",
+        "size": 20,
+        "color": "#1B6AC6"
+      }
+    },
+    "watermark": {
+      "enabled": true,
+      "mod_name": "CSLModernMap",
+      "position": "left_bottom",
+      "font_size": {
+        "fixed": 11,
+        "scaled": 1.5
+      },
+      "separator": " · ",
+      "margin": {
+        "x": 20,
+        "y": 20
+      },
+      "padding": {
+        "x": 12,
+        "y": 6
+      },
+      "border_radius": 6,
+      "background": "transparent",
+      "time_format": "%Y-%m-%d %H:%M:%S",
+      "city_color": "#1A1A1A",
+      "info_color": "#3A3A3A",
+      "meta_color": "#6A6A6A",
+      "content": {
+        "mod_name": true,
+        "city_name": true,
+        "render_time": true,
+        "style_name": true,
+        "resolution": true,
+        "traffic_time": true,
+        "custom_text": false
+      }
+    }
+  }
+}

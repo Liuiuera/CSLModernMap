@@ -38,6 +38,7 @@ internal static class RibbonIcons
 
     internal static string LayerTitle(string layer) => layer switch
     {
+        "satellite" => UiLanguage.Text("Satellite_LayerTitle"),
         "terrain" => UiLanguage.Text("RibbonIcons_LayerTitle_51695AD45A"), "water" => UiLanguage.Text("RibbonIcons_LayerTitle_207E6D1CF5"), "road" => UiLanguage.Text("RibbonIcons_LayerTitle_A44C7BA211"), "building" => UiLanguage.Text("RibbonIcons_LayerTitle_5B46860A8E"),
         "built_area" => UiLanguage.Text("RibbonIcons_LayerTitle_433091EABE"), "poi_area" => UiLanguage.Text("RibbonIcons_LayerTitle_AD68267D54"), "railway" => UiLanguage.Text("RibbonIcons_LayerTitle_97492A0E5D"), "traffic" => UiLanguage.Text("RibbonIcons_LayerTitle_18B9E17D3D"),
         "metro" => UiLanguage.Text("RibbonIcons_LayerTitle_1AB216CC0D"), "poi" => UiLanguage.Text("RibbonIcons_LayerTitle_9FC7D0CF1D"), "label" => UiLanguage.Text("RibbonIcons_LayerTitle_4F0C1E4BF0"), "district" => UiLanguage.Text("RibbonIcons_LayerTitle_0983E2CCDD"),

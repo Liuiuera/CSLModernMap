@@ -42,7 +42,7 @@ from .base import Layer, RenderContext
 #   以 "PropInfo" 结尾          → 摆件/灯/招牌 等
 #
 # 分类顺序由长到短命中，避免前缀误匹配。
-# 缺省颜色（与 amap.yaml procedural_objects 配置同步，若 YAML 缺省则走此兜底）
+# 缺省颜色（与 bright.yaml procedural_objects 配置同步，若 YAML 缺省则走此兜底）
 DEFAULT_COLORS = {
     "geometry":     "#C9D1DD",   # 几何形状（立方体/球体等）
     "building":     "#E4E6EC",   # 建筑改造

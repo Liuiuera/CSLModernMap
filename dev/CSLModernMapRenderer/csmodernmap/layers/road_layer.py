@@ -9,11 +9,12 @@ from collections import defaultdict
 import math
 
 import aggdraw
+from PIL import Image
 
-from ..preview_road_order import build_road_order, flat_piece_key
-from ..road_geometry import RoadRecord, build_junction_mesh, junction_primary, road_sort_key
-from ..road_hierarchy import RoadLevel, road_style_candidates, visible_at_abstract_level
-from ..theme_contract import ROAD_MIN_FILL, ROAD_WIDTH_SCALE
+from ..preview_road_order import build_road_order, display_paint_regions, flat_piece_key
+from ..road_geometry import RoadRecord, build_junction_mesh, junction_primary, quay_centerlines, road_sort_key
+from ..road_hierarchy import RoadLevel, road_style_config, visible_at_abstract_level
+from ..theme_contract import ROAD_MIN_FILL, ROAD_WIDTH_SCALE, QUAY_FOOTPRINT_SCALE
 from .base import Layer, RenderContext
 
 
@@ -31,6 +32,14 @@ class RoadLayer(Layer):
 
     def render(self, ctx: RenderContext, document) -> None:
         """按局部高度等级绘制道路表面与边界。"""
+        try:
+            opacity = float(ctx.style.get("roads.opacity", 1.0))
+        except (TypeError, ValueError) as exc:
+            raise ValueError("roads.opacity must be a finite number in [0, 1]") from exc
+        if not 0.0 <= opacity <= 1.0:
+            raise ValueError("roads.opacity must be a finite number in [0, 1]")
+        if opacity == 0.0:
+            return
         scene = ctx.shared.get(_SCENE_KEY)
         if scene is None and ctx.session is not None:
             scene = ctx.session.road_scene()
@@ -51,6 +60,8 @@ class RoadLayer(Layer):
         self._aa_k = ctx.zoom / max(ctx.final_zoom, 1e-9)
         self.wscale = float(ctx.style.get("roads.width_scale", ROAD_WIDTH_SCALE))
         self.roads_cfg = ctx.style.get("roads", {})
+        self.quay_scale = float(self.roads_cfg.get("quay", {}).get(
+            "footprint_scale", QUAY_FOOTPRINT_SCALE))
         self._has_highways = any(r.level is RoadLevel.HIGHWAY for r in scene.roads)
         bbox = (ctx.world_x0, ctx.world_z0, ctx.world_x1, ctx.world_z1)
         records = sorted((r for r in scene.roads_in(bbox) if self._visible(r)),
@@ -60,14 +71,19 @@ class RoadLayer(Layer):
             for piece in order.pieces[record.id]:
                 by_rank[self._rank(piece)].append(piece)
         connectors = self._junctions(order, records, bbox)
-        draw = aggdraw.Draw(ctx.image)
+        centerlines = quay_centerlines(scene)
+        regions = {(piece.road.id, piece.index): display_paint_regions(piece, self.quay_scale, centerlines)
+                   for pieces in by_rank.values() for piece in pieces}
+        # 先完成不透明道路之间的遮挡，再统一混合整层，避免交叠处累积透明度。
+        target = ctx.image if opacity == 1.0 else Image.new("RGBA", ctx.image.size)
+        draw = aggdraw.Draw(target)
         for rank, pieces in sorted(by_rank.items()):
             pieces = ([piece for piece in pieces if piece.flat_group is None]
                       + sorted((piece for piece in pieces if piece.flat_group is not None), key=flat_piece_key))
             # 人为多边形切分不能生成道路外沿，未切分道路仍使用权威占地边界。
             for piece in pieces:
                 if self._has_footprint(piece.road):
-                    for region in piece.paint_regions:
+                    for region in regions[piece.road.id, piece.index]:
                         cfg = self._cfg_record(region.road)
                         color = hex_to_rgb(cfg.get("border", "#C3C8D2"))
                         pen = aggdraw.Pen(color, max(self._border_width(cfg), .5))
@@ -82,7 +98,7 @@ class RoadLayer(Layer):
                 self._draw_fast_polygons(draw, mesh.outer, border)
             for piece in pieces:
                 if self._has_footprint(piece.road):
-                    for region in piece.paint_regions:
+                    for region in regions[piece.road.id, piece.index]:
                         cfg = self._cfg_record(region.road)
                         self._draw_fast_polygons(draw, region.rings,
                             hex_to_rgb(cfg.get("fill", "#FFFFFF")))
@@ -93,6 +109,14 @@ class RoadLayer(Layer):
             for mesh, _, fill in connectors.get(rank, ()):
                 self._draw_fast_polygons(draw, mesh.inner, fill)
         draw.flush()
+        if opacity < 1.0:
+            # AGG 在透明底上写入预乘 RGB；Pillow 合成需要直通 RGB。
+            target = Image.frombytes("RGBa", target.size, target.tobytes()).convert("RGBA")
+            target.putalpha(target.getchannel("A").point(lambda value: round(value * opacity)))
+            if ctx.image.mode == "RGB":
+                ctx.image.paste(target, (0, 0), target)
+            else:
+                ctx.image.alpha_composite(target)
 
     def _rank(self, piece):
         if self.scene.height_reliable or piece.flat_group is not None:
@@ -202,13 +226,11 @@ class RoadLayer(Layer):
         )
 
     def _cfg_record(self, record: RoadRecord) -> dict:
-        for key in road_style_candidates(record.level, record.mode):
-            cfg = self.roads_cfg.get(key, {})
-            if cfg:
-                return cfg
-        return {}
+        return road_style_config(self.roads_cfg, record.level, record.mode)
 
     def _fill_width(self, record: RoadRecord) -> float:
+        if record.level is RoadLevel.QUAY:
+            return record.width * self.ctx.transform.scale * self.quay_scale
         cfg = self._cfg_record(record)
         minimum = float(cfg.get(
             "min_fill_px", _LEVEL_MIN_PIX[record.level]

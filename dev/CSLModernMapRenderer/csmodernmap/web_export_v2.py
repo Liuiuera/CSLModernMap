@@ -127,12 +127,14 @@ def build_scene_payload(session, style: Any, options: dict[str, Any],
         bundle.close()
 
 
-def _payload_from_bundle(bundle, progress=None, *, include_navigation=True) -> dict:
+def _payload_from_bundle(bundle, progress=None, *, include_navigation=True, visibility=None) -> dict:
     """把 bundle 目录内容读入内存并构造成内嵌 payload。"""
+    effective_layers = {**bundle.manifest.get("layers", {}), **(visibility or {})}
     sources: dict[str, Any] = {}
     images: dict[str, str] = {}
     fonts: dict[str, str] = {}
     poi_atlas_index: dict[str, Any] = {}
+    source_files = {url.split("?")[0] for url in bundle.manifest.get("sources", {}).values()}
     if "traffic" in bundle.manifest.get("sources", {}):
         bundle.traffic_path()
     for path in bundle.root.iterdir():
@@ -142,6 +144,8 @@ def _payload_from_bundle(bundle, progress=None, *, include_navigation=True) -> d
         if name == "manifest.json":
             continue
         if name.endswith(".png"):
+            if name == "satellite.png" and not effective_layers.get("satellite", False):
+                continue
             images[name] = _data_uri(path)
         elif name.startswith("label-font-") and name.endswith((".ttf", ".otf")):
             fonts[name] = "data:font/" + path.suffix[1:] + ";base64," + base64.b64encode(
@@ -149,10 +153,17 @@ def _payload_from_bundle(bundle, progress=None, *, include_navigation=True) -> d
         elif name == "poi-sprite.json":
             poi_atlas_index[name] = json.loads(path.read_text(encoding="utf-8"))
         elif name.endswith((".json", ".geojson")):
+            if name.endswith(".geojson") and name not in source_files:
+                continue
             sources[name] = json.loads(path.read_text(encoding="utf-8"))
     if progress is not None:
         progress(91, i18n.tr('ui.web_export_v2._payload_from_bundle.cea7853717'))
     manifest = dict(bundle.manifest)
+    manifest["layers"] = effective_layers
+    if not manifest.get("layers", {}).get("satellite", False):
+        manifest["sources"] = {k: v for k, v in manifest["sources"].items() if k != "satellite"}
+        manifest.pop("satelliteCorners", None)
+        manifest["satelliteAvailable"] = False
     manifest.pop("navigationRoute", None)
     manifest.pop("navigationRouteOmitted", None)
     if not include_navigation:
@@ -175,7 +186,7 @@ def payload_from_preview_bundle(bundle, *, theme: dict[str, Any] | None = None,
                                 region=None, rotation: Any = None, view: dict | None = None,
                                 navigation_enabled=True) -> dict:
     """将已发布的中央预览打包为单文件 HTML；几何资源复用原包，实时主题和旋转写入清单副本。"""
-    payload = _payload_from_bundle(bundle, include_navigation=navigation_enabled)
+    payload = _payload_from_bundle(bundle, include_navigation=navigation_enabled, visibility=visibility)
     manifest = dict(payload["manifest"])
     if theme is not None:
         manifest["theme"] = theme
@@ -226,6 +237,7 @@ def render_export_html(payload: dict, viewer_dist: Path, city: str = "") -> str:
     css = css_path.read_text(encoding="utf-8")
     js = js_path.read_text(encoding="utf-8")
     worker = worker_path.read_text(encoding="utf-8")
+    startup_errors = (viewer_dist / "preview-errors.js").read_text(encoding="utf-8")
     title = i18n.tr('ui.web_export_v2.render_export_html.cee2179528', p0=city) if city else i18n.tr('ui.web_export_v2.render_export_html.0fe5c970b8')
     worker_json = _escape_script(json.dumps(worker, ensure_ascii=False))
     # 离线资源必须保留，但隐藏路况无需常驻解析后的坐标数组。
@@ -270,6 +282,7 @@ def render_export_html(payload: dict, viewer_dist: Path, city: str = "") -> str:
 <div id="selection" aria-hidden="true"></div>
 <div id="status" hidden></div>
 <div id="hint" hidden></div>
+<script>{_escape_script(startup_errors)}</script>
 <script>window.__CSL_SCENE_WORKER_SRC__={worker_json};</script>
 <script>window.__CSL_SCENE__={payload_json};</script>
 <script type="module">{_escape_script(js)}</script>

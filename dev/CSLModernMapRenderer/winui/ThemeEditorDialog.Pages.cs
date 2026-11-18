@@ -45,15 +45,14 @@ internal sealed partial class ThemeEditorDialog
     {
         foreach (var key in new[] { "name", "description" })
             if (_working[key] is { } value && Matches(value, [key])) _fieldsPanel.Children.Add(MakeField(value, [key]));
-        _fieldsPanel.Children.Add(new TextBlock { Text = UiLanguage.Text("ThemeEditorDialog_Pages_BuildBasicPage_63CC58D88D") + _savePath, FontSize = 12, TextWrapping = TextWrapping.Wrap, Opacity = .8 });
-        _fieldsPanel.Children.Add(new TextBlock { Text = UiLanguage.Text("ThemeEditorDialog_Pages_BuildBasicPage_A1D94D780D"), FontSize = 12, TextWrapping = TextWrapping.Wrap });
-        var saveAs = new Button { Content = UiLanguage.Text("ThemeEditorDialog_Pages_BuildBasicPage_7BB3396904") }; saveAs.Click += async (_, _) => await SaveAsAsync(); _fieldsPanel.Children.Add(saveAs);
         foreach (var (key, value) in _working.Where(pair => pair.Value is not JsonObject && pair.Key is not "name" and not "description"))
             if (value is not null && Matches(value, [key])) _fieldsPanel.Children.Add(MakeField(value, [key]));
     }
     private void BuildRoadsPage()
     {
         var roads = _working["roads"]!.AsObject();
+        if (roads["opacity"] is { } opacity)
+            _fieldsPanel.Children.Add(SliderField(opacity, ["roads", "opacity"], Label(["roads", "opacity"])));
         _fieldsPanel.Children.Add(new TextBlock { Text = UiLanguage.Text("ThemeEditorDialog_Pages_BuildRoadsPage_3001DE3658"), FontWeight = Microsoft.UI.Text.FontWeights.SemiBold });
         var table = new Grid { ColumnSpacing = 8, RowSpacing = 6 };
         foreach (var width in new[] { new GridLength(76), new GridLength(1, GridUnitType.Star), new GridLength(1, GridUnitType.Star), new GridLength(65) })
@@ -76,6 +75,7 @@ internal sealed partial class ThemeEditorDialog
             Grid.SetRow(choose, row); table.Children.Add(choose);
             for (var c = 1; c < 4; c++)
             {
+                if (key == "quay" && c == 3) continue;
                 var attr = c == 1 ? "fill" : c == 2 ? "border" : "min_fill_px";
                 FrameworkElement control = cfg[attr] is { } value ? MakeField(value, ["roads", key, attr], title + headers[c], showLabel: false)
                     : new TextBlock { Text = UiLanguage.Text("ThemeEditorDialog_Pages_BuildRoadsPage_80A57E03F0"), FontSize = 12, TextWrapping = TextWrapping.Wrap };
@@ -83,7 +83,12 @@ internal sealed partial class ThemeEditorDialog
             }
             if (cfg["border_width"] is { } border) borderFields.Children.Add(MakeField(border, ["roads", key, "border_width"], title + UiLanguage.Text("ThemeEditorDialog_Pages_BuildRoadsPage_C0AA8919A8")));
             foreach (var (extra, value) in cfg.Where(pair => pair.Key is not "fill" and not "border" and not "min_fill_px" and not "border_width"))
-                if (value is not null) BuildNode(value, ["roads", key, extra], borderFields);
+                if (value is not null)
+                {
+                    if (key == "quay" && extra == "footprint_scale")
+                        _fieldsPanel.Children.Add(SliderField(value, ["roads", key, extra], Label(["roads", key, extra])));
+                    else BuildNode(value, ["roads", key, extra], borderFields);
+                }
         }
         _fieldsPanel.Children.Add(table);
         _fieldsPanel.Children.Add(new TextBlock { Text = UiLanguage.Text("ThemeEditorDialog_Pages_BuildRoadsPage_512DF348F2"), FontSize = 12, TextWrapping = TextWrapping.Wrap, Opacity = .8 });
@@ -97,7 +102,7 @@ internal sealed partial class ThemeEditorDialog
         var elevated = new StackPanel { Spacing = 10 }; var extras = new StackPanel { Spacing = 10 };
         foreach (var (key, value) in roads)
         {
-            if (value is null || key == "width_scale" || RoadLevels.Any(level => level.Key == key)) continue;
+            if (value is null || key is "width_scale" or "opacity" || RoadLevels.Any(level => level.Key == key)) continue;
             var target = key.Contains("elevated") || key.Contains("tunnel") || key is "bridge" or "tunnel" ? elevated : extras;
             if (value is JsonObject obj) { var content = new StackPanel { Spacing = 8 }; BuildNode(obj, ["roads", key], content); AddGroup(Label(["roads", key]), content, target, "roads." + key); }
             else BuildNode(value, ["roads", key], target);
@@ -110,12 +115,14 @@ internal sealed partial class ThemeEditorDialog
         void Update()
         {
             if (_working["roads"]?[level] is not JsonObject cfg) return;
+            line.Opacity = Numeric(_working["roads"]!["opacity"]!);
             if (cfg["fill"] is { } fill) line.Background = BrushFor(fill.GetValue<string>());
             if (cfg["border"] is { } border) line.BorderBrush = BrushFor(border.GetValue<string>());
             var borderWidth = cfg["border_width"] is { } bw ? SizeAt(bw, 1) : 1;
             var minimum = cfg["min_fill_px"] is { } minFill ? Numeric(minFill) : 0;
             var scale = Numeric(_working["roads"]!["width_scale"]!);
-            line.Height = Math.Max(.5 + 16 * scale, minimum) + borderWidth;
+            line.Height = (level == "quay" ? 16 * Numeric(cfg["footprint_scale"]!)
+                : Math.Max(.5 + 16 * scale, minimum)) + borderWidth;
             line.BorderThickness = new Thickness(borderWidth / 2);
         }
         _sampleUpdates.Add(Update); Update(); return line;
@@ -144,7 +151,7 @@ internal sealed partial class ThemeEditorDialog
     private void BuildTerrainPage()
     {
         var terrain = _working["terrain"]!.AsObject();
-        if (terrain["elevation_mode"] is { } mode) _fieldsPanel.Children.Add(MakeField(mode, ["terrain", "elevation_mode"], UiLanguage.Text("ThemeEditorDialog_Pages_BuildTerrainPage_7A439491B8")));
+        if (terrain["mode"] is { } mode) _fieldsPanel.Children.Add(MakeField(mode, ["terrain", "mode"], Label(["terrain", "mode"])));
         if (terrain["elevation_colors"] is JsonArray ramp)
         {
             _fieldsPanel.Children.Add(RampBand(["terrain", "elevation_colors"]));
@@ -154,7 +161,6 @@ internal sealed partial class ThemeEditorDialog
         }
         if (terrain["hillshade"] is JsonObject shade)
         {
-            if (shade["enabled"] is { } enabled) _fieldsPanel.Children.Add(MakeField(enabled, ["terrain", "hillshade", "enabled"], UiLanguage.Text("ThemeEditorDialog_Pages_BuildTerrainPage_8D2D98C22C")));
             if (shade["intensity"] is { } intensity) _fieldsPanel.Children.Add(SliderField(intensity, ["terrain", "hillshade", "intensity"], UiLanguage.Text("ThemeEditorDialog_Pages_BuildTerrainPage_9D46E5EF25")));
             var detail = new StackPanel { Spacing = 10 };
             foreach (var (key, value) in shade)
@@ -163,7 +169,7 @@ internal sealed partial class ThemeEditorDialog
         }
         var other = new StackPanel { Spacing = 10 };
         foreach (var (key, value) in terrain)
-            if (value is not null && key is not "elevation_mode" and not "elevation_colors" and not "hillshade" && !Hidden(["terrain", key]))
+            if (value is not null && key is not "mode" and not "elevation_mode" and not "elevation_colors" and not "hillshade" && !Hidden(["terrain", key]))
                 BuildNode(value, ["terrain", key], other);
         AddGroup(UiLanguage.Text("ThemeEditorDialog_Pages_BuildTerrainPage_BB3B667B97"), other, _fieldsPanel, "terrain.other");
     }
@@ -177,8 +183,8 @@ internal sealed partial class ThemeEditorDialog
             if (stops.Length == 0) { band.Background = ResourceBrush("ControlFillColorDefaultBrush"); return; }
             var low = Numeric(stops[0]["threshold"]!); var high = Numeric(stops[^1]["threshold"]!);
             var brush = new LinearGradientBrush { StartPoint = new Windows.Foundation.Point(0, .5), EndPoint = new Windows.Foundation.Point(1, .5) };
-            var mode = _working["terrain"]?["elevation_mode"]?.GetValue<string>();
-            var continuous = mode is "continuous" or "gradient" or "linear";
+            var mode = _working["terrain"]?["mode"]?.GetValue<string>();
+            var continuous = mode is "continuous" or "shade";
             for (var i = 0; i < stops.Length; i++)
             {
                 var position = high > low ? (Numeric(stops[i]["threshold"]!) - low) / (high - low) : 0;
@@ -277,12 +283,13 @@ internal sealed partial class ThemeEditorDialog
         if (_working[_section] is not JsonObject section) { BuildNode(_working[_section]!, [_section], _fieldsPanel); return; }
         var common = _section switch
         {
+            "satellite" => new[] { "preset", "intensity" },
             "canvas" => new[] { "background" }, "water" => new[] { "color", "border", "border_width" }, "forest" => new[] { "color" },
             "built_area" => new[] { "enabled", "color" }, "buildings" => new[] { "color_mode", "default", "border", "border_width" },
             "zone" => new[] { "enabled", "border", "border_width", "fill", "fill_alpha" },
             "district" => new[] { "enabled", "border", "border_width", "fill_alpha", "fill_colors" },
             "land_use" => new[] { "enabled", "detail", "alpha", "colors" }, "procedural_objects" => new[] { "colors", "border", "border_width" },
-            "railway" => new[] { "line", "dash" }, "transports" => new[] { "enabled", "auto_color", "width" },
+            "railway" => new[] { "line", "dash" }, "traffic" => new[] { "free", "slow", "busy" }, "transports" => new[] { "enabled", "auto_color", "width" },
             "poi_icons" => new[] { "icon_size", "name_size", "bg_circle", "bg_circle_size", "font" },
             "watermark" => new[] { "enabled", "position", "content" }, _ => Array.Empty<string>(),
         };

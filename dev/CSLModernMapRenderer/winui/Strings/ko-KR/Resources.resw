@@ -4471,4 +4471,83 @@ Esc  현재 작업 취소</value>
   <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>목록에 있는 장식물의 아이콘과 이름을 표시합니다. 건물과 지형지물은 계속 표시됩니다.</value></data>
   <data name="MetroSettings_Reset" xml:space="preserve"><value>기본값 복원</value></data>
   <data name="BuildingCategory_Help" xml:space="preserve"><value>이 설정을 적용하려면 분류별 색상을 선택하세요. 색상 지정을 켜면 해당 분류의 모든 건물에 적용되며, 끄면 자동 POI 색상으로 복원됩니다. 용도를 알 수 없는 건물은 미분류로 유지됩니다.</value></data>
+  <data name="BuildingList_NoName" xml:space="preserve"><value>이름 없음</value></data>
+  <data name="ThemeEditor_New" xml:space="preserve"><value>새 테마</value></data>
+  <data name="BuildingList_OfficialName" xml:space="preserve"><value>게임 공식 분류</value></data>
+  <data name="ThemeEditor_Name" xml:space="preserve"><value>테마 이름</value></data>
+  <data name="BuildingList_Search" xml:space="preserve"><value>건물 이름 검색</value></data>
+  <data name="Preview_AutoStart" xml:space="preserve"><value>시작 시 내장 미리보기 불러오기</value></data>
+  <data name="BuildingList_DetailHint" xml:space="preserve"><value>건물을 선택하면 상세 정보를 볼 수 있습니다.</value></data>
+  <data name="BuildingList_Height" xml:space="preserve"><value>건물 높이</value></data>
+  <data name="BuildingList_Open" xml:space="preserve"><value>건물 목록</value></data>
+  <data name="BuildingList_Name" xml:space="preserve"><value>건물 이름</value></data>
+  <data name="Preview_Continue.Content" xml:space="preserve"><value>계속 기다리기</value></data>
+  <data name="ThemeUpdate_Intro" xml:space="preserve"><value>“{0}”에 프리셋 업데이트가 적용되었습니다.</value></data>
+  <data name="BuildingList_Id" xml:space="preserve"><value>ID</value></data>
+  <data name="ThemeUpdate_Off" xml:space="preserve"><value>끄기</value></data>
+  <data name="BuildingList_CategoryDesc" xml:space="preserve"><value>분류: 내림차순</value></data>
+  <data name="ThemeEditor_Unsaved" xml:space="preserve"><value>저장되지 않음</value></data>
+  <data name="BuildingList_IdDesc" xml:space="preserve"><value>ID: 내림차순</value></data>
+  <data name="ThemeEditor_MigrationWarning" xml:space="preserve"><value>일부 이전 테마를 읽을 수 없습니다. 원본 파일은 백업되었습니다:</value></data>
+  <data name="ThemeEditor_Select" xml:space="preserve"><value>테마 선택</value></data>
+  <data name="ThemeEditor_Copy" xml:space="preserve"><value>테마 복제</value></data>
+  <data name="BuildingList_Info" xml:space="preserve"><value>건물 정보</value></data>
+  <data name="BuildingList_Unnamed" xml:space="preserve"><value>이름 없는 건물</value></data>
+  <data name="BuildingList_CustomName" xml:space="preserve"><value>플레이어 지정</value></data>
+  <data name="ThemeEditor_Cancel" xml:space="preserve"><value>취소</value></data>
+  <data name="ThemeUpdate_Continue" xml:space="preserve"><value>계속 사용</value></data>
+  <data name="BuildingList_NameSource" xml:space="preserve"><value>이름 출처</value></data>
+  <data name="BuildingList_Details" xml:space="preserve"><value>건물 상세 정보</value></data>
+  <data name="ThemeUpdate_UsePrevious" xml:space="preserve"><value>이전 테마 사용</value></data>
+  <data name="ThemeUpdate_Archived" xml:space="preserve"><value>이전 테마가 저장되었습니다. 테마 목록에서 언제든지 선택할 수 있습니다.</value></data>
+  <data name="BuildingList_All" xml:space="preserve"><value>전체</value></data>
+  <data name="ThemeEditor_Exported" xml:space="preserve"><value>테마를 내보냈습니다</value></data>
+  <data name="BuildingList_Empty" xml:space="preserve"><value>일치하는 건물이 없습니다</value></data>
+  <data name="ThemeUpdate_Kept" xml:space="preserve"><value>사용자 변경 사항 유지</value></data>
+  <data name="BuildingList_Count" xml:space="preserve"><value>{0:N0} / {1:N0}개 건물 표시 (복합 건물은 함께 집계)</value></data>
+  <data name="BuildingList_Back" xml:space="preserve"><value>개요로 돌아가기</value></data>
+  <data name="Preview_DataAvailable" xml:space="preserve"><value>지도 데이터를 불러왔습니다. 테마를 선택하고 내보낼 수 있습니다.</value></data>
+  <data name="ThemeEditor_Personal" xml:space="preserve"><value>내 테마</value></data>
+  <data name="ThemeUpdate_ColorRamp" xml:space="preserve"><value>고도 색상</value></data>
+  <data name="ThemeEditor_Export" xml:space="preserve"><value>테마 내보내기…</value></data>
+  <data name="ThemeEditor_Import" xml:space="preserve"><value>테마 가져오기…</value></data>
+  <data name="BuildingList_OutsideFilter" xml:space="preserve"><value>선택한 건물은 현재 필터 결과에 없습니다.</value></data>
+  <data name="ThemeEditor_Base" xml:space="preserve"><value>기본 프리셋</value></data>
+  <data name="BuildingList_NameAsc" xml:space="preserve"><value>이름: 오름차순</value></data>
+  <data name="BuildingList_GroupCount" xml:space="preserve"><value>{0}개 건물 (주 건물 포함)</value></data>
+  <data name="ThemeEditor_CurrentUnreadable" xml:space="preserve"><value>현재 테마를 읽을 수 없습니다. 다른 테마를 선택하세요. 원본 파일은 보존되었습니다.</value></data>
+  <data name="Preview_OpenFailed" xml:space="preserve"><value>HTML은 저장되었지만 브라우저에서 열 수 없습니다. 출력 폴더에서 직접 열어 주세요.</value></data>
+  <data name="ThemeEditor_Rename" xml:space="preserve"><value>이름 변경</value></data>
+  <data name="Preview_OpenMap" xml:space="preserve"><value>지도 파일을 열면 테마를 선택하고 내보낼 수 있습니다.</value></data>
+  <data name="Preview_Slow" xml:space="preserve"><value>지도 미리보기에 시간이 더 걸립니다</value></data>
+  <data name="ThemeUpdate_AllChanges" xml:space="preserve"><value>모든 변경 사항</value></data>
+  <data name="ThemeEditor_Builtins" xml:space="preserve"><value>기본 테마</value></data>
+  <data name="BuildingList_OpenButton.Content" xml:space="preserve"><value>건물 목록</value></data>
+  <data name="ThemeUpdate_Custom" xml:space="preserve"><value>사용자 설정</value></data>
+  <data name="BuildingList_GameCategory" xml:space="preserve"><value>게임 분류</value></data>
+  <data name="Preview_Retry.Content" xml:space="preserve"><value>미리보기 다시 불러오기</value></data>
+  <data name="BuildingList_Members" xml:space="preserve"><value>부속 건물</value></data>
+  <data name="BuildingList_NameDesc" xml:space="preserve"><value>이름: 내림차순</value></data>
+  <data name="BuildingList_IdAsc" xml:space="preserve"><value>ID: 오름차순</value></data>
+  <data name="BuildingList_Group" xml:space="preserve"><value>건물 그룹</value></data>
+  <data name="ThemeEditor_Save" xml:space="preserve"><value>저장</value></data>
+  <data name="ThemeUpdate_On" xml:space="preserve"><value>켜기</value></data>
+  <data name="BuildingList_GameName" xml:space="preserve"><value>게임 생성 이름</value></data>
+  <data name="ThemeUpdate_Conflict" xml:space="preserve"><value>사용자도 변경한 항목입니다. 새 프리셋 값을 적용했습니다.</value></data>
+  <data name="Preview_Html.Content" xml:space="preserve"><value>브라우저에서 열기</value></data>
+  <data name="ThemeEditor_InvalidName" xml:space="preserve"><value>제어 문자 없이 1–64자를 입력하세요.</value></data>
+  <data name="Preview_Stopped" xml:space="preserve"><value>내장 미리보기가 중지되었습니다</value></data>
+  <data name="ThemeUpdate_MoreKept" xml:space="preserve"><value>변경 사항 {0}개 추가 유지</value></data>
+  <data name="BuildingList_GameNames" xml:space="preserve"><value>게임 생성 이름 사용</value></data>
+  <data name="Preview_Png.Content" xml:space="preserve"><value>PNG 내보내기 (2048 px)</value></data>
+  <data name="BuildingList_CategoryAsc" xml:space="preserve"><value>분류: 오름차순</value></data>
+  <data name="BuildingList_Category" xml:space="preserve"><value>건물 분류</value></data>
+  <data name="ThemeUpdate_Unset" xml:space="preserve"><value>설정 안 됨</value></data>
+  <data name="Preview_Failed" xml:space="preserve"><value>지도 미리보기를 불러올 수 없습니다</value></data>
+  <data name="ThemeUpdate_Title" xml:space="preserve"><value>테마 업데이트됨</value></data>
+  <data name="BuildingList_Sort" xml:space="preserve"><value>정렬</value></data>
+  <data name="BuildingList_NameHint" xml:space="preserve"><value>지도 이름 설정과 동기화됩니다. 플레이어 지정 이름은 유지됩니다.</value></data>
+  <data name="BuildingList_Clear" xml:space="preserve"><value>필터 지우기</value></data>
+  <data name="Satellite_LayerTitle" xml:space="preserve"><value>위성 이미지</value></data>
+  <data name="Satellite_Composing" xml:space="preserve"><value>위성 이미지를 합성하는 중…</value></data>
 </root>

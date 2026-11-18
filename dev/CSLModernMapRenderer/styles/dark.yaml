@@ -15,9 +15,10 @@ terrain:
     - { threshold: 250, color: "#2A2E34" }
     - { threshold: 600, color: "#33383F" }
     - { threshold: 1200, color: "#3E444C" }
-  elevation_mode: continuous
+  mode: simple
+  elevation_mode: stepped
   hillshade:
-    enabled: true
+    enabled: false
     intensity: 0.3
     azimuth: 315
     altitude: 45

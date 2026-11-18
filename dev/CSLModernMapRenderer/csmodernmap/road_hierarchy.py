@@ -9,15 +9,17 @@ class RoadLevel(str, Enum):
     MAIN = "main"
     BRANCH = "branch"
     SPECIAL = "special"
+    QUAY = "quay"
     BEAUTIFICATION = "beautification"
 
 
 ROAD_LEVEL_RANK = {
-    RoadLevel.BEAUTIFICATION: 0,
-    RoadLevel.SPECIAL: 1,
-    RoadLevel.BRANCH: 2,
-    RoadLevel.MAIN: 3,
-    RoadLevel.HIGHWAY: 4,
+    RoadLevel.QUAY: 0,
+    RoadLevel.BEAUTIFICATION: 1,
+    RoadLevel.SPECIAL: 2,
+    RoadLevel.BRANCH: 3,
+    RoadLevel.MAIN: 4,
+    RoadLevel.HIGHWAY: 5,
 }
 
 _SPECIAL_TERMS = (
@@ -43,6 +45,10 @@ def is_special_road(asset_name: str = "", item_class: str = "") -> bool:
     return any(term in value for term in _SPECIAL_TERMS)
 
 
+def is_quay_network(*values: str) -> bool:
+    return "quay" in _normalized(*values)
+
+
 def segment_physical_width(segment, segment_type) -> float:
     """返回导出的道路宽度，缺失时使用车道包络宽度。"""
     width = float(getattr(segment, "width", 0.0) or 0.0)
@@ -59,7 +65,12 @@ def classify_segment(segment, segment_type) -> RoadLevel:
         getattr(segment, "name", ""), getattr(segment, "icls", "")
     ):
         return RoadLevel.SPECIAL
-    if bool(getattr(segment_type, "beautification", False)):
+    beautification = bool(getattr(segment_type, "beautification", False))
+    if beautification and is_quay_network(
+            getattr(segment, "name", ""), getattr(segment, "icls", ""),
+            getattr(segment_type, "name", "")):
+        return RoadLevel.QUAY
+    if beautification:
         return RoadLevel.BEAUTIFICATION
 
     car_lanes = int(getattr(segment_type, "car_lane_count", 0) or 0)
@@ -106,6 +117,7 @@ _STYLE_ALIASES = {
     RoadLevel.MAIN: ("main", "primary", "road"),
     RoadLevel.BRANCH: ("branch", "tertiary", "secondary", "road"),
     RoadLevel.SPECIAL: ("special", "branch", "road"),
+    RoadLevel.QUAY: ("quay", "beautification", "pedestrian"),
     RoadLevel.BEAUTIFICATION: ("beautification", "pedestrian"),
 }
 
@@ -121,13 +133,24 @@ def road_style_candidates(level: RoadLevel, mode: str = "ground") -> tuple[str, 
     return tuple(dict.fromkeys(candidates))
 
 
+def road_style_config(roads, level, mode="ground"):
+    candidates = road_style_candidates(level, mode)
+    if level is RoadLevel.QUAY:
+        # 单独调整护岸比例时，未指定的颜色仍继承景观道路。
+        cfg = {}
+        for key in reversed(candidates):
+            cfg.update(roads.get(key, {}))
+        return cfg
+    return next((roads[key] for key in candidates if roads.get(key)), {})
+
+
 def visible_at_abstract_level(
     level: RoadLevel, abstract_level: int, *, has_highways: bool = True,
 ) -> bool:
     if abstract_level <= 0:
         return True
     if abstract_level == 1:
-        return level is not RoadLevel.BEAUTIFICATION
+        return level not in (RoadLevel.QUAY, RoadLevel.BEAUTIFICATION)
     if abstract_level == 2:
         return level in (RoadLevel.HIGHWAY, RoadLevel.MAIN)
     if has_highways:

@@ -8,7 +8,7 @@ import './preview-controls.css';
 
 type TextKey = 'search' | 'searchHelp' | 'empty' | 'building' | 'road' | 'area' | 'layers' | 'fit' | 'help'
   | 'title' | 'move' | 'moveHelp' | 'view' | 'viewHelp' | 'find' | 'findHelp' | 'navigate' | 'navigateHelp'
-  | 'gotIt' | 'terrain' | 'built_area' | 'land_use' | 'water' | 'railway' | 'traffic' | 'metro' | 'transit'
+  | 'gotIt' | 'satellite' | 'terrain' | 'built_area' | 'land_use' | 'water' | 'railway' | 'traffic' | 'metro' | 'transit'
   | 'poi' | 'label' | 'district' | 'zone' | 'watermark' | 'poi_area' | 'procedural_objects' | 'baseMap'
   | 'transportFacilities' | 'labelsOther' | 'close' | 'zoomIn' | 'zoomOut' | 'collapse' | 'expand'
   | 'searchRoutes' | 'actions';
@@ -19,7 +19,7 @@ function text(key: TextKey): string {
 }
 
 const layerGroups: Array<{title: TextKey; items: Array<[TextKey, ControlIcon]>}> = [
-  {title: 'baseMap', items: [['terrain', 'mountain'], ['built_area', 'building-community'], ['land_use', 'map'],
+  {title: 'baseMap', items: [['satellite', 'map'], ['terrain', 'mountain'], ['built_area', 'building-community'], ['land_use', 'map'],
     ['water', 'droplet'], ['road', 'road'], ['building', 'building'], ['railway', 'track']]},
   {title: 'transportFacilities', items: [['traffic', 'traffic-lights'], ['metro', 'train'], ['transit', 'train'],
     ['poi_area', 'border-outer'], ['poi', 'map-pin']]},

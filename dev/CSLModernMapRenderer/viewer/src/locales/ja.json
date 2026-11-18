@@ -214,5 +214,7 @@
   "preview3d_title": "3D プレビュー",
   "preview3d_help": "マウスの中ボタンを押したまま、左右にドラッグして回転、上下にドラッグして傾斜を調整します。",
   "preview3d_missing": "一部の建物はモデルの高さがなく、平面表示のままです。最新の MOD で再エクスポートしてください。",
-  "roads_local_flat_fallback": "一部の道路交差部は平面で描画されます。これらの場所では橋やトンネルの重なりが不正確な場合があります。"
+  "roads_local_flat_fallback": "一部の道路交差部は平面で描画されます。これらの場所では橋やトンネルの重なりが不正確な場合があります。",
+  "satellite_texture_limit": "Satellite image size {{size}} exceeds the device texture limit {{limit}}",
+  "controls_satellite": "衛星画像"
 }
