@@ -78,8 +78,10 @@ class EngineTests(unittest.TestCase):
         del raw["networks"][0]["level"]
         path = self.work / "missing-level.cmm"
         path.write_text(json.dumps(raw), encoding="utf-8")
-        with self.assertRaisesRegex(ValueError, "no valid road level"):
-            load_document(path)
+        document = load_document(path)
+        self.assertNotIn(raw["networks"][0]["id"], {road.id for road in document.networks})
+        self.assertTrue(any(issue.code == "READ_RECORD_SKIPPED" and "no valid road level" in issue.message
+                            for issue in document.issues))
 
     def test_dangling_node_is_diagnosed(self):
         raw = json.loads(self.source.read_text(encoding="utf-8"))

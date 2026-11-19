@@ -1099,6 +1099,7 @@
 
     "localStorageQuotaExceeded": "ローカルストレージの上限に達しました。新しい変更は保存できません。",
     "cmm": {
+        "transfer": "乗り換え",
         "properties": "プロパティ",
         "otherProperties": "その他のプロパティ",
         "moreActions": "その他の操作",

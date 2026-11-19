@@ -35,7 +35,7 @@ def polygon_parts(geometry):
 
 
 def water_surface(geometry):
-    """按水面减岛屿的规则构造多边形。"""
+    """按水面减岛屿的共享规则构造多边形。"""
     rings = []
     for ring, wet in zip(geometry.polygons, geometry.is_water):
         polygon = Polygon([(geometry.origin_x+float(x)*geometry.cell/geometry.upscale,

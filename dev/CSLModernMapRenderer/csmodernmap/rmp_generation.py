@@ -11,6 +11,7 @@ from .cmm import DocumentSession
 from .metro_edit import CompiledEdits, EditIssue, MetroEditDocument, build_editor_scene
 from .metro_features import recommended_metro_output_size, metro_content_canvas_size
 from .schematic_water import layout_and_water
+from .i18n import tr
 from .style import load_metro_style
 from .transit_context import build_transit_context
 
@@ -31,7 +32,7 @@ def generate_rmp(document, options, *, progress=None, cancelled=None):
         if progress is not None:
             progress(fraction, message)
 
-    report(0, "准备交通模型")
+    report(0, tr("gui.rmp.progress.model"))
     session = DocumentSession(document)
     mapdata = session._legacy_view()
     cfg = deepcopy(load_metro_style(str(resource_dir("styles"))).data["transports"])
@@ -45,9 +46,8 @@ def generate_rmp(document, options, *, progress=None, cancelled=None):
     st_cfg["facilities"]["enabled"] = bool(options.get("facilities_enabled", True))
     model, lines, _ = build_transit_context(mapdata, cfg, enabled, facilities=True)
     if not lines:
-        from .i18n import tr
         raise RmpSelectionError(tr("gui.transit.no_lines_selected"))
-    report(.15, "生成示意布局与水域")
+    report(.15, tr("gui.rmp.progress.layout"))
     canvas = metro_content_canvas_size(mapdata, enabled, recommended_metro_output_size(mapdata, enabled))
     zoom = max(canvas) / 4096
     def size(value):
@@ -84,7 +84,7 @@ def generate_rmp(document, options, *, progress=None, cancelled=None):
         adaptive_dense_gap=adaptive["dense_gap"], adaptive_dense_threshold=adaptive["dense_threshold"],
         transit_model=model, station_grid_overrides=edits.station_cells,
         line_loop_overrides=edits.line_loops, shared_corridor_overrides=edits.shared_segments)
-    report(.85, "整理可编辑站线与设施")
+    report(.85, tr("gui.rmp.progress.facilities"))
     stations, facilities = [], []
     facility_cfg = st_cfg["facilities"]
     canvas_scale = max(min(canvas) / 1024, .5)
@@ -122,5 +122,5 @@ def generate_rmp(document, options, *, progress=None, cancelled=None):
             "water": {**water_report, "displayed": display_water},
         },
     }
-    report(1, "工程草稿已生成")
+    report(1, tr("gui.rmp.progress.ready"))
     return result

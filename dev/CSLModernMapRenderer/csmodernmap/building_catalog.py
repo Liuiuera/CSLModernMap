@@ -40,6 +40,7 @@ class BuildingCatalog:
                  "category": self.categories[root],
                  "categoryName": i18n.tr("building.category." + self.categories[root]),
                  "iconPath": icons[entry_key(game, self.by_id[root].category_id)],
+                 "memberNames": {str(item.id): self.names.building(item).text for item in members},
                  "memberIds": [item.id for item in members]}
                 for root, members in self.groups.items()]
 

@@ -22,36 +22,12 @@
     <comment>AppearanceControls.cs:67</comment>
   </data>
   <data name="AppearanceControls_Create_C1FFF780E0" xml:space="preserve">
-    <value>人民广场 · Central Avenue</value>
+    <value>인민광장 · 중앙대로</value>
     <comment>AppearanceControls.cs:98</comment>
   </data>
   <data name="AppearanceControls_Number_0BB1EFDA65" xml:space="preserve">
     <value>{0}: {1}~{2} 사이의 값을 입력하세요.</value>
     <comment>AppearanceControls.cs:153</comment>
-  </data>
-  <data name="AppearanceControls_Number_0DA36741DE" xml:space="preserve">
-    <value>고정 부분(px)</value>
-    <comment>AppearanceControls.cs:136</comment>
-  </data>
-  <data name="AppearanceControls_Number_2C7E083699" xml:space="preserve">
-    <value>배율 부분(기준 픽셀)</value>
-    <comment>AppearanceControls.cs:138</comment>
-  </data>
-  <data name="AppearanceControls_Number_9FC85F1C9F" xml:space="preserve">
-    <value>크기 고정</value>
-    <comment>AppearanceControls.cs:198</comment>
-  </data>
-  <data name="AppearanceControls_Number_C42BC5D941" xml:space="preserve">
-    <value>{0}: 올바른 숫자를 입력하세요.</value>
-    <comment>AppearanceControls.cs:148</comment>
-  </data>
-  <data name="AppearanceControls_Number_EE9964568E" xml:space="preserve">
-    <value>고정 부분 + 배율 조정 부분</value>
-    <comment>AppearanceControls.cs:198</comment>
-  </data>
-  <data name="AppearanceControls_Number_F1463D39A7" xml:space="preserve">
-    <value>지도에 맞춰 크기 조정</value>
-    <comment>AppearanceControls.cs:198</comment>
   </data>
   <data name="ContextRibbonToggle_Refresh_645432A5BF" xml:space="preserve">
     <value>, 켜짐</value>
@@ -216,6 +192,10 @@ Rail Map Painter의 열기 메뉴에서 이 폴더의 .rmp.json 파일을 가져
   <data name="ExportWindow_Preview_FormatDescription_D1B9C29526" xml:space="preserve">
     <value>노선망 프로젝트 · Rail Map Painter에서 편집</value>
     <comment>ExportWindow.Preview.cs:93</comment>
+  </data>
+  <data name="ExportWindow_Preview_FormatDescription_F3E27B053E" xml:space="preserve">
+    <value>GeoPackage (.gpkg) + GeoTIFF (.tif) + QGIS (.qml)</value>
+    <comment>ExportWindow.Preview.cs:91</comment>
   </data>
   <data name="ExportWindow_Preview_InitializeResults_0A07FEF6ED" xml:space="preserve">
     <value>내보내기 재시도</value>
@@ -445,6 +425,10 @@ Rail Map Painter의 열기 메뉴에서 이 폴더의 .rmp.json 파일을 가져
     <value>지하철 노선도</value>
     <comment>ExportWindow.cs:679</comment>
   </data>
+  <data name="ExportWindow_UpdateContextCopy_19744772B2" xml:space="preserve">
+    <value>GeoPackage (.gpkg) + GeoTIFF (.tif) + QGIS (.qml)</value>
+    <comment>ExportWindow.cs:348</comment>
+  </data>
   <data name="ExportWindow_UpdateContextCopy_2F52FBFF32" xml:space="preserve">
     <value>현재 지하철 노선망 및 노선 선택으로 보조 프로젝트를 내보냅니다.</value>
     <comment>ExportWindow.cs:357</comment>
@@ -468,6 +452,10 @@ Rail Map Painter의 열기 메뉴에서 이 폴더의 .rmp.json 파일을 가져
   <data name="ExportWindow_UpdateContextCopy_6339D3A748" xml:space="preserve">
     <value>현재 테마, 레이어 및 선택 범위로 지도를 내보냅니다.</value>
     <comment>ExportWindow.cs:376</comment>
+  </data>
+  <data name="ExportWindow_UpdateContextCopy_694B1FB788" xml:space="preserve">
+    <value>GeoPackage / GeoTIFF + QML</value>
+    <comment>ExportWindow.cs:347</comment>
   </data>
   <data name="ExportWindow_UpdateContextCopy_7BE47589C1" xml:space="preserve">
     <value>.rmp.json을 내보낸 다음 Rail Map Painter로 가져와 노선을 편집하세요.</value>
@@ -817,6 +805,10 @@ Rail Map Painter의 열기 메뉴에서 이 폴더의 .rmp.json 파일을 가져
     <value>PNG 내보내기…</value>
     <comment>MainWindow.File.cs:32</comment>
   </data>
+  <data name="MainWindow_File_BuildFileMenu_D9A515CF72" xml:space="preserve">
+    <value>GeoPackage / GeoTIFF + QML…</value>
+    <comment>MainWindow.File.cs:34</comment>
+  </data>
   <data name="MainWindow_File_RefreshFileRecent_95D7E39D01" xml:space="preserve">
     <value>파일이 이동했거나 없습니다:</value>
     <comment>MainWindow.File.cs:63</comment>
@@ -1145,10 +1137,6 @@ Rail Map Painter의 열기 메뉴에서 이 폴더의 .rmp.json 파일을 가져
     <value>대중교통 아이콘</value>
     <comment>MainWindow.MapSettings.cs:278</comment>
   </data>
-  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_4D2A6ECC62" xml:space="preserve">
-    <value>기준 크기는 도시 전체 4096픽셀 캔버스 기준입니다.</value>
-    <comment>MainWindow.MapSettings.cs:350; MainWindow.MapSettings.cs:365</comment>
-  </data>
   <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_4D8D19C70F" xml:space="preserve">
     <value>범주 설정</value>
     <comment>MainWindow.MapSettings.cs:57; MainWindow.MapSettings.cs:58; MainWindow.MapSettings.cs:59</comment>
@@ -1361,10 +1349,6 @@ Rail Map Painter의 열기 메뉴에서 이 폴더의 .rmp.json 파일을 가져
     <value>텍스트와 아이콘 표시</value>
     <comment>MainWindow.MapSettings.cs:216</comment>
   </data>
-  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_EC7FFA2896" xml:space="preserve">
-    <value>확대에 따른 크기 변화</value>
-    <comment>MainWindow.MapSettings.cs:351; MainWindow.MapSettings.cs:366</comment>
-  </data>
   <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_ED236491A4" xml:space="preserve">
     <value>게임 자동 이름</value>
     <comment>MainWindow.MapSettings.cs:311</comment>
@@ -1388,6 +1372,10 @@ Rail Map Painter의 열기 메뉴에서 이 폴더의 .rmp.json 파일을 가져
   <data name="MainWindow_OverviewButton.Content" xml:space="preserve">
     <value>지도 개요</value>
     <comment>dev\CSLModernMapRenderer\winui\MainWindow.xaml:50</comment>
+  </data>
+  <data name="MainWindow_Overview_ShowInspectorHome_064FC61A89" xml:space="preserve">
+    <value>QGIS에서 계속 편집</value>
+    <comment>MainWindow.Overview.cs:131</comment>
   </data>
   <data name="MainWindow_Overview_ShowInspectorHome_1CDED5B3FD" xml:space="preserve">
     <value>개체 속성</value>
@@ -1433,10 +1421,6 @@ Rail Map Painter의 열기 메뉴에서 이 폴더의 .rmp.json 파일을 가져
     <value>지도 테마 및 도시 개요</value>
     <comment>MainWindow.Overview.cs:39</comment>
   </data>
-  <data name="MainWindow_Overview_ShowMapOverview_3595B7C819" xml:space="preserve">
-    <value>지역 수</value>
-    <comment>MainWindow.Overview.cs:53</comment>
-  </data>
   <data name="MainWindow_Overview_ShowMapOverview_41AB2E0ECB" xml:space="preserve">
     <value>지도</value>
     <comment>MainWindow.Overview.cs:38; MainWindow.Overview.cs:40</comment>
@@ -1450,7 +1434,7 @@ Rail Map Painter의 열기 메뉴에서 이 폴더의 .rmp.json 파일을 가져
     <comment>MainWindow.Overview.cs:52</comment>
   </data>
   <data name="MainWindow_Overview_ShowMapOverview_6F1C3CB04A" xml:space="preserve">
-    <value>테마 편집…</value>
+    <value>테마 매개변수 편집…</value>
     <comment>MainWindow.Overview.cs:48</comment>
   </data>
   <data name="MainWindow_Overview_ShowMapOverview_788DB1CFEC" xml:space="preserve">
@@ -1458,7 +1442,7 @@ Rail Map Painter의 열기 메뉴에서 이 폴더의 .rmp.json 파일을 가져
     <comment>MainWindow.Overview.cs:41</comment>
   </data>
   <data name="MainWindow_Overview_ShowMapOverview_B553EA09A3" xml:space="preserve">
-    <value>대중교통 운행 거리</value>
+    <value>대중교통 노선 길이 합계</value>
     <comment>MainWindow.Overview.cs:52</comment>
   </data>
   <data name="MainWindow_Overview_ShowMapOverview_BDA7B29CF3" xml:space="preserve">
@@ -1480,6 +1464,34 @@ Rail Map Painter의 열기 메뉴에서 이 폴더의 .rmp.json 파일을 가져
   <data name="MainWindow_Overview_ShowMapOverview_ED84A1665F" xml:space="preserve">
     <value>도시</value>
     <comment>MainWindow.Overview.cs:51</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_2CD0F3BE87" xml:space="preserve">
+    <value>취소</value>
+    <comment>MainWindow.PreviewSettings.cs:36</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_3279E8322A" xml:space="preserve">
+    <value>미리보기 성능</value>
+    <comment>MainWindow.PreviewSettings.cs:19</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_63C73C4730" xml:space="preserve">
+    <value>적용</value>
+    <comment>MainWindow.PreviewSettings.cs:37</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_8B710BEF56" xml:space="preserve">
+    <value>도시가 변경되었습니다. 설정을 다시 여세요.</value>
+    <comment>MainWindow.PreviewSettings.cs:39</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_BA2E93E730" xml:space="preserve">
+    <value>기본값 복원</value>
+    <comment>MainWindow.PreviewSettings.cs:35</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_BD4DD78F2D" xml:space="preserve">
+    <value>도시 로드, 지도 생성 및 그리기 시간을 기록하여 미리보기 지연을 진단합니다.</value>
+    <comment>MainWindow.PreviewSettings.cs:29</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_F15F7C4642" xml:space="preserve">
+    <value>미리 보기 성능 기록</value>
+    <comment>MainWindow.PreviewSettings.cs:22</comment>
   </data>
   <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_07C030A101" xml:space="preserve">
     <value>반복 간격(m)</value>
@@ -2058,9 +2070,17 @@ Rail Map Painter의 열기 메뉴에서 이 폴더의 .rmp.json 파일을 가져
     <value>로그 폴더 열기</value>
     <comment>MainWindow.Workflows.cs:197</comment>
   </data>
+  <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_3B1EF565E6" xml:space="preserve">
+    <value>성능</value>
+    <comment>MainWindow.Workflows.cs:213</comment>
+  </data>
   <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_41AB2E0ECB" xml:space="preserve">
     <value>지도</value>
     <comment>MainWindow.Workflows.cs:213</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_51464DD5DC" xml:space="preserve">
+    <value>성능 진단</value>
+    <comment>MainWindow.Workflows.cs:194</comment>
   </data>
   <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_6EDFD8773A" xml:space="preserve">
     <value>미리 보기 새로 고침</value>
@@ -2337,6 +2357,10 @@ Esc  현재 작업 취소</value>
   <data name="MainWindow_xaml_BuildRibbon_62AEEB8B65" xml:space="preserve">
     <value>지역 및 구역</value>
     <comment>MainWindow.xaml.cs:165</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_694B1FB788" xml:space="preserve">
+    <value>GeoPackage / GeoTIFF + QML</value>
+    <comment>MainWindow.xaml.cs:141; MainWindow.xaml.cs:218</comment>
   </data>
   <data name="MainWindow_xaml_BuildRibbon_6BEB3C5ED7" xml:space="preserve">
     <value>지도 만들기</value>
@@ -3371,18 +3395,6 @@ Esc  현재 작업 취소</value>
     <value>입력 중입니다. 유효한 값을 적용하면 미리보기가 갱신됩니다.</value>
     <comment>ThemeEditorDialog.Fields.cs:348</comment>
   </data>
-  <data name="ThemeEditorDialog_Fields_Label_606D5B2CC1" xml:space="preserve">
-    <value>렌더링 축척에 따라 일부 추가</value>
-    <comment>ThemeEditorDialog.Fields.cs:23</comment>
-  </data>
-  <data name="ThemeEditorDialog_Fields_Label_803A1B3A33" xml:space="preserve">
-    <value>고정 부분</value>
-    <comment>ThemeEditorDialog.Fields.cs:22</comment>
-  </data>
-  <data name="ThemeEditorDialog_Fields_MakeField_606D5B2CC1" xml:space="preserve">
-    <value>렌더링 축척에 따라 일부 추가</value>
-    <comment>ThemeEditorDialog.Fields.cs:134</comment>
-  </data>
   <data name="ThemeEditorDialog_Fields_MakeField_66FE53367D" xml:space="preserve">
     <value>{0}~{1} 사이의 값을 입력하세요</value>
     <comment>ThemeEditorDialog.Fields.cs:181</comment>
@@ -3394,14 +3406,6 @@ Esc  현재 작업 취소</value>
   <data name="ThemeEditorDialog_Fields_MakeField_870D5FE5D4" xml:space="preserve">
     <value>JSON 배열을 입력하세요</value>
     <comment>ThemeEditorDialog.Fields.cs:150</comment>
-  </data>
-  <data name="ThemeEditorDialog_Fields_MakeField_986E6B84D7" xml:space="preserve">
-    <value>고정 부분 (px)</value>
-    <comment>ThemeEditorDialog.Fields.cs:133</comment>
-  </data>
-  <data name="ThemeEditorDialog_Fields_MakeField_CF663DC217" xml:space="preserve">
-    <value>최종 크기 = 고정 부분 + 비율에 따라 늘어나는 부분 × 렌더링 배율</value>
-    <comment>ThemeEditorDialog.Fields.cs:136</comment>
   </data>
   <data name="ThemeEditorDialog_Fields_MakeField_D9E21007A0" xml:space="preserve">
     <value>（현재 값）</value>
@@ -3420,11 +3424,11 @@ Esc  현재 작업 취소</value>
     <comment>ThemeEditorDialog.Fields.cs:84</comment>
   </data>
   <data name="ThemeEditorDialog_Fields_PageDescription_5986B685A1" xml:space="preserve">
-    <value>도로 등급별로 채우기, 테두리 및 최소 표시 너비를 조정합니다.</value>
+    <value>도로 등급별로 채우기, 테두리 및 지표면 윤곽이 없는 경우의 너비(px)를 조정합니다.</value>
     <comment>ThemeEditorDialog.Fields.cs:82</comment>
   </data>
   <data name="ThemeEditorDialog_Fields_PageDescription_7245F659EA" xml:space="preserve">
-    <value>테마 이름과 설명을 수정하고 현재 테마 설정을 저장합니다.</value>
+    <value>프리셋 변경을 저장하면 개인 테마가 생성됩니다. 개인 테마를 저장하면 해당 테마가 갱신됩니다. 내보내기는 별도 YAML 파일로 저장합니다.</value>
     <comment>ThemeEditorDialog.Fields.cs:85</comment>
   </data>
   <data name="ThemeEditorDialog_Fields_PageDescription_8714276423" xml:space="preserve">
@@ -3536,7 +3540,7 @@ Esc  현재 작업 취소</value>
     <comment>ThemeEditorDialog.Layout.cs:43</comment>
   </data>
   <data name="ThemeEditorDialog_Layout_BuildWorkbench_BA1125B2AC" xml:space="preserve">
-    <value>전체 테마 데이터(JSON) 편집…</value>
+    <value>JSON 편집…</value>
     <comment>ThemeEditorDialog.Layout.cs:60</comment>
   </data>
   <data name="ThemeEditorDialog_Layout_BuildWorkbench_EC9A1CEB6D" xml:space="preserve">
@@ -3699,10 +3703,6 @@ Esc  현재 작업 취소</value>
     <value>높이({0}~{1}m)와 올바른 HEX 색상값을 입력하세요</value>
     <comment>ThemeEditorDialog.Pages.cs:189</comment>
   </data>
-  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_01EEE2E647" xml:space="preserve">
-    <value>값이 클수록 도로 전체가 두꺼워집니다.</value>
-    <comment>ThemeEditorDialog.Pages.cs:61</comment>
-  </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_05FB7CBA47" xml:space="preserve">
     <value>채우기</value>
     <comment>ThemeEditorDialog.Pages.cs:29</comment>
@@ -3712,23 +3712,19 @@ Esc  현재 작업 취소</value>
     <comment>ThemeEditorDialog.Pages.cs:42</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_1D68EDF7EB" xml:space="preserve">
-    <value>최소 px</value>
+    <value>중심선 너비(px)</value>
     <comment>ThemeEditorDialog.Pages.cs:29</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_3001DE3658" xml:space="preserve">
     <value>등급별 모양</value>
     <comment>ThemeEditorDialog.Pages.cs:24</comment>
   </data>
-  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_37AE912BEC" xml:space="preserve">
-    <value>전체 너비</value>
-    <comment>ThemeEditorDialog.Pages.cs:59</comment>
-  </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_512DF348F2" xml:space="preserve">
-    <value>최소 너비는 먼 거리에서의 표시 여부를 결정하고 실제 너비는 도로 크기에 따라 달라집니다. 테두리는 채우기 영역을 둘러쌉니다.</value>
+    <value>풋프린트가 있으면 풋프린트 너비 × 풋프린트 배율을 사용합니다. 없으면 픽셀 너비 × 요소 배율을 사용합니다. 테두리에도 요소 배율이 적용됩니다.</value>
     <comment>ThemeEditorDialog.Pages.cs:56</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_593A6AFD98" xml:space="preserve">
-    <value>등급별 테두리 너비</value>
+    <value>윤곽선 너비(px) / 도로 면 너비 배율</value>
     <comment>ThemeEditorDialog.Pages.cs:63</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_80A57E03F0" xml:space="preserve">
@@ -3750,10 +3746,6 @@ Esc  현재 작업 취소</value>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_C2AE96D4A6" xml:space="preserve">
     <value>고가 및 터널</value>
     <comment>ThemeEditorDialog.Pages.cs:72</comment>
-  </data>
-  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_E9C68028D9" xml:space="preserve">
-    <value>도로 너비 배율</value>
-    <comment>ThemeEditorDialog.Pages.cs:60</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_FBE666F1E0" xml:space="preserve">
     <value>도로 등급</value>
@@ -3794,11 +3786,6 @@ Esc  현재 작업 취소</value>
   <data name="ThemeEditorDialog_Preview_BuildSamples_1350C527B6" xml:space="preserve">
     <value>색상과 크기 변경 사항은 실제 지도 미리 보기에 표시됩니다.</value>
     <comment>ThemeEditorDialog.Preview.cs:50</comment>
-  </data>
-  <data name="ThemeEditorDialog_Preview_BuildSamples_1A0787C40B" xml:space="preserve">
-    <value> · 최소 {0:0.##} px
-샘플 도로 16 m, 렌더링 축척 1</value>
-    <comment>ThemeEditorDialog.Preview.cs:33</comment>
   </data>
   <data name="ThemeEditorDialog_Preview_BuildSamples_5BD3906590" xml:space="preserve">
     <value>아직 높이 노드가 없습니다</value>
@@ -4314,7 +4301,7 @@ Esc  현재 작업 취소</value>
   <data name="MainWindow_File_OpenConfigurationFolder" xml:space="preserve">
     <value>설정 폴더 열기</value>
   </data>
-  <data name="RmpEditor_Title" xml:space="preserve"><value>Metro diagram editor</value></data>
+  <data name="RmpEditor_Title" xml:space="preserve"><value>지하철 노선도 편집기</value></data>
   <data name="RmpEditor_Edit" xml:space="preserve"><value>Edit</value></data>
   <data name="RmpEditor_Save" xml:space="preserve"><value>Save project</value></data>
   <data name="RmpEditor_SaveAs" xml:space="preserve"><value>Save as…</value></data>
@@ -4326,20 +4313,20 @@ Esc  현재 작업 취소</value>
   <data name="RmpEditor_Cancel" xml:space="preserve"><value>Cancel</value></data>
   <data name="RmpEditor_Discard" xml:space="preserve"><value>Discard changes</value></data>
   <data name="RmpEditor_Unsaved" xml:space="preserve"><value>Unsaved project</value></data>
-  <data name="RmpEditor_UnsavedPrompt" xml:space="preserve"><value>Save changes before continuing?</value></data>
-  <data name="RmpEditor_Independent" xml:space="preserve"><value>Changes belong to this editor only.</value></data>
-  <data name="RmpEditor_NativeAppearance" xml:space="preserve"><value>RMP uses native symbol sizes, Noto Sans SC and opaque water colours composed over the canvas background.</value></data>
-  <data name="RmpEditor_Detached" xml:space="preserve"><value>This project is not linked to the current source map.</value></data>
-  <data name="RmpEditor_MissingAssets" xml:space="preserve"><value>RMP assets are missing. Rebuild the WinUI application.</value></data>
-  <data name="RmpEditor_LoadFailed" xml:space="preserve"><value>Unable to load the RMP editor</value></data>
-  <data name="RmpEditor_ProcessFailed" xml:space="preserve"><value>The editor process stopped. Unsaved changes could not be recovered.</value></data>
-  <data name="RmpEditor_InvalidProject" xml:space="preserve"><value>Not a supported RMP project (save version 1–77).</value></data>
-  <data name="RmpEditor_BlockedResource" xml:space="preserve"><value>An external resource was blocked by the offline editor.</value></data>
+  <data name="RmpEditor_UnsavedPrompt" xml:space="preserve"><value>계속하기 전에 변경 사항을 저장할까요?</value></data>
+  <data name="RmpEditor_Independent" xml:space="preserve"><value>변경 사항은 이 초안에만 적용됩니다.</value></data>
+  <data name="RmpEditor_NativeAppearance" xml:space="preserve"><value>RMP는 기호의 기본 크기와 Noto Sans SC 글꼴을 사용합니다. 수면 색상은 캔버스 배경과 합성해 불투명하게 표시합니다.</value></data>
+  <data name="RmpEditor_Detached" xml:space="preserve"><value>이 프로젝트는 현재 원본 지도에 연결되어 있지 않습니다.</value></data>
+  <data name="RmpEditor_MissingAssets" xml:space="preserve"><value>RMP 리소스가 없습니다. WinUI 앱을 다시 빌드하세요.</value></data>
+  <data name="RmpEditor_LoadFailed" xml:space="preserve"><value>RMP 편집기를 불러올 수 없습니다</value></data>
+  <data name="RmpEditor_ProcessFailed" xml:space="preserve"><value>편집기 프로세스가 종료되었습니다. 저장하지 않은 변경 사항은 복구할 수 없습니다.</value></data>
+  <data name="RmpEditor_InvalidProject" xml:space="preserve"><value>지원하지 않는 RMP 프로젝트입니다. 저장 형식 버전 1~77을 지원합니다.</value></data>
+  <data name="RmpEditor_BlockedResource" xml:space="preserve"><value>오프라인 편집기가 외부 리소스를 차단했습니다.</value></data>
   <data name="RmpEditor_RegeneratePrompt" xml:space="preserve"><value>Replace this draft with the automatic diagram captured when this window opened? This does not change the main window.</value></data>
   <data name="RmpEditor_Exported" xml:space="preserve"><value>Exported:</value></data>
-  <data name="RmpEditor_MismatchPrompt" xml:space="preserve"><value>The saved project does not match its source metadata. Open it independently, or create a new draft without overwriting it?</value></data>
-  <data name="RmpEditor_OpenExisting" xml:space="preserve"><value>Open existing project</value></data>
-  <data name="RmpEditor_NewDraft" xml:space="preserve"><value>Create new draft</value></data>
+  <data name="RmpEditor_MismatchPrompt" xml:space="preserve"><value>저장된 프로젝트가 원본 메타데이터와 일치하지 않습니다. 따로 열거나 원본을 덮어쓰지 않고 새 초안을 만드시겠습니까?</value></data>
+  <data name="RmpEditor_OpenExisting" xml:space="preserve"><value>기존 프로젝트 열기</value></data>
+  <data name="RmpEditor_NewDraft" xml:space="preserve"><value>새 초안 만들기</value></data>
   <data name="RmpEditor_Fit" xml:space="preserve"><value>Fit diagram</value></data>
   <data name="RmpEditor_Undo" xml:space="preserve"><value>실행 취소</value></data>
   <data name="RmpEditor_Redo" xml:space="preserve"><value>다시 실행</value></data>
@@ -4371,6 +4358,290 @@ Esc  현재 작업 취소</value>
   <data name="ExportWindow_RmpContent" xml:space="preserve"><value>수정한 노선, 역 및 기타 요소를 포함하여 현재 지하철 노선도를 내보냅니다. 글꼴은 파일에 포함됩니다.</value></data>
   <data name="ExportWindow_RmpSvgDescription" xml:space="preserve"><value>확대 및 추가 편집이 가능한 벡터 이미지</value></data>
   <data name="RmpEditor_DefaultTitle" xml:space="preserve"><value>{cityName} 지하철 노선도</value></data>
+  <data name="Poi_Area" xml:space="preserve"><value>기능 구역</value></data>
+  <data name="Poi_AreaIcons" xml:space="preserve"><value>기능 구역 아이콘</value></data>
+  <data name="Poi_AreaNames" xml:space="preserve"><value>기능 구역 이름</value></data>
+  <data name="Poi_AreaDescription" xml:space="preserve"><value>게임에서 내보낸 기능 구역과 이름입니다.</value></data>
+  <data name="Poi_PngInternalBuildings" xml:space="preserve"><value>PNG에 구역 내부 건물 아이콘 표시</value></data>
+  <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
+    <value>게임이 실행 중이며 많은 메모리를 사용할 수 있습니다. 도시를 저장하고 게임을 종료한 후 내보내는 것을 권장합니다. 그대로 계속할 수도 있습니다.</value>
+  </data>
+  <data name="ExportWindow_BeforeExportNotice" xml:space="preserve">
+    <value>내보내기 전에 도시를 저장하고 게임을 종료한 뒤 메모리를 많이 사용하는 다른 프로그램도 닫는 것이 좋습니다. 출력 크기가 클수록 더 많은 메모리가 필요합니다.</value>
+  </data>
+  <data name="Poi_AreaMerge" xml:space="preserve">
+    <value>인접 구역 이름 통합 (CS2)</value>
+  </data>
+  <data name="Poi_AreaMergeDescription" xml:space="preserve">
+    <value>원본 유형과 이름이 같은 인접한 CS2 구역은 하나의 표식을 공유합니다. 각 구역의 경계는 유지됩니다.</value>
+  </data>
+  <data name="Map_RotateCounterclockwise" xml:space="preserve">
+    <value>반시계 방향 90°</value>
+  </data>
+  <data name="Map_RotateClockwise" xml:space="preserve">
+    <value>시계 방향 90°</value>
+  </data>
+  <data name="Failure_Internal" xml:space="preserve"><value>예기치 않은 오류가 발생했습니다. 제작자에게 보고할 수 있습니다.</value></data>
+  <data name="Failure_Operation" xml:space="preserve"><value>Operation failed</value></data>
+  <data name="Failure_Metro" xml:space="preserve"><value>지하철 노선도 생성 실패</value></data>
+  <data name="Failure_Export" xml:space="preserve"><value>지도 내보내기 실패</value></data>
+  <data name="Failure_Permission" xml:space="preserve"><value>필요한 파일에 접근하지 못했습니다. 파일 또는 폴더 권한을 확인하고 다시 시도하세요.</value></data>
+  <data name="Failure_MissingFile" xml:space="preserve"><value>필요한 파일을 찾을 수 없습니다. 파일 위치를 확인한 후 다시 시도하세요.</value></data>
+  <data name="Failure_Memory" xml:space="preserve"><value>메모리 할당에 실패했습니다. 출력 크기를 줄이거나 메모리를 많이 사용하는 앱을 닫고 다시 시도하세요.</value></data>
+  <data name="Failure_EngineStopped" xml:space="preserve"><value>렌더링 엔진이 중지되었습니다. 뷰어를 다시 열고 다시 시도하세요.</value></data>
+  <data name="Failure_ViewDetails" xml:space="preserve"><value>View details</value></data>
+  <data name="Failure_CopyDetails" xml:space="preserve"><value>오류 세부 정보 복사</value></data>
+  <data name="Failure_Close" xml:space="preserve"><value>Close</value></data>
+  <data name="Failure_Copied" xml:space="preserve"><value>Copied</value></data>
+  <data name="Failure_CopyFailed" xml:space="preserve"><value>복사하지 못했습니다. 다시 시도하세요.</value></data>
+  <data name="Ribbon_MoreLayers" xml:space="preserve"><value>더 많은 레이어</value></data>
+  <data name="Ribbon_Simplified" xml:space="preserve"><value>간소화</value></data>
+  <data name="Ribbon_Classic" xml:space="preserve"><value>클래식</value></data>
+  <data name="Sidebar_ShowSettings" xml:space="preserve"><value>왼쪽 패널 표시</value></data>
+  <data name="Sidebar_HideSettings" xml:space="preserve"><value>왼쪽 패널 숨기기</value></data>
+  <data name="Sidebar_ShowInspector" xml:space="preserve"><value>오른쪽 패널 표시</value></data>
+  <data name="Sidebar_HideInspector" xml:space="preserve"><value>오른쪽 패널 숨기기</value></data>
+  <data name="Ribbon_IntroTitle" xml:space="preserve"><value>새로운 간소화 모드를 사용해 보세요</value></data>
+  <data name="Ribbon_IntroDescription" xml:space="preserve"><value>간소화 모드에서는 더 편안하고 간단하게 지도를 둘러볼 수 있습니다. 언제든지 클래식 모드로 돌아갈 수 있습니다.</value></data>
+  <data name="Ribbon_IntroTry" xml:space="preserve"><value>간소화 모드 사용</value></data>
+  <data name="Ribbon_IntroLater" xml:space="preserve"><value>나중에</value></data>
+  <data name="RmpEditor_showNames" xml:space="preserve"><value>역 이름 표시</value></data>
+  <data name="RmpEditor_showDefaultNames" xml:space="preserve"><value>기본 역 이름 표시</value></data>
+  <data name="Poi_ShowDecorative" xml:space="preserve"><value>장식물 POI 표시</value></data>
+  <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>목록에 있는 장식물의 아이콘과 이름을 표시합니다. 건물과 지형지물은 계속 표시됩니다.</value></data>
+  <data name="MetroSettings_Reset" xml:space="preserve"><value>기본값 복원</value></data>
+  <data name="Preview_Failed" xml:space="preserve"><value>지도 미리보기를 불러올 수 없습니다</value></data>
+  <data name="Preview_Slow" xml:space="preserve"><value>지도 미리보기에 시간이 더 걸립니다</value></data>
+  <data name="Preview_Stopped" xml:space="preserve"><value>미리 보기가 실행되지 않습니다</value></data>
+  <data name="Preview_DataAvailable" xml:space="preserve"><value>지도 데이터를 불러왔습니다. 테마를 선택하고 내보낼 수 있습니다.</value></data>
+  <data name="Preview_OpenMap" xml:space="preserve"><value>지도 파일을 열면 테마를 선택하고 내보낼 수 있습니다.</value></data>
+  <data name="Preview_AutoStart" xml:space="preserve"><value>시작 시 내장 미리보기 불러오기</value></data>
+  <data name="Preview_Retry.Content" xml:space="preserve"><value>다시 시도</value></data>
+  <data name="Preview_Png.Content" xml:space="preserve"><value>PNG 내보내기 (2048 px)</value></data>
+  <data name="Preview_Html.Content" xml:space="preserve"><value>외부 브라우저에서 열기</value></data>
+  <data name="Preview_Continue.Content" xml:space="preserve"><value>계속 기다리기</value></data>
+  <data name="Preview_OpenFailed" xml:space="preserve"><value>HTML은 저장되었지만 브라우저에서 열 수 없습니다. 출력 폴더에서 직접 열어 주세요.</value></data>
+  <data name="ThemeEditor_Select" xml:space="preserve"><value>테마 선택</value></data>
+  <data name="ThemeEditor_Unsaved" xml:space="preserve"><value>저장되지 않음</value></data>
+  <data name="ThemeEditor_Builtins" xml:space="preserve"><value>사전 설정</value></data>
+  <data name="ThemeEditor_Personal" xml:space="preserve"><value>내 테마</value></data>
+  <data name="ThemeEditor_New" xml:space="preserve"><value>새 테마</value></data>
+  <data name="ThemeEditor_Copy" xml:space="preserve"><value>테마 복제</value></data>
+  <data name="ThemeEditor_Rename" xml:space="preserve"><value>이름 변경</value></data>
+  <data name="ThemeEditor_Import" xml:space="preserve"><value>테마 가져오기…</value></data>
+  <data name="ThemeEditor_Export" xml:space="preserve"><value>테마 내보내기…</value></data>
+  <data name="ThemeEditor_Base" xml:space="preserve"><value>기본 프리셋</value></data>
+  <data name="ThemeEditor_Cancel" xml:space="preserve"><value>취소</value></data>
+  <data name="ThemeEditor_Name" xml:space="preserve"><value>테마 이름</value></data>
+  <data name="ThemeEditor_Save" xml:space="preserve"><value>저장</value></data>
+  <data name="ThemeEditor_Exported" xml:space="preserve"><value>테마를 내보냈습니다</value></data>
+  <data name="ThemeEditor_InvalidName" xml:space="preserve"><value>제어 문자 없이 1–64자를 입력하세요.</value></data>
+  <data name="ThemeEditor_MigrationWarning" xml:space="preserve"><value>일부 이전 테마를 읽을 수 없습니다. 원본 파일은 백업되었습니다:</value></data>
+  <data name="BuildingList_Open" xml:space="preserve"><value>건물 목록</value></data>
+  <data name="BuildingList_Back" xml:space="preserve"><value>개요로 돌아가기</value></data>
+  <data name="BuildingList_Search" xml:space="preserve"><value>건물 이름 검색</value></data>
+  <data name="BuildingList_Category" xml:space="preserve"><value>건물 분류</value></data>
+  <data name="BuildingList_OutsideFilter" xml:space="preserve"><value>선택한 건물은 현재 필터 결과에 없습니다.</value></data>
+  <data name="BuildingList_Clear" xml:space="preserve"><value>필터 지우기</value></data>
+  <data name="BuildingList_All" xml:space="preserve"><value>전체</value></data>
+  <data name="BuildingList_Unnamed" xml:space="preserve"><value>이름 없는 건물</value></data>
+  <data name="BuildingList_Empty" xml:space="preserve"><value>일치하는 건물이 없습니다</value></data>
+  <data name="BuildingList_Count" xml:space="preserve"><value>{0:N0} / {1:N0}개 건물 표시 (복합 건물은 함께 집계)</value></data>
+  <data name="BuildingList_Members" xml:space="preserve"><value>부속 건물</value></data>
+  <data name="BuildingList_OpenButton.Content" xml:space="preserve"><value>건물 목록</value></data>
+  <data name="BuildingList_Sort" xml:space="preserve"><value>정렬</value></data>
+  <data name="BuildingList_NameAsc" xml:space="preserve"><value>이름: 오름차순</value></data>
+  <data name="BuildingList_NameDesc" xml:space="preserve"><value>이름: 내림차순</value></data>
+  <data name="BuildingList_CategoryAsc" xml:space="preserve"><value>분류: 오름차순</value></data>
+  <data name="BuildingList_CategoryDesc" xml:space="preserve"><value>분류: 내림차순</value></data>
+  <data name="BuildingList_IdAsc" xml:space="preserve"><value>ID: 오름차순</value></data>
+  <data name="BuildingList_IdDesc" xml:space="preserve"><value>ID: 내림차순</value></data>
+  <data name="BuildingList_Details" xml:space="preserve"><value>건물 상세 정보</value></data>
+  <data name="BuildingList_DetailHint" xml:space="preserve"><value>건물을 선택하면 상세 정보를 볼 수 있습니다.</value></data>
+  <data name="ThemeEditor_CurrentUnreadable" xml:space="preserve"><value>현재 테마를 읽을 수 없습니다. 다른 테마를 선택하세요. 원본 파일은 보존되었습니다.</value></data>
+  <data name="BuildingList_GameNames" xml:space="preserve"><value>게임 생성 이름 사용</value></data>
+  <data name="BuildingList_NameHint" xml:space="preserve"><value>지도 이름 설정과 동기화됩니다. 플레이어 지정 이름은 유지됩니다.</value></data>
+  <data name="BuildingList_Name" xml:space="preserve"><value>건물 이름</value></data>
+  <data name="BuildingList_Id" xml:space="preserve"><value>ID</value></data>
+  <data name="BuildingList_Info" xml:space="preserve"><value>건물 정보</value></data>
+  <data name="BuildingList_NameSource" xml:space="preserve"><value>이름 출처</value></data>
+  <data name="BuildingList_CustomName" xml:space="preserve"><value>플레이어 지정</value></data>
+  <data name="BuildingList_OfficialName" xml:space="preserve"><value>게임 공식 분류</value></data>
+  <data name="BuildingList_NoName" xml:space="preserve"><value>이름 없음</value></data>
+  <data name="BuildingList_GameCategory" xml:space="preserve"><value>게임 분류</value></data>
+  <data name="BuildingList_Height" xml:space="preserve"><value>건물 높이</value></data>
+  <data name="BuildingList_Group" xml:space="preserve"><value>건물 그룹</value></data>
+  <data name="BuildingList_GroupCount" xml:space="preserve"><value>{0}개 건물 (주 건물 포함)</value></data>
+  <data name="BuildingList_GameName" xml:space="preserve"><value>게임 생성 이름</value></data>
+  <data name="ThemeUpdate_Title" xml:space="preserve"><value>사전 설정 업데이트</value></data>
+  <data name="ThemeUpdate_Intro" xml:space="preserve"><value>다음 사전 설정 변경 사항을 “{0}”에 적용할 수 있습니다.</value></data>
+  <data name="ThemeUpdate_Archived" xml:space="preserve"><value>적용하기 전에 현재 테마를 백업합니다.</value></data>
+  <data name="ThemeUpdate_Continue" xml:space="preserve"><value>업데이트 적용</value></data>
+  <data name="ThemeUpdate_UsePrevious" xml:space="preserve"><value>현재 설정 유지</value></data>
+  <data name="ThemeUpdate_Conflict" xml:space="preserve"><value>이 항목은 사용자 설정을 대체합니다.</value></data>
+  <data name="ThemeUpdate_ColorRamp" xml:space="preserve"><value>고도 색상</value></data>
+  <data name="ThemeUpdate_Unset" xml:space="preserve"><value>설정 안 됨</value></data>
+  <data name="ThemeUpdate_On" xml:space="preserve"><value>켜기</value></data>
+  <data name="ThemeUpdate_Off" xml:space="preserve"><value>끄기</value></data>
+  <data name="ThemeUpdate_Custom" xml:space="preserve"><value>사용자 설정</value></data>
+  <data name="SatelliteGuidance_Title" xml:space="preserve"><value>위성 지도 표시 권장 사항</value></data>
+  <data name="SatelliteGuidance_Body" xml:space="preserve"><value>위성 웜 테마로 도로, 아이콘, 텍스트를 강조합니다.</value></data>
+  <data name="SatelliteGuidance_Apply" xml:space="preserve"><value>권장 설정 적용</value></data>
+  <data name="SatelliteGuidance_Keep" xml:space="preserve"><value>현재 설정 유지</value></data>
+  <data name="SatelliteGuidance_Unavailable" xml:space="preserve"><value>이 지도에는 위성 이미지가 없습니다</value></data>
+  <data name="SatelliteGuidance_EnableTitle" xml:space="preserve"><value>켜기 권장</value></data>
+  <data name="SatelliteGuidance_EnableLayers" xml:space="preserve"><value>도로, 아이콘, 텍스트</value></data>
+  <data name="SatelliteGuidance_OptionalTitle" xml:space="preserve"><value>필요에 따라 켜기</value></data>
+  <data name="SatelliteGuidance_OptionalLayers" xml:space="preserve"><value>철도, 대중교통, 교통 상황</value></data>
+  <data name="SatelliteGuidance_DisableTitle" xml:space="preserve"><value>끄기 권장</value></data>
+  <data name="SatelliteGuidance_DisableLayers" xml:space="preserve"><value>건물, 지형, 수역 등 위성을 가리는 레이어</value></data>
+  <data name="SatelliteGuidance_Preserve" xml:space="preserve"><value>현재 선택 유지</value></data>
+  <data name="SatelliteGuidance_Details" xml:space="preserve"><value>변경 내용 보기</value></data>
+  <data name="SatelliteGuidance_DetailBody" xml:space="preserve"><value>건물, 지형, 수역, 시가지, 토지 이용, POI 영역과 PO 객체는 위성 이미지를 가릴 수 있어 권장하지 않습니다. 권장 설정을 적용하면 이 레이어들이 꺼집니다.</value></data>
+  <data name="Preview_Compatibility.Content" xml:space="preserve"><value>호환 미리 보기</value></data>
+  <data name="Preview_CompatibilityNotice.Text" xml:space="preserve"><value>호환 모드: 이미지 미리 보기로 일부 기능을 사용할 수 없습니다.</value></data>
+  <data name="Preview_Interactive.Content" xml:space="preserve"><value>대화형 미리 보기로 전환</value></data>
+  <data name="Preview_ImageUpdating.Text" xml:space="preserve"><value>미리 보기 업데이트 중</value></data>
+  <data name="Preview_ImageFailed" xml:space="preserve"><value>이미지 미리 보기 실패:</value></data>
+  <data name="Preview_BrowserOpenFailed" xml:space="preserve"><value>브라우저를 열 수 없습니다. HTML 파일은 아래 위치에 있습니다.</value></data>
+  <data name="Preview_OpenFolder" xml:space="preserve"><value>폴더 열기</value></data>
+  <data name="Workspace_Immersive" xml:space="preserve"><value>몰입</value></data>
+  <data name="Workspace_ExitImmersive" xml:space="preserve"><value>몰입 모드 종료</value></data>
+  <data name="Workspace_ImmersiveHint" xml:space="preserve"><value>패널을 숨겨 경로와 지도를 더 넓게 표시합니다.</value></data>
+  <data name="Workspace_TryImmersive" xml:space="preserve"><value>몰입 모드 사용해 보기</value></data>
+  <data name="Workspace_MoreActions" xml:space="preserve"><value>추가 지도 작업</value></data>
+  <data name="Artwork_Enter" xml:space="preserve"><value>지도 초안 만들기…</value></data>
+  <data name="Artwork_Export" xml:space="preserve"><value>현재 작품 내보내기</value></data>
+  <data name="Artwork_PreviewRequired" xml:space="preserve"><value>먼저 도시 지도 미리보기를 여세요.</value></data>
+  <data name="Artwork_OutputSize" xml:space="preserve"><value>출력 긴 변(픽셀)</value></data>
+  <data name="Artwork_Cancel" xml:space="preserve"><value>취소</value></data>
+  <data name="CityEditor_Title" xml:space="preserve"><value>지도 편집기</value></data>
+  <data name="CityEditor_Theme" xml:space="preserve"><value>테마</value></data>
+  <data name="CityEditor_SaveAs" xml:space="preserve"><value>테마를 다른 이름으로 저장</value></data>
+  <data name="CityEditor_Manage" xml:space="preserve"><value>테마 관리</value></data>
+  <data name="CityEditor_Selection" xml:space="preserve"><value>지도 선택 영역</value></data>
+  <data name="CityEditor_Select" xml:space="preserve"><value>범위 선택</value></data>
+  <data name="CityEditor_PickStyle" xml:space="preserve"><value>스타일 추출</value></data>
+  <data name="CityEditor_Pan" xml:space="preserve"><value>이동</value></data>
+  <data name="CityEditor_Clear" xml:space="preserve"><value>선택 지우기</value></data>
+  <data name="CityEditor_Edit" xml:space="preserve"><value>편집</value></data>
+  <data name="CityEditor_Undo" xml:space="preserve"><value>실행 취소</value></data>
+  <data name="CityEditor_Redo" xml:space="preserve"><value>다시 실행</value></data>
+  <data name="CityEditor_View" xml:space="preserve"><value>보기</value></data>
+  <data name="CityEditor_Fit" xml:space="preserve"><value>지도 전체에 맞추기</value></data>
+  <data name="CityEditor_Actual" xml:space="preserve"><value>100%</value></data>
+  <data name="CityEditor_Output" xml:space="preserve"><value>저장 및 출력</value></data>
+  <data name="CityEditor_Save" xml:space="preserve"><value>테마 저장</value></data>
+  <data name="CityEditor_Export" xml:space="preserve"><value>PNG 내보내기</value></data>
+  <data name="CityEditor_Close" xml:space="preserve"><value>닫기</value></data>
+  <data name="CityEditor_Leave" xml:space="preserve"><value>편집기 나가기</value></data>
+  <data name="CityEditor_Range" xml:space="preserve"><value>지도 영역</value></data>
+  <data name="CityEditor_WholeCity" xml:space="preserve"><value>도시 전체</value></data>
+  <data name="CityEditor_SelectedRange" xml:space="preserve"><value>선택한 영역</value></data>
+  <data name="CityEditor_Preset" xml:space="preserve"><value>캔버스 프리셋</value></data>
+  <data name="CityEditor_Create" xml:space="preserve"><value>도시 지도 초안 만들기</value></data>
+  <data name="CityEditor_InvalidSize" xml:space="preserve"><value>캔버스 긴 변은 1~32768픽셀 사이의 정수여야 합니다.</value></data>
+  <data name="CityEditor_CanvasPixels" xml:space="preserve"><value>캔버스 긴 변(픽셀)</value></data>
+  <data name="CityEditor_Rotation" xml:space="preserve"><value>출력 회전</value></data>
+  <data name="CityEditor_Styles" xml:space="preserve"><value>스타일</value></data>
+  <data name="CityEditor_Draft" xml:space="preserve"><value>초안</value></data>
+  <data name="CityEditor_ApplyCanvas" xml:space="preserve"><value>캔버스 설정 적용</value></data>
+  <data name="CityEditor_SelectRange" xml:space="preserve"><value>지도 영역 선택</value></data>
+  <data name="CityEditor_UseSelection" xml:space="preserve"><value>선택한 영역 사용</value></data>
+  <data name="CityEditor_UseWholeCity" xml:space="preserve"><value>도시 전체 사용</value></data>
+  <data name="CityEditor_NoSelection" xml:space="preserve"><value>먼저 지도에서 유효한 영역을 선택하세요.</value></data>
+  <data name="CityEditor_RangeHelp" xml:space="preserve"><value>지도에서 범위를 그린 뒤 적용하세요. 범위를 바꾸면 위의 캔버스 설정도 적용되고 배치가 갱신됩니다. 확대는 보기만 바꿉니다.</value></data>
+  <data name="CityEditor_ObjectFacts" xml:space="preserve"><value>선택한 객체 정보</value></data>
+  <data name="CityEditor_Scope" xml:space="preserve"><value>테마 스타일은 해당 범주 전체에 적용됩니다. 강조 표시는 선택한 객체를 나타냅니다.</value></data>
+  <data name="CityEditor_Unsaved" xml:space="preserve"><value>저장하지 않은 테마 변경 사항</value></data>
+  <data name="CityEditor_Saved" xml:space="preserve"><value>테마 저장됨</value></data>
+  <data name="CityEditor_Updating" xml:space="preserve"><value>초안 업데이트 중</value></data>
+  <data name="CityEditor_ExportScale" xml:space="preserve"><value>이번 내보내기에만 적용할 비례 변환:</value></data>
+  <data name="ThemeEditor_AllRoads" xml:space="preserve"><value>모든 도로 설정</value></data>
+  <data name="ThemeEditor_ThemeSwitchUnavailable" xml:space="preserve"><value>선택한 테마를 불러올 수 없습니다. 렌더러를 업데이트한 후 다시 시도하세요.</value></data>
+  <data name="ThemeEditor_ExternalThemeChanged" xml:space="preserve"><value>다른 작업으로 이 테마가 변경되었습니다. 테마 편집기를 다시 여세요.</value></data>
+  <data name="CityEditor_ContentScope" xml:space="preserve"><value>콘텐츠 및 표시 설정은 테마와 별도로 저장되며 즉시 적용됩니다.</value></data>
+  <data name="CityEditor_CreateIntro" xml:space="preserve"><value>현재 지도에서 시작해 색상과 라벨을 조정하고 나만의 도시 지도를 만드세요.</value></data>
+  <data name="CityEditor_CreateRangeUnselected" xml:space="preserve"><value>도시 전체로 시작합니다. 더 작은 영역을 사용하려면 취소한 뒤 지도에서 먼저 영역을 선택하세요.</value></data>
+  <data name="CityEditor_CreateRangeHelp" xml:space="preserve"><value>선택한 영역이나 도시 전체를 골라 지도에 표시할 범위를 정하세요.</value></data>
+  <data name="CityEditor_CreateCanvasTitle" xml:space="preserve"><value>캔버스 크기</value></data>
+  <data name="CityEditor_CreateCanvasHelp" xml:space="preserve"><value>처음에는 4096픽셀이 적당합니다. 더 큰 이미지가 필요하면 프리셋을 선택하거나 긴 변의 길이를 입력하세요. 지도 비율은 유지됩니다.</value></data>
+  <data name="CityEditor_CreateRotationHelp" xml:space="preserve"><value>지도를 시계 방향으로 회전합니다.</value></data>
+  <data name="CityEditor_CreateAdjustLater" xml:space="preserve"><value>나중에 초안 사이드바에서 영역, 크기 및 회전을 조정할 수 있습니다.</value></data>
+  <data name="CityEditor_LoadingEnter" xml:space="preserve"><value>지도 편집기 여는 중</value></data>
+  <data name="CityEditor_LoadingUpdate" xml:space="preserve"><value>지도 스타일 업데이트 중</value></data>
+  <data name="CityEditor_LoadingTheme" xml:space="preserve"><value>테마 및 캔버스 설정 읽는 중</value></data>
+  <data name="CityEditor_LoadingBase" xml:space="preserve"><value>기본 지도 및 도로 데이터 준비 중</value></data>
+  <data name="CityEditor_LoadingLayout" xml:space="preserve"><value>초안 배치 계산 중</value></data>
+  <data name="CityEditor_LoadingLabels" xml:space="preserve"><value>지도 라벨 배치 중</value></data>
+  <data name="CityEditor_LoadingIcons" xml:space="preserve"><value>장소 아이콘 배치 중</value></data>
+  <data name="CityEditor_LoadingTransport" xml:space="preserve"><value>노선 및 역 배치 중</value></data>
+  <data name="CityEditor_LoadingDelivery" xml:space="preserve"><value>초안 전송 및 이미지 준비 중</value></data>
+  <data name="CityEditor_LoadingPresent" xml:space="preserve"><value>지도 그리는 중, 화면이 완성될 때까지 기다려 주세요</value></data>
+  <data name="Preview_NotRunningDetail" xml:space="preserve"><value>미리 보기가 정상적으로 실행되지 않습니다. 환경 설정, 메모리 부족 등 여러 원인이 있을 수 있습니다. 아래 방법을 선택하여 계속할 수 있습니다.</value></data>
+  <data name="Preview_Cancel.Content" xml:space="preserve"><value>취소</value></data>
+  <data name="CityEditor_CloseupUnavailable" xml:space="preserve"><value>초안 범위에 이 스타일을 확대해서 볼 수 있는 요소가 없습니다.</value></data>
+  <data name="Pixel_Scale" xml:space="preserve"><value>요소 배율(%)</value></data>
+  <data name="Pixel_Actual" xml:space="preserve"><value>실제 크기: {0}px</value></data>
+  <data name="Pixel_Recommended" xml:space="preserve"><value>현재 해상도의 권장 배율: {0}%</value></data>
+  <data name="Pixel_InvalidScale" xml:space="preserve"><value>0보다 큰 유한한 수를 입력하세요.</value></data>
+  <data name="Pixel_Help" xml:space="preserve"><value>긴 변을 두 배로 늘리면 요소 배율도 두 배가 됩니다. 글자, 아이콘, 선 너비의 배율은 따로 조정할 수 있습니다.</value></data>
+  <data name="RoadCategoryQuay" xml:space="preserve"><value>부두</value></data>
+  <data name="CityEditor_ResetCanvas" xml:space="preserve"><value>캔버스 재설정</value></data>
+  <data name="CityEditor_ResetCanvasHelp" xml:space="preserve"><value>현재 초안, 테마 변경 사항 및 보기 위치를 유지하면서 미리 보기를 다시 시작합니다.</value></data>
+  <data name="ThemeUpdate_Review" xml:space="preserve"><value>사전 설정 업데이트 확인</value></data>
+  <data name="ThemeUpdate_None" xml:space="preserve"><value>적용할 사전 설정 변경 사항이 없습니다.</value></data>
+  <data name="CityEditor_Resolution" xml:space="preserve"><value>해상도</value></data>
+  <data name="CityEditor_PresetResolution" xml:space="preserve"><value>사전 설정 해상도</value></data>
+  <data name="CityEditor_CustomResolution" xml:space="preserve"><value>사용자 지정 해상도</value></data>
+  <data name="ThemeUpdate_Current" xml:space="preserve"><value>현재 테마</value></data>
+  <data name="ThemeUpdate_Preset" xml:space="preserve"><value>새 사전 설정</value></data>
+  <data name="CityEditor_PixelWidth" xml:space="preserve"><value>너비 (px)</value></data>
+  <data name="CityEditor_PixelHeight" xml:space="preserve"><value>높이 (px)</value></data>
+  <data name="CityEditor_ElementSize" xml:space="preserve"><value>요소 크기</value></data>
+  <data name="CityEditor_SizeLinked" xml:space="preserve"><value>선택한 영역의 가로세로 비율을 유지합니다.</value></data>
+  <data name="DraftWelcome_Title" xml:space="preserve"><value>초안 편집에 오신 것을 환영합니다</value></data>
+  <data name="DraftWelcome_Intro" xml:space="preserve"><value>지금은 탐색 보기에서 도시를 둘러보고 있습니다. 지도를 내보낼 때는 초안을 열고 테마 편집기에서 글자와 아이콘 크기, 도로 선 너비를 세밀하게 조정할 수 있습니다.</value></data>
+  <data name="DraftWelcome_ExploreTitle" xml:space="preserve"><value>탐색 보기</value></data>
+  <data name="DraftWelcome_ExploreBody" xml:space="preserve"><value>확대하면 더 많은 장소가 나타나고 축소하면 세부 정보가 숨겨집니다. 글자와 아이콘 크기도 자동으로 바뀝니다.</value></data>
+  <data name="DraftWelcome_DraftTitle" xml:space="preserve"><value>초안 편집</value></data>
+  <data name="DraftWelcome_DraftBody" xml:space="preserve"><value>초안 전체가 같은 비율로 확대되거나 축소됩니다. 표시되는 이름과 도로 대비 크기는 그대로 유지됩니다.</value></data>
+  <data name="DraftWelcome_Enter" xml:space="preserve"><value>초안 편집 열기</value></data>
+  <data name="DraftWelcome_Continue" xml:space="preserve"><value>계속 둘러보기</value></data>
+  <data name="DraftWelcome_Pause" xml:space="preserve"><value>일시 정지</value></data>
+  <data name="DraftWelcome_Resume" xml:space="preserve"><value>계속 재생</value></data>
+  <data name="DraftWelcome_NextLevel" xml:space="preserve"><value>다음 확대 단계</value></data>
+  <data name="DraftWelcome_Pier" xml:space="preserve"><value>부두</value></data>
+  <data name="DraftWelcome_Market" xml:space="preserve"><value>시장</value></data>
+  <data name="DraftWelcome_Cafe" xml:space="preserve"><value>카페</value></data>
+  <data name="DraftWelcome_Clinic" xml:space="preserve"><value>의원</value></data>
+  <data name="DraftWelcome_Station" xml:space="preserve"><value>강변역</value></data>
+  <data name="DraftWelcome_Park" xml:space="preserve"><value>공원</value></data>
+  <data name="DraftWelcome_Shop" xml:space="preserve"><value>서점</value></data>
+  <data name="Sidebar_TransitDistance" xml:space="preserve"><value>노선별 길이의 합계입니다. 공유 구간은 노선마다 계산합니다.</value></data>
+  <data name="Sidebar_RoadCommit" xml:space="preserve"><value>스위치는 즉시 적용됩니다. 숫자는 입력란을 벗어날 때 적용됩니다.</value></data>
+  <data name="Sidebar_Locate" xml:space="preserve"><value>선택하면 초안 범위에서 해당 유형의 요소로 이동합니다.</value></data>
+  <data name="ThemeEditor_Edit" xml:space="preserve"><value>테마 편집</value></data>
+  <data name="ThemeEditor_Delete" xml:space="preserve"><value>테마 삭제</value></data>
+  <data name="ThemeEditor_DeleteConfirm" xml:space="preserve"><value>“{0}”을(를) 삭제할까요? 삭제 후 “{1}”(으)로 전환됩니다.</value></data>
+  <data name="ThemeEditor_ThumbnailFailed" xml:space="preserve"><value>테마는 저장되었지만 미리 보기를 업데이트하지 못했습니다.</value></data>
+  <data name="CityEditor_IconDensity" xml:space="preserve">
+    <value>아이콘 밀도</value>
+  </data>
+  <data name="ThemeChoice_Title" xml:space="preserve"><value>테마 편집기 선택</value></data>
+  <data name="ThemeChoice_Interactive" xml:space="preserve"><value>대화형 테마 편집기</value></data>
+  <data name="ThemeChoice_Description" xml:space="preserve"><value>도시 초안에서 테마 설정을 조정하며 내보낼 지도의 모습을 확인할 수 있습니다.</value></data>
+  <data name="ThemeChoice_Traditional" xml:space="preserve"><value>기존 테마 편집기</value></data>
+  <data name="ThemeChoice_Unavailable" xml:space="preserve"><value>도시 지도나 대중교통 지도를 열고 대화형 미리 보기가 준비될 때까지 기다리세요.</value></data>
+  <data name="ExportChoice_Title" xml:space="preserve"><value>내보내기 방식 선택</value></data>
+  <data name="ExportChoice_Direct" xml:space="preserve"><value>바로 내보내기</value></data>
+  <data name="ExportChoice_DirectHelp" xml:space="preserve"><value>형식을 선택하고 현재 지도 설정으로 내보냅니다.</value></data>
+  <data name="ExportChoice_Edit" xml:space="preserve"><value>편집 후 내보내기</value></data>
+  <data name="ExportChoice_EditHelp" xml:space="preserve"><value>초안에서 지도를 조정한 후 내보냅니다.</value></data>
+  <data name="Workflow_Remember" xml:space="preserve"><value>내 선택 기억하기</value></data>
+  <data name="Workflow_Reset" xml:space="preserve"><value>테마 편집 및 내보내기 방식 초기화</value></data>
+  <data name="Export_DraftSettingsHelp" xml:space="preserve"><value>범위, 회전, 요소 크기 또는 아이콘 밀도를 조정하려면 초안 탭에서 결과를 확인하세요.</value></data>
+  <data name="Export_GoToDraft" xml:space="preserve"><value>초안으로 이동</value></data>
   <data name="MetroSettings_WaterSmoothing" xml:space="preserve"><value>해안선 평활화</value></data>
   <data name="MetroSettings_WaterSmoothingHelp" xml:space="preserve"><value>값이 높을수록 해안선 세부가 줄고 굴곡이 부드러워집니다. 0은 사전 평활화를 끄며 기본값은 8입니다. 좁은 강과 섬은 실제 적용 강도를 제한할 수 있습니다.</value></data>
   <data name="RmpEditor_AddTitle" xml:space="preserve"><value>제목 추가</value></data>
@@ -4418,136 +4689,45 @@ Esc  현재 작업 취소</value>
   <data name="PoiDirect_ImageSearch" xml:space="preserve"><value>이미지 이름 또는 파일 이름 검색</value></data>
   <data name="PoiDirect_NoImage" xml:space="preserve"><value>아이콘 없음</value></data>
   <data name="PoiDirect_Count" xml:space="preserve"><value>항목 {0}개, 저장하지 않은 변경 {1}개</value></data>
-<data name="Poi_Area" xml:space="preserve"><value>기능 구역</value></data>
-  <data name="Poi_AreaIcons" xml:space="preserve"><value>기능 구역 아이콘</value></data>
-  <data name="Poi_AreaNames" xml:space="preserve"><value>기능 구역 이름</value></data>
-  <data name="Poi_AreaDescription" xml:space="preserve"><value>게임에서 내보낸 기능 구역과 이름입니다.</value></data>
-  <data name="Poi_PngInternalBuildings" xml:space="preserve"><value>PNG에 구역 내부 건물 아이콘 표시</value></data>
-  <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
-    <value>게임이 실행 중이며 많은 메모리를 사용할 수 있습니다. 도시를 저장하고 게임을 종료한 후 내보내는 것을 권장합니다. 그대로 계속할 수도 있습니다.</value>
-  </data>
-  <data name="ExportWindow_BeforeExportNotice" xml:space="preserve">
-    <value>내보내기 전에 도시를 저장하고 게임을 종료한 뒤 메모리를 많이 사용하는 다른 프로그램도 닫는 것이 좋습니다. 출력 크기가 클수록 더 많은 메모리가 필요합니다.</value>
-  </data>
-  <data name="Poi_AreaMerge" xml:space="preserve">
-    <value>인접 구역 이름 통합 (CS2)</value>
-  </data>
-  <data name="Poi_AreaMergeDescription" xml:space="preserve">
-    <value>원본 유형과 이름이 같은 인접한 CS2 구역은 하나의 표식을 공유합니다. 각 구역의 경계는 유지됩니다.</value>
-  </data>
-  <data name="Map_RotateCounterclockwise" xml:space="preserve">
-    <value>반시계 방향 90°</value>
-  </data>
-  <data name="Map_RotateClockwise" xml:space="preserve">
-    <value>시계 방향 90°</value>
-  </data>
-  <data name="Failure_Internal" xml:space="preserve"><value>An unexpected error occurred. You can report this error to the author.</value></data>
-  <data name="Failure_Operation" xml:space="preserve"><value>Operation failed</value></data>
-  <data name="Failure_Metro" xml:space="preserve"><value>Metro map generation failed</value></data>
-  <data name="Failure_Export" xml:space="preserve"><value>Map export failed</value></data>
-  <data name="Failure_Permission" xml:space="preserve"><value>A required file could not be accessed. Check file or folder permissions and try again.</value></data>
-  <data name="Failure_MissingFile" xml:space="preserve"><value>A required file was not found. Check its location and try again.</value></data>
-  <data name="Failure_Memory" xml:space="preserve"><value>Memory allocation failed. Reduce the output size or close memory-intensive applications and try again.</value></data>
-  <data name="Failure_EngineStopped" xml:space="preserve"><value>The rendering engine has stopped. Reopen the viewer and try again.</value></data>
-  <data name="Failure_ViewDetails" xml:space="preserve"><value>View details</value></data>
-  <data name="Failure_CopyDetails" xml:space="preserve"><value>Copy error details</value></data>
-  <data name="Failure_Close" xml:space="preserve"><value>Close</value></data>
-  <data name="Failure_Copied" xml:space="preserve"><value>Copied</value></data>
-  <data name="Failure_CopyFailed" xml:space="preserve"><value>Copy failed. Please try again.</value></data>
-  <data name="Ribbon_MoreLayers" xml:space="preserve"><value>더 많은 레이어</value></data>
-  <data name="Ribbon_Simplified" xml:space="preserve"><value>간소화</value></data>
-  <data name="Ribbon_Classic" xml:space="preserve"><value>클래식</value></data>
-  <data name="Sidebar_ShowSettings" xml:space="preserve"><value>왼쪽 패널 표시</value></data>
-  <data name="Sidebar_HideSettings" xml:space="preserve"><value>왼쪽 패널 숨기기</value></data>
-  <data name="Sidebar_ShowInspector" xml:space="preserve"><value>오른쪽 패널 표시</value></data>
-  <data name="Sidebar_HideInspector" xml:space="preserve"><value>오른쪽 패널 숨기기</value></data>
-  <data name="Ribbon_IntroTitle" xml:space="preserve"><value>새로운 간소화 모드를 사용해 보세요</value></data>
-  <data name="Ribbon_IntroDescription" xml:space="preserve"><value>간소화 모드에서는 더 편안하고 간단하게 지도를 둘러볼 수 있습니다. 언제든지 클래식 모드로 돌아갈 수 있습니다.</value></data>
-  <data name="Ribbon_IntroTry" xml:space="preserve"><value>간소화 모드 사용</value></data>
-  <data name="Ribbon_IntroLater" xml:space="preserve"><value>나중에</value></data>
-  <data name="RmpEditor_showNames" xml:space="preserve"><value>Show station names</value></data>
-  <data name="RmpEditor_showDefaultNames" xml:space="preserve"><value>Show default station names</value></data>
-  <data name="Poi_ShowDecorative" xml:space="preserve"><value>장식물 POI 표시</value></data>
-  <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>목록에 있는 장식물의 아이콘과 이름을 표시합니다. 건물과 지형지물은 계속 표시됩니다.</value></data>
-  <data name="MetroSettings_Reset" xml:space="preserve"><value>기본값 복원</value></data>
   <data name="BuildingCategory_Help" xml:space="preserve"><value>이 설정을 적용하려면 분류별 색상을 선택하세요. 색상 지정을 켜면 해당 분류의 모든 건물에 적용되며, 끄면 자동 POI 색상으로 복원됩니다. 용도를 알 수 없는 건물은 미분류로 유지됩니다.</value></data>
-  <data name="BuildingList_NoName" xml:space="preserve"><value>이름 없음</value></data>
-  <data name="ThemeEditor_New" xml:space="preserve"><value>새 테마</value></data>
-  <data name="BuildingList_OfficialName" xml:space="preserve"><value>게임 공식 분류</value></data>
-  <data name="ThemeEditor_Name" xml:space="preserve"><value>테마 이름</value></data>
-  <data name="BuildingList_Search" xml:space="preserve"><value>건물 이름 검색</value></data>
-  <data name="Preview_AutoStart" xml:space="preserve"><value>시작 시 내장 미리보기 불러오기</value></data>
-  <data name="BuildingList_DetailHint" xml:space="preserve"><value>건물을 선택하면 상세 정보를 볼 수 있습니다.</value></data>
-  <data name="BuildingList_Height" xml:space="preserve"><value>건물 높이</value></data>
-  <data name="BuildingList_Open" xml:space="preserve"><value>건물 목록</value></data>
-  <data name="BuildingList_Name" xml:space="preserve"><value>건물 이름</value></data>
-  <data name="Preview_Continue.Content" xml:space="preserve"><value>계속 기다리기</value></data>
-  <data name="ThemeUpdate_Intro" xml:space="preserve"><value>“{0}”에 프리셋 업데이트가 적용되었습니다.</value></data>
-  <data name="BuildingList_Id" xml:space="preserve"><value>ID</value></data>
-  <data name="ThemeUpdate_Off" xml:space="preserve"><value>끄기</value></data>
-  <data name="BuildingList_CategoryDesc" xml:space="preserve"><value>분류: 내림차순</value></data>
-  <data name="ThemeEditor_Unsaved" xml:space="preserve"><value>저장되지 않음</value></data>
-  <data name="BuildingList_IdDesc" xml:space="preserve"><value>ID: 내림차순</value></data>
-  <data name="ThemeEditor_MigrationWarning" xml:space="preserve"><value>일부 이전 테마를 읽을 수 없습니다. 원본 파일은 백업되었습니다:</value></data>
-  <data name="ThemeEditor_Select" xml:space="preserve"><value>테마 선택</value></data>
-  <data name="ThemeEditor_Copy" xml:space="preserve"><value>테마 복제</value></data>
-  <data name="BuildingList_Info" xml:space="preserve"><value>건물 정보</value></data>
-  <data name="BuildingList_Unnamed" xml:space="preserve"><value>이름 없는 건물</value></data>
-  <data name="BuildingList_CustomName" xml:space="preserve"><value>플레이어 지정</value></data>
-  <data name="ThemeEditor_Cancel" xml:space="preserve"><value>취소</value></data>
-  <data name="ThemeUpdate_Continue" xml:space="preserve"><value>계속 사용</value></data>
-  <data name="BuildingList_NameSource" xml:space="preserve"><value>이름 출처</value></data>
-  <data name="BuildingList_Details" xml:space="preserve"><value>건물 상세 정보</value></data>
-  <data name="ThemeUpdate_UsePrevious" xml:space="preserve"><value>이전 테마 사용</value></data>
-  <data name="ThemeUpdate_Archived" xml:space="preserve"><value>이전 테마가 저장되었습니다. 테마 목록에서 언제든지 선택할 수 있습니다.</value></data>
-  <data name="BuildingList_All" xml:space="preserve"><value>전체</value></data>
-  <data name="ThemeEditor_Exported" xml:space="preserve"><value>테마를 내보냈습니다</value></data>
-  <data name="BuildingList_Empty" xml:space="preserve"><value>일치하는 건물이 없습니다</value></data>
-  <data name="ThemeUpdate_Kept" xml:space="preserve"><value>사용자 변경 사항 유지</value></data>
-  <data name="BuildingList_Count" xml:space="preserve"><value>{0:N0} / {1:N0}개 건물 표시 (복합 건물은 함께 집계)</value></data>
-  <data name="BuildingList_Back" xml:space="preserve"><value>개요로 돌아가기</value></data>
-  <data name="Preview_DataAvailable" xml:space="preserve"><value>지도 데이터를 불러왔습니다. 테마를 선택하고 내보낼 수 있습니다.</value></data>
-  <data name="ThemeEditor_Personal" xml:space="preserve"><value>내 테마</value></data>
-  <data name="ThemeUpdate_ColorRamp" xml:space="preserve"><value>고도 색상</value></data>
-  <data name="ThemeEditor_Export" xml:space="preserve"><value>테마 내보내기…</value></data>
-  <data name="ThemeEditor_Import" xml:space="preserve"><value>테마 가져오기…</value></data>
-  <data name="BuildingList_OutsideFilter" xml:space="preserve"><value>선택한 건물은 현재 필터 결과에 없습니다.</value></data>
-  <data name="ThemeEditor_Base" xml:space="preserve"><value>기본 프리셋</value></data>
-  <data name="BuildingList_NameAsc" xml:space="preserve"><value>이름: 오름차순</value></data>
-  <data name="BuildingList_GroupCount" xml:space="preserve"><value>{0}개 건물 (주 건물 포함)</value></data>
-  <data name="ThemeEditor_CurrentUnreadable" xml:space="preserve"><value>현재 테마를 읽을 수 없습니다. 다른 테마를 선택하세요. 원본 파일은 보존되었습니다.</value></data>
-  <data name="Preview_OpenFailed" xml:space="preserve"><value>HTML은 저장되었지만 브라우저에서 열 수 없습니다. 출력 폴더에서 직접 열어 주세요.</value></data>
-  <data name="ThemeEditor_Rename" xml:space="preserve"><value>이름 변경</value></data>
-  <data name="Preview_OpenMap" xml:space="preserve"><value>지도 파일을 열면 테마를 선택하고 내보낼 수 있습니다.</value></data>
-  <data name="Preview_Slow" xml:space="preserve"><value>지도 미리보기에 시간이 더 걸립니다</value></data>
-  <data name="ThemeUpdate_AllChanges" xml:space="preserve"><value>모든 변경 사항</value></data>
-  <data name="ThemeEditor_Builtins" xml:space="preserve"><value>기본 테마</value></data>
-  <data name="BuildingList_OpenButton.Content" xml:space="preserve"><value>건물 목록</value></data>
-  <data name="ThemeUpdate_Custom" xml:space="preserve"><value>사용자 설정</value></data>
-  <data name="BuildingList_GameCategory" xml:space="preserve"><value>게임 분류</value></data>
-  <data name="Preview_Retry.Content" xml:space="preserve"><value>미리보기 다시 불러오기</value></data>
-  <data name="BuildingList_Members" xml:space="preserve"><value>부속 건물</value></data>
-  <data name="BuildingList_NameDesc" xml:space="preserve"><value>이름: 내림차순</value></data>
-  <data name="BuildingList_IdAsc" xml:space="preserve"><value>ID: 오름차순</value></data>
-  <data name="BuildingList_Group" xml:space="preserve"><value>건물 그룹</value></data>
-  <data name="ThemeEditor_Save" xml:space="preserve"><value>저장</value></data>
-  <data name="ThemeUpdate_On" xml:space="preserve"><value>켜기</value></data>
-  <data name="BuildingList_GameName" xml:space="preserve"><value>게임 생성 이름</value></data>
-  <data name="ThemeUpdate_Conflict" xml:space="preserve"><value>사용자도 변경한 항목입니다. 새 프리셋 값을 적용했습니다.</value></data>
-  <data name="Preview_Html.Content" xml:space="preserve"><value>브라우저에서 열기</value></data>
-  <data name="ThemeEditor_InvalidName" xml:space="preserve"><value>제어 문자 없이 1–64자를 입력하세요.</value></data>
-  <data name="Preview_Stopped" xml:space="preserve"><value>내장 미리보기가 중지되었습니다</value></data>
-  <data name="ThemeUpdate_MoreKept" xml:space="preserve"><value>변경 사항 {0}개 추가 유지</value></data>
-  <data name="BuildingList_GameNames" xml:space="preserve"><value>게임 생성 이름 사용</value></data>
-  <data name="Preview_Png.Content" xml:space="preserve"><value>PNG 내보내기 (2048 px)</value></data>
-  <data name="BuildingList_CategoryAsc" xml:space="preserve"><value>분류: 오름차순</value></data>
-  <data name="BuildingList_Category" xml:space="preserve"><value>건물 분류</value></data>
-  <data name="ThemeUpdate_Unset" xml:space="preserve"><value>설정 안 됨</value></data>
-  <data name="Preview_Failed" xml:space="preserve"><value>지도 미리보기를 불러올 수 없습니다</value></data>
-  <data name="ThemeUpdate_Title" xml:space="preserve"><value>테마 업데이트됨</value></data>
-  <data name="BuildingList_Sort" xml:space="preserve"><value>정렬</value></data>
-  <data name="BuildingList_NameHint" xml:space="preserve"><value>지도 이름 설정과 동기화됩니다. 플레이어 지정 이름은 유지됩니다.</value></data>
-  <data name="BuildingList_Clear" xml:space="preserve"><value>필터 지우기</value></data>
   <data name="Satellite_LayerTitle" xml:space="preserve"><value>위성 이미지</value></data>
   <data name="Satellite_Composing" xml:space="preserve"><value>위성 이미지를 합성하는 중…</value></data>
+  <data name="PreviewQuality_Title" xml:space="preserve"><value>미리보기 품질</value></data>
+  <data name="PreviewQuality_Preset" xml:space="preserve"><value>미리보기 품질</value></data>
+  <data name="PreviewQuality_Smooth" xml:space="preserve"><value>부드럽게</value></data>
+  <data name="PreviewQuality_Standard" xml:space="preserve"><value>표준</value></data>
+  <data name="PreviewQuality_Fine" xml:space="preserve"><value>정밀</value></data>
+  <data name="PreviewQuality_Custom" xml:space="preserve"><value>사용자 지정</value></data>
+  <data name="PreviewQuality_Open" xml:space="preserve"><value>품질 설정…</value></data>
+  <data name="PreviewQuality_Clarity" xml:space="preserve"><value>선명도</value></data>
+  <data name="PreviewQuality_ClarityHelp" xml:space="preserve"><value>지도를 표시하는 해상도입니다. 높을수록 이미지가 선명해지지만 연산 자원을 더 많이 사용합니다.</value></data>
+  <data name="PreviewQuality_Scale75" xml:space="preserve"><value>부드럽게</value></data>
+  <data name="PreviewQuality_Scale100" xml:space="preserve"><value>표준</value></data>
+  <data name="PreviewQuality_Scale125" xml:space="preserve"><value>정밀</value></data>
+  <data name="PreviewQuality_Lines" xml:space="preserve"><value>도로</value></data>
+  <data name="PreviewQuality_LinesHelp" xml:space="preserve"><value>도로 세부 수준을 높이면 선과 연결부가 매끄러워지지만 연산량이 크게 늘어납니다. 낮추면 성능이 향상되지만 도로가 변형되거나 이음새가 보일 수 있습니다.</value></data>
+  <data name="PreviewQuality_LinesStandard" xml:space="preserve"><value>표준</value></data>
+  <data name="PreviewQuality_LinesFine" xml:space="preserve"><value>정밀</value></data>
+  <data name="PreviewQuality_Polygons" xml:space="preserve"><value>건물</value></data>
+  <data name="PreviewQuality_PolygonsHelp" xml:space="preserve"><value>건물 세부 수준은 건물이 얼마나 촘촘히 표시되는지 결정합니다. 낮추면 일부 작은 건물이 보이지 않을 수 있습니다.</value></data>
+  <data name="PreviewQuality_PolygonsStandard" xml:space="preserve"><value>표준</value></data>
+  <data name="PreviewQuality_PolygonsFine" xml:space="preserve"><value>정밀</value></data>
+  <data name="PreviewQuality_Details" xml:space="preserve"><value>개별 조정</value></data>
+  <data name="PreviewQuality_Samples" xml:space="preserve"><value>비교</value></data>
+  <data name="PreviewQuality_Scope" xml:space="preserve"><value>미리보기에만 적용되며 최종 내보내기에는 영향을 주지 않습니다.</value></data>
+  <data name="PreviewQuality_Apply" xml:space="preserve"><value>적용</value></data>
+  <data name="PreviewQuality_Applied" xml:space="preserve"><value>적용됨</value></data>
+  <data name="PreviewQuality_Saved" xml:space="preserve"><value>저장됨</value></data>
+  <data name="PreviewQuality_Busy" xml:space="preserve"><value>현재 미리보기 작업이 끝난 후 품질 설정을 적용하세요.</value></data>
+  <data name="PreviewQuality_Restarted" xml:space="preserve"><value>미리보기가 중지되었습니다. 다시 시작되면 품질 설정을 다시 적용하세요.</value></data>
+  <data name="PreviewQuality_ExportHint" xml:space="preserve"><value>HTML 품질은 내보내기 설정에서 선택하세요.</value></data>
+  <data name="PreviewQuality_Current" xml:space="preserve"><value>현재 선택</value></data>
+  <data name="Export_HtmlQuality" xml:space="preserve"><value>HTML 품질</value></data>
+  <data name="TransitLabelStyle_Label" xml:space="preserve"><value>라벨 스타일</value></data>
+  <data name="TransitLabelStyle_Classic" xml:space="preserve"><value>기본 캡슐형</value></data>
+  <data name="TransitLabelStyle_SideSign" xml:space="preserve"><value>측면 색 띠</value></data>
+  <data name="TransitLabelStyle_SplitSign" xml:space="preserve"><value>아이콘 분리형 표지</value></data>
+  <data name="TransitLabelStyle_SolidSign" xml:space="preserve"><value>단색 소형 표지</value></data>
+  <data name="TransitLabelStyle_FrameSign" xml:space="preserve"><value>가는 테두리 표지</value></data>
+  <data name="TransitLabelStyle_UnderlineSign" xml:space="preserve"><value>하단 색 띠</value></data>
 </root>

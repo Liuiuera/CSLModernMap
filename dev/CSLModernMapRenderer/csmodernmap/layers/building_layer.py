@@ -117,11 +117,7 @@ class BuildingLayer(Layer):
         if ctx.detail_policy.building_min_area is None:
             return
         cfg = ctx.style.get("buildings", {})
-        bw = cfg.get("border_width", {"fixed": 0.25, "scaled": 0.1})
-        if isinstance(bw, dict):
-            self.border_px = bw.get("fixed", 0.0) + bw.get("scaled", 0.0) * self.render_scale
-        else:
-            self.border_px = float(bw)
+        self.border_px = float(cfg['border_width']) * ctx.zoom / ctx.final_zoom
         self.border_color = hex_to_rgb(cfg.get("border", "#D7DAE1"))
         default_color = hex_to_rgb(cfg.get("default", "#D8D2C6"))
         self.colors = {cat: default_color for cat in CATEGORIES}

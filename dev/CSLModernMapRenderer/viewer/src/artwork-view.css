@@ -1,0 +1,20 @@
+.artwork-view { position: absolute; inset: 0; z-index: 8; overflow: hidden; outline: none; }
+.artwork-view[hidden] { display: none; }
+.artwork-view > svg { position: absolute; inset: 0; touch-action: none; cursor: grab; }
+.artwork-view > svg:active { cursor: grabbing; }
+.artwork-view[data-tool="select"] > svg { cursor: default; }
+.artwork-view[data-tool="pick-style"] > svg { cursor: crosshair; }
+.artwork-active.selecting .artwork-view { pointer-events: none; }
+.artwork-view::before { content: ''; position: absolute; pointer-events: none;
+  left: var(--artwork-left); top: var(--artwork-top); width: var(--artwork-width); height: var(--artwork-height);
+  outline: 1px solid #74808d; box-shadow: 0 0 0 40000px #d9dfe8e8; }
+.artwork-render-mask { position: absolute; inset: 0; display: grid; place-items: center;
+  pointer-events: auto; touch-action: none; cursor: wait; background: #eff3f780; }
+.artwork-render-mask[hidden] { display: none; }
+.artwork-render-mask > span { padding: 8px 14px; border-radius: 6px; font-size: 13px;
+  background: #fffffff2; color: #263440; box-shadow: 0 1px 6px #15233330; }
+html[data-ui-appearance="dark"] .artwork-render-mask { background: #10182180; }
+html[data-ui-appearance="dark"] .artwork-render-mask > span { background: #263440f2; color: #f3f6fa; }
+.artwork-active .maplibregl-marker, .artwork-active .maplibregl-control-container,
+.artwork-active .preview-controls, .artwork-active .navigation-control { visibility: hidden; }
+.artwork-active .preview-watermark { visibility: hidden; }

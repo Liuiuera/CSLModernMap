@@ -17,6 +17,7 @@ function text(key: TextKey): string {
   if (['search', 'searchHelp', 'empty', 'findHelp'].includes(key)) return i18n.t(`search_${key}`);
   return i18n.t(`controls_${key}`);
 }
+export {text as previewControlText};
 
 const layerGroups: Array<{title: TextKey; items: Array<[TextKey, ControlIcon]>}> = [
   {title: 'baseMap', items: [['satellite', 'map'], ['terrain', 'mountain'], ['built_area', 'building-community'], ['land_use', 'map'],
@@ -44,6 +45,7 @@ export class PreviewControls {
   private readonly collapseToggle = document.createElement('button');
   private readonly edgeTabs = new Map<EdgeGroup, HTMLButtonElement>();
   private controlsCollapsed = false;
+  private immersive = false;
   private openGroup: EdgeGroup | null = null;
   private readonly viewSize = new ResizeObserver(([entry]) => {
     document.documentElement.style.setProperty('--preview-controls-right', `${Math.ceil(entry.contentRect.width) + 24}px`);
@@ -76,7 +78,7 @@ export class PreviewControls {
     zoomMap: (delta: number) => void,
     private readonly guideEvent: (type: string) => void,
     private readonly focusMap: () => void,
-    showLayers: boolean) {
+    private readonly showLayers: boolean) {
     this.root.className = 'preview-controls'; this.root.hidden = true;
     this.top.className = 'preview-search-row';
     const search = document.createElement('div'); search.className = 'preview-search';
@@ -169,8 +171,8 @@ export class PreviewControls {
     this.right.append(this.fit, this.zoomIn, this.zoomOut, this.help);
     this.top.id = 'preview-search-row'; this.layers.id = 'preview-layers'; this.right.id = 'preview-view-actions';
     for (const [group, target] of [['search', this.top], ['layers', this.layers], ['view', this.right]] as const) {
-      if (group === 'layers' && !showLayers) continue;
       const tab = document.createElement('button'); tab.type = 'button';
+      tab.hidden = group === 'layers' && !showLayers;
       tab.className = `preview-edge-tab preview-edge-${group}`;
       tab.setAttribute('aria-controls', target.id); tab.setAttribute('aria-expanded', 'false');
       tab.onclick = () => this.setOpenGroup(this.openGroup === group ? null : group);
@@ -205,6 +207,13 @@ export class PreviewControls {
     });
     this.dialog.addEventListener('keydown', event => event.stopPropagation());
     this.root.append(this.top, this.layers); document.body.append(this.root, this.dialog);
+    document.addEventListener('keydown', event => {
+      if (!this.immersive || event.key !== 'Escape' || event.defaultPrevented) return;
+      if (!this.layerPanel.hidden) this.closeLayers(true);
+      else if (!this.results.hidden || !this.searchStatus.hidden) this.closeSearch();
+      else return;
+      event.preventDefault(); event.stopPropagation();
+    }, {signal: this.abort.signal});
     this.translate(); i18n.on('languageChanged', this.languageChanged);
   }
 
@@ -226,6 +235,20 @@ export class PreviewControls {
 
   resetSearch(): void { this.closeSearch(); this.input.value = ''; this.candidates = []; this.navigation.setSearchCandidates([], this.locate); }
   setSearchIcons(icons: Map<string, ImageData>): void { this.icons = icons; }
+
+  setImmersive(immersive: boolean): void {
+    this.immersive = immersive;
+    const visible = this.showLayers || immersive;
+    const active = document.activeElement;
+    const restoreFocus = !visible && (this.layers.contains(active) || this.edgeTabs.get('layers') === active);
+    if (!visible) {
+      this.closeLayers();
+      if (this.openGroup === 'layers') this.setOpenGroup(null, false);
+    }
+    this.layers.hidden = !visible;
+    this.edgeTabs.get('layers')!.hidden = !visible;
+    if (restoreFocus) this.focusMap();
+  }
 
   setLayers(layers: Record<string, boolean>, available: Set<string>, enabled: boolean, settled = false, pending?: string[]): void {
     if (settled) this.pending.clear();

@@ -7,5 +7,8 @@
 .preview-3d-toggle:disabled { opacity: .5; cursor: default; }
 .preview-3d-notice { position: absolute; bottom: 100%; right: 0; width: min(260px, 70vw); padding: 8px 10px;
   margin-bottom: 8px; border-radius: 6px; background: #fff; color: #263244; box-shadow: 0 1px 5px #0003;
-  font: 12px/1.5 system-ui; pointer-events: none; }
+  font: 12px/1.5 system-ui; display: flex; gap: 8px; align-items: flex-start; }
+.maplibregl-ctrl-group .preview-3d-notice-close { flex: 0 0 24px; width: 24px; height: 24px;
+  border: 0; border-radius: 4px; background: transparent; color: inherit; font: 20px/1 system-ui; }
+.preview-3d-notice-close:focus-visible { outline: 2px solid #1454a0; }
 .preview-3d-notice[hidden] { display: none; }

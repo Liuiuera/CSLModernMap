@@ -73,7 +73,7 @@ def test_city_only_archive_and_optional_unknown_member(tmp_path):
 
 
 @pytest.mark.parametrize('case', ['missing_city','missing_png','missing_coords','bad_bounds','bad_png','bad_version','bad_metadata'])
-def test_invalid_archives_rejected(tmp_path, case):
+def test_archive_integrity_and_optional_image_recovery(tmp_path, case):
     entries = members(); raw = json.loads(entries['city.json'])
     if case == 'missing_city': entries.pop('city.json')
     elif case == 'missing_png': entries.pop('satellite.png')
@@ -83,8 +83,42 @@ def test_invalid_archives_rejected(tmp_path, case):
     elif case == 'bad_version': raw['schema_version'] = 'cmm9.0'
     elif case == 'bad_png': entries['satellite.png'] = b'broken'
     if 'city.json' in entries: entries['city.json'] = json.dumps(raw)
+    path = package(tmp_path/'invalid.cmm', entries)
     with pytest.raises((ValueError, OSError)):
-        load_document(package(tmp_path/'invalid.cmm', entries))
+        read_archive(path)
+    if case in {'missing_city', 'bad_version'}:
+        with pytest.raises(ValueError):
+            load_document(path)
+    else:
+        from csmodernmap.cmm.file_format import read_information
+        original = path.read_bytes()
+        recovered = load_document(path)
+        assert recovered._satellite_info is None and recovered._satellite_png is None
+        assert any(issue.code == 'READ_SATELLITE_SKIPPED' for issue in recovered.issues)
+        notice, = read_information(recovered)
+        assert notice and not notice.startswith("gui.")
+        assert path.read_bytes() == original
+
+
+def test_image_crc_failure_keeps_city_and_edits(tmp_path):
+    import struct
+    entries = members()
+    entries["edits.json"] = '{"building_names":{"7":"School"}}'
+    path = tmp_path / "bad-image-crc.cmm"
+    with zipfile.ZipFile(path, "w", zipfile.ZIP_STORED) as archive:
+        for name, value in entries.items():
+            archive.writestr(name, value)
+        offset = archive.getinfo("satellite.png").header_offset
+    data = bytearray(path.read_bytes())
+    name_size, extra_size = struct.unpack_from("<HH", data, offset + 26)
+    data[offset + 30 + name_size + extra_size] ^= 1
+    path.write_bytes(data)
+    recovered = load_document(path)
+    assert recovered._archive_edits == {"building_names": {"7": "School"}}
+    assert recovered._satellite_info is None
+    assert any("CRC" in issue.message for issue in recovered.issues)
+    with pytest.raises(ValueError):
+        read_archive(path)
 
 
 def test_duplicate_and_crc_corruption_rejected(tmp_path):
@@ -135,9 +169,12 @@ def test_raster_and_preview_orientation_agree(tmp_path):
 
 
 def test_native_cs1_archive_cross_language():
+    import os
     from pathlib import Path
-    root=Path(r'D:\COde\CSLModernMap\outputs\cmm11-satellite-20261109')
-    if not (root/'native-satellite.cmm').exists(): pytest.skip('native writer fixture not generated')
+    directory = os.environ.get("CS1_CMM11_FIXTURE_DIR")
+    if not directory:
+        pytest.skip('set CS1_CMM11_FIXTURE_DIR to the native CMM 1.1 example directory')
+    root = Path(directory)
     sat=load_document(root/'native-satellite.cmm')
     city=load_document(root/'native-city.cmm')
     legacy=load_document(root/'legacy-city.cmm.gz')
@@ -147,17 +184,17 @@ def test_native_cs1_archive_cross_language():
     assert len(sat._satellite_png) > 0 and city._satellite_png is None
 
 
-def test_full_preview_satellite_is_independent_and_disabled_by_default(tmp_path):
+def test_full_preview_satellite_is_independent_and_disabled_by_default(tmp_path, modern_style):
     from csmodernmap.cmm import DocumentSession
     from csmodernmap.preview_scene import PreviewSceneCompiler
-    from csmodernmap.style import Style
+    from style_fixtures import pixel_style
     from csmodernmap.layers.water_layer import WaterLayer
     doc = load_document(package(tmp_path/'city.cmm', members()))
     # This fixture has no vector water; imagery no longer overrides terrain implicitly.
     canvas = Image.new('RGBA',(4,4),(23,45,67,255))
     WaterLayer().render(SimpleNamespace(image=canvas), doc)
     assert canvas.getpixel((0,0)) == (23,45,67,255)
-    bundle = PreviewSceneCompiler.compile_full(DocumentSession(doc), Style({}), 1)
+    bundle = PreviewSceneCompiler.compile_full(DocumentSession(doc), modern_style, 1)
     try:
         assert not bundle.manifest['layers']['satellite']
         assert 'satellite' not in bundle.manifest['sources']
@@ -167,19 +204,19 @@ def test_full_preview_satellite_is_independent_and_disabled_by_default(tmp_path)
         bundle.close()
 
 
-def test_satellite_scene_incremental_and_html_omission(tmp_path):
+def test_satellite_scene_incremental_and_html_omission(tmp_path, modern_style):
     from csmodernmap.cmm import DocumentSession
     from csmodernmap.preview_scene import PreviewSceneCompiler
-    from csmodernmap.style import Style
+    from style_fixtures import pixel_style
     from csmodernmap.web_export_v2 import payload_from_preview_bundle
     doc = load_document(package(tmp_path/'city.cmm', members()))
     session = DocumentSession(doc)
-    first = PreviewSceneCompiler.compile_full(session, Style({}), 1, visibility={'satellite': True})
+    first = PreviewSceneCompiler.compile_full(session, modern_style, 1, visibility={'satellite': True})
     second = None
     try:
         assert first.manifest['satelliteCorners']
         assert 'satellite' in first.manifest['sources']
-        second = PreviewSceneCompiler.compile_full(session, Style({}), 2, visibility={'satellite': False}, previous=first)
+        second = PreviewSceneCompiler.compile_full(session, modern_style, 2, visibility={'satellite': False}, previous=first)
         assert first.manifest['sourceRevisions']['satellite'] == second.manifest['sourceRevisions']['satellite']
         payload = payload_from_preview_bundle(second, visibility={'satellite': False}, navigation_enabled=False)
         assert 'satellite' not in payload['manifest']['sources']
@@ -190,24 +227,23 @@ def test_satellite_scene_incremental_and_html_omission(tmp_path):
         if second: second.close()
 
 
-def test_backend_satellite_restore_and_failed_enable():
+def test_backend_satellite_preserves_layers_and_failed_enable():
     from csmodernmap.guir_backend import GuirBackend
-    from csmodernmap.satellite_image import INTERFERING_LAYERS
+    from csmodernmap.satellite_image import COVERING_LAYERS
     backend = GuirBackend.__new__(GuirBackend)
-    backend.layer_visibility = {key: True for key in (*INTERFERING_LAYERS, 'poi', 'label', 'district')}
+    backend.layer_visibility = {key: True for key in (*COVERING_LAYERS, 'road', 'railway', 'traffic', 'poi', 'label', 'district')}
     backend.layer_visibility['satellite'] = False
-    backend._satellite_previous_layers = None
     backend.document = MapDocument.from_dict({})
     original = dict(backend.layer_visibility)
     with pytest.raises(ValueError): backend.set_layer_visibility('satellite', True)
     assert backend.layer_visibility == original
     backend.document._satellite_png = members()['satellite.png']
     backend.set_layer_visibility('satellite', True)
-    assert not any(backend.layer_visibility[key] for key in INTERFERING_LAYERS)
+    assert backend.layer_visibility == {**original, 'satellite': True}
     assert backend.layer_visibility['label'] and backend.layer_visibility['poi']
-    backend.layer_visibility['road'] = True
+    backend.layer_visibility['road'] = False
     backend.set_layer_visibility('satellite', False)
-    assert backend.layer_visibility == original
+    assert backend.layer_visibility == {**original, 'road': False}
 
 
 def layered_members(size=4096, target=4096):
@@ -254,16 +290,18 @@ def test_invalid_layered_archive(tmp_path, case):
             image.save(stream, format='PNG')
         entries['satellite/water.png'] = stream.getvalue()
     entries['city.json'] = json.dumps(raw)
-    with pytest.raises(ValueError): load_document(package(tmp_path/'bad.cmm', entries))
+    path = package(tmp_path/'bad.cmm', entries)
+    with pytest.raises(ValueError): read_archive(path)
+    assert not load_document(path)._satellite_layers
 
 
 def test_png_renderer_satellite_corners_and_rotation(tmp_path):
     from csmodernmap.renderer import Renderer
-    from csmodernmap.style import Style
+    from style_fixtures import pixel_style
     from csmodernmap.layers.satellite_layer import SatelliteLayer
     doc = load_document(package(tmp_path/'city.cmm', members()))
     for angle in (0, 90, 180, 270):
-        renderer = Renderer(Style({}), width=64, height=64, rotation=angle)
+        renderer = Renderer(pixel_style({}), width=64, height=64, rotation=angle)
         renderer.add_layer(SatelliteLayer())
         image = renderer.render(doc, region=(0,0,4,4))
         assert image.size == (64,64)

@@ -74,7 +74,7 @@ class ZoneLayer(Layer):
         upscale = max(1, int(cfg.get("contour_upscale", CONTOUR_UPSCALE) or 1))
         smooth_iters = int(cfg.get("smooth_iters", SMOOTH_ITERS) or 0)
         border_color = hex_to_rgb(cfg.get("border", "#B08A5C"))
-        border_w = self._border_px(cfg.get("border_width", 1), ctx.zoom)
+        border_w = self._border_px(cfg.get("border_width", 1), ctx.zoom / ctx.final_zoom)
         fill_alpha = int(cfg.get("fill_alpha", 100))
         fill = hex_to_rgb(cfg.get("fill", DEFAULT_FILL))
 
@@ -214,8 +214,5 @@ class ZoneLayer(Layer):
 
     # ---- 工具 ----
 
-    def _border_px(self, val, zoom: float) -> float:
-        """边界线宽（像素）：数字=固定像素；dict {fixed, scaled}=fixed+scaled*缩放。"""
-        if isinstance(val, dict):
-            return val.get("fixed", 0.0) + val.get("scaled", 0.0) * zoom
-        return float(val)
+    def _border_px(self, val, raster_scale: float) -> float:
+        return float(val) * raster_scale

@@ -4,24 +4,42 @@ using RibbonSpace.Controls;
 
 namespace CSLModernMapWinUI;
 
-internal sealed class ThemeGalleryBinding(ObservableCollection<ThemeGalleryChoice> choices, Func<string, Task> select)
+internal sealed class ThemeGalleryBinding(ObservableCollection<ThemeGalleryChoice> choices,
+    Func<string, Task> select, Func<object?>? editingSession = null)
 {
     private readonly List<RibbonGallery> _galleries = new();
     private bool _syncing, _pending;
-    private string? _current;
+    private string? _current, _next;
+    internal Task PendingSelection { get; private set; } = Task.CompletedTask;
 
     internal void Bind(RibbonGallery gallery)
     {
         gallery.ItemsSource = choices;
+        gallery.CategorySelector = item => ((ThemeGalleryChoice)item).Category;
         _galleries.Add(gallery);
         gallery.ItemClick += async (_, args) =>
         {
-            if (_syncing || _pending || args.Item is not ThemeGalleryChoice choice || choice.Id == _current) return;
-            _pending = true;
-            try { await select(choice.Id); }
-            finally { _pending = false; Synchronize(_current); }
+            if (_syncing || args.Item is not ThemeGalleryChoice choice) return;
+            if (_pending) { _next = choice.Id; return; }
+            if (choice.Id != _current) await (PendingSelection = SelectAsync(choice.Id));
         };
         Synchronize(_current);
+    }
+
+    private async Task SelectAsync(string id)
+    {
+        var editor = editingSession?.Invoke();
+        _pending = true;
+        try
+        {
+            do {
+                _next = null;
+                await select(id);
+                if (_next is not { } next || next == _current || editor is null || editor != editingSession?.Invoke()) break;
+                id = next;
+            } while (true);
+        }
+        finally { _pending = false; _next = null; Synchronize(_current); }
     }
 
     internal void Synchronize(string? id, Action? updateChoices = null)

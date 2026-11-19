@@ -5,10 +5,10 @@ from pathlib import Path
 import pytest
 from PIL import Image
 from csmodernmap.preview_scene import PreviewSceneServer, world_to_geo
-from test_preview_road_browser import browser_page, make_bundle, load, screenshot, expect_color
-from test_preview_road_order import scene_from_lines
+from browser_support import browser_page, make_bundle, load, screenshot, expect_color
+from road_fixtures import scene_from_lines
 
-pytestmark = pytest.mark.skipif(os.environ.get('CSL_PREVIEW_BROWSER_TEST') != '1', reason='opt-in Chromium WebGL integration test')
+pytestmark = [pytest.mark.browser, pytest.mark.skipif(os.environ.get('CSL_PREVIEW_BROWSER_TEST') != '1', reason='opt-in Chromium WebGL integration test')]
 
 
 def test_satellite_raster_visibility_orientation_and_reuse(tmp_path, browser_page):

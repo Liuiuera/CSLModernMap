@@ -30,7 +30,7 @@ public sealed partial class MainWindow
         Task Write(string key, object value, string? child = null) => child is null
             ? _engine.RequestAsync("setTransitOption", new { metro = true, key, value })
             : WriteContextChildAsync(true, key, child, value);
-        Task Queue(Func<Task> write) => QueueContextWriteAsync(true, write, Current);
+        Task Queue(Func<Task> write, string? key = null) => QueueContextWriteAsync(true, write, Current, debounceKey: key);
         bool Editable(Control control)
         {
             if (syncing || !Current() || !control.IsEnabled) return false;
@@ -61,7 +61,7 @@ public sealed partial class MainWindow
             {
                 if (!Editable(box)) return;
                 var value = box.IsChecked == true;
-                await Queue(() => Write(key, value, child));
+                await Queue(() => Write(key, value, child), key + ":" + child);
             }
             return box;
         }
@@ -99,7 +99,7 @@ public sealed partial class MainWindow
                 if (OperationError.Message == message) OperationError.IsOpen = false;
                 if (amount == saved) return;
                 input.Value = saved = amount;
-                await Queue(() => Write(key, amount / multiplier, child));
+                await Queue(() => Write(key, amount / multiplier, child), key + ":" + child);
             }
             input.LostFocus += async (_, args) => await Commit(args.OriginalSource as TextBox);
             // NumberBox 在按键抬起时处理回车。
@@ -179,7 +179,7 @@ public sealed partial class MainWindow
                 foreach (var (control, read, enabled) in controls)
                 {
                     control.IsEnabled = _documentEnabled && !RmpBlocked && enabled();
-                    if (!HasFocusedField(control)) read();
+                    if (!ContextWritesPending && !HasFocusedField(control)) read();
                 }
             }
             finally { syncing = false; }

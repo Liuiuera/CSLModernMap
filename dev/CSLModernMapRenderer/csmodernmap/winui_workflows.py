@@ -8,7 +8,7 @@ import uuid
 
 
 
-METHODS = {"getRegionCatalog", "setRegionSelection", "getDiagnostics",
+METHODS = {"getRegionCatalog", "setRegionSelection", "getDiagnostics", "setDiagnostics",
            "renderInterchanges", "getUiMetadata", "setLanguage", "getThemePalettes"}
 
 
@@ -25,7 +25,11 @@ class WinuiWorkflows:
                 raise ValueError("unknown region group")
             return {"updated": True}
         if method == "getDiagnostics":
-            return {"details": copy.deepcopy(backend.last_diagnostics)}
+            return {"details": copy.deepcopy(backend.last_diagnostics),
+                    "enabled": backend.performance_diagnostics_enabled}
+        if method == "setDiagnostics":
+            backend.set_performance_diagnostics(bool(params["enabled"]))
+            return {"enabled": backend.performance_diagnostics_enabled}
         if method == "renderInterchanges":
             if backend.busy or self.server._external_busy or self.server._export.target or not backend.has_document:
                 return {"started": False}
@@ -47,6 +51,7 @@ class WinuiWorkflows:
             from .theme_palette import theme_palette
             return {stem: theme_palette(stem) for _, stem in THEME_CHOICES}
         if method in {"setLanguage", "getUiMetadata"}:
+            from . import i18n
             from csmodernmap.ui_palette import LIGHT, DARK
             from csmodernmap.command_metadata import CANONICAL_IDS, COMMANDS
             if method == "setLanguage":

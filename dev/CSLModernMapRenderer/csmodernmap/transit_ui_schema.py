@@ -1,8 +1,10 @@
 """定义可编辑的公交选项及其界面约束。"""
 import math
 from .i18n import tr
+from .transit_label_styles import PRESET_IDS
 
-LABELS = {'station_size': 'style.transport.size.label',
+LABELS = {'station_diameter': 'style.transport.diameter.label',
+ 'line_label_style': 'gui.transit_view.label_style',
  'spacing': 'gui.editor.spacing',
  'line_width': 'style.transport.width.label',
  'line_label_interval': 'gui.transit_view.label_interval',
@@ -10,28 +12,21 @@ LABELS = {'station_size': 'style.transport.size.label',
  'facility_icon_size': 'style.poi.size.label',
  'transit_mask': 'style.transport.mask.label'}
 CHOICES = {'station_name_placement': ('hidden', 'station', 'icon'), 'line_color_mode': ('game', 'classic', 'soft')}
-BOUNDS = {'station_name_size': (6, 48),
- 'station_size': (4, 24),
- 'line_width': (1, 12),
+CHOICES['line_label_style'] = PRESET_IDS
+BOUNDS = {'station_name_size': (0, 1e300),
+ 'station_diameter': (.000001, 1e300),
+ 'line_width': (0, 1e300),
  'spacing': (200, 800),
- 'label_scale': (0.5, 2),
- 'icon_scale': (0.5, 2),
- 'title_scale': (0.5, 2),
- 'legend_scale': (0.5, 2),
  'adaptive_strength': (0, 1),
- 'line_label_size': (6, 36),
- 'line_label_interval': (80, 5000),
+ 'line_label_size': (0, 1e300),
+ 'line_label_interval': (0, 1e300),
  'merge_range': (0, 200),
- 'facility_icon_size': (12, 48),
+ 'facility_icon_size': (0, 1e300),
  'transit_mask': (0, 1),
  'water_smoothing': (0, 16)}
 FALLBACK_LABELS = {'station_name_placement': '站名标注',
  'line_color_mode': '线路颜色',
  'station_name_size': '字号',
- 'label_scale': '站名字号比例',
- 'icon_scale': '图标比例',
- 'title_scale': '标题比例',
- 'legend_scale': '图例比例',
  'stations': '显示站点',
  'schematic_options': '自适应比例',
  'schematic_water': '示意水域',
@@ -44,6 +39,7 @@ FALLBACK_LABELS = {'station_name_placement': '站名标注',
  'ordinary_pois': '普通地点显示',
  'line_label_enabled': '线路标签',
  'line_label_size': '线路标签字号',
+ 'line_label_style': '标签样式',
  'layers': '视图图层',
  'adaptive_scale': '动态比例',
  'adaptive_strength': '自适应强度'}
@@ -56,7 +52,10 @@ LAYER_OPTIONS = {'stations': 'stations',
  'base_district': 'base_district'}
 RESERVED = {"types", "line_ids", "station_line_ids", "metro_edits", "pure", "abstract"}
 STYLE_FIELDS = {'line_width': 'transport.width',
- 'station_size': 'transport.size',
+ 'station_diameter': 'transport.diameter',
+ 'station_name_size': 'transport.station_name_size',
+ 'facility_icon_size': 'poi.size',
+ 'line_label_size': 'transit_view.label_size',
  'line_label_interval': 'transport.label.interval'}
 
 

@@ -8,10 +8,10 @@ from csmodernmap.building_catalog import BuildingCatalog
 from csmodernmap.cmm import Polygon, Vec2
 from csmodernmap.preview_scene import PreviewSceneServer
 from test_building_category_colors import building, document
-from test_preview_road_browser import browser_page, make_bundle, load, screenshot
-from test_preview_road_order import scene_from_lines
+from browser_support import browser_page, make_bundle, load, screenshot
+from road_fixtures import scene_from_lines
 
-pytestmark = pytest.mark.skipif(os.environ.get('CSL_PREVIEW_BROWSER_TEST') != '1', reason='opt-in Chromium WebGL test')
+pytestmark = [pytest.mark.browser, pytest.mark.skipif(os.environ.get('CSL_PREVIEW_BROWSER_TEST') != '1', reason='opt-in Chromium WebGL test')]
 
 
 def test_catalog_highlight_and_selection_work_without_visible_building_source(tmp_path, browser_page):

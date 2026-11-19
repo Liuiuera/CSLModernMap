@@ -93,7 +93,7 @@
     "water": {
       "color": "#80D4FE",
       "border": "#60C0E8",
-      "border_width": 1
+      "border_width": 1.0
     },
     "forest": {
       "color": "#B8DCA0"
@@ -101,10 +101,7 @@
     "district": {
       "enabled": true,
       "border": "#C9A45C",
-      "border_width": {
-        "fixed": 1.0,
-        "scaled": 0.5
-      },
+      "border_width": 1.5,
       "fill_alpha": 115,
       "fill_colors": [
         "#D9E8CC",
@@ -123,10 +120,7 @@
     "zone": {
       "enabled": true,
       "border": "#B08A5C",
-      "border_width": {
-        "fixed": 1.0,
-        "scaled": 0.5
-      },
+      "border_width": 1.5,
       "fill_alpha": 100,
       "fill": "#C8C8C8",
       "smooth_blur": 1.0,
@@ -134,180 +128,157 @@
       "contour_upscale": 2
     },
     "roads": {
-      "width_scale": 0.15,
       "highway": {
         "fill": "#CDCFD5",
         "border": "#AFB1B7",
-        "min_fill_px": 1.8,
-        "border_width": {
-          "fixed": 2.5,
-          "scaled": 0.8
-        }
+        "border_width": 3.3,
+        "line_width": 3.8,
+        "footprint_scale": 1.0
       },
       "main": {
         "fill": "#ECEEF2",
         "border": "#BAC0CA",
-        "min_fill_px": 1.4,
-        "border_width": {
-          "fixed": 2.2,
-          "scaled": 0.7
-        }
+        "border_width": 2.9000000000000004,
+        "line_width": 5.3,
+        "footprint_scale": 1.0
       },
       "branch": {
         "fill": "#FFFFFF",
         "border": "#C3C8D2",
-        "min_fill_px": 0.8,
-        "border_width": {
-          "fixed": 2.0,
-          "scaled": 0.6
-        }
+        "border_width": 2.6,
+        "line_width": 2.9,
+        "footprint_scale": 1.0
       },
       "special": {
         "fill": "#F0F2F5",
         "border": "#E1E3E9",
-        "min_fill_px": 0.8,
-        "border_width": {
-          "fixed": 1.2,
-          "scaled": 0.4
-        }
+        "border_width": 1.6,
+        "line_width": 8.90003,
+        "footprint_scale": 1.0
       },
       "beautification": {
         "fill": "#F0F2F5",
         "border": "#E1E3E9",
-        "min_fill_px": 0.5,
-        "border_width": {
-          "fixed": 1.2,
-          "scaled": 0.4
-        }
+        "border_width": 1.6,
+        "line_width": 1.697,
+        "footprint_scale": 1.0
       },
       "main_elevated": {
         "fill": "#ECEEF2",
         "border": "#B5BBC5",
-        "border_width": {
-          "fixed": 2.8,
-          "scaled": 0.9
-        }
+        "border_width": 3.6999999999999997,
+        "line_width": 5.3,
+        "footprint_scale": 1.0
       },
       "branch_elevated": {
         "fill": "#FFFFFF",
         "border": "#B9BEC8",
-        "border_width": {
-          "fixed": 2.6,
-          "scaled": 0.8
-        }
+        "border_width": 3.4000000000000004,
+        "line_width": 2.9,
+        "footprint_scale": 1.0
       },
       "highway_elevated": {
         "fill": "#CDCFD5",
         "border": "#AFB1B7",
-        "border_width": {
-          "fixed": 3.0,
-          "scaled": 1.0
-        }
+        "border_width": 4.0,
+        "line_width": 3.8,
+        "footprint_scale": 1.0
       },
       "beautification_elevated": {
         "fill": "#F2F4F7",
         "border": "#E1E3E9",
-        "border_width": {
-          "fixed": 1.5,
-          "scaled": 0.5
-        }
+        "border_width": 2.0,
+        "line_width": 1.697,
+        "footprint_scale": 1.0
       },
       "main_tunnel": {
         "fill": "#F0F1F4",
         "border": "#BAC0CA",
-        "border_width": {
-          "fixed": 2.2,
-          "scaled": 0.7
-        },
+        "border_width": 2.9000000000000004,
         "dash": [
           1.5,
-          2
-        ]
+          2.0
+        ],
+        "line_width": 5.3,
+        "footprint_scale": 1.0
       },
       "branch_tunnel": {
         "fill": "#FAFAFC",
         "border": "#C3C8D2",
-        "border_width": {
-          "fixed": 2.0,
-          "scaled": 0.6
-        },
+        "border_width": 2.6,
         "dash": [
           1.5,
-          2
-        ]
+          2.0
+        ],
+        "line_width": 2.9,
+        "footprint_scale": 1.0
       },
       "highway_tunnel": {
         "fill": "#D2D4D9",
         "border": "#AFB1B7",
-        "border_width": {
-          "fixed": 2.5,
-          "scaled": 0.8
-        },
+        "border_width": 3.3,
         "dash": [
           1.5,
-          2
-        ]
+          2.0
+        ],
+        "line_width": 3.8,
+        "footprint_scale": 1.0
       },
       "beautification_tunnel": {
         "fill": "#EEF0F3",
         "border": "#E1E3E9",
-        "border_width": {
-          "fixed": 1.2,
-          "scaled": 0.4
-        },
+        "border_width": 1.6,
         "dash": [
           1.5,
-          2
-        ]
+          2.0
+        ],
+        "line_width": 1.697,
+        "footprint_scale": 1.0
       },
       "quay": {
         "fill": "#F0F2F5",
         "border": "#E1E3E9",
-        "border_width": {
-          "fixed": 1.2,
-          "scaled": 0.4
-        }
+        "border_width": 1.6,
+        "footprint_scale": 0.5,
+        "line_width": 5.688888888888889
       },
       "special_elevated": {
         "fill": "#FFFFFF",
         "border": "#B9BEC8",
-        "border_width": {
-          "fixed": 2.6,
-          "scaled": 0.8
-        }
+        "border_width": 3.4000000000000004,
+        "line_width": 8.90003,
+        "footprint_scale": 1.0
       },
       "quay_elevated": {
         "fill": "#F2F4F7",
         "border": "#E1E3E9",
-        "border_width": {
-          "fixed": 1.5,
-          "scaled": 0.5
-        }
+        "border_width": 2.0,
+        "footprint_scale": 0.5,
+        "line_width": 5.688888888888889
       },
       "special_tunnel": {
         "fill": "#FAFAFC",
         "border": "#C3C8D2",
-        "border_width": {
-          "fixed": 2.0,
-          "scaled": 0.6
-        },
+        "border_width": 2.6,
         "dash": [
           1.5,
-          2
-        ]
+          2.0
+        ],
+        "line_width": 8.90003,
+        "footprint_scale": 1.0
       },
       "quay_tunnel": {
         "fill": "#EEF0F3",
         "border": "#E1E3E9",
-        "border_width": {
-          "fixed": 1.2,
-          "scaled": 0.4
-        },
+        "border_width": 1.6,
+        "footprint_scale": 0.5,
         "dash": [
           1.5,
-          2
-        ]
-      }
+          2.0
+        ],
+        "line_width": 5.688888888888889
+      },
+      "opacity": 1.0
     },
     "transports": {
       "enabled": [
@@ -324,10 +295,7 @@
         "Helicopter"
       ],
       "auto_color": false,
-      "width": {
-        "fixed": 0.5,
-        "scaled": 2.05
-      },
+      "width": 2.55,
       "smooth": 10,
       "octilinear": true,
       "schematic": {
@@ -339,127 +307,83 @@
         "composite_corridors": true,
         "composite_stripe_ratio": 0.46,
         "composite_min_stripe": 1.15,
-        "label_candidate_interval": 110,
+        "label_candidate_interval": 110.0,
         "label_candidate_limit": 72,
-        "label_clearance_padding": 14,
-        "label_size": {
-          "fixed": 0.0,
-          "scaled": 60.0
-        },
-        "label_padding": {
-          "fixed": 0.0,
-          "scaled": 36.0
-        },
-        "label_border_width": {
-          "fixed": 0.0,
-          "scaled": 8.0
-        },
-        "label_seam_width": {
-          "fixed": 0.0,
-          "scaled": 12.0
-        },
+        "label_clearance_padding": 14.0,
+        "label_size": 15.0,
+        "label_padding": 36.0,
+        "label_border_width": 8.0,
+        "label_seam_width": 12.0,
         "label_outer_border_color": "#101828",
         "label_outer_border_alpha": 0.55,
         "label_text_on_light": "#101828",
         "label_text_on_dark": "#FFFFFF",
-        "label_luminance_threshold": 165.0
+        "label_luminance_threshold": 165.0,
+        "label_merge_dist": 40.0
       },
       "types": {
         "Metro": {
-          "width": {
-            "fixed": 0.5,
-            "scaled": 2.05
-          },
+          "width": 2.55,
           "dash": []
         },
         "Train": {
-          "width": {
-            "fixed": 0.5,
-            "scaled": 2.2
-          },
+          "width": 2.7,
           "dash": []
         },
         "Monorail": {
-          "width": {
-            "fixed": 0.4,
-            "scaled": 1.85
-          },
+          "width": 2.25,
           "dash": []
         },
         "Tram": {
-          "width": {
-            "fixed": 0.4,
-            "scaled": 1.7
-          },
+          "width": 2.1,
           "dash": []
         },
         "CableCar": {
-          "width": {
-            "fixed": 0.4,
-            "scaled": 1.7
-          },
+          "width": 2.1,
           "dash": []
         },
         "Ship": {
-          "width": {
-            "fixed": 0.45,
-            "scaled": 1.875
-          },
+          "width": 2.325,
           "dash": [
-            8,
-            6
+            8.0,
+            6.0
           ],
           "color": "#2E86AB"
         },
         "Ferry": {
-          "width": {
-            "fixed": 0.45,
-            "scaled": 1.875
-          },
+          "width": 2.325,
           "dash": [
-            8,
-            6
+            8.0,
+            6.0
           ],
           "color": "#2E86AB"
         },
         "Bus": {
-          "width": {
-            "fixed": 0.35,
-            "scaled": 1.525
-          },
+          "width": 1.875,
           "dash": [],
           "color": "#5A6472"
         },
         "Trolleybus": {
-          "width": {
-            "fixed": 0.35,
-            "scaled": 1.525
-          },
+          "width": 1.875,
           "dash": [
-            4,
-            4
+            4.0,
+            4.0
           ],
           "color": "#7A8391"
         },
         "Airplane": {
-          "width": {
-            "fixed": 0.4,
-            "scaled": 1.7
-          },
+          "width": 2.1,
           "dash": [
-            10,
-            8
+            10.0,
+            8.0
           ],
           "color": "#8A94A6"
         },
         "Helicopter": {
-          "width": {
-            "fixed": 0.3,
-            "scaled": 1.35
-          },
+          "width": 1.6500000000000001,
           "dash": [
-            6,
-            6
+            6.0,
+            6.0
           ],
           "color": "#8A94A6"
         }
@@ -468,22 +392,23 @@
         "enabled": true,
         "font": "Microsoft YaHei",
         "min_zoom": 0.5,
-        "size": {
-          "fixed": 8.0,
-          "scaled": 6.0
-        },
-        "padding": {
-          "fixed": 5.0,
-          "scaled": 3.5
-        },
-        "border_width": {
-          "fixed": 0.9,
-          "scaled": 0.6
-        },
+        "size": 14.0,
+        "padding": 8.5,
+        "border_width": 1.5,
         "bg": "#FFFFFF",
-        "repeat_interval": 600,
-        "min_gap": 350,
-        "max_per_line": 4
+        "repeat_interval": 600.0,
+        "min_gap": 350.0,
+        "max_per_line": 4,
+        "capture_padding": 3.0,
+        "title_size": 76.0,
+        "gap": 28.0,
+        "column_gap": 84.0,
+        "swatch_width": 132.0,
+        "swatch_height": 48.0,
+        "border_radius": 27.0,
+        "margin": 70.0,
+        "shadow_blur": 21.0,
+        "shadow_offset": 10.0
       },
       "station": {
         "enabled": false,
@@ -492,24 +417,119 @@
         "merge_range": 48.0,
         "merge_bus_tram": true,
         "merge_train_metro": false,
-        "size": {
-          "fixed": 2.5,
-          "scaled": 5.0
-        },
         "outline": "#3A3F4A",
         "fill": "#FFFFFF",
-        "border_width": {
-          "fixed": 0.5,
-          "scaled": 0.5
+        "border_width": 2,
+        "names": {
+          "size": 11.0,
+          "gap": 5.0,
+          "stroke_width": 1.0
         },
-        "transfer_scale": 2.0
+        "diameter": 15.0
+      },
+      "line": {
+        "light_outline": {
+          "width": 2.4
+        }
       }
     },
     "buildings": {
       "border": "#D7DAE1",
-      "border_width": {
-        "fixed": 0.25,
-        "scaled": 0.1
+      "border_width": 0.35,
+      "color_mode": "poi",
+      "category_colors": {
+        "residential": {
+          "enabled": false,
+          "color": "#D8D2C6"
+        },
+        "commercial": {
+          "enabled": false,
+          "color": "#D8D2C6"
+        },
+        "office": {
+          "enabled": false,
+          "color": "#D8D2C6"
+        },
+        "industrial": {
+          "enabled": false,
+          "color": "#D8D2C6"
+        },
+        "police": {
+          "enabled": false,
+          "color": "#D8D2C6"
+        },
+        "prison": {
+          "enabled": false,
+          "color": "#D8D2C6"
+        },
+        "fire": {
+          "enabled": false,
+          "color": "#D8D2C6"
+        },
+        "healthcare": {
+          "enabled": false,
+          "color": "#D8D2C6"
+        },
+        "deathcare": {
+          "enabled": false,
+          "color": "#D8D2C6"
+        },
+        "education": {
+          "enabled": false,
+          "color": "#D8D2C6"
+        },
+        "administration": {
+          "enabled": false,
+          "color": "#D8D2C6"
+        },
+        "transport": {
+          "enabled": false,
+          "color": "#D8D2C6"
+        },
+        "parking": {
+          "enabled": false,
+          "color": "#D8D2C6"
+        },
+        "post_telecom": {
+          "enabled": false,
+          "color": "#D8D2C6"
+        },
+        "electricity": {
+          "enabled": false,
+          "color": "#D8D2C6"
+        },
+        "water": {
+          "enabled": false,
+          "color": "#D8D2C6"
+        },
+        "garbage": {
+          "enabled": false,
+          "color": "#D8D2C6"
+        },
+        "maintenance": {
+          "enabled": false,
+          "color": "#D8D2C6"
+        },
+        "park": {
+          "enabled": false,
+          "color": "#D8D2C6"
+        },
+        "amusement": {
+          "enabled": false,
+          "color": "#D8D2C6"
+        },
+        "culture": {
+          "enabled": false,
+          "color": "#D8D2C6"
+        },
+        "decoration": {
+          "enabled": false,
+          "color": "#D8D2C6"
+        },
+        "unclassified": {
+          "enabled": false,
+          "color": "#D8D2C6"
+        }
       }
     },
     "procedural_objects": {
@@ -523,10 +543,7 @@
         "unknown": "#D0D4DD"
       },
       "border": "#C6CAD3",
-      "border_width": {
-        "fixed": 0.2,
-        "scaled": 0.08
-      },
+      "border_width": 0.28,
       "custom_color_alpha": 0.85
     },
     "railway": {
@@ -534,42 +551,24 @@
       "train": {
         "line": "#3A3A3A",
         "dash": "#FFFFFF",
-        "width": {
-          "fixed": 2.5,
-          "scaled": 1.5
-        },
-        "dash_width": {
-          "fixed": 0.8,
-          "scaled": 1.5
-        },
+        "width": 4.0,
+        "dash_width": 2.3,
         "pattern": [
           2,
           4
         ],
-        "station_width": {
-          "fixed": 4.5,
-          "scaled": 2.7
-        }
+        "station_width": 7.2
       },
       "tram": {
         "line": "#A08CA0",
         "dash": "#FFFFFF",
-        "width": {
-          "fixed": 2.0,
-          "scaled": 1.0
-        },
-        "dash_width": {
-          "fixed": 0.8,
-          "scaled": 1.0
-        },
+        "width": 3.0,
+        "dash_width": 1.8,
         "pattern": [
           2,
           4
         ],
-        "station_width": {
-          "fixed": 3.5,
-          "scaled": 2.2
-        }
+        "station_width": 5.7
       },
       "metro": {
         "line": {
@@ -577,149 +576,107 @@
           "alpha": 180
         },
         "dash": "#FFFFFF",
-        "width": {
-          "fixed": 2.5,
-          "scaled": 1.2
-        },
-        "dash_width": {
-          "fixed": 0.8,
-          "scaled": 1.2
-        },
+        "width": 3.7,
+        "dash_width": 2.0,
         "pattern": [
           2,
           4
         ],
-        "station_width": {
-          "fixed": 4.5,
-          "scaled": 2.7
-        }
+        "station_width": 7.2
       },
       "monorail": {
         "line": "#A08C9B",
-        "width": {
-          "fixed": 1.0,
-          "scaled": 1.0
-        },
-        "decoration_span": {
-          "fixed": 2.0,
-          "scaled": 25.0
-        },
-        "decoration_length": {
-          "fixed": 1.0,
-          "scaled": 1.0
-        },
-        "decoration_width": {
-          "fixed": 0.6,
-          "scaled": 0.6
-        }
+        "width": 2.0,
+        "decoration_span": 27.0,
+        "decoration_length": 2.0,
+        "decoration_width": 1.2,
+        "station_width": 2.0,
+        "dash_width": 2.0
       },
       "cablecar": {
         "line": "#8C8C96",
-        "width": {
-          "fixed": 0.5,
-          "scaled": 0.2
-        },
-        "decoration_span": {
-          "fixed": 1.0,
-          "scaled": 15.0
-        },
-        "decoration_length": {
-          "fixed": 0.5,
-          "scaled": 0.2
-        },
-        "decoration_width": {
-          "fixed": 0.2,
-          "scaled": 0.15
-        }
+        "width": 0.7,
+        "decoration_span": 16.0,
+        "decoration_length": 0.7,
+        "decoration_width": 0.35,
+        "station_width": 0.7,
+        "dash_width": 2.0
       }
     },
     "labels": {
       "district": {
         "font": "SimHei",
-        "size": {
-          "fixed": 2.4,
-          "scaled": 18.0
-        },
+        "size": 20.4,
         "color": "#32415A",
         "stroke": "#FFFFFF",
-        "stroke_width": {
-          "fixed": 0.8,
-          "scaled": 2.4
-        }
+        "stroke_width": 3.2,
+        "stroke_blur": 0.0
       },
       "road": {
         "font": "SimHei",
-        "size": {
-          "fixed": 2.8,
-          "scaled": 3.0
-        },
+        "size": 5.8,
         "color": "#505564",
         "stroke": "#FFFFFF",
-        "stroke_width": {
-          "fixed": 1.0,
-          "scaled": 0.2
-        },
-        "size_z": {
-          "highway": 1.6,
-          "main": 1.25,
-          "branch": 1.0,
-          "special": 0.75,
-          "beautification": 0.75
-        },
+        "stroke_width": 1.2,
         "name_z": {
           "highway": 0.8,
           "main": 1.2,
           "branch": 1.6,
           "special": 2.4,
           "beautification": 2.4
+        },
+        "stroke_blur": 0.0,
+        "by_level": {
+          "highway": {
+            "size": 9.28,
+            "stroke_width": 1.92
+          },
+          "main": {
+            "size": 7.25,
+            "stroke_width": 1.5
+          },
+          "special": {
+            "size": 4.35,
+            "stroke_width": 0.8999999999999999
+          },
+          "beautification": {
+            "size": 4.35,
+            "stroke_width": 0.8999999999999999
+          },
+          "quay": {
+            "size": 4.35,
+            "stroke_width": 0.8999999999999999
+          }
         }
       },
-      "road_repeat": 420,
+      "road_repeat": 420.0,
       "road_repeat_ratio": 3,
       "road_min_gap": 240,
       "park": {
         "font": "SimHei",
-        "size": {
-          "fixed": 7.0,
-          "scaled": 8.0
-        },
+        "size": 15.0,
         "color": "#328246",
         "stroke": "#FFFFFF",
-        "stroke_width": {
-          "fixed": 2.4,
-          "scaled": 0.8
-        }
+        "stroke_width": 3.2
       },
       "building": {
         "font": "SimHei",
-        "size": {
-          "fixed": 7.6,
-          "scaled": 8.0
-        },
+        "size": 15.6,
         "color": "#50505A",
         "stroke": "#FFFFFF",
-        "stroke_width": {
-          "fixed": 2.4,
-          "scaled": 0.0
-        }
+        "stroke_width": 2.4
       },
       "stop": {
         "font": "SimHei",
-        "size": {
-          "fixed": 10.0,
-          "scaled": 14.0
-        },
+        "size": 24.0,
         "color": "#1E6EC8",
         "stroke": "#FFFFFF",
-        "stroke_width": {
-          "fixed": 2.4,
-          "scaled": 0.6
-        }
-      }
+        "stroke_width": 3.0
+      },
+      "padding": 4.0
     },
     "poi_icons": {
       "enabled": true,
-      "transit_view_scale": 1.15,
       "merge_enabled": true,
       "merge_distance": 48.0,
       "facility_hierarchy": {
@@ -728,50 +685,39 @@
         "child_min_zoom": 1.0,
         "area_labels_enabled": true
       },
-      "icon_size": {
-        "fixed": 20.0,
-        "scaled": 4.0
-      },
-      "grid_size": {
-        "fixed": 100.0,
-        "scaled": 20.0
-      },
+      "icon_size": 24.0,
+      "grid_size": 120.0,
       "max_per_cell": 2,
       "min_priority": 10,
       "categories": [],
       "bg_circle": false,
-      "bg_circle_size": {
-        "fixed": 28.0,
-        "scaled": 6.0
-      },
+      "bg_circle_size": 34.0,
       "show_name": true,
-      "name_size": {
-        "fixed": 11.0,
-        "scaled": 2.0
-      },
-      "name_offset": 3,
+      "name_size": 13.0,
+      "name_offset": 3.0,
       "name_stroke": "#FFFFFF",
-      "name_stroke_ratio": 0.12,
+      "font": "SimHei",
+      "icon_gap": 3.0,
+      "symbol_padding": 2.0,
+      "name_padding": 4.0,
+      "name_stroke_width": 2,
       "icons_dir": "cn_icons"
     },
     "watermark": {
       "enabled": true,
       "mod_name": "CSLModernMap",
       "position": "left_bottom",
-      "font_size": {
-        "fixed": 11.0,
-        "scaled": 1.5
-      },
+      "font_size": 12,
       "separator": " · ",
       "margin": {
-        "x": 20,
-        "y": 20
+        "x": 20.0,
+        "y": 20.0
       },
       "padding": {
-        "x": 12,
-        "y": 6
+        "x": 12.0,
+        "y": 6.0
       },
-      "border_radius": 6,
+      "border_radius": 6.0,
       "background": "transparent",
       "time_format": "%Y-%m-%d %H:%M:%S",
       "city_color": "#1A1A1A",
@@ -786,7 +732,18 @@
         "traffic_time": true,
         "custom_text": false
       }
-    }
+    },
+    "satellite": {
+      "preset": "original",
+      "intensity": 100,
+      "quality": "original"
+    },
+    "traffic": {
+      "free": "#61A96A",
+      "slow": "#E6B54D",
+      "busy": "#D85B4A"
+    },
+    "size_contract": "pixel-v2"
   },
   "dark": {
     "name": "暗黑风格",
@@ -855,7 +812,7 @@
     "water": {
       "color": "#12293B",
       "border": "#1D4057",
-      "border_width": 1
+      "border_width": 1.0
     },
     "forest": {
       "color": "#1E2E1E"
@@ -881,10 +838,7 @@
     "district": {
       "enabled": true,
       "border": "#8A8578",
-      "border_width": {
-        "fixed": 1.0,
-        "scaled": 0.5
-      },
+      "border_width": 1.5,
       "fill_alpha": 85,
       "fill_colors": [
         "#3A4640",
@@ -903,10 +857,7 @@
     "zone": {
       "enabled": true,
       "border": "#7A6A50",
-      "border_width": {
-        "fixed": 1.0,
-        "scaled": 0.5
-      },
+      "border_width": 1.5,
       "fill_alpha": 80,
       "fill": "#404040",
       "smooth_blur": 1.0,
@@ -914,54 +865,156 @@
       "contour_upscale": 2
     },
     "roads": {
-      "width_scale": 0.15,
       "highway": {
         "fill": "#4A4436",
         "border": "#6B5F3E",
-        "min_fill_px": 1.8,
-        "border_width": 1.5
+        "border_width": 1.5,
+        "line_width": 3.8,
+        "footprint_scale": 1.0
       },
       "main": {
         "fill": "#3C3E44",
         "border": "#5A5E66",
-        "min_fill_px": 1.4,
-        "border_width": 1.2
+        "border_width": 1.2,
+        "line_width": 5.3,
+        "footprint_scale": 1.0
       },
       "special": {
         "fill": "#313338",
         "border": "#4A4D54",
-        "min_fill_px": 0.8,
-        "border_width": 1
+        "border_width": 1.0,
+        "line_width": 8.90003,
+        "footprint_scale": 1.0
       },
       "branch": {
         "fill": "#2A2C30",
         "border": "#3E4046",
-        "min_fill_px": 0.8,
-        "border_width": 0.8
+        "border_width": 0.8,
+        "line_width": 2.9,
+        "footprint_scale": 1.0
       },
       "beautification": {
         "fill": "#24262A",
         "border": "#36383D",
-        "min_fill_px": 0.5,
-        "border_width": 0.5
+        "border_width": 0.5,
+        "line_width": 1.697,
+        "footprint_scale": 1.0
       },
       "quay": {
         "fill": "#24262A",
         "border": "#36383D",
-        "border_width": 0.5
-      }
+        "border_width": 0.5,
+        "footprint_scale": 0.5,
+        "line_width": 5.688888888888889
+      },
+      "opacity": 1.0
     },
     "buildings": {
       "default": "#26282D",
       "border": "#3A3D42",
-      "border_width": 1,
+      "border_width": 1.0,
       "shadow": {
         "enabled": true,
         "offset": [
-          2,
-          2
+          2.0,
+          2.0
         ],
         "color": "#00000030"
+      },
+      "color_mode": "poi",
+      "category_colors": {
+        "residential": {
+          "enabled": false,
+          "color": "#26282D"
+        },
+        "commercial": {
+          "enabled": false,
+          "color": "#26282D"
+        },
+        "office": {
+          "enabled": false,
+          "color": "#26282D"
+        },
+        "industrial": {
+          "enabled": false,
+          "color": "#26282D"
+        },
+        "police": {
+          "enabled": false,
+          "color": "#26282D"
+        },
+        "prison": {
+          "enabled": false,
+          "color": "#26282D"
+        },
+        "fire": {
+          "enabled": false,
+          "color": "#26282D"
+        },
+        "healthcare": {
+          "enabled": false,
+          "color": "#26282D"
+        },
+        "deathcare": {
+          "enabled": false,
+          "color": "#26282D"
+        },
+        "education": {
+          "enabled": false,
+          "color": "#26282D"
+        },
+        "administration": {
+          "enabled": false,
+          "color": "#26282D"
+        },
+        "transport": {
+          "enabled": false,
+          "color": "#26282D"
+        },
+        "parking": {
+          "enabled": false,
+          "color": "#26282D"
+        },
+        "post_telecom": {
+          "enabled": false,
+          "color": "#26282D"
+        },
+        "electricity": {
+          "enabled": false,
+          "color": "#26282D"
+        },
+        "water": {
+          "enabled": false,
+          "color": "#26282D"
+        },
+        "garbage": {
+          "enabled": false,
+          "color": "#26282D"
+        },
+        "maintenance": {
+          "enabled": false,
+          "color": "#26282D"
+        },
+        "park": {
+          "enabled": false,
+          "color": "#26282D"
+        },
+        "amusement": {
+          "enabled": false,
+          "color": "#26282D"
+        },
+        "culture": {
+          "enabled": false,
+          "color": "#26282D"
+        },
+        "decoration": {
+          "enabled": false,
+          "color": "#26282D"
+        },
+        "unclassified": {
+          "enabled": false,
+          "color": "#26282D"
+        }
       }
     },
     "procedural_objects": {
@@ -986,24 +1039,39 @@
         "pattern": [
           2,
           4
-        ]
+        ],
+        "width": 3.2,
+        "station_width": 7.2,
+        "dash_width": 2.0
       },
       "tram": {
         "line": "#B9A3C4",
-        "dash": "#F0F0F0"
+        "dash": "#F0F0F0",
+        "width": 3.2,
+        "station_width": 7.2,
+        "dash_width": 2.0
       },
       "metro": {
         "line": {
           "color": "#C39BCB",
           "alpha": 200
         },
-        "dash": "#F0F0F0"
+        "dash": "#F0F0F0",
+        "width": 3.2,
+        "station_width": 7.2,
+        "dash_width": 2.0
       },
       "monorail": {
-        "line": "#B9A3C4"
+        "line": "#B9A3C4",
+        "width": 3.2,
+        "station_width": 7.2,
+        "dash_width": 2.0
       },
       "cablecar": {
-        "line": "#8E93A0"
+        "line": "#8E93A0",
+        "width": 3.2,
+        "station_width": 7.2,
+        "dash_width": 2.0
       }
     },
     "transports": {
@@ -1021,110 +1089,78 @@
         "Helicopter"
       ],
       "auto_color": false,
-      "width": {
-        "fixed": 0.5,
-        "scaled": 2.05
-      },
+      "width": 2.55,
       "smooth": 10,
       "transit_view": {
-        "mask_intensity": 0.6
+        "mask_intensity": 0.6,
+        "label_size": 15.0,
+        "label_merge_dist": 40.0,
+        "label_candidate_interval": 110.0,
+        "label_clearance_padding": 14.0
       },
       "types": {
         "Metro": {
-          "width": {
-            "fixed": 0.5,
-            "scaled": 2.05
-          },
+          "width": 2.55,
           "dash": []
         },
         "Train": {
-          "width": {
-            "fixed": 0.5,
-            "scaled": 2.2
-          },
+          "width": 2.7,
           "dash": []
         },
         "Monorail": {
-          "width": {
-            "fixed": 0.4,
-            "scaled": 1.85
-          },
+          "width": 2.25,
           "dash": []
         },
         "Tram": {
-          "width": {
-            "fixed": 0.4,
-            "scaled": 1.7
-          },
+          "width": 2.1,
           "dash": []
         },
         "CableCar": {
-          "width": {
-            "fixed": 0.4,
-            "scaled": 1.7
-          },
+          "width": 2.1,
           "dash": []
         },
         "Ship": {
-          "width": {
-            "fixed": 0.45,
-            "scaled": 1.875
-          },
+          "width": 2.325,
           "dash": [
-            8,
-            6
+            8.0,
+            6.0
           ],
           "color": "#2E86AB"
         },
         "Ferry": {
-          "width": {
-            "fixed": 0.45,
-            "scaled": 1.875
-          },
+          "width": 2.325,
           "dash": [
-            8,
-            6
+            8.0,
+            6.0
           ],
           "color": "#2E86AB"
         },
         "Bus": {
-          "width": {
-            "fixed": 0.35,
-            "scaled": 1.525
-          },
+          "width": 1.875,
           "dash": [],
           "color": "#5A6472"
         },
         "Trolleybus": {
-          "width": {
-            "fixed": 0.35,
-            "scaled": 1.525
-          },
+          "width": 1.875,
           "dash": [
-            4,
-            4
+            4.0,
+            4.0
           ],
           "color": "#7A8391"
         },
         "Airplane": {
-          "width": {
-            "fixed": 0.4,
-            "scaled": 1.7
-          },
+          "width": 2.1,
           "dash": [
-            10,
-            8
+            10.0,
+            8.0
           ],
           "color": "#8A94A6"
         },
         "Helicopter": {
-          "width": {
-            "fixed": 0.3,
-            "scaled": 1.35
-          },
+          "width": 1.6500000000000001,
           "dash": [
-            6,
-            6
+            6.0,
+            6.0
           ],
           "color": "#8A94A6"
         }
@@ -1133,75 +1169,113 @@
         "enabled": true,
         "font": "SimHei",
         "min_zoom": 0.5,
-        "size": {
-          "fixed": 8.0,
-          "scaled": 6.0
-        },
-        "padding": {
-          "fixed": 5.0,
-          "scaled": 3.5
-        },
-        "border_width": {
-          "fixed": 0.9,
-          "scaled": 0.6
-        },
+        "size": 14.0,
+        "padding": 8.5,
+        "border_width": 1.5,
         "bg": "#FFFFFF",
-        "repeat_interval": 600,
-        "min_gap": 350,
-        "max_per_line": 4
+        "repeat_interval": 600.0,
+        "min_gap": 350.0,
+        "max_per_line": 4,
+        "capture_padding": 3.0,
+        "title_size": 76.0,
+        "gap": 28.0,
+        "column_gap": 84.0,
+        "swatch_width": 132.0,
+        "swatch_height": 48.0,
+        "border_radius": 27.0,
+        "margin": 70.0,
+        "shadow_blur": 21.0,
+        "shadow_offset": 10.0
+      },
+      "station": {
+        "border_width": 2,
+        "names": {
+          "size": 11.0,
+          "gap": 5.0,
+          "stroke_width": 1.0
+        },
+        "diameter": 15.0
+      },
+      "line": {
+        "light_outline": {
+          "width": 2.4
+        }
       }
     },
     "labels": {
       "district": {
         "font": "SimHei",
-        "size": 28,
+        "size": 28.0,
         "color": "#C8CDD2",
         "stroke": "#1C1E22",
-        "stroke_width": 1.5
+        "stroke_width": 1.5,
+        "stroke_blur": 0.0
       },
       "road": {
         "font": "SimHei",
-        "size": 7,
+        "size": 7.0,
         "color": "#9A9EA4",
         "stroke": "#1C1E22",
-        "stroke_width": 1.0
+        "stroke_width": 1.0,
+        "stroke_blur": 0.0,
+        "by_level": {
+          "highway": {
+            "size": 11.200000000000001,
+            "stroke_width": 1.6
+          },
+          "main": {
+            "size": 8.75,
+            "stroke_width": 1.25
+          },
+          "special": {
+            "size": 5.25,
+            "stroke_width": 0.75
+          },
+          "beautification": {
+            "size": 5.25,
+            "stroke_width": 0.75
+          },
+          "quay": {
+            "size": 5.25,
+            "stroke_width": 0.75
+          }
+        }
       },
       "building": {
         "font": "SimHei",
-        "size": 16,
+        "size": 16.0,
         "color": "#7A7E84"
       },
       "park": {
         "font": "SimHei",
-        "size": 14,
+        "size": 14.0,
         "color": "#6E9E5E",
         "stroke": "#FFFFFF",
         "stroke_width": 1.5
       },
       "stop": {
         "font": "SimHei",
-        "size": 20,
+        "size": 20.0,
         "color": "#4A9AE8"
-      }
+      },
+      "road_repeat": 400.0,
+      "padding": 4.0
     },
     "watermark": {
       "enabled": true,
       "mod_name": "CSLModernMap",
       "position": "left_bottom",
-      "font_size": {
-        "fixed": 11,
-        "scaled": 1.5
-      },
+      "font_size": 12,
       "separator": " · ",
       "margin": {
-        "x": 20,
-        "y": 20
+        "x": 20.0,
+        "y": 20.0
       },
       "padding": {
-        "x": 12,
-        "y": 6
+        "x": 12.0,
+        "y": 6.0
       },
-      "border_radius": 6,
+      "border_radius": 6.0,
       "background": "transparent",
       "time_format": "%Y-%m-%d %H:%M:%S",
       "city_color": "#F0F0F0",
@@ -1216,7 +1290,30 @@
         "traffic_time": true,
         "custom_text": false
       }
-    }
+    },
+    "satellite": {
+      "preset": "original",
+      "intensity": 100,
+      "quality": "original"
+    },
+    "traffic": {
+      "free": "#61A96A",
+      "slow": "#E6B54D",
+      "busy": "#D85B4A"
+    },
+    "poi_icons": {
+      "icon_size": 22.0,
+      "bg_circle_size": 30.0,
+      "name_size": 13.0,
+      "name_offset": 3.0,
+      "grid_size": 90.0,
+      "icon_gap": 3.0,
+      "symbol_padding": 2.0,
+      "name_padding": 4.0,
+      "name_stroke_width": 2,
+      "icons_dir": "cn_icons"
+    },
+    "size_contract": "pixel-v2"
   },
   "modern": {
     "name": "轻简现代",
@@ -1273,7 +1370,7 @@
     "water": {
       "color": "#8DDBF6",
       "border": "#72C3E2",
-      "border_width": 1
+      "border_width": 1.0
     },
     "built_area": {
       "enabled": true,
@@ -1309,10 +1406,7 @@
     "district": {
       "enabled": false,
       "border": "#A6A6AD",
-      "border_width": {
-        "fixed": 1.0,
-        "scaled": 0.5
-      },
+      "border_width": 1.5,
       "fill_alpha": 115,
       "fill_colors": [
         "#E0E9D6",
@@ -1331,7 +1425,7 @@
     "zone": {
       "enabled": true,
       "border": "#A89880",
-      "border_width": 0,
+      "border_width": 0.0,
       "fill_alpha": 255,
       "fill": "#E0DFDA",
       "smooth_blur": 1.0,
@@ -1342,54 +1436,46 @@
       "highway": {
         "fill": "#A4ADBD",
         "border": "#8995A7",
-        "border_width": {
-          "fixed": 0.3,
-          "scaled": 1.2
-        },
-        "min_fill_px": 1.8
+        "border_width": 1.5,
+        "line_width": 3.8,
+        "footprint_scale": 1.0
       },
-      "width_scale": 0.15,
       "main": {
         "fill": "#D1D7DF",
         "border": "#ADB6C2",
-        "border_width": {
-          "fixed": 0.25,
-          "scaled": 0.95
-        },
-        "min_fill_px": 1.4
+        "border_width": 1.2,
+        "line_width": 5.3,
+        "footprint_scale": 1.0
       },
       "branch": {
         "fill": "#FFFFFF",
         "border": "#C4C8C0",
-        "border_width": {
-          "fixed": 0.15,
-          "scaled": 0.65
-        },
-        "min_fill_px": 0.8
+        "border_width": 0.8,
+        "line_width": 2.9,
+        "footprint_scale": 1.0
       },
       "special": {
         "fill": "#FFFFFF",
         "border": "#C3C8D2",
-        "min_fill_px": 0.8,
-        "border_width": 1.0
+        "border_width": 1.0,
+        "line_width": 8.90003,
+        "footprint_scale": 1.0
       },
       "beautification": {
         "fill": "#E6E5DD",
         "border": "#D5D5CE",
-        "border_width": {
-          "fixed": 0.1,
-          "scaled": 0.4
-        },
-        "min_fill_px": 0.5
+        "border_width": 0.5,
+        "line_width": 1.697,
+        "footprint_scale": 1.0
       },
       "quay": {
         "fill": "#E6E5DD",
         "border": "#D5D5CE",
-        "border_width": {
-          "fixed": 0.1,
-          "scaled": 0.4
-        }
-      }
+        "border_width": 0.5,
+        "footprint_scale": 0.5,
+        "line_width": 5.688888888888889
+      },
+      "opacity": 1.0
     },
     "buildings": {
       "default": "#DADCD5",
@@ -1397,17 +1483,109 @@
       "poi_tint": {
         "contrast": 0.38
       },
-      "border_width": {
-        "fixed": 0.2,
-        "scaled": 0.8
-      },
+      "border_width": 1.0,
       "shadow": {
         "enabled": true,
         "offset": [
-          2,
-          2
+          2.0,
+          2.0
         ],
         "color": "#00000012"
+      },
+      "color_mode": "poi",
+      "category_colors": {
+        "residential": {
+          "enabled": false,
+          "color": "#DADCD5"
+        },
+        "commercial": {
+          "enabled": false,
+          "color": "#DADCD5"
+        },
+        "office": {
+          "enabled": false,
+          "color": "#DADCD5"
+        },
+        "industrial": {
+          "enabled": false,
+          "color": "#DADCD5"
+        },
+        "police": {
+          "enabled": false,
+          "color": "#DADCD5"
+        },
+        "prison": {
+          "enabled": false,
+          "color": "#DADCD5"
+        },
+        "fire": {
+          "enabled": false,
+          "color": "#DADCD5"
+        },
+        "healthcare": {
+          "enabled": false,
+          "color": "#DADCD5"
+        },
+        "deathcare": {
+          "enabled": false,
+          "color": "#DADCD5"
+        },
+        "education": {
+          "enabled": false,
+          "color": "#DADCD5"
+        },
+        "administration": {
+          "enabled": false,
+          "color": "#DADCD5"
+        },
+        "transport": {
+          "enabled": false,
+          "color": "#DADCD5"
+        },
+        "parking": {
+          "enabled": false,
+          "color": "#DADCD5"
+        },
+        "post_telecom": {
+          "enabled": false,
+          "color": "#DADCD5"
+        },
+        "electricity": {
+          "enabled": false,
+          "color": "#DADCD5"
+        },
+        "water": {
+          "enabled": false,
+          "color": "#DADCD5"
+        },
+        "garbage": {
+          "enabled": false,
+          "color": "#DADCD5"
+        },
+        "maintenance": {
+          "enabled": false,
+          "color": "#DADCD5"
+        },
+        "park": {
+          "enabled": false,
+          "color": "#DADCD5"
+        },
+        "amusement": {
+          "enabled": false,
+          "color": "#DADCD5"
+        },
+        "culture": {
+          "enabled": false,
+          "color": "#DADCD5"
+        },
+        "decoration": {
+          "enabled": false,
+          "color": "#DADCD5"
+        },
+        "unclassified": {
+          "enabled": false,
+          "color": "#DADCD5"
+        }
       }
     },
     "procedural_objects": {
@@ -1421,16 +1599,36 @@
         "unknown": "#DCDCD5"
       },
       "border": "#BDBDB5",
-      "border_width": {
-        "fixed": 0.2,
-        "scaled": 0.7
-      },
+      "border_width": 0.8999999999999999,
       "custom_color_alpha": 0.85
     },
     "railway": {
       "train": {
         "line": "#E1E1DE",
-        "dash": "#87878C"
+        "dash": "#87878C",
+        "width": 3.2,
+        "station_width": 7.2,
+        "dash_width": 2.0
+      },
+      "tram": {
+        "width": 3.2,
+        "station_width": 7.2,
+        "dash_width": 2.0
+      },
+      "metro": {
+        "width": 3.2,
+        "station_width": 7.2,
+        "dash_width": 2.0
+      },
+      "monorail": {
+        "width": 3.2,
+        "station_width": 7.2,
+        "dash_width": 2.0
+      },
+      "cablecar": {
+        "width": 3.2,
+        "station_width": 7.2,
+        "dash_width": 2.0
       }
     },
     "transports": {
@@ -1448,110 +1646,78 @@
         "Helicopter"
       ],
       "auto_color": false,
-      "width": {
-        "fixed": 0.5,
-        "scaled": 2.05
-      },
+      "width": 2.55,
       "smooth": 10,
       "transit_view": {
-        "mask_intensity": 0.6
+        "mask_intensity": 0.6,
+        "label_size": 15.0,
+        "label_merge_dist": 40.0,
+        "label_candidate_interval": 110.0,
+        "label_clearance_padding": 14.0
       },
       "types": {
         "Metro": {
-          "width": {
-            "fixed": 0.5,
-            "scaled": 2.05
-          },
+          "width": 2.55,
           "dash": []
         },
         "Train": {
-          "width": {
-            "fixed": 0.5,
-            "scaled": 2.2
-          },
+          "width": 2.7,
           "dash": []
         },
         "Monorail": {
-          "width": {
-            "fixed": 0.4,
-            "scaled": 1.85
-          },
+          "width": 2.25,
           "dash": []
         },
         "Tram": {
-          "width": {
-            "fixed": 0.4,
-            "scaled": 1.7
-          },
+          "width": 2.1,
           "dash": []
         },
         "CableCar": {
-          "width": {
-            "fixed": 0.4,
-            "scaled": 1.7
-          },
+          "width": 2.1,
           "dash": []
         },
         "Ship": {
-          "width": {
-            "fixed": 0.45,
-            "scaled": 1.875
-          },
+          "width": 2.325,
           "dash": [
-            8,
-            6
+            8.0,
+            6.0
           ],
           "color": "#3F7FBF"
         },
         "Ferry": {
-          "width": {
-            "fixed": 0.45,
-            "scaled": 1.875
-          },
+          "width": 2.325,
           "dash": [
-            8,
-            6
+            8.0,
+            6.0
           ],
           "color": "#3F7FBF"
         },
         "Bus": {
-          "width": {
-            "fixed": 0.35,
-            "scaled": 1.525
-          },
+          "width": 1.875,
           "dash": [],
           "color": "#5C6670"
         },
         "Trolleybus": {
-          "width": {
-            "fixed": 0.35,
-            "scaled": 1.525
-          },
+          "width": 1.875,
           "dash": [
-            4,
-            4
+            4.0,
+            4.0
           ],
           "color": "#7C8590"
         },
         "Airplane": {
-          "width": {
-            "fixed": 0.4,
-            "scaled": 1.7
-          },
+          "width": 2.1,
           "dash": [
-            10,
-            8
+            10.0,
+            8.0
           ],
           "color": "#8F98A6"
         },
         "Helicopter": {
-          "width": {
-            "fixed": 0.3,
-            "scaled": 1.35
-          },
+          "width": 1.6500000000000001,
           "dash": [
-            6,
-            6
+            6.0,
+            6.0
           ],
           "color": "#8F98A6"
         }
@@ -1560,48 +1726,51 @@
         "enabled": true,
         "font": "SimHei",
         "min_zoom": 0.5,
-        "size": {
-          "fixed": 8.0,
-          "scaled": 6.0
-        },
-        "padding": {
-          "fixed": 5.0,
-          "scaled": 3.5
-        },
-        "border_width": {
-          "fixed": 0.9,
-          "scaled": 0.6
-        },
+        "size": 14.0,
+        "padding": 8.5,
+        "border_width": 1.5,
         "bg": "#FFFFFF",
-        "repeat_interval": 600,
-        "min_gap": 350,
-        "max_per_line": 4
+        "repeat_interval": 600.0,
+        "min_gap": 350.0,
+        "max_per_line": 4,
+        "capture_padding": 3.0,
+        "title_size": 76.0,
+        "gap": 28.0,
+        "column_gap": 84.0,
+        "swatch_width": 132.0,
+        "swatch_height": 48.0,
+        "border_radius": 27.0,
+        "margin": 70.0,
+        "shadow_blur": 21.0,
+        "shadow_offset": 10.0
+      },
+      "station": {
+        "border_width": 2,
+        "names": {
+          "size": 11.0,
+          "gap": 5.0,
+          "stroke_width": 1.0
+        },
+        "diameter": 15.0
+      },
+      "line": {
+        "light_outline": {
+          "width": 2.4
+        }
       }
     },
     "poi_icons": {
       "enabled": true,
       "icons_dir": "cn_icons",
-      "icon_size": {
-        "fixed": 20.0,
-        "scaled": 4.0
-      },
-      "grid_size": {
-        "fixed": 100.0,
-        "scaled": 20.0
-      },
+      "icon_size": 24.0,
+      "grid_size": 120.0,
       "max_per_cell": 2,
       "min_priority": 10,
       "bg_circle": false,
-      "bg_circle_size": {
-        "fixed": 28.0,
-        "scaled": 6.0
-      },
+      "bg_circle_size": 34.0,
       "show_name": true,
-      "name_size": {
-        "fixed": 11.0,
-        "scaled": 2.0
-      },
-      "name_offset": 3,
+      "name_size": 13.0,
+      "name_offset": 3.0,
       "merge_enabled": true,
       "merge_distance": 48.0,
       "facility_hierarchy": {
@@ -1610,88 +1779,94 @@
         "child_min_zoom": 1.0,
         "area_labels_enabled": true
       },
-      "transit_view_scale": 1.15,
       "categories": [],
       "hidden_categories": [
         "traffic_light",
         "highway_entrance",
         "highway_exit"
-      ]
+      ],
+      "font": "SimHei",
+      "icon_gap": 3.0,
+      "symbol_padding": 2.0,
+      "name_padding": 4.0,
+      "name_stroke_width": 2
     },
     "labels": {
       "district": {
         "font": "PingFang SC",
-        "size": {
-          "fixed": 2.4,
-          "scaled": 18.0
-        },
+        "size": 20.4,
         "color": "#344054",
         "stroke": "#FFFFFF",
-        "stroke_width": {
-          "fixed": 0.8,
-          "scaled": 2.4
-        },
-        "bold": true
+        "stroke_width": 3.2,
+        "bold": true,
+        "stroke_blur": 0.0
       },
       "road": {
         "font": "PingFang SC",
-        "size": {
-          "fixed": 1.0,
-          "scaled": 6.0
-        },
+        "size": 7.0,
         "color": "#566579",
         "stroke": "#FFFFFF",
-        "stroke_width": {
-          "fixed": 0.2,
-          "scaled": 0.8
+        "stroke_width": 1.0,
+        "stroke_blur": 0.0,
+        "by_level": {
+          "highway": {
+            "size": 11.200000000000001,
+            "stroke_width": 1.6
+          },
+          "main": {
+            "size": 8.75,
+            "stroke_width": 1.25
+          },
+          "special": {
+            "size": 5.25,
+            "stroke_width": 0.75
+          },
+          "beautification": {
+            "size": 5.25,
+            "stroke_width": 0.75
+          },
+          "quay": {
+            "size": 5.25,
+            "stroke_width": 0.75
+          }
         }
       },
       "building": {
         "font": "PingFang SC",
-        "size": {
-          "fixed": 2.0,
-          "scaled": 14.0
-        },
+        "size": 16.0,
         "color": "#596574"
       },
       "park": {
         "font": "PingFang SC",
-        "size": {
-          "fixed": 2.0,
-          "scaled": 12.0
-        },
+        "size": 14.0,
         "color": "#557D52",
         "stroke": "#FFFFFF",
         "stroke_width": 1.5
       },
       "stop": {
         "font": "PingFang SC",
-        "size": {
-          "fixed": 2.0,
-          "scaled": 18.0
-        },
+        "size": 20.0,
         "color": "#2F6FA3"
-      }
+      },
+      "road_repeat": 400.0,
+      "padding": 4.0
     },
     "watermark": {
       "enabled": true,
       "mod_name": "CSLModernMap",
       "font": "PingFang SC",
       "position": "left_bottom",
-      "font_size": {
-        "fixed": 11,
-        "scaled": 1.5
-      },
+      "font_size": 12,
       "separator": " · ",
       "margin": {
-        "x": 20,
-        "y": 20
+        "x": 20.0,
+        "y": 20.0
       },
       "padding": {
-        "x": 12,
-        "y": 6
+        "x": 12.0,
+        "y": 6.0
       },
-      "border_radius": 6,
+      "border_radius": 6.0,
       "background": "transparent",
       "time_format": "%Y-%m-%d %H:%M:%S",
       "city_color": "#1D1D1F",
@@ -1706,7 +1881,18 @@
         "traffic_time": true,
         "custom_text": false
       }
-    }
+    },
+    "satellite": {
+      "preset": "original",
+      "intensity": 100,
+      "quality": "original"
+    },
+    "traffic": {
+      "free": "#61A96A",
+      "slow": "#E6B54D",
+      "busy": "#D85B4A"
+    },
+    "size_contract": "pixel-v2"
   },
   "satellite": {
     "name": "卫星暖色",
@@ -1759,7 +1945,7 @@
     "water": {
       "color": "#A8D5E8",
       "border": "#89BED6",
-      "border_width": 1
+      "border_width": 1.0
     },
     "forest": {
       "color": "#CFE3B8"
@@ -1785,10 +1971,7 @@
     "district": {
       "enabled": true,
       "border": "#A5A5A5",
-      "border_width": {
-        "fixed": 1.0,
-        "scaled": 0.5
-      },
+      "border_width": 1.5,
       "fill_alpha": 0,
       "fill_colors": [
         "#D9E8CC",
@@ -1807,10 +1990,7 @@
     "zone": {
       "enabled": true,
       "border": "#B08A5C",
-      "border_width": {
-        "fixed": 1.0,
-        "scaled": 0.5
-      },
+      "border_width": 1.5,
       "fill_alpha": 0,
       "fill": "#C8C8C8",
       "smooth_blur": 1.0,
@@ -1818,55 +1998,156 @@
       "contour_upscale": 2
     },
     "roads": {
-      "width_scale": 0.15,
       "highway": {
         "fill": "#FFE1A8",
         "border": "#49463E",
-        "min_fill_px": 1.8,
-        "border_width": 0.6
+        "border_width": 0.6,
+        "line_width": 3.8,
+        "footprint_scale": 1.0
       },
       "main": {
         "fill": "#FDE293",
         "border": "#49463E",
-        "min_fill_px": 1.4,
-        "border_width": 0.6
+        "border_width": 0.6,
+        "line_width": 5.3,
+        "footprint_scale": 1.0
       },
       "special": {
         "fill": "#FFFFFF",
         "border": "#49463E",
-        "min_fill_px": 0.8,
-        "border_width": 0.6
+        "border_width": 0.6,
+        "line_width": 8.90003,
+        "footprint_scale": 1.0
       },
       "branch": {
         "fill": "#FFFFFF",
         "border": "#49463E",
-        "min_fill_px": 0.8,
-        "border_width": 0.6
+        "border_width": 0.6,
+        "line_width": 2.9,
+        "footprint_scale": 1.0
       },
       "beautification": {
         "fill": "#F5F3EC",
         "border": "#49463E",
-        "min_fill_px": 0.5,
-        "border_width": 0.5
+        "border_width": 0.5,
+        "line_width": 1.697,
+        "footprint_scale": 1.0
       },
       "opacity": 0.6,
       "quay": {
         "fill": "#F5F3EC",
         "border": "#49463E",
-        "border_width": 0.5
+        "border_width": 0.5,
+        "footprint_scale": 0.5,
+        "line_width": 5.688888888888889
       }
     },
     "buildings": {
       "default": "#EFECE3",
       "border": "#C9C5B8",
-      "border_width": 1,
+      "border_width": 1.0,
       "shadow": {
         "enabled": true,
         "offset": [
-          2,
-          2
+          2.0,
+          2.0
         ],
         "color": "#00000018"
+      },
+      "color_mode": "poi",
+      "category_colors": {
+        "residential": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "commercial": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "office": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "industrial": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "police": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "prison": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "fire": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "healthcare": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "deathcare": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "education": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "administration": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "transport": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "parking": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "post_telecom": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "electricity": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "water": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "garbage": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "maintenance": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "park": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "amusement": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "culture": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "decoration": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "unclassified": {
+          "enabled": false,
+          "color": "#EFECE3"
+        }
       }
     },
     "procedural_objects": {
@@ -1886,7 +2167,30 @@
     "railway": {
       "train": {
         "line": "#DCDCDC",
-        "dash": "#6E6E6E"
+        "dash": "#6E6E6E",
+        "width": 3.2,
+        "station_width": 7.2,
+        "dash_width": 2.0
+      },
+      "tram": {
+        "width": 3.2,
+        "station_width": 7.2,
+        "dash_width": 2.0
+      },
+      "metro": {
+        "width": 3.2,
+        "station_width": 7.2,
+        "dash_width": 2.0
+      },
+      "monorail": {
+        "width": 3.2,
+        "station_width": 7.2,
+        "dash_width": 2.0
+      },
+      "cablecar": {
+        "width": 3.2,
+        "station_width": 7.2,
+        "dash_width": 2.0
       }
     },
     "transports": {
@@ -1904,110 +2208,78 @@
         "Helicopter"
       ],
       "auto_color": false,
-      "width": {
-        "fixed": 0.5,
-        "scaled": 2.05
-      },
+      "width": 2.55,
       "smooth": 10,
       "transit_view": {
-        "mask_intensity": 0.6
+        "mask_intensity": 0.6,
+        "label_size": 15.0,
+        "label_merge_dist": 40.0,
+        "label_candidate_interval": 110.0,
+        "label_clearance_padding": 14.0
       },
       "types": {
         "Metro": {
-          "width": {
-            "fixed": 0.5,
-            "scaled": 2.05
-          },
+          "width": 2.55,
           "dash": []
         },
         "Train": {
-          "width": {
-            "fixed": 0.5,
-            "scaled": 2.2
-          },
+          "width": 2.7,
           "dash": []
         },
         "Monorail": {
-          "width": {
-            "fixed": 0.4,
-            "scaled": 1.85
-          },
+          "width": 2.25,
           "dash": []
         },
         "Tram": {
-          "width": {
-            "fixed": 0.4,
-            "scaled": 1.7
-          },
+          "width": 2.1,
           "dash": []
         },
         "CableCar": {
-          "width": {
-            "fixed": 0.4,
-            "scaled": 1.7
-          },
+          "width": 2.1,
           "dash": []
         },
         "Ship": {
-          "width": {
-            "fixed": 0.45,
-            "scaled": 1.875
-          },
+          "width": 2.325,
           "dash": [
-            8,
-            6
+            8.0,
+            6.0
           ],
           "color": "#2E86AB"
         },
         "Ferry": {
-          "width": {
-            "fixed": 0.45,
-            "scaled": 1.875
-          },
+          "width": 2.325,
           "dash": [
-            8,
-            6
+            8.0,
+            6.0
           ],
           "color": "#2E86AB"
         },
         "Bus": {
-          "width": {
-            "fixed": 0.35,
-            "scaled": 1.525
-          },
+          "width": 1.875,
           "dash": [],
           "color": "#5A6472"
         },
         "Trolleybus": {
-          "width": {
-            "fixed": 0.35,
-            "scaled": 1.525
-          },
+          "width": 1.875,
           "dash": [
-            4,
-            4
+            4.0,
+            4.0
           ],
           "color": "#7A8391"
         },
         "Airplane": {
-          "width": {
-            "fixed": 0.4,
-            "scaled": 1.7
-          },
+          "width": 2.1,
           "dash": [
-            10,
-            8
+            10.0,
+            8.0
           ],
           "color": "#8A94A6"
         },
         "Helicopter": {
-          "width": {
-            "fixed": 0.3,
-            "scaled": 1.35
-          },
+          "width": 1.6500000000000001,
           "dash": [
-            6,
-            6
+            6.0,
+            6.0
           ],
           "color": "#8A94A6"
         }
@@ -2016,89 +2288,113 @@
         "enabled": true,
         "font": "SimHei",
         "min_zoom": 0.5,
-        "size": {
-          "fixed": 8.0,
-          "scaled": 6.0
-        },
-        "padding": {
-          "fixed": 5.0,
-          "scaled": 3.5
-        },
-        "border_width": {
-          "fixed": 0.9,
-          "scaled": 0.6
-        },
+        "size": 14.0,
+        "padding": 8.5,
+        "border_width": 1.5,
         "bg": "#FFFFFF",
-        "repeat_interval": 600,
-        "min_gap": 350,
-        "max_per_line": 4
+        "repeat_interval": 600.0,
+        "min_gap": 350.0,
+        "max_per_line": 4,
+        "capture_padding": 3.0,
+        "title_size": 76.0,
+        "gap": 28.0,
+        "column_gap": 84.0,
+        "swatch_width": 132.0,
+        "swatch_height": 48.0,
+        "border_radius": 27.0,
+        "margin": 70.0,
+        "shadow_blur": 21.0,
+        "shadow_offset": 10.0
+      },
+      "station": {
+        "border_width": 2,
+        "names": {
+          "size": 11.0,
+          "gap": 5.0,
+          "stroke_width": 1.0
+        },
+        "diameter": 15.0
+      },
+      "line": {
+        "light_outline": {
+          "width": 2.4
+        }
       }
     },
     "labels": {
       "district": {
         "font": "SimHei",
-        "size": 28,
+        "size": 28.0,
         "color": "#F7F4EA",
         "stroke": "#25231FBF",
-        "stroke_width": {
-          "fixed": 1.5,
-          "scaled": 0.0
-        },
-        "stroke_blur": {
-          "fixed": 0.6,
-          "scaled": 0.0
-        }
+        "stroke_width": 1.5,
+        "stroke_blur": 0.6
       },
       "road": {
         "font": "SimHei",
-        "size": 7,
+        "size": 7.0,
         "color": "#F7F4EA",
         "stroke": "#25231FBF",
-        "stroke_width": {
-          "fixed": 1.2,
-          "scaled": 0.0
-        },
-        "stroke_blur": {
-          "fixed": 0.6,
-          "scaled": 0.0
+        "stroke_width": 1.2,
+        "stroke_blur": 0.6,
+        "by_level": {
+          "highway": {
+            "size": 11.200000000000001,
+            "stroke_width": 1.92
+          },
+          "main": {
+            "size": 8.75,
+            "stroke_width": 1.5
+          },
+          "special": {
+            "size": 5.25,
+            "stroke_width": 0.8999999999999999
+          },
+          "beautification": {
+            "size": 5.25,
+            "stroke_width": 0.8999999999999999
+          },
+          "quay": {
+            "size": 5.25,
+            "stroke_width": 0.8999999999999999
+          }
         }
       },
       "building": {
         "font": "SimHei",
-        "size": 16,
+        "size": 16.0,
         "color": "#F7F4EA"
       },
       "park": {
         "font": "SimHei",
-        "size": 14,
+        "size": 14.0,
         "color": "#D6E8BF",
         "stroke": "#25231F",
         "stroke_width": 1.5
       },
       "stop": {
         "font": "SimHei",
-        "size": 20,
+        "size": 20.0,
         "color": "#F7F4EA"
-      }
+      },
+      "road_repeat": 400.0,
+      "padding": 4.0
     },
     "watermark": {
       "enabled": true,
       "mod_name": "CSLModernMap",
       "position": "left_bottom",
-      "font_size": {
-        "fixed": 11,
-        "scaled": 1.5
-      },
+      "font_size": 12,
       "separator": " · ",
       "margin": {
-        "x": 20,
-        "y": 20
+        "x": 20.0,
+        "y": 20.0
       },
       "padding": {
-        "x": 12,
-        "y": 6
+        "x": 12.0,
+        "y": 6.0
       },
-      "border_radius": 6,
+      "border_radius": 6.0,
       "background": "transparent",
       "time_format": "%Y-%m-%d %H:%M:%S",
       "city_color": "#F7F4EA",
@@ -2117,8 +2413,585 @@
     "poi_icons": {
       "name_color": "#F7F4EA",
       "name_stroke": "#25231F",
+      "font": "SimHei",
+      "icon_size": 22.0,
+      "bg_circle_size": 30.0,
+      "name_size": 13.0,
+      "name_offset": 3.0,
+      "grid_size": 90.0,
+      "icon_gap": 3.0,
+      "symbol_padding": 2.0,
+      "name_padding": 4.0,
+      "name_stroke_width": 2,
       "icons_dir": "cn_icons"
-    }
+    },
+    "satellite": {
+      "preset": "original",
+      "intensity": 100,
+      "quality": "original"
+    },
+    "traffic": {
+      "free": "#61A96A",
+      "slow": "#E6B54D",
+      "busy": "#D85B4A"
+    },
+    "size_contract": "pixel-v2"
+  },
+  "urban_white": {
+    "name": "城市白图",
+    "description": "白色画布、黑灰路网与浅灰建筑肌理，以蓝色水系和绿色植被突出城市结构。",
+    "canvas": {
+      "width": 4096,
+      "height": 4096,
+      "background": "#FFFFFF"
+    },
+    "terrain": {
+      "elevation_colors": [
+        {
+          "threshold": 0,
+          "color": "#FFFFFF"
+        }
+      ],
+      "mode": "simple",
+      "elevation_mode": "stepped",
+      "hillshade": {
+        "enabled": false,
+        "intensity": 0.3,
+        "azimuth": 315.0,
+        "altitude": 45.0,
+        "large_scale_meters": 320.0,
+        "small_scale_meters": 0.0,
+        "large_scale_weight": 0.35,
+        "small_scale_weight": 0.65
+      }
+    },
+    "water": {
+      "color": "#8CBAEA",
+      "border": "#8CBAEA",
+      "border_width": 0.0
+    },
+    "built_area": {
+      "enabled": true,
+      "cell_meters": 8.0,
+      "color": "#FCFCFC",
+      "buffer_meters": 60.0,
+      "smooth_blur": 2.0,
+      "smooth_iters": 6,
+      "contour_upscale": 2,
+      "edge_meters": 8.0
+    },
+    "forest": {
+      "color": "#ACD89B"
+    },
+    "land_use": {
+      "enabled": false,
+      "detail": "base",
+      "cell_meters": 16.0,
+      "smooth_blur": 1.5,
+      "smooth_iters": 3,
+      "contour_upscale": 2,
+      "alpha": 110,
+      "colors": {
+        "green": "#ACD89B",
+        "public": "#FCFCFC",
+        "residential": "#FCFCFC",
+        "industrial": "#FCFCFC",
+        "office": "#FCFCFC",
+        "publictransport": "#FCFCFC",
+        "commercial": "#FCFCFC"
+      }
+    },
+    "district": {
+      "enabled": false,
+      "border": "#C9CCCF",
+      "border_width": 1.5,
+      "fill_alpha": 115,
+      "fill_colors": [
+        "#FCFCFC"
+      ],
+      "smooth_blur": 1.0,
+      "smooth_iters": 3,
+      "contour_upscale": 2
+    },
+    "zone": {
+      "enabled": false,
+      "border": "#C9CCCF",
+      "border_width": 0.0,
+      "fill_alpha": 255,
+      "fill": "#FCFCFC",
+      "smooth_blur": 1.0,
+      "smooth_iters": 3,
+      "contour_upscale": 2
+    },
+    "roads": {
+      "highway": {
+        "fill": "#454B50",
+        "border": "#454B50",
+        "border_width": 1.5,
+        "line_width": 3.8,
+        "footprint_scale": 1.0
+      },
+      "main": {
+        "fill": "#62696E",
+        "border": "#62696E",
+        "border_width": 1.2,
+        "line_width": 5.3,
+        "footprint_scale": 1.0
+      },
+      "branch": {
+        "fill": "#ADB2B6",
+        "border": "#ADB2B6",
+        "border_width": 0.8,
+        "line_width": 2.9,
+        "footprint_scale": 1.0
+      },
+      "special": {
+        "fill": "#F8F9F8",
+        "border": "#C9CCCF",
+        "border_width": 0.8,
+        "line_width": 8.90003,
+        "footprint_scale": 1.0
+      },
+      "beautification": {
+        "fill": "#F3F4F3",
+        "border": "#D9DDDA",
+        "border_width": 0.5,
+        "line_width": 1.697,
+        "footprint_scale": 1.0
+      },
+      "quay": {
+        "fill": "#F3F4F3",
+        "border": "#D9DDDA",
+        "border_width": 0.5,
+        "footprint_scale": 0.5,
+        "line_width": 5.688888888888889
+      },
+      "opacity": 1.0
+    },
+    "buildings": {
+      "default": "#E1E4E2",
+      "border": "#BEC4C0",
+      "poi_tint": {
+        "contrast": 0.38
+      },
+      "border_width": 0.8,
+      "shadow": {
+        "enabled": false,
+        "offset": [
+          2.0,
+          2.0
+        ],
+        "color": "#00000012"
+      },
+      "color_mode": "uniform",
+      "category_colors": {
+        "residential": {
+          "enabled": false,
+          "color": "#E1E4E2"
+        },
+        "commercial": {
+          "enabled": false,
+          "color": "#E1E4E2"
+        },
+        "office": {
+          "enabled": false,
+          "color": "#E1E4E2"
+        },
+        "industrial": {
+          "enabled": false,
+          "color": "#E1E4E2"
+        },
+        "police": {
+          "enabled": false,
+          "color": "#E1E4E2"
+        },
+        "prison": {
+          "enabled": false,
+          "color": "#E1E4E2"
+        },
+        "fire": {
+          "enabled": false,
+          "color": "#E1E4E2"
+        },
+        "healthcare": {
+          "enabled": false,
+          "color": "#E1E4E2"
+        },
+        "deathcare": {
+          "enabled": false,
+          "color": "#E1E4E2"
+        },
+        "education": {
+          "enabled": false,
+          "color": "#E1E4E2"
+        },
+        "administration": {
+          "enabled": false,
+          "color": "#E1E4E2"
+        },
+        "transport": {
+          "enabled": false,
+          "color": "#E1E4E2"
+        },
+        "parking": {
+          "enabled": false,
+          "color": "#E1E4E2"
+        },
+        "post_telecom": {
+          "enabled": false,
+          "color": "#E1E4E2"
+        },
+        "electricity": {
+          "enabled": false,
+          "color": "#E1E4E2"
+        },
+        "water": {
+          "enabled": false,
+          "color": "#E1E4E2"
+        },
+        "garbage": {
+          "enabled": false,
+          "color": "#E1E4E2"
+        },
+        "maintenance": {
+          "enabled": false,
+          "color": "#E1E4E2"
+        },
+        "park": {
+          "enabled": false,
+          "color": "#E1E4E2"
+        },
+        "amusement": {
+          "enabled": false,
+          "color": "#E1E4E2"
+        },
+        "culture": {
+          "enabled": false,
+          "color": "#E1E4E2"
+        },
+        "decoration": {
+          "enabled": false,
+          "color": "#E1E4E2"
+        },
+        "unclassified": {
+          "enabled": false,
+          "color": "#E1E4E2"
+        }
+      }
+    },
+    "procedural_objects": {
+      "colors": {
+        "geometry": "#F8F9F8",
+        "building": "#F8F9F8",
+        "prop": "#F8F9F8",
+        "tree": "#ACD89B",
+        "street_furn": "#F8F9F8",
+        "sign": "#F8F9F8",
+        "unknown": "#F8F9F8"
+      },
+      "border": "#C9CCCF",
+      "border_width": 0.8999999999999999,
+      "custom_color_alpha": 0.0
+    },
+    "railway": {
+      "train": {
+        "line": "#747A7E",
+        "dash": "#FFFFFF",
+        "width": 3.2,
+        "station_width": 7.2,
+        "dash_width": 2.0
+      },
+      "tram": {
+        "line": "#ADB2B6",
+        "dash": "#FFFFFF",
+        "width": 3.2,
+        "station_width": 7.2,
+        "dash_width": 2.0
+      },
+      "metro": {
+        "line": "#ADB2B6",
+        "dash": "#FFFFFF",
+        "width": 3.2,
+        "station_width": 7.2,
+        "dash_width": 2.0
+      },
+      "monorail": {
+        "line": "#ADB2B6",
+        "dash": "#FFFFFF",
+        "width": 3.2,
+        "station_width": 7.2,
+        "dash_width": 2.0
+      },
+      "cablecar": {
+        "line": "#ADB2B6",
+        "dash": "#FFFFFF",
+        "width": 3.2,
+        "station_width": 7.2,
+        "dash_width": 2.0
+      }
+    },
+    "transports": {
+      "enabled": [
+        "Metro",
+        "Train",
+        "Monorail",
+        "Tram",
+        "CableCar",
+        "Ship",
+        "Ferry",
+        "Bus",
+        "Trolleybus",
+        "Airplane",
+        "Helicopter"
+      ],
+      "auto_color": false,
+      "width": 2.55,
+      "smooth": 10,
+      "transit_view": {
+        "mask_intensity": 0.6,
+        "label_size": 15.0,
+        "label_merge_dist": 40.0,
+        "label_candidate_interval": 110.0,
+        "label_clearance_padding": 14.0
+      },
+      "types": {
+        "Metro": {
+          "width": 2.55,
+          "dash": []
+        },
+        "Train": {
+          "width": 2.7,
+          "dash": []
+        },
+        "Monorail": {
+          "width": 2.25,
+          "dash": []
+        },
+        "Tram": {
+          "width": 2.1,
+          "dash": []
+        },
+        "CableCar": {
+          "width": 2.1,
+          "dash": []
+        },
+        "Ship": {
+          "width": 2.325,
+          "dash": [
+            8.0,
+            6.0
+          ],
+          "color": "#3F7FBF"
+        },
+        "Ferry": {
+          "width": 2.325,
+          "dash": [
+            8.0,
+            6.0
+          ],
+          "color": "#3F7FBF"
+        },
+        "Bus": {
+          "width": 1.875,
+          "dash": [],
+          "color": "#5C6670"
+        },
+        "Trolleybus": {
+          "width": 1.875,
+          "dash": [
+            4.0,
+            4.0
+          ],
+          "color": "#7C8590"
+        },
+        "Airplane": {
+          "width": 2.1,
+          "dash": [
+            10.0,
+            8.0
+          ],
+          "color": "#8F98A6"
+        },
+        "Helicopter": {
+          "width": 1.6500000000000001,
+          "dash": [
+            6.0,
+            6.0
+          ],
+          "color": "#8F98A6"
+        }
+      },
+      "label": {
+        "enabled": true,
+        "font": "SimHei",
+        "min_zoom": 0.5,
+        "size": 14.0,
+        "padding": 8.5,
+        "border_width": 1.5,
+        "bg": "#FFFFFF",
+        "repeat_interval": 600.0,
+        "min_gap": 350.0,
+        "max_per_line": 4,
+        "capture_padding": 3.0,
+        "title_size": 76.0,
+        "gap": 28.0,
+        "column_gap": 84.0,
+        "swatch_width": 132.0,
+        "swatch_height": 48.0,
+        "border_radius": 27.0,
+        "margin": 70.0,
+        "shadow_blur": 21.0,
+        "shadow_offset": 10.0
+      },
+      "station": {
+        "border_width": 2,
+        "names": {
+          "size": 11.0,
+          "gap": 5.0,
+          "stroke_width": 1.0
+        },
+        "diameter": 15.0
+      },
+      "line": {
+        "light_outline": {
+          "width": 2.4
+        }
+      }
+    },
+    "poi_icons": {
+      "enabled": true,
+      "icons_dir": "cn_icons",
+      "icon_size": 24.0,
+      "grid_size": 120.0,
+      "max_per_cell": 2,
+      "min_priority": 10,
+      "bg_circle": false,
+      "bg_circle_size": 34.0,
+      "show_name": true,
+      "name_size": 13.0,
+      "name_offset": 3.0,
+      "merge_enabled": true,
+      "merge_distance": 48.0,
+      "facility_hierarchy": {
+        "enabled": true,
+        "children_enabled": true,
+        "child_min_zoom": 1.0,
+        "area_labels_enabled": true
+      },
+      "categories": [],
+      "hidden_categories": [
+        "traffic_light",
+        "highway_entrance",
+        "highway_exit"
+      ],
+      "font": "SimHei",
+      "icon_gap": 3.0,
+      "symbol_padding": 2.0,
+      "name_padding": 4.0,
+      "name_stroke_width": 2
+    },
+    "labels": {
+      "district": {
+        "font": "PingFang SC",
+        "size": 20.4,
+        "color": "#555A5E",
+        "stroke": "#FFFFFF",
+        "stroke_width": 3.2,
+        "bold": true,
+        "stroke_blur": 0.0
+      },
+      "road": {
+        "font": "PingFang SC",
+        "size": 7.0,
+        "color": "#555A5E",
+        "stroke": "#FFFFFF",
+        "stroke_width": 1.0,
+        "stroke_blur": 0.0,
+        "by_level": {
+          "highway": {
+            "size": 11.200000000000001,
+            "stroke_width": 1.6
+          },
+          "main": {
+            "size": 8.75,
+            "stroke_width": 1.25
+          },
+          "special": {
+            "size": 5.25,
+            "stroke_width": 0.75
+          },
+          "beautification": {
+            "size": 5.25,
+            "stroke_width": 0.75
+          },
+          "quay": {
+            "size": 5.25,
+            "stroke_width": 0.75
+          }
+        }
+      },
+      "building": {
+        "font": "PingFang SC",
+        "size": 16.0,
+        "color": "#555A5E"
+      },
+      "park": {
+        "font": "PingFang SC",
+        "size": 14.0,
+        "color": "#6F9361",
+        "stroke": "#FFFFFF",
+        "stroke_width": 1.5
+      },
+      "stop": {
+        "font": "PingFang SC",
+        "size": 20.0,
+        "color": "#555A5E"
+      },
+      "road_repeat": 400.0,
+      "padding": 4.0
+    },
+    "watermark": {
+      "enabled": true,
+      "mod_name": "CSLModernMap",
+      "font": "PingFang SC",
+      "position": "left_bottom",
+      "font_size": 12,
+      "separator": " · ",
+      "margin": {
+        "x": 20.0,
+        "y": 20.0
+      },
+      "padding": {
+        "x": 12.0,
+        "y": 6.0
+      },
+      "border_radius": 6.0,
+      "background": "transparent",
+      "time_format": "%Y-%m-%d %H:%M:%S",
+      "city_color": "#555A5E",
+      "info_color": "#555A5E",
+      "meta_color": "#ADB2B6",
+      "content": {
+        "mod_name": true,
+        "city_name": true,
+        "render_time": true,
+        "style_name": true,
+        "resolution": true,
+        "traffic_time": true,
+        "custom_text": false
+      }
+    },
+    "satellite": {
+      "preset": "original",
+      "intensity": 100,
+      "quality": "original"
+    },
+    "traffic": {
+      "free": "#61A96A",
+      "slow": "#E6B54D",
+      "busy": "#D85B4A"
+    },
+    "size_contract": "pixel-v2"
   },
   "vintage": {
     "name": "复古风格",
@@ -2171,7 +3044,7 @@
     "water": {
       "color": "#BBD3D6",
       "border": "#8FAFB4",
-      "border_width": 1
+      "border_width": 1.0
     },
     "forest": {
       "color": "#D3D9A8"
@@ -2197,10 +3070,7 @@
     "district": {
       "enabled": true,
       "border": "#9C8A62",
-      "border_width": {
-        "fixed": 1.0,
-        "scaled": 0.5
-      },
+      "border_width": 1.5,
       "fill_alpha": 105,
       "fill_colors": [
         "#D8D8C0",
@@ -2219,10 +3089,7 @@
     "zone": {
       "enabled": true,
       "border": "#9C8A62",
-      "border_width": {
-        "fixed": 1.0,
-        "scaled": 0.5
-      },
+      "border_width": 1.5,
       "fill_alpha": 90,
       "fill": "#B8B8B8",
       "smooth_blur": 1.0,
@@ -2230,54 +3097,156 @@
       "contour_upscale": 2
     },
     "roads": {
-      "width_scale": 0.15,
       "highway": {
         "fill": "#E8C170",
         "border": "#B98F3E",
-        "min_fill_px": 1.8,
-        "border_width": 1.5
+        "border_width": 1.5,
+        "line_width": 3.8,
+        "footprint_scale": 1.0
       },
       "main": {
         "fill": "#F0DFA8",
         "border": "#B8A062",
-        "min_fill_px": 1.4,
-        "border_width": 1.2
+        "border_width": 1.2,
+        "line_width": 5.3,
+        "footprint_scale": 1.0
       },
       "special": {
         "fill": "#F4E9C8",
         "border": "#BFAF82",
-        "min_fill_px": 0.8,
-        "border_width": 1
+        "border_width": 1.0,
+        "line_width": 8.90003,
+        "footprint_scale": 1.0
       },
       "branch": {
         "fill": "#F6EDD2",
         "border": "#C8B894",
-        "min_fill_px": 0.8,
-        "border_width": 0.8
+        "border_width": 0.8,
+        "line_width": 2.9,
+        "footprint_scale": 1.0
       },
       "beautification": {
         "fill": "#F2E9D0",
         "border": "#CDBE9C",
-        "min_fill_px": 0.5,
-        "border_width": 0.5
+        "border_width": 0.5,
+        "line_width": 1.697,
+        "footprint_scale": 1.0
       },
       "quay": {
         "fill": "#F2E9D0",
         "border": "#CDBE9C",
-        "border_width": 0.5
-      }
+        "border_width": 0.5,
+        "footprint_scale": 0.5,
+        "line_width": 5.688888888888889
+      },
+      "opacity": 1.0
     },
     "buildings": {
       "default": "#E8DEC0",
       "border": "#A8946A",
-      "border_width": 1,
+      "border_width": 1.0,
       "shadow": {
         "enabled": true,
         "offset": [
-          2,
-          2
+          2.0,
+          2.0
         ],
         "color": "#00000014"
+      },
+      "color_mode": "poi",
+      "category_colors": {
+        "residential": {
+          "enabled": false,
+          "color": "#E8DEC0"
+        },
+        "commercial": {
+          "enabled": false,
+          "color": "#E8DEC0"
+        },
+        "office": {
+          "enabled": false,
+          "color": "#E8DEC0"
+        },
+        "industrial": {
+          "enabled": false,
+          "color": "#E8DEC0"
+        },
+        "police": {
+          "enabled": false,
+          "color": "#E8DEC0"
+        },
+        "prison": {
+          "enabled": false,
+          "color": "#E8DEC0"
+        },
+        "fire": {
+          "enabled": false,
+          "color": "#E8DEC0"
+        },
+        "healthcare": {
+          "enabled": false,
+          "color": "#E8DEC0"
+        },
+        "deathcare": {
+          "enabled": false,
+          "color": "#E8DEC0"
+        },
+        "education": {
+          "enabled": false,
+          "color": "#E8DEC0"
+        },
+        "administration": {
+          "enabled": false,
+          "color": "#E8DEC0"
+        },
+        "transport": {
+          "enabled": false,
+          "color": "#E8DEC0"
+        },
+        "parking": {
+          "enabled": false,
+          "color": "#E8DEC0"
+        },
+        "post_telecom": {
+          "enabled": false,
+          "color": "#E8DEC0"
+        },
+        "electricity": {
+          "enabled": false,
+          "color": "#E8DEC0"
+        },
+        "water": {
+          "enabled": false,
+          "color": "#E8DEC0"
+        },
+        "garbage": {
+          "enabled": false,
+          "color": "#E8DEC0"
+        },
+        "maintenance": {
+          "enabled": false,
+          "color": "#E8DEC0"
+        },
+        "park": {
+          "enabled": false,
+          "color": "#E8DEC0"
+        },
+        "amusement": {
+          "enabled": false,
+          "color": "#E8DEC0"
+        },
+        "culture": {
+          "enabled": false,
+          "color": "#E8DEC0"
+        },
+        "decoration": {
+          "enabled": false,
+          "color": "#E8DEC0"
+        },
+        "unclassified": {
+          "enabled": false,
+          "color": "#E8DEC0"
+        }
       }
     },
     "procedural_objects": {
@@ -2297,7 +3266,30 @@
     "railway": {
       "train": {
         "line": "#C8BCA0",
-        "dash": "#5C4F38"
+        "dash": "#5C4F38",
+        "width": 3.2,
+        "station_width": 7.2,
+        "dash_width": 2.0
+      },
+      "tram": {
+        "width": 3.2,
+        "station_width": 7.2,
+        "dash_width": 2.0
+      },
+      "metro": {
+        "width": 3.2,
+        "station_width": 7.2,
+        "dash_width": 2.0
+      },
+      "monorail": {
+        "width": 3.2,
+        "station_width": 7.2,
+        "dash_width": 2.0
+      },
+      "cablecar": {
+        "width": 3.2,
+        "station_width": 7.2,
+        "dash_width": 2.0
       }
     },
     "transports": {
@@ -2315,122 +3307,83 @@
         "Helicopter"
       ],
       "auto_color": false,
-      "width": {
-        "fixed": 0.5,
-        "scaled": 2.05
-      },
+      "width": 2.55,
       "smooth": 10,
       "transit_view": {
         "mask_intensity": 0.6,
-        "label_repeat_interval": 300,
-        "label_min_gap": 180,
+        "label_repeat_interval": 300.0,
+        "label_min_gap": 180.0,
         "label_max_per_line": 12,
-        "label_size": {
-          "fixed": 18,
-          "scaled": 12
-        },
-        "label_padding": {
-          "fixed": 10,
-          "scaled": 6
-        },
-        "label_border_width": 2.2
+        "label_size": 21.0,
+        "label_padding": 16.0,
+        "label_border_width": 2.2,
+        "label_merge_dist": 40.0,
+        "label_candidate_interval": 110.0,
+        "label_clearance_padding": 14.0
       },
       "types": {
         "Metro": {
-          "width": {
-            "fixed": 0.5,
-            "scaled": 2.05
-          },
+          "width": 2.55,
           "dash": []
         },
         "Train": {
-          "width": {
-            "fixed": 0.5,
-            "scaled": 2.2
-          },
+          "width": 2.7,
           "dash": []
         },
         "Monorail": {
-          "width": {
-            "fixed": 0.4,
-            "scaled": 1.85
-          },
+          "width": 2.25,
           "dash": []
         },
         "Tram": {
-          "width": {
-            "fixed": 0.4,
-            "scaled": 1.7
-          },
+          "width": 2.1,
           "dash": []
         },
         "CableCar": {
-          "width": {
-            "fixed": 0.4,
-            "scaled": 1.7
-          },
+          "width": 2.1,
           "dash": []
         },
         "Ship": {
-          "width": {
-            "fixed": 0.45,
-            "scaled": 1.875
-          },
+          "width": 2.325,
           "dash": [
-            8,
-            6
+            8.0,
+            6.0
           ],
           "color": "#2E86AB"
         },
         "Ferry": {
-          "width": {
-            "fixed": 0.45,
-            "scaled": 1.875
-          },
+          "width": 2.325,
           "dash": [
-            8,
-            6
+            8.0,
+            6.0
           ],
           "color": "#2E86AB"
         },
         "Bus": {
-          "width": {
-            "fixed": 0.35,
-            "scaled": 1.525
-          },
+          "width": 1.875,
           "dash": [],
           "color": "#5A6472"
         },
         "Trolleybus": {
-          "width": {
-            "fixed": 0.35,
-            "scaled": 1.525
-          },
+          "width": 1.875,
           "dash": [
-            4,
-            4
+            4.0,
+            4.0
           ],
           "color": "#7A8391"
         },
         "Airplane": {
-          "width": {
-            "fixed": 0.4,
-            "scaled": 1.7
-          },
+          "width": 2.1,
           "dash": [
-            10,
-            8
+            10.0,
+            8.0
           ],
           "color": "#8A94A6"
         },
         "Helicopter": {
-          "width": {
-            "fixed": 0.3,
-            "scaled": 1.35
-          },
+          "width": 1.6500000000000001,
           "dash": [
-            6,
-            6
+            6.0,
+            6.0
           ],
           "color": "#8A94A6"
         }
@@ -2439,75 +3392,113 @@
         "enabled": true,
         "font": "SimHei",
         "min_zoom": 0.5,
-        "size": {
-          "fixed": 8.0,
-          "scaled": 6.0
-        },
-        "padding": {
-          "fixed": 5.0,
-          "scaled": 3.5
-        },
-        "border_width": {
-          "fixed": 0.9,
-          "scaled": 0.6
-        },
+        "size": 14.0,
+        "padding": 8.5,
+        "border_width": 1.5,
         "bg": "#FFFFFF",
-        "repeat_interval": 600,
-        "min_gap": 350,
-        "max_per_line": 4
+        "repeat_interval": 600.0,
+        "min_gap": 350.0,
+        "max_per_line": 4,
+        "capture_padding": 3.0,
+        "title_size": 76.0,
+        "gap": 28.0,
+        "column_gap": 84.0,
+        "swatch_width": 132.0,
+        "swatch_height": 48.0,
+        "border_radius": 27.0,
+        "margin": 70.0,
+        "shadow_blur": 21.0,
+        "shadow_offset": 10.0
+      },
+      "station": {
+        "border_width": 2,
+        "names": {
+          "size": 11.0,
+          "gap": 5.0,
+          "stroke_width": 1.0
+        },
+        "diameter": 15.0
+      },
+      "line": {
+        "light_outline": {
+          "width": 2.4
+        }
       }
     },
     "labels": {
       "district": {
         "font": "SimHei",
-        "size": 28,
+        "size": 28.0,
         "color": "#6B5A3A",
         "stroke": "#F1E8D0",
-        "stroke_width": 1.5
+        "stroke_width": 1.5,
+        "stroke_blur": 0.0
       },
       "road": {
         "font": "SimHei",
-        "size": 7,
+        "size": 7.0,
         "color": "#7A6A48",
         "stroke": "#F1E8D0",
-        "stroke_width": 1.0
+        "stroke_width": 1.0,
+        "stroke_blur": 0.0,
+        "by_level": {
+          "highway": {
+            "size": 11.200000000000001,
+            "stroke_width": 1.6
+          },
+          "main": {
+            "size": 8.75,
+            "stroke_width": 1.25
+          },
+          "special": {
+            "size": 5.25,
+            "stroke_width": 0.75
+          },
+          "beautification": {
+            "size": 5.25,
+            "stroke_width": 0.75
+          },
+          "quay": {
+            "size": 5.25,
+            "stroke_width": 0.75
+          }
+        }
       },
       "building": {
         "font": "SimHei",
-        "size": 16,
+        "size": 16.0,
         "color": "#8A7A58"
       },
       "park": {
         "font": "SimHei",
-        "size": 14,
+        "size": 14.0,
         "color": "#6E8A4A",
         "stroke": "#FFFFFF",
         "stroke_width": 1.5
       },
       "stop": {
         "font": "SimHei",
-        "size": 20,
+        "size": 20.0,
         "color": "#4A6A9A"
-      }
+      },
+      "road_repeat": 400.0,
+      "padding": 4.0
     },
     "watermark": {
       "enabled": true,
       "mod_name": "CSLModernMap",
       "position": "left_bottom",
-      "font_size": {
-        "fixed": 11,
-        "scaled": 1.5
-      },
+      "font_size": 12,
       "separator": " · ",
       "margin": {
-        "x": 20,
-        "y": 20
+        "x": 20.0,
+        "y": 20.0
       },
       "padding": {
-        "x": 12,
-        "y": 6
+        "x": 12.0,
+        "y": 6.0
       },
-      "border_radius": 6,
+      "border_radius": 6.0,
       "background": "transparent",
       "time_format": "%Y-%m-%d %H:%M:%S",
       "city_color": "#4A3E28",
@@ -2522,7 +3513,30 @@
         "traffic_time": true,
         "custom_text": false
       }
-    }
+    },
+    "satellite": {
+      "preset": "original",
+      "intensity": 100,
+      "quality": "original"
+    },
+    "traffic": {
+      "free": "#61A96A",
+      "slow": "#E6B54D",
+      "busy": "#D85B4A"
+    },
+    "poi_icons": {
+      "icon_size": 22.0,
+      "bg_circle_size": 30.0,
+      "name_size": 13.0,
+      "name_offset": 3.0,
+      "grid_size": 90.0,
+      "icon_gap": 3.0,
+      "symbol_padding": 2.0,
+      "name_padding": 4.0,
+      "name_stroke_width": 2,
+      "icons_dir": "cn_icons"
+    },
+    "size_contract": "pixel-v2"
   },
   "warm_natural": {
     "name": "暖色自然",
@@ -2575,7 +3589,7 @@
     "water": {
       "color": "#A8D5E8",
       "border": "#89BED6",
-      "border_width": 1
+      "border_width": 1.0
     },
     "forest": {
       "color": "#CFE3B8"
@@ -2601,10 +3615,7 @@
     "district": {
       "enabled": true,
       "border": "#A5A5A5",
-      "border_width": {
-        "fixed": 1.0,
-        "scaled": 0.5
-      },
+      "border_width": 1.5,
       "fill_alpha": 115,
       "fill_colors": [
         "#D9E8CC",
@@ -2623,10 +3634,7 @@
     "zone": {
       "enabled": true,
       "border": "#B08A5C",
-      "border_width": {
-        "fixed": 1.0,
-        "scaled": 0.5
-      },
+      "border_width": 1.5,
       "fill_alpha": 100,
       "fill": "#C8C8C8",
       "smooth_blur": 1.0,
@@ -2634,54 +3642,156 @@
       "contour_upscale": 2
     },
     "roads": {
-      "width_scale": 0.15,
       "highway": {
         "fill": "#FFE1A8",
         "border": "#F5CD90",
-        "min_fill_px": 1.8,
-        "border_width": 1.5
+        "border_width": 1.5,
+        "line_width": 3.8,
+        "footprint_scale": 1.0
       },
       "main": {
         "fill": "#FDE293",
         "border": "#E8C769",
-        "min_fill_px": 1.4,
-        "border_width": 1.2
+        "border_width": 1.2,
+        "line_width": 5.3,
+        "footprint_scale": 1.0
       },
       "special": {
         "fill": "#FFFFFF",
         "border": "#D6D2C4",
-        "min_fill_px": 0.8,
-        "border_width": 1
+        "border_width": 1.0,
+        "line_width": 8.90003,
+        "footprint_scale": 1.0
       },
       "branch": {
         "fill": "#FFFFFF",
         "border": "#E2DED2",
-        "min_fill_px": 0.8,
-        "border_width": 0.8
+        "border_width": 0.8,
+        "line_width": 2.9,
+        "footprint_scale": 1.0
       },
       "beautification": {
         "fill": "#F5F3EC",
         "border": "#E2DED2",
-        "min_fill_px": 0.5,
-        "border_width": 0.5
+        "border_width": 0.5,
+        "line_width": 1.697,
+        "footprint_scale": 1.0
       },
       "quay": {
         "fill": "#F5F3EC",
         "border": "#E2DED2",
-        "border_width": 0.5
-      }
+        "border_width": 0.5,
+        "footprint_scale": 0.5,
+        "line_width": 5.688888888888889
+      },
+      "opacity": 1.0
     },
     "buildings": {
       "default": "#EFECE3",
       "border": "#C9C5B8",
-      "border_width": 1,
+      "border_width": 1.0,
       "shadow": {
         "enabled": true,
         "offset": [
-          2,
-          2
+          2.0,
+          2.0
         ],
         "color": "#00000018"
+      },
+      "color_mode": "poi",
+      "category_colors": {
+        "residential": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "commercial": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "office": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "industrial": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "police": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "prison": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "fire": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "healthcare": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "deathcare": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "education": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "administration": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "transport": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "parking": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "post_telecom": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "electricity": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "water": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "garbage": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "maintenance": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "park": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "amusement": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "culture": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "decoration": {
+          "enabled": false,
+          "color": "#EFECE3"
+        },
+        "unclassified": {
+          "enabled": false,
+          "color": "#EFECE3"
+        }
       }
     },
     "procedural_objects": {
@@ -2701,7 +3811,30 @@
     "railway": {
       "train": {
         "line": "#DCDCDC",
-        "dash": "#6E6E6E"
+        "dash": "#6E6E6E",
+        "width": 3.2,
+        "station_width": 7.2,
+        "dash_width": 2.0
+      },
+      "tram": {
+        "width": 3.2,
+        "station_width": 7.2,
+        "dash_width": 2.0
+      },
+      "metro": {
+        "width": 3.2,
+        "station_width": 7.2,
+        "dash_width": 2.0
+      },
+      "monorail": {
+        "width": 3.2,
+        "station_width": 7.2,
+        "dash_width": 2.0
+      },
+      "cablecar": {
+        "width": 3.2,
+        "station_width": 7.2,
+        "dash_width": 2.0
       }
     },
     "transports": {
@@ -2719,110 +3852,78 @@
         "Helicopter"
       ],
       "auto_color": false,
-      "width": {
-        "fixed": 0.5,
-        "scaled": 2.05
-      },
+      "width": 2.55,
       "smooth": 10,
       "transit_view": {
-        "mask_intensity": 0.6
+        "mask_intensity": 0.6,
+        "label_size": 15.0,
+        "label_merge_dist": 40.0,
+        "label_candidate_interval": 110.0,
+        "label_clearance_padding": 14.0
       },
       "types": {
         "Metro": {
-          "width": {
-            "fixed": 0.5,
-            "scaled": 2.05
-          },
+          "width": 2.55,
           "dash": []
         },
         "Train": {
-          "width": {
-            "fixed": 0.5,
-            "scaled": 2.2
-          },
+          "width": 2.7,
           "dash": []
         },
         "Monorail": {
-          "width": {
-            "fixed": 0.4,
-            "scaled": 1.85
-          },
+          "width": 2.25,
           "dash": []
         },
         "Tram": {
-          "width": {
-            "fixed": 0.4,
-            "scaled": 1.7
-          },
+          "width": 2.1,
           "dash": []
         },
         "CableCar": {
-          "width": {
-            "fixed": 0.4,
-            "scaled": 1.7
-          },
+          "width": 2.1,
           "dash": []
         },
         "Ship": {
-          "width": {
-            "fixed": 0.45,
-            "scaled": 1.875
-          },
+          "width": 2.325,
           "dash": [
-            8,
-            6
+            8.0,
+            6.0
           ],
           "color": "#2E86AB"
         },
         "Ferry": {
-          "width": {
-            "fixed": 0.45,
-            "scaled": 1.875
-          },
+          "width": 2.325,
           "dash": [
-            8,
-            6
+            8.0,
+            6.0
           ],
           "color": "#2E86AB"
         },
         "Bus": {
-          "width": {
-            "fixed": 0.35,
-            "scaled": 1.525
-          },
+          "width": 1.875,
           "dash": [],
           "color": "#5A6472"
         },
         "Trolleybus": {
-          "width": {
-            "fixed": 0.35,
-            "scaled": 1.525
-          },
+          "width": 1.875,
           "dash": [
-            4,
-            4
+            4.0,
+            4.0
           ],
           "color": "#7A8391"
         },
         "Airplane": {
-          "width": {
-            "fixed": 0.4,
-            "scaled": 1.7
-          },
+          "width": 2.1,
           "dash": [
-            10,
-            8
+            10.0,
+            8.0
           ],
           "color": "#8A94A6"
         },
         "Helicopter": {
-          "width": {
-            "fixed": 0.3,
-            "scaled": 1.35
-          },
+          "width": 1.6500000000000001,
           "dash": [
-            6,
-            6
+            6.0,
+            6.0
           ],
           "color": "#8A94A6"
         }
@@ -2831,75 +3932,113 @@
         "enabled": true,
         "font": "SimHei",
         "min_zoom": 0.5,
-        "size": {
-          "fixed": 8.0,
-          "scaled": 6.0
-        },
-        "padding": {
-          "fixed": 5.0,
-          "scaled": 3.5
-        },
-        "border_width": {
-          "fixed": 0.9,
-          "scaled": 0.6
-        },
+        "size": 14.0,
+        "padding": 8.5,
+        "border_width": 1.5,
         "bg": "#FFFFFF",
-        "repeat_interval": 600,
-        "min_gap": 350,
-        "max_per_line": 4
+        "repeat_interval": 600.0,
+        "min_gap": 350.0,
+        "max_per_line": 4,
+        "capture_padding": 3.0,
+        "title_size": 76.0,
+        "gap": 28.0,
+        "column_gap": 84.0,
+        "swatch_width": 132.0,
+        "swatch_height": 48.0,
+        "border_radius": 27.0,
+        "margin": 70.0,
+        "shadow_blur": 21.0,
+        "shadow_offset": 10.0
+      },
+      "station": {
+        "border_width": 2,
+        "names": {
+          "size": 11.0,
+          "gap": 5.0,
+          "stroke_width": 1.0
+        },
+        "diameter": 15.0
+      },
+      "line": {
+        "light_outline": {
+          "width": 2.4
+        }
       }
     },
     "labels": {
       "district": {
         "font": "SimHei",
-        "size": 28,
+        "size": 28.0,
         "color": "#7A7A7A",
         "stroke": "#FFFFFF",
-        "stroke_width": 1.5
+        "stroke_width": 1.5,
+        "stroke_blur": 0.0
       },
       "road": {
         "font": "SimHei",
-        "size": 7,
+        "size": 7.0,
         "color": "#6E6E6E",
         "stroke": "#FFFFFF",
-        "stroke_width": 1.0
+        "stroke_width": 1.0,
+        "stroke_blur": 0.0,
+        "by_level": {
+          "highway": {
+            "size": 11.200000000000001,
+            "stroke_width": 1.6
+          },
+          "main": {
+            "size": 8.75,
+            "stroke_width": 1.25
+          },
+          "special": {
+            "size": 5.25,
+            "stroke_width": 0.75
+          },
+          "beautification": {
+            "size": 5.25,
+            "stroke_width": 0.75
+          },
+          "quay": {
+            "size": 5.25,
+            "stroke_width": 0.75
+          }
+        }
       },
       "building": {
         "font": "SimHei",
-        "size": 16,
+        "size": 16.0,
         "color": "#8C8C8C"
       },
       "park": {
         "font": "SimHei",
-        "size": 14,
+        "size": 14.0,
         "color": "#6A9E5A",
         "stroke": "#FFFFFF",
         "stroke_width": 1.5
       },
       "stop": {
         "font": "SimHei",
-        "size": 20,
+        "size": 20.0,
         "color": "#1B6AC6"
-      }
+      },
+      "road_repeat": 400.0,
+      "padding": 4.0
     },
     "watermark": {
       "enabled": true,
       "mod_name": "CSLModernMap",
       "position": "left_bottom",
-      "font_size": {
-        "fixed": 11,
-        "scaled": 1.5
-      },
+      "font_size": 12,
       "separator": " · ",
       "margin": {
-        "x": 20,
-        "y": 20
+        "x": 20.0,
+        "y": 20.0
       },
       "padding": {
-        "x": 12,
-        "y": 6
+        "x": 12.0,
+        "y": 6.0
       },
-      "border_radius": 6,
+      "border_radius": 6.0,
       "background": "transparent",
       "time_format": "%Y-%m-%d %H:%M:%S",
       "city_color": "#1A1A1A",
@@ -2914,6 +4053,29 @@
         "traffic_time": true,
         "custom_text": false
       }
-    }
+    },
+    "satellite": {
+      "preset": "original",
+      "intensity": 100,
+      "quality": "original"
+    },
+    "traffic": {
+      "free": "#61A96A",
+      "slow": "#E6B54D",
+      "busy": "#D85B4A"
+    },
+    "poi_icons": {
+      "icon_size": 22.0,
+      "bg_circle_size": 30.0,
+      "name_size": 13.0,
+      "name_offset": 3.0,
+      "grid_size": 90.0,
+      "icon_gap": 3.0,
+      "symbol_padding": 2.0,
+      "name_padding": 4.0,
+      "name_stroke_width": 2,
+      "icons_dir": "cn_icons"
+    },
+    "size_contract": "pixel-v2"
   }
 }

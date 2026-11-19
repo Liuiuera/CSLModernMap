@@ -1,7 +1,6 @@
 # RMP 生成参数。width 仅用于水域概括容差；原生样式由编辑器管理。
 name: RMP 生成
 transports:
-  # 默认启用类型（GUI 对话框会用用户勾选覆盖此列表）
   enabled:
   - Metro
   - Train
@@ -28,10 +27,7 @@ transports:
   grouping:
     by_name: true
     sequence_fallback: true
-    # 保守关闭：仅共享半数站点不足以证明是同一物理线路，容易把支线、
-    # 区间车或不同线路误并。跨 Transport 身份将在物理边拓扑层用多证据判断。
     share_ratio: 0.0
-    # 部分共线线路保持独立；精确共享站间段仍由 share_corridors 复用几何。
     merge_partial_overlap: false
     share_corridors: true
   station:
@@ -39,14 +35,12 @@ transports:
     merge_range: 48.0
     merge_bus_tram: true
     merge_train_metro: false
-    # 设施语义只作为站点邻近标识，换乘圆形标记仍承担线路换乘信息。
     facilities:
       enabled: true
       distances:
         airport: 1000
         rail: 600
         port: 600
-      # 同一机场通常会拆成多个航站楼/附属建筑，先合并为一个机场候选。
       merge_distances:
         airport: 1200
         rail: 300

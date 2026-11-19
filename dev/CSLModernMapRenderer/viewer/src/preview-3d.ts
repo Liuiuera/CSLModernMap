@@ -15,10 +15,14 @@ export class Preview3D implements IControl {
   private readonly root = document.createElement('div');
   private readonly button = document.createElement('button');
   private readonly notice = document.createElement('div');
+  private readonly noticeText = document.createElement('span');
+  private readonly closeNotice = document.createElement('button');
   private readonly abort = new AbortController();
   private enabledValue = false;
   private available = false;
   private missing = false;
+  private noticeDismissed = false;
+  private buildingSceneId: string | null = null;
   private suspended: Preview3DState | null = null;
   private drag: {id: number; x: number; y: number; pitch: number; bearing: number} | null = null;
   private pending: PointerEvent | null = null;
@@ -42,6 +46,10 @@ export class Preview3D implements IControl {
       this.setEnabled(enabled, true, CAMERA_TRANSITION_MS); this.interacted();
     };
     this.notice.className = 'preview-3d-notice'; this.notice.setAttribute('role', 'status');
+    this.closeNotice.type = 'button'; this.closeNotice.className = 'preview-3d-notice-close';
+    this.closeNotice.textContent = '×';
+    this.closeNotice.onclick = () => { this.noticeDismissed = true; this.translate(); this.button.focus(); };
+    this.notice.append(this.noticeText, this.closeNotice);
     this.root.append(this.button, this.notice);
     const canvas = map.getCanvas(), options = {signal: this.abort.signal};
     canvas.addEventListener('pointerdown', event => {
@@ -95,15 +103,22 @@ export class Preview3D implements IControl {
     this.button.setAttribute('aria-label', text('title'));
     this.button.setAttribute('aria-pressed', String(this.enabled));
     this.button.disabled = !this.available || this.suspended !== null;
-    this.notice.textContent = text('missing'); this.notice.hidden = !this.enabled || !this.missing;
+    this.noticeText.textContent = text('missing');
+    this.closeNotice.setAttribute('aria-label', i18n.t('controls_close')); this.closeNotice.title = i18n.t('controls_close');
+    this.notice.hidden = !this.enabled || !this.missing || this.noticeDismissed;
   };
   setAvailable(available: boolean): void {
     this.available = available;
     if (!available) this.reset();
     this.translate();
   }
-  setBuildings(features: Array<{properties?: Record<string, unknown>}>): void {
-    this.missing = features.some(item => typeof item.properties?.height_m !== 'number');
+  setBuildings(features: Array<{properties?: Record<string, unknown>}>, sceneId: string): void {
+    if (sceneId !== this.buildingSceneId) this.noticeDismissed = false;
+    this.buildingSceneId = sceneId;
+    this.missing = features.length > 0 && !features.some(item => {
+      const height = item.properties?.height_m;
+      return typeof height === 'number' && Number.isFinite(height) && height > 0;
+    });
     this.translate();
   }
   setEnabled(enabled: boolean, camera = true, duration = 0): void {

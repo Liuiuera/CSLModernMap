@@ -1,0 +1,3 @@
+# Preserve the original source bytes for migration verification.
+*.yaml -text -whitespace
+presets.*.json -text -whitespace

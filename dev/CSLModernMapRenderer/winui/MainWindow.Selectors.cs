@@ -14,6 +14,7 @@ public sealed partial class MainWindow
 
     private async Task ShowTransitLinesAsync()
     {
+        await FlushContextWritesAsync();
         if (_selectorOpen || _engineBusy) return;
         _selectorOpen = true;
         try
@@ -21,7 +22,7 @@ public sealed partial class MainWindow
             var generation = _documentGeneration;
             var context = _context;
             var metro = context == "metro";
-            var data = await _engine.RequestAsync("getTransitLines", new { metro });
+            var data = await _engine.RequestAsync("getTransitLines", new { metro, map = context == "map", draft = IsTransitDraft });
             bool Current() => !_closing && generation == _documentGeneration && context == _context && !_engineBusy;
             if (!Current()) return;
             var labels = TransitTypeLabels();
@@ -45,7 +46,7 @@ public sealed partial class MainWindow
                 metro ? UiLanguage.Text("MainWindow_Selectors_ShowTransitLinesAsync_DD96AB6C0D") : UiLanguage.Text("MainWindow_Selectors_ShowTransitLinesAsync_2418A38642"), metro ? 1 : 0);
             if (await dialog.ShowAsync() != ContentDialogResult.Primary || !Current()) return;
             var ids = selector.SelectedIds.Select(id => long.Parse(id, CultureInfo.InvariantCulture)).ToArray();
-            await _engine.RequestAsync("setTransitLines", new { metro, documentEpoch = data.GetProperty("documentEpoch").GetInt32(),
+            await _engine.RequestAsync("setTransitLines", new { metro, map = context == "map", draft = IsTransitDraft, documentEpoch = data.GetProperty("documentEpoch").GetInt32(),
                 lineIds = ids.Length == all.Length ? null : ids });
             if (metro)
             {

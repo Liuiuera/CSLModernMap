@@ -91,6 +91,8 @@ def _build_command(mode: str, console: bool = False,
         # 地图文字字体仍由用户放入 custom_fonts/；这里只分发 MIT 许可的
         # Tabler UI 图标字体及其码点表。
         _data_option(ROOT / "resources" / "i18n", "resources/i18n"),
+        *[f"--include-data-file={ROOT / 'resources' / name}=resources/{name}"
+          for name in ("theme-pixel-defaults.json", "theme-sizing-calibration.json")],
         *[f"--include-data-file={path}=resources/icons/rmp/{path.name}"
           for path in sorted(rmp_icons.glob("*.png"))],
         f"--include-data-file={ROOT / 'resources' / 'fonts' / 'tabler-icons.ttf'}=resources/fonts/tabler-icons.ttf",

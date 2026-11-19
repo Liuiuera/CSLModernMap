@@ -11,11 +11,11 @@ using Windows.Storage.Pickers;
 
 namespace CSLModernMapWinUI;
 
-internal sealed partial class ThemeEditorDialog
+internal sealed partial class ThemeEditorDialog : IDisposable
 {
     private static readonly Regex HexColor = new("^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$", RegexOptions.Compiled);
     private readonly (string Key, string Label)[] RoadLevels =
-        [("highway", UiLanguage.Text("ThemeEditorDialog_RoadLevels_534C553126")), ("main", UiLanguage.Text("ThemeEditorDialog_RoadLevels_F5E3A1B5F2")), ("branch", UiLanguage.Text("ThemeEditorDialog_RoadLevels_109688E695")), ("special", UiLanguage.Text("ThemeEditorDialog_RoadLevels_EDE0519A4C")), ("beautification", UiLanguage.Text("ThemeEditorDialog_RoadLevels_35CDE54CEB"))];
+        [("highway", UiLanguage.Text("ThemeEditorDialog_RoadLevels_534C553126")), ("main", UiLanguage.Text("ThemeEditorDialog_RoadLevels_F5E3A1B5F2")), ("branch", UiLanguage.Text("ThemeEditorDialog_RoadLevels_109688E695")), ("special", UiLanguage.Text("ThemeEditorDialog_RoadLevels_EDE0519A4C")), ("quay", UiLanguage.Text("RoadCategoryQuay")), ("beautification", UiLanguage.Text("ThemeEditorDialog_RoadLevels_35CDE54CEB"))];
     private readonly (string Key, string Label)[] LabelTypes =
         [("road", UiLanguage.Text("ThemeEditorDialog_LabelTypes_A44C7BA211")), ("district", UiLanguage.Text("ThemeEditorDialog_LabelTypes_4F56683E73")), ("building", UiLanguage.Text("ThemeEditorDialog_LabelTypes_5B46860A8E")), ("park", UiLanguage.Text("ThemeEditorDialog_LabelTypes_E852DCA995")), ("stop", UiLanguage.Text("ThemeEditorDialog_LabelTypes_A59FE62777"))];
     private readonly Dictionary<string, string> SectionNames = new()
@@ -29,7 +29,10 @@ internal sealed partial class ThemeEditorDialog
     };
     private readonly MainWindow _owner;
     private readonly EngineClient _engine;
-    private readonly EditorWindow _window;
+    private readonly EditorWindow? _window;
+    private readonly XamlRoot _hostRoot;
+    private readonly Func<JsonElement, Task>? _workingThemeChanged;
+    private bool IsEmbedded => _workingThemeChanged is not null;
     private JsonElement _metadata;
     private JsonObject _working;
     private string _theme, _saved;
@@ -50,7 +53,7 @@ internal sealed partial class ThemeEditorDialog
     private readonly TextBlock _previewStatus = new() { TextWrapping = TextWrapping.Wrap, FontSize = 12 };
     private readonly Image _preview = new() { Stretch = Stretch.Uniform, HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch };
     private readonly StackPanel _samplePanel = new() { Spacing = 8 };
-    private readonly Button _undo = new() { Content = new SymbolIcon(Symbol.Undo) }, _redo = new() { Content = new SymbolIcon(Symbol.Redo) };
+    private readonly Button _undo = new() { Content = CommandIcon(Symbol.Undo) }, _redo = new() { Content = CommandIcon(Symbol.Redo) };
     private readonly Button _restore = new() { Content = UiLanguage.Text("ThemeEditorDialog__restore_AC9EA45E9D") };
     private Button _saveButton = null!;
     private CancellationTokenSource? _previewDelay, _sampleCancellation;
@@ -59,8 +62,12 @@ internal sealed partial class ThemeEditorDialog
     private int _sampleRevision;
 
     public ThemeEditorDialog(MainWindow owner, EngineClient engine, XamlRoot root, JsonElement draft)
+        : this(owner, engine, root, draft, null) { }
+
+    private ThemeEditorDialog(MainWindow owner, EngineClient engine, XamlRoot root, JsonElement draft,
+        Func<JsonElement, Task>? workingThemeChanged)
     {
-        _owner = owner; _engine = engine; _metadata = draft.Clone();
+        _owner = owner; _engine = engine; _hostRoot = root; _workingThemeChanged = workingThemeChanged; _metadata = draft.Clone();
         _documentEpoch = draft.GetProperty("documentEpoch").GetInt32();
         _settingsRevision = draft.TryGetProperty("settingsRevision", out var revision) ? revision.GetString() : null;
         _theme = draft.GetProperty("theme").GetString()!;
@@ -69,17 +76,19 @@ internal sealed partial class ThemeEditorDialog
         _isBuiltin = draft.GetProperty("isBuiltin").GetBoolean();
         _working = JsonNode.Parse(draft.GetProperty("data").GetRawText())!.AsObject();
         _saved = JsonNode.Parse(draft.GetProperty("savedData").GetRawText())!.ToJsonString();
-        _window = new EditorWindow(UiLanguage.Text("ThemeEditorDialog_View_74F45217E6"), 1120, 740, owner: owner);
+        if (IsEmbedded) _lastPublishedTheme = Snapshot();
+        if (!IsEmbedded) _window = new EditorWindow(UiLanguage.Text("ThemeEditorDialog_View_74F45217E6"), "palette", 1120, 740, owner: owner);
         BuildWorkbench();
-        _window.CanCloseAsync = ConfirmCloseAsync;
+        if (_window is not null) _window.CanCloseAsync = ConfirmCloseAsync;
         UpdateThemeChoices(); RebuildNavigation(); RebuildFields(); UpdateHistoryButtons(); UpdateStatus();
     }
 
-    public void Activate() => _window.Activate();
+    public void Activate() => _window?.Activate();
     public void FocusSection(string section) => SelectSection(section);
-    public Task<bool> RequestCloseAsync() => _window.RequestCloseAsync();
+    public Task<bool> RequestCloseAsync() => _window is not null ? _window.RequestCloseAsync() : ConfirmLeaveAsync();
     public async Task<bool> ShowAsync()
     {
+        if (_window is null) throw new InvalidOperationException("Attach the embedded editor content to its owner.");
         SchedulePreview(immediate: true);
         await _window.ShowAsync();
         _noticeTimer.Stop(); CancelPreview(); _sampleCancellation?.Cancel();
@@ -89,16 +98,19 @@ internal sealed partial class ThemeEditorDialog
     }
     public void Invalidate()
     {
-        _invalidated = true; _noticeTimer.Stop(); CancelPreview(); _sampleCancellation?.Cancel(); _window.ForceClose();
+        if (_invalidated) return;
+        _invalidated = true; _noticeTimer.Stop(); CancelPreview(); _sampleCancellation?.Cancel(); _window?.ForceClose();
+        SetBusy(_busy);
     }
     private async Task<bool> ConfirmCloseAsync()
     {
+        if (_invalidated) return true;
         FlushInputs();
         if (_busy) return false;
-        if (_invalidated || (!HasChanges && _errors.Count == 0)) return true;
+        if (_invalidated || (!HasUnsavedChanges && _errors.Count == 0)) return true;
         SetBusy(true);
         ContentDialogResult result;
-        try { result = await new ContentDialog { XamlRoot = _window.Root.XamlRoot,
+        try { result = await new ContentDialog { XamlRoot = DialogRoot,
             Title = UiLanguage.Text("ThemeEditorDialog_ConfirmCloseAsync_E7ADF10792"), PrimaryButtonText = UiLanguage.Text("ThemeEditorDialog_ConfirmCloseAsync_A3030BF8F1"), SecondaryButtonText = UiLanguage.Text("ThemeEditorDialog_ConfirmCloseAsync_8BCC3E177F"), CloseButtonText = UiLanguage.Text("ThemeEditorDialog_ConfirmCloseAsync_FD4B9E3B6C") }.ShowAsync();
         }
         finally { SetBusy(false); }
@@ -108,24 +120,28 @@ internal sealed partial class ThemeEditorDialog
     private bool FlushInputs()
     {
         foreach (var check in _checks.Values.ToArray()) check();
+        _pendingInput = false;
+        UpdateStatus();
         return _errors.Count == 0;
     }
     private void SelectSection(string key)
     {
-        if (_building || key == _section) return;
+        if (_invalidated || _busy || _building || key == _section) return;
         if (!FlushInputs()) { UpdateNavigationSelection(); return; }
         _section = key;
         UpdateNavigationSelection(); RebuildFields(); SchedulePreview();
     }
-    private void Change(string[] path, JsonNode? updated)
+    private void Change(string[] path, JsonNode? updated) => ChangeValue(path, updated, true);
+    private void ChangeValue(string[] path, JsonNode? updated, bool recordHistory)
     {
-        if (_building) return;
+        if (_invalidated || _building) return;
         JsonNode parent = _working;
         foreach (var part in path.SkipLast(1)) parent = parent is JsonArray array ? array[int.Parse(part)]! : parent[part]!;
         var key = path[^1];
         var old = parent is JsonArray values ? values[int.Parse(key)] : parent[key];
         if (JsonNode.DeepEquals(old, updated)) return;
-        _undoStack.Push(Snapshot()); _redoStack.Clear();
+        if (recordHistory) _undoStack.Push(Snapshot());
+        _redoStack.Clear();
         if (parent is JsonArray list) list[int.Parse(key)] = updated?.DeepClone();
         else parent[key] = updated?.DeepClone();
         _operationStatus = "";
@@ -133,14 +149,14 @@ internal sealed partial class ThemeEditorDialog
     }
     private void RestoreHistory(Stack<string> source, Stack<string> target)
     {
-        if (_busy || !FlushInputs() || source.Count == 0) return;
+        if (_invalidated || _busy || !FlushInputs() || source.Count == 0) return;
         target.Push(Snapshot()); _working = JsonNode.Parse(source.Pop())!.AsObject();
         _operationStatus = "";
         RebuildNavigation(); RebuildFields(); UpdateHistoryButtons(); UpdateStatus(); SchedulePreview();
     }
     private void RestoreSection()
     {
-        if (_busy || !FlushInputs()) return;
+        if (_invalidated || _busy || !FlushInputs()) return;
         var defaults = JsonNode.Parse(_metadata.GetProperty("defaults").GetRawText())!.AsObject();
         var before = Snapshot();
         void Restore(JsonObject current, JsonObject baseline, string[] path, bool force = false)
@@ -148,8 +164,9 @@ internal sealed partial class ThemeEditorDialog
             foreach (var (key, value) in current.ToArray())
             {
                 var child = path.Append(key).ToArray();
+                if (!InFocusedStyle(child)) continue;
                 if (Hidden(child) || value is null) continue;
-                if (value is JsonObject obj && !IsPair(obj))
+                if (value is JsonObject obj && true)
                 {
                     Restore(obj, baseline[key] as JsonObject ?? new JsonObject(), child, force || MatchesField(child));
                     continue;
@@ -181,8 +198,6 @@ internal sealed partial class ThemeEditorDialog
                     }
                     continue;
                 }
-                if (value is JsonObject pair && IsPair(pair) && baseline[key] is JsonObject originalPair)
-                { Restore(pair, originalPair, child, force || MatchesField(child)); continue; }
                 if (!force && !Matches(value, child)) continue;
                 if (baseline.TryGetPropertyValue(key, out var original)) current[key] = original?.DeepClone();
             }
@@ -205,6 +220,7 @@ internal sealed partial class ThemeEditorDialog
     {
         var parsed = JsonNode.Parse(json) as JsonObject ?? throw new JsonException(UiLanguage.Text("ThemeEditorDialog_ReplaceDraftAsync_F1DC302FE8"));
         var result = await _engine.RequestAsync("describeThemeDraft", new { data = parsed });
+        if (_invalidated) return;
         var next = JsonNode.Parse(result.GetProperty("data").GetRawText())!.AsObject();
         if (JsonNode.DeepEquals(next, _working)) return;
         _undoStack.Push(Snapshot()); _redoStack.Clear(); _working = next;
@@ -217,16 +233,19 @@ internal sealed partial class ThemeEditorDialog
     private string Snapshot() => _working.ToJsonString();
     private bool HasChanges => _isNew || !JsonNode.DeepEquals(_working, JsonNode.Parse(_saved));
     private void UpdateHistoryButtons()
-    { _undo.IsEnabled = !_busy && _undoStack.Count > 0; _redo.IsEnabled = !_busy && _redoStack.Count > 0; _restore.IsEnabled = !_busy; }
+    { _undo.IsEnabled = CanUndo; _redo.IsEnabled = CanRedo; _restore.IsEnabled = !_invalidated && !_busy; }
     private void UpdateStatus()
     {
         _status.Text = _errors.Count > 0 ? UiLanguage.Text("ThemeEditorDialog_UpdateStatus_94B3E39B5C") : _operationStatus;
         _status.Visibility = _status.Text.Length == 0 ? Visibility.Collapsed : Visibility.Visible;
-        _dirtyMark.Text = HasChanges ? "●" : "";
-        _saveButton.IsEnabled = !_busy && HasChanges;
+        _dirtyMark.Text = HasUnsavedChanges ? "●" : "";
+        _saveButton.IsEnabled = CanSave;
+        foreach (var button in _commands.Children.OfType<Button>())
+            if (Microsoft.UI.Xaml.Automation.AutomationProperties.GetAutomationId(button) == "theme.delete") button.IsEnabled = CanDelete;
+        if (IsEmbedded) UpdateNavigationDirtyMarks();
+        StateChanged?.Invoke(this, EventArgs.Empty);
     }
     private string SectionLabel(string key) => SectionNames.GetValueOrDefault(key, key);
-    private static bool IsPair(JsonObject obj) => obj.ContainsKey("fixed") && obj.ContainsKey("scaled");
     private static Brush BrushFor(string value) => new SolidColorBrush(AppearanceControls.ParseColor(value));
     private static void Name(DependencyObject control, string name, string? id = null)
     { AutomationProperties.SetName(control, name); if (id is not null) AutomationProperties.SetAutomationId(control, id); }

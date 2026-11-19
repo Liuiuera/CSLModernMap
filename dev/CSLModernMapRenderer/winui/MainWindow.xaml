@@ -29,7 +29,7 @@
         <Border Grid.Row="0" Background="Transparent">
             <TitleBar x:Name="AppTitleBar" Title="CSLModernMap" Height="40" Background="Transparent">
                 <TitleBar.IconSource>
-                    <SymbolIconSource Symbol="Map" />
+                    <BitmapIconSource UriSource="ms-appx:///Assets/app-icon.png" ShowAsMonochrome="False" />
                 </TitleBar.IconSource>
                 <TitleBar.RightHeader>
                     <Button x:Name="LanguageButton" Background="Transparent" BorderThickness="0" Padding="8,4">
@@ -52,9 +52,12 @@
             </Grid.ColumnDefinitions>
             <Border x:Name="SettingsBorder" Grid.Column="0" BorderThickness="0,0,1,0" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" Background="{ThemeResource WorkspaceSidebarSurfaceBrush}">
                 <Grid>
-                    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
-                    <StackPanel x:Name="SettingsHeader" Padding="12,10,12,0" Spacing="8" Visibility="Collapsed" />
-                    <ScrollViewer x:Name="SettingsScroll" Grid.Row="1" HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch"><StackPanel Padding="12" Spacing="10"><Button x:Uid="MainWindow_OverviewButton" x:Name="OverviewButton"  HorizontalAlignment="Stretch"/><Button x:Uid="BuildingList_OpenButton" x:Name="BuildingListButton" HorizontalAlignment="Stretch"/><StackPanel x:Name="SettingsPanel" Spacing="10" /></StackPanel></ScrollViewer>
+                    <Grid x:Name="BrowseSettingsPanel">
+                        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                        <StackPanel x:Name="SettingsHeader" Padding="12,10,12,0" Spacing="8" Visibility="Collapsed" />
+                        <ScrollViewer x:Name="SettingsScroll" Grid.Row="1" HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch"><StackPanel Padding="12" Spacing="10"><Button x:Name="ArtworkEntryButton" HorizontalAlignment="Stretch"/><Button x:Uid="MainWindow_OverviewButton" x:Name="OverviewButton"  HorizontalAlignment="Stretch"/><StackPanel x:Name="SettingsPanel" Spacing="10" /></StackPanel></ScrollViewer>
+                    </Grid>
+                    <Grid x:Name="ArtworkSettingsPlaceholder" Visibility="Collapsed" />
                 </Grid>
             </Border>
             <Grid Grid.Column="1" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -63,17 +66,21 @@
                     <InfoBar x:Name="OperationError" IsOpen="False" Severity="Error" IsClosable="True" />
                     <InfoBar x:Name="PreviewLoadingNotice" IsOpen="False" Severity="Warning" IsClosable="False" />
                 </StackPanel>
-                <Grid Grid.Row="1" Padding="8" ColumnSpacing="8">
-                    <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                    <Button x:Name="SettingsToggle" VerticalAlignment="Top" Padding="6" />
-                    <StackPanel Grid.Column="1" Spacing="6">
-                        <TextBlock x:Uid="MainWindow_ContextText" x:Name="ContextText"  />
-                        <Grid x:Name="ViewerToolbar" ColumnSpacing="6" RowSpacing="6" />
-                    </StackPanel>
-                    <Button x:Name="InspectorToggle" Grid.Column="2" VerticalAlignment="Top" Padding="6" />
+                <Grid x:Name="MapToolbarHeader" Grid.Row="1" Padding="8,4" ColumnSpacing="6">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                    <Button x:Name="SettingsToggle" VerticalAlignment="Center" Height="32" MinHeight="32" Padding="6" />
+                    <TextBlock x:Uid="MainWindow_ContextText" x:Name="ContextText" Grid.Column="1" VerticalAlignment="Center" Margin="2,0,6,0" />
+                    <Grid x:Name="ViewerToolbar" Grid.Column="2" ColumnSpacing="6" VerticalAlignment="Center" />
+                    <DropDownButton x:Name="WorkspaceModeButton" Grid.Column="3" Height="32" MinHeight="32" Padding="8,3" VerticalAlignment="Center" />
+                    <Button x:Name="InspectorToggle" Grid.Column="4" VerticalAlignment="Center" Height="32" MinHeight="32" Padding="6" />
                 </Grid>
                 <Grid x:Name="MapSurface" Grid.Row="2">
                 <WebView2 x:Name="MapView" />
+                <ScrollViewer x:Name="CompatibilitySurface" Visibility="Collapsed" ZoomMode="Enabled"
+                              MinZoomFactor="1" MaxZoomFactor="8" HorizontalScrollBarVisibility="Auto"
+                              VerticalScrollBarVisibility="Auto" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                    <Image x:Name="CompatibilityImage" Stretch="Uniform" />
+                </ScrollViewer>
                 <Grid x:Name="RmpWorkspace" Visibility="Collapsed" Background="White" />
                 <Border x:Name="MapOverlay" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Visibility="Visible">
                     <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Center" Spacing="12" MaxWidth="520" Margin="24">
@@ -88,14 +95,41 @@
                                 <TextBlock x:Uid="MainWindow_5"  />
                             </StackPanel>
                         </Button>
-                        <StackPanel x:Name="PreviewActions" Spacing="8" Visibility="Collapsed" HorizontalAlignment="Center">
-                            <Button x:Name="PreviewContinue" x:Uid="Preview_Continue" HorizontalAlignment="Stretch" />
-                            <Button x:Name="PreviewRetry" x:Uid="Preview_Retry" HorizontalAlignment="Stretch" />
-                            <Button x:Name="PreviewPng" x:Uid="Preview_Png" HorizontalAlignment="Stretch" />
+                    </StackPanel>
+                </Border>
+                <Border x:Name="CompatibilityNotice" Visibility="Collapsed" VerticalAlignment="Top" HorizontalAlignment="Center"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1" CornerRadius="8" Margin="16" Padding="12,8">
+                    <StackPanel Spacing="6">
+                        <TextBlock x:Uid="Preview_CompatibilityNotice" TextWrapping="Wrap" MaxWidth="480" />
+                        <Button x:Name="CompatibilityRetry" x:Uid="Preview_Interactive" HorizontalAlignment="Right" />
+                    </StackPanel>
+                </Border>
+                <Border x:Name="CompatibilityUpdating" Visibility="Collapsed" VerticalAlignment="Bottom" HorizontalAlignment="Center"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Margin="16" Padding="12,8">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <ProgressRing Width="16" Height="16" IsActive="True" />
+                        <TextBlock x:Uid="Preview_ImageUpdating" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+                <Border x:Name="PreviewActions" Visibility="Collapsed" VerticalAlignment="Bottom" HorizontalAlignment="Center"
+                        MaxWidth="560" Margin="16" Padding="16" CornerRadius="10"
+                        Background="{ThemeResource SolidBackgroundFillColorBaseBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1">
+                    <StackPanel Spacing="10">
+                        <TextBlock x:Name="PreviewNoticeTitle" FontWeight="SemiBold" TextWrapping="Wrap" />
+                        <TextBlock x:Name="PreviewNoticeDetail" TextWrapping="Wrap" />
+                        <StackPanel Spacing="8">
+                            <Button x:Name="PreviewCompatibility" x:Uid="Preview_Compatibility" Style="{StaticResource AccentButtonStyle}" HorizontalAlignment="Stretch" />
                             <Button x:Name="PreviewHtml" x:Uid="Preview_Html" HorizontalAlignment="Stretch" />
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="6">
+                                <Button x:Name="PreviewRetry" x:Uid="Preview_Retry" FontSize="12" Padding="10,4" MinHeight="28" />
+                                <Button x:Name="PreviewCancel" x:Uid="Preview_Cancel" FontSize="12" Padding="10,4" MinHeight="28" />
+                            </StackPanel>
                         </StackPanel>
                     </StackPanel>
                 </Border>
+                <Button x:Name="ExitImmersiveButton" Visibility="Collapsed" HorizontalAlignment="Right" VerticalAlignment="Top"
+                        Margin="12" Padding="8,5" />
             </Grid>
             </Grid>
             <Border x:Name="InspectorBorder" Grid.Column="2" BorderThickness="1,0,0,0" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" Background="{ThemeResource WorkspaceSidebarSurfaceBrush}">
@@ -105,7 +139,7 @@
                 </StackPanel></ScrollViewer></Grid>
             </Border>
         </Grid>
-        <Grid Grid.Row="3" Padding="12,6" Background="{ThemeResource WorkspaceSidebarSurfaceBrush}">
+        <Grid x:Name="StatusBar" Grid.Row="3" Padding="12,6" Background="{ThemeResource WorkspaceSidebarSurfaceBrush}">
             <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
             <ProgressRing x:Name="StatusSpinner" Width="16" Height="16" Margin="0,0,8,0"
                           IsActive="False" Visibility="Collapsed" VerticalAlignment="Center" />

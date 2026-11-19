@@ -32,7 +32,7 @@ terrain:
 water:
   color: '#A8D5E8'
   border: '#89BED6'
-  border_width: 1
+  border_width: 1.0
 forest:
   color: '#CFE3B8'
 land_use:
@@ -54,9 +54,7 @@ land_use:
 district:
   enabled: true
   border: '#A5A5A5'
-  border_width:
-    fixed: 1.0
-    scaled: 0.5
+  border_width: 1.5
   fill_alpha: 0
   fill_colors:
   - '#D9E8CC'
@@ -73,52 +71,131 @@ district:
 zone:
   enabled: true
   border: '#B08A5C'
-  border_width:
-    fixed: 1.0
-    scaled: 0.5
+  border_width: 1.5
   fill_alpha: 0
   fill: '#C8C8C8'
   smooth_blur: 1.0
   smooth_iters: 3
   contour_upscale: 2
 roads:
-  width_scale: 0.15
   highway:
     fill: '#FFE1A8'
     border: '#49463E'
-    min_fill_px: 1.8
     border_width: 0.6
+    line_width: 3.8
+    footprint_scale: 1.0
   main:
     fill: '#FDE293'
     border: '#49463E'
-    min_fill_px: 1.4
     border_width: 0.6
+    line_width: 5.3
+    footprint_scale: 1.0
   special:
     fill: '#FFFFFF'
     border: '#49463E'
-    min_fill_px: 0.8
     border_width: 0.6
+    line_width: 8.90003
+    footprint_scale: 1.0
   branch:
     fill: '#FFFFFF'
     border: '#49463E'
-    min_fill_px: 0.8
     border_width: 0.6
+    line_width: 2.9
+    footprint_scale: 1.0
   beautification:
     fill: '#F5F3EC'
     border: '#49463E'
-    min_fill_px: 0.5
     border_width: 0.5
+    line_width: 1.697
+    footprint_scale: 1.0
   opacity: 0.6
+  quay:
+    fill: '#F5F3EC'
+    border: '#49463E'
+    border_width: 0.5
+    footprint_scale: 0.5
+    line_width: 5.688888888888889
 buildings:
   default: '#EFECE3'
   border: '#C9C5B8'
-  border_width: 1
+  border_width: 1.0
   shadow:
     enabled: true
     offset:
-    - 2
-    - 2
+    - 2.0
+    - 2.0
     color: '#00000018'
+  color_mode: poi
+  category_colors:
+    residential:
+      enabled: false
+      color: '#EFECE3'
+    commercial:
+      enabled: false
+      color: '#EFECE3'
+    office:
+      enabled: false
+      color: '#EFECE3'
+    industrial:
+      enabled: false
+      color: '#EFECE3'
+    police:
+      enabled: false
+      color: '#EFECE3'
+    prison:
+      enabled: false
+      color: '#EFECE3'
+    fire:
+      enabled: false
+      color: '#EFECE3'
+    healthcare:
+      enabled: false
+      color: '#EFECE3'
+    deathcare:
+      enabled: false
+      color: '#EFECE3'
+    education:
+      enabled: false
+      color: '#EFECE3'
+    administration:
+      enabled: false
+      color: '#EFECE3'
+    transport:
+      enabled: false
+      color: '#EFECE3'
+    parking:
+      enabled: false
+      color: '#EFECE3'
+    post_telecom:
+      enabled: false
+      color: '#EFECE3'
+    electricity:
+      enabled: false
+      color: '#EFECE3'
+    water:
+      enabled: false
+      color: '#EFECE3'
+    garbage:
+      enabled: false
+      color: '#EFECE3'
+    maintenance:
+      enabled: false
+      color: '#EFECE3'
+    park:
+      enabled: false
+      color: '#EFECE3'
+    amusement:
+      enabled: false
+      color: '#EFECE3'
+    culture:
+      enabled: false
+      color: '#EFECE3'
+    decoration:
+      enabled: false
+      color: '#EFECE3'
+    unclassified:
+      enabled: false
+      color: '#EFECE3'
 procedural_objects:
   colors:
     geometry: '#D9D7CC'
@@ -135,6 +212,25 @@ railway:
   train:
     line: '#DCDCDC'
     dash: '#6E6E6E'
+    width: 3.2
+    station_width: 7.2
+    dash_width: 2.0
+  tram:
+    width: 3.2
+    station_width: 7.2
+    dash_width: 2.0
+  metro:
+    width: 3.2
+    station_width: 7.2
+    dash_width: 2.0
+  monorail:
+    width: 3.2
+    station_width: 7.2
+    dash_width: 2.0
+  cablecar:
+    width: 3.2
+    station_width: 7.2
+    dash_width: 2.0
 transports:
   enabled:
   - Metro
@@ -149,153 +245,155 @@ transports:
   - Airplane
   - Helicopter
   auto_color: false
-  width:
-    fixed: 0.5
-    scaled: 2.05
+  width: 2.55
   smooth: 10
   transit_view:
     mask_intensity: 0.6
+    label_size: 15.0
+    label_merge_dist: 40.0
+    label_candidate_interval: 110.0
+    label_clearance_padding: 14.0
   types:
     Metro:
-      width:
-        fixed: 0.5
-        scaled: 2.05
+      width: 2.55
       dash: []
     Train:
-      width:
-        fixed: 0.5
-        scaled: 2.2
+      width: 2.7
       dash: []
     Monorail:
-      width:
-        fixed: 0.4
-        scaled: 1.85
+      width: 2.25
       dash: []
     Tram:
-      width:
-        fixed: 0.4
-        scaled: 1.7
+      width: 2.1
       dash: []
     CableCar:
-      width:
-        fixed: 0.4
-        scaled: 1.7
+      width: 2.1
       dash: []
     Ship:
-      width:
-        fixed: 0.45
-        scaled: 1.875
+      width: 2.325
       dash:
-      - 8
-      - 6
+      - 8.0
+      - 6.0
       color: '#2E86AB'
     Ferry:
-      width:
-        fixed: 0.45
-        scaled: 1.875
+      width: 2.325
       dash:
-      - 8
-      - 6
+      - 8.0
+      - 6.0
       color: '#2E86AB'
     Bus:
-      width:
-        fixed: 0.35
-        scaled: 1.525
+      width: 1.875
       dash: []
       color: '#5A6472'
     Trolleybus:
-      width:
-        fixed: 0.35
-        scaled: 1.525
+      width: 1.875
       dash:
-      - 4
-      - 4
+      - 4.0
+      - 4.0
       color: '#7A8391'
     Airplane:
-      width:
-        fixed: 0.4
-        scaled: 1.7
+      width: 2.1
       dash:
-      - 10
-      - 8
+      - 10.0
+      - 8.0
       color: '#8A94A6'
     Helicopter:
-      width:
-        fixed: 0.3
-        scaled: 1.35
+      width: 1.6500000000000001
       dash:
-      - 6
-      - 6
+      - 6.0
+      - 6.0
       color: '#8A94A6'
   label:
     enabled: true
     font: SimHei
     min_zoom: 0.5
-    size:
-      fixed: 8.0
-      scaled: 6.0
-    padding:
-      fixed: 5.0
-      scaled: 3.5
-    border_width:
-      fixed: 0.9
-      scaled: 0.6
+    size: 14.0
+    padding: 8.5
+    border_width: 1.5
     bg: '#FFFFFF'
-    repeat_interval: 600
-    min_gap: 350
+    repeat_interval: 600.0
+    min_gap: 350.0
     max_per_line: 4
+    capture_padding: 3.0
+    title_size: 76.0
+    gap: 28.0
+    column_gap: 84.0
+    swatch_width: 132.0
+    swatch_height: 48.0
+    border_radius: 27.0
+    margin: 70.0
+    shadow_blur: 21.0
+    shadow_offset: 10.0
+  station:
+    border_width: 2
+    names:
+      size: 11.0
+      gap: 5.0
+      stroke_width: 1.0
+    diameter: 15.0
+  line:
+    light_outline:
+      width: 2.4
 labels:
   district:
     font: SimHei
-    size: 28
+    size: 28.0
     color: '#F7F4EA'
     stroke: '#25231FBF'
-    stroke_width:
-      fixed: 1.5
-      scaled: 0.0
-    stroke_blur:
-      fixed: 0.6
-      scaled: 0.0
+    stroke_width: 1.5
+    stroke_blur: 0.6
   road:
     font: SimHei
-    size: 7
+    size: 7.0
     color: '#F7F4EA'
     stroke: '#25231FBF'
-    stroke_width:
-      fixed: 1.2
-      scaled: 0.0
-    stroke_blur:
-      fixed: 0.6
-      scaled: 0.0
+    stroke_width: 1.2
+    stroke_blur: 0.6
+    by_level:
+      highway:
+        size: 11.200000000000001
+        stroke_width: 1.92
+      main:
+        size: 8.75
+        stroke_width: 1.5
+      special:
+        size: 5.25
+        stroke_width: 0.8999999999999999
+      beautification:
+        size: 5.25
+        stroke_width: 0.8999999999999999
+      quay:
+        size: 5.25
+        stroke_width: 0.8999999999999999
   building:
     font: SimHei
-    size: 16
+    size: 16.0
     color: '#F7F4EA'
   park:
     font: SimHei
-    size: 14
+    size: 14.0
     color: '#D6E8BF'
     stroke: '#25231F'
     stroke_width: 1.5
   stop:
     font: SimHei
-    size: 20
+    size: 20.0
     color: '#F7F4EA'
+  road_repeat: 400.0
+  padding: 4.0
 watermark:
   enabled: true
   mod_name: CSLModernMap
   position: left_bottom
-  font_size:
-    fixed: 11
-    scaled: 1.5
+  font_size: 12
   separator: ' · '
   margin:
-    x: 20
-    y: 20
+    x: 20.0
+    y: 20.0
   padding:
-    x: 12
-    y: 6
-  border_radius: 6
+    x: 12.0
+    y: 6.0
+  border_radius: 6.0
   background: transparent
   time_format: '%Y-%m-%d %H:%M:%S'
   city_color: '#F7F4EA'
@@ -312,3 +410,22 @@ watermark:
 poi_icons:
   name_color: '#F7F4EA'
   name_stroke: '#25231F'
+  font: SimHei
+  icon_size: 22.0
+  bg_circle_size: 30.0
+  name_size: 13.0
+  name_offset: 3.0
+  grid_size: 90.0
+  icon_gap: 3.0
+  symbol_padding: 2.0
+  name_padding: 4.0
+  name_stroke_width: 2
+satellite:
+  preset: original
+  intensity: 100
+  quality: original
+traffic:
+  free: '#61A96A'
+  slow: '#E6B54D'
+  busy: '#D85B4A'
+size_contract: pixel-v2

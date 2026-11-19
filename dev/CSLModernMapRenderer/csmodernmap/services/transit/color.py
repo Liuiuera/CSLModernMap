@@ -5,6 +5,23 @@ from typing import Iterable, Mapping
 
 from ...cmm import JobParams, LineGroup, Stop, TransitLine
 from ...transit import DEFAULT_PALETTE
+from ...style import hex_to_rgb
+
+
+_VIEW_PALETTES = {
+    "classic": ("#D94B4B", "#3978C5", "#2A9D69", "#E59A2F", "#8A5BB5", "#2A9DA8"),
+    "soft": ("#D98282", "#729BCD", "#72B795", "#E4B46F", "#A98AC3", "#6EB6BC"),
+}
+
+
+def view_line_colors(lines, mode: str) -> dict[int, str]:
+    if mode == "game":
+        return {line.id: "#%02X%02X%02X" % tuple(color[:3]) for line in lines
+                if (color := getattr(line, "user_color", None)) is not None}
+    palette = _VIEW_PALETTES[mode]
+    # 取全城线路顺序，筛选类型或单条线路时保留其余线路的配色。
+    return {line_id: palette[index % len(palette)]
+            for index, line_id in enumerate(sorted(line.id for line in lines))}
 
 
 def _pick_color(used: set[tuple[int, int, int]], palette, usage):
@@ -72,6 +89,18 @@ def effective_color(line: TransitLine, auto_colors: Mapping[int, tuple[int, int,
     if auto_colors and line.id in auto_colors:
         return tuple(auto_colors[line.id])
     return fallback
+
+
+def type_color(type_style, type_default):
+    return type_style.get("color") or type_default.get("color") or "#8A8F99"
+
+
+def display_color(line, model, type_style, type_default, view_colors):
+    if line.id in view_colors:
+        return view_colors[line.id]
+    fallback = type_color(type_style, type_default)
+    rgb = effective_color(line, model.auto_colors, fallback=hex_to_rgb(fallback))
+    return "#%02X%02X%02X" % rgb
 
 
 assign_auto_colors = resolve_auto_colors

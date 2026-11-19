@@ -29,30 +29,6 @@
     <value>{0}：{1}～{2} の範囲で数値を入力してください。</value>
     <comment>AppearanceControls.cs:153</comment>
   </data>
-  <data name="AppearanceControls_Number_0DA36741DE" xml:space="preserve">
-    <value>固定部分（px）</value>
-    <comment>AppearanceControls.cs:136</comment>
-  </data>
-  <data name="AppearanceControls_Number_2C7E083699" xml:space="preserve">
-    <value>拡大縮小部分（基準ピクセル）</value>
-    <comment>AppearanceControls.cs:138</comment>
-  </data>
-  <data name="AppearanceControls_Number_9FC85F1C9F" xml:space="preserve">
-    <value>サイズを固定</value>
-    <comment>AppearanceControls.cs:198</comment>
-  </data>
-  <data name="AppearanceControls_Number_C42BC5D941" xml:space="preserve">
-    <value>{0}：有効な数値を入力してください。</value>
-    <comment>AppearanceControls.cs:148</comment>
-  </data>
-  <data name="AppearanceControls_Number_EE9964568E" xml:space="preserve">
-    <value>固定部分 + 拡大縮小する部分</value>
-    <comment>AppearanceControls.cs:198</comment>
-  </data>
-  <data name="AppearanceControls_Number_F1463D39A7" xml:space="preserve">
-    <value>マップに合わせて拡大縮小</value>
-    <comment>AppearanceControls.cs:198</comment>
-  </data>
   <data name="ContextRibbonToggle_Refresh_645432A5BF" xml:space="preserve">
     <value>、有効</value>
     <comment>ContextRibbonToggle.cs:31</comment>
@@ -216,6 +192,10 @@
   <data name="ExportWindow_Preview_FormatDescription_D1B9C29526" xml:space="preserve">
     <value>ネットワークプロジェクト · Rail Map Painter で編集</value>
     <comment>ExportWindow.Preview.cs:93</comment>
+  </data>
+  <data name="ExportWindow_Preview_FormatDescription_F3E27B053E" xml:space="preserve">
+    <value>GeoPackage (.gpkg) + GeoTIFF (.tif) + QGIS (.qml)</value>
+    <comment>ExportWindow.Preview.cs:91</comment>
   </data>
   <data name="ExportWindow_Preview_InitializeResults_0A07FEF6ED" xml:space="preserve">
     <value>エクスポートを再試行</value>
@@ -445,6 +425,10 @@
     <value>地下鉄路線図</value>
     <comment>ExportWindow.cs:679</comment>
   </data>
+  <data name="ExportWindow_UpdateContextCopy_19744772B2" xml:space="preserve">
+    <value>GeoPackage (.gpkg) + GeoTIFF (.tif) + QGIS (.qml)</value>
+    <comment>ExportWindow.cs:348</comment>
+  </data>
   <data name="ExportWindow_UpdateContextCopy_2F52FBFF32" xml:space="preserve">
     <value>現在の地下鉄路線網と路線選択で補助プロジェクトをエクスポートします。</value>
     <comment>ExportWindow.cs:357</comment>
@@ -468,6 +452,10 @@
   <data name="ExportWindow_UpdateContextCopy_6339D3A748" xml:space="preserve">
     <value>現在のテーマ、レイヤー、選択範囲でマップをエクスポートします。</value>
     <comment>ExportWindow.cs:376</comment>
+  </data>
+  <data name="ExportWindow_UpdateContextCopy_694B1FB788" xml:space="preserve">
+    <value>GeoPackage / GeoTIFF + QML</value>
+    <comment>ExportWindow.cs:347</comment>
   </data>
   <data name="ExportWindow_UpdateContextCopy_7BE47589C1" xml:space="preserve">
     <value>.rmp.json をエクスポートし、Rail Map Painter にインポートして路線を編集します。</value>
@@ -817,6 +805,10 @@
     <value>PNG をエクスポート…</value>
     <comment>MainWindow.File.cs:32</comment>
   </data>
+  <data name="MainWindow_File_BuildFileMenu_D9A515CF72" xml:space="preserve">
+    <value>GeoPackage / GeoTIFF + QML…</value>
+    <comment>MainWindow.File.cs:34</comment>
+  </data>
   <data name="MainWindow_File_RefreshFileRecent_95D7E39D01" xml:space="preserve">
     <value>ファイルが移動したか、存在しません：</value>
     <comment>MainWindow.File.cs:63</comment>
@@ -1145,10 +1137,6 @@
     <value>公共交通アイコン</value>
     <comment>MainWindow.MapSettings.cs:278</comment>
   </data>
-  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_4D2A6ECC62" xml:space="preserve">
-    <value>基準サイズは都市全体を4096ピクセルとして計算します。</value>
-    <comment>MainWindow.MapSettings.cs:350; MainWindow.MapSettings.cs:365</comment>
-  </data>
   <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_4D8D19C70F" xml:space="preserve">
     <value>カテゴリを設定</value>
     <comment>MainWindow.MapSettings.cs:57; MainWindow.MapSettings.cs:58; MainWindow.MapSettings.cs:59</comment>
@@ -1361,10 +1349,6 @@
     <value>文字とアイコンを表示</value>
     <comment>MainWindow.MapSettings.cs:216</comment>
   </data>
-  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_EC7FFA2896" xml:space="preserve">
-    <value>ズームによるサイズ変化</value>
-    <comment>MainWindow.MapSettings.cs:351; MainWindow.MapSettings.cs:366</comment>
-  </data>
   <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_ED236491A4" xml:space="preserve">
     <value>ゲームによる自動名称</value>
     <comment>MainWindow.MapSettings.cs:311</comment>
@@ -1388,6 +1372,10 @@
   <data name="MainWindow_OverviewButton.Content" xml:space="preserve">
     <value>マップの概要</value>
     <comment>dev\CSLModernMapRenderer\winui\MainWindow.xaml:50</comment>
+  </data>
+  <data name="MainWindow_Overview_ShowInspectorHome_064FC61A89" xml:space="preserve">
+    <value>QGIS で編集を続ける</value>
+    <comment>MainWindow.Overview.cs:131</comment>
   </data>
   <data name="MainWindow_Overview_ShowInspectorHome_1CDED5B3FD" xml:space="preserve">
     <value>オブジェクトのプロパティ</value>
@@ -1433,10 +1421,6 @@
     <value>マップテーマと都市の概要</value>
     <comment>MainWindow.Overview.cs:39</comment>
   </data>
-  <data name="MainWindow_Overview_ShowMapOverview_3595B7C819" xml:space="preserve">
-    <value>エリア数</value>
-    <comment>MainWindow.Overview.cs:53</comment>
-  </data>
   <data name="MainWindow_Overview_ShowMapOverview_41AB2E0ECB" xml:space="preserve">
     <value>地図</value>
     <comment>MainWindow.Overview.cs:38; MainWindow.Overview.cs:40</comment>
@@ -1450,7 +1434,7 @@
     <comment>MainWindow.Overview.cs:52</comment>
   </data>
   <data name="MainWindow_Overview_ShowMapOverview_6F1C3CB04A" xml:space="preserve">
-    <value>テーマを編集…</value>
+    <value>テーマの設定値を編集…</value>
     <comment>MainWindow.Overview.cs:48</comment>
   </data>
   <data name="MainWindow_Overview_ShowMapOverview_788DB1CFEC" xml:space="preserve">
@@ -1458,7 +1442,7 @@
     <comment>MainWindow.Overview.cs:41</comment>
   </data>
   <data name="MainWindow_Overview_ShowMapOverview_B553EA09A3" xml:space="preserve">
-    <value>公共交通の運行距離</value>
+    <value>公共交通の路線長合計</value>
     <comment>MainWindow.Overview.cs:52</comment>
   </data>
   <data name="MainWindow_Overview_ShowMapOverview_BDA7B29CF3" xml:space="preserve">
@@ -1480,6 +1464,34 @@
   <data name="MainWindow_Overview_ShowMapOverview_ED84A1665F" xml:space="preserve">
     <value>都市</value>
     <comment>MainWindow.Overview.cs:51</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_2CD0F3BE87" xml:space="preserve">
+    <value>キャンセル</value>
+    <comment>MainWindow.PreviewSettings.cs:36</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_3279E8322A" xml:space="preserve">
+    <value>プレビューのパフォーマンス</value>
+    <comment>MainWindow.PreviewSettings.cs:19</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_63C73C4730" xml:space="preserve">
+    <value>適用</value>
+    <comment>MainWindow.PreviewSettings.cs:37</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_8B710BEF56" xml:space="preserve">
+    <value>都市が変更されました。設定を開き直してください。</value>
+    <comment>MainWindow.PreviewSettings.cs:39</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_BA2E93E730" xml:space="preserve">
+    <value>既定値に戻す</value>
+    <comment>MainWindow.PreviewSettings.cs:35</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_BD4DD78F2D" xml:space="preserve">
+    <value>都市の読み込み、マップ生成、描画にかかった時間を記録し、プレビューの遅延を調べます。</value>
+    <comment>MainWindow.PreviewSettings.cs:29</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_F15F7C4642" xml:space="preserve">
+    <value>プレビューのパフォーマンスを記録</value>
+    <comment>MainWindow.PreviewSettings.cs:22</comment>
   </data>
   <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_07C030A101" xml:space="preserve">
     <value>繰り返し間隔（m）</value>
@@ -2058,9 +2070,17 @@
     <value>ログフォルダーを開く</value>
     <comment>MainWindow.Workflows.cs:197</comment>
   </data>
+  <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_3B1EF565E6" xml:space="preserve">
+    <value>パフォーマンス</value>
+    <comment>MainWindow.Workflows.cs:213</comment>
+  </data>
   <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_41AB2E0ECB" xml:space="preserve">
     <value>地図</value>
     <comment>MainWindow.Workflows.cs:213</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_51464DD5DC" xml:space="preserve">
+    <value>パフォーマンス診断</value>
+    <comment>MainWindow.Workflows.cs:194</comment>
   </data>
   <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_6EDFD8773A" xml:space="preserve">
     <value>プレビューを更新</value>
@@ -2337,6 +2357,10 @@ Esc  現在のタスクをキャンセル</value>
   <data name="MainWindow_xaml_BuildRibbon_62AEEB8B65" xml:space="preserve">
     <value>地域と地区</value>
     <comment>MainWindow.xaml.cs:165</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_694B1FB788" xml:space="preserve">
+    <value>GeoPackage / GeoTIFF + QML</value>
+    <comment>MainWindow.xaml.cs:141; MainWindow.xaml.cs:218</comment>
   </data>
   <data name="MainWindow_xaml_BuildRibbon_6BEB3C5ED7" xml:space="preserve">
     <value>地図の作成</value>
@@ -3371,18 +3395,6 @@ Esc  現在のタスクをキャンセル</value>
     <value>入力中です。有効な値を確定するとプレビューが更新されます。</value>
     <comment>ThemeEditorDialog.Fields.cs:348</comment>
   </data>
-  <data name="ThemeEditorDialog_Fields_Label_606D5B2CC1" xml:space="preserve">
-    <value>描画倍率に応じて追加</value>
-    <comment>ThemeEditorDialog.Fields.cs:23</comment>
-  </data>
-  <data name="ThemeEditorDialog_Fields_Label_803A1B3A33" xml:space="preserve">
-    <value>固定部分</value>
-    <comment>ThemeEditorDialog.Fields.cs:22</comment>
-  </data>
-  <data name="ThemeEditorDialog_Fields_MakeField_606D5B2CC1" xml:space="preserve">
-    <value>描画倍率に応じて追加</value>
-    <comment>ThemeEditorDialog.Fields.cs:134</comment>
-  </data>
   <data name="ThemeEditorDialog_Fields_MakeField_66FE53367D" xml:space="preserve">
     <value>{0}～{1} の数値を入力してください</value>
     <comment>ThemeEditorDialog.Fields.cs:181</comment>
@@ -3394,14 +3406,6 @@ Esc  現在のタスクをキャンセル</value>
   <data name="ThemeEditorDialog_Fields_MakeField_870D5FE5D4" xml:space="preserve">
     <value>JSON 配列を入力してください</value>
     <comment>ThemeEditorDialog.Fields.cs:150</comment>
-  </data>
-  <data name="ThemeEditorDialog_Fields_MakeField_986E6B84D7" xml:space="preserve">
-    <value>固定部分（px）</value>
-    <comment>ThemeEditorDialog.Fields.cs:133</comment>
-  </data>
-  <data name="ThemeEditorDialog_Fields_MakeField_CF663DC217" xml:space="preserve">
-    <value>最終サイズ = 固定部分 + 比率に応じて増える部分 × 描画倍率</value>
-    <comment>ThemeEditorDialog.Fields.cs:136</comment>
   </data>
   <data name="ThemeEditorDialog_Fields_MakeField_D9E21007A0" xml:space="preserve">
     <value>（現在値）</value>
@@ -3420,11 +3424,11 @@ Esc  現在のタスクをキャンセル</value>
     <comment>ThemeEditorDialog.Fields.cs:84</comment>
   </data>
   <data name="ThemeEditorDialog_Fields_PageDescription_5986B685A1" xml:space="preserve">
-    <value>道路ランク別に塗り、縁取り、最小表示幅を調整します。</value>
+    <value>道路ランク別に塗り、縁取り、フットプリントがない場合の幅（px）を調整します。</value>
     <comment>ThemeEditorDialog.Fields.cs:82</comment>
   </data>
   <data name="ThemeEditorDialog_Fields_PageDescription_7245F659EA" xml:space="preserve">
-    <value>テーマ名と説明を編集し、現在のテーマ設定を保存します。</value>
+    <value>プリセットの変更を保存すると個人テーマを作成します。個人テーマの保存は上書きです。エクスポートは別の YAML ファイルに保存します。</value>
     <comment>ThemeEditorDialog.Fields.cs:85</comment>
   </data>
   <data name="ThemeEditorDialog_Fields_PageDescription_8714276423" xml:space="preserve">
@@ -3536,7 +3540,7 @@ Esc  現在のタスクをキャンセル</value>
     <comment>ThemeEditorDialog.Layout.cs:43</comment>
   </data>
   <data name="ThemeEditorDialog_Layout_BuildWorkbench_BA1125B2AC" xml:space="preserve">
-    <value>テーマデータ全体を編集（JSON）…</value>
+    <value>JSON を編集…</value>
     <comment>ThemeEditorDialog.Layout.cs:60</comment>
   </data>
   <data name="ThemeEditorDialog_Layout_BuildWorkbench_EC9A1CEB6D" xml:space="preserve">
@@ -3699,10 +3703,6 @@ Esc  現在のタスクをキャンセル</value>
     <value>高さ（{0}～{1} m）と有効な HEX 色コードを入力してください</value>
     <comment>ThemeEditorDialog.Pages.cs:189</comment>
   </data>
-  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_01EEE2E647" xml:space="preserve">
-    <value>値が大きいほど道路全体が太くなります。</value>
-    <comment>ThemeEditorDialog.Pages.cs:61</comment>
-  </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_05FB7CBA47" xml:space="preserve">
     <value>塗りつぶし</value>
     <comment>ThemeEditorDialog.Pages.cs:29</comment>
@@ -3712,23 +3712,19 @@ Esc  現在のタスクをキャンセル</value>
     <comment>ThemeEditorDialog.Pages.cs:42</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_1D68EDF7EB" xml:space="preserve">
-    <value>最小 px</value>
+    <value>中心線の幅（px）</value>
     <comment>ThemeEditorDialog.Pages.cs:29</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_3001DE3658" xml:space="preserve">
     <value>レベル別の外観</value>
     <comment>ThemeEditorDialog.Pages.cs:24</comment>
   </data>
-  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_37AE912BEC" xml:space="preserve">
-    <value>全体の太さ</value>
-    <comment>ThemeEditorDialog.Pages.cs:59</comment>
-  </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_512DF348F2" xml:space="preserve">
-    <value>最小幅は遠景での見やすさを制御し、実際の幅は道路サイズに応じて変わります。縁取りは塗りつぶしを囲みます。</value>
+    <value>フットプリントあり：その幅 × フットプリント倍率。なし：ピクセル幅 × 要素倍率。輪郭線にも要素倍率を適用します。</value>
     <comment>ThemeEditorDialog.Pages.cs:56</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_593A6AFD98" xml:space="preserve">
-    <value>ランク別の縁取り幅</value>
+    <value>輪郭線の幅（px）／道路面の幅の倍率</value>
     <comment>ThemeEditorDialog.Pages.cs:63</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_80A57E03F0" xml:space="preserve">
@@ -3750,10 +3746,6 @@ Esc  現在のタスクをキャンセル</value>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_C2AE96D4A6" xml:space="preserve">
     <value>高架とトンネル</value>
     <comment>ThemeEditorDialog.Pages.cs:72</comment>
-  </data>
-  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_E9C68028D9" xml:space="preserve">
-    <value>道路幅の倍率</value>
-    <comment>ThemeEditorDialog.Pages.cs:60</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_FBE666F1E0" xml:space="preserve">
     <value>道路ランク</value>
@@ -3794,11 +3786,6 @@ Esc  現在のタスクをキャンセル</value>
   <data name="ThemeEditorDialog_Preview_BuildSamples_1350C527B6" xml:space="preserve">
     <value>実際の地図プレビューに色とサイズの変更が反映されます。</value>
     <comment>ThemeEditorDialog.Preview.cs:50</comment>
-  </data>
-  <data name="ThemeEditorDialog_Preview_BuildSamples_1A0787C40B" xml:space="preserve">
-    <value> · 最小 {0:0.##} px
-サンプル道路 16 m、描画倍率 1</value>
-    <comment>ThemeEditorDialog.Preview.cs:33</comment>
   </data>
   <data name="ThemeEditorDialog_Preview_BuildSamples_5BD3906590" xml:space="preserve">
     <value>標高ノードはまだありません</value>
@@ -4314,7 +4301,7 @@ Esc  現在のタスクをキャンセル</value>
   <data name="MainWindow_File_OpenConfigurationFolder" xml:space="preserve">
     <value>設定フォルダーを開く</value>
   </data>
-  <data name="RmpEditor_Title" xml:space="preserve"><value>Metro diagram editor</value></data>
+  <data name="RmpEditor_Title" xml:space="preserve"><value>地下鉄路線図エディター</value></data>
   <data name="RmpEditor_Edit" xml:space="preserve"><value>Edit</value></data>
   <data name="RmpEditor_Save" xml:space="preserve"><value>Save project</value></data>
   <data name="RmpEditor_SaveAs" xml:space="preserve"><value>Save as…</value></data>
@@ -4326,20 +4313,20 @@ Esc  現在のタスクをキャンセル</value>
   <data name="RmpEditor_Cancel" xml:space="preserve"><value>Cancel</value></data>
   <data name="RmpEditor_Discard" xml:space="preserve"><value>Discard changes</value></data>
   <data name="RmpEditor_Unsaved" xml:space="preserve"><value>Unsaved project</value></data>
-  <data name="RmpEditor_UnsavedPrompt" xml:space="preserve"><value>Save changes before continuing?</value></data>
-  <data name="RmpEditor_Independent" xml:space="preserve"><value>Changes belong to this editor only.</value></data>
-  <data name="RmpEditor_NativeAppearance" xml:space="preserve"><value>RMP uses native symbol sizes, Noto Sans SC and opaque water colours composed over the canvas background.</value></data>
-  <data name="RmpEditor_Detached" xml:space="preserve"><value>This project is not linked to the current source map.</value></data>
-  <data name="RmpEditor_MissingAssets" xml:space="preserve"><value>RMP assets are missing. Rebuild the WinUI application.</value></data>
-  <data name="RmpEditor_LoadFailed" xml:space="preserve"><value>Unable to load the RMP editor</value></data>
-  <data name="RmpEditor_ProcessFailed" xml:space="preserve"><value>The editor process stopped. Unsaved changes could not be recovered.</value></data>
-  <data name="RmpEditor_InvalidProject" xml:space="preserve"><value>Not a supported RMP project (save version 1–77).</value></data>
-  <data name="RmpEditor_BlockedResource" xml:space="preserve"><value>An external resource was blocked by the offline editor.</value></data>
+  <data name="RmpEditor_UnsavedPrompt" xml:space="preserve"><value>続行する前に変更を保存しますか？</value></data>
+  <data name="RmpEditor_Independent" xml:space="preserve"><value>変更はこの下書きだけに適用されます。</value></data>
+  <data name="RmpEditor_NativeAppearance" xml:space="preserve"><value>RMPでは記号を本来のサイズで表示し、フォントにNoto Sans SCを使います。水域の色はキャンバスの背景と合成した不透明色になります。</value></data>
+  <data name="RmpEditor_Detached" xml:space="preserve"><value>このプロジェクトは現在の元地図に関連付けられていません。</value></data>
+  <data name="RmpEditor_MissingAssets" xml:space="preserve"><value>RMPのリソースがありません。WinUIアプリを再ビルドしてください。</value></data>
+  <data name="RmpEditor_LoadFailed" xml:space="preserve"><value>RMPエディターを読み込めません</value></data>
+  <data name="RmpEditor_ProcessFailed" xml:space="preserve"><value>エディターのプロセスが停止しました。未保存の変更は復元できませんでした。</value></data>
+  <data name="RmpEditor_InvalidProject" xml:space="preserve"><value>対応していないRMPプロジェクトです。保存形式のバージョン1～77に対応しています。</value></data>
+  <data name="RmpEditor_BlockedResource" xml:space="preserve"><value>オフラインエディターが外部リソースをブロックしました。</value></data>
   <data name="RmpEditor_RegeneratePrompt" xml:space="preserve"><value>Replace this draft with the automatic diagram captured when this window opened? This does not change the main window.</value></data>
   <data name="RmpEditor_Exported" xml:space="preserve"><value>Exported:</value></data>
-  <data name="RmpEditor_MismatchPrompt" xml:space="preserve"><value>The saved project does not match its source metadata. Open it independently, or create a new draft without overwriting it?</value></data>
-  <data name="RmpEditor_OpenExisting" xml:space="preserve"><value>Open existing project</value></data>
-  <data name="RmpEditor_NewDraft" xml:space="preserve"><value>Create new draft</value></data>
+  <data name="RmpEditor_MismatchPrompt" xml:space="preserve"><value>保存済みプロジェクトと元のメタデータが一致しません。個別に開くか、元のファイルを残して新しい下書きを作成しますか？</value></data>
+  <data name="RmpEditor_OpenExisting" xml:space="preserve"><value>既存のプロジェクトを開く</value></data>
+  <data name="RmpEditor_NewDraft" xml:space="preserve"><value>新しい下書きを作成</value></data>
   <data name="RmpEditor_Fit" xml:space="preserve"><value>Fit diagram</value></data>
   <data name="RmpEditor_Undo" xml:space="preserve"><value>元に戻す</value></data>
   <data name="RmpEditor_Redo" xml:space="preserve"><value>やり直す</value></data>
@@ -4371,6 +4358,290 @@ Esc  現在のタスクをキャンセル</value>
   <data name="ExportWindow_RmpContent" xml:space="preserve"><value>編集中の地下鉄路線図を、変更した路線・駅・その他の要素を含めて書き出します。フォントはファイルに埋め込まれます。</value></data>
   <data name="ExportWindow_RmpSvgDescription" xml:space="preserve"><value>拡大縮小や再編集が可能なベクター画像</value></data>
   <data name="RmpEditor_DefaultTitle" xml:space="preserve"><value>{cityName}地下鉄路線図</value></data>
+  <data name="Poi_Area" xml:space="preserve"><value>機能エリア</value></data>
+  <data name="Poi_AreaIcons" xml:space="preserve"><value>機能エリアのアイコン</value></data>
+  <data name="Poi_AreaNames" xml:space="preserve"><value>機能エリア名</value></data>
+  <data name="Poi_AreaDescription" xml:space="preserve"><value>ゲームから出力された機能エリアとその名前。</value></data>
+  <data name="Poi_PngInternalBuildings" xml:space="preserve"><value>PNG にエリア内部の建物アイコンを表示</value></data>
+  <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
+    <value>ゲームが起動中のため、多くのメモリを使用している可能性があります。都市を保存してゲームを終了してからの出力をおすすめします。そのまま続行することもできます。</value>
+  </data>
+  <data name="ExportWindow_BeforeExportNotice" xml:space="preserve">
+    <value>エクスポート前に都市を保存してゲームを終了し、メモリを多く使用する他のプログラムも閉じることをお勧めします。出力サイズが大きいほど多くのメモリを使用します。</value>
+  </data>
+  <data name="Poi_AreaMerge" xml:space="preserve">
+    <value>近接エリアのラベル統合（CS2）</value>
+  </data>
+  <data name="Poi_AreaMergeDescription" xml:space="preserve">
+    <value>同じネイティブタイプと名前を持つ近接したCS2エリアのラベルを統合します。各エリアの境界は保持されます。</value>
+  </data>
+  <data name="Map_RotateCounterclockwise" xml:space="preserve">
+    <value>反時計回りに90°</value>
+  </data>
+  <data name="Map_RotateClockwise" xml:space="preserve">
+    <value>時計回りに90°</value>
+  </data>
+  <data name="Failure_Internal" xml:space="preserve"><value>予期しないエラーが発生しました。作者に報告できます。</value></data>
+  <data name="Failure_Operation" xml:space="preserve"><value>Operation failed</value></data>
+  <data name="Failure_Metro" xml:space="preserve"><value>路線図の生成に失敗しました</value></data>
+  <data name="Failure_Export" xml:space="preserve"><value>マップのエクスポートに失敗しました</value></data>
+  <data name="Failure_Permission" xml:space="preserve"><value>必要なファイルにアクセスできませんでした。ファイルまたはフォルダーの権限を確認して、再試行してください。</value></data>
+  <data name="Failure_MissingFile" xml:space="preserve"><value>必要なファイルが見つかりません。保存場所を確認してもう一度お試しください。</value></data>
+  <data name="Failure_Memory" xml:space="preserve"><value>メモリを確保できませんでした。出力サイズを小さくするか、メモリを多く使うアプリを閉じて、再試行してください。</value></data>
+  <data name="Failure_EngineStopped" xml:space="preserve"><value>描画エンジンが停止しました。ビューアーを開き直してもう一度お試しください。</value></data>
+  <data name="Failure_ViewDetails" xml:space="preserve"><value>View details</value></data>
+  <data name="Failure_CopyDetails" xml:space="preserve"><value>エラーの詳細をコピー</value></data>
+  <data name="Failure_Close" xml:space="preserve"><value>Close</value></data>
+  <data name="Failure_Copied" xml:space="preserve"><value>Copied</value></data>
+  <data name="Failure_CopyFailed" xml:space="preserve"><value>コピーできませんでした。もう一度お試しください。</value></data>
+  <data name="Ribbon_MoreLayers" xml:space="preserve"><value>その他のレイヤー</value></data>
+  <data name="Ribbon_Simplified" xml:space="preserve"><value>簡易</value></data>
+  <data name="Ribbon_Classic" xml:space="preserve"><value>クラシック</value></data>
+  <data name="Sidebar_ShowSettings" xml:space="preserve"><value>左パネルを表示</value></data>
+  <data name="Sidebar_HideSettings" xml:space="preserve"><value>左パネルを非表示</value></data>
+  <data name="Sidebar_ShowInspector" xml:space="preserve"><value>右パネルを表示</value></data>
+  <data name="Sidebar_HideInspector" xml:space="preserve"><value>右パネルを非表示</value></data>
+  <data name="Ribbon_IntroTitle" xml:space="preserve"><value>新しい簡易モードを試す</value></data>
+  <data name="Ribbon_IntroDescription" xml:space="preserve"><value>簡易モードでは、より快適でシンプルに地図を閲覧できます。いつでもクラシックモードに戻せます。</value></data>
+  <data name="Ribbon_IntroTry" xml:space="preserve"><value>簡易モードを試す</value></data>
+  <data name="Ribbon_IntroLater" xml:space="preserve"><value>今はしない</value></data>
+  <data name="RmpEditor_showNames" xml:space="preserve"><value>駅名を表示</value></data>
+  <data name="RmpEditor_showDefaultNames" xml:space="preserve"><value>既定の駅名を表示</value></data>
+  <data name="Poi_ShowDecorative" xml:space="preserve"><value>装飾物の POI を表示</value></data>
+  <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>登録済み装飾物のアイコンと名前を表示します。建物や地物は引き続き表示されます。</value></data>
+  <data name="MetroSettings_Reset" xml:space="preserve"><value>既定値に戻す</value></data>
+  <data name="Preview_Failed" xml:space="preserve"><value>地図プレビューを読み込めませんでした</value></data>
+  <data name="Preview_Slow" xml:space="preserve"><value>地図プレビューに時間がかかっています</value></data>
+  <data name="Preview_Stopped" xml:space="preserve"><value>プレビューが動作していません</value></data>
+  <data name="Preview_DataAvailable" xml:space="preserve"><value>地図データは読み込み済みです。テーマの選択と書き出しができます。</value></data>
+  <data name="Preview_OpenMap" xml:space="preserve"><value>地図ファイルを開くと、テーマの選択と書き出しができます。</value></data>
+  <data name="Preview_AutoStart" xml:space="preserve"><value>起動時に内蔵プレビューを読み込む</value></data>
+  <data name="Preview_Retry.Content" xml:space="preserve"><value>再試行</value></data>
+  <data name="Preview_Png.Content" xml:space="preserve"><value>PNG を書き出す（2048 px）</value></data>
+  <data name="Preview_Html.Content" xml:space="preserve"><value>外部ブラウザーで開く</value></data>
+  <data name="Preview_Continue.Content" xml:space="preserve"><value>待機を続ける</value></data>
+  <data name="Preview_OpenFailed" xml:space="preserve"><value>HTML は保存されましたが、ブラウザーで開けませんでした。出力フォルダーから手動で開いてください。</value></data>
+  <data name="ThemeEditor_Select" xml:space="preserve"><value>テーマを選択</value></data>
+  <data name="ThemeEditor_Unsaved" xml:space="preserve"><value>未保存</value></data>
+  <data name="ThemeEditor_Builtins" xml:space="preserve"><value>プリセット</value></data>
+  <data name="ThemeEditor_Personal" xml:space="preserve"><value>マイテーマ</value></data>
+  <data name="ThemeEditor_New" xml:space="preserve"><value>新しいテーマ</value></data>
+  <data name="ThemeEditor_Copy" xml:space="preserve"><value>テーマを複製</value></data>
+  <data name="ThemeEditor_Rename" xml:space="preserve"><value>名前を変更</value></data>
+  <data name="ThemeEditor_Import" xml:space="preserve"><value>テーマをインポート…</value></data>
+  <data name="ThemeEditor_Export" xml:space="preserve"><value>テーマをエクスポート…</value></data>
+  <data name="ThemeEditor_Base" xml:space="preserve"><value>基本プリセット</value></data>
+  <data name="ThemeEditor_Cancel" xml:space="preserve"><value>キャンセル</value></data>
+  <data name="ThemeEditor_Name" xml:space="preserve"><value>テーマ名</value></data>
+  <data name="ThemeEditor_Save" xml:space="preserve"><value>保存</value></data>
+  <data name="ThemeEditor_Exported" xml:space="preserve"><value>テーマをエクスポートしました</value></data>
+  <data name="ThemeEditor_InvalidName" xml:space="preserve"><value>制御文字を含まない1～64文字で入力してください。</value></data>
+  <data name="ThemeEditor_MigrationWarning" xml:space="preserve"><value>一部の旧テーマを読み込めませんでした。元のファイルはバックアップされています：</value></data>
+  <data name="BuildingList_Open" xml:space="preserve"><value>建物一覧</value></data>
+  <data name="BuildingList_Back" xml:space="preserve"><value>概要に戻る</value></data>
+  <data name="BuildingList_Search" xml:space="preserve"><value>建物名を検索</value></data>
+  <data name="BuildingList_Category" xml:space="preserve"><value>建物の分類</value></data>
+  <data name="BuildingList_OutsideFilter" xml:space="preserve"><value>選択した建物は現在の絞り込み結果に含まれません。</value></data>
+  <data name="BuildingList_Clear" xml:space="preserve"><value>絞り込みを解除</value></data>
+  <data name="BuildingList_All" xml:space="preserve"><value>すべて</value></data>
+  <data name="BuildingList_Unnamed" xml:space="preserve"><value>名称未設定の建物</value></data>
+  <data name="BuildingList_Empty" xml:space="preserve"><value>該当する建物はありません</value></data>
+  <data name="BuildingList_Count" xml:space="preserve"><value>{0:N0} / {1:N0} 棟を表示（複合建物はまとめて集計）</value></data>
+  <data name="BuildingList_Members" xml:space="preserve"><value>付属建物</value></data>
+  <data name="BuildingList_OpenButton.Content" xml:space="preserve"><value>建物一覧</value></data>
+  <data name="BuildingList_Sort" xml:space="preserve"><value>並べ替え</value></data>
+  <data name="BuildingList_NameAsc" xml:space="preserve"><value>名前：昇順</value></data>
+  <data name="BuildingList_NameDesc" xml:space="preserve"><value>名前：降順</value></data>
+  <data name="BuildingList_CategoryAsc" xml:space="preserve"><value>分類：昇順</value></data>
+  <data name="BuildingList_CategoryDesc" xml:space="preserve"><value>分類：降順</value></data>
+  <data name="BuildingList_IdAsc" xml:space="preserve"><value>ID：昇順</value></data>
+  <data name="BuildingList_IdDesc" xml:space="preserve"><value>ID：降順</value></data>
+  <data name="BuildingList_Details" xml:space="preserve"><value>建物の詳細</value></data>
+  <data name="BuildingList_DetailHint" xml:space="preserve"><value>建物を選択すると詳細が表示されます。</value></data>
+  <data name="ThemeEditor_CurrentUnreadable" xml:space="preserve"><value>現在のテーマを読み込めません。別のテーマを選択してください。元のファイルは保持されています。</value></data>
+  <data name="BuildingList_GameNames" xml:space="preserve"><value>ゲーム生成名を使用</value></data>
+  <data name="BuildingList_NameHint" xml:space="preserve"><value>名前の設定は地図と同期します。プレイヤーが付けた名前は保持されます。</value></data>
+  <data name="BuildingList_Name" xml:space="preserve"><value>建物名</value></data>
+  <data name="BuildingList_Id" xml:space="preserve"><value>ID</value></data>
+  <data name="BuildingList_Info" xml:space="preserve"><value>建物情報</value></data>
+  <data name="BuildingList_NameSource" xml:space="preserve"><value>名前の出典</value></data>
+  <data name="BuildingList_CustomName" xml:space="preserve"><value>プレイヤー指定</value></data>
+  <data name="BuildingList_OfficialName" xml:space="preserve"><value>ゲームの公式分類</value></data>
+  <data name="BuildingList_NoName" xml:space="preserve"><value>名前なし</value></data>
+  <data name="BuildingList_GameCategory" xml:space="preserve"><value>ゲームの分類</value></data>
+  <data name="BuildingList_Height" xml:space="preserve"><value>建物の高さ</value></data>
+  <data name="BuildingList_Group" xml:space="preserve"><value>建物グループ</value></data>
+  <data name="BuildingList_GroupCount" xml:space="preserve"><value>{0} 棟（主建物を含む）</value></data>
+  <data name="BuildingList_GameName" xml:space="preserve"><value>ゲーム生成名</value></data>
+  <data name="ThemeUpdate_Title" xml:space="preserve"><value>プリセットの更新</value></data>
+  <data name="ThemeUpdate_Intro" xml:space="preserve"><value>次のプリセット変更を「{0}」に適用できます。</value></data>
+  <data name="ThemeUpdate_Archived" xml:space="preserve"><value>適用前に現在のテーマをバックアップします。</value></data>
+  <data name="ThemeUpdate_Continue" xml:space="preserve"><value>更新を適用</value></data>
+  <data name="ThemeUpdate_UsePrevious" xml:space="preserve"><value>現在の設定を維持</value></data>
+  <data name="ThemeUpdate_Conflict" xml:space="preserve"><value>この項目はカスタム設定を置き換えます。</value></data>
+  <data name="ThemeUpdate_ColorRamp" xml:space="preserve"><value>標高の配色</value></data>
+  <data name="ThemeUpdate_Unset" xml:space="preserve"><value>未設定</value></data>
+  <data name="ThemeUpdate_On" xml:space="preserve"><value>オン</value></data>
+  <data name="ThemeUpdate_Off" xml:space="preserve"><value>オフ</value></data>
+  <data name="ThemeUpdate_Custom" xml:space="preserve"><value>カスタム設定</value></data>
+  <data name="SatelliteGuidance_Title" xml:space="preserve"><value>衛星地図の表示設定</value></data>
+  <data name="SatelliteGuidance_Body" xml:space="preserve"><value>衛星ウォームテーマで道路・アイコン・文字を見やすくします。</value></data>
+  <data name="SatelliteGuidance_Apply" xml:space="preserve"><value>推奨設定を適用</value></data>
+  <data name="SatelliteGuidance_Keep" xml:space="preserve"><value>現在の設定を維持</value></data>
+  <data name="SatelliteGuidance_Unavailable" xml:space="preserve"><value>この地図には衛星画像がありません</value></data>
+  <data name="SatelliteGuidance_EnableTitle" xml:space="preserve"><value>有効を推奨</value></data>
+  <data name="SatelliteGuidance_EnableLayers" xml:space="preserve"><value>道路・アイコン・文字</value></data>
+  <data name="SatelliteGuidance_OptionalTitle" xml:space="preserve"><value>必要に応じて有効</value></data>
+  <data name="SatelliteGuidance_OptionalLayers" xml:space="preserve"><value>鉄道・公共交通・交通状況</value></data>
+  <data name="SatelliteGuidance_DisableTitle" xml:space="preserve"><value>無効を推奨</value></data>
+  <data name="SatelliteGuidance_DisableLayers" xml:space="preserve"><value>建物・地形・水域などの重ね合わせレイヤー</value></data>
+  <data name="SatelliteGuidance_Preserve" xml:space="preserve"><value>現在の選択を維持</value></data>
+  <data name="SatelliteGuidance_Details" xml:space="preserve"><value>変更の詳細を見る</value></data>
+  <data name="SatelliteGuidance_DetailBody" xml:space="preserve"><value>建物、地形、水域、市街地、土地利用、POI 領域、PO オブジェクトは衛星画像を覆うため、有効にしないことをおすすめします。推奨設定を適用すると、これらのレイヤーは無効になります。</value></data>
+  <data name="Preview_Compatibility.Content" xml:space="preserve"><value>互換プレビュー</value></data>
+  <data name="Preview_CompatibilityNotice.Text" xml:space="preserve"><value>互換モード：画像プレビューのため、一部の機能は使用できません。</value></data>
+  <data name="Preview_Interactive.Content" xml:space="preserve"><value>対話型プレビューに戻す</value></data>
+  <data name="Preview_ImageUpdating.Text" xml:space="preserve"><value>プレビューを更新中</value></data>
+  <data name="Preview_ImageFailed" xml:space="preserve"><value>画像プレビューの更新に失敗：</value></data>
+  <data name="Preview_BrowserOpenFailed" xml:space="preserve"><value>ブラウザーを開けませんでした。HTMLファイルは以下の場所にあります。</value></data>
+  <data name="Preview_OpenFolder" xml:space="preserve"><value>フォルダーを開く</value></data>
+  <data name="Workspace_Immersive" xml:space="preserve"><value>没入</value></data>
+  <data name="Workspace_ExitImmersive" xml:space="preserve"><value>没入モードを終了</value></data>
+  <data name="Workspace_ImmersiveHint" xml:space="preserve"><value>パネルを隠してルートと地図を広く表示します。</value></data>
+  <data name="Workspace_TryImmersive" xml:space="preserve"><value>没入モードを試す</value></data>
+  <data name="Workspace_MoreActions" xml:space="preserve"><value>その他の地図操作</value></data>
+  <data name="Artwork_Enter" xml:space="preserve"><value>地図の下書きを作成…</value></data>
+  <data name="Artwork_Export" xml:space="preserve"><value>現在の作品を書き出す</value></data>
+  <data name="Artwork_PreviewRequired" xml:space="preserve"><value>先に都市マップのプレビューを開いてください。</value></data>
+  <data name="Artwork_OutputSize" xml:space="preserve"><value>出力の長辺（ピクセル）</value></data>
+  <data name="Artwork_Cancel" xml:space="preserve"><value>キャンセル</value></data>
+  <data name="CityEditor_Title" xml:space="preserve"><value>地図エディター</value></data>
+  <data name="CityEditor_Theme" xml:space="preserve"><value>テーマ</value></data>
+  <data name="CityEditor_SaveAs" xml:space="preserve"><value>テーマに名前を付けて保存</value></data>
+  <data name="CityEditor_Manage" xml:space="preserve"><value>テーマを管理</value></data>
+  <data name="CityEditor_Selection" xml:space="preserve"><value>マップ上の範囲選択</value></data>
+  <data name="CityEditor_Select" xml:space="preserve"><value>範囲選択</value></data>
+  <data name="CityEditor_PickStyle" xml:space="preserve"><value>スタイルを取得</value></data>
+  <data name="CityEditor_Pan" xml:space="preserve"><value>パン</value></data>
+  <data name="CityEditor_Clear" xml:space="preserve"><value>選択をクリア</value></data>
+  <data name="CityEditor_Edit" xml:space="preserve"><value>編集</value></data>
+  <data name="CityEditor_Undo" xml:space="preserve"><value>元に戻す</value></data>
+  <data name="CityEditor_Redo" xml:space="preserve"><value>やり直し</value></data>
+  <data name="CityEditor_View" xml:space="preserve"><value>表示</value></data>
+  <data name="CityEditor_Fit" xml:space="preserve"><value>地図全体を画面に合わせる</value></data>
+  <data name="CityEditor_Actual" xml:space="preserve"><value>100%</value></data>
+  <data name="CityEditor_Output" xml:space="preserve"><value>保存と出力</value></data>
+  <data name="CityEditor_Save" xml:space="preserve"><value>テーマを保存</value></data>
+  <data name="CityEditor_Export" xml:space="preserve"><value>PNGでエクスポート</value></data>
+  <data name="CityEditor_Close" xml:space="preserve"><value>閉じる</value></data>
+  <data name="CityEditor_Leave" xml:space="preserve"><value>エディターを終了</value></data>
+  <data name="CityEditor_Range" xml:space="preserve"><value>地図の範囲</value></data>
+  <data name="CityEditor_WholeCity" xml:space="preserve"><value>市全域</value></data>
+  <data name="CityEditor_SelectedRange" xml:space="preserve"><value>選択した範囲</value></data>
+  <data name="CityEditor_Preset" xml:space="preserve"><value>キャンバスのプリセット</value></data>
+  <data name="CityEditor_Create" xml:space="preserve"><value>都市マップの下書きを作成</value></data>
+  <data name="CityEditor_InvalidSize" xml:space="preserve"><value>キャンバスの長辺は1～32768ピクセルの整数で指定してください。</value></data>
+  <data name="CityEditor_CanvasPixels" xml:space="preserve"><value>キャンバスの長辺（ピクセル）</value></data>
+  <data name="CityEditor_Rotation" xml:space="preserve"><value>出力時の回転</value></data>
+  <data name="CityEditor_Styles" xml:space="preserve"><value>スタイル</value></data>
+  <data name="CityEditor_Draft" xml:space="preserve"><value>下書き</value></data>
+  <data name="CityEditor_ApplyCanvas" xml:space="preserve"><value>キャンバス設定を適用</value></data>
+  <data name="CityEditor_SelectRange" xml:space="preserve"><value>地図の範囲を選択</value></data>
+  <data name="CityEditor_UseSelection" xml:space="preserve"><value>選択した範囲を使用</value></data>
+  <data name="CityEditor_UseWholeCity" xml:space="preserve"><value>市全域を使用</value></data>
+  <data name="CityEditor_NoSelection" xml:space="preserve"><value>先に地図上で有効な範囲を選択してください。</value></data>
+  <data name="CityEditor_RangeHelp" xml:space="preserve"><value>地図上で範囲を囲んで適用します。範囲の変更時は上の設定も適用し、配置を再計算します。ズームは表示だけを変更します。</value></data>
+  <data name="CityEditor_ObjectFacts" xml:space="preserve"><value>選択したオブジェクトの情報</value></data>
+  <data name="CityEditor_Scope" xml:space="preserve"><value>テーマのスタイルは同じカテゴリのすべての対象に適用されます。強調表示は選択中の対象を示します。</value></data>
+  <data name="CityEditor_Unsaved" xml:space="preserve"><value>テーマに未保存の変更があります</value></data>
+  <data name="CityEditor_Saved" xml:space="preserve"><value>テーマを保存しました</value></data>
+  <data name="CityEditor_Updating" xml:space="preserve"><value>下書きを更新中</value></data>
+  <data name="CityEditor_ExportScale" xml:space="preserve"><value>今回のエクスポートにのみ適用する比例変換：</value></data>
+  <data name="ThemeEditor_AllRoads" xml:space="preserve"><value>すべての道路の設定</value></data>
+  <data name="ThemeEditor_ThemeSwitchUnavailable" xml:space="preserve"><value>選択したテーマを読み込めません。レンダラーを更新して再試行してください。</value></data>
+  <data name="ThemeEditor_ExternalThemeChanged" xml:space="preserve"><value>別の操作でテーマが変更されました。テーマエディターを開き直してください。</value></data>
+  <data name="CityEditor_ContentScope" xml:space="preserve"><value>内容と表示の設定はテーマとは別に保存され、すぐに反映されます。</value></data>
+  <data name="CityEditor_CreateIntro" xml:space="preserve"><value>現在の地図をもとに、配色やラベルを調整して自分だけの都市マップを作れます。</value></data>
+  <data name="CityEditor_CreateRangeUnselected" xml:space="preserve"><value>最初は市全域が対象です。範囲を狭めるには、いったんキャンセルして地図上で範囲を選んでください。</value></data>
+  <data name="CityEditor_CreateRangeHelp" xml:space="preserve"><value>選択した範囲と市全域を切り替えて、地図に表示する範囲を決められます。</value></data>
+  <data name="CityEditor_CreateCanvasTitle" xml:space="preserve"><value>キャンバスサイズ</value></data>
+  <data name="CityEditor_CreateCanvasHelp" xml:space="preserve"><value>通常は4096ピクセルが目安です。より大きくするには、プリセットを選ぶか長辺の長さを入力してください。地図の縦横比は維持されます。</value></data>
+  <data name="CityEditor_CreateRotationHelp" xml:space="preserve"><value>地図を時計回りに回転します。</value></data>
+  <data name="CityEditor_CreateAdjustLater" xml:space="preserve"><value>範囲、サイズ、回転は後から「下書き」サイドバーで調整できます。</value></data>
+  <data name="CityEditor_LoadingEnter" xml:space="preserve"><value>地図エディターを開いています</value></data>
+  <data name="CityEditor_LoadingUpdate" xml:space="preserve"><value>地図のスタイルを更新中</value></data>
+  <data name="CityEditor_LoadingTheme" xml:space="preserve"><value>テーマとキャンバス設定を読み込み中</value></data>
+  <data name="CityEditor_LoadingBase" xml:space="preserve"><value>ベースマップと道路データを準備中</value></data>
+  <data name="CityEditor_LoadingLayout" xml:space="preserve"><value>下書きのレイアウトを計算中</value></data>
+  <data name="CityEditor_LoadingLabels" xml:space="preserve"><value>地図のラベルを配置中</value></data>
+  <data name="CityEditor_LoadingIcons" xml:space="preserve"><value>地点のアイコンを配置中</value></data>
+  <data name="CityEditor_LoadingTransport" xml:space="preserve"><value>路線と駅を配置中</value></data>
+  <data name="CityEditor_LoadingDelivery" xml:space="preserve"><value>下書きを転送して画像を準備中</value></data>
+  <data name="CityEditor_LoadingPresent" xml:space="preserve"><value>地図を描画中です。画面の表示完了を待っています</value></data>
+  <data name="Preview_NotRunningDetail" xml:space="preserve"><value>プレビューが正常に動作していません。環境設定やメモリ不足など、さまざまな原因が考えられます。以下の方法を選択して続行できます。</value></data>
+  <data name="Preview_Cancel.Content" xml:space="preserve"><value>キャンセル</value></data>
+  <data name="CityEditor_CloseupUnavailable" xml:space="preserve"><value>下書きの範囲内に、このスタイルを拡大表示できる地物がありません。</value></data>
+  <data name="Pixel_Scale" xml:space="preserve"><value>要素の倍率（%）</value></data>
+  <data name="Pixel_Actual" xml:space="preserve"><value>実際のサイズ：{0} px</value></data>
+  <data name="Pixel_Recommended" xml:space="preserve"><value>この解像度での推奨値：{0}%</value></data>
+  <data name="Pixel_InvalidScale" xml:space="preserve"><value>0より大きい有限の数値を入力してください。</value></data>
+  <data name="Pixel_Help" xml:space="preserve"><value>長辺を2倍にすると要素の倍率も2倍になります。文字、アイコン、線幅の倍率は個別に調整できます。</value></data>
+  <data name="RoadCategoryQuay" xml:space="preserve"><value>護岸</value></data>
+  <data name="CityEditor_ResetCanvas" xml:space="preserve"><value>キャンバスをリセット</value></data>
+  <data name="CityEditor_ResetCanvasHelp" xml:space="preserve"><value>下書き、テーマの変更、表示位置を保持してプレビューを再起動します。</value></data>
+  <data name="ThemeUpdate_Review" xml:space="preserve"><value>プリセット更新を確認</value></data>
+  <data name="ThemeUpdate_None" xml:space="preserve"><value>適用できるプリセットの変更はありません。</value></data>
+  <data name="CityEditor_Resolution" xml:space="preserve"><value>解像度</value></data>
+  <data name="CityEditor_PresetResolution" xml:space="preserve"><value>プリセット解像度</value></data>
+  <data name="CityEditor_CustomResolution" xml:space="preserve"><value>カスタム解像度</value></data>
+  <data name="ThemeUpdate_Current" xml:space="preserve"><value>現在のテーマ</value></data>
+  <data name="ThemeUpdate_Preset" xml:space="preserve"><value>新しいプリセット</value></data>
+  <data name="CityEditor_PixelWidth" xml:space="preserve"><value>幅（px）</value></data>
+  <data name="CityEditor_PixelHeight" xml:space="preserve"><value>高さ（px）</value></data>
+  <data name="CityEditor_ElementSize" xml:space="preserve"><value>要素のサイズ</value></data>
+  <data name="CityEditor_SizeLinked" xml:space="preserve"><value>選択範囲の縦横比を維持します。</value></data>
+  <data name="DraftWelcome_Title" xml:space="preserve"><value>下書き編集へようこそ</value></data>
+  <data name="DraftWelcome_Intro" xml:space="preserve"><value>現在は探索ビューで街を見ています。地図を書き出すときは、下書き編集を開いて、テーマエディターで文字やアイコンの大きさ、道路の線幅を細かく調整できます。</value></data>
+  <data name="DraftWelcome_ExploreTitle" xml:space="preserve"><value>探索ビュー</value></data>
+  <data name="DraftWelcome_ExploreBody" xml:space="preserve"><value>拡大すると表示される場所が増え、縮小すると細部が隠れます。文字やアイコンの大きさも自動で変わります。</value></data>
+  <data name="DraftWelcome_DraftTitle" xml:space="preserve"><value>下書き編集</value></data>
+  <data name="DraftWelcome_DraftBody" xml:space="preserve"><value>下書き全体が同じ比率で拡大・縮小します。表示されるラベルと街区に対する大きさは変わりません。</value></data>
+  <data name="DraftWelcome_Enter" xml:space="preserve"><value>下書き編集を開く</value></data>
+  <data name="DraftWelcome_Continue" xml:space="preserve"><value>探索を続ける</value></data>
+  <data name="DraftWelcome_Pause" xml:space="preserve"><value>一時停止</value></data>
+  <data name="DraftWelcome_Resume" xml:space="preserve"><value>再生を再開</value></data>
+  <data name="DraftWelcome_NextLevel" xml:space="preserve"><value>次のズーム段階へ</value></data>
+  <data name="DraftWelcome_Pier" xml:space="preserve"><value>桟橋</value></data>
+  <data name="DraftWelcome_Market" xml:space="preserve"><value>市場</value></data>
+  <data name="DraftWelcome_Cafe" xml:space="preserve"><value>カフェ</value></data>
+  <data name="DraftWelcome_Clinic" xml:space="preserve"><value>診療所</value></data>
+  <data name="DraftWelcome_Station" xml:space="preserve"><value>河岸駅</value></data>
+  <data name="DraftWelcome_Park" xml:space="preserve"><value>公園</value></data>
+  <data name="DraftWelcome_Shop" xml:space="preserve"><value>書店</value></data>
+  <data name="Sidebar_TransitDistance" xml:space="preserve"><value>路線ごとの長さを合計します。共有区間は路線ごとに数えます。</value></data>
+  <data name="Sidebar_RoadCommit" xml:space="preserve"><value>スイッチはすぐに反映されます。数値は入力欄から移動すると反映されます。</value></data>
+  <data name="Sidebar_Locate" xml:space="preserve"><value>選択すると下書きの範囲内で該当する地物に移動します。</value></data>
+  <data name="ThemeEditor_Edit" xml:space="preserve"><value>テーマを編集</value></data>
+  <data name="ThemeEditor_Delete" xml:space="preserve"><value>テーマを削除</value></data>
+  <data name="ThemeEditor_DeleteConfirm" xml:space="preserve"><value>「{0}」を削除しますか？削除後は「{1}」に切り替わります。</value></data>
+  <data name="ThemeEditor_ThumbnailFailed" xml:space="preserve"><value>テーマは保存されましたが、プレビューを更新できませんでした。</value></data>
+  <data name="CityEditor_IconDensity" xml:space="preserve">
+    <value>アイコン密度</value>
+  </data>
+  <data name="ThemeChoice_Title" xml:space="preserve"><value>テーマエディターの選択</value></data>
+  <data name="ThemeChoice_Interactive" xml:space="preserve"><value>対話型テーマエディター</value></data>
+  <data name="ThemeChoice_Description" xml:space="preserve"><value>都市の下書きでテーマ設定を調整し、書き出した地図の仕上がりを確認できます。</value></data>
+  <data name="ThemeChoice_Traditional" xml:space="preserve"><value>従来のテーマエディター</value></data>
+  <data name="ThemeChoice_Unavailable" xml:space="preserve"><value>都市マップまたは公共交通マップを開き、対話型プレビューの準備が整うまでお待ちください。</value></data>
+  <data name="ExportChoice_Title" xml:space="preserve"><value>書き出し方法を選択</value></data>
+  <data name="ExportChoice_Direct" xml:space="preserve"><value>そのまま書き出す</value></data>
+  <data name="ExportChoice_DirectHelp" xml:space="preserve"><value>形式を選び、現在の地図設定で書き出します。</value></data>
+  <data name="ExportChoice_Edit" xml:space="preserve"><value>編集してから書き出す</value></data>
+  <data name="ExportChoice_EditHelp" xml:space="preserve"><value>下書きで地図を調整してから書き出します。</value></data>
+  <data name="Workflow_Remember" xml:space="preserve"><value>選択を記憶する</value></data>
+  <data name="Workflow_Reset" xml:space="preserve"><value>テーマ編集と書き出し方法の選択をリセット</value></data>
+  <data name="Export_DraftSettingsHelp" xml:space="preserve"><value>範囲、向き、要素の大きさ、アイコン密度を変更するには、下書きタブを開いて結果を確認してください。</value></data>
+  <data name="Export_GoToDraft" xml:space="preserve"><value>下書きを開く</value></data>
   <data name="MetroSettings_WaterSmoothing" xml:space="preserve"><value>海岸線の平滑化</value></data>
   <data name="MetroSettings_WaterSmoothingHelp" xml:space="preserve"><value>値を上げると海岸線の細部が減り、曲がり角が滑らかになります。0 で事前平滑化を無効にします。既定値は 8 です。細い川や島によって適用強度が制限される場合があります。</value></data>
   <data name="RmpEditor_AddTitle" xml:space="preserve"><value>タイトルを追加</value></data>
@@ -4418,136 +4689,45 @@ Esc  現在のタスクをキャンセル</value>
   <data name="PoiDirect_ImageSearch" xml:space="preserve"><value>画像名またはファイル名を検索</value></data>
   <data name="PoiDirect_NoImage" xml:space="preserve"><value>アイコンなし</value></data>
   <data name="PoiDirect_Count" xml:space="preserve"><value>{0} 項目、未保存の変更 {1} 件</value></data>
-<data name="Poi_Area" xml:space="preserve"><value>機能エリア</value></data>
-  <data name="Poi_AreaIcons" xml:space="preserve"><value>機能エリアのアイコン</value></data>
-  <data name="Poi_AreaNames" xml:space="preserve"><value>機能エリア名</value></data>
-  <data name="Poi_AreaDescription" xml:space="preserve"><value>ゲームから出力された機能エリアとその名前。</value></data>
-  <data name="Poi_PngInternalBuildings" xml:space="preserve"><value>PNG にエリア内部の建物アイコンを表示</value></data>
-  <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
-    <value>ゲームが起動中のため、多くのメモリを使用している可能性があります。都市を保存してゲームを終了してからの出力をおすすめします。そのまま続行することもできます。</value>
-  </data>
-  <data name="ExportWindow_BeforeExportNotice" xml:space="preserve">
-    <value>エクスポート前に都市を保存してゲームを終了し、メモリを多く使用する他のプログラムも閉じることをお勧めします。出力サイズが大きいほど多くのメモリを使用します。</value>
-  </data>
-  <data name="Poi_AreaMerge" xml:space="preserve">
-    <value>近接エリアのラベル統合（CS2）</value>
-  </data>
-  <data name="Poi_AreaMergeDescription" xml:space="preserve">
-    <value>同じネイティブタイプと名前を持つ近接したCS2エリアのラベルを統合します。各エリアの境界は保持されます。</value>
-  </data>
-  <data name="Map_RotateCounterclockwise" xml:space="preserve">
-    <value>反時計回りに90°</value>
-  </data>
-  <data name="Map_RotateClockwise" xml:space="preserve">
-    <value>時計回りに90°</value>
-  </data>
-  <data name="Failure_Internal" xml:space="preserve"><value>An unexpected error occurred. You can report this error to the author.</value></data>
-  <data name="Failure_Operation" xml:space="preserve"><value>Operation failed</value></data>
-  <data name="Failure_Metro" xml:space="preserve"><value>Metro map generation failed</value></data>
-  <data name="Failure_Export" xml:space="preserve"><value>Map export failed</value></data>
-  <data name="Failure_Permission" xml:space="preserve"><value>A required file could not be accessed. Check file or folder permissions and try again.</value></data>
-  <data name="Failure_MissingFile" xml:space="preserve"><value>A required file was not found. Check its location and try again.</value></data>
-  <data name="Failure_Memory" xml:space="preserve"><value>Memory allocation failed. Reduce the output size or close memory-intensive applications and try again.</value></data>
-  <data name="Failure_EngineStopped" xml:space="preserve"><value>The rendering engine has stopped. Reopen the viewer and try again.</value></data>
-  <data name="Failure_ViewDetails" xml:space="preserve"><value>View details</value></data>
-  <data name="Failure_CopyDetails" xml:space="preserve"><value>Copy error details</value></data>
-  <data name="Failure_Close" xml:space="preserve"><value>Close</value></data>
-  <data name="Failure_Copied" xml:space="preserve"><value>Copied</value></data>
-  <data name="Failure_CopyFailed" xml:space="preserve"><value>Copy failed. Please try again.</value></data>
-  <data name="Ribbon_MoreLayers" xml:space="preserve"><value>その他のレイヤー</value></data>
-  <data name="Ribbon_Simplified" xml:space="preserve"><value>簡易</value></data>
-  <data name="Ribbon_Classic" xml:space="preserve"><value>クラシック</value></data>
-  <data name="Sidebar_ShowSettings" xml:space="preserve"><value>左パネルを表示</value></data>
-  <data name="Sidebar_HideSettings" xml:space="preserve"><value>左パネルを非表示</value></data>
-  <data name="Sidebar_ShowInspector" xml:space="preserve"><value>右パネルを表示</value></data>
-  <data name="Sidebar_HideInspector" xml:space="preserve"><value>右パネルを非表示</value></data>
-  <data name="Ribbon_IntroTitle" xml:space="preserve"><value>新しい簡易モードを試す</value></data>
-  <data name="Ribbon_IntroDescription" xml:space="preserve"><value>簡易モードでは、より快適でシンプルに地図を閲覧できます。いつでもクラシックモードに戻せます。</value></data>
-  <data name="Ribbon_IntroTry" xml:space="preserve"><value>簡易モードを試す</value></data>
-  <data name="Ribbon_IntroLater" xml:space="preserve"><value>今はしない</value></data>
-  <data name="RmpEditor_showNames" xml:space="preserve"><value>Show station names</value></data>
-  <data name="RmpEditor_showDefaultNames" xml:space="preserve"><value>Show default station names</value></data>
-  <data name="Poi_ShowDecorative" xml:space="preserve"><value>装飾物の POI を表示</value></data>
-  <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>登録済み装飾物のアイコンと名前を表示します。建物や地物は引き続き表示されます。</value></data>
-  <data name="MetroSettings_Reset" xml:space="preserve"><value>既定値に戻す</value></data>
   <data name="BuildingCategory_Help" xml:space="preserve"><value>「分類別の色」を選択すると適用されます。「色を指定」を有効にすると分類内のすべての建物に適用され、無効にすると POI の自動色に戻ります。用途不明の建物は未分類のままです。</value></data>
-  <data name="BuildingList_NoName" xml:space="preserve"><value>名前なし</value></data>
-  <data name="ThemeEditor_New" xml:space="preserve"><value>新しいテーマ</value></data>
-  <data name="BuildingList_OfficialName" xml:space="preserve"><value>ゲームの公式分類</value></data>
-  <data name="ThemeEditor_Name" xml:space="preserve"><value>テーマ名</value></data>
-  <data name="BuildingList_Search" xml:space="preserve"><value>建物名を検索</value></data>
-  <data name="Preview_AutoStart" xml:space="preserve"><value>起動時に内蔵プレビューを読み込む</value></data>
-  <data name="BuildingList_DetailHint" xml:space="preserve"><value>建物を選択すると詳細が表示されます。</value></data>
-  <data name="BuildingList_Height" xml:space="preserve"><value>建物の高さ</value></data>
-  <data name="BuildingList_Open" xml:space="preserve"><value>建物一覧</value></data>
-  <data name="BuildingList_Name" xml:space="preserve"><value>建物名</value></data>
-  <data name="Preview_Continue.Content" xml:space="preserve"><value>待機を続ける</value></data>
-  <data name="ThemeUpdate_Intro" xml:space="preserve"><value>「{0}」にプリセットの更新を反映しました。</value></data>
-  <data name="BuildingList_Id" xml:space="preserve"><value>ID</value></data>
-  <data name="ThemeUpdate_Off" xml:space="preserve"><value>オフ</value></data>
-  <data name="BuildingList_CategoryDesc" xml:space="preserve"><value>分類：降順</value></data>
-  <data name="ThemeEditor_Unsaved" xml:space="preserve"><value>未保存</value></data>
-  <data name="BuildingList_IdDesc" xml:space="preserve"><value>ID：降順</value></data>
-  <data name="ThemeEditor_MigrationWarning" xml:space="preserve"><value>一部の旧テーマを読み込めませんでした。元のファイルはバックアップされています：</value></data>
-  <data name="ThemeEditor_Select" xml:space="preserve"><value>テーマを選択</value></data>
-  <data name="ThemeEditor_Copy" xml:space="preserve"><value>テーマを複製</value></data>
-  <data name="BuildingList_Info" xml:space="preserve"><value>建物情報</value></data>
-  <data name="BuildingList_Unnamed" xml:space="preserve"><value>名称未設定の建物</value></data>
-  <data name="BuildingList_CustomName" xml:space="preserve"><value>プレイヤー指定</value></data>
-  <data name="ThemeEditor_Cancel" xml:space="preserve"><value>キャンセル</value></data>
-  <data name="ThemeUpdate_Continue" xml:space="preserve"><value>このまま使う</value></data>
-  <data name="BuildingList_NameSource" xml:space="preserve"><value>名前の出典</value></data>
-  <data name="BuildingList_Details" xml:space="preserve"><value>建物の詳細</value></data>
-  <data name="ThemeUpdate_UsePrevious" xml:space="preserve"><value>以前に戻す</value></data>
-  <data name="ThemeUpdate_Archived" xml:space="preserve"><value>以前のテーマは保存されています。テーマ一覧からいつでも切り替えられます。</value></data>
-  <data name="BuildingList_All" xml:space="preserve"><value>すべて</value></data>
-  <data name="ThemeEditor_Exported" xml:space="preserve"><value>テーマをエクスポートしました</value></data>
-  <data name="BuildingList_Empty" xml:space="preserve"><value>該当する建物はありません</value></data>
-  <data name="ThemeUpdate_Kept" xml:space="preserve"><value>変更を保持しました</value></data>
-  <data name="BuildingList_Count" xml:space="preserve"><value>{0:N0} / {1:N0} 棟を表示（複合建物はまとめて集計）</value></data>
-  <data name="BuildingList_Back" xml:space="preserve"><value>概要に戻る</value></data>
-  <data name="Preview_DataAvailable" xml:space="preserve"><value>地図データは読み込み済みです。テーマの選択と書き出しができます。</value></data>
-  <data name="ThemeEditor_Personal" xml:space="preserve"><value>マイテーマ</value></data>
-  <data name="ThemeUpdate_ColorRamp" xml:space="preserve"><value>標高の配色</value></data>
-  <data name="ThemeEditor_Export" xml:space="preserve"><value>テーマをエクスポート…</value></data>
-  <data name="ThemeEditor_Import" xml:space="preserve"><value>テーマをインポート…</value></data>
-  <data name="BuildingList_OutsideFilter" xml:space="preserve"><value>選択した建物は現在の絞り込み結果に含まれません。</value></data>
-  <data name="ThemeEditor_Base" xml:space="preserve"><value>基本プリセット</value></data>
-  <data name="BuildingList_NameAsc" xml:space="preserve"><value>名前：昇順</value></data>
-  <data name="BuildingList_GroupCount" xml:space="preserve"><value>{0} 棟（主建物を含む）</value></data>
-  <data name="ThemeEditor_CurrentUnreadable" xml:space="preserve"><value>現在のテーマを読み込めません。別のテーマを選択してください。元のファイルは保持されています。</value></data>
-  <data name="Preview_OpenFailed" xml:space="preserve"><value>HTML は保存されましたが、ブラウザーで開けませんでした。出力フォルダーから手動で開いてください。</value></data>
-  <data name="ThemeEditor_Rename" xml:space="preserve"><value>名前を変更</value></data>
-  <data name="Preview_OpenMap" xml:space="preserve"><value>地図ファイルを開くと、テーマの選択と書き出しができます。</value></data>
-  <data name="Preview_Slow" xml:space="preserve"><value>地図プレビューに時間がかかっています</value></data>
-  <data name="ThemeUpdate_AllChanges" xml:space="preserve"><value>すべての変更</value></data>
-  <data name="ThemeEditor_Builtins" xml:space="preserve"><value>組み込みテーマ</value></data>
-  <data name="BuildingList_OpenButton.Content" xml:space="preserve"><value>建物一覧</value></data>
-  <data name="ThemeUpdate_Custom" xml:space="preserve"><value>カスタム設定</value></data>
-  <data name="BuildingList_GameCategory" xml:space="preserve"><value>ゲームの分類</value></data>
-  <data name="Preview_Retry.Content" xml:space="preserve"><value>プレビューを再読み込み</value></data>
-  <data name="BuildingList_Members" xml:space="preserve"><value>付属建物</value></data>
-  <data name="BuildingList_NameDesc" xml:space="preserve"><value>名前：降順</value></data>
-  <data name="BuildingList_IdAsc" xml:space="preserve"><value>ID：昇順</value></data>
-  <data name="BuildingList_Group" xml:space="preserve"><value>建物グループ</value></data>
-  <data name="ThemeEditor_Save" xml:space="preserve"><value>保存</value></data>
-  <data name="ThemeUpdate_On" xml:space="preserve"><value>オン</value></data>
-  <data name="BuildingList_GameName" xml:space="preserve"><value>ゲーム生成名</value></data>
-  <data name="ThemeUpdate_Conflict" xml:space="preserve"><value>この項目はユーザーも変更しています。新しいプリセットを優先しました。</value></data>
-  <data name="Preview_Html.Content" xml:space="preserve"><value>ブラウザーで開く</value></data>
-  <data name="ThemeEditor_InvalidName" xml:space="preserve"><value>制御文字を含まない1～64文字で入力してください。</value></data>
-  <data name="Preview_Stopped" xml:space="preserve"><value>内蔵プレビューは停止中です</value></data>
-  <data name="ThemeUpdate_MoreKept" xml:space="preserve"><value>ほか {0} 件の変更を保持</value></data>
-  <data name="BuildingList_GameNames" xml:space="preserve"><value>ゲーム生成名を使用</value></data>
-  <data name="Preview_Png.Content" xml:space="preserve"><value>PNG を書き出す（2048 px）</value></data>
-  <data name="BuildingList_CategoryAsc" xml:space="preserve"><value>分類：昇順</value></data>
-  <data name="BuildingList_Category" xml:space="preserve"><value>建物の分類</value></data>
-  <data name="ThemeUpdate_Unset" xml:space="preserve"><value>未設定</value></data>
-  <data name="Preview_Failed" xml:space="preserve"><value>地図プレビューを読み込めませんでした</value></data>
-  <data name="ThemeUpdate_Title" xml:space="preserve"><value>テーマを更新しました</value></data>
-  <data name="BuildingList_Sort" xml:space="preserve"><value>並べ替え</value></data>
-  <data name="BuildingList_NameHint" xml:space="preserve"><value>名前の設定は地図と同期します。プレイヤーが付けた名前は保持されます。</value></data>
-  <data name="BuildingList_Clear" xml:space="preserve"><value>絞り込みを解除</value></data>
   <data name="Satellite_LayerTitle" xml:space="preserve"><value>衛星画像</value></data>
   <data name="Satellite_Composing" xml:space="preserve"><value>衛星画像を合成しています…</value></data>
+  <data name="PreviewQuality_Title" xml:space="preserve"><value>プレビュー画質</value></data>
+  <data name="PreviewQuality_Preset" xml:space="preserve"><value>プレビュー画質</value></data>
+  <data name="PreviewQuality_Smooth" xml:space="preserve"><value>軽量</value></data>
+  <data name="PreviewQuality_Standard" xml:space="preserve"><value>標準</value></data>
+  <data name="PreviewQuality_Fine" xml:space="preserve"><value>高精細</value></data>
+  <data name="PreviewQuality_Custom" xml:space="preserve"><value>カスタム</value></data>
+  <data name="PreviewQuality_Open" xml:space="preserve"><value>画質設定…</value></data>
+  <data name="PreviewQuality_Clarity" xml:space="preserve"><value>鮮明度</value></data>
+  <data name="PreviewQuality_ClarityHelp" xml:space="preserve"><value>地図の表示解像度です。高くすると画像は鮮明になりますが、処理負荷も増えます。</value></data>
+  <data name="PreviewQuality_Scale75" xml:space="preserve"><value>軽量</value></data>
+  <data name="PreviewQuality_Scale100" xml:space="preserve"><value>標準</value></data>
+  <data name="PreviewQuality_Scale125" xml:space="preserve"><value>高精細</value></data>
+  <data name="PreviewQuality_Lines" xml:space="preserve"><value>道路</value></data>
+  <data name="PreviewQuality_LinesHelp" xml:space="preserve"><value>道路の詳細度を上げると線やつなぎ目が滑らかになりますが、処理負荷が大きくなります。下げると動作は軽くなりますが、道路がゆがんだり継ぎ目が見えたりする場合があります。</value></data>
+  <data name="PreviewQuality_LinesStandard" xml:space="preserve"><value>標準</value></data>
+  <data name="PreviewQuality_LinesFine" xml:space="preserve"><value>高精細</value></data>
+  <data name="PreviewQuality_Polygons" xml:space="preserve"><value>建物</value></data>
+  <data name="PreviewQuality_PolygonsHelp" xml:space="preserve"><value>建物の詳細度で表示密度を調整します。詳細度を下げると一部の小さな建物が表示されないことがあります。</value></data>
+  <data name="PreviewQuality_PolygonsStandard" xml:space="preserve"><value>標準</value></data>
+  <data name="PreviewQuality_PolygonsFine" xml:space="preserve"><value>高精細</value></data>
+  <data name="PreviewQuality_Details" xml:space="preserve"><value>個別に調整</value></data>
+  <data name="PreviewQuality_Samples" xml:space="preserve"><value>比較</value></data>
+  <data name="PreviewQuality_Scope" xml:space="preserve"><value>プレビュー専用です。最終的な出力には影響しません。</value></data>
+  <data name="PreviewQuality_Apply" xml:space="preserve"><value>適用</value></data>
+  <data name="PreviewQuality_Applied" xml:space="preserve"><value>適用済み</value></data>
+  <data name="PreviewQuality_Saved" xml:space="preserve"><value>保存済み</value></data>
+  <data name="PreviewQuality_Busy" xml:space="preserve"><value>現在のプレビュー処理が終わってから画質設定を適用してください。</value></data>
+  <data name="PreviewQuality_Restarted" xml:space="preserve"><value>プレビューが停止しました。再開後に画質設定をもう一度適用してください。</value></data>
+  <data name="PreviewQuality_ExportHint" xml:space="preserve"><value>HTMLの画質はエクスポート設定で選択してください。</value></data>
+  <data name="PreviewQuality_Current" xml:space="preserve"><value>現在の選択</value></data>
+  <data name="Export_HtmlQuality" xml:space="preserve"><value>HTMLの画質</value></data>
+  <data name="TransitLabelStyle_Label" xml:space="preserve"><value>ラベルのスタイル</value></data>
+  <data name="TransitLabelStyle_Classic" xml:space="preserve"><value>従来のカプセル型</value></data>
+  <data name="TransitLabelStyle_SideSign" xml:space="preserve"><value>サイドカラーバー</value></data>
+  <data name="TransitLabelStyle_SplitSign" xml:space="preserve"><value>アイコン分割型バッジ</value></data>
+  <data name="TransitLabelStyle_SolidSign" xml:space="preserve"><value>コンパクトな単色標識</value></data>
+  <data name="TransitLabelStyle_FrameSign" xml:space="preserve"><value>細枠の標識</value></data>
+  <data name="TransitLabelStyle_UnderlineSign" xml:space="preserve"><value>下部カラーバンド</value></data>
 </root>

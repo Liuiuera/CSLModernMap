@@ -19,8 +19,8 @@ from shapely.geometry import Polygon, mapping
 
 from csmodernmap.external_edit.rmp_graph import build_editor_draft
 
-pytestmark = pytest.mark.skipif(os.environ.get("CSL_RMP_BROWSER_TEST") != "1",
-                                reason="opt-in built RMP editor integration test")
+pytestmark = [pytest.mark.browser, pytest.mark.skipif(os.environ.get("CSL_RMP_BROWSER_TEST") != "1",
+                                reason="opt-in built RMP editor integration test")]
 ROOT = Path(__file__).resolve().parents[2]
 
 

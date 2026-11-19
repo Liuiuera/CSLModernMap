@@ -195,13 +195,14 @@ def test_native_stops_without_road_anchors_roundtrip_and_generate_pois(omit):
     from PIL import Image, ImageDraw, ImageChops
     from csmodernmap.layers.base import RenderContext
     from csmodernmap.layers.transport_layer import TransportLayer
-    from csmodernmap.style import Style
+    from csmodernmap._paths import resource_dir
+    from csmodernmap.style import load_style
 
     images = []
     for source in (MapDocumentView(native_document()), view):
         image = Image.new("RGBA", (240, 120), "white")
         ctx = RenderContext(image, ImageDraw.Draw(image), lambda x, z: (20 + x / 10, 60 + z / 10),
-            Style({"transports": {"enabled": ["Metro"], "abstract": False,
+            load_style(str(resource_dir("styles") / "modern.yaml")).merged({"transports": {"enabled": ["Metro"], "abstract": False,
                                   "label": {"enabled": False}, "station": {"enabled": True}}}))
         TransportLayer().render(ctx, source)
         images.append(image.convert("RGB"))
@@ -351,9 +352,11 @@ def test_native_preview_keeps_separate_routes_without_drawing_a_bridge(tmp_path)
     from csmodernmap.cmm import DocumentSession
     from csmodernmap.preview_scene import PreviewSceneCompiler
 
+    from contextlib import ExitStack
     document = native_document(((101, 102), (105, 106)))
-    PreviewSceneCompiler._compile_domain_sources(document, DocumentSession(document), tmp_path, 1, {},
-        {"changed": {"transit"}, "style": {}})
+    with ExitStack() as scope:
+        PreviewSceneCompiler._compile_domain_sources(document, DocumentSession(document), tmp_path, 1, {},
+            {"changed": {"transit"}, "style": {}}, domain_scope=scope)
     feature, = json.loads((tmp_path / "transit.geojson").read_text(encoding="utf-8"))["features"]
     assert feature["geometry"]["type"] == "MultiLineString"
     assert [len(part) for part in feature["geometry"]["coordinates"]] == [2, 2]

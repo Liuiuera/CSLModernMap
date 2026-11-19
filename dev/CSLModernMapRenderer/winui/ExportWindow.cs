@@ -29,7 +29,10 @@ internal sealed partial class ExportWindow
     private JsonObject _output;
     private readonly ComboBox _format = new() { Header = UiLanguage.Text("ExportWindow__format_7A1260E05E"), HorizontalAlignment = HorizontalAlignment.Right, Width = 180 };
     private readonly NumberBox _size = new() { Header = UiLanguage.Text("ExportWindow__size_0FE38504DD"), Minimum = 512, Maximum = 32768, SmallChange = 256 };
+    private ElementScaleInput? _elementScale;
     private readonly ComboBox _rotation = new() { Header = UiLanguage.Text("ExportWindow__rotation_144514527B"), ItemsSource = new[] { 0, 90, 180, 270 } };
+    private readonly ComboBox _htmlQuality = new() { Header = UiLanguage.Text("Export_HtmlQuality"),
+        Name = "ExportHtmlQuality", HorizontalAlignment = HorizontalAlignment.Stretch };
     private readonly CheckBox _pngInternalBuildings = new() { Content = UiLanguage.Text("Poi_PngInternalBuildings") };
     private readonly CheckBox _densityEnabled = new() { Content = UiLanguage.Text("PoiProfileEditorPanel_Build_C563296C44") };
     private readonly ComboBox _densityTier = new() { Header = UiLanguage.Text("PoiProfileEditorPanel_Build_163850E3D5"),
@@ -40,13 +43,13 @@ internal sealed partial class ExportWindow
     private readonly CheckBox _useActionRegion = new() { Content = UiLanguage.Text("ExportWindow__useActionRegion_061399F78D") };
     private readonly CheckBox _autoOpen = new() { Content = UiLanguage.Text("ExportWindow__autoOpen_4986B00E95"), IsChecked = true };
     private readonly TextBlock _dimensions = new() { TextWrapping = TextWrapping.Wrap };
-    private readonly TextBlock _range = new() { TextWrapping = TextWrapping.Wrap };
+    private TextBlock _range => _rangeControls.Summary;
     private readonly TextBlock _contextTitle = new() { FontSize = 22, FontWeight = Microsoft.UI.Text.FontWeights.SemiBold };
     private readonly TextBlock _contextDesc = new() { TextWrapping = TextWrapping.Wrap };
     private readonly TextBlock _status = new() { TextWrapping = TextWrapping.Wrap };
     private readonly Button _start;
     private readonly Button _cancel;
-    private readonly Button _chooseRange = new() { Content = UiLanguage.Text("ExportWindow__chooseRange_A2BF7686B7") };
+    private Button _chooseRange => _rangeControls.Choose;
     private readonly Button _viewResult = new() { Content = UiLanguage.Text("ExportWindow__viewResult_D06BC6EFDD"), IsEnabled = false };
     private readonly Button _copyResult = new() { Content = UiLanguage.Text("ExportWindow__copyResult_189B772103"), IsEnabled = false };
     private readonly Button _openResultFolder = new() { Content = UiLanguage.Text("ExportWindow__openResultFolder_4A45AD491A"), IsEnabled = false };
@@ -67,6 +70,10 @@ internal sealed partial class ExportWindow
     private double _savedSize;
     private int _savedRotation;
     private Task _outputSaveTail = Task.CompletedTask;
+    private readonly JsonElement? _draftState;
+    internal bool GoToDraft { get; private set; }
+    internal bool IsDraftExportBusy => _draftState.HasValue && _busy;
+    internal event Action? BusyChanged;
     internal bool IsBusy => _busy;
     internal Window OwnerWindow => _window;
 
@@ -74,12 +81,15 @@ internal sealed partial class ExportWindow
         Window? owner = null,
         Func<Task>? editMapSettings = null, Func<Uri, Task<bool>>? openUri = null,
         JsonElement? appearancePalettes = null, Func<Task>? settingsChanged = null,
-        Func<string, string, RmpExportOptions, Task>? exportRmp = null, Func<Task>? rotationChanged = null, bool quickPng = false)
+        Func<string, string, RmpExportOptions, Task>? exportRmp = null, Func<Task>? rotationChanged = null, bool quickPng = false,
+        JsonElement? draftState = null)
     {
-        _window = new(UiLanguage.Text("ExportWindow_View_456F962F93"), 1000, 760, translucent: true, owner: owner, modal: owner is not null) { ActionsRightAligned = true };
+        _window = new(UiLanguage.Text("ExportWindow_View_456F962F93"), "file-export", 1000, 760, translucent: true, owner: owner, modal: owner is not null) { ActionsRightAligned = true };
         _engine = engine;
         _exportRmp = exportRmp;
         _quickPng = quickPng;
+        _draftState = draftState;
+        if (draftState.HasValue) profile = DraftExportProfile(profile, draftState.Value.GetProperty("config"));
         if (exportRmp is not null) profile = RmpExportProfile(profile);
         _editMapSettings = editMapSettings;
         _settingsChanged = settingsChanged;
@@ -99,6 +109,14 @@ internal sealed partial class ExportWindow
         _documentEpoch = profile.GetProperty("documentEpoch").GetInt32();
         _initialRegion = region is null ? null : JsonNode.Parse(JsonSerializer.Serialize(region))!.AsObject();
         _output = ReadOutput(profile);
+        foreach (var preset in new[] { "Smooth", "Standard", "Fine" })
+            _htmlQuality.Items.Add(new ComboBoxItem { Content = UiLanguage.Text("PreviewQuality_" + preset), Tag = preset.ToLowerInvariant() });
+        SelectHtmlQuality((_output["htmlQuality"]?.GetValue<string>()) ?? "standard");
+        _htmlQuality.SelectionChanged += async (_, _) =>
+        {
+            var value = (string)((ComboBoxItem)_htmlQuality.SelectedItem).Tag;
+            if (_output["htmlQuality"]?.GetValue<string>() != value) await CommitOutputOptionAsync("htmlQuality", value);
+        };
         var metro = _context == "metro";
 
         foreach (var item in profile.GetProperty("formats").EnumerateArray()) _format.Items.Add(item.GetString()!);
@@ -106,7 +124,7 @@ internal sealed partial class ExportWindow
             ? savedFormat.GetString() : "PNG";
         _format.SelectedItem = format is not null && _format.Items.Contains(format)
             ? format : _format.Items.Contains(currentFormat) ? currentFormat : _format.Items[0];
-        _size.Minimum = metro ? 0 : 512;
+        _size.Minimum = metro ? 0 : draftState.HasValue ? 1 : 512;
         _size.Value = (_output["size"] ?? throw new JsonException("Export profile requires size.")).GetValue<double>();
         if (_quickPng) { _size.Value = 2048; _output["size"] = 2048; }
         _rotation.SelectedItem = (int)(_output["rotation"] ?? throw new JsonException("Export profile requires rotation.")).GetValue<double>();
@@ -155,12 +173,22 @@ internal sealed partial class ExportWindow
 
         var extent = Section(settings, UiLanguage.Text("ExportWindow_View_000E18C870"));
         _extentSection = (Control)settings.Children.Last();
-        BuildRangeControls(extent);
+        if (!draftState.HasValue) BuildRangeControls(extent);
 
         var image = Section(settings, UiLanguage.Text("ExportWindow_View_349F3DEF65"));
         _imageSection = (Control)settings.Children.Last();
         if (_exportRmp is null) BuildSizePresets(image, metro);
         else BuildRmpExportControls(image);
+        if (!metro && !draftState.HasValue) {
+            _elementScale = new ElementScaleInput(_size, _output["elementScale"]?.GetValue<double>() ?? _size.Value / 4096);
+            _elementScale.Input.Header = UiLanguage.Text("CityEditor_ElementSize") + " (%)";
+            _editable.Add(_elementScale.Input);
+            image.Children.Insert(image.Children.IndexOf(_dimensions) + 1, _elementScale);
+            _elementScale.Input.LostFocus += async (_, _) => {
+                if (_elementScale.IsValid) await CommitOutputOptionAsync("elementScale", _elementScale.ElementScale);
+            };
+        }
+        image.Children.Add(_htmlQuality);
         _resetOutputButton = new Button { Content = UiLanguage.Text("ExportWindow_View_54B91E5C45"), FontSize = 12,
             Padding = new Thickness(8, 4, 8, 4), HorizontalAlignment = HorizontalAlignment.Right };
         _resetOutputButton.Click += async (_, _) => await ResetOutputProfileAsync();
@@ -171,12 +199,12 @@ internal sealed partial class ExportWindow
         imageHeader.Children.Add(imageTitle);
         Grid.SetColumn(_resetOutputButton, 1); imageHeader.Children.Add(_resetOutputButton);
         image.Children.Insert(0, imageHeader);
-        if (!metro) BuildDensityControls(image, profile.GetProperty("poiProfile"));
+        if (!metro && !draftState.HasValue) BuildDensityControls(image, profile.GetProperty("poiProfile"));
 
         var poiContent = new StackPanel { Spacing = 8 };
         _pngSection = new ContentControl { Content = ExportDesign.Divider(poiContent),
             HorizontalContentAlignment = HorizontalAlignment.Stretch, IsTabStop = false };
-        if (!metro && profile.TryGetProperty("poiProfile", out var poiProfile))
+        if (!metro && !draftState.HasValue && profile.TryGetProperty("poiProfile", out _))
         {
             var edit = new Button { Content = UiLanguage.Text("ExportWindow_View_95170F6894"), IsEnabled = _editMapSettings is not null };
             edit.Click += async (_, _) =>
@@ -219,7 +247,7 @@ internal sealed partial class ExportWindow
         var footerBorder = ExportDesign.Divider(footer);
         Grid.SetRow(footerBorder, 2); body.Children.Add(footerBorder);
         _window.SetBody(body);
-        _editable.AddRange([_format, _size, _rotation, _autoOpen,
+        _editable.AddRange([_format, _size, _rotation, _htmlQuality, _autoOpen,
             _useActionRegion, _chooseRange, _resetOutputButton]);
         if (metro)
         {
@@ -260,6 +288,36 @@ internal sealed partial class ExportWindow
         _status.Text = "";
     }
 
+    private static JsonElement DraftExportProfile(JsonElement source, JsonElement config)
+    {
+        var profile = JsonNode.Parse(source.GetRawText())!.AsObject();
+        profile["formats"] = new JsonArray("PNG");
+        var png = profile["formatCapabilities"]!["PNG"]!;
+        png["outputFields"] = new JsonArray("size");
+        png["outputProfileTarget"] = null;
+        foreach (var key in new[] { "showsRange", "showsPoiProfile", "showsSharedLayers", "showsTransitLines" })
+            png[key] = false;
+        var region = config.GetProperty("region");
+        var output = profile["output"]!;
+        output["size"] = config.GetProperty("longEdge").GetInt32();
+        output["rotation"] = config.GetProperty("rotation").GetInt32();
+        output["bounds"] = JsonNode.Parse(region.GetProperty("bounds").GetRawText());
+        output["rangeSource"] = region.GetProperty("source").GetString();
+        return JsonSerializer.SerializeToElement(profile);
+    }
+
+    private static string DraftSummary(JsonElement config, string range)
+    {
+        var density = config.GetProperty("poiDensity");
+        var tier = density.GetProperty("density_enabled").GetBoolean()
+            ? PoiProfileEditorPanel.DensityChoices.Single(choice => choice.Value == density.GetProperty("density_tier").GetString()).Label
+            : UiLanguage.Text("ThemeUpdate_Off");
+        return string.Join("\n", range,
+            $"{UiLanguage.Text("CityEditor_Rotation")} · {config.GetProperty("rotation").GetInt32()}°",
+            $"{UiLanguage.Text("CityEditor_ElementSize")} · {config.GetProperty("elementScale").GetDouble() * 100:F2}%",
+            $"{UiLanguage.Text("CityEditor_IconDensity")} · {tier}");
+    }
+
     private static JsonObject ReadOutput(JsonElement profile)
     {
         if (profile.TryGetProperty("output", out var output) && output.ValueKind == JsonValueKind.Object)
@@ -280,6 +338,9 @@ internal sealed partial class ExportWindow
     }
 
     private string SelectedFormat => (string?)_format.SelectedItem ?? "PNG";
+
+    private void SelectHtmlQuality(string value) => _htmlQuality.SelectedItem = _htmlQuality.Items.Cast<ComboBoxItem>()
+        .Single(item => (string)item.Tag == value);
 
     private JsonElement SelectedFormatCapability => _formatCapabilities.GetProperty(SelectedFormat);
     private string? CapabilityString(string key) => SelectedFormatCapability.GetProperty(key).GetString();
@@ -321,6 +382,12 @@ internal sealed partial class ExportWindow
     // 五种上下文共用导出窗口，格式和范围只属于当前窗口。
     private void UpdateContextCopy()
     {
+        if (_draftState.HasValue)
+        {
+            _contextTitle.Text = UiLanguage.Text("Artwork_Export");
+            _contextDesc.Visibility = Visibility.Collapsed;
+            return;
+        }
         if (_exportRmp is not null)
         {
             _contextTitle.Text = UiLanguage.Text("ExportWindow_UpdateContextCopy_FA5D23884E");
@@ -389,8 +456,20 @@ internal sealed partial class ExportWindow
         var height = rotated ? spanZ : spanX;
         var length = Math.Max(width, height);
         var pixels = double.IsFinite(_size.Value) ? (int)_size.Value : 0;
-        _dimensions.Text = length > 0 && pixels > 0
-            ? UiLanguage.Format("ExportWindow_UpdateDimensions_DAC5591541", Math.Max(1, (int)Math.Round(pixels * width / length)), Math.Max(1, (int)Math.Round(pixels * height / length)))
+        (int Width, int Height) dimensions = (0, 0);
+        if (_draftState is { } state)
+        {
+            var config = state.GetProperty("config");
+            var edge = config.GetProperty("longEdge").GetInt32();
+            var scale = (double)pixels / edge;
+            dimensions = ((int)Math.Round(config.GetProperty("width").GetInt32() * scale),
+                          (int)Math.Round(config.GetProperty("height").GetInt32() * scale));
+            _sizeHelp.Text = $"{UiLanguage.Text("CityEditor_ExportScale")} {edge} → {pixels} px";
+        }
+        else if (length > 0 && pixels > 0)
+            dimensions = CanvasDimensions.Calculate(b, pixels, (int)(_rotation.SelectedItem ?? 0));
+        _dimensions.Text = dimensions.Width > 0 && dimensions.Height > 0
+            ? UiLanguage.Format("ExportWindow_UpdateDimensions_DAC5591541", dimensions.Width, dimensions.Height)
             : UiLanguage.Text("ExportWindow_UpdateDimensions_5C5EC61CE8");
         var source = EffectiveRegion()?["source"]?.GetValue<string>() ??
             (_output["rangeSource"] ?? throw new JsonException("Export profile requires rangeSource.")).GetValue<string>();
@@ -402,6 +481,7 @@ internal sealed partial class ExportWindow
             _ => UiLanguage.Text("ExportWindow_UpdateDimensions_653AEA4D67"),
         };
         _range.Text = UiLanguage.Format("ExportWindow_UpdateDimensions_49C485EFFB", rangeName, height / 1000, width / 1000);
+        if (_draftState is { } draft) _contentSummary.Text = DraftSummary(draft.GetProperty("config"), _range.Text);
         SyncRangeControls();
     }
 
@@ -415,6 +495,9 @@ internal sealed partial class ExportWindow
         _imageSection!.Visibility = _exportRmp is not null || ShowsOutputField("size") || ShowsOutputField("rotation")
             ? Visibility.Visible : Visibility.Collapsed;
         _rotation.Visibility = ShowsOutputField("rotation") ? Visibility.Visible : Visibility.Collapsed;
+        if (_elementScale is not null)
+            _elementScale.Visibility = ShowsOutputField("elementScale") ? Visibility.Visible : Visibility.Collapsed;
+        _htmlQuality.Visibility = ShowsOutputField("htmlQuality") ? Visibility.Visible : Visibility.Collapsed;
         _dimensions.Visibility = ShowsOutputField("size") ? Visibility.Visible : Visibility.Collapsed;
         _range.Visibility = ShowsRange ? Visibility.Visible : Visibility.Collapsed;
         _chooseRange.Visibility = ShowsRange ? Visibility.Visible : Visibility.Collapsed;
@@ -424,7 +507,7 @@ internal sealed partial class ExportWindow
             _resetOutputButton.Visibility = OutputProfileTarget is null ? Visibility.Collapsed : Visibility.Visible;
         _output["format"] = (string?)_format.SelectedItem ?? "PNG";
         foreach (var (format, radio) in _formatChoices) radio.IsChecked = format == SelectedFormat;
-        _rangePreview.Visibility = ShowsRange && _rangeWorld is not null ? Visibility.Visible : Visibility.Collapsed;
+        _rangePreview.Visibility = ShowsRange && _rangeCanvas.HasMap ? Visibility.Visible : Visibility.Collapsed;
         RefreshSnapshotSummary(_summaryProfile, _summaryPanel!);
         if (_exportRmp is null) SyncSizePreset();
         else UpdateRmpExportControls();
@@ -451,6 +534,7 @@ internal sealed partial class ExportWindow
     {
         _summaryProfile = profile;
         target.Children.Clear();
+        if (_draftState.HasValue) return;
         if (_exportRmp is not null)
         {
             _contentSummary.Text = UiLanguage.Text("ExportWindow_RmpContent");
@@ -578,7 +662,7 @@ internal sealed partial class ExportWindow
         try
         {
             await _outputSaveTail;
-            var keys = new[] { "size", "rotation" }.Where(ShowsOutputField).ToArray();
+            var keys = new[] { "size", "elementScale", "rotation", "htmlQuality" }.Where(ShowsOutputField).ToArray();
             if (keys.Length == 0) return;
             var result = await _engine.RequestAsync("resetProfileFields", new
             {
@@ -596,7 +680,9 @@ internal sealed partial class ExportWindow
                 switch (key)
                 {
                     case "size": _size.Value = _savedSize = value.GetDouble(); break;
+                    case "elementScale": if (_elementScale is not null) _elementScale.Input.Value = value.GetDouble() * 100; break;
                     case "rotation": _savedRotation = value.GetInt32(); _rotation.SelectedItem = _savedRotation; break;
+                    case "htmlQuality": SelectHtmlQuality(value.GetString()!); break;
                 }
             }
             UpdateDimensions();
@@ -617,6 +703,7 @@ internal sealed partial class ExportWindow
         }
         var target = OutputProfileTarget;
         if (target is null) return;
+        var elementScale = key == "size" && _elementScale is { IsValid: true } ? (double?)_elementScale.ElementScale : null;
         var previous = _outputSaveTail;
         async Task Execute()
         {
@@ -626,6 +713,7 @@ internal sealed partial class ExportWindow
                 profileTarget = target,
                 key,
                 value,
+                elementScale,
                 documentEpoch = _documentEpoch,
             });
         }
@@ -648,7 +736,7 @@ internal sealed partial class ExportWindow
 
     internal void SetSharedRotation(int rotation)
     {
-        if (_context == "metro" || _busy) return;
+        if (_context == "metro" || _busy || _draftState.HasValue) return;
         _savedRotation = rotation;
         _output["rotation"] = rotation;
         _rotation.SelectedItem = rotation;
@@ -663,6 +751,7 @@ internal sealed partial class ExportWindow
     private void SetBusy(bool busy)
     {
         _busy = busy;
+        BusyChanged?.Invoke();
         _progress.Visibility = busy ? Visibility.Visible : Visibility.Collapsed;
         if (busy) { _progress.Value = 0; _progress.IsIndeterminate = true; }
         RefreshControlStates();
@@ -672,7 +761,7 @@ internal sealed partial class ExportWindow
     {
         var canEdit = !_busy && !_choosing && !_engineFailed && !_savingDensity;
         _cancel.Content = _busy ? UiLanguage.Text("ExportWindow_RefreshControlStates_537D17F1C5") : UiLanguage.Text("ExportWindow_RefreshControlStates_2CD0F3BE87");
-        _cancel.IsEnabled = _busy ? _exportRmp is null && !_engineFailed && !TargetIsDirectory : !_choosing;
+        _cancel.IsEnabled = _busy ? !_draftState.HasValue && _exportRmp is null && !_engineFailed && !TargetIsDirectory : !_choosing;
         _start.IsEnabled = canEdit;
         UpdateResultActions();
         foreach (var control in _editable)
@@ -733,21 +822,22 @@ internal sealed partial class ExportWindow
             if (clearedPreviousView) _latestResultPath = null;
             await _outputSaveTail;
 
-            var latest = await _engine.RequestAsync("getExportProfile", new
+            var latest = _draftState.HasValue ? _summaryProfile : await _engine.RequestAsync("getExportProfile", new
             {
                 context = _context,
                 profileTarget = _profileTarget,
             });
-            var currentEpoch = latest.GetProperty("documentEpoch").GetInt32();
-            if (_summaryPanel is not null) RefreshSnapshotSummary(latest, _summaryPanel);
+            var currentEpoch = (_draftState ?? latest).GetProperty("documentEpoch").GetInt32();
+            if (!_draftState.HasValue && _summaryPanel is not null) RefreshSnapshotSummary(latest, _summaryPanel);
 
             JsonObject? latestOutput = null;
-            if (ShowsOutputOptions && latest.TryGetProperty("output", out var outputSnapshot) &&
+            if (!_draftState.HasValue && ShowsOutputOptions && latest.TryGetProperty("output", out var outputSnapshot) &&
                 outputSnapshot.ValueKind == JsonValueKind.Object)
             {
                 latestOutput = JsonNode.Parse(outputSnapshot.GetRawText())!.AsObject();
                 latestOutput["format"] = format;
                 if (ShowsOutputField("size")) latestOutput["size"] = (int)_size.Value;
+                if (ShowsOutputField("htmlQuality")) latestOutput["htmlQuality"] = (string)((ComboBoxItem)_htmlQuality.SelectedItem).Tag;
                 if (ShowsOutputField("rotation")) SetSharedRotation(latestOutput["rotation"]!.GetValue<int>());
                 _output = (JsonObject)latestOutput.DeepClone();
             }
@@ -799,12 +889,19 @@ internal sealed partial class ExportWindow
                     foreach (var key in new[] { "size", "rotation" })
                         if (ShowsOutputField(key) && latestOutput[key] is { } value)
                             outputParameters[key] = value.DeepClone();
+                    if (ShowsOutputField("elementScale") && _elementScale is not null) {
+                        if (!_elementScale.IsValid) throw new InvalidOperationException(UiLanguage.Text("Pixel_InvalidScale"));
+                        outputParameters["elementScale"] = _elementScale.ElementScale;
+                    }
                     request["output"] = outputParameters;
                 }
             }
             if (poiVisibility is not null) request["poiVisibility"] = poiVisibility;
             if (ShowsRange) request["region"] = region;
-            var result = await _engine.RequestAsync("export", request);
+            var result = _draftState is { } draft
+                ? await _engine.RequestAsync("exportCityArtwork", new { requestId = _requestId, documentEpoch = currentEpoch,
+                    expectedRevision = draft.GetProperty("revision").GetInt32(), target, longEdge = (int)_size.Value })
+                : await _engine.RequestAsync("export", request);
             if (!result.GetProperty("started").GetBoolean())
             {
                 if (clearedPreviousView) { _latestResultPath = previousResultPath; _latestResultFormat = previousResultFormat; }

@@ -119,7 +119,8 @@ def test_partial_personal_theme_preserves_mode_when_only_lighting_changes(tmp_pa
         assert backend.theme_data(identity)["terrain"]["mode"] == "shade"
         # A preset already using shade must retain it when its diff only edits intensity.
         from csmodernmap import theme_library
-        base = normalize_theme({"terrain": {"mode": "shade", "hillshade": {"intensity": .3}}})
+        from style_fixtures import complete_style
+        base = normalize_theme(complete_style({"terrain": {"mode": "shade", "hillshade": {"intensity": .3}}}).data)
         record = theme_library.make_record("Intensity only", {**base, "terrain": {
             **base["terrain"], "hillshade": {**base["terrain"]["hillshade"], "intensity": .67}}}, "modern", base)
         assert theme_library.resolve(record, base)["terrain"]["mode"] == "shade"

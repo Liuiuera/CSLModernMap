@@ -11,7 +11,7 @@ import re
 
 from . import i18n
 from .ribbon_schema import FIELDS
-from .guir_backend import _baseline_1024, road_level_style_key
+from .guir_backend import road_level_style_key
 from .style import Style
 
 
@@ -90,7 +90,7 @@ def _array(value):
     return value if isinstance(value, list) else []
 
 
-def describe(backend, frame, context='map', options=None):
+def describe(backend, frame, context='map', options=None, *, style_data=None):
     """汇总选中对象的只读事实与可编辑样式字段。"""
     if context not in ('map', 'transit'):
         raise ValueError('Unsupported inspector context')
@@ -98,7 +98,7 @@ def describe(backend, frame, context='map', options=None):
     if not isinstance(props, dict):
         raise ValueError('Object properties must be an object')
     kind = str(frame.get('objectType') or frame.get('styleLayer') or '')
-    style = backend.current_style_data()
+    style = backend.current_style_data() if style_data is None else style_data
     options = options or {}
     sections, bindings, summary = [], {}, []
     used = {'name', 'featureId'}
@@ -127,9 +127,7 @@ def describe(backend, frame, context='map', options=None):
     def path_field(group, key, label, path, default, field_kind='color', unit='', low=0, high=100,
                    choices=None, conversion=None):
         raw = read_path(style, path, default)
-        from .preview_scene import _preview_number
-        value = (_baseline_1024(raw, default) if conversion == 'label_size' else _preview_number(raw, default)) if conversion in ('size', 'label_size') else (
-            float(raw) / 255 * 100 if conversion == 'alpha' else raw)
+        value = float(raw) / 255 * 100 if conversion == 'alpha' else raw
         if field_kind == 'color':
             value = display_color(value)
         bindings[key] = {'path': path, 'default': default, 'conversion': conversion}
@@ -142,12 +140,6 @@ def describe(backend, frame, context='map', options=None):
         value = backend.field_value(key, meta.default, style_data=style)
         if meta.kind == 'color':
             value = display_color(value, meta.default)
-        if isinstance(value, dict):
-            # 复合尺寸公式由服务端管理，写回时保持原有比例。
-            from .guir_backend import STYLE_FIELD_PATHS
-            path_field(group, key, label or meta.label, STYLE_FIELD_PATHS[key], meta.default,
-                       'number', unit or 'px', meta.low, meta.high, conversion='label_size' if key.startswith('label.size.') else 'size')
-            return
         bindings[key] = {'field': key}
         group['fields'].append({'key': key, 'label': label or meta.label, 'kind': meta.kind,
                                 'value': value, 'unit': unit, 'low': meta.low, 'high': meta.high,
@@ -164,7 +156,7 @@ def describe(backend, frame, context='map', options=None):
             field(group, f'label.{attr}.{label_kind}', label, 'px' if attr == 'size' else '')
 
     def option_field(group, key, label, default, field_kind='number', unit='', low=0, high=100, choices=None):
-        bindings['view.' + key] = {'option': key, 'default': default}
+        bindings['view.' + key] = {'option': key, 'default': default, 'map': context == 'map'}
         group['fields'].append({'key': 'view.' + key, 'label': label, 'kind': field_kind,
                                 'value': options.get(key, default), 'unit': unit,
                                 'low': low, 'high': high, 'choices': choices or [], 'enabled': True})
@@ -200,16 +192,17 @@ def describe(backend, frame, context='map', options=None):
                             i18n.tr('ui.object_inspector.describe.ae299c3aef'))
             path_field(group, 'road.fill', i18n.tr('ui.object_inspector.describe.54f5431ad3'), ('roads', style_key, 'fill'), '#FFFFFF')
             path_field(group, 'road.border', i18n.tr('ui.object_inspector.describe.5e3f198ad9'), ('roads', style_key, 'border'), '#C6C5C0')
-            from .preview_scene import _LEVEL_MIN_FILL_PX
-            path_field(group, 'road.minimum', i18n.tr('ui.object_inspector.describe.9a6361d604'),
-                       ('roads', style_key, 'min_fill_px'), _LEVEL_MIN_FILL_PX[RoadLevel(level)], 'number', 'px', .2, 6)
+            for attr, unit in (('line_width', 'px'), ('footprint_scale', ''), ('border_width', 'px')):
+                meta = FIELDS[f'road.level.{level}.{attr}']
+                path_field(group, 'road.'+attr, i18n.tr(f'style.{meta.key}.label'),
+                           ('roads', style_key, attr), meta.default, meta.kind, unit, meta.low, meta.high)
             used.add('styleKey')
         else:
             notice.append(i18n.tr('ui.object_inspector.describe.747c2ffdcb'))
         names('road', 'road.names')
         group = section('overall', i18n.tr('ui.object_inspector.describe.047fa9d803'), i18n.tr('ui.object_inspector.describe.4c93e617e4'), False)
-        for key in ('road.width', 'road.bridge', 'road.tunnel'):
-            field(group, key, unit='%' if key == 'road.width' else '')
+        for key in ('road.bridge', 'road.tunnel'):
+            field(group, key)
     elif kind == 'building':
         fact('height_m', i18n.tr('building.height'), 'm')
         fact('base_elevation_m', i18n.tr('building.base_elevation'), 'm')
@@ -270,7 +263,7 @@ def describe(backend, frame, context='map', options=None):
         field(group, 'poi.name_size', i18n.tr('ui.object_inspector.describe.3fbdb548d1'), 'px')
         field(group, 'poi.set', i18n.tr('ui.object_inspector.describe.c8a2d11ead'))
         group = section('names', i18n.tr('ui.object_inspector.describe.bf21786b6a'), i18n.tr('ui.object_inspector.describe.c6c54bf846'), False)
-        for key in ('poi.font', 'poi.name_stroke', 'poi.name_stroke_ratio'):
+        for key in ('poi.font', 'poi.name_stroke', 'poi.name_stroke_width'):
             field(group, key)
         group = section('visibility', i18n.tr('ui.object_inspector.describe.e3b04e065c'), i18n.tr(GROUPS[group_key]), False)
         visibility_field(group, 'icons', group_key)
@@ -312,18 +305,10 @@ def describe(backend, frame, context='map', options=None):
             fact('lengthMeters', i18n.tr('ui.object_inspector.describe.614eb9e832'), 'm')
             fact('color', i18n.tr('ui.object_inspector.describe.a76488cf50'))
             group = section('appearance', i18n.tr('ui.object_inspector.describe.1efb861668'), i18n.tr('ui.object_inspector.describe.77007520ba'))
-            kind_key = next((k for k in style.get('transports', {}).get('types', {}) if k.lower() == str(props.get('kind') or '').lower()), None)
-            if context == 'transit':
-                option_field(group, 'line_width', i18n.tr('ui.object_inspector.describe.e211926d3a'), 3, unit='px', low=1, high=12)
-                option_field(group, 'line_label_enabled', i18n.tr('ui.object_inspector.describe.a8a9631df4'), True, 'toggle')
-                option_field(group, 'line_label_size', i18n.tr('ui.object_inspector.describe.8b301292a2'), 12, unit='px', low=6, high=36)
-            else:
-                path = ('transports', 'types', kind_key, 'width') if kind_key else ('transports', 'width')
-                base = read_path(style, ('transports', 'width'), 3)
-                from .preview_scene import _preview_number
-                path_field(group, 'line.width', i18n.tr('ui.object_inspector.describe.e4f5889abd') if kind_key else i18n.tr('ui.object_inspector.describe.5807d1dc81'), path, _preview_number(base, 3), 'number', 'px', .2, 12, conversion='size')
-                path_field(group, 'line.names', i18n.tr('ui.object_inspector.describe.b87011f842'), ('transports', 'label', 'enabled'), True, 'toggle')
-                path_field(group, 'line.name_size', i18n.tr('ui.object_inspector.describe.8b301292a2'), ('transports', 'label', 'size'), 12, 'number', 'px', 6, 36, conversion='size')
+            option_field(group, 'line_width', FIELDS['transport.width'].label, 3, unit='px', high=1e300)
+            option_field(group, 'line_label_enabled', i18n.tr('ui.object_inspector.describe.a8a9631df4'), True, 'toggle')
+            option_field(group, 'line_label_size', i18n.tr('ui.object_inspector.describe.8b301292a2'),
+                         12, unit='px', high=1e300)
         else:
             fact('servingLineCount', i18n.tr('ui.object_inspector.describe.57baf59886'))
             ids = _array(props.get('servingLineIds'))
@@ -331,17 +316,16 @@ def describe(backend, frame, context='map', options=None):
                 catalog = {str(item['id']): item for item in backend.transit_line_catalog()}
                 fact('servingLineIds', i18n.tr('ui.object_inspector.describe.995f11ecdc'), value=' · '.join(str(catalog.get(str(n), {}).get('name') or i18n.tr('ui.object_inspector.describe.e4a79af431') + str(n)) for n in ids[:3]) + (' …' if len(ids) > 3 else ''))
             group = section('appearance', i18n.tr('ui.object_inspector.describe.e5bd2eef37'), i18n.tr('ui.object_inspector.describe.b05f246ac9'))
-            if context == 'transit':
-                option_field(group, 'station_size', i18n.tr('ui.object_inspector.describe.d211657dd1'), 8, unit='px', low=4, high=24)
-            else:
-                field(group, 'transport.size', i18n.tr('ui.object_inspector.describe.d211657dd1'), 'px')
-            visibility_field(group, 'names', 'transit')
-            field(group, 'poi.name_size', i18n.tr('ui.object_inspector.describe.5910b70e80'), 'px')
+            option_field(group, 'stations', i18n.tr('gui.metro.show_stations'), True, 'toggle')
+            option_field(group, 'station_diameter', FIELDS['transport.diameter'].label, 8,
+                         unit='px', low=.000001, high=1e300)
+            option_field(group, 'station_name_size', i18n.tr('ui.object_inspector.describe.5910b70e80'),
+                         12, unit='px', high=1e300)
             group = section('names', i18n.tr('ui.object_inspector.describe.ac41b1adda'), i18n.tr('ui.object_inspector.describe.f2c5395498'), False)
-            for key in ('poi.font', 'poi.name_stroke', 'poi.name_stroke_ratio'):
+            for key in ('poi.font', 'poi.name_stroke', 'poi.name_stroke_width'):
                 field(group, key)
             group = section('visibility', i18n.tr('ui.object_inspector.describe.4247a9c3ad'), i18n.tr('ui.object_inspector.describe.ac0bf8c3b7'), False)
-            visibility_field(group, 'icons', 'transit')
+            option_field(group, 'facilities_enabled', i18n.tr(GROUPS['transit']), True, 'toggle')
     elif kind == 'railway':
         fact('railType', i18n.tr('ui.object_inspector.describe.18202c5a9d'), value=readable(props.get('railType')))
         fact('station', i18n.tr('ui.object_inspector.describe.eccafde326'))
@@ -353,8 +337,7 @@ def describe(backend, frame, context='map', options=None):
             path_field(group, 'track.color', i18n.tr('ui.object_inspector.describe.2abba61725'), ('railway', rail_kind, 'line'), cfg.get('line', '#C36E69'))
             width_key = 'station_width' if props.get('station') else 'width'
             base = cfg.get(width_key, cfg.get('width', 4.5 if props.get('station') else 2.0))
-            from .preview_scene import _preview_number
-            path_field(group, 'track.width', (i18n.tr('ui.object_inspector.describe.ef34af6177') if props.get('station') else i18n.tr('ui.object_inspector.describe.e58ee3c2db')), ('railway', rail_kind, width_key), _preview_number(base, 2), 'number', 'px', .2, 12, conversion='size')
+            path_field(group, 'track.width', (i18n.tr('ui.object_inspector.describe.ef34af6177') if props.get('station') else i18n.tr('ui.object_inspector.describe.e58ee3c2db')), ('railway', rail_kind, width_key), float(base), 'number', 'px', 0, 1e300)
             path_field(group, 'track.dash', i18n.tr('ui.object_inspector.describe.42a2766d08'), ('railway', rail_kind, 'dash'), cfg.get('dash', '#FFFFFF'))
     elif kind in ('district', 'zone'):
         fact('kind', i18n.tr('ui.object_inspector.describe.f8ddaae464'), value=readable(props.get('kind')))
@@ -366,13 +349,12 @@ def describe(backend, frame, context='map', options=None):
         if kind == 'zone':
             path_field(group, 'zone.fill', i18n.tr('ui.object_inspector.describe.54f5431ad3'), ('zone', 'fill'), '#C8C8C8')
         field(group, kind + '.color', i18n.tr('ui.object_inspector.describe.5e3f198ad9'))
-        path_field(group, 'area.width', i18n.tr('ui.object_inspector.describe.a8e3637209'), (kind, 'border_width'), 1, 'number', 'px', 0, 8, conversion='size')
+        path_field(group, 'area.width', i18n.tr('ui.object_inspector.describe.a8e3637209'), (kind, 'border_width'), 1, 'number', 'px', 0, 1e300)
         field(group, kind + '.opacity', i18n.tr('ui.object_inspector.describe.6fb3f1e4e4'), '%')
         if kind == 'district':
             names('district', 'label.districts')
         else:
-            group = section('names', i18n.tr(GROUPS['area']),
-                            i18n.tr('ui.object_inspector.describe.86a200764b'))
+            group = section('names', i18n.tr(GROUPS['area']), i18n.tr('ui.object_inspector.describe.86a200764b'))
             visibility_field(group, 'icons', 'area')
             visibility_field(group, 'names', 'area')
 
@@ -403,7 +385,10 @@ def describe(backend, frame, context='map', options=None):
                               backend.poi_visibility_snapshot(), backend.get_poi_profile('preview')], sort_keys=True, default=str).encode()).hexdigest()
     return {'objectType': kind, 'title': title, 'typeLabel': type_label, 'summary': summary,
             'notices': notice, 'sections': sections, 'details': details, 'technical': technical,
-            'themeSection': theme_section, 'settingsRevision': revision}, bindings
+            'themeSection': theme_section,
+            'stylePath': '.'.join(next((binding['path'][:-1] for binding in bindings.values()
+                                      if binding.get('path') and binding['path'][0] == theme_section), (theme_section,))),
+            'settingsRevision': revision}, bindings
 
 
 def validate(field, value):
@@ -461,13 +446,6 @@ def apply(backend, frame, context, options, key=None, value=None, reset_group=No
                 v = defaults.get('.'.join(path), binding['default'])
             elif binding['conversion'] == 'alpha':
                 v = round(value * 255 / 100)
-            elif binding['conversion'] in ('size', 'label_size'):
-                current = read_path(backend.current_style_data(), path)
-                if isinstance(current, dict):
-                    fixed = min(float(current.get('fixed', 0)), value)
-                    v = {**current, 'fixed': fixed, 'scaled': (value - fixed) * (4 if binding['conversion'] == 'label_size' else 1)}
-                else:
-                    v = value
             else:
                 v = value
             write_path(backend._style_data_mut(), path, v)
@@ -478,7 +456,10 @@ def apply(backend, frame, context, options, key=None, value=None, reset_group=No
             snapshot[channel][group] = value
             backend.set_poi_visibility_snapshot(snapshot)
         elif 'option' in binding:
-            backend.update_transit_options(False, {**options, binding['option']: value})
+            if binding['map']:
+                backend.set_map_transit_option(binding['option'], value)
+            else:
+                backend.update_transit_options(False, {**options, binding['option']: value})
         elif 'profile' in binding:
             profile = backend.get_poi_profile('preview')
             write_path(profile, binding['profile'], value)
@@ -487,7 +468,7 @@ def apply(backend, frame, context, options, key=None, value=None, reset_group=No
 
 
 def capture(backend, frame, context, options, key=None, reset_group=None, targets=None):
-    """仅保存一次操作的修改目标，包括原始尺寸公式。"""
+    """仅保存一次操作的修改目标。"""
     if targets is None:
         model, bindings = describe(backend, frame, context, options)
         keys = [key] if reset_group is None else [f['key'] for s in model['sections']
@@ -561,5 +542,8 @@ def restore(backend, changes, options):
                 options[binding['option']] = value
             else:
                 options.pop(binding['option'], None)
-            backend.update_transit_options(False, options)
+            if binding['map']:
+                backend.set_map_transit_option(binding['option'], value)
+            else:
+                backend.update_transit_options(False, options)
     return options

@@ -6,11 +6,14 @@ namespace CSLModernMapWinUI;
 
 public sealed partial class MainWindow
 {
+    private readonly Button BuildingListButton = new() { HorizontalAlignment = HorizontalAlignment.Stretch, IsEnabled = false };
     private BuildingListPanel? _buildingList;
     private EditorWindow? _buildingListWindow;
     private int _buildingListRequest, _buildingHighlightRequest;
     private JsonElement? _buildingHighlight;
     private string? _buildingCatalogState;
+    private bool _buildingUseGameNames, _buildingListLoading;
+    private DispatcherTimer? _buildingNamesDelay;
 
     private async Task ShowBuildingListAsync()
     {
@@ -19,69 +22,112 @@ public sealed partial class MainWindow
         var request = ++_buildingListRequest;
         var generation = _documentGeneration;
         var epoch = _snapshot.GetProperty("documentEpoch").GetInt32();
-        var data = await _engine.RequestAsync("getBuildingCatalog", new { documentEpoch = epoch });
-        if (_closing || request != _buildingListRequest || generation != _documentGeneration || _context != "map") return;
-        var window = new EditorWindow(UiLanguage.Text("BuildingList_Open"), 1100, 780, translucent: true, owner: this);
-        var panel = new BuildingListPanel(data);
+        _buildingUseGameNames = false;
+        var window = new EditorWindow(UiLanguage.Text("BuildingList_Open"), "building", 1100, 780, translucent: true, owner: this);
+        var loading = BuildingListPanel.CreateLoadingIndicator();
+        var body = new Grid();
+        body.Children.Add(loading);
+        window.SetBody(body);
         _buildingListWindow = window;
-        _buildingList = panel;
-        _buildingCatalogState = BuildingCatalogState();
-        panel.Selected = id =>
-        {
-            if (id is { } value) _ = RunAsync(() => SelectBuildingAsync(value));
-            else { SendViewer(new { type = "clearObjectSelection" }); ShowInspectorHome(); }
-        };
-        panel.CategoryChanged = category => _ = RunAsync(() => HighlightBuildingsAsync(category));
-        panel.GameNamesChanged = enabled =>
-        {
-            var generation = _documentGeneration;
-            _ = QueueLayerActionAsync(() => UpdateFieldAsync("poi.game_names", enabled),
-                () => !_closing && generation == _documentGeneration && _buildingList == panel);
-        };
-        window.SetBody(panel);
         window.Closed += (_, _) =>
         {
             if (_buildingListWindow != window) return;
             _buildingListWindow = null;
             CloseBuildingList();
         };
+        _buildingListLoading = true;
+        ApplyMapTaskState();
         window.Activate();
-        if (_inspectorSelection is { } selection)
+        try
         {
-            SyncBuildingList(selection);
-            if (_objectInspector is { } inspector) panel.ShowDetails(inspector.Model, selection);
+            var data = await _engine.RequestAsync("getBuildingCatalog", new { documentEpoch = epoch, useGameNames = _buildingUseGameNames });
+            if (_closing || request != _buildingListRequest || generation != _documentGeneration || _context != "map") return;
+            var panel = new BuildingListPanel(data);
+            _buildingList = panel;
+            _buildingCatalogState = BuildingCatalogState();
+            panel.Selected = id =>
+            {
+                if (id is { } value) _ = RunAsync(() => SelectBuildingAsync(value));
+                else { SendViewer(new { type = "clearObjectSelection" }); ShowInspectorHome(); }
+            };
+            panel.CategoryChanged = category => _ = RunAsync(() => HighlightBuildingsAsync(category));
+            _buildingNamesDelay = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(250) };
+            _buildingNamesDelay.Tick += (_, _) =>
+            {
+                _buildingNamesDelay.Stop();
+                _ = RunAsync(RefreshBuildingCatalogAsync);
+            };
+            panel.GameNamesChanged = enabled =>
+            {
+                _buildingUseGameNames = enabled;
+                _buildingListRequest++;
+                SetBuildingListLoading(true);
+                _buildingNamesDelay.Stop();
+                _buildingNamesDelay.Start();
+            };
+            body.Children.Clear();
+            body.Children.Add(panel);
+            if (_inspectorSelection is { } selection)
+            {
+                SyncBuildingList(selection);
+                if (_objectInspector is { } inspector) panel.ShowDetails(inspector.Model, selection);
+            }
+        }
+        finally
+        {
+            ((ProgressRing)loading.Children[0]).IsActive = false;
+            if (_buildingListWindow == window)
+            {
+                SetBuildingListLoading(false);
+            }
         }
     }
 
     private void CloseBuildingList()
     {
         _buildingListRequest++; _buildingHighlightRequest++;
+        _buildingNamesDelay?.Stop();
+        _buildingNamesDelay = null;
         var window = _buildingListWindow;
         _buildingListWindow = null;
         _buildingList = null; _buildingHighlight = null; _buildingCatalogState = null;
+        _buildingListLoading = false;
+        ApplyMapTaskState();
         window?.ForceClose();
         SendViewer(new { type = "setBuildingHighlight" });
     }
 
-    private string BuildingCatalogState() => _snapshot.GetProperty("fields").GetProperty("poi.game_names").GetRawText()
+    private string BuildingCatalogState() => _buildingUseGameNames.ToString()
         + ":" + _snapshot.GetProperty("fields").GetProperty("poi.set").GetRawText()
         + ":" + _snapshot.GetProperty("theme").GetString();
+
+    private void SetBuildingListLoading(bool loading)
+    {
+        _buildingListLoading = loading;
+        _buildingList?.SetLoading(loading);
+        ApplyMapTaskState();
+    }
 
     private async Task RefreshBuildingCatalogAsync()
     {
         var panel = _buildingList;
-        if (panel is null || !_documentEnabled) return;
+        if (panel is null || !_documentEnabled || _buildingNamesDelay?.IsEnabled == true) return;
         var state = BuildingCatalogState();
-        if (state == _buildingCatalogState) { panel.SynchronizeGameNames(); return; }
-        var generation = _documentGeneration;
         var request = ++_buildingListRequest;
-        var data = await _engine.RequestAsync("getBuildingCatalog", new {
-            documentEpoch = _snapshot.GetProperty("documentEpoch").GetInt32() });
-        if (_closing || panel != _buildingList || generation != _documentGeneration || request != _buildingListRequest) return;
-        panel.UpdateCatalog(data);
-        _buildingCatalogState = state;
-        if (_inspectorSelection is { } selection && selection.GetProperty("objectType").GetString() == "building")
-            await ShowObjectInspectorAsync(selection);
+        try
+        {
+            if (state == _buildingCatalogState) { panel.SynchronizeGameNames(); return; }
+            var generation = _documentGeneration;
+            var data = await _engine.RequestAsync("getBuildingCatalog", new {
+                documentEpoch = _snapshot.GetProperty("documentEpoch").GetInt32(), useGameNames = _buildingUseGameNames });
+            if (_closing || panel != _buildingList || generation != _documentGeneration || request != _buildingListRequest) return;
+            panel.UpdateCatalog(data);
+            _buildingCatalogState = state;
+        }
+        finally
+        {
+            if (panel == _buildingList && request == _buildingListRequest) SetBuildingListLoading(false);
+        }
     }
 
     private async Task SelectBuildingAsync(int id)

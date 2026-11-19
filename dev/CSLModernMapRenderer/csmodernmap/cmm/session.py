@@ -10,6 +10,7 @@ from typing import Any, Callable
 
 from .model import MapDocument
 from .transit_domain import JobParams
+from ..performance import current_recorder, perf_span, measured
 
 
 def _fingerprint(params: dict[str, Any] | Any) -> str:
@@ -44,9 +45,14 @@ class ServiceCache:
         result = self._store.get(key)
         if result is not None:
             self._hits += 1
+            if (recorder := current_recorder()) is not None:
+                recorder.add_counter(f"cache.{service}.hit")
             return result
         self._misses += 1
-        result = compute()
+        if (recorder := current_recorder()) is not None:
+            recorder.add_counter(f"cache.{service}.miss")
+        with perf_span(recorder, f"service.{service}.compute"):
+            result = compute()
         self._store[key] = result
         return result
 
@@ -142,6 +148,7 @@ class DocumentSession:
             "ground_distance", params or {},
             lambda: builtup_distance_field(self.document, **(params or {})))
 
+    @measured("service.surface_model")
     def surface_model(self, params: dict[str, Any] | None = None) -> Any:
         """返回预览和导出共享的渲染器无关字段。"""
         from ..services.surface_compiler import (
@@ -201,8 +208,13 @@ class DocumentSession:
     def poi_catalog(self, params: dict[str, Any] | None = None, *, override_path: str | None = None) -> Any:
         """返回缓存的 POI 目录。"""
         from ..services.poi.service import produce
+        from ..services.poi.direct_mapping import load_mapping
+        from ..services.poi.model import POIJobParams
+        params = params if isinstance(params, POIJobParams) else POIJobParams(**(params or {}))
+        # 编辑任务将映射冻结到临时文件；内容相同的映射不因路径变化重复派生。
+        key = {'params': params.fingerprint, 'mapping': load_mapping(override_path)}
         return self.service_cache.get_or_compute(
-            "poi_catalog", {"params": params or {}, "override": override_path},
+            "poi_catalog", key,
             lambda: produce(self._legacy_view(), params, override_path=override_path,
                             session=self))
 
@@ -214,6 +226,7 @@ class DocumentSession:
 
     # 内部辅助入口。
 
+    @measured("service._legacy_view")
     def _legacy_view(self) -> Any:
         """返回由标准文档支持的延迟 MapData 兼容视图；字段按需读取并在同文档渲染中共享。"""
         from .document_view import MapDocumentView

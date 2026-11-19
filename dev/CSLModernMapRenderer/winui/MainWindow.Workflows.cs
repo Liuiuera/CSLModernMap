@@ -10,8 +10,9 @@ namespace CSLModernMapWinUI;
 public sealed partial class MainWindow
 {
     private string _randomScene = "overall", _randomSeed = "";
-    private Task PickRandomRegionAsync()
+    private async Task PickRandomRegionAsync()
     {
+        if (_cityArtwork && !await TryLeaveArtworkEditorAsync()) return;
         ClearLayerPanel(SettingsPanel);
         SettingsPanel.Children.Add(new TextBlock { Text = UiLanguage.Text("MainWindow_Workflows_PickRandomRegionAsync_485DDBB48A"), FontSize = 18 });
         var options = LayerSection(SettingsPanel, UiLanguage.Text("MainWindow_Workflows_PickRandomRegionAsync_1D48993136"));
@@ -38,7 +39,6 @@ public sealed partial class MainWindow
         var export = new Button { Content = UiLanguage.Text("MainWindow_Workflows_PickRandomRegionAsync_9B8845539A") }; export.Click += async (_, _) => await RunAsync(ExportSelectionAsync);
         foreach (var control in new UIElement[] { scenes, seed, pick }) options.Children.Add(control);
         SettingsPanel.Children.Add(export);
-        return Task.CompletedTask;
     }
     private bool _changingLanguage;
     private async Task ChangeLanguageAsync()
@@ -90,6 +90,7 @@ public sealed partial class MainWindow
         var sourceFile = _snapshot.ValueKind == JsonValueKind.Object && _snapshot.TryGetProperty("sourceFile", out var file)
             ? file.GetString() : null;
         var arguments = string.IsNullOrEmpty(sourceFile) ? _arguments : new[] { sourceFile };
+        await FlushContextWritesAsync();
         _closing = true;
         await _engine.CloseAsync();
         UiLanguage.Configure(metadata);
@@ -205,8 +206,13 @@ public sealed partial class MainWindow
     {
         var data = await _engine.RequestAsync("getDiagnostics");
         ClearLayerPanel(SettingsPanel);
+        var enabled = AppearanceControls.Toggle(UiLanguage.Text("MainWindow_Workflows_ShowFullDiagnosticsAsync_51464DD5DC"), data.GetProperty("enabled").GetBoolean());
+        enabled.Toggled += async (_, _) => await RunAsync(async () => { await _engine.RequestAsync("setDiagnostics", new { enabled = enabled.IsOn }); });
+        var performance = new StackPanel { Spacing = 8 }; performance.Children.Add(enabled);
         var logs = new Button { Content = UiLanguage.Text("MainWindow_Workflows_ShowFullDiagnosticsAsync_2E765B0E76") };
         logs.Click += async (_, _) => await RunAsync(async () => { await Windows.System.Launcher.LaunchFolderPathAsync(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CSLModernMap", "logs")); });
+        performance.Children.Add(logs);
+        performance.Children.Add(new TextBlock { Text = JsonSerializer.Serialize(data.GetProperty("details"), new JsonSerializerOptions { WriteIndented = true }), TextWrapping = TextWrapping.Wrap, IsTextSelectionEnabled = true });
         var map = new StackPanel { Spacing = 8 };
         map.Children.Add(new TextBlock { Text = UiLanguage.Format("MainWindow_Workflows_ShowFullDiagnosticsAsync_1EB5F39D42", _context, (_awaitingScene ? UiLanguage.Text("MainWindow_Workflows_ShowFullDiagnosticsAsync_D04FCBDA73") : string.IsNullOrEmpty(_sceneId) ? UiLanguage.Text("MainWindow_Workflows_ShowFullDiagnosticsAsync_E5C84C9AA7") : UiLanguage.Text("MainWindow_Workflows_ShowFullDiagnosticsAsync_B073DB9C0B"))), TextWrapping = TextWrapping.Wrap });
         if (_snapshot.ValueKind == JsonValueKind.Object)
@@ -214,14 +220,12 @@ public sealed partial class MainWindow
         var refresh = new Button { Content = UiLanguage.Text("MainWindow_Workflows_ShowFullDiagnosticsAsync_6EDFD8773A") };
         refresh.Click += async (_, _) => await ExecuteCommandAsync("map.refresh_preview"); map.Children.Add(refresh);
         var errors = new StackPanel { Spacing = 8 };
-        errors.Children.Add(logs);
-        map.Children.Add(new TextBlock { Text = JsonSerializer.Serialize(data.GetProperty("details"), new JsonSerializerOptions { WriteIndented = true }), TextWrapping = TextWrapping.Wrap, IsTextSelectionEnabled = true });
         var errorText = new TextBlock { Text = _recentErrors.Count == 0 ? UiLanguage.Text("MainWindow_Workflows_ShowFullDiagnosticsAsync_8E32E45D05") : string.Join("\n", _recentErrors), TextWrapping = TextWrapping.Wrap, IsTextSelectionEnabled = true };
         var clear = new Button { Content = UiLanguage.Text("MainWindow_Workflows_ShowFullDiagnosticsAsync_C569EEBE8E") };
         clear.Click += (_, _) => { _recentErrors.Clear(); errorText.Text = UiLanguage.Text("MainWindow_Workflows_ShowFullDiagnosticsAsync_8E32E45D05"); };
         errors.Children.Add(clear); errors.Children.Add(errorText);
         var tabs = new TabView { IsAddTabButtonVisible = false, Height = Math.Max(280, Root.ActualHeight - 350) };
-        foreach (var (name, page) in new[] { (UiLanguage.Text("MainWindow_Workflows_ShowFullDiagnosticsAsync_41AB2E0ECB"), map), (UiLanguage.Text("MainWindow_Workflows_ShowFullDiagnosticsAsync_0BC1FB72AE"), errors) })
+        foreach (var (name, page) in new[] { (UiLanguage.Text("MainWindow_Workflows_ShowFullDiagnosticsAsync_41AB2E0ECB"), map), (UiLanguage.Text("MainWindow_Workflows_ShowFullDiagnosticsAsync_0BC1FB72AE"), errors), (UiLanguage.Text("MainWindow_Workflows_ShowFullDiagnosticsAsync_3B1EF565E6"), performance) })
             tabs.TabItems.Add(new TabViewItem { Header = name, IsClosable = false, Content = new ScrollViewer { Content = page, HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled } });
         SettingsPanel.Children.Add(tabs);
     }

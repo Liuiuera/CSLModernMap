@@ -8,16 +8,16 @@ from PIL import ImageChops
 
 from test_navigation_ui_browser import (navigation_page, navigation_bundle, navigation_server,
     open_navigation, make_route, VIEWER, expect)
-from test_preview_road_browser import load, screenshot
+from browser_support import load, screenshot
 from csmodernmap.preview_scene import world_to_geo
 from csmodernmap.web_export_v2 import payload_from_preview_bundle, render_export_html
 
-pytestmark = pytest.mark.skipif(os.environ.get('CSL_PREVIEW_BROWSER_TEST') != '1', reason='opt-in WebGL test')
+pytestmark = [pytest.mark.browser, pytest.mark.skipif(os.environ.get('CSL_PREVIEW_BROWSER_TEST') != '1', reason='opt-in WebGL test')]
 
 
 def instrument(source):
     # Expose the actual production map in test responses only, without a shipped diagnostics API.
-    result, count = re.subn(r'new [\w$.]+\(\{container:[`\"]map[`\"]',
+    result, count = re.subn(r'new [\w$.]+\.Map\(\{container:[`\"]map[`\"]',
         lambda m: 'window.__testMap='+m.group(), source)
     assert count == 1
     return result
@@ -72,7 +72,7 @@ def test_3d_camera_buildings_selection_and_refresh(navigation_page,navigation_bu
     assert camera(page)['pitch']==pytest.approx(52)
     raised=screenshot(page,f'{game}-height-3d')
     assert ImageChops.difference(flat,raised).getbbox()
-    expect(page.locator('.preview-3d-notice')).to_be_visible()
+    expect(page.locator('.preview-3d-notice')).to_be_hidden()
     assert page.evaluate('new Set(__testMap.queryRenderedFeatures({layers:["buildings-3d"]}).map(f=>f.properties.buildingId)).size')==2
     roof = page.evaluate('''() => {
       for(let y=120;y<700;y+=8) for(let x=350;x<1000;x+=8) {
@@ -134,12 +134,59 @@ def test_3d_camera_buildings_selection_and_refresh(navigation_page,navigation_bu
     load(page,navigation_server,3);expect(toggle).to_have_attribute('aria-pressed','false')
 
 
+@pytest.mark.parametrize('heights', [[], [None, 0, -1], [None, 0, 12]])
+def test_height_notice_only_when_all_missing_and_dismisses_per_city(
+        navigation_page, navigation_bundle, navigation_server, heights):
+    page = navigation_page
+    buildings(navigation_bundle)
+    path = navigation_bundle.root / 'buildings.geojson'
+    data = json.loads(path.read_text(encoding='utf-8'))
+    data['features'] = data['features'][:len(heights)]
+    for feature, height in zip(data['features'], heights):
+        feature['properties']['height_m'] = height
+    path.write_text(json.dumps(data), encoding='utf-8')
+    load(page, navigation_server, 1)
+    toggle = page.get_by_role('button', name='3D 预览', exact=True)
+    notice = page.locator('.preview-3d-notice')
+    expect(notice).to_be_hidden()
+    toggle.click()
+    if not heights or any(height is not None and height > 0 for height in heights):
+        expect(notice).to_be_hidden()
+        return
+    expect(notice).to_contain_text('未检测到建筑高度，请尝试使用最新版本的导出器重新导出。')
+    notice.get_by_role('button', name='关闭', exact=True).click()
+    expect(notice).to_be_hidden()
+    toggle.click(); toggle.click()
+    expect(notice).to_be_hidden()
+    # Re-fetching building data in this city must preserve dismissal.
+    navigation_bundle.manifest['revision'] = 2
+    navigation_bundle.manifest['sourceRevisions']['buildings'] = 2
+    navigation_bundle.manifest['sources']['buildings'] = 'buildings.geojson?revision=2'
+    (navigation_bundle.root/'manifest.json').write_text(json.dumps(navigation_bundle.manifest), encoding='utf-8')
+    load(page, navigation_server, 2)
+    expect(notice).to_be_hidden()
+    navigation_bundle.manifest.update(sceneId='height-notice-next-city', revision=3)
+    (navigation_bundle.root/'manifest.json').write_text(json.dumps(navigation_bundle.manifest), encoding='utf-8')
+    load(page, navigation_server, 3)
+    toggle.click()
+    expect(notice).to_be_visible()
+    screenshot(page, 'height-notice-dismissible')
+    navigation_bundle.manifest.update(sceneId='city-without-buildings', revision=4)
+    del navigation_bundle.manifest['sources']['buildings']
+    (navigation_bundle.root/'manifest.json').write_text(json.dumps(navigation_bundle.manifest), encoding='utf-8')
+    load(page, navigation_server, 4)
+    toggle.click()
+    expect(notice).to_be_hidden()
+
+
 def test_navigation_and_offline_share_3d(navigation_page,navigation_bundle,navigation_server,tmp_path):
     page=navigation_page; buildings(navigation_bundle,'cs2');expose_map(page)
     open_navigation(page,navigation_server);make_route(page)
     toggle=page.get_by_role('button',name='3D 预览',exact=True);toggle.click();settle_camera(page,52);drag(page,30,50)
     before=camera(page)
     page.get_by_role('button',name='模拟导航',exact=True).click()
+    page.get_by_label('速度',exact=True).select_option('custom')
+    page.get_by_label('速度 (km/h)',exact=True).fill('36')
     page.wait_for_timeout(1700)
     page.get_by_label('视图',exact=True).select_option('buildings')
     expect(toggle).to_have_attribute('aria-pressed','true')

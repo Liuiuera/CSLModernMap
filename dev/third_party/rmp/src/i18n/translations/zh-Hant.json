@@ -1097,6 +1097,7 @@
 
     "localStorageQuotaExceeded": "本機儲存空間已達上限。無法儲存新的變更。",
     "cmm": {
+    "transfer": "轉乘",
     "properties": "屬性",
     "otherProperties": "其他屬性",
     "moreActions": "更多操作",

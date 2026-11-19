@@ -21,6 +21,7 @@ internal sealed class BuildingListPanel : Grid
 {
     private List<BuildingListItem> _items = new();
     private Dictionary<int, BuildingListItem> _byMember = new();
+    private Dictionary<int, string> _memberNames = new();
     private readonly TextBox _search;
     private readonly ComboBox _categories, _sort;
     private readonly CheckBox _gameNames;
@@ -28,6 +29,8 @@ internal sealed class BuildingListPanel : Grid
     private readonly TextBlock _count, _notice;
     private readonly Button _clear;
     private readonly StackPanel _details = new() { Spacing = 12 };
+    private readonly Border _surface;
+    private readonly StackPanel _loading = CreateLoadingIndicator();
     private bool _updating;
     private int? _selected;
     private JsonElement? _detailModel, _detailSelection;
@@ -55,7 +58,6 @@ internal sealed class BuildingListPanel : Grid
             FontWeight = Microsoft.UI.Text.FontWeights.SemiBold, VerticalAlignment = VerticalAlignment.Center });
         _gameNames = new CheckBox { Content = UiLanguage.Text("BuildingList_GameNames"), VerticalAlignment = VerticalAlignment.Center };
         AutomationProperties.SetAutomationId(_gameNames, "BuildingListGameNames");
-        ToolTipService.SetToolTip(_gameNames, UiLanguage.Text("BuildingList_NameHint"));
         Grid.SetColumn(_gameNames, 1); titleBar.Children.Add(_gameNames);
         Children.Add(titleBar);
         var heading = new StackPanel { Spacing = 12, Margin = new Thickness(16, 16, 16, 0) };
@@ -125,10 +127,12 @@ internal sealed class BuildingListPanel : Grid
             """);
         detailBorder.Child = detailScroll;
         Grid.SetColumn(detailBorder, 1); Grid.SetRowSpan(detailBorder, 2); body.Children.Add(detailBorder);
-        var surface = (Border)XamlReader.Load("""
+        _surface = (Border)XamlReader.Load("""
             <Border xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Background="{ThemeResource LayerFillColorDefaultBrush}" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" />
             """);
-        surface.Child = body; Grid.SetRow(surface, 1); Children.Add(surface);
+        _surface.Child = body; Grid.SetRow(_surface, 1); Children.Add(_surface);
+        Grid.SetRow(_loading, 1); Children.Add(_loading);
+        SetLoading(false);
         bool? stacked = null;
         SizeChanged += (_, _) =>
         {
@@ -161,6 +165,8 @@ internal sealed class BuildingListPanel : Grid
     internal void UpdateCatalog(JsonElement catalog)
     {
         var category = Category;
+        _memberNames = catalog.GetProperty("items").EnumerateArray().SelectMany(row => row.GetProperty("memberNames").EnumerateObject())
+            .ToDictionary(name => int.Parse(name.Name, CultureInfo.InvariantCulture), name => name.Value.GetString()!);
         _items = catalog.GetProperty("items").EnumerateArray().Select(row => new BuildingListItem(
             row.GetProperty("id").GetInt32(), DisplayName(row.GetProperty("name").GetString()!, row.GetProperty("id").GetInt32()),
             row.GetProperty("nameSource").GetString()!,
@@ -187,6 +193,25 @@ internal sealed class BuildingListPanel : Grid
 
     internal static string DisplayName(string name, int id) => string.IsNullOrWhiteSpace(name)
         ? $"{UiLanguage.Text("BuildingList_Unnamed")} · {id}" : name;
+
+    internal static StackPanel CreateLoadingIndicator()
+    {
+        var indicator = new StackPanel { Spacing = 12, HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center };
+        indicator.Children.Add(new ProgressRing { IsActive = true, Width = 40, Height = 40,
+            HorizontalAlignment = HorizontalAlignment.Center });
+        indicator.Children.Add(new TextBlock { Text = UiLanguage.Text("BuildingList_Open") + " · " + UiLanguage.Text("MapTaskState_Status_D04FCBDA73"),
+            TextAlignment = TextAlignment.Center, TextWrapping = TextWrapping.Wrap });
+        AutomationProperties.SetAutomationId(indicator, "BuildingListLoading");
+        return indicator;
+    }
+
+    internal void SetLoading(bool loading)
+    {
+        _loading.Visibility = loading ? Visibility.Visible : Visibility.Collapsed;
+        ((ProgressRing)_loading.Children[0]).IsActive = loading;
+        _surface.Visibility = loading ? Visibility.Collapsed : Visibility.Visible;
+    }
 
     internal void SynchronizeGameNames()
     {
@@ -287,7 +312,7 @@ internal sealed class BuildingListPanel : Grid
         {
             var children = new StackPanel { Spacing = 8 };
             foreach (var member in members.EnumerateArray())
-                children.Children.Add(new TextBlock { Text = DisplayName(member.GetProperty("name").GetString()!, member.GetProperty("id").GetInt32())
+                children.Children.Add(new TextBlock { Text = DisplayName(_memberNames[member.GetProperty("id").GetInt32()], member.GetProperty("id").GetInt32())
                     + $" · ID {member.GetProperty("id").GetInt32()}\n" + member.GetProperty("categoryName").GetString(), TextWrapping = TextWrapping.Wrap, IsTextSelectionEnabled = true });
             _details.Children.Add(new Expander { Header = UiLanguage.Text("BuildingList_Members"), Content = children, IsExpanded = true,
                 HorizontalAlignment = HorizontalAlignment.Stretch, HorizontalContentAlignment = HorizontalAlignment.Stretch });

@@ -29,30 +29,6 @@
     <value>{0}: wprowadź wartość od {1} do {2}.</value>
     <comment>AppearanceControls.cs:153</comment>
   </data>
-  <data name="AppearanceControls_Number_0DA36741DE" xml:space="preserve">
-    <value>Część stała (px)</value>
-    <comment>AppearanceControls.cs:136</comment>
-  </data>
-  <data name="AppearanceControls_Number_2C7E083699" xml:space="preserve">
-    <value>Część skalowana (referencyjne piksele)</value>
-    <comment>AppearanceControls.cs:138</comment>
-  </data>
-  <data name="AppearanceControls_Number_9FC85F1C9F" xml:space="preserve">
-    <value>Zachowaj stały rozmiar</value>
-    <comment>AppearanceControls.cs:198</comment>
-  </data>
-  <data name="AppearanceControls_Number_C42BC5D941" xml:space="preserve">
-    <value>{0}: wprowadź prawidłową liczbę.</value>
-    <comment>AppearanceControls.cs:148</comment>
-  </data>
-  <data name="AppearanceControls_Number_EE9964568E" xml:space="preserve">
-    <value>Część stała + część skalowana</value>
-    <comment>AppearanceControls.cs:198</comment>
-  </data>
-  <data name="AppearanceControls_Number_F1463D39A7" xml:space="preserve">
-    <value>Dopasuj do powiększenia mapy</value>
-    <comment>AppearanceControls.cs:198</comment>
-  </data>
   <data name="ContextRibbonToggle_Refresh_645432A5BF" xml:space="preserve">
     <value>, włączone</value>
     <comment>ContextRibbonToggle.cs:31</comment>
@@ -216,6 +192,10 @@ Nie można otworzyć strony:</value>
   <data name="ExportWindow_Preview_FormatDescription_D1B9C29526" xml:space="preserve">
     <value>Projekt sieci · edytuj w Rail Map Painter</value>
     <comment>ExportWindow.Preview.cs:93</comment>
+  </data>
+  <data name="ExportWindow_Preview_FormatDescription_F3E27B053E" xml:space="preserve">
+    <value>GeoPackage (.gpkg) + GeoTIFF (.tif) + QGIS (.qml)</value>
+    <comment>ExportWindow.Preview.cs:91</comment>
   </data>
   <data name="ExportWindow_Preview_InitializeResults_0A07FEF6ED" xml:space="preserve">
     <value>Ponów eksport</value>
@@ -445,6 +425,10 @@ Nie można otworzyć strony:</value>
     <value>Schemat metra</value>
     <comment>ExportWindow.cs:679</comment>
   </data>
+  <data name="ExportWindow_UpdateContextCopy_19744772B2" xml:space="preserve">
+    <value>GeoPackage (.gpkg) + GeoTIFF (.tif) + QGIS (.qml)</value>
+    <comment>ExportWindow.cs:348</comment>
+  </data>
   <data name="ExportWindow_UpdateContextCopy_2F52FBFF32" xml:space="preserve">
     <value>Eksportuj projekt pomocniczy na podstawie bieżącej sieci metra i wybranych linii.</value>
     <comment>ExportWindow.cs:357</comment>
@@ -468,6 +452,10 @@ Nie można otworzyć strony:</value>
   <data name="ExportWindow_UpdateContextCopy_6339D3A748" xml:space="preserve">
     <value>Eksportuj mapę z bieżącym motywem, warstwami i wybranym obszarem.</value>
     <comment>ExportWindow.cs:376</comment>
+  </data>
+  <data name="ExportWindow_UpdateContextCopy_694B1FB788" xml:space="preserve">
+    <value>GeoPackage / GeoTIFF + QML</value>
+    <comment>ExportWindow.cs:347</comment>
   </data>
   <data name="ExportWindow_UpdateContextCopy_7BE47589C1" xml:space="preserve">
     <value>Wyeksportuj plik .rmp.json, a następnie zaimportuj go do Rail Map Painter i edytuj trasy.</value>
@@ -817,6 +805,10 @@ Nie można otworzyć strony:</value>
     <value>Eksportuj PNG…</value>
     <comment>MainWindow.File.cs:32</comment>
   </data>
+  <data name="MainWindow_File_BuildFileMenu_D9A515CF72" xml:space="preserve">
+    <value>GeoPackage / GeoTIFF + QML…</value>
+    <comment>MainWindow.File.cs:34</comment>
+  </data>
   <data name="MainWindow_File_RefreshFileRecent_95D7E39D01" xml:space="preserve">
     <value>Plik został przeniesiony lub nie istnieje:</value>
     <comment>MainWindow.File.cs:63</comment>
@@ -1145,10 +1137,6 @@ Nie można otworzyć strony:</value>
     <value>Ikony transportu</value>
     <comment>MainWindow.MapSettings.cs:278</comment>
   </data>
-  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_4D2A6ECC62" xml:space="preserve">
-    <value>Rozmiary odniesienia są oparte na mapie całego miasta o szerokości 4096 pikseli.</value>
-    <comment>MainWindow.MapSettings.cs:350; MainWindow.MapSettings.cs:365</comment>
-  </data>
   <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_4D8D19C70F" xml:space="preserve">
     <value>Kategoria ustawień</value>
     <comment>MainWindow.MapSettings.cs:57; MainWindow.MapSettings.cs:58; MainWindow.MapSettings.cs:59</comment>
@@ -1361,10 +1349,6 @@ Nie można otworzyć strony:</value>
     <value>Pokaż tekst i ikony</value>
     <comment>MainWindow.MapSettings.cs:216</comment>
   </data>
-  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_EC7FFA2896" xml:space="preserve">
-    <value>Zmiana rozmiarów wraz z powiększeniem</value>
-    <comment>MainWindow.MapSettings.cs:351; MainWindow.MapSettings.cs:366</comment>
-  </data>
   <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_ED236491A4" xml:space="preserve">
     <value>Nazwa z gry</value>
     <comment>MainWindow.MapSettings.cs:311</comment>
@@ -1388,6 +1372,10 @@ Nie można otworzyć strony:</value>
   <data name="MainWindow_OverviewButton.Content" xml:space="preserve">
     <value>Informacje o mapie</value>
     <comment>dev\CSLModernMapRenderer\winui\MainWindow.xaml:50</comment>
+  </data>
+  <data name="MainWindow_Overview_ShowInspectorHome_064FC61A89" xml:space="preserve">
+    <value>Kontynuuj edycję w QGIS</value>
+    <comment>MainWindow.Overview.cs:131</comment>
   </data>
   <data name="MainWindow_Overview_ShowInspectorHome_1CDED5B3FD" xml:space="preserve">
     <value>Właściwości obiektu</value>
@@ -1433,10 +1421,6 @@ Nie można otworzyć strony:</value>
     <value>Motyw mapy i informacje o bieżącej mapie</value>
     <comment>MainWindow.Overview.cs:39</comment>
   </data>
-  <data name="MainWindow_Overview_ShowMapOverview_3595B7C819" xml:space="preserve">
-    <value>Liczba obszarów</value>
-    <comment>MainWindow.Overview.cs:53</comment>
-  </data>
   <data name="MainWindow_Overview_ShowMapOverview_41AB2E0ECB" xml:space="preserve">
     <value>Mapa</value>
     <comment>MainWindow.Overview.cs:38; MainWindow.Overview.cs:40</comment>
@@ -1450,7 +1434,7 @@ Nie można otworzyć strony:</value>
     <comment>MainWindow.Overview.cs:52</comment>
   </data>
   <data name="MainWindow_Overview_ShowMapOverview_6F1C3CB04A" xml:space="preserve">
-    <value>Edytuj styl…</value>
+    <value>Edytuj parametry motywu…</value>
     <comment>MainWindow.Overview.cs:48</comment>
   </data>
   <data name="MainWindow_Overview_ShowMapOverview_788DB1CFEC" xml:space="preserve">
@@ -1458,7 +1442,7 @@ Nie można otworzyć strony:</value>
     <comment>MainWindow.Overview.cs:41</comment>
   </data>
   <data name="MainWindow_Overview_ShowMapOverview_B553EA09A3" xml:space="preserve">
-    <value>Długość tras transportu publicznego</value>
+    <value>Łączna długość linii transportu</value>
     <comment>MainWindow.Overview.cs:52</comment>
   </data>
   <data name="MainWindow_Overview_ShowMapOverview_BDA7B29CF3" xml:space="preserve">
@@ -1480,6 +1464,34 @@ Nie można otworzyć strony:</value>
   <data name="MainWindow_Overview_ShowMapOverview_ED84A1665F" xml:space="preserve">
     <value>Miasto</value>
     <comment>MainWindow.Overview.cs:51</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_2CD0F3BE87" xml:space="preserve">
+    <value>Anuluj</value>
+    <comment>MainWindow.PreviewSettings.cs:36</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_3279E8322A" xml:space="preserve">
+    <value>Wydajność podglądu</value>
+    <comment>MainWindow.PreviewSettings.cs:19</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_63C73C4730" xml:space="preserve">
+    <value>Zastosuj</value>
+    <comment>MainWindow.PreviewSettings.cs:37</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_8B710BEF56" xml:space="preserve">
+    <value>Miasto się zmieniło. Otwórz ponownie ustawienia.</value>
+    <comment>MainWindow.PreviewSettings.cs:39</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_BA2E93E730" xml:space="preserve">
+    <value>Przywróć domyślne</value>
+    <comment>MainWindow.PreviewSettings.cs:35</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_BD4DD78F2D" xml:space="preserve">
+    <value>Zapisuje czas wczytywania miasta, generowania mapy i rysowania, aby ułatwić diagnozowanie wolnego podglądu.</value>
+    <comment>MainWindow.PreviewSettings.cs:29</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_F15F7C4642" xml:space="preserve">
+    <value>Zapisz wydajność podglądu</value>
+    <comment>MainWindow.PreviewSettings.cs:22</comment>
   </data>
   <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_07C030A101" xml:space="preserve">
     <value>Odstęp powtarzania (m)</value>
@@ -2058,9 +2070,17 @@ Podgląd: {1}</value>
     <value>Otwórz folder dzienników</value>
     <comment>MainWindow.Workflows.cs:197</comment>
   </data>
+  <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_3B1EF565E6" xml:space="preserve">
+    <value>Wydajność</value>
+    <comment>MainWindow.Workflows.cs:213</comment>
+  </data>
   <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_41AB2E0ECB" xml:space="preserve">
     <value>Mapa</value>
     <comment>MainWindow.Workflows.cs:213</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_51464DD5DC" xml:space="preserve">
+    <value>Diagnostyka wydajności</value>
+    <comment>MainWindow.Workflows.cs:194</comment>
   </data>
   <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_6EDFD8773A" xml:space="preserve">
     <value>Odśwież podgląd</value>
@@ -2337,6 +2357,10 @@ Esc  Anuluj bieżące zadanie</value>
   <data name="MainWindow_xaml_BuildRibbon_62AEEB8B65" xml:space="preserve">
     <value>Regiony i dzielnice</value>
     <comment>MainWindow.xaml.cs:165</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_694B1FB788" xml:space="preserve">
+    <value>GeoPackage / GeoTIFF + QML</value>
+    <comment>MainWindow.xaml.cs:141; MainWindow.xaml.cs:218</comment>
   </data>
   <data name="MainWindow_xaml_BuildRibbon_6BEB3C5ED7" xml:space="preserve">
     <value>Tworzenie mapy</value>
@@ -3371,18 +3395,6 @@ Mapy miast, mapy transportu publicznego i schematy metra.
     <value>Podgląd zaktualizuje się po zatwierdzeniu poprawnej wartości</value>
     <comment>ThemeEditorDialog.Fields.cs:348</comment>
   </data>
-  <data name="ThemeEditorDialog_Fields_Label_606D5B2CC1" xml:space="preserve">
-    <value>Składnik dodawany wraz ze wzrostem skali renderowania</value>
-    <comment>ThemeEditorDialog.Fields.cs:23</comment>
-  </data>
-  <data name="ThemeEditorDialog_Fields_Label_803A1B3A33" xml:space="preserve">
-    <value>Część stała</value>
-    <comment>ThemeEditorDialog.Fields.cs:22</comment>
-  </data>
-  <data name="ThemeEditorDialog_Fields_MakeField_606D5B2CC1" xml:space="preserve">
-    <value>Składnik dodawany wraz ze wzrostem skali renderowania</value>
-    <comment>ThemeEditorDialog.Fields.cs:134</comment>
-  </data>
   <data name="ThemeEditorDialog_Fields_MakeField_66FE53367D" xml:space="preserve">
     <value>Wprowadź wartość od {0} do {1}</value>
     <comment>ThemeEditorDialog.Fields.cs:181</comment>
@@ -3394,14 +3406,6 @@ Mapy miast, mapy transportu publicznego i schematy metra.
   <data name="ThemeEditorDialog_Fields_MakeField_870D5FE5D4" xml:space="preserve">
     <value>Wprowadź tablicę JSON</value>
     <comment>ThemeEditorDialog.Fields.cs:150</comment>
-  </data>
-  <data name="ThemeEditorDialog_Fields_MakeField_986E6B84D7" xml:space="preserve">
-    <value>Część stała (px)</value>
-    <comment>ThemeEditorDialog.Fields.cs:133</comment>
-  </data>
-  <data name="ThemeEditorDialog_Fields_MakeField_CF663DC217" xml:space="preserve">
-    <value>Rozmiar końcowy = część stała + część skalowana × skala renderowania</value>
-    <comment>ThemeEditorDialog.Fields.cs:136</comment>
   </data>
   <data name="ThemeEditorDialog_Fields_MakeField_D9E21007A0" xml:space="preserve">
     <value>(bieżąca wartość)</value>
@@ -3420,11 +3424,11 @@ Mapy miast, mapy transportu publicznego i schematy metra.
     <comment>ThemeEditorDialog.Fields.cs:84</comment>
   </data>
   <data name="ThemeEditorDialog_Fields_PageDescription_5986B685A1" xml:space="preserve">
-    <value>Dostosuj wypełnienie, obrys i minimalną widoczną szerokość według klasy drogi.</value>
+    <value>Dostosuj wypełnienie, obrys i szerokość bez obrysu powierzchni (px) według klasy drogi.</value>
     <comment>ThemeEditorDialog.Fields.cs:82</comment>
   </data>
   <data name="ThemeEditorDialog_Fields_PageDescription_7245F659EA" xml:space="preserve">
-    <value>Edytuj nazwę i opis motywu oraz zapisz bieżące ustawienia.</value>
+    <value>Zapis zmian ustawienia wstępnego tworzy motyw osobisty; zapis motywu osobistego aktualizuje go. Eksport zapisuje osobny plik YAML.</value>
     <comment>ThemeEditorDialog.Fields.cs:85</comment>
   </data>
   <data name="ThemeEditorDialog_Fields_PageDescription_8714276423" xml:space="preserve">
@@ -3536,7 +3540,7 @@ Mapy miast, mapy transportu publicznego i schematy metra.
     <comment>ThemeEditorDialog.Layout.cs:43</comment>
   </data>
   <data name="ThemeEditorDialog_Layout_BuildWorkbench_BA1125B2AC" xml:space="preserve">
-    <value>Edytuj pełne dane motywu (JSON)…</value>
+    <value>Edytuj JSON…</value>
     <comment>ThemeEditorDialog.Layout.cs:60</comment>
   </data>
   <data name="ThemeEditorDialog_Layout_BuildWorkbench_EC9A1CEB6D" xml:space="preserve">
@@ -3699,10 +3703,6 @@ Mapy miast, mapy transportu publicznego i schematy metra.
     <value>Wprowadź wysokość od {0} do {1} m oraz prawidłowy kolor HEX</value>
     <comment>ThemeEditorDialog.Pages.cs:189</comment>
   </data>
-  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_01EEE2E647" xml:space="preserve">
-    <value>Im większy współczynnik, tym grubsze są drogi.</value>
-    <comment>ThemeEditorDialog.Pages.cs:61</comment>
-  </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_05FB7CBA47" xml:space="preserve">
     <value>Wypełnienie</value>
     <comment>ThemeEditorDialog.Pages.cs:29</comment>
@@ -3712,23 +3712,19 @@ Mapy miast, mapy transportu publicznego i schematy metra.
     <comment>ThemeEditorDialog.Pages.cs:42</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_1D68EDF7EB" xml:space="preserve">
-    <value>Minimalne px</value>
+    <value>Szerokość linii środkowej (px)</value>
     <comment>ThemeEditorDialog.Pages.cs:29</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_3001DE3658" xml:space="preserve">
     <value>Wygląd według klas</value>
     <comment>ThemeEditorDialog.Pages.cs:24</comment>
   </data>
-  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_37AE912BEC" xml:space="preserve">
-    <value>Grubość ogólna</value>
-    <comment>ThemeEditorDialog.Pages.cs:59</comment>
-  </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_512DF348F2" xml:space="preserve">
-    <value>Minimalna szerokość określa widoczność z daleka, a rzeczywista szerokość zależy od rozmiaru drogi. Obrys otacza wypełnienie.</value>
+    <value>Z obrysem: szerokość obrysu × mnożnik obrysu. Bez obrysu: szerokość w pikselach × skala elementów. Obramowania również podlegają tej skali.</value>
     <comment>ThemeEditorDialog.Pages.cs:56</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_593A6AFD98" xml:space="preserve">
-    <value>Szerokość obrysu poszczególnych klas</value>
+    <value>Szerokość obrysu (px) / mnożnik szerokości powierzchni drogi</value>
     <comment>ThemeEditorDialog.Pages.cs:63</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_80A57E03F0" xml:space="preserve">
@@ -3750,10 +3746,6 @@ Mapy miast, mapy transportu publicznego i schematy metra.
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_C2AE96D4A6" xml:space="preserve">
     <value>Wiadukty i tunele</value>
     <comment>ThemeEditorDialog.Pages.cs:72</comment>
-  </data>
-  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_E9C68028D9" xml:space="preserve">
-    <value>Skala szerokości dróg</value>
-    <comment>ThemeEditorDialog.Pages.cs:60</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_FBE666F1E0" xml:space="preserve">
     <value>Klasy dróg</value>
@@ -3794,11 +3786,6 @@ Mapy miast, mapy transportu publicznego i schematy metra.
   <data name="ThemeEditorDialog_Preview_BuildSamples_1350C527B6" xml:space="preserve">
     <value>Zmiany koloru i rozmiaru są widoczne na podglądzie rzeczywistej mapy.</value>
     <comment>ThemeEditorDialog.Preview.cs:50</comment>
-  </data>
-  <data name="ThemeEditorDialog_Preview_BuildSamples_1A0787C40B" xml:space="preserve">
-    <value> · minimum {0:0.##} px
-Przykładowa droga: 16 m, skala renderowania: 1</value>
-    <comment>ThemeEditorDialog.Preview.cs:33</comment>
   </data>
   <data name="ThemeEditorDialog_Preview_BuildSamples_5BD3906590" xml:space="preserve">
     <value>Brak węzłów wysokości</value>
@@ -4314,7 +4301,7 @@ Przykładowa droga: 16 m, skala renderowania: 1</value>
   <data name="MainWindow_File_OpenConfigurationFolder" xml:space="preserve">
     <value>Otwórz folder konfiguracji</value>
   </data>
-  <data name="RmpEditor_Title" xml:space="preserve"><value>Metro diagram editor</value></data>
+  <data name="RmpEditor_Title" xml:space="preserve"><value>Edytor schematów metra</value></data>
   <data name="RmpEditor_Edit" xml:space="preserve"><value>Edit</value></data>
   <data name="RmpEditor_Save" xml:space="preserve"><value>Save project</value></data>
   <data name="RmpEditor_SaveAs" xml:space="preserve"><value>Save as…</value></data>
@@ -4326,20 +4313,20 @@ Przykładowa droga: 16 m, skala renderowania: 1</value>
   <data name="RmpEditor_Cancel" xml:space="preserve"><value>Cancel</value></data>
   <data name="RmpEditor_Discard" xml:space="preserve"><value>Discard changes</value></data>
   <data name="RmpEditor_Unsaved" xml:space="preserve"><value>Unsaved project</value></data>
-  <data name="RmpEditor_UnsavedPrompt" xml:space="preserve"><value>Save changes before continuing?</value></data>
-  <data name="RmpEditor_Independent" xml:space="preserve"><value>Changes belong to this editor only.</value></data>
-  <data name="RmpEditor_NativeAppearance" xml:space="preserve"><value>RMP uses native symbol sizes, Noto Sans SC and opaque water colours composed over the canvas background.</value></data>
-  <data name="RmpEditor_Detached" xml:space="preserve"><value>This project is not linked to the current source map.</value></data>
-  <data name="RmpEditor_MissingAssets" xml:space="preserve"><value>RMP assets are missing. Rebuild the WinUI application.</value></data>
-  <data name="RmpEditor_LoadFailed" xml:space="preserve"><value>Unable to load the RMP editor</value></data>
-  <data name="RmpEditor_ProcessFailed" xml:space="preserve"><value>The editor process stopped. Unsaved changes could not be recovered.</value></data>
-  <data name="RmpEditor_InvalidProject" xml:space="preserve"><value>Not a supported RMP project (save version 1–77).</value></data>
-  <data name="RmpEditor_BlockedResource" xml:space="preserve"><value>An external resource was blocked by the offline editor.</value></data>
+  <data name="RmpEditor_UnsavedPrompt" xml:space="preserve"><value>Zapisać zmiany przed kontynuowaniem?</value></data>
+  <data name="RmpEditor_Independent" xml:space="preserve"><value>Zmiany dotyczą tylko tego szkicu.</value></data>
+  <data name="RmpEditor_NativeAppearance" xml:space="preserve"><value>RMP używa oryginalnych rozmiarów symboli i czcionki Noto Sans SC. Kolory wody są łączone z tłem płótna, aby uzyskać nieprzezroczyste barwy.</value></data>
+  <data name="RmpEditor_Detached" xml:space="preserve"><value>Ten projekt nie jest powiązany z bieżącą mapą źródłową.</value></data>
+  <data name="RmpEditor_MissingAssets" xml:space="preserve"><value>Brak zasobów RMP. Ponownie skompiluj aplikację WinUI.</value></data>
+  <data name="RmpEditor_LoadFailed" xml:space="preserve"><value>Nie można wczytać edytora RMP</value></data>
+  <data name="RmpEditor_ProcessFailed" xml:space="preserve"><value>Proces edytora został zatrzymany. Nie udało się odzyskać niezapisanych zmian.</value></data>
+  <data name="RmpEditor_InvalidProject" xml:space="preserve"><value>Nieobsługiwany projekt RMP. Obsługiwane wersje zapisu: 1–77.</value></data>
+  <data name="RmpEditor_BlockedResource" xml:space="preserve"><value>Edytor offline zablokował zasób zewnętrzny.</value></data>
   <data name="RmpEditor_RegeneratePrompt" xml:space="preserve"><value>Replace this draft with the automatic diagram captured when this window opened? This does not change the main window.</value></data>
   <data name="RmpEditor_Exported" xml:space="preserve"><value>Exported:</value></data>
-  <data name="RmpEditor_MismatchPrompt" xml:space="preserve"><value>The saved project does not match its source metadata. Open it independently, or create a new draft without overwriting it?</value></data>
-  <data name="RmpEditor_OpenExisting" xml:space="preserve"><value>Open existing project</value></data>
-  <data name="RmpEditor_NewDraft" xml:space="preserve"><value>Create new draft</value></data>
+  <data name="RmpEditor_MismatchPrompt" xml:space="preserve"><value>Zapisany projekt nie odpowiada metadanym źródła. Otworzyć go oddzielnie czy utworzyć nowy szkic, zachowując oryginał?</value></data>
+  <data name="RmpEditor_OpenExisting" xml:space="preserve"><value>Otwórz istniejący projekt</value></data>
+  <data name="RmpEditor_NewDraft" xml:space="preserve"><value>Utwórz nowy szkic</value></data>
   <data name="RmpEditor_Fit" xml:space="preserve"><value>Fit diagram</value></data>
   <data name="RmpEditor_Undo" xml:space="preserve"><value>Cofnij</value></data>
   <data name="RmpEditor_Redo" xml:space="preserve"><value>Ponów</value></data>
@@ -4371,6 +4358,290 @@ Przykładowa droga: 16 m, skala renderowania: 1</value>
   <data name="ExportWindow_RmpContent" xml:space="preserve"><value>Eksportuje bieżący schemat metra, w tym zmienione linie, stacje i inne elementy. Czcionki są osadzone w pliku.</value></data>
   <data name="ExportWindow_RmpSvgDescription" xml:space="preserve"><value>Obraz wektorowy do skalowania i dalszej edycji</value></data>
   <data name="RmpEditor_DefaultTitle" xml:space="preserve"><value>{cityName} — Mapa metra</value></data>
+  <data name="Poi_Area" xml:space="preserve"><value>Obszary funkcjonalne</value></data>
+  <data name="Poi_AreaIcons" xml:space="preserve"><value>Ikony obszarów funkcjonalnych</value></data>
+  <data name="Poi_AreaNames" xml:space="preserve"><value>Nazwy obszarów funkcjonalnych</value></data>
+  <data name="Poi_AreaDescription" xml:space="preserve"><value>Obszary funkcjonalne i nazwy wyeksportowane z gry.</value></data>
+  <data name="Poi_PngInternalBuildings" xml:space="preserve"><value>Pokazuj ikony budynków wewnątrz obszarów w PNG</value></data>
+  <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
+    <value>Gra nadal działa i może zużywać dużo pamięci. Zalecamy zapisanie miasta i zamknięcie gry przed eksportem. Możesz też kontynuować.</value>
+  </data>
+  <data name="ExportWindow_BeforeExportNotice" xml:space="preserve">
+    <value>Przed eksportem warto zapisać miasto, zamknąć grę i inne programy zużywające dużo pamięci. Większe eksporty wymagają więcej pamięci.</value>
+  </data>
+  <data name="Poi_AreaMerge" xml:space="preserve">
+    <value>Etykiety pobliskich obszarów (CS2)</value>
+  </data>
+  <data name="Poi_AreaMergeDescription" xml:space="preserve">
+    <value>Pobliskie obszary CS2 o tym samym typie źródłowym i nazwie mają wspólną etykietę. Ich granice pozostają oddzielne.</value>
+  </data>
+  <data name="Map_RotateCounterclockwise" xml:space="preserve">
+    <value>90° przeciwnie do wskazówek zegara</value>
+  </data>
+  <data name="Map_RotateClockwise" xml:space="preserve">
+    <value>90° zgodnie ze wskazówkami zegara</value>
+  </data>
+  <data name="Failure_Internal" xml:space="preserve"><value>Wystąpił nieoczekiwany błąd. Możesz zgłosić go autorowi.</value></data>
+  <data name="Failure_Operation" xml:space="preserve"><value>Operation failed</value></data>
+  <data name="Failure_Metro" xml:space="preserve"><value>Nie udało się wygenerować mapy metra</value></data>
+  <data name="Failure_Export" xml:space="preserve"><value>Nie udało się wyeksportować mapy</value></data>
+  <data name="Failure_Permission" xml:space="preserve"><value>Nie można uzyskać dostępu do wymaganego pliku. Sprawdź uprawnienia pliku lub folderu i spróbuj ponownie.</value></data>
+  <data name="Failure_MissingFile" xml:space="preserve"><value>Nie znaleziono wymaganego pliku. Sprawdź jego lokalizację i spróbuj ponownie.</value></data>
+  <data name="Failure_Memory" xml:space="preserve"><value>Nie udało się przydzielić pamięci. Zmniejsz rozmiar wyjściowy lub zamknij aplikacje zużywające dużo pamięci i spróbuj ponownie.</value></data>
+  <data name="Failure_EngineStopped" xml:space="preserve"><value>Silnik renderowania został zatrzymany. Otwórz ponownie przeglądarkę map i spróbuj jeszcze raz.</value></data>
+  <data name="Failure_ViewDetails" xml:space="preserve"><value>View details</value></data>
+  <data name="Failure_CopyDetails" xml:space="preserve"><value>Kopiuj szczegóły błędu</value></data>
+  <data name="Failure_Close" xml:space="preserve"><value>Close</value></data>
+  <data name="Failure_Copied" xml:space="preserve"><value>Copied</value></data>
+  <data name="Failure_CopyFailed" xml:space="preserve"><value>Nie udało się skopiować. Spróbuj ponownie.</value></data>
+  <data name="Ribbon_MoreLayers" xml:space="preserve"><value>Więcej warstw</value></data>
+  <data name="Ribbon_Simplified" xml:space="preserve"><value>Uproszczona</value></data>
+  <data name="Ribbon_Classic" xml:space="preserve"><value>Klasyczna</value></data>
+  <data name="Sidebar_ShowSettings" xml:space="preserve"><value>Pokaż lewy panel</value></data>
+  <data name="Sidebar_HideSettings" xml:space="preserve"><value>Ukryj lewy panel</value></data>
+  <data name="Sidebar_ShowInspector" xml:space="preserve"><value>Pokaż prawy panel</value></data>
+  <data name="Sidebar_HideInspector" xml:space="preserve"><value>Ukryj prawy panel</value></data>
+  <data name="Ribbon_IntroTitle" xml:space="preserve"><value>Wypróbuj nowy tryb uproszczony</value></data>
+  <data name="Ribbon_IntroDescription" xml:space="preserve"><value>Tryb uproszczony zapewnia wygodniejszy i prostszy sposób przeglądania mapy. W każdej chwili możesz wrócić do trybu klasycznego.</value></data>
+  <data name="Ribbon_IntroTry" xml:space="preserve"><value>Wypróbuj tryb uproszczony</value></data>
+  <data name="Ribbon_IntroLater" xml:space="preserve"><value>Nie teraz</value></data>
+  <data name="RmpEditor_showNames" xml:space="preserve"><value>Pokaż nazwy stacji</value></data>
+  <data name="RmpEditor_showDefaultNames" xml:space="preserve"><value>Pokaż domyślne nazwy stacji</value></data>
+  <data name="Poi_ShowDecorative" xml:space="preserve"><value>Pokaż dekoracyjne POI</value></data>
+  <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>Pokaż ikony i nazwy dekoracji z listy. Budynki i obiekty mapy pozostają widoczne.</value></data>
+  <data name="MetroSettings_Reset" xml:space="preserve"><value>Przywróć domyślne</value></data>
+  <data name="Preview_Failed" xml:space="preserve"><value>Nie udało się wczytać podglądu</value></data>
+  <data name="Preview_Slow" xml:space="preserve"><value>Wczytywanie podglądu trwa dłużej</value></data>
+  <data name="Preview_Stopped" xml:space="preserve"><value>Podgląd nie jest uruchomiony</value></data>
+  <data name="Preview_DataAvailable" xml:space="preserve"><value>Dane mapy są wczytane. Możesz wybrać motyw i wyeksportować mapę.</value></data>
+  <data name="Preview_OpenMap" xml:space="preserve"><value>Otwórz plik mapy, aby wybrać motyw i wyeksportować mapę.</value></data>
+  <data name="Preview_AutoStart" xml:space="preserve"><value>Wczytaj wbudowany podgląd przy uruchomieniu</value></data>
+  <data name="Preview_Retry.Content" xml:space="preserve"><value>Ponów</value></data>
+  <data name="Preview_Png.Content" xml:space="preserve"><value>Eksportuj PNG (2048 px)</value></data>
+  <data name="Preview_Html.Content" xml:space="preserve"><value>Otwórz w zewnętrznej przeglądarce</value></data>
+  <data name="Preview_Continue.Content" xml:space="preserve"><value>Czekaj dalej</value></data>
+  <data name="Preview_OpenFailed" xml:space="preserve"><value>Plik HTML został zapisany, ale nie udało się go otworzyć. Otwórz go ręcznie w folderze wyjściowym.</value></data>
+  <data name="ThemeEditor_Select" xml:space="preserve"><value>Wybierz motyw</value></data>
+  <data name="ThemeEditor_Unsaved" xml:space="preserve"><value>Niezapisane</value></data>
+  <data name="ThemeEditor_Builtins" xml:space="preserve"><value>Ustawienia wstępne</value></data>
+  <data name="ThemeEditor_Personal" xml:space="preserve"><value>Moje motywy</value></data>
+  <data name="ThemeEditor_New" xml:space="preserve"><value>Nowy motyw</value></data>
+  <data name="ThemeEditor_Copy" xml:space="preserve"><value>Powiel motyw</value></data>
+  <data name="ThemeEditor_Rename" xml:space="preserve"><value>Zmień nazwę</value></data>
+  <data name="ThemeEditor_Import" xml:space="preserve"><value>Importuj motyw…</value></data>
+  <data name="ThemeEditor_Export" xml:space="preserve"><value>Eksportuj motyw…</value></data>
+  <data name="ThemeEditor_Base" xml:space="preserve"><value>Ustawienie bazowe</value></data>
+  <data name="ThemeEditor_Cancel" xml:space="preserve"><value>Anuluj</value></data>
+  <data name="ThemeEditor_Name" xml:space="preserve"><value>Nazwa motywu</value></data>
+  <data name="ThemeEditor_Save" xml:space="preserve"><value>Zapisz</value></data>
+  <data name="ThemeEditor_Exported" xml:space="preserve"><value>Motyw wyeksportowany</value></data>
+  <data name="ThemeEditor_InvalidName" xml:space="preserve"><value>Użyj od 1 do 64 znaków bez znaków sterujących.</value></data>
+  <data name="ThemeEditor_MigrationWarning" xml:space="preserve"><value>Nie można odczytać niektórych starszych motywów. Utworzono kopie plików źródłowych:</value></data>
+  <data name="BuildingList_Open" xml:space="preserve"><value>Lista budynków</value></data>
+  <data name="BuildingList_Back" xml:space="preserve"><value>Powrót do przeglądu</value></data>
+  <data name="BuildingList_Search" xml:space="preserve"><value>Szukaj nazw budynków</value></data>
+  <data name="BuildingList_Category" xml:space="preserve"><value>Kategoria budynku</value></data>
+  <data name="BuildingList_OutsideFilter" xml:space="preserve"><value>Wybrany budynek nie pasuje do bieżącego filtra.</value></data>
+  <data name="BuildingList_Clear" xml:space="preserve"><value>Wyczyść filtry</value></data>
+  <data name="BuildingList_All" xml:space="preserve"><value>Wszystkie</value></data>
+  <data name="BuildingList_Unnamed" xml:space="preserve"><value>Budynek bez nazwy</value></data>
+  <data name="BuildingList_Empty" xml:space="preserve"><value>Brak pasujących budynków</value></data>
+  <data name="BuildingList_Count" xml:space="preserve"><value>{0:N0} / {1:N0} budynków (kompleksy liczone łącznie)</value></data>
+  <data name="BuildingList_Members" xml:space="preserve"><value>Budynki pomocnicze</value></data>
+  <data name="BuildingList_OpenButton.Content" xml:space="preserve"><value>Lista budynków</value></data>
+  <data name="BuildingList_Sort" xml:space="preserve"><value>Sortowanie</value></data>
+  <data name="BuildingList_NameAsc" xml:space="preserve"><value>Nazwa rosnąco</value></data>
+  <data name="BuildingList_NameDesc" xml:space="preserve"><value>Nazwa malejąco</value></data>
+  <data name="BuildingList_CategoryAsc" xml:space="preserve"><value>Kategoria rosnąco</value></data>
+  <data name="BuildingList_CategoryDesc" xml:space="preserve"><value>Kategoria malejąco</value></data>
+  <data name="BuildingList_IdAsc" xml:space="preserve"><value>ID rosnąco</value></data>
+  <data name="BuildingList_IdDesc" xml:space="preserve"><value>ID malejąco</value></data>
+  <data name="BuildingList_Details" xml:space="preserve"><value>Szczegóły budynku</value></data>
+  <data name="BuildingList_DetailHint" xml:space="preserve"><value>Wybierz budynek, aby zobaczyć szczegóły.</value></data>
+  <data name="ThemeEditor_CurrentUnreadable" xml:space="preserve"><value>Nie można odczytać bieżącego motywu. Wybierz inny motyw. Oryginalne pliki zostały zachowane.</value></data>
+  <data name="BuildingList_GameNames" xml:space="preserve"><value>Używaj nazw generowanych przez grę</value></data>
+  <data name="BuildingList_NameHint" xml:space="preserve"><value>Nazwy są zgodne z ustawieniem mapy. Nazwy nadane przez gracza są zachowywane.</value></data>
+  <data name="BuildingList_Name" xml:space="preserve"><value>Nazwa budynku</value></data>
+  <data name="BuildingList_Id" xml:space="preserve"><value>ID</value></data>
+  <data name="BuildingList_Info" xml:space="preserve"><value>Informacje o budynku</value></data>
+  <data name="BuildingList_NameSource" xml:space="preserve"><value>Źródło nazwy</value></data>
+  <data name="BuildingList_CustomName" xml:space="preserve"><value>Nadana przez gracza</value></data>
+  <data name="BuildingList_OfficialName" xml:space="preserve"><value>Oficjalna kategoria gry</value></data>
+  <data name="BuildingList_NoName" xml:space="preserve"><value>Brak nazwy</value></data>
+  <data name="BuildingList_GameCategory" xml:space="preserve"><value>Kategoria gry</value></data>
+  <data name="BuildingList_Height" xml:space="preserve"><value>Wysokość budynku</value></data>
+  <data name="BuildingList_Group" xml:space="preserve"><value>Grupa budynków</value></data>
+  <data name="BuildingList_GroupCount" xml:space="preserve"><value>Budynki: {0} (w tym główny)</value></data>
+  <data name="BuildingList_GameName" xml:space="preserve"><value>Nazwa generowana przez grę</value></data>
+  <data name="ThemeUpdate_Title" xml:space="preserve"><value>Aktualizacja ustawień wstępnych</value></data>
+  <data name="ThemeUpdate_Intro" xml:space="preserve"><value>Poniższe zmiany ustawień wstępnych można zastosować do „{0}”.</value></data>
+  <data name="ThemeUpdate_Archived" xml:space="preserve"><value>Przed zastosowaniem zmian zostanie zapisana kopia bieżącego motywu.</value></data>
+  <data name="ThemeUpdate_Continue" xml:space="preserve"><value>Zastosuj aktualizację</value></data>
+  <data name="ThemeUpdate_UsePrevious" xml:space="preserve"><value>Zachowaj ustawienia</value></data>
+  <data name="ThemeUpdate_Conflict" xml:space="preserve"><value>Ta zmiana zastąpi Twoje ustawienie niestandardowe.</value></data>
+  <data name="ThemeUpdate_ColorRamp" xml:space="preserve"><value>Kolory wysokości</value></data>
+  <data name="ThemeUpdate_Unset" xml:space="preserve"><value>Nie ustawiono</value></data>
+  <data name="ThemeUpdate_On" xml:space="preserve"><value>Włączone</value></data>
+  <data name="ThemeUpdate_Off" xml:space="preserve"><value>Wyłączone</value></data>
+  <data name="ThemeUpdate_Custom" xml:space="preserve"><value>Własne ustawienia</value></data>
+  <data name="SatelliteGuidance_Title" xml:space="preserve"><value>Zalecenia wyświetlania mapy satelitarnej</value></data>
+  <data name="SatelliteGuidance_Body" xml:space="preserve"><value>Motyw Satelita ciepły wyróżnia drogi, ikony i tekst.</value></data>
+  <data name="SatelliteGuidance_Apply" xml:space="preserve"><value>Zastosuj zalecane ustawienia</value></data>
+  <data name="SatelliteGuidance_Keep" xml:space="preserve"><value>Zachowaj bieżące ustawienia</value></data>
+  <data name="SatelliteGuidance_Unavailable" xml:space="preserve"><value>Ta mapa nie zawiera zdjęć satelitarnych</value></data>
+  <data name="SatelliteGuidance_EnableTitle" xml:space="preserve"><value>Zalecane włączenie</value></data>
+  <data name="SatelliteGuidance_EnableLayers" xml:space="preserve"><value>Drogi, ikony, tekst</value></data>
+  <data name="SatelliteGuidance_OptionalTitle" xml:space="preserve"><value>Opcjonalnie</value></data>
+  <data name="SatelliteGuidance_OptionalLayers" xml:space="preserve"><value>Koleje, transport publiczny, ruch drogowy</value></data>
+  <data name="SatelliteGuidance_DisableTitle" xml:space="preserve"><value>Zalecane wyłączenie</value></data>
+  <data name="SatelliteGuidance_DisableLayers" xml:space="preserve"><value>Budynki, teren, woda i inne warstwy zasłaniające obraz</value></data>
+  <data name="SatelliteGuidance_Preserve" xml:space="preserve"><value>Zachowaj bieżący wybór</value></data>
+  <data name="SatelliteGuidance_Details" xml:space="preserve"><value>Zobacz szczegóły zmian</value></data>
+  <data name="SatelliteGuidance_DetailBody" xml:space="preserve"><value>Budynki, teren, woda, obszary zabudowane, użytkowanie terenu, obrysy POI i obiekty PO mogą zasłaniać zdjęcie satelitarne i nie są zalecane. Zastosowanie zaleceń wyłącza te warstwy.</value></data>
+  <data name="Preview_Compatibility.Content" xml:space="preserve"><value>Podgląd zgodny</value></data>
+  <data name="Preview_CompatibilityNotice.Text" xml:space="preserve"><value>Tryb zgodności: podgląd obrazu; niektóre funkcje są niedostępne.</value></data>
+  <data name="Preview_Interactive.Content" xml:space="preserve"><value>Wróć do podglądu interaktywnego</value></data>
+  <data name="Preview_ImageUpdating.Text" xml:space="preserve"><value>Aktualizowanie podglądu</value></data>
+  <data name="Preview_ImageFailed" xml:space="preserve"><value>Podgląd obrazu nie powiódł się:</value></data>
+  <data name="Preview_BrowserOpenFailed" xml:space="preserve"><value>Nie udało się otworzyć przeglądarki. Plik HTML znajduje się w podanej niżej lokalizacji.</value></data>
+  <data name="Preview_OpenFolder" xml:space="preserve"><value>Otwórz folder</value></data>
+  <data name="Workspace_Immersive" xml:space="preserve"><value>Immersyjny</value></data>
+  <data name="Workspace_ExitImmersive" xml:space="preserve"><value>Wyjdź z trybu immersyjnego</value></data>
+  <data name="Workspace_ImmersiveHint" xml:space="preserve"><value>Ukryj panele, aby zapewnić więcej miejsca trasom i mapie.</value></data>
+  <data name="Workspace_TryImmersive" xml:space="preserve"><value>Wypróbuj tryb immersyjny</value></data>
+  <data name="Workspace_MoreActions" xml:space="preserve"><value>Więcej działań mapy</value></data>
+  <data name="Artwork_Enter" xml:space="preserve"><value>Utwórz szkic mapy…</value></data>
+  <data name="Artwork_Export" xml:space="preserve"><value>Eksportuj kompozycję</value></data>
+  <data name="Artwork_PreviewRequired" xml:space="preserve"><value>Najpierw otwórz podgląd miasta.</value></data>
+  <data name="Artwork_OutputSize" xml:space="preserve"><value>Dłuższy bok wyniku (piksele)</value></data>
+  <data name="Artwork_Cancel" xml:space="preserve"><value>Anuluj</value></data>
+  <data name="CityEditor_Title" xml:space="preserve"><value>Edytor mapy</value></data>
+  <data name="CityEditor_Theme" xml:space="preserve"><value>Motyw</value></data>
+  <data name="CityEditor_SaveAs" xml:space="preserve"><value>Zapisz motyw jako</value></data>
+  <data name="CityEditor_Manage" xml:space="preserve"><value>Zarządzaj motywami</value></data>
+  <data name="CityEditor_Selection" xml:space="preserve"><value>Zaznaczenie mapy</value></data>
+  <data name="CityEditor_Select" xml:space="preserve"><value>Zaznacz</value></data>
+  <data name="CityEditor_PickStyle" xml:space="preserve"><value>Pobierz styl</value></data>
+  <data name="CityEditor_Pan" xml:space="preserve"><value>Przesuń</value></data>
+  <data name="CityEditor_Clear" xml:space="preserve"><value>Wyczyść zaznaczenie</value></data>
+  <data name="CityEditor_Edit" xml:space="preserve"><value>Edytuj</value></data>
+  <data name="CityEditor_Undo" xml:space="preserve"><value>Cofnij</value></data>
+  <data name="CityEditor_Redo" xml:space="preserve"><value>Ponów</value></data>
+  <data name="CityEditor_View" xml:space="preserve"><value>Widok</value></data>
+  <data name="CityEditor_Fit" xml:space="preserve"><value>Dopasuj widok do mapy</value></data>
+  <data name="CityEditor_Actual" xml:space="preserve"><value>100%</value></data>
+  <data name="CityEditor_Output" xml:space="preserve"><value>Zapis i eksport</value></data>
+  <data name="CityEditor_Save" xml:space="preserve"><value>Zapisz motyw</value></data>
+  <data name="CityEditor_Export" xml:space="preserve"><value>Eksportuj jako PNG</value></data>
+  <data name="CityEditor_Close" xml:space="preserve"><value>Zamknij</value></data>
+  <data name="CityEditor_Leave" xml:space="preserve"><value>Zamknij edytor</value></data>
+  <data name="CityEditor_Range" xml:space="preserve"><value>Obszar mapy</value></data>
+  <data name="CityEditor_WholeCity" xml:space="preserve"><value>Całe miasto</value></data>
+  <data name="CityEditor_SelectedRange" xml:space="preserve"><value>Zaznaczony obszar</value></data>
+  <data name="CityEditor_Preset" xml:space="preserve"><value>Gotowy format płótna</value></data>
+  <data name="CityEditor_Create" xml:space="preserve"><value>Utwórz szkic miasta</value></data>
+  <data name="CityEditor_InvalidSize" xml:space="preserve"><value>Długość dłuższego boku płótna musi być liczbą całkowitą od 1 do 32768 pikseli.</value></data>
+  <data name="CityEditor_CanvasPixels" xml:space="preserve"><value>Dłuższy bok płótna (piksele)</value></data>
+  <data name="CityEditor_Rotation" xml:space="preserve"><value>Obrót przy eksporcie</value></data>
+  <data name="CityEditor_Styles" xml:space="preserve"><value>Style</value></data>
+  <data name="CityEditor_Draft" xml:space="preserve"><value>Szkic</value></data>
+  <data name="CityEditor_ApplyCanvas" xml:space="preserve"><value>Zastosuj ustawienia płótna</value></data>
+  <data name="CityEditor_SelectRange" xml:space="preserve"><value>Zaznacz obszar mapy</value></data>
+  <data name="CityEditor_UseSelection" xml:space="preserve"><value>Użyj zaznaczonego obszaru</value></data>
+  <data name="CityEditor_UseWholeCity" xml:space="preserve"><value>Użyj całego miasta</value></data>
+  <data name="CityEditor_NoSelection" xml:space="preserve"><value>Najpierw zaznacz prawidłowy obszar mapy.</value></data>
+  <data name="CityEditor_RangeHelp" xml:space="preserve"><value>Zaznacz obszar i zastosuj go. Zmiana obszaru stosuje również ustawienia płótna i przelicza układ. Zoom zmienia tylko widok.</value></data>
+  <data name="CityEditor_ObjectFacts" xml:space="preserve"><value>Informacje o wybranym obiekcie</value></data>
+  <data name="CityEditor_Scope" xml:space="preserve"><value>Zmiany stylu dotyczą całej kategorii. Wyróżnienie wskazuje zaznaczony obiekt.</value></data>
+  <data name="CityEditor_Unsaved" xml:space="preserve"><value>Niezapisane zmiany motywu</value></data>
+  <data name="CityEditor_Saved" xml:space="preserve"><value>Motyw zapisany</value></data>
+  <data name="CityEditor_Updating" xml:space="preserve"><value>Aktualizowanie szkicu</value></data>
+  <data name="CityEditor_ExportScale" xml:space="preserve"><value>Skalowanie proporcjonalne tylko na potrzeby tego eksportu:</value></data>
+  <data name="ThemeEditor_AllRoads" xml:space="preserve"><value>Ustawienia wszystkich dróg</value></data>
+  <data name="ThemeEditor_ThemeSwitchUnavailable" xml:space="preserve"><value>Nie można wczytać wybranego motywu. Zaktualizuj renderer i spróbuj ponownie.</value></data>
+  <data name="ThemeEditor_ExternalThemeChanged" xml:space="preserve"><value>Ten motyw został zmieniony przez inną operację. Otwórz ponownie edytor motywów.</value></data>
+  <data name="CityEditor_ContentScope" xml:space="preserve"><value>Ustawienia zawartości i widoczności są zapisywane niezależnie od motywu i działają od razu.</value></data>
+  <data name="CityEditor_CreateIntro" xml:space="preserve"><value>Zacznij od bieżącej mapy i dostosuj kolory oraz etykiety, aby stworzyć własną mapę miasta.</value></data>
+  <data name="CityEditor_CreateRangeUnselected" xml:space="preserve"><value>Zacznij od całego miasta. Aby użyć mniejszego obszaru, anuluj i najpierw zaznacz go na mapie.</value></data>
+  <data name="CityEditor_CreateRangeHelp" xml:space="preserve"><value>Użyj zaznaczonego obszaru lub wybierz całe miasto, aby określić zasięg mapy.</value></data>
+  <data name="CityEditor_CreateCanvasTitle" xml:space="preserve"><value>Rozmiar płótna</value></data>
+  <data name="CityEditor_CreateCanvasHelp" xml:space="preserve"><value>Na początek wystarczy 4096 pikseli. Aby uzyskać większy obraz, wybierz gotowe ustawienie lub podaj długość dłuższego boku. Mapa zachowa proporcje.</value></data>
+  <data name="CityEditor_CreateRotationHelp" xml:space="preserve"><value>Obraca mapę zgodnie z ruchem wskazówek zegara.</value></data>
+  <data name="CityEditor_CreateAdjustLater" xml:space="preserve"><value>Obszar, rozmiar i obrót można później zmienić w panelu bocznym szkicu.</value></data>
+  <data name="CityEditor_LoadingEnter" xml:space="preserve"><value>Otwieranie edytora mapy</value></data>
+  <data name="CityEditor_LoadingUpdate" xml:space="preserve"><value>Aktualizowanie stylów mapy</value></data>
+  <data name="CityEditor_LoadingTheme" xml:space="preserve"><value>Odczytywanie motywu i ustawień płótna</value></data>
+  <data name="CityEditor_LoadingBase" xml:space="preserve"><value>Przygotowywanie podkładu mapy i danych drogowych</value></data>
+  <data name="CityEditor_LoadingLayout" xml:space="preserve"><value>Obliczanie układu szkicu</value></data>
+  <data name="CityEditor_LoadingLabels" xml:space="preserve"><value>Rozmieszczanie etykiet mapy</value></data>
+  <data name="CityEditor_LoadingIcons" xml:space="preserve"><value>Rozmieszczanie ikon miejsc</value></data>
+  <data name="CityEditor_LoadingTransport" xml:space="preserve"><value>Rozmieszczanie linii i stacji</value></data>
+  <data name="CityEditor_LoadingDelivery" xml:space="preserve"><value>Przesyłanie szkicu i przygotowywanie obrazów</value></data>
+  <data name="CityEditor_LoadingPresent" xml:space="preserve"><value>Rysowanie mapy i oczekiwanie na zakończenie renderowania</value></data>
+  <data name="Preview_NotRunningDetail" xml:space="preserve"><value>Podgląd nie działa prawidłowo. Przyczyną mogą być ustawienia środowiska, brak pamięci lub inne problemy. Wybierz jedną z poniższych opcji, aby kontynuować.</value></data>
+  <data name="Preview_Cancel.Content" xml:space="preserve"><value>Anuluj</value></data>
+  <data name="CityEditor_CloseupUnavailable" xml:space="preserve"><value>W obrębie szkicu nie ma obiektów odpowiednich do pokazania tego stylu w zbliżeniu.</value></data>
+  <data name="Pixel_Scale" xml:space="preserve"><value>Skala elementów (%)</value></data>
+  <data name="Pixel_Actual" xml:space="preserve"><value>Rzeczywisty rozmiar: {0} px</value></data>
+  <data name="Pixel_Recommended" xml:space="preserve"><value>Zalecane dla tej rozdzielczości: {0}%</value></data>
+  <data name="Pixel_InvalidScale" xml:space="preserve"><value>Wpisz skończoną liczbę większą od zera.</value></data>
+  <data name="Pixel_Help" xml:space="preserve"><value>Podwojenie dłuższego boku podwaja skalę elementów. Procent można zmienić osobno dla rozmiaru tekstu, ikon i linii.</value></data>
+  <data name="RoadCategoryQuay" xml:space="preserve"><value>Nabrzeże</value></data>
+  <data name="CityEditor_ResetCanvas" xml:space="preserve"><value>Resetuj płótno</value></data>
+  <data name="CityEditor_ResetCanvasHelp" xml:space="preserve"><value>Uruchamia podgląd ponownie, zachowując szkic, zmiany motywu i pozycję widoku.</value></data>
+  <data name="ThemeUpdate_Review" xml:space="preserve"><value>Sprawdź aktualizację</value></data>
+  <data name="ThemeUpdate_None" xml:space="preserve"><value>Brak zmian ustawień wstępnych do zastosowania.</value></data>
+  <data name="CityEditor_Resolution" xml:space="preserve"><value>Rozdzielczość</value></data>
+  <data name="CityEditor_PresetResolution" xml:space="preserve"><value>Gotowa rozdzielczość</value></data>
+  <data name="CityEditor_CustomResolution" xml:space="preserve"><value>Własna rozdzielczość</value></data>
+  <data name="ThemeUpdate_Current" xml:space="preserve"><value>Bieżący motyw</value></data>
+  <data name="ThemeUpdate_Preset" xml:space="preserve"><value>Nowe ustawienie</value></data>
+  <data name="CityEditor_PixelWidth" xml:space="preserve"><value>Szerokość (px)</value></data>
+  <data name="CityEditor_PixelHeight" xml:space="preserve"><value>Wysokość (px)</value></data>
+  <data name="CityEditor_ElementSize" xml:space="preserve"><value>Rozmiar elementów</value></data>
+  <data name="CityEditor_SizeLinked" xml:space="preserve"><value>Zachowaj proporcje wybranego obszaru.</value></data>
+  <data name="DraftWelcome_Title" xml:space="preserve"><value>Witaj w edytorze szkiców</value></data>
+  <data name="DraftWelcome_Intro" xml:space="preserve"><value>Teraz oglądasz swoje miasto. Aby wyeksportować mapę, otwórz szkic i dostosuj rozmiar tekstu i ikon oraz szerokość dróg w edytorze motywów.</value></data>
+  <data name="DraftWelcome_ExploreTitle" xml:space="preserve"><value>Widok miasta</value></data>
+  <data name="DraftWelcome_ExploreBody" xml:space="preserve"><value>Przybliż mapę, aby zobaczyć więcej miejsc. Po oddaleniu szczegóły znikają. Tekst i ikony zmieniają rozmiar.</value></data>
+  <data name="DraftWelcome_DraftTitle" xml:space="preserve"><value>Edycja szkicu</value></data>
+  <data name="DraftWelcome_DraftBody" xml:space="preserve"><value>Cały szkic zmienia skalę. Te same etykiety pozostają widoczne i zachowują rozmiar względem ulic.</value></data>
+  <data name="DraftWelcome_Enter" xml:space="preserve"><value>Otwórz szkic</value></data>
+  <data name="DraftWelcome_Continue" xml:space="preserve"><value>Oglądaj dalej</value></data>
+  <data name="DraftWelcome_Pause" xml:space="preserve"><value>Wstrzymaj pokaz</value></data>
+  <data name="DraftWelcome_Resume" xml:space="preserve"><value>Wznów pokaz</value></data>
+  <data name="DraftWelcome_NextLevel" xml:space="preserve"><value>Następny poziom zbliżenia</value></data>
+  <data name="DraftWelcome_Pier" xml:space="preserve"><value>Molo</value></data>
+  <data name="DraftWelcome_Market" xml:space="preserve"><value>Targ</value></data>
+  <data name="DraftWelcome_Cafe" xml:space="preserve"><value>Kawiarnia</value></data>
+  <data name="DraftWelcome_Clinic" xml:space="preserve"><value>Klinika</value></data>
+  <data name="DraftWelcome_Station" xml:space="preserve"><value>Stacja</value></data>
+  <data name="DraftWelcome_Park" xml:space="preserve"><value>Park</value></data>
+  <data name="DraftWelcome_Shop" xml:space="preserve"><value>Książki</value></data>
+  <data name="Sidebar_TransitDistance" xml:space="preserve"><value>Długości są sumowane dla każdej linii. Wspólny odcinek liczy się w każdej linii.</value></data>
+  <data name="Sidebar_RoadCommit" xml:space="preserve"><value>Przełączniki działają od razu. Liczby są stosowane po opuszczeniu pola.</value></data>
+  <data name="Sidebar_Locate" xml:space="preserve"><value>Wybierz, aby zlokalizować taki obiekt w obszarze szkicu.</value></data>
+  <data name="ThemeEditor_Edit" xml:space="preserve"><value>Edytuj motyw</value></data>
+  <data name="ThemeEditor_Delete" xml:space="preserve"><value>Usuń motyw</value></data>
+  <data name="ThemeEditor_DeleteConfirm" xml:space="preserve"><value>Usunąć „{0}”? Następnie zostanie wybrany motyw „{1}”.</value></data>
+  <data name="ThemeEditor_ThumbnailFailed" xml:space="preserve"><value>Motyw został zapisany, ale nie udało się zaktualizować podglądu.</value></data>
+  <data name="CityEditor_IconDensity" xml:space="preserve">
+    <value>Gęstość ikon</value>
+  </data>
+  <data name="ThemeChoice_Title" xml:space="preserve"><value>Wybierz edytor motywów</value></data>
+  <data name="ThemeChoice_Interactive" xml:space="preserve"><value>Interaktywny edytor motywów</value></data>
+  <data name="ThemeChoice_Description" xml:space="preserve"><value>Dostosuj ustawienia motywu na szkicu miasta, aby zobaczyć, jak będzie wyglądać wyeksportowana mapa.</value></data>
+  <data name="ThemeChoice_Traditional" xml:space="preserve"><value>Tradycyjny edytor motywów</value></data>
+  <data name="ThemeChoice_Unavailable" xml:space="preserve"><value>Otwórz mapę miasta lub transportu publicznego i poczekaj, aż podgląd interaktywny będzie gotowy.</value></data>
+  <data name="ExportChoice_Title" xml:space="preserve"><value>Wybierz sposób eksportu</value></data>
+  <data name="ExportChoice_Direct" xml:space="preserve"><value>Eksportuj bezpośrednio</value></data>
+  <data name="ExportChoice_DirectHelp" xml:space="preserve"><value>Wybierz format i wyeksportuj mapę z bieżącymi ustawieniami.</value></data>
+  <data name="ExportChoice_Edit" xml:space="preserve"><value>Edytuj przed eksportem</value></data>
+  <data name="ExportChoice_EditHelp" xml:space="preserve"><value>Dostosuj mapę w szkicu, a następnie ją wyeksportuj.</value></data>
+  <data name="Workflow_Remember" xml:space="preserve"><value>Zapamiętaj mój wybór</value></data>
+  <data name="Workflow_Reset" xml:space="preserve"><value>Zresetuj wybór edytora motywów i sposobu eksportu</value></data>
+  <data name="Export_DraftSettingsHelp" xml:space="preserve"><value>Otwórz szkic, aby dostosować obszar, obrót, rozmiar elementów lub gęstość ikon i sprawdzić wynik.</value></data>
+  <data name="Export_GoToDraft" xml:space="preserve"><value>Przejdź do szkicu</value></data>
   <data name="MetroSettings_WaterSmoothing" xml:space="preserve"><value>Wygładzanie linii brzegowej</value></data>
   <data name="MetroSettings_WaterSmoothingHelp" xml:space="preserve"><value>Wyższe wartości zmniejszają szczegółowość linii brzegowej i łagodzą zakręty. 0 wyłącza wstępne wygładzanie; wartość domyślna to 8. Wąskie rzeki i wyspy mogą ograniczyć zastosowaną siłę.</value></data>
   <data name="RmpEditor_AddTitle" xml:space="preserve"><value>Dodaj tytuł</value></data>
@@ -4418,136 +4689,45 @@ Przykładowa droga: 16 m, skala renderowania: 1</value>
   <data name="PoiDirect_ImageSearch" xml:space="preserve"><value>Szukaj nazw obrazów lub plików</value></data>
   <data name="PoiDirect_NoImage" xml:space="preserve"><value>Bez ikony</value></data>
   <data name="PoiDirect_Count" xml:space="preserve"><value>{0} elementów, {1} niezapisanych zmian</value></data>
-<data name="Poi_Area" xml:space="preserve"><value>Obszary funkcjonalne</value></data>
-  <data name="Poi_AreaIcons" xml:space="preserve"><value>Ikony obszarów funkcjonalnych</value></data>
-  <data name="Poi_AreaNames" xml:space="preserve"><value>Nazwy obszarów funkcjonalnych</value></data>
-  <data name="Poi_AreaDescription" xml:space="preserve"><value>Obszary funkcjonalne i nazwy wyeksportowane z gry.</value></data>
-  <data name="Poi_PngInternalBuildings" xml:space="preserve"><value>Pokazuj ikony budynków wewnątrz obszarów w PNG</value></data>
-  <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
-    <value>Gra nadal działa i może zużywać dużo pamięci. Zalecamy zapisanie miasta i zamknięcie gry przed eksportem. Możesz też kontynuować.</value>
-  </data>
-  <data name="ExportWindow_BeforeExportNotice" xml:space="preserve">
-    <value>Przed eksportem warto zapisać miasto, zamknąć grę i inne programy zużywające dużo pamięci. Większe eksporty wymagają więcej pamięci.</value>
-  </data>
-  <data name="Poi_AreaMerge" xml:space="preserve">
-    <value>Etykiety pobliskich obszarów (CS2)</value>
-  </data>
-  <data name="Poi_AreaMergeDescription" xml:space="preserve">
-    <value>Pobliskie obszary CS2 o tym samym typie źródłowym i nazwie mają wspólną etykietę. Ich granice pozostają oddzielne.</value>
-  </data>
-  <data name="Map_RotateCounterclockwise" xml:space="preserve">
-    <value>90° przeciwnie do wskazówek zegara</value>
-  </data>
-  <data name="Map_RotateClockwise" xml:space="preserve">
-    <value>90° zgodnie ze wskazówkami zegara</value>
-  </data>
-  <data name="Failure_Internal" xml:space="preserve"><value>An unexpected error occurred. You can report this error to the author.</value></data>
-  <data name="Failure_Operation" xml:space="preserve"><value>Operation failed</value></data>
-  <data name="Failure_Metro" xml:space="preserve"><value>Metro map generation failed</value></data>
-  <data name="Failure_Export" xml:space="preserve"><value>Map export failed</value></data>
-  <data name="Failure_Permission" xml:space="preserve"><value>A required file could not be accessed. Check file or folder permissions and try again.</value></data>
-  <data name="Failure_MissingFile" xml:space="preserve"><value>A required file was not found. Check its location and try again.</value></data>
-  <data name="Failure_Memory" xml:space="preserve"><value>Memory allocation failed. Reduce the output size or close memory-intensive applications and try again.</value></data>
-  <data name="Failure_EngineStopped" xml:space="preserve"><value>The rendering engine has stopped. Reopen the viewer and try again.</value></data>
-  <data name="Failure_ViewDetails" xml:space="preserve"><value>View details</value></data>
-  <data name="Failure_CopyDetails" xml:space="preserve"><value>Copy error details</value></data>
-  <data name="Failure_Close" xml:space="preserve"><value>Close</value></data>
-  <data name="Failure_Copied" xml:space="preserve"><value>Copied</value></data>
-  <data name="Failure_CopyFailed" xml:space="preserve"><value>Copy failed. Please try again.</value></data>
-  <data name="Ribbon_MoreLayers" xml:space="preserve"><value>Więcej warstw</value></data>
-  <data name="Ribbon_Simplified" xml:space="preserve"><value>Uproszczona</value></data>
-  <data name="Ribbon_Classic" xml:space="preserve"><value>Klasyczna</value></data>
-  <data name="Sidebar_ShowSettings" xml:space="preserve"><value>Pokaż lewy panel</value></data>
-  <data name="Sidebar_HideSettings" xml:space="preserve"><value>Ukryj lewy panel</value></data>
-  <data name="Sidebar_ShowInspector" xml:space="preserve"><value>Pokaż prawy panel</value></data>
-  <data name="Sidebar_HideInspector" xml:space="preserve"><value>Ukryj prawy panel</value></data>
-  <data name="Ribbon_IntroTitle" xml:space="preserve"><value>Wypróbuj nowy tryb uproszczony</value></data>
-  <data name="Ribbon_IntroDescription" xml:space="preserve"><value>Tryb uproszczony zapewnia wygodniejszy i prostszy sposób przeglądania mapy. W każdej chwili możesz wrócić do trybu klasycznego.</value></data>
-  <data name="Ribbon_IntroTry" xml:space="preserve"><value>Wypróbuj tryb uproszczony</value></data>
-  <data name="Ribbon_IntroLater" xml:space="preserve"><value>Nie teraz</value></data>
-  <data name="RmpEditor_showNames" xml:space="preserve"><value>Show station names</value></data>
-  <data name="RmpEditor_showDefaultNames" xml:space="preserve"><value>Show default station names</value></data>
-  <data name="Poi_ShowDecorative" xml:space="preserve"><value>Pokaż dekoracyjne POI</value></data>
-  <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>Pokaż ikony i nazwy dekoracji z listy. Budynki i obiekty mapy pozostają widoczne.</value></data>
-  <data name="MetroSettings_Reset" xml:space="preserve"><value>Przywróć domyślne</value></data>
   <data name="BuildingCategory_Help" xml:space="preserve"><value>Wybierz Kolory kategorii, aby zastosować te ustawienia. Włącz Zastąp kolor dla wszystkich budynków kategorii; wyłącz, aby przywrócić automatyczne kolory POI. Nieznane zastosowania pozostają niesklasyfikowane.</value></data>
-  <data name="BuildingList_NoName" xml:space="preserve"><value>Brak nazwy</value></data>
-  <data name="ThemeEditor_New" xml:space="preserve"><value>Nowy motyw</value></data>
-  <data name="BuildingList_OfficialName" xml:space="preserve"><value>Oficjalna kategoria gry</value></data>
-  <data name="ThemeEditor_Name" xml:space="preserve"><value>Nazwa motywu</value></data>
-  <data name="BuildingList_Search" xml:space="preserve"><value>Szukaj nazw budynków</value></data>
-  <data name="Preview_AutoStart" xml:space="preserve"><value>Wczytaj wbudowany podgląd przy uruchomieniu</value></data>
-  <data name="BuildingList_DetailHint" xml:space="preserve"><value>Wybierz budynek, aby zobaczyć szczegóły.</value></data>
-  <data name="BuildingList_Height" xml:space="preserve"><value>Wysokość budynku</value></data>
-  <data name="BuildingList_Open" xml:space="preserve"><value>Lista budynków</value></data>
-  <data name="BuildingList_Name" xml:space="preserve"><value>Nazwa budynku</value></data>
-  <data name="Preview_Continue.Content" xml:space="preserve"><value>Czekaj dalej</value></data>
-  <data name="ThemeUpdate_Intro" xml:space="preserve"><value>„{0}” zawiera aktualizację ustawień wstępnych.</value></data>
-  <data name="BuildingList_Id" xml:space="preserve"><value>ID</value></data>
-  <data name="ThemeUpdate_Off" xml:space="preserve"><value>Wyłączone</value></data>
-  <data name="BuildingList_CategoryDesc" xml:space="preserve"><value>Kategoria malejąco</value></data>
-  <data name="ThemeEditor_Unsaved" xml:space="preserve"><value>Niezapisane</value></data>
-  <data name="BuildingList_IdDesc" xml:space="preserve"><value>ID malejąco</value></data>
-  <data name="ThemeEditor_MigrationWarning" xml:space="preserve"><value>Nie można odczytać niektórych starszych motywów. Utworzono kopie plików źródłowych:</value></data>
-  <data name="ThemeEditor_Select" xml:space="preserve"><value>Wybierz motyw</value></data>
-  <data name="ThemeEditor_Copy" xml:space="preserve"><value>Powiel motyw</value></data>
-  <data name="BuildingList_Info" xml:space="preserve"><value>Informacje o budynku</value></data>
-  <data name="BuildingList_Unnamed" xml:space="preserve"><value>Budynek bez nazwy</value></data>
-  <data name="BuildingList_CustomName" xml:space="preserve"><value>Nadana przez gracza</value></data>
-  <data name="ThemeEditor_Cancel" xml:space="preserve"><value>Anuluj</value></data>
-  <data name="ThemeUpdate_Continue" xml:space="preserve"><value>Kontynuuj</value></data>
-  <data name="BuildingList_NameSource" xml:space="preserve"><value>Źródło nazwy</value></data>
-  <data name="BuildingList_Details" xml:space="preserve"><value>Szczegóły budynku</value></data>
-  <data name="ThemeUpdate_UsePrevious" xml:space="preserve"><value>Użyj poprzedniego</value></data>
-  <data name="ThemeUpdate_Archived" xml:space="preserve"><value>Poprzedni motyw został zapisany. Możesz wybrać go z listy motywów.</value></data>
-  <data name="BuildingList_All" xml:space="preserve"><value>Wszystkie</value></data>
-  <data name="ThemeEditor_Exported" xml:space="preserve"><value>Motyw wyeksportowany</value></data>
-  <data name="BuildingList_Empty" xml:space="preserve"><value>Brak pasujących budynków</value></data>
-  <data name="ThemeUpdate_Kept" xml:space="preserve"><value>Zachowano Twoje zmiany</value></data>
-  <data name="BuildingList_Count" xml:space="preserve"><value>{0:N0} / {1:N0} budynków (kompleksy liczone łącznie)</value></data>
-  <data name="BuildingList_Back" xml:space="preserve"><value>Powrót do przeglądu</value></data>
-  <data name="Preview_DataAvailable" xml:space="preserve"><value>Dane mapy są wczytane. Możesz wybrać motyw i wyeksportować mapę.</value></data>
-  <data name="ThemeEditor_Personal" xml:space="preserve"><value>Moje motywy</value></data>
-  <data name="ThemeUpdate_ColorRamp" xml:space="preserve"><value>Kolory wysokości</value></data>
-  <data name="ThemeEditor_Export" xml:space="preserve"><value>Eksportuj motyw…</value></data>
-  <data name="ThemeEditor_Import" xml:space="preserve"><value>Importuj motyw…</value></data>
-  <data name="BuildingList_OutsideFilter" xml:space="preserve"><value>Wybrany budynek nie pasuje do bieżącego filtra.</value></data>
-  <data name="ThemeEditor_Base" xml:space="preserve"><value>Ustawienie bazowe</value></data>
-  <data name="BuildingList_NameAsc" xml:space="preserve"><value>Nazwa rosnąco</value></data>
-  <data name="BuildingList_GroupCount" xml:space="preserve"><value>Budynki: {0} (w tym główny)</value></data>
-  <data name="ThemeEditor_CurrentUnreadable" xml:space="preserve"><value>Nie można odczytać bieżącego motywu. Wybierz inny motyw. Oryginalne pliki zostały zachowane.</value></data>
-  <data name="Preview_OpenFailed" xml:space="preserve"><value>Plik HTML został zapisany, ale nie udało się go otworzyć. Otwórz go ręcznie w folderze wyjściowym.</value></data>
-  <data name="ThemeEditor_Rename" xml:space="preserve"><value>Zmień nazwę</value></data>
-  <data name="Preview_OpenMap" xml:space="preserve"><value>Otwórz plik mapy, aby wybrać motyw i wyeksportować mapę.</value></data>
-  <data name="Preview_Slow" xml:space="preserve"><value>Wczytywanie podglądu trwa dłużej</value></data>
-  <data name="ThemeUpdate_AllChanges" xml:space="preserve"><value>Wszystkie zmiany</value></data>
-  <data name="ThemeEditor_Builtins" xml:space="preserve"><value>Motywy wbudowane</value></data>
-  <data name="BuildingList_OpenButton.Content" xml:space="preserve"><value>Lista budynków</value></data>
-  <data name="ThemeUpdate_Custom" xml:space="preserve"><value>Własne ustawienia</value></data>
-  <data name="BuildingList_GameCategory" xml:space="preserve"><value>Kategoria gry</value></data>
-  <data name="Preview_Retry.Content" xml:space="preserve"><value>Wczytaj podgląd ponownie</value></data>
-  <data name="BuildingList_Members" xml:space="preserve"><value>Budynki pomocnicze</value></data>
-  <data name="BuildingList_NameDesc" xml:space="preserve"><value>Nazwa malejąco</value></data>
-  <data name="BuildingList_IdAsc" xml:space="preserve"><value>ID rosnąco</value></data>
-  <data name="BuildingList_Group" xml:space="preserve"><value>Grupa budynków</value></data>
-  <data name="ThemeEditor_Save" xml:space="preserve"><value>Zapisz</value></data>
-  <data name="ThemeUpdate_On" xml:space="preserve"><value>Włączone</value></data>
-  <data name="BuildingList_GameName" xml:space="preserve"><value>Nazwa generowana przez grę</value></data>
-  <data name="ThemeUpdate_Conflict" xml:space="preserve"><value>Ten parametr został też zmieniony przez Ciebie. Pierwszeństwo ma nowa wartość domyślna.</value></data>
-  <data name="Preview_Html.Content" xml:space="preserve"><value>Otwórz w przeglądarce</value></data>
-  <data name="ThemeEditor_InvalidName" xml:space="preserve"><value>Użyj od 1 do 64 znaków bez znaków sterujących.</value></data>
-  <data name="Preview_Stopped" xml:space="preserve"><value>Wbudowany podgląd jest zatrzymany</value></data>
-  <data name="ThemeUpdate_MoreKept" xml:space="preserve"><value>Zachowano jeszcze {0} zmian</value></data>
-  <data name="BuildingList_GameNames" xml:space="preserve"><value>Używaj nazw generowanych przez grę</value></data>
-  <data name="Preview_Png.Content" xml:space="preserve"><value>Eksportuj PNG (2048 px)</value></data>
-  <data name="BuildingList_CategoryAsc" xml:space="preserve"><value>Kategoria rosnąco</value></data>
-  <data name="BuildingList_Category" xml:space="preserve"><value>Kategoria budynku</value></data>
-  <data name="ThemeUpdate_Unset" xml:space="preserve"><value>Nie ustawiono</value></data>
-  <data name="Preview_Failed" xml:space="preserve"><value>Nie udało się wczytać podglądu</value></data>
-  <data name="ThemeUpdate_Title" xml:space="preserve"><value>Zaktualizowano motyw</value></data>
-  <data name="BuildingList_Sort" xml:space="preserve"><value>Sortowanie</value></data>
-  <data name="BuildingList_NameHint" xml:space="preserve"><value>Nazwy są zgodne z ustawieniem mapy. Nazwy nadane przez gracza są zachowywane.</value></data>
-  <data name="BuildingList_Clear" xml:space="preserve"><value>Wyczyść filtry</value></data>
   <data name="Satellite_LayerTitle" xml:space="preserve"><value>Zdjęcia satelitarne</value></data>
   <data name="Satellite_Composing" xml:space="preserve"><value>Łączenie zdjęć satelitarnych…</value></data>
+  <data name="PreviewQuality_Title" xml:space="preserve"><value>Jakość podglądu</value></data>
+  <data name="PreviewQuality_Preset" xml:space="preserve"><value>Jakość podglądu</value></data>
+  <data name="PreviewQuality_Smooth" xml:space="preserve"><value>Płynny</value></data>
+  <data name="PreviewQuality_Standard" xml:space="preserve"><value>Standardowy</value></data>
+  <data name="PreviewQuality_Fine" xml:space="preserve"><value>Szczegółowy</value></data>
+  <data name="PreviewQuality_Custom" xml:space="preserve"><value>Niestandardowe</value></data>
+  <data name="PreviewQuality_Open" xml:space="preserve"><value>Ustawienia jakości…</value></data>
+  <data name="PreviewQuality_Clarity" xml:space="preserve"><value>Ostrość</value></data>
+  <data name="PreviewQuality_ClarityHelp" xml:space="preserve"><value>Rozdzielczość wyświetlanej mapy. Wyższa rozdzielczość daje ostrzejszy obraz, ale wymaga więcej mocy obliczeniowej.</value></data>
+  <data name="PreviewQuality_Scale75" xml:space="preserve"><value>Płynny</value></data>
+  <data name="PreviewQuality_Scale100" xml:space="preserve"><value>Standardowy</value></data>
+  <data name="PreviewQuality_Scale125" xml:space="preserve"><value>Szczegółowy</value></data>
+  <data name="PreviewQuality_Lines" xml:space="preserve"><value>Drogi</value></data>
+  <data name="PreviewQuality_LinesHelp" xml:space="preserve"><value>Większa szczegółowość dróg wygładza linie i połączenia, ale wymaga znacznie więcej mocy obliczeniowej. Niższa poprawia wydajność, lecz może powodować zniekształcenia dróg i widoczne łączenia.</value></data>
+  <data name="PreviewQuality_LinesStandard" xml:space="preserve"><value>Standardowy</value></data>
+  <data name="PreviewQuality_LinesFine" xml:space="preserve"><value>Szczegółowy</value></data>
+  <data name="PreviewQuality_Polygons" xml:space="preserve"><value>Budynki</value></data>
+  <data name="PreviewQuality_PolygonsHelp" xml:space="preserve"><value>Poziom szczegółowości budynków określa gęstość ich wyświetlania. Przy niższym poziomie niektóre mniejsze budynki mogą być ukryte.</value></data>
+  <data name="PreviewQuality_PolygonsStandard" xml:space="preserve"><value>Standardowy</value></data>
+  <data name="PreviewQuality_PolygonsFine" xml:space="preserve"><value>Szczegółowy</value></data>
+  <data name="PreviewQuality_Details" xml:space="preserve"><value>Dostosuj osobno</value></data>
+  <data name="PreviewQuality_Samples" xml:space="preserve"><value>Porównaj</value></data>
+  <data name="PreviewQuality_Scope" xml:space="preserve"><value>Dotyczy tylko podglądu. Nie wpływa na wynik eksportu.</value></data>
+  <data name="PreviewQuality_Apply" xml:space="preserve"><value>Zastosuj</value></data>
+  <data name="PreviewQuality_Applied" xml:space="preserve"><value>Zastosowano</value></data>
+  <data name="PreviewQuality_Saved" xml:space="preserve"><value>Zapisano</value></data>
+  <data name="PreviewQuality_Busy" xml:space="preserve"><value>Przed zastosowaniem ustawień jakości poczekaj na zakończenie bieżącej operacji podglądu.</value></data>
+  <data name="PreviewQuality_Restarted" xml:space="preserve"><value>Podgląd został zatrzymany. Po jego ponownym uruchomieniu zastosuj jeszcze raz ustawienia jakości.</value></data>
+  <data name="PreviewQuality_ExportHint" xml:space="preserve"><value>Wybierz jakość HTML w ustawieniach eksportu.</value></data>
+  <data name="PreviewQuality_Current" xml:space="preserve"><value>Bieżący wybór</value></data>
+  <data name="Export_HtmlQuality" xml:space="preserve"><value>Jakość HTML</value></data>
+  <data name="TransitLabelStyle_Label" xml:space="preserve"><value>Styl etykiety</value></data>
+  <data name="TransitLabelStyle_Classic" xml:space="preserve"><value>Oryginalna kapsułka</value></data>
+  <data name="TransitLabelStyle_SideSign" xml:space="preserve"><value>Boczny pasek koloru</value></data>
+  <data name="TransitLabelStyle_SplitSign" xml:space="preserve"><value>Etykieta z osobnym polem na ikonę</value></data>
+  <data name="TransitLabelStyle_SolidSign" xml:space="preserve"><value>Zwarta etykieta z pełnym tłem</value></data>
+  <data name="TransitLabelStyle_FrameSign" xml:space="preserve"><value>Tabliczka z cienką ramką</value></data>
+  <data name="TransitLabelStyle_UnderlineSign" xml:space="preserve"><value>Dolny pasek koloru</value></data>
 </root>

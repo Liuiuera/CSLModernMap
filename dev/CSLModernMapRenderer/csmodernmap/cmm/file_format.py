@@ -25,7 +25,7 @@ def check_version(value, *, format: str, supported: str, pattern: str) -> None:
                        format=format, version=value, supported=supported)
 
 
-def check_cmm(raw) -> None:
+def check_cmm(raw, *, recover_records: bool = False) -> None:
     if not isinstance(raw, dict) or ("schema_version" not in raw and "metadata" not in raw):
         raise MapFileError("invalid_cmm")
     if raw.get("schema_version") != "cmm-v1":
@@ -38,10 +38,14 @@ def check_cmm(raw) -> None:
     for key in ("nodes", "networks", "buildings", "districts", "stops", "transit_lines",
                 "routes", "forests", "procedural_objects", "issues"):
         if key in raw and (not isinstance(raw[key], list)
-                           or any(not isinstance(item, dict) for item in raw[key])):
+                           or (not recover_records and any(not isinstance(item, dict) for item in raw[key]))):
             raise MapFileError("invalid_cmm")
     for key in ("terrain", "derived", "extensions"):
         if key in raw and not isinstance(raw[key], dict):
+            raise MapFileError("invalid_cmm")
+    derived = raw.get("derived", {})
+    for key in ("stations", "pois", "facility_groups", "labels", "water_bodies"):
+        if key in derived and not isinstance(derived[key], list):
             raise MapFileError("invalid_cmm")
 
 
@@ -62,4 +66,16 @@ def check_cslmap(root) -> str:
 def file_warnings(document) -> list[str]:
     keys = {"LEGACY_XML_FORMAT": "legacy_xml", "MISSING_XML_VERSION": "unversioned_xml"}
     return [tr("gui.file." + keys[code]) for code in dict.fromkeys(
-        issue.code for issue in document.issues if issue.code in keys)]
+        issue.code for issue in document.issues if issue.code in keys)] + read_information(document)
+
+
+def read_information(document) -> list[str]:
+    messages = []
+    if any(issue.code in {"READ_SATELLITE_SKIPPED", "SATELLITE_CAPTURE_FAILED"} for issue in document.issues):
+        messages.append(tr("gui.file.satellite_skipped"))
+    for code, key in (("READ_RECORD_SKIPPED", "records_skipped"),
+                      ("READ_DEPENDENCY_SKIPPED", "dependencies_skipped")):
+        count = sum(issue.code == code for issue in document.issues)
+        if count:
+            messages.append(tr("gui.file." + key, count=count))
+    return messages

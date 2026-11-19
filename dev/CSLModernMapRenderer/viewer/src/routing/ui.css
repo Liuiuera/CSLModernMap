@@ -29,7 +29,6 @@
 .navigation-modes { display: flex; gap: 6px; margin-bottom: 12px; }
 .navigation-modes button { flex: 1; }
 .navigation-modes button[aria-pressed="true"] { background: var(--nav-selected); border-color: var(--nav-accent); color: var(--nav-accent); }
-.navigation-endpoint-access { display: block; font-size: 11px; color: var(--nav-secondary); }
 .navigation-steps .navigation-leg { border-inline-start: 3px solid var(--nav-border); padding-inline-start: 10px; }
 .navigation-control .navigation-close { border-color: transparent; background: transparent; font-size: 12px; }
 .navigation-endpoints { border: 1px solid var(--nav-border); border-radius: 4px; background: var(--nav-control); padding: 0 12px; }
@@ -56,12 +55,12 @@
 .navigation-actions input { width: 125px; min-width: 0; flex: 1; }
 .navigation-section-title { font-size: 12px; color: var(--nav-secondary); margin: 16px 0 8px; }
 .navigation-control .navigation-route-card { position: relative; width: 100%; display: block; text-align: start; padding: 12px 14px; margin-bottom: 8px; }
-.navigation-control .navigation-route-option { margin: 0 6px 8px 0; }
+.navigation-control .navigation-route-option:not(.navigation-route-card) { margin: 0 6px 8px 0; }
 .navigation-route-option[aria-pressed="true"] { border-color: var(--nav-accent); background: var(--nav-selected); }
 .navigation-route-option[aria-pressed="true"] .navigation-route-label { color: var(--nav-accent); }
 .navigation-route-popup .maplibregl-popup-content { padding: 0; background: var(--nav-surface); border: 1px solid var(--nav-border); border-radius: 8px; box-shadow: 0 4px 16px var(--nav-shadow); }
 .navigation-route-popup.maplibregl-popup-anchor-bottom .maplibregl-popup-tip { border-top-color: var(--nav-surface); }
-.navigation-map-card { padding: 12px 14px; min-width: 180px; }
+.navigation-map-card { display: flex; align-items: center; gap: 10px; padding: 8px 10px; }
 .navigation-control .navigation-route-card[aria-pressed="true"] { background: var(--nav-selected); }
 .navigation-route-card[aria-pressed="true"]::before { content: ''; position: absolute; width: 3px; top: 25%; height: 50%; left: 0; background: var(--nav-accent); border-radius: 2px; }
 .navigation-duration, .navigation-distance, .navigation-via { display: block; }
@@ -69,6 +68,7 @@
 .navigation-route-card[aria-pressed="true"] .navigation-route-label { color: var(--nav-accent); }
 .navigation-duration { font-size: 24px; font-weight: 600; margin: 5px 0 3px; line-height: 1.4; overflow-wrap: anywhere; }
 .navigation-duration.has-estimate { font-size: 28px; }
+.navigation-map-card .navigation-duration { font-size: 16px; margin: 0; white-space: nowrap; }
 .navigation-route-card.transit .navigation-duration { font-size: 15px; margin: 0 0 6px; }
 .navigation-route-card.transit .navigation-via { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
 .navigation-line-badge { border-inline-start: 4px solid var(--nav-border); padding-inline-start: 5px; color: var(--nav-text); }

@@ -1,0 +1,28 @@
+<ContentDialog
+    x:Class="CSLModernMapWinUI.DraftWelcomeDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CSLModernMapWinUI"
+    DefaultButton="Close">
+    <ContentDialog.Resources>
+        <x:Double x:Key="ContentDialogMaxWidth">568</x:Double>
+    </ContentDialog.Resources>
+    <StackPanel Spacing="12" MaxWidth="518">
+        <TextBlock x:Name="Intro" TextWrapping="Wrap"/>
+        <Grid x:Name="Samples" ColumnSpacing="16" RowSpacing="12" SizeChanged="SamplesSizeChanged">
+            <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition x:Name="SecondColumn"/></Grid.ColumnDefinitions>
+            <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+            <StackPanel Spacing="4">
+                <local:DraftWelcomeMap x:Name="ExploreMap" Margin="0,2,0,4"/>
+                <TextBlock x:Name="ExploreTitle" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                <TextBlock x:Name="ExploreBody" TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+            </StackPanel>
+            <StackPanel x:Name="DraftSample" Grid.Column="1" Spacing="4">
+                <local:DraftWelcomeMap x:Name="DraftMap" Margin="0,2,0,4"/>
+                <TextBlock x:Name="DraftTitle" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                <TextBlock x:Name="DraftBody" TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+            </StackPanel>
+        </Grid>
+        <HyperlinkButton x:Name="Playback" HorizontalAlignment="Left" Click="PlaybackClicked"/>
+    </StackPanel>
+</ContentDialog>

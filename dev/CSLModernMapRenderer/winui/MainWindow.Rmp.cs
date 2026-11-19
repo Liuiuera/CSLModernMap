@@ -60,7 +60,7 @@ public sealed partial class MainWindow
         AddButton(_metroCloseGroup, UiLanguage.Text("MainWindow_xaml_BuildRibbon_71B67FAAD9"), LeaveContextAsync, "view.metro.close", true);
         RegisterCommand("workspace.saveAs", () => _context == "metro" ? RunRmpCommandAsync("saveAs") : ShowExportAsync(), true,
             new Button(), VirtualKey.S, VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift);
-        RegisterCommand("workspace.export", () => _context == "metro" ? RunRmpCommandAsync("export") : ShowExportAsync(), true,
+        RegisterCommand("workspace.export", () => _context == "metro" ? RunRmpCommandAsync("export") : ChooseExportAsync(), true,
             new Button(), VirtualKey.E, VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift);
     }
 
@@ -133,7 +133,7 @@ public sealed partial class MainWindow
         try
         {
             if (_rmpView is { HasProject: true } current && !await current.ConfirmRegenerationAsync()) return;
-            await _contextWriteTail;
+            await FlushContextWritesAsync();
             if (_context != "metro" || generation != _documentGeneration || _engineBusy) return;
             _rmpView?.Suspend(true);
             BeginMapTask(MapTaskPhase.Generating, RmpText("GenerateDraft"), requestId: requestId, waitForScene: false);

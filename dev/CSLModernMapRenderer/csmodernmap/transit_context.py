@@ -6,7 +6,7 @@ from .services.transit import build_transit_model, match_facilities, resolve_rou
 from .services.transit.color import hex_palette
 
 
-def build_transit_context(mapdata: MapData, cfg: dict, enabled: list, *, facilities=False):
+def build_transit_context(mapdata: MapData, cfg: dict, enabled: list, *, facilities=False, session=None):
     """构建当前渲染共用的交通视图；源 MapData 保持兼容输入，后续消费只读取 T02 派生模型。"""
     st_cfg = cfg.get("station") or {}
     gcfg = cfg.get("grouping") or {}
@@ -41,9 +41,8 @@ def build_transit_context(mapdata: MapData, cfg: dict, enabled: list, *, facilit
     )
     # None 启用地图旁自动发现，显式路径原样传递，False 则关闭。
     station_fix = st_cfg.get("sidecar", st_cfg.get("station_fix"))
-    model = build_transit_model(
-        mapdata, params, station_fix=station_fix,
-    )
+    model = (session.transit_model(params) if session is not None and station_fix is None else
+             build_transit_model(mapdata, params, station_fix=station_fix))
     # 设施匹配属于站点上下文，服务按 T02 站点标识返回关联而不修改源地图。
     if facilities:
         facility_cfg = st_cfg.get("facilities") or {}

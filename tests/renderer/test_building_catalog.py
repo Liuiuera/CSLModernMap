@@ -91,3 +91,13 @@ def test_engine_catalog_refreshes_display_name_policy_and_preserves_custom_names
     result = request()
     assert result['useGameNames'] is True
     assert [(row['name'], row['nameSource']) for row in result['items']] == [('Game name', 'game'), ('Player name', 'custom')]
+    result = server.dispatch('getBuildingCatalog', {'documentEpoch': 0, 'useGameNames': False})
+    assert result['items'][0]['name'] == '住宅'
+    assert server.backend.poi_game_names is True
+    server.dispatch('setField', {'key': 'poi.game_names', 'value': False})
+    result = server.dispatch('getBuildingCatalog', {'documentEpoch': 0, 'useGameNames': True})
+    assert result['items'][0]['name'] == 'Game name'
+    assert server.backend.poi_game_names is False
+    assert result['items'][0]['memberNames'] == {'1': 'Game name'}
+    with pytest.raises(ValueError):
+        server.dispatch('getBuildingCatalog', {'documentEpoch': 0, 'useGameNames': 'true'})

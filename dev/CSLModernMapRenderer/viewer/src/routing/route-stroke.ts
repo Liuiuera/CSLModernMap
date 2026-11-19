@@ -5,6 +5,29 @@ export type RouteStroke = {points: XYZ[]; properties: Record<string, unknown>};
 const roadModes = new Set(['GROUND', 'ELEVATED', 'TUNNEL']);
 const width = (part: RouteStroke): number => Number(part.properties.surfaceWidth || part.properties.physicalWidth || 0);
 
+export function renderRouteFeatures(features: GeoJSON.Feature[], zoom: number): GeoJSON.Feature[] {
+  // 本地地图位于赤道附近；经纬度距离对应屏幕距离。只简化中间点，不能丢弃短线段。
+  const toleranceSquared = (.375 * 360 / (512 * 2**Math.floor(zoom)))**2;
+  return features.map(feature => {
+    if (feature.geometry.type !== 'LineString' || !roadModes.has(String(feature.properties?.mode))) return feature;
+    const points = feature.geometry.coordinates, last = points.length-1;
+    if (last < 2) return feature;
+    const keep = new Set([0, last]), pending = [[0, last]];
+    while (pending.length) {
+      const [start, end] = pending.pop()!, a = points[start], b = points[end];
+      const dx = b[0]-a[0], dy = b[1]-a[1], span = dx*dx+dy*dy;
+      let maximum = toleranceSquared, furthest = -1;
+      for (let i = start+1; i < end; i++) {
+        const p = points[i], t = span ? Math.max(0, Math.min(1, ((p[0]-a[0])*dx+(p[1]-a[1])*dy)/span)) : 0;
+        const distanceSquared = (p[0]-a[0]-t*dx)**2+(p[1]-a[1]-t*dy)**2;
+        if (distanceSquared > maximum) { maximum = distanceSquared; furthest = i; }
+      }
+      if (furthest >= 0) { keep.add(furthest); pending.push([start, furthest], [furthest, end]); }
+    }
+    return {...feature, geometry: {...feature.geometry, coordinates: points.filter((_, i) => keep.has(i))}};
+  });
+}
+
 export function routeStrokeFeatures(parts: RouteStroke[], maxLength = Infinity): GeoJSON.Feature[] {
   let offset = 0;
   return parts.flatMap((part, index) => {

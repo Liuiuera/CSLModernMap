@@ -67,13 +67,44 @@ body.selecting #map { cursor: crosshair; }
 }
 .map-label-transit { font-weight: 650; transform: translateY(-12px); }
 .map-label-poi { font-size: 11px; transform: none; }
+.map-transit-badge-group { display: flex; pointer-events: none; }
+.map-transit-badge-group > .map-transit-badge { position: relative; flex-shrink: 0; }
 .map-transit-badge {
   max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   border: 1px solid transparent; border-radius: 999px;
   /* 尺寸（padding / 圆角 / 边框宽度）与配色都由 inline style 按主题规范写，
+     见 docs/tasks/公共交通视图-整改-20260910/01-线路标签视觉统一-20260914.md。
      这里只留兜底：上游漏赋值时标签至少还能看见。 */
   background: transparent; font-family: "Microsoft YaHei", sans-serif; font-weight: 700;
   line-height: 1; pointer-events: none;
+}
+.map-transit-badge {
+  align-items: center; position: absolute;
+  padding: 0 var(--badge-pad); border-style: solid;
+}
+.map-transit-badge .transit-badge-name {
+  max-width: 180px; min-width: 0; overflow: hidden; text-overflow: ellipsis;
+}
+.map-transit-badge[data-preset="side-sign"]::before {
+  content: ""; position: absolute; left: var(--badge-outline);
+  top: var(--badge-outline); bottom: var(--badge-outline);
+  width: calc(var(--badge-size) * 4 / 14); background: var(--badge-color);
+}
+.map-transit-badge .transit-badge-mode { display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.map-transit-badge .transit-badge-icon {
+  display: block; width: var(--badge-icon-size); height: var(--badge-icon-size);
+  background: currentColor; mask-position: center; mask-size: contain; mask-repeat: no-repeat;
+}
+.map-transit-badge[data-preset="split-sign"] { padding-left: 0; }
+.map-transit-badge[data-preset="split-sign"] .transit-badge-mode {
+  width: var(--badge-icon-width); align-self: stretch; background: var(--badge-color);
+  margin-right: var(--badge-icon-gap);
+}
+.map-transit-badge[data-preset="frame-sign"] { gap: var(--badge-icon-gap); }
+.map-transit-badge[data-preset="underline-sign"] { padding-bottom: calc(var(--badge-size) * 3 / 14); }
+.map-transit-badge[data-preset="underline-sign"]::after {
+  content: ""; position: absolute; bottom: 0; left: 0; right: 0;
+  height: calc(var(--badge-size) * 3 / 14); background: var(--badge-color);
 }
 /* 描边开关按文字类别来（preview_scene 下发 halos），关掉时抹掉默认的白色描边。 */
 .map-label-no-halo { -webkit-text-stroke-width: 0; }
@@ -95,3 +126,7 @@ body.selecting #map { cursor: crosshair; }
   font-size: 12px; font-weight: 600; pointer-events: none;
 }
 .preview-watermark-left { left: 14px; right: auto; }
+/* The quality demonstration reuses the production renderer without its map tools. */
+body.quality-sample .maplibregl-control-container,
+body.quality-sample .preview-controls,
+body.quality-sample .preview-watermark { display: none !important; }

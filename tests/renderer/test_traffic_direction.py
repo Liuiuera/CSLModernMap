@@ -205,7 +205,7 @@ def test_no_data_keeps_centerline_without_inventing_free_flow():
 
 
 def test_preview_uses_matched_road_width_and_style():
-    from test_preview_road_order import scene_from_lines
+    from road_fixtures import scene_from_lines
     road = scene_from_lines([[(0, 0, 0), (100, 0, 0)]], width=12).roads[0]
     feature, = _traffic_features(segment([lane(3, .5)], width=20), road)
     props = feature["properties"]

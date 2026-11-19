@@ -9,8 +9,8 @@ from PIL import Image, ImageChops
 
 from csmodernmap.preview_scene import PreviewSceneServer, preview_theme, road_theme, world_to_geo
 from test_preview_3d_browser import expose_map
-from test_preview_road_browser import browser_page, expect_color, load, make_bundle, screenshot
-from test_preview_road_order import scene_from_lines
+from browser_support import browser_page, expect_color, load, make_bundle, screenshot
+from road_fixtures import scene_from_lines
 from test_navigation_ui_browser import (
     navigation_page, navigation_bundle, navigation_server, open_navigation, make_route,
 )
@@ -39,24 +39,29 @@ def assert_road_opacity(page, opacity):
 
 
 def test_satellite_theme_tokens_defaults_scaling_and_alpha():
-    assert road_theme({})['opacity'] == 1
-    for value, expected in [(-.5, 0), (0, 0), (.35, .35), (1, 1), (2, 1)]:
-        assert road_theme({'roads': {'opacity': value}})['opacity'] == expected
+    from style_fixtures import complete_style
+    assert road_theme(complete_style({'roads': {'opacity': 1}}))['opacity'] == 1
+    from csmodernmap.theme_contract import validate_theme_values
+    for invalid in (-.5, 2):
+        with pytest.raises(ValueError, match='opacity'):
+            validate_theme_values(complete_style({'roads': {'opacity': invalid}}).data)
+    for value in (0, .35, 1):
+        assert road_theme(complete_style({'roads': {'opacity': value}}))['opacity'] == value
     labels = {kind: {'color': '#12345680', 'stroke': '#ABCDEF40',
-                     'stroke_width': {'fixed': 1, 'scaled': 4},
-                     'stroke_blur': {'fixed': 2, 'scaled': 8}}
+                     'stroke_width': 2,
+                     'stroke_blur': 4}
               for kind in ('road', 'district')}
-    theme = preview_theme({'roads': {'opacity': .35}, 'labels': labels})
+    theme = preview_theme(complete_style({'roads': {'opacity': .35}, 'labels': labels}))
     assert theme['road']['opacity'] == .35
     for kind in labels:
         assert theme['label']['colors'][kind] == '#12345680'
         assert theme['label']['strokes'][kind] == {
             'color': '#ABCDEF40', 'width': 2, 'blur': 4}
-        assert theme['label']['metrics']['strokeBlurs'][kind] == {'fixed': 2, 'scaled': 8}
-    defaults = preview_theme({'labels': {'road': {'stroke': '#FFFFFF', 'stroke_width': 2}}})
+        assert theme['label']['metrics']['strokeBlurs'][kind] == 4
+    defaults = preview_theme(complete_style({'labels': {'road': {'stroke': '#FFFFFF', 'stroke_width': 2, 'stroke_blur': 0}}}))
     assert defaults['label']['strokes']['road']['blur'] == 0
     assert defaults['label']['metrics']['strokeBlurs']['road'] == 0
-    assert preview_theme({'poi_icons': {'name_color': '#F7F4EA'}})['label']['colors']['poi'] == '#F7F4EA'
+    assert preview_theme(complete_style({'poi_icons': {'name_color': '#F7F4EA'}}))['label']['colors']['poi'] == '#F7F4EA'
 
 
 @browser_test

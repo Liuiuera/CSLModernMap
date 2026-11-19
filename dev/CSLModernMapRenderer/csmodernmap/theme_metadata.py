@@ -1,7 +1,7 @@
 """主题编辑器的字段元数据与纯函数（无 Qt 依赖）。
 
 主题 YAML 是「数据驱动」的：顶层 17 个结构段，每个段里可能是标量、嵌套字典、
-列表或 ``{fixed, scaled}`` 组合，合计 150+ 个可编辑叶子。编辑器按数据结构递归
+列表；像素长度仅使用单值。编辑器按数据结构递归
 生成控件，本模块只负责回答「这个字段叫什么、范围多少、怎么解释、怎么解析」这类
 与界面无关的问题。
 
@@ -89,8 +89,8 @@ LABELS = {
     "border_width": "gui.style_editor.field.border_width",
     "fill": "gui.style_editor.field.fill",
     "width_scale": "gui.style_editor.field.width_scale",
-    "fixed": "gui.style_editor.field.fixed",
-    "scaled": "gui.style_editor.field.scaled",
+
+
     "dash": "gui.style_editor.field.dash",
     "road": "gui.style_editor.field.road",
     "highway": "gui.style_editor.field.highway",
@@ -113,8 +113,8 @@ LABELS = {
     "beautification_tunnel": "gui.style_editor.field.beautification_tunnel",
     "tunnel": "gui.style_editor.field.tunnel",
     "bridge": "gui.style_editor.field.bridge",
-    "min_fill_px": "gui.style_editor.field.min_fill_px",
-    "footprint_scale": "style.road.level.quay.width.label",
+
+    "footprint_scale": "gui.style_editor.field.footprint_scale",
     "smooth": "gui.style_editor.field.smooth",
     "label": "gui.style_editor.field.label",
     "font": "gui.style_editor.field.font",
@@ -158,6 +158,7 @@ LABELS = {
     "hidden_categories": "gui.style_editor.field.hidden_categories",
     "cell_meters": "gui.style_editor.field.cell_meters",
     "buffer_meters": "gui.style_editor.field.buffer_meters",
+    "edge_meters": "gui.style_editor.field.border_width",
     "contour_upscale": "gui.style_editor.field.contour_upscale",
     "smooth_iters": "gui.style_editor.field.smooth_iters",
     "smooth_blur": "gui.style_editor.field.smooth_blur",
@@ -174,7 +175,6 @@ LABELS = {
     "parallel_gap": "gui.style_editor.field.parallel_gap",
     "transit_view": "gui.style_editor.field.transit_view",
     "mask_intensity": "gui.style_editor.field.mask_intensity",
-    "transit_view_scale": "gui.style_editor.field.transit_view_scale",
     "min_zoom": "gui.style_editor.field.min_zoom",
     "merge_enabled": "gui.style_editor.field.merge_enabled",
     "merge_range": "gui.style_editor.field.merge_range",
@@ -182,7 +182,7 @@ LABELS = {
     "merge_bus_tram": "gui.style_editor.field.merge_bus_tram",
     "merge_train_metro": "gui.style_editor.field.merge_train_metro",
     "outline": "gui.style_editor.field.outline",
-    "transfer_scale": "gui.style_editor.field.transfer_scale",
+
     "geometry": "gui.style_editor.field.geometry",
     "prop": "gui.style_editor.field.prop",
     "tree": "gui.style_editor.field.tree",
@@ -264,7 +264,7 @@ FIELD_UNIT_KEYS = {
     "azimuth": "degree",
     "altitude": "degree",
     "width_scale": "meter_to_pixel",
-    "min_fill_px": "px",
+
     "smooth": "samples",
     "repeat_interval": "px",
     "min_gap": "px",
@@ -287,7 +287,6 @@ FIELD_UNIT_KEYS = {
     "buffer_meters": "meter",
     "cell_meters": "meter",
     "smooth_blur": "px",
-    "transit_view_scale": "ratio",
     "border_radius": "px",
     "dash_width": "px",
 }
@@ -309,7 +308,7 @@ _UNIT_KEYS = {
 # 显式语义优先于按名字猜测：值 = ((最小, 最大, 步长), 单位键)
 NUMERIC_FIELD_SPECS = {
     "water.border_width": ((0.0, 50.0, 0.1), "px"),
-    "roads.width_scale": ((0.0, 5.0, 0.01), "meter_to_pixel"),
+
     "roads.opacity": ((0.0, 1.0, 0.01), "ratio"),
     "labels.road.stroke_blur": ((0.0, 8.0, 0.1), "px"),
     "labels.district.stroke_blur": ((0.0, 8.0, 0.1), "px"),
@@ -324,8 +323,10 @@ NUMERIC_FIELD_SPECS = {
     "built_area.opacity": ((0.0, 1.0, 0.01), "ratio"),
     "buildings.poi_tint.contrast": ((0.0, 1.0, 0.01), "ratio"),
     "procedural_objects.custom_color_alpha": ((0.0, 1.0, 0.01), "ratio"),
-    "roads.*.min_fill_px": ((0.0, 20.0, 0.1), "px"),
-    "roads.quay.footprint_scale": ((0.05, 1.0, 0.05), "ratio"),
+
+    "roads.*.line_width": ((0.01, 2000.0, 0.1), "px"),
+    "roads.*.footprint_scale": ((0.0, 1e300, 0.05), "ratio"),
+    "transports.station.diameter": ((0.01, 2000.0, 0.1), "px"),
     "roads.*.border_width": ((0.0, 50.0, 0.1), "px"),
     "roads.*.dash.*": ((0.0, 2000.0, 0.1), "px"),
     "transports.types.*.dash.*": ((0.0, 2000.0, 0.1), "px"),
@@ -355,10 +356,11 @@ FIELD_KINDS = {
     "terrain.*colors.*.color": "color",
     "terrain.ground.enabled": "toggle", "terrain.ground.near_green": "color",
     "terrain.ground.far_green": "color", "terrain.hillshade.enabled": "toggle",
-    "roads.width_scale": "number", "roads.*.fill": "color", "roads.*.border": "color",
+     "roads.*.fill": "color", "roads.*.border": "color",
     "roads.opacity": "number",
-    "roads.*.min_fill_px": "number", "roads.*.border_width": "size", "roads.*.dash": "numbers",
+     "roads.*.border_width": "size", "roads.*.dash": "numbers",
     "roads.quay.footprint_scale": "number",
+    "roads.*.footprint_scale": "number", "roads.*.line_width": "size",
     "buildings.color_mode": "choice", "buildings.default": "color", "buildings.border": "color",
     "buildings.border_width": "size", "buildings.poi_tint.contrast": "number",
     "district.border": "color", "district.border_width": "size", "district.fill_colors": "colors",
@@ -369,7 +371,8 @@ FIELD_KINDS = {
     "transports.enabled": "types", "transports.auto_color": "toggle", "transports.width": "size",
     "transports.types.*.width": "size", "transports.types.*.dash": "numbers",
     "transports.types.*.color": "color", "transports.palette": "colors",
-    "transports.station.size": "size",
+
+    "transports.station.diameter": "size",
     "transports.label.size": "size", "transports.label.padding": "size",
     "transports.label.border_width": "size", "transports.label.font": "font", "transports.label.bg": "color",
     "poi_icons.icon_size": "size", "poi_icons.name_size": "size", "poi_icons.bg_circle_size": "size",
@@ -437,7 +440,7 @@ FIELD_DESC_FALLBACK = {
     "zone.border": "gui.style_editor.desc.zone.border",
     "zone.fill_alpha": "gui.style_editor.desc.zone.fill_alpha",
     "zone.fill": "gui.style_editor.desc.zone.fill",
-    "roads.width_scale": "gui.style_editor.desc.roads.width_scale",
+
     "roads.opacity": "gui.style_editor.desc.roads.opacity",
     "labels.road.stroke_blur": "gui.style_editor.desc.labels.stroke_blur",
     "labels.district.stroke_blur": "gui.style_editor.desc.labels.stroke_blur",
@@ -453,10 +456,10 @@ FIELD_DESC_FALLBACK = {
     "transports.label.bg": "gui.style_editor.desc.transports.label.bg",
     "transports.label.repeat_interval": "gui.style_editor.desc.transports.label.repeat_interval",
     "transports.station.enabled": "gui.style_editor.desc.transports.station.enabled",
-    "transports.station.size": "gui.style_editor.desc.transports.station.size",
+
     "transports.station.merge_enabled": "gui.style_editor.desc.transports.station.merge_enabled",
     "transports.station.merge_range": "gui.style_editor.desc.transports.station.merge_range",
-    "transports.station.transfer_scale": "gui.style_editor.desc.transports.station.transfer_scale",
+
     "buildings.border": "gui.style_editor.desc.buildings.border",
     "buildings.shadow.enabled": "gui.style_editor.desc.buildings.shadow.enabled",
     "poi_icons.enabled": "gui.style_editor.desc.poi_icons.enabled",
@@ -477,7 +480,6 @@ FIELD_DESC_FALLBACK = {
     "procedural_objects.custom_color_alpha": "gui.style_editor.desc.procedural_objects.custom_color_alpha",
 
     # ---- 《03》G 组续补（2026-09-15 第二批）----
-    # 说明挂在「父路径」上时，`.fixed` / `.scaled` 两行共用同一条文案；
     # 挂在分组（dict）路径上时，由 theme_editor 的分组标题 tooltip 显示。
     "canvas": "gui.style_editor.desc.canvas",
     "buildings.default": "gui.style_editor.desc.buildings.default",
@@ -546,9 +548,13 @@ def field_label(key: str, path: tuple = ()) -> str:
         if len(path) == 2:
             return tr('building.category.table')
         return tr('building.category.' + key)
+    if len(path) == 3 and path[0] == "roads":
+        road_field = FIELDS.get(f"road.level.{path[1]}.{key}")
+        if road_field is not None:
+            return road_field.label
     field_key = field_key_for(path)
     if field_key and field_key in FIELDS:
-        return tr(f"style.{field_key}.label")
+        return FIELDS[field_key].label
     tk = LABELS.get(key)
     return tr(tk) if tk else key
 
@@ -607,8 +613,6 @@ def num_range(key: str, value, path: tuple = ()) -> tuple:
         return (0, 32768, 256)
     if "size" in key:
         return (0, 200, 1)
-    if key in ("fixed", "scaled"):
-        return (0.0, 50.0, 0.1)
     if key in ("intensity", "width_scale", "rdp_epsilon"):
         return (0.0, 5.0, 0.01)
     if key in ("alpha", "fill_alpha"):
@@ -618,27 +622,12 @@ def num_range(key: str, value, path: tuple = ()) -> tuple:
     return (0, 2000, 1)
 
 
-def pair_range(key: str, path: tuple = ()) -> tuple:
-    """``{fixed, scaled}`` 组合字段的取值范围。"""
-    dotted = ".".join(path)
-    spec = numeric_spec(path)
-    if spec is not None:
-        return spec[0]
-    field_key = _PATH_TO_FIELD.get(dotted)
-    if field_key:
-        field = FIELDS.get(field_key)
-        if field is not None and field.low is not None and field.high is not None:
-            return (float(field.low), float(field.high), 0.01)
-    if "grid" in key:
-        return (10, 500, 10)
-    if "size" in key:
-        return (0, 200, 1)
-    if "repeat" in key or "gap" in key:
-        return (10, 20000, 10)
-    return (0.0, 50.0, 0.1)
+
 
 
 def numeric_hint(key: str, lo, hi, path: tuple = ()) -> str:
+    if len(path) == 3 and path[0] == "roads" and key == "footprint_scale":
+        return tr("gui.style_editor.desc.road_footprint")
     dotted = ".".join(path)
     spec = numeric_spec(path)
     unit_key = spec[1] if spec is not None else FIELD_UNIT_KEYS.get(key)
@@ -748,6 +737,8 @@ def describe_theme(data: dict) -> dict:
                    "supported": declared_kind is not None or (path[0] in SECTION_ORDER and key in LABELS),
                    "valueKind": declared_kind,
                    "hidden": key in HIDDEN_LEAF_KEYS.get(path[-2] if len(path) > 1 else "", set())}
+        from .pixel_sizes import is_pixel_theme, field_rule
+        pixel_length = is_pixel_theme(data) and field_rule(dotted) is not None
         if isinstance(value, bool):
             details["kind"] = "toggle"
         elif isinstance(value, (int, float)):
@@ -757,16 +748,11 @@ def describe_theme(data: dict) -> dict:
             details.update(kind="number", low=low, high=high, step=step,
                            unit=unit_key or "", unitLabel=tr(_UNIT_KEYS[unit_key]) if unit_key in _UNIT_KEYS else "",
                            hint=numeric_hint(key, low, high, path))
-            if key in ("fixed", "scaled") and len(path) > 1:
-                parent = fields.get(".".join(path[:-1]), {})
-                if parent.get("kind") == "pair":
-                    details.update(low=0, high=parent["high"], step=parent["step"], unit="px")
+            if pixel_length:
+                details.update(unit='px', unitLabel='px', low=-1e300 if 'offset' in dotted else 0,
+                               high=1e300, step=.1, pixelLength=True, hint='', description='', supported=True)
         elif isinstance(value, dict):
-            details["kind"] = "object"
-            if {"fixed", "scaled"} <= value.keys():
-                low, high, step = pair_range(key, path)
-                details.update(kind="pair", low=low, high=high, step=step,
-                               unit="px", unitLabel=tr(_UNIT_KEYS["px"]), hint=numeric_hint(key, low, high, path))
+            details['kind'] = 'object'
         elif isinstance(value, list):
             if is_elevation_list(key, value):
                 details["kind"] = "ramp"
@@ -800,8 +786,6 @@ def describe_theme(data: dict) -> dict:
         details["optional"] = not required
         if key in {"enabled", "detail", "backend", "color_mode"}:
             details["optional"] = True
-        if key in {"fixed", "scaled"}:
-            details["supported"] = fields.get(".".join(path[:-1]), {}).get("supported", False)
         if default is not None:
             details["default"] = default
         if isinstance(value, dict):
@@ -821,6 +805,9 @@ def describe_theme(data: dict) -> dict:
 
 def validate_theme_fields(data: dict, baseline: dict | None = None) -> None:
     """提交时使用编辑器显式字段范围；旧值在修改前保持有效，未知属性和枚举值属于兼容数据。"""
+    from .pixel_sizes import is_pixel_theme, validate, field_rule
+    validate(data)
+    pixel = True
     fields = describe_theme(data)
     def walk(value, path):
         if path[:2] == ("terrain", "ground"):
@@ -833,7 +820,7 @@ def validate_theme_fields(data: dict, baseline: dict | None = None) -> None:
         valid = {
             "toggle": lambda: isinstance(value, bool),
             "number": lambda: isinstance(value, (int, float)) and not isinstance(value, bool),
-            "size": lambda: not isinstance(value, bool) and (isinstance(value, (int, float)) or isinstance(value, dict) and bool({"fixed", "scaled"} & value.keys())),
+            "size": lambda: type(value) in (int, float),
             "color": lambda: isinstance(value, str) and HEX_RE.fullmatch(value),
             "choice": lambda: isinstance(value, (str, int)),
             "font": lambda: value is None or isinstance(value, str),
@@ -844,14 +831,14 @@ def validate_theme_fields(data: dict, baseline: dict | None = None) -> None:
         }
         if kind in valid and not valid[kind]():
             raise ValueError(f"{dotted}: expected {kind}")
-        if field["supported"] and field["kind"] == "number" and (spec or schema or path[-1] in ("fixed", "scaled")):
+        pixel_length = pixel and (field_rule(dotted) or fnmatchcase(dotted, 'roads.*.footprint_scale'))
+        if not pixel_length and field["supported"] and field["kind"] == "number" and (spec or schema):
             old = baseline
             for part in path:
                 old = old.get(part) if isinstance(old, dict) else old[int(part)] if isinstance(old, list) and int(part) < len(old) else None
             if value != old and not field["low"] <= value <= field["high"]:
                 raise ValueError(f"{dotted}: expected {field['low']} to {field['high']}")
-        if spec and (isinstance(value, bool) or not isinstance(value, (int, float, dict))
-                     or isinstance(value, dict) and not ({"fixed", "scaled"} & value.keys())):
+        if spec and type(value) not in (int, float):
             raise ValueError(f"{dotted}: expected a number")
         if isinstance(value, dict):
             for key, child in value.items(): walk(child, path + (key,))

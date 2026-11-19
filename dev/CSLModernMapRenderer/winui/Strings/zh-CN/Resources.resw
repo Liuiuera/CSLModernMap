@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
@@ -28,30 +28,6 @@
   <data name="AppearanceControls_Number_0BB1EFDA65" xml:space="preserve">
     <value>{0}：请输入 {1} 至 {2} 之间的数值。</value>
     <comment>AppearanceControls.cs:153</comment>
-  </data>
-  <data name="AppearanceControls_Number_0DA36741DE" xml:space="preserve">
-    <value>固定部分（像素）</value>
-    <comment>AppearanceControls.cs:136</comment>
-  </data>
-  <data name="AppearanceControls_Number_2C7E083699" xml:space="preserve">
-    <value>随缩放部分（参考像素）</value>
-    <comment>AppearanceControls.cs:138</comment>
-  </data>
-  <data name="AppearanceControls_Number_9FC85F1C9F" xml:space="preserve">
-    <value>保持固定大小</value>
-    <comment>AppearanceControls.cs:198</comment>
-  </data>
-  <data name="AppearanceControls_Number_C42BC5D941" xml:space="preserve">
-    <value>{0}：请输入有效数值。</value>
-    <comment>AppearanceControls.cs:148</comment>
-  </data>
-  <data name="AppearanceControls_Number_EE9964568E" xml:space="preserve">
-    <value>固定部分 + 随缩放部分</value>
-    <comment>AppearanceControls.cs:198</comment>
-  </data>
-  <data name="AppearanceControls_Number_F1463D39A7" xml:space="preserve">
-    <value>随地图缩放</value>
-    <comment>AppearanceControls.cs:198</comment>
   </data>
   <data name="ContextRibbonToggle_Refresh_645432A5BF" xml:space="preserve">
     <value>，已开启</value>
@@ -216,6 +192,10 @@
   <data name="ExportWindow_Preview_FormatDescription_D1B9C29526" xml:space="preserve">
     <value>线网项目  在 Rail Map Painter 中编辑</value>
     <comment>ExportWindow.Preview.cs:93</comment>
+  </data>
+  <data name="ExportWindow_Preview_FormatDescription_F3E27B053E" xml:space="preserve">
+    <value>GeoPackage (.gpkg) + GeoTIFF (.tif) + QGIS (.qml)</value>
+    <comment>ExportWindow.Preview.cs:91</comment>
   </data>
   <data name="ExportWindow_Preview_InitializeResults_0A07FEF6ED" xml:space="preserve">
     <value>重试导出</value>
@@ -445,6 +425,10 @@
     <value>地铁示意图</value>
     <comment>ExportWindow.cs:679</comment>
   </data>
+  <data name="ExportWindow_UpdateContextCopy_19744772B2" xml:space="preserve">
+    <value>GeoPackage (.gpkg) + GeoTIFF (.tif) + QGIS (.qml)</value>
+    <comment>ExportWindow.cs:348</comment>
+  </data>
   <data name="ExportWindow_UpdateContextCopy_2F52FBFF32" xml:space="preserve">
     <value>按当前地铁线网与线路选择导出辅助项目。</value>
     <comment>ExportWindow.cs:357</comment>
@@ -468,6 +452,10 @@
   <data name="ExportWindow_UpdateContextCopy_6339D3A748" xml:space="preserve">
     <value>按当前主题、图层和所选范围导出地图。</value>
     <comment>ExportWindow.cs:376</comment>
+  </data>
+  <data name="ExportWindow_UpdateContextCopy_694B1FB788" xml:space="preserve">
+    <value>GeoPackage / GeoTIFF + QML</value>
+    <comment>ExportWindow.cs:347</comment>
   </data>
   <data name="ExportWindow_UpdateContextCopy_7BE47589C1" xml:space="preserve">
     <value>导出 .rmp.json 后，在 Rail Map Painter 中导入并编辑线路。</value>
@@ -817,6 +805,10 @@
     <value>导出 PNG…</value>
     <comment>MainWindow.File.cs:32</comment>
   </data>
+  <data name="MainWindow_File_BuildFileMenu_D9A515CF72" xml:space="preserve">
+    <value>GeoPackage / GeoTIFF + QML…</value>
+    <comment>MainWindow.File.cs:34</comment>
+  </data>
   <data name="MainWindow_File_RefreshFileRecent_95D7E39D01" xml:space="preserve">
     <value>文件已移动或不存在：</value>
     <comment>MainWindow.File.cs:63</comment>
@@ -1145,10 +1137,6 @@
     <value>交通图标</value>
     <comment>MainWindow.MapSettings.cs:278</comment>
   </data>
-  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_4D2A6ECC62" xml:space="preserve">
-    <value>参考尺寸以全城 4096 像素为基准。</value>
-    <comment>MainWindow.MapSettings.cs:350; MainWindow.MapSettings.cs:365</comment>
-  </data>
   <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_4D8D19C70F" xml:space="preserve">
     <value>设置类别</value>
     <comment>MainWindow.MapSettings.cs:57; MainWindow.MapSettings.cs:58; MainWindow.MapSettings.cs:59</comment>
@@ -1361,10 +1349,6 @@
     <value>显示文字与图标</value>
     <comment>MainWindow.MapSettings.cs:216</comment>
   </data>
-  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_EC7FFA2896" xml:space="preserve">
-    <value>大小随缩放的变化</value>
-    <comment>MainWindow.MapSettings.cs:351; MainWindow.MapSettings.cs:366</comment>
-  </data>
   <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_ED236491A4" xml:space="preserve">
     <value>游戏自动名称</value>
     <comment>MainWindow.MapSettings.cs:311</comment>
@@ -1388,6 +1372,10 @@
   <data name="MainWindow_OverviewButton.Content" xml:space="preserve">
     <value>地图概况</value>
     <comment>dev\CSLModernMapRenderer\winui\MainWindow.xaml:50</comment>
+  </data>
+  <data name="MainWindow_Overview_ShowInspectorHome_064FC61A89" xml:space="preserve">
+    <value>在 QGIS 中继续编辑</value>
+    <comment>MainWindow.Overview.cs:131</comment>
   </data>
   <data name="MainWindow_Overview_ShowInspectorHome_1CDED5B3FD" xml:space="preserve">
     <value>对象属性</value>
@@ -1433,10 +1421,6 @@
     <value>地图主题和当前地图概况</value>
     <comment>MainWindow.Overview.cs:39</comment>
   </data>
-  <data name="MainWindow_Overview_ShowMapOverview_3595B7C819" xml:space="preserve">
-    <value>区域数量</value>
-    <comment>MainWindow.Overview.cs:53</comment>
-  </data>
   <data name="MainWindow_Overview_ShowMapOverview_41AB2E0ECB" xml:space="preserve">
     <value>地图</value>
     <comment>MainWindow.Overview.cs:38; MainWindow.Overview.cs:40</comment>
@@ -1450,7 +1434,7 @@
     <comment>MainWindow.Overview.cs:52</comment>
   </data>
   <data name="MainWindow_Overview_ShowMapOverview_6F1C3CB04A" xml:space="preserve">
-    <value>编辑主题…</value>
+    <value>编辑主题参数…</value>
     <comment>MainWindow.Overview.cs:48</comment>
   </data>
   <data name="MainWindow_Overview_ShowMapOverview_788DB1CFEC" xml:space="preserve">
@@ -1458,7 +1442,7 @@
     <comment>MainWindow.Overview.cs:41</comment>
   </data>
   <data name="MainWindow_Overview_ShowMapOverview_B553EA09A3" xml:space="preserve">
-    <value>公共交通运营里程</value>
+    <value>公共交通线路总长</value>
     <comment>MainWindow.Overview.cs:52</comment>
   </data>
   <data name="MainWindow_Overview_ShowMapOverview_BDA7B29CF3" xml:space="preserve">
@@ -1480,6 +1464,34 @@
   <data name="MainWindow_Overview_ShowMapOverview_ED84A1665F" xml:space="preserve">
     <value>城市</value>
     <comment>MainWindow.Overview.cs:51</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_2CD0F3BE87" xml:space="preserve">
+    <value>取消</value>
+    <comment>MainWindow.PreviewSettings.cs:36</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_3279E8322A" xml:space="preserve">
+    <value>预览性能</value>
+    <comment>MainWindow.PreviewSettings.cs:19</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_63C73C4730" xml:space="preserve">
+    <value>应用</value>
+    <comment>MainWindow.PreviewSettings.cs:37</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_8B710BEF56" xml:space="preserve">
+    <value>当前城市已变化，请重新打开设置。</value>
+    <comment>MainWindow.PreviewSettings.cs:39</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_BA2E93E730" xml:space="preserve">
+    <value>恢复默认</value>
+    <comment>MainWindow.PreviewSettings.cs:35</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_BD4DD78F2D" xml:space="preserve">
+    <value>记录城市加载、地图生成与绘制耗时，便于排查预览卡顿。</value>
+    <comment>MainWindow.PreviewSettings.cs:29</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_F15F7C4642" xml:space="preserve">
+    <value>记录预览性能</value>
+    <comment>MainWindow.PreviewSettings.cs:22</comment>
   </data>
   <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_07C030A101" xml:space="preserve">
     <value>重复间隔（米）</value>
@@ -1518,7 +1530,7 @@
     <comment>MainWindow.PublicTransitSettings.cs:238</comment>
   </data>
   <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_2035432E8A" xml:space="preserve">
-    <value>线路名称</value>
+    <value>线路标签</value>
     <comment>MainWindow.PublicTransitSettings.cs:191; MainWindow.PublicTransitSettings.cs:195</comment>
   </data>
   <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_207E6D1CF5" xml:space="preserve">
@@ -2058,9 +2070,17 @@
     <value>打开日志文件夹</value>
     <comment>MainWindow.Workflows.cs:197</comment>
   </data>
+  <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_3B1EF565E6" xml:space="preserve">
+    <value>性能</value>
+    <comment>MainWindow.Workflows.cs:213</comment>
+  </data>
   <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_41AB2E0ECB" xml:space="preserve">
     <value>地图</value>
     <comment>MainWindow.Workflows.cs:213</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_51464DD5DC" xml:space="preserve">
+    <value>性能诊断</value>
+    <comment>MainWindow.Workflows.cs:194</comment>
   </data>
   <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_6EDFD8773A" xml:space="preserve">
     <value>刷新预览</value>
@@ -2337,6 +2357,10 @@ Esc  取消当前任务</value>
   <data name="MainWindow_xaml_BuildRibbon_62AEEB8B65" xml:space="preserve">
     <value>区域与区划</value>
     <comment>MainWindow.xaml.cs:165</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_694B1FB788" xml:space="preserve">
+    <value>GeoPackage / GeoTIFF + QML</value>
+    <comment>MainWindow.xaml.cs:141; MainWindow.xaml.cs:218</comment>
   </data>
   <data name="MainWindow_xaml_BuildRibbon_6BEB3C5ED7" xml:space="preserve">
     <value>地图作品</value>
@@ -3371,18 +3395,6 @@ Esc  取消当前任务</value>
     <value>输入正在编辑，提交有效值后更新预览</value>
     <comment>ThemeEditorDialog.Fields.cs:348</comment>
   </data>
-  <data name="ThemeEditorDialog_Fields_Label_606D5B2CC1" xml:space="preserve">
-    <value>随渲染比例增加部分</value>
-    <comment>ThemeEditorDialog.Fields.cs:23</comment>
-  </data>
-  <data name="ThemeEditorDialog_Fields_Label_803A1B3A33" xml:space="preserve">
-    <value>固定部分</value>
-    <comment>ThemeEditorDialog.Fields.cs:22</comment>
-  </data>
-  <data name="ThemeEditorDialog_Fields_MakeField_606D5B2CC1" xml:space="preserve">
-    <value>随渲染比例增加部分</value>
-    <comment>ThemeEditorDialog.Fields.cs:134</comment>
-  </data>
   <data name="ThemeEditorDialog_Fields_MakeField_66FE53367D" xml:space="preserve">
     <value>请输入 {0} 至 {1} 之间的数值</value>
     <comment>ThemeEditorDialog.Fields.cs:181</comment>
@@ -3394,14 +3406,6 @@ Esc  取消当前任务</value>
   <data name="ThemeEditorDialog_Fields_MakeField_870D5FE5D4" xml:space="preserve">
     <value>请输入 JSON 数组</value>
     <comment>ThemeEditorDialog.Fields.cs:150</comment>
-  </data>
-  <data name="ThemeEditorDialog_Fields_MakeField_986E6B84D7" xml:space="preserve">
-    <value>固定部分（px）</value>
-    <comment>ThemeEditorDialog.Fields.cs:133</comment>
-  </data>
-  <data name="ThemeEditorDialog_Fields_MakeField_CF663DC217" xml:space="preserve">
-    <value>最终尺寸 = 固定部分 + 随比例增加部分 × 渲染比例</value>
-    <comment>ThemeEditorDialog.Fields.cs:136</comment>
   </data>
   <data name="ThemeEditorDialog_Fields_MakeField_D9E21007A0" xml:space="preserve">
     <value>（当前值）</value>
@@ -3420,11 +3424,11 @@ Esc  取消当前任务</value>
     <comment>ThemeEditorDialog.Fields.cs:84</comment>
   </data>
   <data name="ThemeEditorDialog_Fields_PageDescription_5986B685A1" xml:space="preserve">
-    <value>按道路等级调整填充、描边和最小可见宽度。</value>
+    <value>按道路等级调整填充、描边和无足迹宽度（px）。</value>
     <comment>ThemeEditorDialog.Fields.cs:82</comment>
   </data>
   <data name="ThemeEditorDialog_Fields_PageDescription_7245F659EA" xml:space="preserve">
-    <value>编辑主题名称与说明，保存当前主题设置。</value>
+    <value>保存预设的修改会创建个人主题；保存个人主题会更新原主题。导出可另存为 YAML 文件。</value>
     <comment>ThemeEditorDialog.Fields.cs:85</comment>
   </data>
   <data name="ThemeEditorDialog_Fields_PageDescription_8714276423" xml:space="preserve">
@@ -3536,7 +3540,7 @@ Esc  取消当前任务</value>
     <comment>ThemeEditorDialog.Layout.cs:43</comment>
   </data>
   <data name="ThemeEditorDialog_Layout_BuildWorkbench_BA1125B2AC" xml:space="preserve">
-    <value>编辑完整主题数据（JSON）…</value>
+    <value>编辑 JSON…</value>
     <comment>ThemeEditorDialog.Layout.cs:60</comment>
   </data>
   <data name="ThemeEditorDialog_Layout_BuildWorkbench_EC9A1CEB6D" xml:space="preserve">
@@ -3699,10 +3703,6 @@ Esc  取消当前任务</value>
     <value>请输入 {0} 至 {1} m 的高度和有效 HEX 色值</value>
     <comment>ThemeEditorDialog.Pages.cs:189</comment>
   </data>
-  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_01EEE2E647" xml:space="preserve">
-    <value>系数越大，道路整体越粗。</value>
-    <comment>ThemeEditorDialog.Pages.cs:61</comment>
-  </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_05FB7CBA47" xml:space="preserve">
     <value>填充</value>
     <comment>ThemeEditorDialog.Pages.cs:29</comment>
@@ -3712,23 +3712,19 @@ Esc  取消当前任务</value>
     <comment>ThemeEditorDialog.Pages.cs:42</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_1D68EDF7EB" xml:space="preserve">
-    <value>最小 px</value>
+    <value>无足迹道路宽度 (px)</value>
     <comment>ThemeEditorDialog.Pages.cs:29</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_3001DE3658" xml:space="preserve">
     <value>各等级外观</value>
     <comment>ThemeEditorDialog.Pages.cs:24</comment>
   </data>
-  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_37AE912BEC" xml:space="preserve">
-    <value>整体粗细</value>
-    <comment>ThemeEditorDialog.Pages.cs:59</comment>
-  </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_512DF348F2" xml:space="preserve">
-    <value>最小宽度控制远景可见性，实际宽度随道路尺寸变化；描边包围填充。</value>
+    <value>有足迹：足迹宽度 × 足迹倍率。无足迹：像素宽度 × 元素倍率。描边也按元素倍率缩放。</value>
     <comment>ThemeEditorDialog.Pages.cs:56</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_593A6AFD98" xml:space="preserve">
-    <value>各等级描边宽度</value>
+    <value>描边宽度 (px) / 足迹宽度倍率</value>
     <comment>ThemeEditorDialog.Pages.cs:63</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_80A57E03F0" xml:space="preserve">
@@ -3750,10 +3746,6 @@ Esc  取消当前任务</value>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_C2AE96D4A6" xml:space="preserve">
     <value>高架与隧道</value>
     <comment>ThemeEditorDialog.Pages.cs:72</comment>
-  </data>
-  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_E9C68028D9" xml:space="preserve">
-    <value>道路宽度系数</value>
-    <comment>ThemeEditorDialog.Pages.cs:60</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_FBE666F1E0" xml:space="preserve">
     <value>道路等级</value>
@@ -3794,11 +3786,6 @@ Esc  取消当前任务</value>
   <data name="ThemeEditorDialog_Preview_BuildSamples_1350C527B6" xml:space="preserve">
     <value>颜色与尺寸变化会显示在真实地图预览中。</value>
     <comment>ThemeEditorDialog.Preview.cs:50</comment>
-  </data>
-  <data name="ThemeEditorDialog_Preview_BuildSamples_1A0787C40B" xml:space="preserve">
-    <value> · 最小 {0:0.##} px
-样本道路 16 m，渲染比例 1</value>
-    <comment>ThemeEditorDialog.Preview.cs:33</comment>
   </data>
   <data name="ThemeEditorDialog_Preview_BuildSamples_5BD3906590" xml:space="preserve">
     <value>尚无高度节点</value>
@@ -4423,7 +4410,7 @@ Esc  取消当前任务</value>
   <data name="PoiDirect_ImageSearch" xml:space="preserve"><value>搜索图片名称或文件名</value></data>
   <data name="PoiDirect_NoImage" xml:space="preserve"><value>不绘制图标</value></data>
   <data name="PoiDirect_Count" xml:space="preserve"><value>{0} 个条目，{1} 项未保存修改</value></data>
-<data name="Poi_Area" xml:space="preserve"><value>功能区</value></data>
+  <data name="Poi_Area" xml:space="preserve"><value>功能区</value></data>
   <data name="Poi_AreaIcons" xml:space="preserve"><value>功能区图标</value></data>
   <data name="Poi_AreaNames" xml:space="preserve"><value>功能区名称</value></data>
   <data name="Poi_AreaDescription" xml:space="preserve"><value>游戏导出的功能区域及其名称。</value></data>
@@ -4476,83 +4463,346 @@ Esc  取消当前任务</value>
   <data name="Poi_ShowDecorative" xml:space="preserve"><value>显示装饰物 POI</value></data>
   <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>控制已收录装饰物的图标与名称，保留建筑和地物。</value></data>
   <data name="MetroSettings_Reset" xml:space="preserve"><value>恢复默认</value></data>
-  <data name="BuildingList_NoName" xml:space="preserve"><value>未提供名称</value></data>
-  <data name="ThemeEditor_New" xml:space="preserve"><value>新建主题</value></data>
-  <data name="BuildingList_OfficialName" xml:space="preserve"><value>游戏官方分类</value></data>
-  <data name="ThemeEditor_Name" xml:space="preserve"><value>主题名称</value></data>
-  <data name="BuildingList_Search" xml:space="preserve"><value>搜索建筑名称</value></data>
-  <data name="Preview_AutoStart" xml:space="preserve"><value>启动时加载内嵌预览</value></data>
-  <data name="BuildingList_DetailHint" xml:space="preserve"><value>选择建筑查看详细信息。</value></data>
-  <data name="BuildingList_Height" xml:space="preserve"><value>建筑高度</value></data>
   <data name="Satellite_LayerTitle" xml:space="preserve"><value>卫星影像</value></data>
-  <data name="BuildingList_Open" xml:space="preserve"><value>建筑列表</value></data>
-  <data name="BuildingList_Name" xml:space="preserve"><value>建筑名称</value></data>
-  <data name="Preview_Continue.Content" xml:space="preserve"><value>继续等待</value></data>
-  <data name="ThemeUpdate_Intro" xml:space="preserve"><value>“{0}”已合并本次预设更新。</value></data>
-  <data name="BuildingList_Id" xml:space="preserve"><value>ID</value></data>
-  <data name="ThemeUpdate_Off" xml:space="preserve"><value>关闭</value></data>
-  <data name="BuildingList_CategoryDesc" xml:space="preserve"><value>类别：降序</value></data>
-  <data name="ThemeEditor_Unsaved" xml:space="preserve"><value>未保存</value></data>
-  <data name="BuildingList_IdDesc" xml:space="preserve"><value>ID：降序</value></data>
-  <data name="ThemeEditor_MigrationWarning" xml:space="preserve"><value>部分旧主题无法读取，原文件已备份：</value></data>
   <data name="Satellite_Composing" xml:space="preserve"><value>正在合成卫星影像…</value></data>
-  <data name="ThemeEditor_Select" xml:space="preserve"><value>选择主题</value></data>
-  <data name="ThemeEditor_Copy" xml:space="preserve"><value>复制主题</value></data>
-  <data name="BuildingList_Info" xml:space="preserve"><value>建筑信息</value></data>
-  <data name="BuildingList_Unnamed" xml:space="preserve"><value>未命名建筑</value></data>
-  <data name="BuildingList_CustomName" xml:space="preserve"><value>玩家自定义</value></data>
-  <data name="ThemeEditor_Cancel" xml:space="preserve"><value>取消</value></data>
-  <data name="ThemeUpdate_Continue" xml:space="preserve"><value>继续使用</value></data>
-  <data name="BuildingList_NameSource" xml:space="preserve"><value>名称来源</value></data>
-  <data name="BuildingList_Details" xml:space="preserve"><value>建筑详细信息</value></data>
-  <data name="ThemeUpdate_UsePrevious" xml:space="preserve"><value>切换旧版</value></data>
-  <data name="ThemeUpdate_Archived" xml:space="preserve"><value>原主题已保留，可随时从主题列表切换。</value></data>
-  <data name="BuildingList_All" xml:space="preserve"><value>全部</value></data>
-  <data name="ThemeEditor_Exported" xml:space="preserve"><value>主题已导出</value></data>
-  <data name="BuildingList_Empty" xml:space="preserve"><value>没有符合条件的建筑</value></data>
-  <data name="ThemeUpdate_Kept" xml:space="preserve"><value>保留了你的修改</value></data>
-  <data name="BuildingList_Count" xml:space="preserve"><value>显示 {0:N0} / {1:N0} 栋建筑（组合建筑合并计数）</value></data>
-  <data name="BuildingList_Back" xml:space="preserve"><value>返回地图概况</value></data>
-  <data name="Preview_DataAvailable" xml:space="preserve"><value>地图数据已读取，可以选择主题并继续导出。</value></data>
-  <data name="ThemeEditor_Personal" xml:space="preserve"><value>我的主题</value></data>
-  <data name="ThemeUpdate_ColorRamp" xml:space="preserve"><value>高程色带</value></data>
-  <data name="ThemeEditor_Export" xml:space="preserve"><value>导出主题…</value></data>
-  <data name="ThemeEditor_Import" xml:space="preserve"><value>导入主题…</value></data>
-  <data name="BuildingList_OutsideFilter" xml:space="preserve"><value>所选建筑不在当前筛选结果中。</value></data>
-  <data name="ThemeEditor_Base" xml:space="preserve"><value>基础预设</value></data>
-  <data name="BuildingList_NameAsc" xml:space="preserve"><value>名称：升序</value></data>
-  <data name="BuildingList_GroupCount" xml:space="preserve"><value>{0} 栋（含主建筑）</value></data>
-  <data name="ThemeEditor_CurrentUnreadable" xml:space="preserve"><value>当前主题无法读取，请选择其他主题。原文件已保留。</value></data>
-  <data name="Preview_OpenFailed" xml:space="preserve"><value>网页已生成，但无法打开浏览器。可以打开输出目录，手动打开 HTML 文件。</value></data>
-  <data name="ThemeEditor_Rename" xml:space="preserve"><value>重命名</value></data>
-  <data name="Preview_OpenMap" xml:space="preserve"><value>可以打开地图文件，读取成功后继续导出。</value></data>
-  <data name="Preview_Slow" xml:space="preserve"><value>地图预览耗时较长</value></data>
-  <data name="ThemeUpdate_AllChanges" xml:space="preserve"><value>全部变化</value></data>
-  <data name="ThemeEditor_Builtins" xml:space="preserve"><value>内置主题</value></data>
-  <data name="BuildingList_OpenButton.Content" xml:space="preserve"><value>建筑列表</value></data>
-  <data name="ThemeUpdate_Custom" xml:space="preserve"><value>自定义配置</value></data>
-  <data name="BuildingList_GameCategory" xml:space="preserve"><value>游戏分类</value></data>
-  <data name="Preview_Retry.Content" xml:space="preserve"><value>重新加载预览</value></data>
-  <data name="BuildingList_Members" xml:space="preserve"><value>附属建筑</value></data>
-  <data name="BuildingList_NameDesc" xml:space="preserve"><value>名称：降序</value></data>
-  <data name="BuildingList_IdAsc" xml:space="preserve"><value>ID：升序</value></data>
-  <data name="BuildingList_Group" xml:space="preserve"><value>组合建筑</value></data>
-  <data name="ThemeEditor_Save" xml:space="preserve"><value>保存</value></data>
-  <data name="ThemeUpdate_On" xml:space="preserve"><value>开启</value></data>
-  <data name="BuildingList_GameName" xml:space="preserve"><value>游戏随机名</value></data>
-  <data name="ThemeUpdate_Conflict" xml:space="preserve"><value>你也修改过此项，本次采用新版预设。</value></data>
-  <data name="Preview_Html.Content" xml:space="preserve"><value>在浏览器中打开</value></data>
-  <data name="ThemeEditor_InvalidName" xml:space="preserve"><value>名称须为 1–64 个字符，不能包含控制字符。</value></data>
-  <data name="Preview_Stopped" xml:space="preserve"><value>内嵌预览已停止</value></data>
-  <data name="ThemeUpdate_MoreKept" xml:space="preserve"><value>另有 {0} 项修改已保留</value></data>
-  <data name="BuildingList_GameNames" xml:space="preserve"><value>使用游戏随机名</value></data>
-  <data name="Preview_Png.Content" xml:space="preserve"><value>导出 PNG（2048 像素）</value></data>
-  <data name="BuildingList_CategoryAsc" xml:space="preserve"><value>类别：升序</value></data>
-  <data name="BuildingList_Category" xml:space="preserve"><value>建筑类别</value></data>
-  <data name="ThemeUpdate_Unset" xml:space="preserve"><value>未设置</value></data>
   <data name="Preview_Failed" xml:space="preserve"><value>地图预览无法加载</value></data>
-  <data name="ThemeUpdate_Title" xml:space="preserve"><value>主题已更新</value></data>
-  <data name="BuildingList_Sort" xml:space="preserve"><value>排序</value></data>
-  <data name="BuildingList_NameHint" xml:space="preserve"><value>名称设置与地图同步；玩家自定义名称始终保留。</value></data>
+  <data name="Preview_Slow" xml:space="preserve"><value>地图预览耗时较长</value></data>
+  <data name="Preview_Stopped" xml:space="preserve"><value>预览器未运行</value></data>
+  <data name="Preview_DataAvailable" xml:space="preserve"><value>地图数据已读取，可以选择主题并继续导出。</value></data>
+  <data name="Preview_OpenMap" xml:space="preserve"><value>可以打开地图文件，读取成功后继续导出。</value></data>
+  <data name="Preview_AutoStart" xml:space="preserve"><value>启动时加载内嵌预览</value></data>
+  <data name="Preview_Retry.Content" xml:space="preserve"><value>重试</value></data>
+  <data name="Preview_Png.Content" xml:space="preserve"><value>导出 PNG（2048 像素）</value></data>
+  <data name="Preview_Html.Content" xml:space="preserve"><value>在外部浏览器打开</value></data>
+  <data name="Preview_Continue.Content" xml:space="preserve"><value>继续等待</value></data>
+  <data name="Preview_OpenFailed" xml:space="preserve"><value>网页已生成，但无法打开浏览器。可以打开输出目录，手动打开 HTML 文件。</value></data>
+  <data name="ThemeEditor_Select" xml:space="preserve"><value>选择主题</value></data>
+  <data name="ThemeEditor_Unsaved" xml:space="preserve"><value>未保存</value></data>
+  <data name="ThemeEditor_Builtins" xml:space="preserve"><value>预设</value></data>
+  <data name="ThemeEditor_Personal" xml:space="preserve"><value>我的主题</value></data>
+  <data name="ThemeEditor_New" xml:space="preserve"><value>新建主题</value></data>
+  <data name="ThemeEditor_Copy" xml:space="preserve"><value>复制主题</value></data>
+  <data name="ThemeEditor_Rename" xml:space="preserve"><value>重命名</value></data>
+  <data name="ThemeEditor_Import" xml:space="preserve"><value>导入主题…</value></data>
+  <data name="ThemeEditor_Export" xml:space="preserve"><value>导出 YAML…</value></data>
+  <data name="ThemeEditor_Base" xml:space="preserve"><value>基础预设</value></data>
+  <data name="ThemeEditor_Cancel" xml:space="preserve"><value>取消</value></data>
+  <data name="ThemeEditor_Name" xml:space="preserve"><value>主题名称</value></data>
+  <data name="ThemeEditor_Save" xml:space="preserve"><value>保存到我的主题</value></data>
+  <data name="ThemeEditor_Exported" xml:space="preserve"><value>主题已导出</value></data>
+  <data name="ThemeEditor_InvalidName" xml:space="preserve"><value>名称须为 1–64 个字符，不能包含控制字符。</value></data>
+  <data name="ThemeEditor_MigrationWarning" xml:space="preserve"><value>部分旧主题无法读取，原文件已备份：</value></data>
+  <data name="BuildingList_Open" xml:space="preserve"><value>建筑列表</value></data>
+  <data name="BuildingList_Back" xml:space="preserve"><value>返回地图概况</value></data>
+  <data name="BuildingList_Search" xml:space="preserve"><value>搜索建筑名称</value></data>
+  <data name="BuildingList_Category" xml:space="preserve"><value>建筑类别</value></data>
+  <data name="BuildingList_OutsideFilter" xml:space="preserve"><value>所选建筑不在当前筛选结果中。</value></data>
   <data name="BuildingList_Clear" xml:space="preserve"><value>清除筛选</value></data>
+  <data name="BuildingList_All" xml:space="preserve"><value>全部</value></data>
+  <data name="BuildingList_Unnamed" xml:space="preserve"><value>未命名建筑</value></data>
+  <data name="BuildingList_Empty" xml:space="preserve"><value>没有符合条件的建筑</value></data>
+  <data name="BuildingList_Count" xml:space="preserve"><value>显示 {0:N0} / {1:N0} 栋建筑（组合建筑合并计数）</value></data>
+  <data name="BuildingList_Members" xml:space="preserve"><value>附属建筑</value></data>
+  <data name="BuildingList_OpenButton.Content" xml:space="preserve"><value>建筑列表</value></data>
+  <data name="BuildingList_Sort" xml:space="preserve"><value>排序</value></data>
+  <data name="BuildingList_NameAsc" xml:space="preserve"><value>名称：升序</value></data>
+  <data name="BuildingList_NameDesc" xml:space="preserve"><value>名称：降序</value></data>
+  <data name="BuildingList_CategoryAsc" xml:space="preserve"><value>类别：升序</value></data>
+  <data name="BuildingList_CategoryDesc" xml:space="preserve"><value>类别：降序</value></data>
+  <data name="BuildingList_IdAsc" xml:space="preserve"><value>ID：升序</value></data>
+  <data name="BuildingList_IdDesc" xml:space="preserve"><value>ID：降序</value></data>
+  <data name="BuildingList_Details" xml:space="preserve"><value>建筑详细信息</value></data>
+  <data name="BuildingList_DetailHint" xml:space="preserve"><value>选择建筑查看详细信息。</value></data>
+  <data name="ThemeEditor_CurrentUnreadable" xml:space="preserve"><value>当前主题无法读取，请选择其他主题。原文件已保留。</value></data>
+  <data name="BuildingList_GameNames" xml:space="preserve"><value>使用游戏随机名</value></data>
+  <data name="BuildingList_NameHint" xml:space="preserve"><value>名称设置与地图同步；玩家自定义名称始终保留。</value></data>
+  <data name="BuildingList_Name" xml:space="preserve"><value>建筑名称</value></data>
+  <data name="BuildingList_Id" xml:space="preserve"><value>ID</value></data>
+  <data name="BuildingList_Info" xml:space="preserve"><value>建筑信息</value></data>
+  <data name="BuildingList_NameSource" xml:space="preserve"><value>名称来源</value></data>
+  <data name="BuildingList_CustomName" xml:space="preserve"><value>玩家自定义</value></data>
+  <data name="BuildingList_OfficialName" xml:space="preserve"><value>游戏官方分类</value></data>
+  <data name="BuildingList_NoName" xml:space="preserve"><value>未提供名称</value></data>
+  <data name="BuildingList_GameCategory" xml:space="preserve"><value>游戏分类</value></data>
+  <data name="BuildingList_Height" xml:space="preserve"><value>建筑高度</value></data>
+  <data name="BuildingList_Group" xml:space="preserve"><value>组合建筑</value></data>
+  <data name="BuildingList_GroupCount" xml:space="preserve"><value>{0} 栋（含主建筑）</value></data>
+  <data name="BuildingList_GameName" xml:space="preserve"><value>游戏随机名</value></data>
+  <data name="ThemeUpdate_Title" xml:space="preserve"><value>预设更新</value></data>
+  <data name="ThemeUpdate_Intro" xml:space="preserve"><value>可将新版预设的下列变化应用到“{0}”。</value></data>
+  <data name="ThemeUpdate_Archived" xml:space="preserve"><value>应用前会备份当前主题。</value></data>
+  <data name="ThemeUpdate_Continue" xml:space="preserve"><value>应用更新</value></data>
+  <data name="ThemeUpdate_UsePrevious" xml:space="preserve"><value>保持现状</value></data>
+  <data name="ThemeUpdate_Conflict" xml:space="preserve"><value>此项将替换你的自定义设置。</value></data>
+  <data name="ThemeUpdate_ColorRamp" xml:space="preserve"><value>高程色带</value></data>
+  <data name="ThemeUpdate_Unset" xml:space="preserve"><value>未设置</value></data>
+  <data name="ThemeUpdate_On" xml:space="preserve"><value>开启</value></data>
+  <data name="ThemeUpdate_Off" xml:space="preserve"><value>关闭</value></data>
+  <data name="ThemeUpdate_Custom" xml:space="preserve"><value>自定义配置</value></data>
+  <data name="SatelliteGuidance_Title" xml:space="preserve"><value>卫星地图显示建议</value></data>
+  <data name="SatelliteGuidance_Body" xml:space="preserve"><value>推荐搭配卫星暖色主题，突出道路、图标和文字。</value></data>
+  <data name="SatelliteGuidance_Apply" xml:space="preserve"><value>应用推荐设置</value></data>
+  <data name="SatelliteGuidance_Keep" xml:space="preserve"><value>保持当前设置</value></data>
+  <data name="SatelliteGuidance_Unavailable" xml:space="preserve"><value>当前地图没有卫星影像</value></data>
+  <data name="SatelliteGuidance_EnableTitle" xml:space="preserve"><value>建议开启</value></data>
+  <data name="SatelliteGuidance_EnableLayers" xml:space="preserve"><value>道路、图标、文字</value></data>
+  <data name="SatelliteGuidance_OptionalTitle" xml:space="preserve"><value>按需开启</value></data>
+  <data name="SatelliteGuidance_OptionalLayers" xml:space="preserve"><value>铁路、公共交通、路况</value></data>
+  <data name="SatelliteGuidance_DisableTitle" xml:space="preserve"><value>建议关闭</value></data>
+  <data name="SatelliteGuidance_DisableLayers" xml:space="preserve"><value>建筑、地形、水域等覆盖图层</value></data>
+  <data name="SatelliteGuidance_Preserve" xml:space="preserve"><value>保留当前选择</value></data>
+  <data name="SatelliteGuidance_Details" xml:space="preserve"><value>查看调整详情</value></data>
+  <data name="SatelliteGuidance_DetailBody" xml:space="preserve"><value>建筑、地形、水域、建成区、用地类型、POI 足迹和 PO 对象可能遮挡卫星影像，不建议开启。应用推荐设置会关闭这些图层。</value></data>
+  <data name="Preview_Compatibility.Content" xml:space="preserve"><value>兼容预览</value></data>
+  <data name="Preview_CompatibilityNotice.Text" xml:space="preserve"><value>兼容模式：使用图片预览，不支持全部功能。</value></data>
+  <data name="Preview_Interactive.Content" xml:space="preserve"><value>切回交互预览</value></data>
+  <data name="Preview_ImageUpdating.Text" xml:space="preserve"><value>正在更新预览</value></data>
+  <data name="Preview_ImageFailed" xml:space="preserve"><value>图片预览更新失败：</value></data>
+  <data name="Preview_BrowserOpenFailed" xml:space="preserve"><value>无法打开浏览器，已生成的 HTML 文件保留在下方位置。</value></data>
+  <data name="Preview_OpenFolder" xml:space="preserve"><value>打开文件夹</value></data>
+  <data name="PreviewQuality_Title" xml:space="preserve">
+    <value>预览画质</value>
+  </data>
+  <data name="PreviewQuality_Preset" xml:space="preserve">
+    <value>预览画质</value>
+  </data>
+  <data name="PreviewQuality_Smooth" xml:space="preserve">
+    <value>流畅</value>
+  </data>
+  <data name="PreviewQuality_Standard" xml:space="preserve">
+    <value>标准</value>
+  </data>
+  <data name="PreviewQuality_Fine" xml:space="preserve">
+    <value>精细</value>
+  </data>
+  <data name="PreviewQuality_Custom" xml:space="preserve">
+    <value>自定义</value>
+  </data>
+  <data name="PreviewQuality_Open" xml:space="preserve">
+    <value>质量设置…</value>
+  </data>
+  <data name="PreviewQuality_Clarity" xml:space="preserve">
+    <value>清晰度</value>
+  </data>
+  <data name="PreviewQuality_ClarityHelp" xml:space="preserve">
+    <value>地图显示的分辨率。较高的分辨率可以获得更清晰的视觉效果，但是也会占用更多的性能。</value>
+  </data>
+  <data name="PreviewQuality_Scale75" xml:space="preserve">
+    <value>流畅</value>
+  </data>
+  <data name="PreviewQuality_Scale100" xml:space="preserve">
+    <value>标准</value>
+  </data>
+  <data name="PreviewQuality_Scale125" xml:space="preserve">
+    <value>精细</value>
+  </data>
+  <data name="PreviewQuality_Lines" xml:space="preserve">
+    <value>道路</value>
+  </data>
+  <data name="PreviewQuality_LinesHelp" xml:space="preserve">
+    <value>道路的细节等级。较高的细节等级可以获得更流畅的线条和过渡，但是会显著增加性能损耗；较低的等级会提高性能但是可能出现一定的道路失真和接缝。</value>
+  </data>
+  <data name="PreviewQuality_LinesStandard" xml:space="preserve">
+    <value>标准</value>
+  </data>
+  <data name="PreviewQuality_LinesFine" xml:space="preserve">
+    <value>精细</value>
+  </data>
+  <data name="PreviewQuality_Polygons" xml:space="preserve">
+    <value>建筑</value>
+  </data>
+  <data name="PreviewQuality_PolygonsHelp" xml:space="preserve">
+    <value>建筑的细节等级。控制建筑的显示密度。较低的细节等级可能会不显示一些较小的房屋。</value>
+  </data>
+  <data name="PreviewQuality_PolygonsStandard" xml:space="preserve">
+    <value>标准</value>
+  </data>
+  <data name="PreviewQuality_PolygonsFine" xml:space="preserve">
+    <value>精细</value>
+  </data>
+  <data name="PreviewQuality_Details" xml:space="preserve">
+    <value>单独调整</value>
+  </data>
+  <data name="PreviewQuality_Samples" xml:space="preserve">
+    <value>效果对比</value>
+  </data>
+  <data name="PreviewQuality_Scope" xml:space="preserve">
+    <value>仅影响预览，不影响最终导出</value>
+  </data>
+  <data name="PreviewQuality_Apply" xml:space="preserve">
+    <value>应用</value>
+  </data>
+  <data name="PreviewQuality_Applied" xml:space="preserve">
+    <value>已应用</value>
+  </data>
+  <data name="PreviewQuality_Saved" xml:space="preserve">
+    <value>已保存</value>
+  </data>
+  <data name="PreviewQuality_Busy" xml:space="preserve">
+    <value>请等待当前预览操作完成后再应用质量设置。</value>
+  </data>
+  <data name="PreviewQuality_Restarted" xml:space="preserve">
+    <value>预览已停止，请在重新启动后再次应用质量设置。</value>
+  </data>
+  <data name="PreviewQuality_ExportHint" xml:space="preserve"><value>HTML 画质请在导出设置中选择。</value></data>
+  <data name="PreviewQuality_Current" xml:space="preserve"><value>当前选择</value></data>
+  <data name="Export_HtmlQuality" xml:space="preserve"><value>HTML 画质</value></data>
+  <data name="Workspace_Immersive" xml:space="preserve"><value>沉浸</value></data>
+  <data name="Workspace_ExitImmersive" xml:space="preserve"><value>退出沉浸</value></data>
+  <data name="Workspace_ImmersiveHint" xml:space="preserve"><value>收起工作区面板，为线路和地图留出更多空间。</value></data>
+  <data name="Workspace_TryImmersive" xml:space="preserve"><value>尝试沉浸模式</value></data>
+  <data name="Workspace_MoreActions" xml:space="preserve"><value>更多地图操作</value></data>
+  <data name="TransitLabelStyle_Label" xml:space="preserve">
+    <value>标签样式</value>
+  </data>
+  <data name="TransitLabelStyle_Classic" xml:space="preserve">
+    <value>原有胶囊</value>
+  </data>
+  <data name="TransitLabelStyle_SideSign" xml:space="preserve">
+    <value>白底色签</value>
+  </data>
+  <data name="TransitLabelStyle_SplitSign" xml:space="preserve">
+    <value>图标分段</value>
+  </data>
+  <data name="TransitLabelStyle_SolidSign" xml:space="preserve">
+    <value>轻量实色</value>
+  </data>
+  <data name="TransitLabelStyle_FrameSign" xml:space="preserve">
+    <value>细框路牌</value>
+  </data>
+  <data name="TransitLabelStyle_UnderlineSign" xml:space="preserve">
+    <value>下沿色带</value>
+  </data>
+  <data name="Artwork_Enter" xml:space="preserve"><value>创建地图草稿…</value></data>
+  <data name="Artwork_Export" xml:space="preserve"><value>导出当前作品</value></data>
+  <data name="Artwork_PreviewRequired" xml:space="preserve"><value>请先打开城市地图预览。</value></data>
+  <data name="Artwork_OutputSize" xml:space="preserve"><value>导出长边（像素）</value></data>
+  <data name="Artwork_Cancel" xml:space="preserve"><value>取消</value></data>
+  <data name="CityEditor_Title" xml:space="preserve"><value>地图编辑</value></data>
+  <data name="CityEditor_Theme" xml:space="preserve"><value>主题方案</value></data>
+  <data name="CityEditor_SaveAs" xml:space="preserve"><value>另存主题</value></data>
+  <data name="CityEditor_Manage" xml:space="preserve"><value>主题管理</value></data>
+  <data name="CityEditor_Selection" xml:space="preserve"><value>地图选择</value></data>
+  <data name="CityEditor_Select" xml:space="preserve"><value>选择</value></data>
+  <data name="CityEditor_PickStyle" xml:space="preserve"><value>拾取样式</value></data>
+  <data name="CityEditor_Pan" xml:space="preserve"><value>平移</value></data>
+  <data name="CityEditor_Clear" xml:space="preserve"><value>取消选择</value></data>
+  <data name="CityEditor_Edit" xml:space="preserve"><value>编辑</value></data>
+  <data name="CityEditor_Undo" xml:space="preserve"><value>撤销</value></data>
+  <data name="CityEditor_Redo" xml:space="preserve"><value>重做</value></data>
+  <data name="CityEditor_View" xml:space="preserve"><value>观察</value></data>
+  <data name="CityEditor_Fit" xml:space="preserve"><value>适应范围</value></data>
+  <data name="CityEditor_Actual" xml:space="preserve"><value>100%</value></data>
+  <data name="CityEditor_Output" xml:space="preserve"><value>保存与输出</value></data>
+  <data name="CityEditor_Save" xml:space="preserve"><value>保存主题</value></data>
+  <data name="CityEditor_Export" xml:space="preserve"><value>导出 PNG</value></data>
+  <data name="CityEditor_Close" xml:space="preserve"><value>关闭</value></data>
+  <data name="CityEditor_Leave" xml:space="preserve"><value>退出编辑</value></data>
+  <data name="CityEditor_Range" xml:space="preserve"><value>范围</value></data>
+  <data name="CityEditor_WholeCity" xml:space="preserve"><value>全城</value></data>
+  <data name="CityEditor_SelectedRange" xml:space="preserve"><value>所选区块</value></data>
+  <data name="CityEditor_Preset" xml:space="preserve"><value>画布预设</value></data>
+  <data name="CityEditor_Create" xml:space="preserve"><value>创建城市草稿</value></data>
+  <data name="CityEditor_InvalidSize" xml:space="preserve"><value>画布长边须为 1–32768 的整数像素。</value></data>
+  <data name="CityEditor_CanvasPixels" xml:space="preserve"><value>画布长边（像素）</value></data>
+  <data name="CityEditor_Rotation" xml:space="preserve"><value>输出方向</value></data>
+  <data name="CityEditor_Styles" xml:space="preserve"><value>样式</value></data>
+  <data name="CityEditor_Draft" xml:space="preserve"><value>草稿</value></data>
+  <data name="CityEditor_ApplyCanvas" xml:space="preserve"><value>应用画布设置</value></data>
+  <data name="CityEditor_SelectRange" xml:space="preserve"><value>选择地图区块</value></data>
+  <data name="CityEditor_UseSelection" xml:space="preserve"><value>应用所选范围</value></data>
+  <data name="CityEditor_UseWholeCity" xml:space="preserve"><value>恢复全城范围</value></data>
+  <data name="CityEditor_NoSelection" xml:space="preserve"><value>请先在地图上选择有效区块。</value></data>
+  <data name="CityEditor_RangeHelp" xml:space="preserve"><value>先在地图上框选，再应用所选范围。更改范围会一并应用上方的画布设置并重新排版。缩放视图只改变观察距离。</value></data>
+  <data name="CityEditor_ObjectFacts" xml:space="preserve"><value>所选对象信息</value></data>
+  <data name="CityEditor_Scope" xml:space="preserve"><value>主题样式修改应用于同类对象；高亮只表示当前选择。</value></data>
+  <data name="CityEditor_Unsaved" xml:space="preserve"><value>主题有未保存修改</value></data>
+  <data name="CityEditor_Saved" xml:space="preserve"><value>主题已保存</value></data>
+  <data name="CityEditor_Updating" xml:space="preserve"><value>正在更新草稿</value></data>
+  <data name="CityEditor_ExportScale" xml:space="preserve"><value>等比转换，仅作用于本次导出：</value></data>
+  <data name="ThemeEditor_AllRoads" xml:space="preserve"><value>全部道路设置</value></data>
+  <data name="ThemeEditor_ThemeSwitchUnavailable" xml:space="preserve"><value>无法读取所选主题，请更新渲染器后重试。</value></data>
+  <data name="ThemeEditor_ExternalThemeChanged" xml:space="preserve"><value>主题已被其他操作修改，请重新打开主题编辑器。</value></data>
+  <data name="CityEditor_ContentScope" xml:space="preserve"><value>内容与可见性设置即时独立保存，不属于主题保存</value></data>
+  <data name="CityEditor_CreateIntro" xml:space="preserve"><value>从当前地图开始，调整配色与标注，制作属于你的城市地图。</value></data>
+  <data name="CityEditor_CreateRangeUnselected" xml:space="preserve"><value>先从全城开始。如需只制作一部分，可取消后在地图上框选区块。</value></data>
+  <data name="CityEditor_CreateRangeHelp" xml:space="preserve"><value>使用已框选的区块，或切换为全城，决定这张地图包含哪些区域。</value></data>
+  <data name="CityEditor_CreateCanvasTitle" xml:space="preserve"><value>画布大小</value></data>
+  <data name="CityEditor_CreateCanvasHelp" xml:space="preserve"><value>4096 像素适合日常出图。需要更大图片时，可选择预设或输入长边像素；画布会保持地图比例。</value></data>
+  <data name="CityEditor_CreateRotationHelp" xml:space="preserve"><value>顺时针旋转地图。</value></data>
+  <data name="CityEditor_CreateAdjustLater" xml:space="preserve"><value>创建后仍可在左侧“草稿”中调整范围、大小和方向。</value></data>
+  <data name="CityEditor_LoadingEnter" xml:space="preserve"><value>正在进入地图编辑器</value></data>
+  <data name="CityEditor_LoadingUpdate" xml:space="preserve"><value>正在更新地图样式</value></data>
+  <data name="CityEditor_LoadingTheme" xml:space="preserve"><value>读取主题与画布设置</value></data>
+  <data name="CityEditor_LoadingBase" xml:space="preserve"><value>准备地图底图与道路数据</value></data>
+  <data name="CityEditor_LoadingLayout" xml:space="preserve"><value>计算草稿布局</value></data>
+  <data name="CityEditor_LoadingLabels" xml:space="preserve"><value>排版地图文字</value></data>
+  <data name="CityEditor_LoadingIcons" xml:space="preserve"><value>排版地点图标</value></data>
+  <data name="CityEditor_LoadingTransport" xml:space="preserve"><value>排版线路与站点</value></data>
+  <data name="CityEditor_LoadingDelivery" xml:space="preserve"><value>传递草稿并准备图像</value></data>
+  <data name="CityEditor_LoadingPresent" xml:space="preserve"><value>显示地图，等待画面完成</value></data>
+  <data name="Preview_NotRunningDetail" xml:space="preserve"><value>预览器当前没有正确运行，这可能是环境配置、内存不足等多种原因。你可以选择下列方式继续。</value></data>
+  <data name="Preview_Cancel.Content" xml:space="preserve"><value>取消</value></data>
+  <data name="CityEditor_CloseupUnavailable" xml:space="preserve"><value>当前草稿范围内没有可用于此样式特写的要素。</value></data>
+  <data name="Pixel_Scale" xml:space="preserve"><value>元素缩放 (%)</value></data>
+  <data name="Pixel_Actual" xml:space="preserve"><value>实际大小：{0} px</value></data>
+  <data name="Pixel_Recommended" xml:space="preserve"><value>当前分辨率推荐 {0}%</value></data>
+  <data name="Pixel_InvalidScale" xml:space="preserve"><value>请输入有效的正数。</value></data>
+  <data name="Pixel_Help" xml:space="preserve"><value>长边加倍，元素缩放也会加倍。可单独调整此比例，改变文字、图标和线宽。</value></data>
+  <data name="RoadCategoryQuay" xml:space="preserve"><value>护岸</value></data>
+  <data name="CityEditor_ResetCanvas" xml:space="preserve"><value>重置画布</value></data>
+  <data name="CityEditor_ResetCanvasHelp" xml:space="preserve"><value>重新启动画布预览，保留当前草稿、主题修改和观察位置。</value></data>
+  <data name="ThemeUpdate_Review" xml:space="preserve"><value>查看预设更新</value></data>
+  <data name="ThemeUpdate_None" xml:space="preserve"><value>没有可应用的预设变化。</value></data>
+  <data name="CityEditor_Resolution" xml:space="preserve"><value>分辨率</value></data>
+  <data name="CityEditor_PresetResolution" xml:space="preserve"><value>预设分辨率</value></data>
+  <data name="CityEditor_CustomResolution" xml:space="preserve"><value>自定义分辨率</value></data>
+  <data name="ThemeUpdate_Current" xml:space="preserve"><value>当前主题</value></data>
+  <data name="ThemeUpdate_Preset" xml:space="preserve"><value>新版预设</value></data>
+  <data name="CityEditor_PixelWidth" xml:space="preserve"><value>宽度（px）</value></data>
+  <data name="CityEditor_PixelHeight" xml:space="preserve"><value>高度（px）</value></data>
+  <data name="CityEditor_ElementSize" xml:space="preserve"><value>元素大小</value></data>
+  <data name="CityEditor_SizeLinked" xml:space="preserve"><value>按所选范围保持宽高比例。</value></data>
+  <data name="DraftWelcome_Title" xml:space="preserve"><value>欢迎使用草稿编辑</value></data>
+  <data name="DraftWelcome_Intro" xml:space="preserve"><value>你正在探索视图中浏览城市。准备导出地图时，可以进入草稿编辑，用主题编辑器精确调整字号、图标大小和道路线宽。</value></data>
+  <data name="DraftWelcome_ExploreTitle" xml:space="preserve"><value>探索视图</value></data>
+  <data name="DraftWelcome_ExploreBody" xml:space="preserve"><value>拉近显示更多地点，拉远收起细节。文字和图标自动调整大小。</value></data>
+  <data name="DraftWelcome_DraftTitle" xml:space="preserve"><value>草稿编辑</value></data>
+  <data name="DraftWelcome_DraftBody" xml:space="preserve"><value>整张草稿等比缩放。显示哪些标注，以及它们与街区的比例，都保持不变。</value></data>
+  <data name="DraftWelcome_Enter" xml:space="preserve"><value>进入草稿编辑</value></data>
+  <data name="DraftWelcome_Continue" xml:space="preserve"><value>继续探索</value></data>
+  <data name="DraftWelcome_Pause" xml:space="preserve"><value>暂停演示</value></data>
+  <data name="DraftWelcome_Resume" xml:space="preserve"><value>继续播放</value></data>
+  <data name="DraftWelcome_NextLevel" xml:space="preserve"><value>查看下一级</value></data>
+  <data name="DraftWelcome_Pier" xml:space="preserve"><value>码头</value></data>
+  <data name="DraftWelcome_Market" xml:space="preserve"><value>集市</value></data>
+  <data name="DraftWelcome_Cafe" xml:space="preserve"><value>咖啡馆</value></data>
+  <data name="DraftWelcome_Clinic" xml:space="preserve"><value>诊所</value></data>
+  <data name="DraftWelcome_Station" xml:space="preserve"><value>河湾站</value></data>
+  <data name="DraftWelcome_Park" xml:space="preserve"><value>公园</value></data>
+  <data name="DraftWelcome_Shop" xml:space="preserve"><value>书店</value></data>
+  <data name="Sidebar_TransitDistance" xml:space="preserve"><value>各线路长度相加，共线路段按线路分别计入。</value></data>
+  <data name="Sidebar_RoadCommit" xml:space="preserve"><value>开关立即生效。数值在移出输入框时应用。</value></data>
+  <data name="Sidebar_Locate" xml:space="preserve"><value>选择后，地图会定位到范围内的同类要素。</value></data>
+  <data name="ThemeEditor_Edit" xml:space="preserve"><value>编辑主题</value></data>
+  <data name="ThemeEditor_Delete" xml:space="preserve"><value>删除主题</value></data>
+  <data name="ThemeEditor_DeleteConfirm" xml:space="preserve"><value>删除“{0}”？删除后切换到“{1}”。</value></data>
+  <data name="ThemeEditor_ThumbnailFailed" xml:space="preserve"><value>主题已保存，但缩略图未能更新。</value></data>
+  <data name="CityEditor_IconDensity" xml:space="preserve">
+    <value>图标密度</value>
+  </data>
+  <data name="ThemeChoice_Title" xml:space="preserve"><value>选择主题编辑器</value></data>
+  <data name="ThemeChoice_Interactive" xml:space="preserve"><value>交互式主题编辑器</value></data>
+  <data name="ThemeChoice_Description" xml:space="preserve"><value>在城市草稿上调整主题参数，直观确认地图实际导出时的效果。</value></data>
+  <data name="ThemeChoice_Traditional" xml:space="preserve"><value>传统主题编辑器</value></data>
+  <data name="ThemeChoice_Unavailable" xml:space="preserve"><value>请先打开城市地图或公共交通地图，等待交互预览就绪。</value></data>
+  <data name="ExportChoice_Title" xml:space="preserve"><value>选择导出方式</value></data>
+  <data name="ExportChoice_Direct" xml:space="preserve"><value>直接导出</value></data>
+  <data name="ExportChoice_DirectHelp" xml:space="preserve"><value>使用当前地图设置，选择格式并导出。</value></data>
+  <data name="ExportChoice_Edit" xml:space="preserve"><value>编辑后导出</value></data>
+  <data name="ExportChoice_EditHelp" xml:space="preserve"><value>先在草稿上调整地图，满意后再导出。</value></data>
+  <data name="Workflow_Remember" xml:space="preserve"><value>记住我的选择</value></data>
+  <data name="Workflow_Reset" xml:space="preserve"><value>重置主题编辑和导出方式</value></data>
+  <data name="Export_DraftSettingsHelp" xml:space="preserve"><value>如需调整范围、方向、元素大小或图标密度，请前往草稿页确认效果。</value></data>
+  <data name="Export_GoToDraft" xml:space="preserve"><value>前往草稿</value></data>
 </root>

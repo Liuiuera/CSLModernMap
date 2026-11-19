@@ -3,6 +3,8 @@
 本模块不依赖具体渲染器，依据导出的三维道路中心线生成世界坐标图元，再由栅格和 SVG 后端分别投影与着色。"""
 from __future__ import annotations
 
+from .performance import measured, perf_span, current_recorder
+
 import math
 from dataclasses import dataclass, field
 from typing import Callable, Iterable
@@ -36,6 +38,8 @@ def scale_footprint_width(points, centerline, factor):
     edges = [(a.x, a.z, b.x-a.x, b.z-a.z)
              for a, b in zip(centerline, centerline[1:])
              if math.hypot(b.x-a.x, b.z-a.z) > _EPS]
+    if not edges:
+        raise ValueError('Footprint width scaling requires a nonzero road centerline')
     result = []
     for x, z in points:
         best_error = math.inf
@@ -149,14 +153,14 @@ class RoadScene:
         return [j for j in self.junctions if _bbox_intersects(j.bbox, bbox)]
 
 
-def quay_centerlines(scene):
-    """跨护岸二度节点延伸投影轴，使相邻占地在接缝处使用相同的横向方向。"""
+def footprint_centerlines(scene, *, quay_only=False):
+    """跨二度节点延伸投影轴，使相邻占地在接缝处使用相同的横向方向。"""
     extensions = {}
     for junction in scene.junctions:
         if len(junction.segment_ids) != 2:
             continue
         a, b = (scene.roads_by_id[sid] for sid in junction.segment_ids)
-        if a.level is not RoadLevel.QUAY or b.level is not RoadLevel.QUAY or a.mode != b.mode:
+        if a.mode != b.mode or (quay_only and (a.level is not RoadLevel.QUAY or b.level is not RoadLevel.QUAY)):
             continue
         for road, neighbor in ((a, b), (b, a)):
             oriented = (neighbor.points if neighbor.end_node_id == junction.node_id
@@ -169,7 +173,11 @@ def quay_centerlines(scene):
             extensions[road.id] = prefix, suffix
     return {road.id: extensions.get(road.id, ((), ()))[0] + road.points
             + extensions.get(road.id, ((), ()))[1]
-            for road in scene.roads if road.level is RoadLevel.QUAY}
+            for road in scene.roads if not quay_only or road.level is RoadLevel.QUAY}
+
+
+def quay_centerlines(scene):
+    return footprint_centerlines(scene, quay_only=True)
 
 @dataclass(frozen=True)
 class JunctionMesh:
@@ -578,78 +586,90 @@ def _crossing_grid_size(edges):
         size *= 2
 
 
+@measured("roads.find_crossings")
 def _find_crossings(edges, roads_by_id, height_reliable):
     grid: dict[tuple[int, int], list[int]] = {}
-    grid_size = _crossing_grid_size(edges)
-    for idx, edge in enumerate(edges):
-        x0, z0, x1, z1 = edge.bbox
-        for gx in range(math.floor(x0 / grid_size), math.floor(x1 / grid_size) + 1):
-            for gz in range(math.floor(z0 / grid_size), math.floor(z1 / grid_size) + 1):
-                grid.setdefault((gx, gz), []).append(idx)
+    with perf_span(None, "roads.crossings.index"):
+        grid_size = _crossing_grid_size(edges)
+        for idx, edge in enumerate(edges):
+            x0, z0, x1, z1 = edge.bbox
+            for gx in range(math.floor(x0 / grid_size), math.floor(x1 / grid_size) + 1):
+                for gz in range(math.floor(z0 / grid_size), math.floor(z1 / grid_size) + 1):
+                    grid.setdefault((gx, gz), []).append(idx)
 
     shared_nodes: dict[tuple[int, int], bool] = {}
     events: list[CrossingEvent] = []
     seen_crossings: set[tuple[int, int, int, int]] = set()
-    for cell in sorted(grid):
-        bucket = grid[cell]
-        for pos, ai in enumerate(bucket):
-            for bi in bucket[pos + 1:]:
-                if ai == bi:
-                    continue
-                a, b = edges[ai], edges[bi]
-                if a.road_id == b.road_id or not _bbox_intersects(a.bbox, b.bbox):
-                    continue
-                pair = (min(a.road_id, b.road_id), max(a.road_id, b.road_id))
-                shares = shared_nodes.get(pair)
-                if shares is None:
+    # 每个交点只由其所在网格单元负责，无需保存全量 edge-pair 去重集合；
+    # 泉都等大存档的预处理临时内存因此保持在网格索引级别。
+    with perf_span(None, "roads.crossings.candidates"):
+        for cell in sorted(grid):
+            bucket = grid[cell]
+            for pos, ai in enumerate(bucket):
+                for bi in bucket[pos + 1:]:
+                    if ai == bi:
+                        continue
+                    a, b = edges[ai], edges[bi]
+                    if a.road_id == b.road_id or not _bbox_intersects(a.bbox, b.bbox):
+                        continue
+                    pair = (min(a.road_id, b.road_id), max(a.road_id, b.road_id))
+                    shares = shared_nodes.get(pair)
+                    if shares is None:
+                        ra, rb = roads_by_id[a.road_id], roads_by_id[b.road_id]
+                        nodes_a = {ra.start_node_id, ra.end_node_id}
+                        nodes_b = {rb.start_node_id, rb.end_node_id}
+                        shares = bool(nodes_a & nodes_b)
+                        shared_nodes[pair] = shares
+                    if shares:
+                        continue
+                    hit = _line_intersection(a, b)
+                    if hit is None:
+                        continue
+                    t, u, x, z = hit
+                    if (math.floor(x / grid_size), math.floor(z / grid_size)) != cell:
+                        continue
+                    dedupe = (pair[0], pair[1], round(x * 10), round(z * 10))
+                    if dedupe in seen_crossings:
+                        continue
+                    seen_crossings.add(dedupe)
+                    ay = a.a.y + (a.b.y - a.a.y) * t
+                    by = b.a.y + (b.b.y - b.a.y) * u
                     ra, rb = roads_by_id[a.road_id], roads_by_id[b.road_id]
-                    nodes_a = {ra.start_node_id, ra.end_node_id}
-                    nodes_b = {rb.start_node_id, rb.end_node_id}
-                    shares = bool(nodes_a & nodes_b)
-                    shared_nodes[pair] = shares
-                if shares:
-                    continue
-                hit = _line_intersection(a, b)
-                if hit is None:
-                    continue
-                t, u, x, z = hit
-                if (math.floor(x / grid_size), math.floor(z / grid_size)) != cell:
-                    continue
-                dedupe = (pair[0], pair[1], round(x * 10), round(z * 10))
-                if dedupe in seen_crossings:
-                    continue
-                seen_crossings.add(dedupe)
-                ay = a.a.y + (a.b.y - a.a.y) * t
-                by = b.a.y + (b.b.y - b.a.y) * u
-                ra, rb = roads_by_id[a.road_id], roads_by_id[b.road_id]
-                # 地面道路可有零高度；只要场景证明三维高度存在，零仍是有效高程。
-                if height_reliable and abs(ay - by) > HEIGHT_EPSILON:
-                    upper_a = ay > by
-                else:
-                    upper_a = road_sort_key(ra, False) > road_sort_key(rb, False)
-                upper, lower = (a, b) if upper_a else (b, a)
-                ur, lr = roads_by_id[upper.road_id], roads_by_id[lower.road_id]
-                uy, ly = (ay, by) if upper_a else (by, ay)
-                ud = upper.start_distance + (t if upper is a else u) * upper.length
-                ld = lower.start_distance + (u if upper is a else t) * lower.length
-                # 斜交时下层道路在上层占地中的投影会变长，覆盖跨度须随交角延长并设上下界。
-                cross_sine = abs(
-                    ((a.b.x - a.a.x) * (b.b.z - b.a.z)
-                     - (a.b.z - a.a.z) * (b.b.x - b.a.x))
-                    / max(a.length * b.length, _EPS)
-                )
-                projected_lower = lr.width / max(cross_sine, 0.2)
-                base_span = _clamp(
-                    1.25 * (ur.width + lr.width), 12.0, 40.0)
-                span = _clamp(
-                    max(base_span, 1.25 * projected_lower), 12.0, 120.0)
-                events.append(CrossingEvent(
-                    lower_segment_id=lower.road_id,
-                    upper_segment_id=upper.road_id,
-                    x=x, z=z, lower_y=ly, upper_y=uy,
-                    lower_distance=ld, upper_distance=ud, span=span,
-                ))
+                    # 地面道路可有零高度；只要场景证明三维高度存在，零仍是有效高程。
+                    if height_reliable and abs(ay - by) > HEIGHT_EPSILON:
+                        upper_a = ay > by
+                    else:
+                        upper_a = road_sort_key(ra, False) > road_sort_key(rb, False)
+                    upper, lower = (a, b) if upper_a else (b, a)
+                    ur, lr = roads_by_id[upper.road_id], roads_by_id[lower.road_id]
+                    uy, ly = (ay, by) if upper_a else (by, ay)
+                    ud = upper.start_distance + (t if upper is a else u) * upper.length
+                    ld = lower.start_distance + (u if upper is a else t) * lower.length
+                    # 斜交时下层道路在上层占地中的投影会变长，覆盖跨度须随交角延长并设上下界。
+                    cross_sine = abs(
+                        ((a.b.x - a.a.x) * (b.b.z - b.a.z)
+                         - (a.b.z - a.a.z) * (b.b.x - b.a.x))
+                        / max(a.length * b.length, _EPS)
+                    )
+                    projected_lower = lr.width / max(cross_sine, 0.2)
+                    base_span = _clamp(
+                        1.25 * (ur.width + lr.width), 12.0, 40.0)
+                    span = _clamp(
+                        max(base_span, 1.25 * projected_lower), 12.0, 120.0)
+                    events.append(CrossingEvent(
+                        lower_segment_id=lower.road_id,
+                        upper_segment_id=upper.road_id,
+                        x=x, z=z, lower_y=ly, upper_y=uy,
+                        lower_distance=ld, upper_distance=ud, span=span,
+                    ))
     events.sort(key=lambda e: (e.upper_y, e.upper_segment_id, e.x, e.z))
+    if (recorder := current_recorder()) is not None:
+        recorder.set_counter("roads.edges", len(edges))
+        recorder.set_counter("roads.crossings.grid_meters", grid_size)
+        recorder.set_counter("roads.crossings.index_entries", sum(map(len, grid.values())))
+        recorder.set_counter("roads.crossings.grid_cells", len(grid))
+        recorder.set_counter("roads.crossings.grid_candidate_pairs", sum(len(v)*(len(v)-1)//2 for v in grid.values()))
+        recorder.set_counter("roads.crossings.events", len(events))
     return events
 
 

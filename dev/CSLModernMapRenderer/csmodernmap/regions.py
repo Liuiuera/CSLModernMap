@@ -87,7 +87,7 @@ def random_region(
             top = int(counts.max())
             cand = np.argwhere(counts == top)
         weights = counts[cand[:, 0], cand[:, 1]].astype(float)
-        pick = rng.choices(range(len(cand)), weights=weights, k=1)[0]
+        pick = _weighted_index(weights, rng)
         cy, cx = int(cand[pick, 0]), int(cand[pick, 1])
 
     cell = WORLD_SIZE / grid
@@ -389,12 +389,24 @@ def closeup_region(
     else:
         cand = np.argwhere(feat > 0)
         weights = feat[cand[:, 0], cand[:, 1]].astype(float)
-        pick = rng.choices(range(len(cand)), weights=weights, k=1)[0]
+        pick = _weighted_index(weights, rng)
         gy, gx = int(cand[pick, 0]), int(cand[pick, 1])
     cell_w = w / grid
     cx = x0 + (gx + rng.uniform(0.25, 0.75)) * cell_w
     cz = z0 + (gy + rng.uniform(0.25, 0.75)) * cell_w
-    # 跨度：地图尺寸比例自适应，钳制在 [span_range] 且不越界
+    return _closeup_window((cx, cz), (x0, z0, x1, z1), rng,
+                           span_frac=span_frac, span_range=span_range)
+
+
+def _weighted_index(weights, rng):
+    return rng.choices(range(len(weights)), weights=weights, k=1)[0]
+
+
+def _closeup_window(center, bounds, rng, *, span_frac=(0.15, 0.30),
+                    span_range=(400.0, 2500.0)):
+    x0, z0, x1, z1 = bounds
+    w, h = x1 - x0, z1 - z0
+    cx, cz = center
     half = rng.uniform(span_frac[0], span_frac[1]) * min(w, h) / 2.0
     half = min(max(half, span_range[0] / 2.0), span_range[1] / 2.0)
     half = min(half, min(w, h) / 2.0 - 1.0)

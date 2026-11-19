@@ -18,7 +18,8 @@ PRESETS = {
                  "sample": .72, "grain": 2.7, "correlated": 1.7,
                  "channel_shift": .4, "motion": .65, "jpeg": 88},
 }
-DEFAULTS = {"preset": "original", "intensity": 100}
+QUALITY_LIMITS = {"smooth": 2048, "standard": 4096, "original": None}
+DEFAULTS = {"preset": "original", "intensity": 100, "quality": "original"}
 
 
 def filter_key(style):
@@ -34,6 +35,15 @@ def filter_key(style):
             or not 0 <= intensity <= 100):
         raise ValueError("satellite.intensity: expected a number from 0 to 100")
     return ("original", 0) if preset == "original" or intensity == 0 else (preset, float(intensity))
+
+
+def image_key(style):
+    key = filter_key(style)
+    data = getattr(style, "data", style) or {}
+    quality = data.get("satellite", {}).get("quality", DEFAULTS["quality"])
+    if not isinstance(quality, str) or quality not in QUALITY_LIMITS:
+        raise ValueError("satellite.quality: unknown image quality")
+    return (*key, quality)
 
 
 def _shift(channel, dx, dy):
@@ -144,20 +154,23 @@ def apply_filter(source, key, bounds, progress=None):
 
 
 def satellite_image(document, style=None, progress=None):
-    """会话只保留当前滤镜成品，原始合成图始终无损保留。"""
+    """会话只保留当前质量与成像成品，原始合成图始终无损保留。"""
     from .satellite_image import ensure_satellite
-    key = filter_key(style)
+    key = image_key(style)
     cached = document._satellite_filtered
     if cached is not None and cached[0] == key:
         return cached[1]
     png = ensure_satellite(document)
-    if key[0] == "original":
+    if key == ("original", 0, "original"):
         document._satellite_filtered = None
         return png
     # 替换前释放旧成品；处理失败时归档原图与已显示的预览资源仍可用。
     document._satellite_filtered = None
     with Image.open(io.BytesIO(png)) as source:
-        with apply_filter(source, key, document._satellite_info["world_bounds_xz"], progress) as image:
+        limit = QUALITY_LIMITS[key[2]]
+        if limit is not None:
+            source.thumbnail((limit, limit), Image.Resampling.LANCZOS)
+        with apply_filter(source, key[:2], document._satellite_info["world_bounds_xz"], progress) as image:
             stream = io.BytesIO()
             image.save(stream, format="PNG")
     result = stream.getvalue()

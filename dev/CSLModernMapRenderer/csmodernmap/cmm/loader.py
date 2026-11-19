@@ -14,12 +14,14 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Callable, Mapping
 import gzip
+import json
 import zlib
 
 import numpy as np
 from lxml import etree as LET
 
 from .. import __version__
+from .read_recovery import ReadRecovery
 from ..parser import (
     TERRAIN_SIZE,
     _load_element_tree,
@@ -211,29 +213,31 @@ def _read_segment_types(root) -> dict[str, _SegmentTypeInfo]:
     return result
 
 
-def _read_nodes(root) -> tuple[list[NetworkNode], dict[int, SegmentMode]]:
+def _read_nodes(root, recovery=None) -> tuple[list[NetworkNode], dict[int, SegmentMode]]:
     """直接构造 NetworkNode，并记录节点级地上/地下模式用于路段判定。"""
+    recovery = recovery or ReadRecovery()
     nodes: list[NetworkNode] = []
     mode_by_node: dict[int, SegmentMode] = {}
     nodes_elem = root.find("Nodes")
     if nodes_elem is None:
         return nodes, mode_by_node
-    for ne in nodes_elem.findall("Node"):
-        node_id = int(ne.get("id", 0))
-        pe = ne.find("Pos")
-        pos = _parse_pos(pe) if pe is not None else None
-        ug = _parse_bool(ne.get("ug", "false"))
-        og = _parse_bool(ne.get("og", "false"))
-        mode = SegmentMode.TUNNEL if ug else (SegmentMode.GROUND if og else SegmentMode.ELEVATED)
-        mode_by_node[node_id] = mode
-        subsrv = ne.get("subsrv", "")
-        nodes.append(NetworkNode(
-            id=node_id,
-            pos=Vec3(pos.x, pos.y, pos.z) if pos is not None else Vec3(0, 0, 0),
-            mode_hint=mode,
-            station_service=(_stop_kind(subsrv) if subsrv else None),
-            source_raw=subsrv or "",
-        ))
+    for record_index, ne in enumerate(nodes_elem.findall("Node")):
+        with recovery.record("node", ne.get("id"), f"node[{record_index}]"):
+            node_id = int(ne.get("id", 0))
+            pe = ne.find("Pos")
+            pos = _parse_pos(pe) if pe is not None else None
+            ug = _parse_bool(ne.get("ug", "false"))
+            og = _parse_bool(ne.get("og", "false"))
+            mode = SegmentMode.TUNNEL if ug else (SegmentMode.GROUND if og else SegmentMode.ELEVATED)
+            subsrv = ne.get("subsrv", "")
+            nodes.append(NetworkNode(
+                id=node_id,
+                pos=Vec3(pos.x, pos.y, pos.z) if pos is not None else Vec3(0, 0, 0),
+                mode_hint=mode,
+                station_service=(_stop_kind(subsrv) if subsrv else None),
+                source_raw=subsrv or "",
+            ))
+            mode_by_node[node_id] = mode
     return nodes, mode_by_node
 
 
@@ -242,138 +246,144 @@ def _read_segments(
     segment_types: Mapping[str, _SegmentTypeInfo],
     mode_by_node: Mapping[int, SegmentMode],
     pos_by_node: Mapping[int, Vec3],
+    recovery=None,
 ) -> list[NetworkSegment]:
     """直接构造 NetworkSegment：类型识别在读取时一次完成。"""
+    recovery = recovery or ReadRecovery()
     networks: list[NetworkSegment] = []
     segs_elem = root.find("Segments")
     if segs_elem is None:
         return networks
-    for se in segs_elem.findall("Seg"):
-        raw = _SegmentRaw()
-        raw.id = int(se.get("id", 0))
-        raw.start_node_id = int(se.get("sn", 0))
-        raw.end_node_id = int(se.get("en", 0))
-        raw.icls = se.get("icls", "")
-        raw.width = float(se.get("width", 0))
-        raw.custom_name = se.get("CustomName", se.get("customName", ""))
-        name_elem = se.find("Name")
-        if name_elem is not None:
-            raw.name = (name_elem.text or "").strip()
-        custom_elem = se.find("CustomName")
-        if custom_elem is not None and (custom_elem.text or "").strip():
-            raw.custom_name = custom_elem.text.strip()
-        points_elem = se.find("Points")
-        if points_elem is not None:
-            raw.points = _parse_points(points_elem)
-        path_elem = se.find("Path")
-        if path_elem is not None:
-            path_segs = path_elem.find("Segs")
-            if path_segs is not None:
-                raw.path_seg_ids = [
-                    int(sg.text) for sg in path_segs.findall("Sg") if sg.text]
+    for record_index, se in enumerate(segs_elem.findall("Seg")):
+        with recovery.record("network", se.get("id"), f"network[{record_index}]"):
+            raw = _SegmentRaw()
+            raw.id = int(se.get("id", 0))
+            raw.start_node_id = int(se.get("sn", 0))
+            raw.end_node_id = int(se.get("en", 0))
+            raw.icls = se.get("icls", "")
+            raw.width = float(se.get("width", 0))
+            raw.custom_name = se.get("CustomName", se.get("customName", ""))
+            name_elem = se.find("Name")
+            if name_elem is not None:
+                raw.name = (name_elem.text or "").strip()
+            custom_elem = se.find("CustomName")
+            if custom_elem is not None and (custom_elem.text or "").strip():
+                raw.custom_name = custom_elem.text.strip()
+            points_elem = se.find("Points")
+            if points_elem is not None:
+                raw.points = _parse_points(points_elem)
+            path_elem = se.find("Path")
+            if path_elem is not None:
+                path_segs = path_elem.find("Segs")
+                if path_segs is not None:
+                    raw.path_seg_ids = [
+                        int(sg.text) for sg in path_segs.findall("Sg") if sg.text]
 
-        seg_type = segment_types.get(raw.name) or segment_types.get(raw.icls)
-        kind, transit_for = _network_kind(raw, seg_type)
-        geometry_points = raw.points
-        if not geometry_points:
-            geometry_points = []
-            for node_id in (raw.start_node_id, raw.end_node_id):
-                point = pos_by_node.get(node_id)
-                if point is not None:
-                    geometry_points.append(point)
-        level = None
-        if kind in (NetworkKind.ROAD, NetworkKind.BEAUTIFICATION):
-            legacy_level = classify_segment(raw, seg_type)
-            # QUAY 仅用于渲染显示；CMM 保持 BEAUTIFICATION，加载场景时再从源数据派生。
-            level = (RoadLevel.BEAUTIFICATION
-                     if legacy_level.value == "quay"
-                     else RoadLevel[legacy_level.name])
-        width = segment_physical_width(raw, seg_type)
-        start_mode = mode_by_node.get(raw.start_node_id, SegmentMode.GROUND)
-        end_mode = mode_by_node.get(raw.end_node_id, SegmentMode.GROUND)
-        if start_mode is SegmentMode.TUNNEL or end_mode is SegmentMode.TUNNEL:
-            mode = SegmentMode.TUNNEL
-        elif start_mode is SegmentMode.ELEVATED or end_mode is SegmentMode.ELEVATED:
-            mode = SegmentMode.ELEVATED
-        else:
-            mode = SegmentMode.GROUND
-        networks.append(NetworkSegment(
-            id=raw.id,
-            kind=kind,
-            start_id=raw.start_node_id,
-            end_id=raw.end_node_id,
-            geometry=Polyline(tuple(
-                Vec3(p.x, p.y, p.z) for p in geometry_points)),
-            mode=mode,
-            width=width,
-            level=level,
-            lane_summary=(None if seg_type is None else LaneSummary(
-                seg_type.car_lane_count, seg_type.lane_dir)),
-            transit_for=transit_for,
-            path_segment_ids=(list(raw.path_seg_ids)
-                              if kind is NetworkKind.STOP_LINE else []),
-            platform="platform" in (raw.name or "").casefold(),
-            name=raw.name or "",
-            display_name=raw.custom_name or "",
-            game_name=se.findtext("GameName") or se.get("game_name", ""),
-            source_raw=raw.name or "",
-        ))
+            seg_type = segment_types.get(raw.name) or segment_types.get(raw.icls)
+            kind, transit_for = _network_kind(raw, seg_type)
+            geometry_points = raw.points
+            if not geometry_points:
+                geometry_points = []
+                for node_id in (raw.start_node_id, raw.end_node_id):
+                    point = pos_by_node.get(node_id)
+                    if point is not None:
+                        geometry_points.append(point)
+            level = None
+            if kind in (NetworkKind.ROAD, NetworkKind.BEAUTIFICATION):
+                legacy_level = classify_segment(raw, seg_type)
+                # QUAY 仅用于渲染显示；CMM 保持 BEAUTIFICATION，加载场景时再从源数据派生。
+                level = (RoadLevel.BEAUTIFICATION
+                         if legacy_level.value == "quay"
+                         else RoadLevel[legacy_level.name])
+            width = segment_physical_width(raw, seg_type)
+            start_mode = mode_by_node.get(raw.start_node_id, SegmentMode.GROUND)
+            end_mode = mode_by_node.get(raw.end_node_id, SegmentMode.GROUND)
+            if start_mode is SegmentMode.TUNNEL or end_mode is SegmentMode.TUNNEL:
+                mode = SegmentMode.TUNNEL
+            elif start_mode is SegmentMode.ELEVATED or end_mode is SegmentMode.ELEVATED:
+                mode = SegmentMode.ELEVATED
+            else:
+                mode = SegmentMode.GROUND
+            networks.append(NetworkSegment(
+                id=raw.id,
+                kind=kind,
+                start_id=raw.start_node_id,
+                end_id=raw.end_node_id,
+                geometry=Polyline(tuple(
+                    Vec3(p.x, p.y, p.z) for p in geometry_points)),
+                mode=mode,
+                width=width,
+                level=level,
+                lane_summary=(None if seg_type is None else LaneSummary(
+                    seg_type.car_lane_count, seg_type.lane_dir)),
+                transit_for=transit_for,
+                path_segment_ids=(list(raw.path_seg_ids)
+                                  if kind is NetworkKind.STOP_LINE else []),
+                platform="platform" in (raw.name or "").casefold(),
+                name=raw.name or "",
+                display_name=raw.custom_name or "",
+                game_name=se.findtext("GameName") or se.get("game_name", ""),
+                source_raw=raw.name or "",
+            ))
     return networks
 
 
-def _read_buildings(root) -> list[Building]:
+def _read_buildings(root, recovery=None) -> list[Building]:
+    recovery = recovery or ReadRecovery()
     buildings: list[Building] = []
     child_by_parent: dict[int, list[int]] = {}
     blds_elem = root.find("Buildings")
     if blds_elem is None:
         return buildings
-    for be in blds_elem.findall("Buil"):
-        building_id = int(be.get("id", 0))
-        service = be.get("srv", "")
-        sub_service = be.get("subsrv", "")
-        icls = be.get("icls", "")
-        parent_raw = be.get("prntb", be.get("ParentBuildingId", be.get("parentbld", "")))
-        child_raw = be.get("subb", be.get("SubBuildingId", be.get("subbld", "")))
-        parent_id = _as_int(parent_raw)
-        child_id = _as_int(child_raw)
-        if parent_id is not None:
-            child_by_parent.setdefault(parent_id, []).append(building_id)
-        if child_id is not None:
-            child_by_parent.setdefault(building_id, []).append(child_id)
-        points_elem = be.find("Points")
-        points = _parse_points(points_elem) if points_elem is not None else []
-        custom_name = be.get("myname", "")
-        game_name = be.get("displayname", "")
-        display_name = custom_name or game_name
-        buildings.append(Building(
-            id=building_id,
-            name=be.get("name", ""),
-            display_name=DisplayName(
-                display_name,
-                "custom" if custom_name else "game" if game_name else "empty"),
-            role=_building_role(service, sub_service, icls),
-            footprint=Polygon(tuple(Vec2(p.x, p.z) for p in points)),
-            parent_id=parent_id,
-            child_ids=[],
-            source_raw=" ".join(item for item in (service, sub_service, icls) if item),
-            service=service or "",
-            sub_service=sub_service or "",
-            icls=icls or "",
-            sub_building_id=str(child_raw or ""),
-            parent_building_id=str(parent_raw or ""),
-            area_id=(-(int(be.get("park_id")) + 1) if be.get("park_id") not in (None, "0") else None),
-            category_id=be.get("category_id", ""),
-            category_name=be.get("category_name", ""),
-            category_locale=be.get("category_locale", ""),
-            growth_kind=be.get("growth_kind", "unknown"),
-            growth_use=be.get("growth_use", ""),
-        ))
+    for record_index, be in enumerate(blds_elem.findall("Buil")):
+        with recovery.record("building", be.get("id"), f"building[{record_index}]"):
+            building_id = int(be.get("id", 0))
+            service = be.get("srv", "")
+            sub_service = be.get("subsrv", "")
+            icls = be.get("icls", "")
+            parent_raw = be.get("prntb", be.get("ParentBuildingId", be.get("parentbld", "")))
+            child_raw = be.get("subb", be.get("SubBuildingId", be.get("subbld", "")))
+            parent_id = _as_int(parent_raw)
+            child_id = _as_int(child_raw)
+            points_elem = be.find("Points")
+            points = _parse_points(points_elem) if points_elem is not None else []
+            custom_name = be.get("myname", "")
+            game_name = be.get("displayname", "")
+            display_name = custom_name or game_name
+            buildings.append(Building(
+                id=building_id,
+                name=be.get("name", ""),
+                display_name=DisplayName(
+                    display_name,
+                    "custom" if custom_name else "game" if game_name else "empty"),
+                role=_building_role(service, sub_service, icls),
+                footprint=Polygon(tuple(Vec2(p.x, p.z) for p in points)),
+                parent_id=parent_id,
+                child_ids=[],
+                source_raw=" ".join(item for item in (service, sub_service, icls) if item),
+                service=service or "",
+                sub_service=sub_service or "",
+                icls=icls or "",
+                sub_building_id=str(child_raw or ""),
+                parent_building_id=str(parent_raw or ""),
+                area_id=(-(int(be.get("park_id")) + 1) if be.get("park_id") not in (None, "0") else None),
+                category_id=be.get("category_id", ""),
+                category_name=be.get("category_name", ""),
+                category_locale=be.get("category_locale", ""),
+                growth_kind=be.get("growth_kind", "unknown"),
+                growth_use=be.get("growth_use", ""),
+            ))
+            if parent_id is not None:
+                child_by_parent.setdefault(parent_id, []).append(building_id)
+            if child_id is not None:
+                child_by_parent.setdefault(building_id, []).append(child_id)
     for building in buildings:
         building.child_ids = sorted(set(child_by_parent.get(building.id, [])))
     return buildings
 
 
-def _read_districts(root) -> tuple[list[District], float, float]:
+def _read_districts(root, recovery=None) -> tuple[list[District], float, float]:
+    recovery = recovery or ReadRecovery()
     districts: list[District] = []
     district_cell = 0.0
     park_cell = 0.0
@@ -383,52 +393,55 @@ def _read_districts(root) -> tuple[list[District], float, float]:
     if grid_elem is not None:
         grid_by_id, district_cell = _parse_zone_grid((grid_elem.text or "").strip())
     if dists_elem is not None:
-        for de in dists_elem.findall("Dist"):
-            district_id = int(de.get("id", 0))
-            dtype = de.get("type", "")
-            boundary_points = _parse_points(de)
-            grid_points = [Vec2(x, z) for x, z in grid_by_id.get(district_id, ())]
-            districts.append(District(
-                id=district_id,
-                name=_display_name(de.get("name", "")),
-                kind="DISTRICT",
-                zone_kind=_zone_kind(dtype),
-                grid_points=grid_points,
-                grid_cell=float(district_cell),
-                boundary=(Polygon(tuple(Vec2(p.x, p.z) for p in boundary_points))
-                          if boundary_points else None),
-                position=(Vec2(boundary_points[0].x, boundary_points[0].z)
-                          if boundary_points else (grid_points[0] if grid_points else None)),
-                source_raw=dtype or "",
-            ))
+        for record_index, de in enumerate(dists_elem.findall("Dist")):
+            with recovery.record("district", de.get("id"), f"district[{record_index}]"):
+                district_id = int(de.get("id", 0))
+                dtype = de.get("type", "")
+                boundary_points = _parse_points(de)
+                grid_points = [Vec2(x, z) for x, z in grid_by_id.get(district_id, ())]
+                districts.append(District(
+                    id=district_id,
+                    name=_display_name(de.get("name", "")),
+                    kind="DISTRICT",
+                    zone_kind=_zone_kind(dtype),
+                    grid_points=grid_points,
+                    grid_cell=float(district_cell),
+                    boundary=(Polygon(tuple(Vec2(p.x, p.z) for p in boundary_points))
+                              if boundary_points else None),
+                    position=(Vec2(boundary_points[0].x, boundary_points[0].z)
+                              if boundary_points else (grid_points[0] if grid_points else None)),
+                    source_raw=dtype or "",
+                ))
     parks_elem = root.find("Parks")
     park_grid_by_id: dict[int, list[tuple[float, float]]] = {}
     park_grid_elem = root.find("ParkGrid")
     if park_grid_elem is not None:
         park_grid_by_id, park_cell = _parse_zone_grid((park_grid_elem.text or "").strip())
     if parks_elem is not None:
-        for pe in parks_elem.findall("Park"):
-            park_id = int(pe.get("id", 0))
-            ptype = ""
-            te = pe.find("type")
-            if te is not None:
-                ptype = (te.text or "").strip()
-            boundary_points = _parse_points(pe)
-            grid_points = [Vec2(x, z) for x, z in park_grid_by_id.get(park_id, ())]
-            districts.append(District(
-                id=-(park_id + 1),
-                name=_display_name(pe.get("name", "")),
-                kind="PARK_ZONE",
-                zone_kind=_zone_kind(ptype),
-                grid_points=grid_points,
-                grid_cell=float(park_cell),
-                boundary=(Polygon(tuple(Vec2(p.x, p.z) for p in boundary_points))
-                          if boundary_points else None),
-                position=(Vec2(boundary_points[0].x, boundary_points[0].z)
-                          if boundary_points else (grid_points[0] if grid_points else None)),
-                owner_building_id=(int(pe.get("main_building_id")) if pe.get("main_building_id") not in (None, "0") else None),
-                source_raw=ptype or "",
-            ))
+        for record_index, pe in enumerate(parks_elem.findall("Park")):
+            park_ref = _as_int(pe.get("id"))
+            with recovery.record("district", -(park_ref + 1) if park_ref is not None else None, f"park[{record_index}]"):
+                park_id = int(pe.get("id", 0))
+                ptype = ""
+                te = pe.find("type")
+                if te is not None:
+                    ptype = (te.text or "").strip()
+                boundary_points = _parse_points(pe)
+                grid_points = [Vec2(x, z) for x, z in park_grid_by_id.get(park_id, ())]
+                districts.append(District(
+                    id=-(park_id + 1),
+                    name=_display_name(pe.get("name", "")),
+                    kind="PARK_ZONE",
+                    zone_kind=_zone_kind(ptype),
+                    grid_points=grid_points,
+                    grid_cell=float(park_cell),
+                    boundary=(Polygon(tuple(Vec2(p.x, p.z) for p in boundary_points))
+                              if boundary_points else None),
+                    position=(Vec2(boundary_points[0].x, boundary_points[0].z)
+                              if boundary_points else (grid_points[0] if grid_points else None)),
+                    owner_building_id=(int(pe.get("main_building_id")) if pe.get("main_building_id") not in (None, "0") else None),
+                    source_raw=ptype or "",
+                ))
     return districts, float(district_cell), float(park_cell)
 
 
@@ -437,7 +450,9 @@ def _read_transports(
     mode_by_node: Mapping[int, SegmentMode],
     pos_by_node: Mapping[int, Vec3],
     service_by_node: Mapping[int, str],
+    recovery=None,
 ) -> tuple[list[TransitLine], list[Stop], list[Route]]:
+    recovery = recovery or ReadRecovery()
     lines: list[TransitLine] = []
     stops: list[Stop] = []
     routes: list[Route] = []
@@ -446,69 +461,60 @@ def _read_transports(
         return lines, stops, routes
     stop_by_key: dict[tuple[int, StopKind], Stop] = {}
     used_stop_ids: set[int] = set()
-    for te in trans_elem.findall("Trans"):
-        color = (255, 255, 255, 255)
-        color_elem = te.find("color")
-        if color_elem is not None:
-            color = (
-                int(color_elem.get("a", 255)),
-                int(color_elem.get("r", 255)),
-                int(color_elem.get("g", 255)),
-                int(color_elem.get("b", 255)),
-            )
-        transport_id = int(te.get("id", 0))
-        transport_type = te.get("type", "")
-        transit_kind = _transit_kind(transport_type)
-        lines.append(TransitLine(
-            id=transport_id,
-            name=te.get("name", ""),
-            kind=transit_kind,
-            user_color=_rgba_or_none(color),
-            bidirectional=None,
-            branch="",
-            source_raw=transport_type or "",
-        ))
-        route_stop_ids: list[int] = []
-        stops_elem = te.find("Stops")
-        if stops_elem is not None:
-            for stop_elem in stops_elem.findall("Stop"):
+    for record_index, te in enumerate(trans_elem.findall("Trans")):
+        with recovery.record("line", te.get("id"), f"transport[{record_index}]"):
+            color = (255, 255, 255, 255)
+            color_elem = te.find("color")
+            if color_elem is not None:
+                color = tuple(int(color_elem.get(channel, 255)) for channel in ("a", "r", "g", "b"))
+            transport_id = int(te.get("id", 0))
+            transport_type = te.get("type", "")
+            transit_kind = _transit_kind(transport_type)
+            line = TransitLine(
+                id=transport_id, name=te.get("name", ""), kind=transit_kind,
+                user_color=_rgba_or_none(color), bidirectional=None, branch="",
+                source_raw=transport_type or "")
+            pending_stops = {}
+            pending_ids = set()
+            pending_names = []
+            route_stop_ids = []
+            # 一条旧版线路展开为多种对象；全部解析成功后才提交共享状态。
+            for stop_elem in te.findall("Stops/Stop"):
                 node_id = int(stop_elem.get("node", 0))
                 node_service = service_by_node.get(node_id, "")
                 stop_kind = _stop_kind(node_service, transit_kind)
                 key = (node_id, stop_kind)
-                stop = stop_by_key.get(key)
+                stop = pending_stops.get(key) or stop_by_key.get(key)
                 if stop is None:
-                    stop_id = node_id if node_id not in used_stop_ids else None
-                    if stop_id is None:
-                        candidate = node_id * 100 + list(StopKind).index(stop_kind) + 1
-                        while candidate in used_stop_ids:
-                            candidate += 1
-                        stop_id = candidate
-                    used_stop_ids.add(stop_id)
-                    position = pos_by_node.get(node_id, Vec3(0, 0, 0))
+                    stop_id = node_id
+                    if stop_id in used_stop_ids or stop_id in pending_ids:
+                        stop_id = node_id * 100 + list(StopKind).index(stop_kind) + 1
+                        while stop_id in used_stop_ids or stop_id in pending_ids:
+                            stop_id += 1
                     stop = Stop(
-                        id=stop_id,
-                        network_node_id=node_id,
-                        kind=stop_kind,
+                        id=stop_id, network_node_id=node_id, kind=stop_kind,
                         name=_display_name(stop_elem.get("name", "")),
-                        position=position,
-                        source_raw=node_service,
-                    )
-                    stop_by_key[key] = stop
-                    stops.append(stop)
+                        position=pos_by_node.get(node_id, Vec3(0, 0, 0)),
+                        source_raw=node_service)
+                    pending_stops[key] = stop
+                    pending_ids.add(stop_id)
                 elif not stop.name.text and stop_elem.get("name", ""):
-                    stop.name = _display_name(stop_elem.get("name", ""))
+                    pending_names.append((stop, _display_name(stop_elem.get("name", ""))))
                 route_stop_ids.append(stop.id)
-        is_closed = len(route_stop_ids) > 1 and route_stop_ids[0] == route_stop_ids[-1]
-        routes.append(Route(
-            id=transport_id * 2 + 1,
-            line_id=transport_id,
-            direction="loop" if is_closed else "outbound",
-            stop_ids=route_stop_ids,
-            is_closed=is_closed,
-            geometry_kind=GeomKind.STOP_DIRECT,
-            source_raw=transport_type or "",
-        ))
+            is_closed = len(route_stop_ids) > 1 and route_stop_ids[0] == route_stop_ids[-1]
+            route = Route(
+                id=transport_id * 2 + 1, line_id=transport_id,
+                direction="loop" if is_closed else "outbound", stop_ids=route_stop_ids,
+                is_closed=is_closed, geometry_kind=GeomKind.STOP_DIRECT,
+                source_raw=transport_type or "")
+            lines.append(line)
+            routes.append(route)
+            stops.extend(pending_stops.values())
+            stop_by_key.update(pending_stops)
+            used_stop_ids.update(pending_ids)
+            for stop, name in pending_names:
+                if not stop.name.text:
+                    stop.name = name
     return lines, stops, routes
 
 
@@ -558,57 +564,61 @@ def _read_terrain(root) -> Terrain:
     )
 
 
-def _read_forests(root) -> list[Forest]:
+def _read_forests(root, recovery=None) -> list[Forest]:
+    recovery = recovery or ReadRecovery()
     forests: list[Forest] = []
     forests_elem = root.find("Forests")
     if forests_elem is None:
         return forests
-    for fe in forests_elem.findall("Forest"):
-        text = (fe.text or "").strip()
-        data = [int(v) for v in text.split(",") if v.strip()]
-        forests.append(Forest(data=data))
+    for record_index, fe in enumerate(forests_elem.findall("Forest")):
+        with recovery.record("forest", fe.get("id"), f"forest[{record_index}]"):
+            text = (fe.text or "").strip()
+            data = [int(v) for v in text.split(",") if v.strip()]
+            forests.append(Forest(data=data))
     return forests
 
 
-def _read_procedural_objects(root) -> list[ProceduralObject]:
+def _read_procedural_objects(root, recovery=None) -> list[ProceduralObject]:
+    recovery = recovery or ReadRecovery()
     items: list[ProceduralObject] = []
     pos_elem = root.find("ProceduralObjects")
     if pos_elem is None:
         return items
-    for pe in pos_elem.findall("PO"):
-        x = float(pe.get("x", 0))
-        y = float(pe.get("y", 0))
-        z = float(pe.get("z", 0))
-        cx = pe.get("cx")
-        cz = pe.get("cz")
-        ex = pe.get("ex")
-        ez = pe.get("ez")
-        ry = float(pe.get("ry", "0"))
-        scale = float(pe.get("s", "1"))
-        if scale < 0.01:
-            scale = 1.0
-        cr_str = pe.get("cr")
-        cg_str = pe.get("cg")
-        cb_str = pe.get("cb")
-        color = None
-        if cr_str is not None and cg_str is not None and cb_str is not None:
-            try:
-                color = (int(cr_str) & 0xFF, int(cg_str) & 0xFF, int(cb_str) & 0xFF)
-            except ValueError:
-                color = None
-        items.append(ProceduralObject(
-            id=int(pe.get("id", 0)),
-            pos=Vec3(x, y, z),
-            center_x=float(cx) if cx else x,
-            center_z=float(cz) if cz else z,
-            extent_x=max(float(ex) if ex else 0.5, 0.1),
-            extent_z=max(float(ez) if ez else 0.5, 0.1),
-            rotation_y=ry,
-            scale=scale,
-            prefab_name=pe.get("pfn", "") or "",
-            source_type=pe.get("src", "") or "",
-            color_rgb=color,
-        ))
+    for record_index, pe in enumerate(pos_elem.findall("PO")):
+        with recovery.record("procedural_object", pe.get("id"), f"procedural_object[{record_index}]"):
+            x = float(pe.get("x", 0))
+            y = float(pe.get("y", 0))
+            z = float(pe.get("z", 0))
+            cx = pe.get("cx")
+            cz = pe.get("cz")
+            ex = pe.get("ex")
+            ez = pe.get("ez")
+            ry = float(pe.get("ry", "0"))
+            scale = float(pe.get("s", "1"))
+            if scale < 0.01:
+                scale = 1.0
+            cr_str = pe.get("cr")
+            cg_str = pe.get("cg")
+            cb_str = pe.get("cb")
+            color = None
+            if cr_str is not None and cg_str is not None and cb_str is not None:
+                try:
+                    color = (int(cr_str) & 0xFF, int(cg_str) & 0xFF, int(cb_str) & 0xFF)
+                except ValueError:
+                    color = None
+            items.append(ProceduralObject(
+                id=int(pe.get("id", 0)),
+                pos=Vec3(x, y, z),
+                center_x=float(cx) if cx else x,
+                center_z=float(cz) if cz else z,
+                extent_x=max(float(ex) if ex else 0.5, 0.1),
+                extent_z=max(float(ez) if ez else 0.5, 0.1),
+                rotation_y=ry,
+                scale=scale,
+                prefab_name=pe.get("pfn", "") or "",
+                source_type=pe.get("src", "") or "",
+                color_rgb=color,
+            ))
     return items
 
 
@@ -647,6 +657,7 @@ class MapV41Loader:
 
         source_path = Path(source)
         issues: list[MapIssue] = []
+        recovery = ReadRecovery()
 
         report(0.02, tr("gui.progress.load.xml"))
         try:
@@ -664,32 +675,32 @@ class MapV41Loader:
         segment_types = _read_segment_types(root)
 
         report(0.25, tr("gui.progress.load.nodes"))
-        nodes, mode_by_node = _read_nodes(root)
+        nodes, mode_by_node = _read_nodes(root, recovery)
         pos_by_node = {node.id: node.pos for node in nodes}
         service_by_node = {node.id: node.source_raw for node in nodes}
 
         report(0.40, tr("gui.progress.load.segments"))
-        networks = _read_segments(root, segment_types, mode_by_node, pos_by_node)
+        networks = _read_segments(root, segment_types, mode_by_node, pos_by_node, recovery)
 
         report(0.55, tr("gui.progress.load.buildings"))
-        buildings = _read_buildings(root)
+        buildings = _read_buildings(root, recovery)
 
         report(0.65, tr("gui.progress.load.zones"))
-        districts, district_cell, park_cell = _read_districts(root)
+        districts, district_cell, park_cell = _read_districts(root, recovery)
 
         report(0.75, tr("gui.progress.load.transit"))
         lines, stops, routes = _read_transports(
-            root, mode_by_node, pos_by_node, service_by_node)
+            root, mode_by_node, pos_by_node, service_by_node, recovery)
 
         report(0.82, tr("gui.progress.load.terrain"))
         try:
             terrain = _read_terrain(root)
         except ValueError as error:
-            raise ValueError(f"{source_path}: {error}") from error
+            raise MapFileError("invalid_terrain") from error
 
         report(0.90, tr("gui.progress.load.props"))
-        forests = _read_forests(root)
-        procedural_objects = _read_procedural_objects(root)
+        forests = _read_forests(root, recovery)
+        procedural_objects = _read_procedural_objects(root, recovery)
 
         traffic = None
         traffic_elem = root.find("TrafficSnapshotJson")
@@ -756,6 +767,7 @@ class MapV41Loader:
             issues=issues,
             extensions=extensions,
         )
+        recovery.finish(document)
         if validate:
             document.validate()
         report(1.0, tr("gui.progress.load.done"))
@@ -782,11 +794,13 @@ def _load_document(path, progress, *, validate):
     if source.name.casefold().endswith(CMM_FILE_SUFFIXES) or source.suffix.lower() == ".json":
         if progress is not None:
             progress(0.1, tr("gui.progress.load.document"))
-        document = MapDocument.from_json(source)
+        try:
+            document = MapDocument.from_json(source, recover_records=True)
+        except (MapFileError, json.JSONDecodeError, UnicodeError):
+            raise
+        except (ValueError, TypeError, OverflowError) as error:
+            raise MapFileError("invalid_cmm") from error
         document.metadata.source_path = str(source)
-        for network in document.networks:
-            if network.kind in (NetworkKind.ROAD, NetworkKind.BEAUTIFICATION) and network.level is None:
-                raise ValueError(f"{source}: road {network.id} has no valid road level")
         if validate:
             document.validate()
         if progress is not None:

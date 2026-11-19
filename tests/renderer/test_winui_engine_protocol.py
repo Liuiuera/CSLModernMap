@@ -20,6 +20,7 @@ import pytest
 from csmodernmap.winui_engine import EngineServer, sanitize_theme_data
 from csmodernmap.guir_backend import GuirBackend
 from csmodernmap.ui_contracts import ContextMode
+from style_fixtures import pixel_style
 
 
 class _Backend:
@@ -263,6 +264,7 @@ def test_real_city_metro_request_completes(tmp_path):
 
 
 @pytest.mark.skipif(not os.environ.get("CSLMM_METRO_TEST_SAVE"), reason="real city not configured")
+@pytest.mark.integration
 def test_real_city_metro_over_winui_process_protocol(tmp_path):
     original = Path(os.environ["CSLMM_METRO_TEST_SAVE"])
     save = tmp_path / original.name
@@ -388,6 +390,7 @@ def test_json_lines_hello_error_and_close() -> None:
 
 
 class _ThemeBackend:
+    session = None
     theme_stem = "modern"
     theme_migration_issues = ()
     aa = True
@@ -419,12 +422,12 @@ class _ThemeBackend:
     def _saved_theme_records(self):
         return self.user_themes
 
-    def save_personal_theme(self, data, *, identity, base_id, name):
-        self.applied = (data, None)
+    def save_personal_theme(self, data, *, identity, base_id, name, source=None):
+        self.applied = (data, source)
         return "user_test"
 
     def current_style_data(self) -> dict:
-        return {"canvas": {"background": "#FFFFFF"}, "name": "Test"}
+        return {"size_contract": "pixel-v2", "canvas": {"background": "#FFFFFF"}, "name": "Test"}
 
     def reset_style_preview_regions(self) -> None:
         pass
@@ -459,7 +462,7 @@ def test_theme_draft_rejects_bad_color_before_commit() -> None:
         with pytest.raises(ValueError, match="invalid color"):
             server.dispatch("commitThemeDraft", {
                 "theme": "modern", "documentEpoch": 0,
-                "data": {"canvas": {"background": "#XYZ"}},
+                "data": {**draft["data"], "canvas": {"background": "#XYZ"}},
             })
         assert backend.applied is None
         result = server.dispatch("commitThemeDraft", {
@@ -474,21 +477,27 @@ def test_theme_draft_rejects_bad_color_before_commit() -> None:
         server._preview_files.cleanup()
 
 
-def test_theme_draft_exposes_qt_field_metadata() -> None:
+def test_theme_draft_exposes_editor_field_metadata() -> None:
     class ThemeBackend(_ThemeBackend):
         def current_style_data(self):
-            return {"canvas": {"background": "#FFFFFF"},
-                    "roads": {"width": {"fixed": 1.5, "scaled": 0.4}},
-                    "terrain": {"elevation_colors": [
-                        {"threshold": 0, "color": "#557733"}]},
-                    "labels": {"font": "Arial"}}
+            return pixel_style({
+                "canvas": {"background": "#FFFFFF"},
+                "roads": {"main": {"line_width": 1.5, "footprint_scale": 1}},
+                "terrain": {"elevation_colors": [{"threshold": 0, "color": "#557733"}]},
+                "labels": {"font": "Arial"},
+            }).data
 
     server = EngineServer(io.StringIO(), io.StringIO(), ThemeBackend())
     try:
         draft = server.dispatch("getThemeDraft", {})
         assert draft["fields"]["canvas.background"]["label"] != "background"
-        assert draft["fields"]["roads.width"]["kind"] == "pair"
-        assert draft["fields"]["roads.width"]["step"] > 0
+        width = draft["fields"]["roads.main.line_width"]
+        assert width["kind"] == "number" and width["unit"] == "px"
+        assert width["step"] > 0
+        assert width["label"] not in ("line_width", "gui.style_editor.field.line_width")
+        footprint = draft["fields"]["roads.main.footprint_scale"]
+        assert footprint["hint"] and len(footprint["hint"]) < 200
+        assert not footprint["label"].startswith(("gui.", "style."))
         assert draft["fields"]["terrain.elevation_colors"]["kind"] == "ramp"
         assert draft["fields"]["labels.font"]["kind"] == "font"
         assert draft["fields"]["labels.font"]["choices"]
@@ -499,8 +508,9 @@ def test_theme_draft_exposes_qt_field_metadata() -> None:
 
 def test_theme_sanitizer_keeps_appearance_and_strips_processing_snapshots():
     raw = {
-        "roads": {"road": {"width": 9}, "highway": {"width": 7}},
-        "railway": {"line": "#123456"},
+        "size_contract": "pixel-v2",
+        "roads": {"main": {"line_width": 9, "footprint_scale": 1.0, "border_width": 1}},
+        "railway": {"train": {"line": "#123456", "dash": "#FFFFFF"}},
         "built_area": {"buffer_meters": 60, "smooth_blur": 2,
                        "contour_upscale": 4},
         "buildings": {
@@ -526,29 +536,33 @@ def test_theme_sanitizer_keeps_appearance_and_strips_processing_snapshots():
     assert cleaned["buildings"]["poi_tint"] == {"contrast": 0.3}
     assert "poi_area" not in cleaned
     assert cleaned["built_area"] == raw["built_area"]
-    assert "road" not in cleaned["roads"]
-    assert all("width" not in value for value in cleaned["roads"].values())
-    assert cleaned["railway"]["train"]["line"] == "#123456"
-    assert cleaned["railway"]["train"]["dash"] == "#FFFFFF"
-    assert "line" not in cleaned["railway"]
+    assert cleaned["roads"] == raw["roads"]
+    assert cleaned["railway"] == raw["railway"]
     assert cleaned["poi_icons"] == {"font": "Noto Sans"}
     # Sanitizing is copy-only so importing a theme cannot mutate the editor's input.
     assert "active_profile" in raw["poi_icons"]
 
 
-@pytest.mark.parametrize("size", [8, {"fixed": 4, "scaled": 8}, {"scaled": 8}])
-def test_get_theme_draft_accepts_station_size_representations(tmp_path, size):
+@pytest.mark.parametrize("diameter", [8, 4.5, 28])
+def test_get_theme_draft_accepts_positive_pixel_station_diameters(tmp_path, diameter):
     backend = _guir_backend(tmp_path)
     backend.theme_stem = "warm_natural"
-    backend.style_overrides["warm_natural"] = {"transports": {"station": {"size": size}}}
+    backend.style_overrides["warm_natural"] = {
+        "size_contract": "pixel-v2",
+        "transports": {"station": {"diameter": diameter}},
+    }
     server = EngineServer(io.StringIO(), io.StringIO(), backend)
     try:
         draft = server.dispatch("getThemeDraft", {})
-        assert draft["data"]["transports"]["station"]["size"] == size
-        assert draft["fields"]["transports.station.size"]["valueKind"] == "size"
-        for invalid in (True, "large", {"pixels": 8}, {"fixed": "large", "scaled": 8}):
-            with pytest.raises(ValueError, match=r"transports\.station\.size"):
-                server.validate_theme_draft({"transports": {"station": {"size": invalid}}})
+        assert draft["data"]["transports"]["station"]["diameter"] == diameter
+        field = draft["fields"]["transports.station.diameter"]
+        assert field["kind"] == "number" and field["unit"] == "px"
+        for invalid in (True, "large", 0, -1, {"fixed": 4, "scaled": 8}):
+            with pytest.raises(ValueError, match=r"transports\.station\.diameter"):
+                server.validate_theme_draft({
+                    "size_contract": "pixel-v2",
+                    "transports": {"station": {"diameter": invalid}},
+                })
     finally:
         backend.close()
         server._preview_files.cleanup()
@@ -678,7 +692,8 @@ def test_export_freezes_shared_view_profile_and_ignores_legacy_local_overrides(t
         assert snapshot["export_format"] == "PNG"
         assert snapshot["export_target"] == target
         assert snapshot["output_profile"] == {
-            "size": 8192, "rotation": 90, "aa": True}
+            "size": 8192, "elementScale": 4 / 3, "rotation": 90,
+            "aa": True, "htmlQuality": "standard"}
         assert snapshot["poi_profile"]["groups"]["ordinary"]["distance_m"] == 333.5
         assert snapshot["poi_profile"]["groups"]["facility"]["merge_enabled"] is True
         assert snapshot["poi_visibility_snapshot"] == {
@@ -693,7 +708,7 @@ def test_export_freezes_shared_view_profile_and_ignores_legacy_local_overrides(t
         server._preview_files.cleanup()
 
 
-def test_html_export_only_applies_the_shared_rotation_field(tmp_path):
+def test_html_export_uses_its_own_quality_and_shared_rotation(tmp_path):
     backend = _guir_backend(tmp_path)
     backend.document = object()
     backend.session = object()
@@ -722,15 +737,15 @@ def test_html_export_only_applies_the_shared_rotation_field(tmp_path):
             "context": "normal", "format": "HTML",
             "target": str(tmp_path / "map.html"),
             "profileTarget": "normal_png",
-            # Only rotation is valid for HTML; stale or over-eager clients may
-            # still send hidden size/AA fields, which the engine must ignore.
-            "output": {"size": 8192, "rotation": 90, "aa": True},
+            # HTML owns its quality; hidden raster size/AA fields are ignored.
+            "output": {"size": 8192, "rotation": 90, "aa": True, "htmlQuality": "fine"},
             "region": None,
         })
         assert result == {"started": True}
         request = captured["request"]
         assert request.render_snapshot["output_profile"] == {
-            "size": 6144, "rotation": 270, "aa": True,
+            "size": 6144, "elementScale": 1.5, "rotation": 270,
+            "aa": True, "htmlQuality": "fine",
         }
         assert request.render_snapshot["poi_profile_target"] == "preview"
         assert request.render_snapshot["ui"]["poi_profile"]["target"] == "preview"
@@ -816,7 +831,8 @@ def test_reset_profile_fields_changes_only_visible_keys(tmp_path):
         })
         assert reset_output == {
             "kind": "output", "target": "normal_png",
-            "profile": {"size": 4096, "rotation": 90, "aa": True},
+            "profile": {"size": 4096, "elementScale": 1.5, "rotation": 90,
+                        "aa": True, "htmlQuality": "standard"},
         }
 
         profile = backend.get_poi_profile("normal_png")
@@ -837,9 +853,9 @@ def test_reset_profile_fields_changes_only_visible_keys(tmp_path):
 def test_format_capabilities_match_context_and_visible_controls():
     normal = EngineServer._format_capabilities(ContextMode.NORMAL)
     assert list(normal) == ["PNG", "HTML"]
-    assert normal["PNG"]["outputFields"] == ["size", "rotation"]
+    assert normal["PNG"]["outputFields"] == ["size", "rotation", "elementScale"]
     assert normal["PNG"]["outputProfileTarget"] == "normal_png"
-    assert normal["HTML"]["outputFields"] == ["rotation"]
+    assert normal["HTML"]["outputFields"] == ["rotation", "htmlQuality", "elementScale"]
     assert normal["HTML"]["outputProfileTarget"] == "normal_png"
     assert normal["HTML"]["poiProfileTarget"] is None
     for context in (ContextMode.SELECTION, ContextMode.RANDOM_SPOT):
@@ -883,7 +899,7 @@ def test_theme_preview_only_emits_latest_request() -> None:
 
     class Backend:
         def current_style_data(self):
-            return {}
+            return {"size_contract": "pixel-v2"}
 
         def __init__(self):
             self.session = object()
@@ -908,10 +924,10 @@ def test_theme_preview_only_emits_latest_request() -> None:
     server.event = on_event
     try:
         assert server.dispatch("renderThemePreview", {
-            "requestId": "first", "data": {"name": "first"}})["started"]
+            "requestId": "first", "data": {**backend.current_style_data(), "name": "first"}})["started"]
         assert backend.entered.wait(2)
         assert server.dispatch("renderThemePreview", {
-            "requestId": "second", "data": {"name": "second"}})["started"]
+            "requestId": "second", "data": {**backend.current_style_data(), "name": "second"}})["started"]
         backend.release.set()
         assert ready.wait(2)
         assert received == [("themePreviewReady", {

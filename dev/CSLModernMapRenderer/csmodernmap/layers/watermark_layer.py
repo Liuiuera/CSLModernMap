@@ -39,10 +39,8 @@ def _parse_rgba(s: str) -> Tuple[int, int, int, int]:
     return (rgb[0], rgb[1], rgb[2], 255)
 
 
-def _resolve_size(val, render_scale: float) -> float:
-    if isinstance(val, dict):
-        return val.get("fixed", 0.0) + val.get("scaled", 0.0) * render_scale
-    return float(val)
+def _resolve_size(val, raster_scale=1.0) -> float:
+    return float(val) * raster_scale
 
 
 class WatermarkLayer(Layer):
@@ -65,14 +63,14 @@ class WatermarkLayer(Layer):
         style,
         document,
         *,
-        render_scale: float = 1.0,
+        raster_scale: float = 1.0,
         custom_text: str | None = None,
     ) -> None:
         """直接在给定 PIL Image 上绘制水印（原地修改 image）。
 
         document: MapDocument 或 legacy MapData（读取
         city_name/generated/traffic 属性，两者同形）。
-        render_scale: 画布相对 4096 的缩放（水印边距/字号自适应）。
+        raster_scale: 抗锯齿栅格倍率；主题已经解析元素倍率。
         custom_text: 自定义附加文字（优先级高于 style 内嵌）。
         """
         cfg = style.get("watermark", {})
@@ -89,7 +87,7 @@ class WatermarkLayer(Layer):
             return
         draw = ImageDraw.Draw(image)
         layer = cls()
-        layer._draw_impl(draw, image, cfg, segments, render_scale=render_scale)
+        layer._draw_impl(draw, image, cfg, segments, raster_scale=raster_scale)
 
     # ------------------------------------------------------------------
     # 主入口：Layer.render() 协议
@@ -99,12 +97,12 @@ class WatermarkLayer(Layer):
         if not cfg.get("enabled", True):
             return
 
-        render_scale = min(ctx.image.size) / 4096.0  # 成品尺寸，不随选区地理放大倍数膨胀
+        raster_scale = ctx.zoom / ctx.final_zoom  # 成品尺寸，不随选区地理放大倍数膨胀
         custom = getattr(self, "_custom_text", None)
         segments = self._build_segments(cfg, document, ctx.style, custom_text=custom)
         if not segments:
             return
-        self._draw_impl(ctx.draw, ctx.image, cfg, segments, render_scale=render_scale)
+        self._draw_impl(ctx.draw, ctx.image, cfg, segments, raster_scale=raster_scale)
 
     # ------------------------------------------------------------------
     # 内部：组装文字片段（所有场景共用）
@@ -193,7 +191,7 @@ class WatermarkLayer(Layer):
         cfg: dict,
         segments: List[Tuple[str, str]],
         *,
-        render_scale: float,
+        raster_scale: float,
     ) -> None:
         """在 draw/image 上绘制单行水印。segments 已经是 _build_segments 的结果。"""
         # 分辨率在最后补（拿到实际 image.size 才知道）
@@ -207,19 +205,19 @@ class WatermarkLayer(Layer):
 
         # 样式参数
         font_size = max(int(round(_resolve_size(
-            cfg.get("font_size", {"fixed": 11, "scaled": 1.5}),
-            render_scale,
-        ))), 6)
+            cfg["font_size"],
+            raster_scale,
+        ))), 1)
         sep = cfg.get("separator", " · ")
-        margin_x = int(_resolve_size(cfg.get("margin", {}).get("x", 20), render_scale))
-        margin_y = int(_resolve_size(cfg.get("margin", {}).get("y", 20), render_scale))
+        margin_x = int(_resolve_size(cfg.get("margin", {}).get("x", 20), raster_scale))
+        margin_y = int(_resolve_size(cfg.get("margin", {}).get("y", 20), raster_scale))
         bg_raw = str(cfg.get("background", "transparent")).strip().lower()
         bg = None
         if bg_raw not in ("", "none", "transparent"):
             bg = _parse_rgba(str(cfg.get("background")))
-        pad_x = int(_resolve_size(cfg.get("padding", {}).get("x", 12), render_scale))
-        pad_y = int(_resolve_size(cfg.get("padding", {}).get("y", 6), render_scale))
-        radius = int(_resolve_size(cfg.get("border_radius", 6), render_scale))
+        pad_x = int(_resolve_size(cfg.get("padding", {}).get("x", 12), raster_scale))
+        pad_y = int(_resolve_size(cfg.get("padding", {}).get("y", 6), raster_scale))
+        radius = int(_resolve_size(cfg.get("border_radius", 6), raster_scale))
 
         color_map = {
             "city_color": cfg.get("city_color", "#1A1A1A"),
@@ -300,7 +298,7 @@ class WatermarkLayer(Layer):
     def _get_font(self, size_px: int, font_family: str | None = None,
                   text: str | None = None) -> ImageFont.FreeTypeFont:
         """按（字号，实际字体文件）缓存；给定 text 时按字符覆盖选字体。"""
-        size = max(int(round(size_px)), 6)
+        size = max(int(round(size_px)), 1)
         path = resolve_text_font(font_family, text=text)
         key = (size, str(path) if path is not None else "")
         if key not in self._font_cache:

@@ -31,6 +31,7 @@ public partial class App : Application
             Children = { new TextBlock { Text = "CSLModernMap", FontSize = 20, HorizontalAlignment = HorizontalAlignment.Center }, spinner, errorText },
         };
         var startup = new Window { Title = "CSLModernMap", Content = content };
+        startup.AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "app.ico"));
         startup.AppWindow.Resize(new Windows.Graphics.SizeInt32(420, 240));
         var handedOff = false;
         var closing = false;

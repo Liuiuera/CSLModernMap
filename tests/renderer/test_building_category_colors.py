@@ -1,4 +1,5 @@
 """两代类别改色的作用范围、父子继承和预览/PNG 契约。"""
+from contextlib import ExitStack
 from copy import deepcopy
 import json
 
@@ -69,7 +70,7 @@ def render(doc, data):
 
 
 @pytest.mark.parametrize('game', ['cs1','cs2'])
-def test_category_changes_police_and_expansion_only_in_png_and_preview(tmp_path, game):
+def test_category_changes_police_and_expansion_only_in_png_and_preview(tmp_path, game, modern_style):
     doc=document(game,[
         building(1,'PoliceDepartment','Police Station' if game=='cs1' else 'JP_PoliceHQ01',game=game,icls='Police Department Facility'),
         building(2,'Beautification','Rollercoaster' if game=='cs1' else 'WaterPark01',game=game),
@@ -77,7 +78,9 @@ def test_category_changes_police_and_expansion_only_in_png_and_preview(tmp_path,
         building(4,'None','Unmapped extension',game=game,parent=1),
         building(5,'None','Unmapped independent',game=game),
     ])
-    cfg={'buildings':{'color_mode':'poi','default':'#D8D2C6','border_width':0}, 'poi_icons':{'enabled':False}}
+    cfg=deepcopy(modern_style.data)
+    cfg['buildings']={'color_mode':'poi','default':'#D8D2C6','border_width':0}
+    cfg['poi_icons']={'enabled':False}
     original=render(doc,cfg)
     cfg['buildings'].update(color_mode='category',category_colors={'police':{'enabled':True,'color':'#FF0000'}})
     changed=render(doc,cfg)
@@ -87,8 +90,9 @@ def test_category_changes_police_and_expansion_only_in_png_and_preview(tmp_path,
     for i in (2,3,5):
         point=(50+(i-1)*90,50)
         assert changed.getpixel(point)==original.getpixel(point)
-    PreviewSceneCompiler._compile_domain_sources(doc,DocumentSession(doc),tmp_path,1,{},
-        {'changed':{'buildings'},'style':cfg})
+    with ExitStack() as scope:
+        PreviewSceneCompiler._compile_domain_sources(doc,DocumentSession(doc),tmp_path,1,{},
+            {'changed':{'buildings'},'style':cfg},domain_scope=scope)
     source=json.loads((tmp_path/'buildings.geojson').read_text(encoding='utf-8'))
     props={f['properties']['buildingId']:f['properties'] for f in source['features']}
     assert {i:p['colorCategory'] for i,p in props.items()} == building_categories(doc)
@@ -100,10 +104,12 @@ def test_category_changes_police_and_expansion_only_in_png_and_preview(tmp_path,
     assert render(doc,cfg).tobytes()==original.tobytes()
 
 
-def test_theme_category_defaults_metadata_and_round_trip():
-    raw={'buildings':{'default':'#123456'}}
+def test_theme_category_defaults_metadata_and_round_trip(modern_style):
+    raw=modern_style.data
+    raw['buildings']['default']='#123456'
+    before=deepcopy(raw)
     normalized=normalize_theme(raw)
-    assert raw=={'buildings':{'default':'#123456'}}
+    assert raw==before
     assert normalize_theme(normalized)==normalized
     assert category_palette(normalized['buildings'])=={}
     value=normalized['buildings']['category_colors']['police']

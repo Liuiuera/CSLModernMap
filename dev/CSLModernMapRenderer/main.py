@@ -28,9 +28,18 @@ _SUBCOMMANDS = {
 }
 
 
+def _load_cli_document(path):
+    from csmodernmap.parser import parse_document
+    from csmodernmap.cmm.file_format import read_information
+
+    document = parse_document(path)
+    for message in read_information(document):
+        print(message, file=sys.stderr)
+    return document
+
+
 def cmd_parse(args: argparse.Namespace) -> int:
     """解析存档并输出统计信息。"""
-    from csmodernmap import parser as map_parser
     from csmodernmap.cmm.session import DocumentSession
 
     if not Path(args.file).exists():
@@ -39,7 +48,7 @@ def cmd_parse(args: argparse.Namespace) -> int:
         return 1
     t0 = time.time()
     print(f"解析 {args.file} ...")
-    document = map_parser.parse_document(args.file)
+    document = _load_cli_document(args.file)
     session = DocumentSession(document=document)
     mapdata = session._legacy_view()
     elapsed = time.time() - t0
@@ -109,10 +118,9 @@ def _load_style(args: argparse.Namespace):
         print(f"错误：主题“{args.style}”不存在。")
         print(f"可用主题：{', '.join(available)}")
         return None
-    s = load_style(
-        str(style_path),
-        font_scale=getattr(args, "font_scale", 1.0),
-    )
+    s = load_style(str(style_path))
+    from csmodernmap.pixel_sizes import prepare_style
+    prepare_style(s, getattr(args, 'element_scale', 1.0))
     return s
 
 
@@ -304,17 +312,34 @@ def _open_session(document):
     return DocumentSession(document=document)
 
 
+def _make_diagnostics(args, label: str, **metadata):
+    """按需创建性能记录器；普通命令默认不启动诊断。"""
+    path = getattr(args, "diagnostics", None)
+    if not path:
+        return None, None
+    from csmodernmap.performance import PerformanceRecorder
+
+    metadata.setdefault("archive", str(Path(args.file).resolve()))
+    return PerformanceRecorder(label=label, metadata=metadata), path
+
+
 def cmd_render(args: argparse.Namespace) -> int:
     """渲染地图为 PNG。"""
     if not _check_file(args.file):
         return 1
     from csmodernmap import export
-    from csmodernmap import parser as map_parser
+    from csmodernmap.performance import perf_span
     from csmodernmap.services.station import StationSidecarError
     from PIL import Image  # noqa: F401  保留以防遗漏
+
+    diagnostics, diagnostics_path = _make_diagnostics(
+        args, "cli-render", command="render", size=args.size,
+        aa_rate=2 if args.aa else 1,
+    )
     t0 = time.time()
     print(f"解析 {args.file} ...")
-    mapdata = map_parser.parse_document(args.file)
+    with perf_span(diagnostics, "load.document"):
+        mapdata = _load_cli_document(args.file)
     _attach_traffic(mapdata, getattr(args, "traffic", None))
     session = _open_session(mapdata)
 
@@ -358,14 +383,18 @@ def cmd_render(args: argparse.Namespace) -> int:
     try:
         image = renderer.render(
             mapdata, region=region, aa_downsample=aa_rate,
-            session=session,
+            diagnostics=diagnostics, session=session,
         )
     except StationSidecarError as exc:
         print(f"错误：站点侧车未应用，渲染已停止：{exc}")
         return 1
     if renderer.last_stats.get("auto_tiled_fallback"):
         print("  提示：整图渲染峰值内存超上限，已自动切换分块渲染（结果一致）")
-    export.export_png(image, args.output)
+    with perf_span(diagnostics, "output.png"):
+        export.export_png(image, args.output)
+    if diagnostics is not None:
+        diagnostics.write_json(diagnostics_path)
+        print(f"性能诊断已写入: {diagnostics_path}")
     print(f"完成: {args.output} (总耗时 {time.time() - t0:.1f}s)")
     return 0
 
@@ -380,16 +409,22 @@ def cmd_transit(args: argparse.Namespace) -> int:
     import copy
 
     from csmodernmap import export
-    from csmodernmap import parser as map_parser
     from csmodernmap import transit
+    from csmodernmap.performance import perf_span
     from csmodernmap.layers.poi_icon_layer import POIIconLayer
     from csmodernmap.layers.transport_layer import TransportLayer
     from csmodernmap.renderer import Renderer
     from csmodernmap.services.station import StationSidecarError
     from PIL import Image
+
+    diagnostics, diagnostics_path = _make_diagnostics(
+        args, "cli-transit", command="transit", size=args.size,
+        aa_rate=2 if args.aa else 1,
+    )
     t0 = time.time()
     print(f"解析 {args.file} ...")
-    mapdata = map_parser.parse_document(args.file)
+    with perf_span(diagnostics, "load.document"):
+        mapdata = _load_cli_document(args.file)
     _attach_traffic(mapdata, getattr(args, "traffic", None))
     session = _open_session(mapdata)
     utility_map = session._legacy_view()
@@ -451,9 +486,11 @@ def cmd_transit(args: argparse.Namespace) -> int:
     )
     renderer.render_job = base_job
     print(f"渲染底图（剔除交通线路）({args.size}x{args.size}, AA={args.aa}) ...")
+    if diagnostics is not None:
+        diagnostics.metadata["transit_types"] = types
     img = renderer.render(
         mapdata, region=region, aa_downsample=aa_rate,
-        session=session,
+        diagnostics=diagnostics, session=session,
     )
     # 淡白遮罩
     mask = float(args.transit_mask)
@@ -467,7 +504,6 @@ def cmd_transit(args: argparse.Namespace) -> int:
     station_cfg = dict(cfg.get("station") or {})
     station_cfg["enabled"] = True
     station_cfg.setdefault("merge_range", 48.0)
-    station_cfg.setdefault("size", {"fixed": 2.5, "scaled": 5.0})
     cfg["station"] = station_cfg
     renderer2 = Renderer(
         s2, width=args.size, height=args.size,
@@ -489,7 +525,8 @@ def cmd_transit(args: argparse.Namespace) -> int:
 
     try:
         img_tr = renderer2.render(mapdata, region=region, aa_downsample=aa_rate,
-                                  progress=_p_tr, session=session)
+                                  progress=_p_tr, diagnostics=diagnostics,
+                                  session=session)
     except StationSidecarError as exc:
         sys.stdout.write("\n")
         print(f"错误：站点侧车未应用，渲染已停止：{exc}")
@@ -505,10 +542,13 @@ def cmd_transit(args: argparse.Namespace) -> int:
 
         WatermarkLayer.draw_on_image(
             img, style, utility_map,
-            render_scale=img.size[0] / 4096,
             custom_text=getattr(args, "watermark_text", None),
         )
-    export.export_png(img, args.output)
+    with perf_span(diagnostics, "output.png"):
+        export.export_png(img, args.output)
+    if diagnostics is not None:
+        diagnostics.write_json(diagnostics_path)
+        print(f"性能诊断已写入: {diagnostics_path}")
     print(f"完成: {args.output} (总耗时 {time.time() - t0:.1f}s)")
     return 0
 
@@ -520,14 +560,13 @@ def cmd_random(args: argparse.Namespace) -> int:
     import random
 
     from csmodernmap import export
-    from csmodernmap import parser as map_parser
     from PIL import Image  # noqa: F401
 
     from csmodernmap.regions import random_region
 
     t0 = time.time()
     print(f"解析 {args.file} ...")
-    mapdata = map_parser.parse_document(args.file)
+    mapdata = _load_cli_document(args.file)
     _attach_traffic(mapdata, getattr(args, "traffic", None))
     session = _open_session(mapdata)
     utility_map = session._legacy_view()
@@ -570,12 +609,11 @@ def cmd_interchange(args: argparse.Namespace) -> int:
     from PIL import Image  # noqa: F401
 
     from csmodernmap import export
-    from csmodernmap import parser as map_parser
     from csmodernmap.interchanges import render_interchange_mosaic
 
     t0 = time.time()
     print(f"解析 {args.file} ...")
-    mapdata = map_parser.parse_document(args.file)
+    mapdata = _load_cli_document(args.file)
     _attach_traffic(mapdata, getattr(args, "traffic", None))
     session = _open_session(mapdata)
     utility_map = session._legacy_view()
@@ -617,7 +655,6 @@ def cmd_interchange(args: argparse.Namespace) -> int:
 
         WatermarkLayer.draw_on_image(
             mosaic, style, utility_map,
-            render_scale=mosaic.size[0] / 4096,
             custom_text=getattr(args, "watermark_text", None),
         )
     export.export_png(mosaic, args.output)
@@ -652,7 +689,6 @@ def cmd_spot(args: argparse.Namespace) -> int:
     import random as _random
 
     from csmodernmap import export
-    from csmodernmap import parser as map_parser
     from csmodernmap.spots import (
         compose_compare,
         has_traffic,
@@ -664,7 +700,7 @@ def cmd_spot(args: argparse.Namespace) -> int:
 
     t0 = time.time()
     print(f"解析 {args.file} ...")
-    mapdata = map_parser.parse_document(args.file)
+    mapdata = _load_cli_document(args.file)
     _attach_traffic(mapdata, getattr(args, "traffic", None))
     session = _open_session(mapdata)
     utility_map = session._legacy_view()
@@ -744,7 +780,6 @@ def cmd_spot(args: argparse.Namespace) -> int:
 
         WatermarkLayer.draw_on_image(
             image, style, utility_map,
-            render_scale=image.size[0] / 4096,
             custom_text=getattr(args, "watermark_text", None),
         )
     export.export_png(image, args.output)
@@ -758,10 +793,14 @@ def cmd_export_web(args: argparse.Namespace) -> int:
     """导出 MapLibre 单文件网页地图 HTML（资源全部内嵌，双击即看）。"""
     if not _check_file(args.file):
         return 1
-    from csmodernmap import parser as map_parser
+    from csmodernmap.performance import perf_span
+
+    diagnostics, diagnostics_path = _make_diagnostics(
+        args, "cli-export-web", command="export-web")
     t0 = time.time()
     print(f"解析 {args.file} ...")
-    mapdata = map_parser.parse_document(args.file)
+    with perf_span(diagnostics, "load.document"):
+        mapdata = _load_cli_document(args.file)
 
     print(f"加载主题 {args.style} ...")
     style = _load_style(args)
@@ -770,17 +809,22 @@ def cmd_export_web(args: argparse.Namespace) -> int:
 
     print("生成网页地图（MapLibre 单文件，资源全部内嵌）...")
     from csmodernmap.web_export_v2 import export_web
-    out = export_web(
-        mapdata, style, city=mapdata.city_name,
-        out_path=args.output,
-        options={
-            "visibility": {"poi": not args.no_poi},
-            "rotation": args.rotation,
-            **({"revision": args.revision} if args.revision is not None else {}),
-        },
-        callbacks={"progress": _cli_progress},
-    )
+
+    with perf_span(diagnostics, "render.html"):
+        out = export_web(
+            mapdata, style, city=mapdata.city_name,
+            out_path=args.output,
+            options={
+                "visibility": {"poi": not args.no_poi},
+                "rotation": args.rotation,
+                **({"revision": args.revision} if args.revision is not None else {}),
+            },
+            callbacks={"progress": _cli_progress},
+        )
     out = Path(args.output)
+    if diagnostics is not None:
+        diagnostics.write_json(diagnostics_path)
+        print(f"性能诊断已写入: {diagnostics_path}")
     mb = out.stat().st_size / 1024 / 1024
     print(
         f"完成: {out} ({mb:.1f} MB, 总耗时 {time.time() - t0:.1f}s)\n"
@@ -967,8 +1011,12 @@ def main(argv=None) -> int:
         help="渲染区域 x0,z0,x1,z1（游戏坐标，可选；不填渲染整张地图）",
     )
     p_render.add_argument("-o", "--output", default="output.png", help="输出文件路径")
-    p_render.add_argument("--font-scale", type=float, default=1.0,
-                   help="全局字号倍率（如 1.2；1.0=不缩放，作用于渲染文字/标签）")
+    p_render.add_argument(
+        "--diagnostics", default=None, metavar="JSON",
+        help="开启性能诊断并将阶段耗时/内存记录写入 JSON（默认关闭）",
+    )
+    p_render.add_argument("--element-scale", type=float, default=1.0,
+                   help="元素缩放倍率（1.0=100%，应用于所有主题像素长度）")
     p_render.set_defaults(func=cmd_render)
 
     p_transit = sub.add_parser(
@@ -1022,8 +1070,12 @@ def main(argv=None) -> int:
                            help="渲染区域 x0,z0,x1,z1（可选）")
     p_transit.add_argument("-o", "--output", default="transit.png",
                            help="输出文件路径")
-    p_transit.add_argument("--font-scale", type=float, default=1.0,
-                           help="全局字号倍率")
+    p_transit.add_argument("--element-scale", type=float, default=1.0,
+                           help="元素缩放倍率（1.0=100%，应用于所有主题像素长度）")
+    p_transit.add_argument(
+        "--diagnostics", default=None, metavar="JSON",
+        help="开启性能诊断并将阶段耗时/内存记录写入 JSON（默认关闭）",
+    )
     p_transit.set_defaults(func=cmd_transit)
 
     p_random = sub.add_parser("random", help="随机特写：随机渲染一块城市建成区")
@@ -1081,8 +1133,8 @@ def main(argv=None) -> int:
         help="输出顺时针旋转角度（0/90/180/270，默认 0）；文字与图标在旋转后的坐标系中重新渲染",
     )
     p_random.add_argument("-o", "--output", default="random_spot.png", help="输出文件路径")
-    p_random.add_argument("--font-scale", type=float, default=1.0,
-                   help="全局字号倍率（如 1.2；1.0=不缩放，作用于渲染文字/标签）")
+    p_random.add_argument("--element-scale", type=float, default=1.0,
+                   help="元素缩放倍率（1.0=100%，应用于所有主题像素长度）")
     p_random.set_defaults(func=cmd_random)
 
     p_int = sub.add_parser("interchange", help="立交特写：识别立交桥并逐处特写拼图")
@@ -1140,8 +1192,8 @@ def main(argv=None) -> int:
         help="输出顺时针旋转角度（0/90/180/270，默认 0）；文字与图标在旋转后的坐标系中重新渲染",
     )
     p_int.add_argument("-o", "--output", default="interchanges.png", help="输出文件路径")
-    p_int.add_argument("--font-scale", type=float, default=1.0,
-                   help="全局字号倍率（如 1.2；1.0=不缩放，作用于渲染文字/标签）")
+    p_int.add_argument("--element-scale", type=float, default=1.0,
+                   help="元素缩放倍率（1.0=100%，应用于所有主题像素长度）")
     p_int.set_defaults(func=cmd_interchange)
 
     p_spot = sub.add_parser(
@@ -1219,8 +1271,8 @@ def main(argv=None) -> int:
         help="输出顺时针旋转角度（0/90/180/270，默认 0）；文字与图标在旋转后的坐标系中重新渲染",
     )
     p_spot.add_argument("-o", "--output", default="spots.png", help="输出文件路径")
-    p_spot.add_argument("--font-scale", type=float, default=1.0,
-                   help="全局字号倍率（如 1.2；1.0=不缩放，作用于渲染文字/标签）")
+    p_spot.add_argument("--element-scale", type=float, default=1.0,
+                   help="元素缩放倍率（1.0=100%，应用于所有主题像素长度）")
     p_spot.set_defaults(func=cmd_spot)
 
     p_list = sub.add_parser("list-styles", help="列出可用主题")
@@ -1241,8 +1293,12 @@ def main(argv=None) -> int:
         "--rotation", type=int, choices=(0, 90, 180, 270), default=0,
         help="输出旋转角度：顺时针旋转地图内容（默认 0，只改方向不改数据）",
     )
-    p_export.add_argument("--font-scale", type=float, default=1.0,
-                   help="全局字号倍率（如 1.2；1.0=不缩放，作用于渲染文字/标签）")
+    p_export.add_argument("--element-scale", type=float, default=1.0,
+                   help="元素缩放倍率（1.0=100%，应用于所有主题像素长度）")
+    p_export.add_argument(
+        "--diagnostics", default=None, metavar="JSON",
+        help="开启轻量性能诊断并写入 JSON（默认关闭）",
+    )
     p_export.set_defaults(func=cmd_export_web)
 
     if argv is None:
@@ -1252,7 +1308,7 @@ def main(argv=None) -> int:
         return 0
 
     args = parser.parse_args(argv)
-    # 给不接受这些参数的子命令（gui/parse/list-styles）补齐默认值
+    # 给不接受这些参数的子命令（parse/list-styles）补齐默认值
     defaults = {
         "layers": None,
         "tile_size": 0,
@@ -1320,7 +1376,7 @@ def _notify_startup_error(message: str) -> None:
 
 
 def _startup_error_hook(exc_type, exc_value, exc_tb) -> None:
-    """记录启动异常，并在无控制台时显示日志位置。"""
+    """未处理异常落盘；无控制台版本再弹出提示框指出日志位置。"""
     import traceback
 
     from csmodernmap._paths import is_bundled

@@ -226,8 +226,7 @@ def test_export_embeds_navigation_and_escapes_road_names(tmp_path):
     (viewer / "index.html").write_text('<script src="./assets/index-test.js"></script><link href="./assets/index-test.css">', encoding="utf8")
     for name in ("index-test.js", "index-test.css", "maplibre-gl-csp-worker.js"):
         (assets / name).write_text("", encoding="utf8")
-    for name in ("preview-errors.js", "THIRD_PARTY_LICENSES.txt"):
-        (viewer / name).write_text("", encoding="utf8")
+    (viewer / "preview-errors.js").write_text("", encoding="utf8")
     class Parser(HTMLParser):
         count = 0
         def handle_starttag(self, tag, attrs):

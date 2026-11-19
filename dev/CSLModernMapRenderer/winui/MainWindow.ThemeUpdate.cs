@@ -2,78 +2,148 @@ using System.Text.Json;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Automation;
+using Microsoft.UI.Xaml.Automation.Peers;
 using Windows.UI;
 
 namespace CSLModernMapWinUI;
 
 public sealed partial class MainWindow
 {
-    private async Task ShowThemeUpdateAsync()
+    private EditorWindow? _presetUpdateWindow;
+
+    internal async Task<bool> ShowThemeUpdateAsync(bool includeHandled = false, string? theme = null)
     {
-        if (!_snapshot.TryGetProperty("themeUpdate", out var notice) || notice.ValueKind != JsonValueKind.Object) return;
-        var body = new StackPanel { Spacing = 16, MaxWidth = 460 };
-        body.Children.Add(new TextBlock { Text = string.Format(UiLanguage.Text("ThemeUpdate_Intro"), notice.GetProperty("name").GetString()), TextWrapping = TextWrapping.Wrap });
-        var changes = notice.GetProperty("changes").EnumerateArray().ToArray();
-        foreach (var change in changes.Take(3)) body.Children.Add(ThemeChangeRow(change));
-        if (changes.Length > 3)
+        if (_presetUpdateWindow is not null) return false;
+        JsonElement notice;
+        if (includeHandled)
         {
-            var rest = new StackPanel { Spacing = 14 };
-            foreach (var change in changes.Skip(3)) rest.Children.Add(ThemeChangeRow(change));
-            body.Children.Add(new Expander { Header = UiLanguage.Text("ThemeUpdate_AllChanges"), Content = rest, HorizontalAlignment = HorizontalAlignment.Stretch });
+            var result = await _engine.RequestAsync("getThemeUpdate", new { theme });
+            notice = result.GetProperty("notice");
         }
-        var preserved = notice.GetProperty("preserved").EnumerateArray().ToArray();
-        if (preserved.Length > 0)
+        else if (!_snapshot.TryGetProperty("themeUpdate", out notice)) return false;
+        if (notice.ValueKind != JsonValueKind.Object)
         {
-            var kept = new StackPanel { Spacing = 8 };
-            kept.Children.Add(new TextBlock { Text = UiLanguage.Text("ThemeUpdate_Kept"), FontWeight = Microsoft.UI.Text.FontWeights.SemiBold });
-            foreach (var item in preserved.Take(3))
+            if (includeHandled) ShowNotice(UiLanguage.Text("ThemeUpdate_None"));
+            return false;
+        }
+        var epoch = _snapshot.GetProperty("documentEpoch").GetInt32();
+        var window = _presetUpdateWindow = new EditorWindow(UiLanguage.Text("ThemeUpdate_Title"), "refresh", 820, 630,
+            translucent: true, owner: this, modal: true) { ActionsRightAligned = true };
+        var body = new Grid { RowSpacing = 12 };
+        body.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+        body.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+        body.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+        var heading = ExportDesign.Group(UiLanguage.Text("ThemeUpdate_Title"));
+        ((TextBlock)heading.Children[0]).FontSize = 22;
+        heading.Children.Add(ExportDesign.Text(
+            string.Format(UiLanguage.Text("ThemeUpdate_Intro"), notice.GetProperty("name").GetString())));
+        var release = ExportDesign.Text($"{notice.GetProperty("fromVersion").GetString()} → {notice.GetProperty("toVersion").GetString()}");
+        ExportDesign.Secondary(release);
+        heading.Children.Add(release);
+        body.Children.Add(heading);
+        var groups = new StackPanel { Spacing = 10 };
+        foreach (var group in notice.GetProperty("changes").EnumerateArray().GroupBy(change => change.GetProperty("section").GetString()))
+            groups.Children.Add(ThemeChangeGroup(group.Key!, group));
+        var list = new ScrollViewer { Content = groups, HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+            HorizontalContentAlignment = HorizontalAlignment.Stretch };
+        Grid.SetRow(list, 1);
+        body.Children.Add(list);
+        var note = ExportDesign.Text(UiLanguage.Text("ThemeUpdate_Archived"));
+        ExportDesign.Secondary(note);
+        var error = new InfoBar { Severity = InfoBarSeverity.Error, IsClosable = false };
+        var footer = new StackPanel { Spacing = 8 };
+        footer.Children.Add(note);
+        footer.Children.Add(error);
+        Grid.SetRow(footer, 2);
+        body.Children.Add(footer);
+        window.SetBody(body);
+        var decided = false;
+        var applied = false;
+        var deciding = false;
+        async Task Decide(bool apply)
+        {
+            deciding = true;
+            try
             {
-                var line = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
-                line.Children.Add(ThemeUpdateValue(item.GetProperty("after"), item.GetProperty("afterLabel")));
-                line.Children.Add(new TextBlock { Text = item.GetProperty("label").GetString() ?? UiLanguage.Text("ThemeUpdate_Custom"), TextWrapping = TextWrapping.Wrap, MaxWidth = 320, VerticalAlignment = VerticalAlignment.Center });
-                kept.Children.Add(line);
+                await _engine.RequestAsync("acknowledgeThemeUpdate", new {
+                    apply, theme = notice.GetProperty("theme").GetString(),
+                    revision = notice.GetProperty("revision").GetString(),
+                    sourceDigest = notice.GetProperty("sourceDigest").GetString(), documentEpoch = epoch });
+                decided = true; applied = apply;
             }
-            if (preserved.Length > 3) kept.Children.Add(new TextBlock { Text = string.Format(UiLanguage.Text("ThemeUpdate_MoreKept"), preserved.Length - 3), TextWrapping = TextWrapping.Wrap });
-            body.Children.Add(kept);
+            finally { deciding = false; }
         }
-        body.Children.Add(new TextBlock { Text = UiLanguage.Text("ThemeUpdate_Archived"), TextWrapping = TextWrapping.Wrap });
-        var dialog = new ContentDialog
-        {
-            XamlRoot = Root.XamlRoot, Title = UiLanguage.Text("ThemeUpdate_Title"),
-            Content = new ScrollViewer { Content = body, MaxHeight = 480, HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled },
-            PrimaryButtonText = UiLanguage.Text("ThemeUpdate_Continue"), CloseButtonText = UiLanguage.Text("ThemeUpdate_UsePrevious"),
-            DefaultButton = ContentDialogButton.Primary,
+        window.CanCloseAsync = async () => {
+            if (decided) return true;
+            if (deciding) return false;
+            try { await Decide(false); return true; }
+            catch (InvalidOperationException exception) { ShowNotice(exception.Message); return true; }
         };
-        // Esc 继续使用已合并的主题；只有点“切换旧版”才切换。
-        var usePrevious = false;
-        dialog.CloseButtonClick += (_, _) => usePrevious = true;
-        await dialog.ShowAsync();
-        await _engine.RequestAsync("acknowledgeThemeUpdate", new { usePrevious });
+        window.AddAction(UiLanguage.Text("ThemeUpdate_UsePrevious"), async () => await window.RequestCloseAsync());
+        window.AddAction(UiLanguage.Text("ThemeUpdate_Continue"), async () => {
+            if (deciding) return;
+            try { await Decide(true); window.ForceClose(); }
+            catch (InvalidOperationException exception) { error.Message = exception.Message; error.IsOpen = true; }
+        }).Style = (Style)Application.Current.Resources["AccentButtonStyle"];
+        try { await window.ShowAsync(); }
+        finally { _presetUpdateWindow = null; }
         await RefreshSnapshotAsync();
-        if (usePrevious && _snapshot.GetProperty("hasDocument").GetBoolean()) await RefreshLivePreviewAsync();
+        if (applied && _snapshot.GetProperty("hasDocument").GetBoolean()) await RefreshLivePreviewAsync();
+        return applied;
     }
 
-    private static StackPanel ThemeChangeRow(JsonElement change)
+    private static FrameworkElement ThemeChangeGroup(string title, IEnumerable<JsonElement> changes)
     {
-        var row = new StackPanel { Spacing = 6 };
-        row.Children.Add(new TextBlock { Text = change.GetProperty("label").GetString() ?? UiLanguage.Text("ThemeUpdate_Custom"), TextWrapping = TextWrapping.Wrap });
-        var values = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 10 };
-        values.Children.Add(ThemeUpdateValue(change.GetProperty("before"), change.GetProperty("beforeLabel")));
-        values.Children.Add(new FontIcon { Glyph = "\uE72A", FontSize = 12, VerticalAlignment = VerticalAlignment.Center });
-        values.Children.Add(ThemeUpdateValue(change.GetProperty("after"), change.GetProperty("afterLabel")));
-        row.Children.Add(values);
-        if (change.GetProperty("conflict").GetBoolean())
-            row.Children.Add(new TextBlock { Text = UiLanguage.Text("ThemeUpdate_Conflict"), FontSize = 12, TextWrapping = TextWrapping.Wrap });
+        var section = new StackPanel { Spacing = 8 };
+        var name = ExportDesign.Text(title, heading: true);
+        AutomationProperties.SetHeadingLevel(name, AutomationHeadingLevel.Level2);
+        var current = ExportDesign.Text(UiLanguage.Text("ThemeUpdate_Current"));
+        var updated = ExportDesign.Text(UiLanguage.Text("ThemeUpdate_Preset"));
+        ExportDesign.Secondary(current);
+        ExportDesign.Secondary(updated);
+        section.Children.Add(ThemeComparisonRow(name, current, updated));
+        foreach (var change in changes)
+        {
+            var label = new StackPanel { Spacing = 3 };
+            label.Children.Add(ExportDesign.Text(change.GetProperty("label").GetString()!));
+            if (change.GetProperty("conflict").GetBoolean())
+            {
+                var conflict = ExportDesign.Text(UiLanguage.Text("ThemeUpdate_Conflict"));
+                ExportDesign.Secondary(conflict);
+                label.Children.Add(conflict);
+            }
+            var row = ThemeComparisonRow(label, ThemeUpdateValue(change.GetProperty("before"), change.GetProperty("beforeLabel")),
+                ThemeUpdateValue(change.GetProperty("after"), change.GetProperty("afterLabel")));
+            var divider = ExportDesign.Divider(row);
+            divider.Padding = new Thickness(0, 7, 0, 0);
+            section.Children.Add(divider);
+        }
+        return ExportDesign.Card(section);
+    }
+
+    private static Grid ThemeComparisonRow(FrameworkElement label, FrameworkElement current, FrameworkElement updated)
+    {
+        var row = new Grid { ColumnSpacing = 12 };
+        row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1.4, GridUnitType.Star) });
+        row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        Grid.SetColumn(current, 1);
+        Grid.SetColumn(updated, 2);
+        row.Children.Add(label);
+        row.Children.Add(current);
+        row.Children.Add(updated);
         return row;
     }
 
     private static FrameworkElement ThemeUpdateValue(JsonElement value, JsonElement label)
     {
-        var panel = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, MaxWidth = 195 };
+        var panel = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, HorizontalAlignment = HorizontalAlignment.Left };
         if (value.ValueKind == JsonValueKind.String && value.GetString() is { } color && ThemeUpdateColor(color) is { } brush)
         {
             panel.Children.Add(new Border { Width = 24, Height = 18, CornerRadius = new CornerRadius(3), Background = brush });
             Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(panel, color);
+            panel.Children.Add(new TextBlock { Text = color, VerticalAlignment = VerticalAlignment.Center, TextWrapping = TextWrapping.Wrap });
             return panel;
         }
         if (value.ValueKind == JsonValueKind.Array && value.GetArrayLength() > 0 && value[0].ValueKind == JsonValueKind.Object && value[0].TryGetProperty("color", out _))
@@ -81,7 +151,8 @@ public sealed partial class MainWindow
             var ramp = new StackPanel { Orientation = Orientation.Horizontal };
             foreach (var stop in value.EnumerateArray())
                 ramp.Children.Add(new Border { Width = 100.0 / value.GetArrayLength(), Height = 18, Background = ThemeUpdateColor(stop.GetProperty("color").GetString()!) });
-            Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(ramp, UiLanguage.Text("ThemeUpdate_ColorRamp"));
+            AutomationProperties.SetName(ramp, UiLanguage.Text("ThemeUpdate_ColorRamp"));
+            ToolTipService.SetToolTip(ramp, string.Join(" · ", value.EnumerateArray().Select(stop => stop.GetProperty("color").GetString())));
             return ramp;
         }
         var text = label.ValueKind == JsonValueKind.String ? label.GetString() : value.ValueKind switch

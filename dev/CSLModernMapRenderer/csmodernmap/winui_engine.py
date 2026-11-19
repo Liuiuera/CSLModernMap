@@ -5,7 +5,6 @@
 from __future__ import annotations
 
 from . import i18n
-from .task_error import error_payload
 
 import heapq
 import hashlib
@@ -13,12 +12,14 @@ import copy
 import errno
 import json
 import math
+import os
 import re
 import queue
 import sys
 import tempfile
 import threading
 import time
+from .task_error import error_payload
 import traceback
 import uuid
 from contextlib import contextmanager
@@ -51,7 +52,7 @@ from .theme_contract import normalize_theme, sanitize_theme_data, validate_theme
 PROTOCOL_VERSION = 1
 TEXT_ICON_FIELDS = ("label.roads", "label.districts", "road.game_names", "poi.game_names",
     "transport.stations", "transport.station_names", "poi.set", "poi.size", "poi.font",
-    "poi.name_size", "poi.name_stroke", "poi.name_stroke_ratio") + tuple(
+    "poi.name_size", "poi.name_stroke", "poi.name_stroke_width") + tuple(
         f"label.{attr}.{kind}" for kind in ("road", "district")
         for attr in ("font", "size", "color", "stroke_width", "stroke_color"))
 TEXT_ICON_OPTIONS = {
@@ -82,14 +83,14 @@ COLOR_PATHS = {tuple(path) for key, path in STYLE_FIELD_PATHS.items()
                if key in FIELDS and FIELDS[key].kind == "color"}
 
 def _polyline_length(points) -> float:
-    """水平面 (x, z) 折线长。"""
+    """与 Qt 版 guir/main_window.py::_polyline_length 同口径：水平面 (x, z) 折线长。"""
     points = list(points)
     return sum(math.hypot(float(right.x) - float(left.x), float(right.z) - float(left.z))
                for left, right in zip(points, points[1:]))
 
 
 def _polygon_area(points) -> float:
-    """使用鞋带公式计算水平面面积。"""
+    """与 Qt 版 guir/main_window.py::_polygon_area 同口径的鞋带公式。"""
     points = list(points)
     if len(points) < 3:
         return 0.0
@@ -172,24 +173,45 @@ class EngineServer:
         self._saving_export = False
         self.workflows = WinuiWorkflows(self)
         self._document_epoch = 0
+        from .artwork import ArtworkState
+        self.artwork_state = ArtworkState(self._document_epoch)
+        self._artwork_jobs = []
+        self._artwork_active = False
+        self._artwork_stop = threading.Event()
+        self.artwork_diagnostics = {}
+        self._artwork_started = {}
+        self._city_draft = None
+        self._city_edit_timer = None
+        self._city_waiting_drafts = {}
+        self._artwork_scene = None
         self._stats_cache: dict | None = None
         self._external_busy = False
-        self._transit_session_options: dict | None = None
         self._render_mode: str | None = None
         self._theme_preview_request_id: str | None = None
+        self._theme_import: tuple[str, int, str, str] | None = None
         self._theme_preview_lock = threading.Lock()
         self._theme_preview_pending: tuple[str, dict, str, int, object] | None = None
         self._theme_preview_busy = False
+        self._theme_thumbnail_pending = {}
+        self._theme_thumbnail_busy = False
+        self._theme_thumbnail_thread = None
         self._poi_editor_token: str | None = None
         self._poi_editor_mtime: tuple[int, int | None] | None = None
         self._preview_files = tempfile.TemporaryDirectory(prefix="cslmm-winui-")
+        self._compatibility_files: dict[str, Path] = {}
         self.callbacks = {
             "progress": self._render_progress,
             "busy": lambda value: self.event("busy", {"value": bool(value) or self._saving_export}),
             "meta": lambda info, source: self.event("meta", {"info": info, "source": source}),
             "error": self._backend_error,
-            "scene_error": lambda error: self.event("sceneError", {"message": str(error)}),
+            "scene_error": lambda error: self.event("sceneError", error_payload(error, operation="preview", stage="preview", documentEpoch=self._document_epoch)),
+            "scene_detail_error": lambda base, error: self.event("sceneDetailError", error_payload(
+                error, operation="preview", stage="enrichment", documentEpoch=self._document_epoch,
+                sceneId=base.scene_id, revision=base.revision, notice=tr("gui.file.preview_details_skipped"))),
             "scene_ready": self._scene_ready,
+            "scene_compiled": lambda bundle: self.event("sceneCompiled", {
+                "sceneId": bundle.scene_id, "revision": bundle.revision,
+                "documentEpoch": self._document_epoch}),
             "done": self._render_done,
             "rmp_done": self._rmp_done,
             "web_done": lambda path: self.event("exportDone", {"path": str(path)}),
@@ -221,6 +243,20 @@ class EngineServer:
         if type(epoch) is not int or epoch != self._document_epoch:
             raise RuntimeError(i18n.tr('ui.winui_engine._require_document_epoch.8e11490207'))
 
+    def _check_satellite_texture(self, style, limit) -> None:
+        from .satellite_filter import satellite_image
+        from PIL import Image
+        import io
+        if self.backend.document is None or self.backend.document._satellite_info is None:
+            raise ValueError(tr("gui.satellite.unavailable"))
+        if limit is not None and (type(limit) is not int or limit <= 0):
+            raise ValueError("Invalid texture size limit")
+        png = satellite_image(self.backend.document, style, progress=self._render_progress)
+        if limit is not None:
+            with Image.open(io.BytesIO(png)) as image:
+                if max(image.size) > limit:
+                    raise ValueError(tr("satellite_texture_limit", size=max(image.size), limit=limit))
+
     @staticmethod
     def _profile_paths(profile: dict, prefix: str = "") -> set[str]:
         paths = set()
@@ -246,12 +282,83 @@ class EngineServer:
         node[parts[-1]] = copy.deepcopy(value)
 
     def _scene_ready(self, bundle, manifest_url: str) -> None:
+        self._artwork_scene = (self._document_epoch, bundle)
         self.event("sceneReady", {"manifestUrl": manifest_url,
                                   "sceneId": bundle.scene_id, "revision": bundle.revision,
                                   "completion": bundle.manifest.get("completion", "complete"),
-                                  "warnings": self._render_warnings(road_order=bundle.manifest.get("roadOrder", {})),
+                                  "warnings": self._render_warnings(road_order=bundle.manifest.get("roadOrder", {}), include_read_info=False),
                                   "theme": self.backend.preview_theme(),
                                   "layers": self.backend.map_layer_visibility()})
+        waiting = getattr(self, '_city_waiting_drafts', {})
+        handled_current = any(config is self._city_draft for config in waiting.values())
+        for identity, config in list(waiting.items()):
+            if config is not self._city_draft and not self.artwork_state.is_pinned(identity):
+                waiting.pop(identity)
+                continue
+            try:
+                self._start_city_draft(config)
+            except Exception as exc:
+                waiting.pop(identity, None)
+                self.artwork_state.fail(identity, str(exc))
+                if config is self._city_draft:
+                    self.event('artworkFailed', {'documentEpoch': identity[0], 'artworkRevision': identity[1],
+                        'operationId': config.get('operationId'), 'message': str(exc)})
+        if self._city_draft is not None and not handled_current and self._city_edit_timer is None:
+            try:
+                if not self._city_draft['waiting']:
+                    self._city_draft['revision'] = 0
+                self._start_city_draft()
+            except Exception as exc:
+                config = self._city_draft
+                config['waiting'] = False
+                self.artwork_state.fail((self._document_epoch, self.artwork_state.revision), str(exc))
+                self.event('artworkFailed', {'documentEpoch': self._document_epoch,
+                    'operationId': config.get('operationId'),
+                    'artworkRevision': config.get('revision', 0), 'message': str(exc)})
+
+    def _render_compatibility_preview(self, params: dict) -> dict:
+        self._require_document_epoch(params)
+        backend = self.backend
+        if backend.preview_enabled:
+            raise RuntimeError("Stop the interactive preview before rendering an image")
+        if not backend.has_document:
+            raise RuntimeError("No map is loaded")
+        request_id = params.get("requestId")
+        if not isinstance(request_id, str) or not request_id:
+            raise ValueError("A preview requestId is required")
+        context = ContextMode(params.get("context", "normal"))
+        if context not in {ContextMode.NORMAL, ContextMode.TRANSIT}:
+            raise ValueError("Image preview supports normal and transit maps")
+        if backend.busy or backend.local_render_active or self._saving_export:
+            return {"started": False}
+        job, _, _ = self._capture_output_snapshot(context, "PNG", {
+            "output": {"size": 2048}, "quickPng": True})
+        # 图片预览沿用预览的 POI 配置，正式 PNG 的独立配置保持不变。
+        backend._attach_poi_render_config(job, "preview")
+        if context == ContextMode.NORMAL and not job["ui"]["text_enabled"]:
+            job["ui"]["poi_visibility_snapshot"]["icons"] = {
+                group: False for group in job["ui"]["poi_visibility_snapshot"]["icons"]}
+        job["final_png"] = True
+        metadata = {"requestId": request_id, "documentEpoch": self._document_epoch}
+        path = Path(self._preview_files.name) / f"map-{uuid.uuid4().hex}.png"
+
+        def failed(error):
+            self.event("compatibilityPreviewFailed", error_payload(
+                error, operation="preview", stage="imagePreview", **metadata))
+
+        def done(*_args):
+            try:
+                Path(backend.result_png_path).replace(path)
+                backend.discard_png_result()
+                self._compatibility_files[request_id] = path
+                self.event("compatibilityPreviewReady", {**metadata, "url": path.as_uri()})
+            except Exception as error:
+                failed(error)
+
+        callbacks = {**self.callbacks, "done": done, "error": failed,
+                     "cancelled": lambda: self.event("compatibilityPreviewCancelled", metadata)}
+        request = ExportRequest(context=context, target=str(path), render_snapshot=job)
+        return {"started": backend.render_png_export(request, callbacks, file_result=True)}
 
     def _backend_error(self, error) -> None:
         if self._render_mode == "rmp":
@@ -373,7 +480,8 @@ class EngineServer:
                                    **(metadata or {"requestId": request_id})})
         self.event("busy", {"value": bool(getattr(self.backend, "busy", False))})
 
-    def _render_warnings(self, *, road_order=None):
+    def _render_warnings(self, *, road_order=None, include_read_info=True):
+        from .cmm.file_format import read_information
         from .services.poi.direct_mapping import document_warnings
         from .schematic_water import water_warning
         from .preview_road_order import road_warning
@@ -382,9 +490,11 @@ class EngineServer:
         if road_order is None:
             road_order = self.backend.last_diagnostics.get("stats", {}).get("road_order", {})
         road_message = road_warning(road_order)
+        document = getattr(self.backend, "document", None)
         return (([warning] if warning else [])
                 + ([road_message] if road_message else [])
-                + document_warnings(getattr(self.backend, "document", None)))
+                + document_warnings(document)
+                + (read_information(document) if include_read_info and document is not None else []))
 
     def _export_cancelled(self, metadata):
         if metadata["requestId"] == self._export.request_id:
@@ -393,7 +503,11 @@ class EngineServer:
         self.event("exportCancelled", metadata)
 
     def map_statistics(self) -> dict:
-        """地图概况页的六项统计，按当前城市缓存。"""
+        """地图概况页的六项统计。
+
+        Qt 版把这些算在界面层（``guir/main_window.py::_map_statistics``）；
+        WinUI 侧不该碰游戏几何，所以由引擎算好并按下城市缓存一次。
+        """
         if self._stats_cache is not None:
             return self._stats_cache
         backend = self.backend
@@ -436,6 +550,10 @@ class EngineServer:
             fields = {key: backend.field_value(key, field.default, style_data=style_data)
                       for key, field in FIELDS.items()}
         transit_options = self.transit_options()
+        transit_draft = self._city_draft is not None and self._city_draft.get('job', {}).get('kind') == 'transit'
+        if transit_draft:
+            transit_options = self._draft_transit_options()
+        map_options = backend.map_transit_options()
         metro_options = self.metro_options()
         if getattr(backend, "has_document", False):
             poi_visibility = backend.poi_visibility_snapshot()
@@ -462,7 +580,7 @@ class EngineServer:
             "stats": self.map_statistics(),
             "theme": backend.theme_stem,
             "themes": backend.theme_choices(),
-            "themeMigrationIssues": [],
+            "themeMigrationIssues": list(backend.theme_migration_issues),
             "themeLoadError": backend.theme_load_error,
             "themeUpdate": self.theme_update_notice(),
             "layers": visible_layers,
@@ -471,6 +589,8 @@ class EngineServer:
             "documentEpoch": self._document_epoch,
             "fields": fields,
             "fieldSchema": {key: {"label": field.label, "kind": field.kind,
+                                   "description": tr("gui.style_editor.desc.road_footprint" if key.startswith("road.level.") and
+                                                     key.endswith(".footprint_scale") else f"style.{key}.desc"),
                                    "choices": [{"value": value, "label": field.option_label(value)}
                                                for value in field.choices],
                                    "low": field.low, "high": field.high}
@@ -481,12 +601,15 @@ class EngineServer:
             "labelChildren": label_children,
             "transitTypes": [{"key": key, "label": tr(label)} for key, label in TRANSIT_TYPES],
             "mapTransitTypes": list(backend.transit_types),
-            "mapTransitLineIds": transit_options.get("line_ids"),
+            "mapTransitLineIds": map_options.get("line_ids"),
+            "mapTransitOptions": map_options,
+            "transitDraftChanged": bool(transit_draft and self._city_draft["params"].get("transitChanges")),
             "mapStations": bool(fields["transport.stations"]),
             "mapStationNames": bool(fields["transport.station_names"]),
             "transitOptions": transit_options,
             "metroOptions": metro_options,
-            "lineSelection": {"transit": self.line_selection_summary(transit_options),
+            "lineSelection": {"map": self.line_selection_summary(map_options),
+                              "transit": self.line_selection_summary(transit_options),
                               "metro": self.line_selection_summary(metro_options)},
             "metroOutline": bool((style_data.get("transports", {})
                                   .get("line", {}).get("light_outline", {})
@@ -513,7 +636,23 @@ class EngineServer:
         }
 
     def transit_options(self) -> dict:
-        return copy.deepcopy(self._transit_session_options or self.backend.transit_options(False))
+        return self.backend.transit_options(False)
+
+    def _draft_transit_options(self):
+        draft = self._city_draft
+        if draft is None or draft['job'].get('kind') != 'transit':
+            raise RuntimeError('No public transit draft is active')
+        return copy.deepcopy(draft['job']['opts'])
+
+    def _stage_transit_option(self, key, value):
+        changes = self._city_draft['params'].setdefault('transitChanges', {})
+        saved = self.backend.transit_options(theme=self._city_draft.get('themeId'))
+        if saved.get(key) == value:
+            changes.pop(key, None)
+        else:
+            changes[key] = copy.deepcopy(value)
+        # A pending revert also has to be visible before the next layout starts.
+        self._city_draft['job']['opts'][key] = copy.deepcopy(value)
 
     def metro_options(self) -> dict:
         return self.backend.transit_options(True)
@@ -527,63 +666,60 @@ class EngineServer:
         return {"selected": len(selected), "total": len(eligible),
             "types": [kind for kind, _ in TRANSIT_TYPES if any(line["type"] == kind for line in selected)]}
 
-    def theme_update_notice(self) -> dict | None:
-        notice = getattr(self.backend, "theme_update_notice", None)
+    def theme_update_notice(self, *, include_handled=False, identity=None) -> dict | None:
+        notice = self.backend.pending_preset_update(identity, include_handled=include_handled)
         if not notice:
             return None
-        from .theme_metadata import field_label, field_kind, section_title, field_key_for, SECTION_ORDER
+        from .theme_metadata import field_label, field_kind, section_title, field_key_for, SECTION_ORDER, format_number
         from .ribbon_schema import FIELDS
-        old = self.backend.theme_data(notice["previousTheme"])
-        new = self.backend.theme_data(notice["theme"])
-
-        def value(data, path):
-            for key in path:
-                if not isinstance(data, dict) or key not in data:
-                    return None
-                data = data[key]
-            return data
-
-        def row(path, conflict=False):
+        def row(change):
+            path = change["path"]
             def display(item):
                 spec = FIELDS.get(field_key_for(tuple(path)))
                 if spec and spec.choices and item in spec.choices:
                     return spec.option_label(item)
                 if path == ["terrain", "elevation_mode"] and isinstance(item, str):
                     return tr("gui.style_editor.value." + item)
+                if type(item) in (int, float):
+                    suffix = " m" if path[-1].endswith("_meters") else ""
+                    return format_number(item) + suffix
                 return None
-            section = section_title(path[0]) if path[0] in SECTION_ORDER else None
-            label = field_label(path[-1], tuple(path))
-            return {"label": (section + " · " + label if label != path[-1] else section) if section else None,
-                    "before": value(old, path), "after": value(new, path),
-                    "beforeLabel": display(value(old, path)), "afterLabel": display(value(new, path)),
-                    "kind": field_kind(tuple(path)), "conflict": conflict}
+            return {"section": section_title(path[0]) if path[0] in SECTION_ORDER else path[0],
+                    "label": field_label(path[-1], tuple(path)),
+                    "before": change["before"], "after": change["after"],
+                    "beforeLabel": display(change["before"]), "afterLabel": display(change["after"]),
+                    "kind": field_kind(tuple(path)), "conflict": change["conflict"]}
 
-        return {"theme": notice["theme"], "previousTheme": notice["previousTheme"], "name": notice["name"],
-                "changes": [row(item["path"], item["conflict"]) for item in notice["changes"]],
-                "preserved": [row(path) for path in notice["preserved"]]}
+        order = {section: index for index, section in enumerate(SECTION_ORDER)}
+        changes = sorted(notice["changes"], key=lambda change: order.get(change["path"][0], len(order)))
+        return {"theme": notice["theme"], "name": notice["name"],
+                "revision": notice["revision"], "sourceDigest": notice["sourceDigest"],
+                "fromVersion": notice["fromVersion"], "toVersion": notice["toVersion"],
+                "changes": [row(change) for change in changes]}
 
     def theme_revision(self) -> str:
         return hashlib.sha256(json.dumps({"theme": self.backend.theme_stem,
             "data": self.backend.current_style_data(), "themes": self.backend._saved_theme_records()},
             sort_keys=True, default=str).encode()).hexdigest()
 
-    def theme_draft(self, *, data=None, base_id=None, new=False) -> dict:
+    def theme_draft(self, *, data=None, base_id=None, new=False, theme_id=None) -> dict:
         from csmodernmap import theme_metadata as theme_meta
         backend = self.backend
-        raw = backend.current_style_data() if data is None else data
+        theme_id = theme_id or backend.theme_stem
+        raw = (backend.current_style_data() if theme_id == backend.theme_stem else backend.theme_data(theme_id)) if data is None else data
         data = normalize_theme(self.validate_theme_draft(raw, raw))
-        record = backend.user_themes.get(backend.theme_stem) or backend._legacy_themes.get(backend.theme_stem)
+        record = backend.user_themes.get(theme_id)
         if not new:
-            base_id = record["base"] if record else backend.theme_stem
+            base_id = (record.get("legacyBase") or record["base"]) if record else theme_id
         defaults = normalize_theme(sanitize_theme_data(backend.theme_defaults(base_id))) if base_id else copy.deepcopy(data)
-        saved = backend.theme_data(backend.theme_stem)
+        saved = backend.theme_data(theme_id)
         fields = theme_meta.describe_theme(data)
-        return {"theme": backend.theme_stem, "data": data,
+        return {"theme": theme_id, "data": data,
                 "defaults": defaults, "baseTheme": base_id,
                 "isNew": new, "isBuiltin": record is None and not new,
                 "suggestedName": backend.suggest_theme_name(backend.theme_display() + " · " + tr("gui.theme.personal")),
                 "themes": backend.theme_choices(),
-                "migrationIssues": [],
+                "migrationIssues": list(backend.theme_migration_issues),
                 "savedData": normalize_theme(sanitize_theme_data(saved)),
                 "savePath": "", "documentEpoch": self._document_epoch,
                 "settingsRevision": self.theme_revision(),
@@ -605,8 +741,11 @@ class EngineServer:
     def range_profile(self) -> dict:
         backend = self.backend
         grid = backend.range_tile_grid()
-        if not backend.has_document or grid is None:
+        if not backend.has_document:
             return {"available": False}
+        if grid is None:
+            return {"available": False, "worldBounds": backend.world_rect(),
+                    "cityBounds": document_city_bounds(backend.document)}
         bounds = backend.world_rect()
         limit = grid.limit(bounds)
         outside = backend.has_outside_terrain()
@@ -708,6 +847,51 @@ class EngineServer:
                          name="winui-theme-preview", daemon=True).start()
         return {"started": True}
 
+    def queue_theme_thumbnail(self, identity):
+        backend = self.backend
+        if backend.session is None:
+            return
+        with self._theme_preview_lock:
+            self._theme_thumbnail_pending[identity] = (
+                copy.deepcopy(backend.user_themes[identity]['data']), backend.session,
+                dict(backend.layer_visibility), backend.rotation, str(backend.poi_mapping_override))
+            if self._theme_thumbnail_busy:
+                return
+            self._theme_thumbnail_busy = True
+        self._theme_thumbnail_thread = threading.Thread(target=self._render_theme_thumbnails, name='theme-thumbnail', daemon=True)
+        self._theme_thumbnail_thread.start()
+
+    def _render_theme_thumbnails(self):
+        from . import theme_thumbnail
+        while True:
+            with self._theme_preview_lock:
+                if not self._theme_thumbnail_pending:
+                    self._theme_thumbnail_busy = False
+                    return
+                identity = next(iter(self._theme_thumbnail_pending))
+                job = self._theme_thumbnail_pending.pop(identity)
+            data = job[0]
+            target = theme_thumbnail.cache_path(self.backend._settings_dir, identity, data)
+            temporary = target.with_suffix('.tmp')
+            try:
+                image = theme_thumbnail.render(*job)
+                with self._theme_preview_lock:
+                    record = self.backend.user_themes.get(identity)
+                    if not self.running or not record or record['data'] != data or identity in self._theme_thumbnail_pending:
+                        continue
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    image.save(temporary, format='PNG')
+                    os.replace(temporary, target)
+                    for old in target.parent.glob(theme_thumbnail.cache_prefix(identity) + '*.png'):
+                        if old != target:
+                            old.unlink()
+                self.event('themeThumbnailReady', {'theme': identity, 'url': target.resolve().as_uri()})
+            except Exception as error:  # 缩略图任务边界：主题已保存，报告独立的预览失败。
+                traceback.print_exc(file=sys.stderr)
+                self.event('themeThumbnailFailed', {'theme': identity, 'message': str(error)})
+            finally:
+                temporary.unlink(missing_ok=True)
+
     def theme_text_sample(self, params: dict) -> dict:
         from PIL import Image
         from .layers.label_layer import LabelLayer, _resolve_size
@@ -716,6 +900,10 @@ class EngineServer:
         kind = str(params["type"])
         if kind not in {"road", "district", "building", "park", "stop"}:
             raise ValueError("unknown label type")
+        from .pixel_sizes import is_pixel_theme, resolve
+        pixel = is_pixel_theme(data)
+        if pixel:
+            data = resolve(data, params.get('elementScale', 1))[0]
         cfg = data["labels"][kind]
         text = str(params.get("text", i18n.tr('ui.winui_engine.theme_text_sample.c1fff780e0')))
         if not 1 <= len(text) <= 120:
@@ -727,7 +915,7 @@ class EngineServer:
         colors = {"road": "#505564", "district": "#32415A", "park": "#328246",
                   "building": "#505564", "stop": "#505564"}
         size = _resolve_size(cfg.get("size", sizes[kind]), scale)
-        if kind == "district":
+        if kind == "district" and not pixel:
             size = max(size, 12 * min(scale, 1))
         stroke = _resolve_size(cfg.get("stroke_width", 1.5 if kind == "park" else 2), scale) if kind in {"road", "district", "park"} else 0
         blur = _resolve_size(cfg.get("stroke_blur", 0), scale) if kind in {"road", "district"} else 0
@@ -741,7 +929,9 @@ class EngineServer:
         padding = 24 + 2 * math.ceil(blur * 3)
         width, height = bbox[2] - bbox[0] + padding, bbox[3] - bbox[1] + padding
         image = Image.new("RGBA", (max(width, 1), max(height, 1)), (0, 0, 0, 0))
-        painter.ctx = SimpleNamespace(image=image)
+        from .style import Style
+        painter.ctx = SimpleNamespace(image=image, shared={}, style=Style(data))
+        painter._aa_k = scale
         painter._render_text((width / 2, height / 2), text, size,
                              cfg.get("color", colors[kind]), stroke,
                              cfg.get("stroke", "#FFFFFF"), font_family=font_name, bold=bold,
@@ -893,7 +1083,7 @@ class EngineServer:
         output = (self.backend.get_output_profile(output_target)
                   if self.backend.has_document else default_output_profile(output_target))
         bounds = list(document_city_bounds(self.backend.document))
-        line_ids = (selected if context == ContextMode.TRANSIT else self.transit_options()).get("line_ids")
+        line_ids = (selected if context == ContextMode.TRANSIT else self.backend.map_transit_options()).get("line_ids")
         line_count = (len(self.backend.transit_line_catalog())
                       if context == ContextMode.TRANSIT and self.backend.has_document else 0)
         output_snapshot = {
@@ -947,7 +1137,7 @@ class EngineServer:
                     "targetKind": "file", "context": context_name,
                     "outputProfileTarget": None if metro else target,
                     "poiProfileTarget": None if metro else target,
-                    "outputFields": ["size"] if metro else ["size", "rotation"],
+                    "outputFields": ["size"] if metro else ["size", "rotation", "elementScale"],
                     "showsOutputOptions": True,
                     "showsRange": not metro, "showsPoiProfile": not metro,
                     "showsSharedLayers": not metro,
@@ -959,7 +1149,7 @@ class EngineServer:
                     "targetKind": "file", "context": context_name,
                     "outputProfileTarget": "transit_png" if context == ContextMode.TRANSIT else "normal_png",
                     "poiProfileTarget": None,
-                    "outputFields": ["rotation"],
+                    "outputFields": ["rotation", "htmlQuality", "elementScale"],
                     "showsOutputOptions": True, "showsRange": True,
                     "showsPoiProfile": False, "showsSharedLayers": True,
                     "showsTransitLines": False, "resultImage": False,
@@ -1012,8 +1202,9 @@ class EngineServer:
                 raise ValueError("output snapshot must be an object")
             if params.get("profileTarget", target) != target:
                 raise ValueError("export profile target does not match the selected context")
-            output = validate_output_profile({**backend.get_output_profile(target),
-                **{key: raw_output[key] for key in capability["outputFields"] if key in raw_output}}, target)
+            from .output_profiles import update_output_profile
+            output = update_output_profile(backend.get_output_profile(target),
+                {key: raw_output[key] for key in capability["outputFields"] if key in raw_output}, target)
             quick_png = params.get("quickPng", False)
             if not isinstance(quick_png, bool) or quick_png and output_format != "PNG":
                 raise ValueError("quickPng requires a PNG export and a boolean value")
@@ -1034,10 +1225,10 @@ class EngineServer:
             job["poi_visibility_snapshot"] = copy.deepcopy(visibility)
             job["profile_target"] = target
             job["poi_profile_target"] = poi_target
-            if context != ContextMode.TRANSIT:
-                job["ui"]["transit_line_ids"] = copy.deepcopy(self.transit_options().get("line_ids"))
         job["style"] = backend.theme_stem
         job["ui"].setdefault("style_overrides", {})[backend.theme_stem] = copy.deepcopy(theme_data)
+        if 'previewSizing' in params:
+            raise ValueError('previewSizing is retired; use elementScale')
         # capture_png_export_job 已解析共享可见性和配置规则。
         job["document_epoch"] = self._document_epoch
         return job, theme_data, layers
@@ -1116,7 +1307,6 @@ class EngineServer:
 
         saved = self.metro_options()
         defaults = DEFAULT_VIEW_SETTINGS["metro"]
-        # 旧展示界面停用后只保留生成输入。
         options = {key: copy.deepcopy(saved[key]) for key in (
             "types", "line_ids", "merge_enabled", "merge_range", "spacing",
             "schematic_water", "water_smoothing", "facilities_enabled", "metro_edits",
@@ -1155,19 +1345,600 @@ class EngineServer:
                     "layoutFingerprint": hashlib.sha256(json.dumps(project["cmmDraft"], sort_keys=True, ensure_ascii=False).encode()).hexdigest(),
                 }}
 
+    def submit_artwork(self, job, *, sizing=None, draft=False, operation=None, identity=None):
+        """后端入口：接收冻结作业，复用本地工作线程串行派生会话数据。"""
+        import copy
+        from .render_jobs import build_artwork_job
+        from .gui_render_worker import _build_transit_renderer, _build_normal_renderer
+        from .gui_render_worker import _load_ui_style
+        from .artwork import MAX_EDGE
+        backend = self.backend
+        if self._artwork_active and self._artwork_stop.is_set():
+            raise RuntimeError('Artwork cancellation is still completing')
+        if backend.session is None or backend.session.document is not backend.document:
+            raise RuntimeError('Artwork requires the current document session')
+        if not self._artwork_active and (backend.busy or backend.local_render_active or self._external_busy):
+            raise RuntimeError('Another document task is running')
+        frozen = copy.deepcopy(job)
+        frozen.setdefault('kind', 'normal')
+        if type(frozen['size']) is not int or not 1 <= frozen['size'] <= MAX_EDGE:
+            raise ValueError('Invalid artwork base long edge')
+        if frozen['kind'] not in {'normal', 'transit'} or (
+                frozen['kind'] == 'transit' and (frozen['opts'].get('abstract') or frozen['opts'].get('pure'))):
+            raise ValueError('Artwork requires a geographic normal or transit job')
+        if frozen.get('region') is None or frozen.get('region_policy'):
+            raise ValueError('Resolve the draft region before accepting artwork')
+        checked = build_artwork_job(frozen['kind'], frozen['region'],
+            long_edge=frozen['size'], rotation=frozen['ui']['rotation'],
+            element_scale=frozen.get('elementScale', frozen['size'] / 4096))
+        frozen['elementScale'] = checked.derive_params['elementScale']
+        frozen['ui']['elementScale'] = frozen['elementScale']
+        ui = copy.deepcopy(frozen['ui'])
+        frozen['ui']['style_overrides'][frozen['style']] = copy.deepcopy(_load_ui_style(ui, frozen['style']).data)
+        from .services.poi.direct_mapping import load_mapping, SCHEMA_VERSION
+        frozen['_poi_mapping_snapshot'] = {'schema_version': SCHEMA_VERSION,
+            'entries': copy.deepcopy(list(load_mapping(ui.get('poi_mapping_override') or None).values()))}
+        ui = copy.deepcopy(frozen['ui'])
+        if frozen['kind'] == 'normal':
+            from .city_artwork_sizing import prepare_style
+            renderer = _build_normal_renderer(ui, frozen['style'], frozen['layers'],
+                (checked.canvas['width'], checked.canvas['height']), False, 'normal')
+        else:
+            from .transit_artwork_sizing import prepare_style
+            renderer = _build_transit_renderer(ui, frozen['style'], frozen['types'],
+                (checked.canvas['width'], checked.canvas['height']),
+                stations=bool(frozen['opts']['stations']), opts=frozen['opts'])
+        prepare_style(renderer.style, backend.document,
+            (checked.canvas['width'], checked.canvas['height']), sizing=sizing,
+            element_scale=frozen['elementScale'])
+        if identity is None:
+            identity = self.artwork_state.request()
+        retained = []
+        for task in self._artwork_jobs:
+            if task[0] != 'layout' or self.artwork_state.is_pinned(task[1]):
+                retained.append(task)
+            else:
+                self._artwork_started.pop(task[1], None)
+        self._artwork_jobs = retained
+        live = {task[1] for task in retained if task[0] == 'layout'}
+        running = getattr(self, '_artwork_running', None)
+        if running is not None and running[0] == 'layout':
+            live.add(running[1])
+        self._artwork_started = {key: value for key, value in self._artwork_started.items() if key in live}
+        self._artwork_started[identity] = time.perf_counter()
+        self._artwork_jobs.append(('layout', identity, frozen, backend.session, copy.deepcopy(sizing), draft,
+                                  copy.deepcopy(operation or {})))
+        self._start_artwork_tasks()
+        return identity
+
+    def _artwork_progress(self, identity, operation_id, stage, percent, message=None):
+        config = self._city_draft
+        if (identity != (self._document_epoch, self.artwork_state.revision) or config is None
+                or config.get('operationId', operation_id) != operation_id):
+            return
+        payload = {'documentEpoch': identity[0], 'artworkRevision': identity[1],
+                   'operationId': operation_id, 'stage': stage, 'percent': percent}
+        if message is not None:
+            payload['message'] = str(message)
+        self.event('artworkProgress', payload)
+
+    def _cancel_city_edit_timer(self):
+        if self._city_edit_timer is not None:
+            self.scheduler.cancel(self._city_edit_timer)
+            self._city_edit_timer = None
+
+    def _schedule_city_edit(self):
+        config = self._city_draft
+        identity = self.artwork_state.request()
+        config['revision'] = identity[1]
+        config['waiting'] = False
+        self._city_edit_timer = self.scheduler.call_later(350, self._run_scheduled_city_edit)
+        return {'started': False, 'scheduled': True, 'documentEpoch': identity[0], 'artworkRevision': identity[1]}
+
+    def _run_scheduled_city_edit(self):
+        self._city_edit_timer = None
+        config = self._city_draft
+        try:
+            self._start_city_draft(config)
+        except Exception as error:
+            identity = config['epoch'], config['revision']
+            config['waiting'] = False
+            self.artwork_state.fail(identity, str(error))
+            self.event('artworkFailed', {'documentEpoch': identity[0], 'artworkRevision': identity[1],
+                'operationId': config.get('operationId'), 'message': str(error)})
+
+    def _start_city_draft(self, config=None):
+        from .city_artwork import required_sources
+        config = self._city_draft if config is None else config
+        if config['epoch'] != self._document_epoch:
+            self._city_draft = None
+            return {'started': False}
+        job = copy.deepcopy(config['job'])
+        if not config['revision']:
+            config['revision'] = self.artwork_state.request()[1]
+        identity = self._document_epoch, config['revision']
+        scene = self._artwork_scene
+        from .terrain import resolve_terrain_config
+        terrain = resolve_terrain_config(job['ui']['style_overrides'][job['style']].get('terrain', {}), job['ui'].get('terrain'))
+        required = set(required_sources(job['layers'], terrain['mode'])) if job.get('kind') != 'transit' else set()
+        available = set(scene[1].manifest['sources']) if scene is not None else set()
+        if scene is not None and scene[1].manifest.get('surfaceFields', {}).get('builtArea'):
+            available.add('builtArea')
+        if scene is None or scene[0] != self._document_epoch:
+            raise RuntimeError('The preview does not belong to the current document')
+        bundle = scene[1]
+        if required and (required - available or self._city_base_needs_rebuild(bundle, required, config)):
+            if not config['waiting']:
+                config['baseWaitStarted'] = time.perf_counter()
+            config['waiting'] = True
+            self._city_waiting_drafts[identity] = config
+            self._artwork_progress(identity, config.get('operationId'), 'waitingBase', None)
+            compiling = self.backend._preview_compile_thread
+            if compiling is None or not compiling.is_alive():
+                if not self.backend.compile_preview_scene(self.callbacks, self._city_render_theme(config)):
+                    raise RuntimeError('Required editor base sources could not be prepared')
+            return {'started': False, 'waiting': True}
+        job['_preview_binding'] = {'sceneId': bundle.scene_id, 'revision': bundle.revision}
+        base_wait = time.perf_counter()-config['baseWaitStarted'] if config['waiting'] else 0
+        self._city_waiting_drafts.pop(identity, None)
+        identity = self.submit_artwork(job, draft=True, identity=identity, operation={
+            'operationId': config.get('operationId'), 'baseWaitSeconds': base_wait,
+            'operationKind': config['kind']})
+        self._artwork_started[identity] = config['started']
+        config['revision'] = identity[1]
+        config['waiting'] = False
+        self.event('artworkRequested', {'documentEpoch': identity[0], 'artworkRevision': identity[1],
+            'operationId': config.get('operationId'),
+            **job['_preview_binding']})
+        return {'started': True, 'documentEpoch': identity[0], 'artworkRevision': identity[1]}
+
+    def _city_draft_job(self, params, previous=None):
+        from .artwork import MAX_EDGE
+        from .render_jobs import build_artwork_job
+        config = copy.deepcopy(previous['params']) if previous is not None else {
+            'output': {'size': 4096}, 'region': None}
+        old_edge = config['output']['size']
+        if 'longEdge' in params:
+            edge = params['longEdge']
+            if type(edge) is not int or not 1 <= edge <= MAX_EDGE:
+                raise ValueError('Invalid artwork base long edge')
+            config['output']['size'] = edge
+        from .pixel_sizes import number
+        edge = config['output']['size']
+        scale = (config['output'].get('elementScale', old_edge / 4096) * edge / old_edge
+                 if previous is not None else edge / 4096)
+        config['output']['elementScale'] = number(params.get('elementScale', scale),
+                                                 'elementScale', positive=True)
+        if 'region' in params:
+            config['region'] = copy.deepcopy(params['region'])
+        rotation = params.get('rotation', previous['rotation'] if previous else self.backend.rotation)
+        if type(rotation) is not int or rotation not in (0, 90, 180, 270):
+            raise ValueError('Invalid artwork rotation')
+        kind = previous['job'].get('kind', 'normal') if previous else params.get('kind', 'normal')
+        if kind not in ('normal', 'transit'):
+            raise ValueError('Invalid geographic draft kind')
+        job, _, _ = self._capture_output_snapshot(ContextMode(kind), 'PNG', config)
+        density = params.get('poiDensity', config.get('poiDensity'))
+        if density is not None:
+            if not isinstance(density, dict) or set(density) != {'density_enabled', 'density_tier'}:
+                raise ValueError('Invalid artwork POI density')
+            profile = validate_poi_profile({**job['poi_profile'], **density}, kind)
+            config['poiDensity'] = copy.deepcopy(density)
+            job['poi_profile'] = profile
+            self.backend._attach_poi_render_config(job, job['poi_profile_target'],
+                profile=profile, visibility_snapshot=job['poi_visibility_snapshot'])
+        job['ui']['rotation'] = rotation
+        theme_id = params.get('theme', previous.get('themeId') if previous else None)
+        if theme_id is not None:
+            if theme_id not in {choice['id'] for choice in self.backend.theme_choices()}:
+                raise ValueError('Unknown editor theme')
+            job['style'] = theme_id
+        if previous is not None and previous.get('themeData') is not None:
+            job['ui']['style_overrides'][job['style']] = copy.deepcopy(previous['themeData'])
+        if 'data' in params:
+            job['ui']['style_overrides'][job['style']] = self.validate_theme_draft(
+                params['data'], self.backend.theme_data(job['style']))
+        if kind == 'transit':
+            theme_data = job['ui']['style_overrides'][job['style']]
+            saved = self.backend.theme_data(job['style'])
+            sizes = self.backend._transport_sizes(theme_data)
+            base_sizes = self.backend._transport_sizes(saved)
+            scoped_sizes = self.backend._view_section(False).get('themes', {}).get(job['style'], {})
+            job['opts'].update({key: scoped_sizes.get(key, value) if value == base_sizes[key] else value
+                                for key, value in sizes.items()})
+            job['opts'].update(config.get('transitChanges', {}))
+            job['types'] = list(job['opts']['types'])
+        elif 'data' in params or (previous and previous.get('themeData') is not None):
+            # Use unsaved city theme sizes when they differ from the stored theme.
+            data = job['ui']['style_overrides'][job['style']]
+            saved_sizes = self.backend._transport_sizes(self.backend.theme_data(job['style']), city=True)
+            for key, value in self.backend._transport_sizes(data, city=True).items():
+                if value != saved_sizes[key]:
+                    job['ui']['map_transport'][key] = value
+        checked = build_artwork_job(kind, job['region'], long_edge=job['size'], rotation=rotation,
+                                    element_scale=config['output']['elementScale'])
+        # 固定已解析范围，不让后续浏览范围设置改变活动草稿。
+        source = config['region'].get('source', 'selection') if config['region'] else 'city'
+        config['region'] = {'bounds': list(checked.derive_params['world_bounds']), 'source': source}
+        return config, rotation, job, checked.canvas
+
+    def _city_draft_state(self):
+        config = self._city_draft
+        if config is None:
+            return {'active': False, 'documentEpoch': self._document_epoch}
+        return {'active': True, 'documentEpoch': self._document_epoch,
+            'revision': config['revision'], 'status': 'preparing' if config['waiting'] else self.artwork_state.status,
+            'config': {'kind': config['job'].get('kind', 'normal'), 'region': copy.deepcopy(config['params']['region']),
+                'longEdge': config['params']['output']['size'], 'rotation': config['rotation'],
+                'elementScale': config['params']['output']['elementScale'],
+                'poiDensity': {key: config['job']['poi_profile'][key] for key in ('density_enabled', 'density_tier')},
+                **config['canvas']}}
+
+    def _city_base_needs_rebuild(self, bundle, required, config=None):
+        from .preview_scene import preview_source_signatures
+        config = self._city_draft if config is None else config
+        style = self._city_render_theme(config) if config else None
+        signatures = preview_source_signatures(self.backend._preview_style(style), self.backend._preview_source_options(style))
+        previous = bundle.manifest.get('sourceSignatures', {})
+        return any(previous.get(source) != signatures.get(source) for source in required)
+
+    def _city_render_theme(self, config):
+        from .pixel_sizes import is_pixel_theme, resolve
+        job = config['job']
+        data = job['ui']['style_overrides'].get(job['style'])
+        if data is None:
+            data = self.backend.theme_data(job['style'])
+        return resolve(data, job['elementScale'])[0] if is_pixel_theme(data) else data
+
+    def export_artwork(self, target, *, long_edge=None, aa=1):
+        """固定接受时的最新修订；等待其布局，不依赖网页呈现。"""
+        from concurrent.futures import Future
+        from .artwork import MAX_EDGE
+        if long_edge is not None and (type(long_edge) is not int or not 1 <= long_edge <= MAX_EDGE):
+            raise ValueError('Invalid artwork output long edge')
+        if type(aa) is not int or aa not in (1, 2, 4):
+            raise ValueError('Invalid artwork output AA')
+        if not self._artwork_active and (self.backend.busy or self.backend.local_render_active):
+            raise RuntimeError('Another document task is running')
+        if self._city_edit_timer is not None:
+            self._cancel_city_edit_timer()
+            self._run_scheduled_city_edit()
+        pinned = self.artwork_state.pin_export()
+        result = Future()
+        def release_pin(done, references=[pinned]):
+            reference = references.pop()
+            if done.cancelled():
+                reference.cancel()
+        result.add_done_callback(release_pin)
+        self._artwork_jobs.append(('export', (self._document_epoch, self.artwork_state.revision),
+            pinned, result, str(target), long_edge, aa))
+        self._start_artwork_tasks()
+        return result
+
+    def cancel_artwork(self):
+        self._cancel_city_edit_timer()
+        self._artwork_stop.set()
+        self.artwork_state.cancel_exports()
+        self._city_waiting_drafts.clear()
+        self.artwork_state.fail((self._document_epoch, self.artwork_state.revision), 'Artwork task cancelled')
+        if self._city_draft is not None:
+            self._city_draft['waiting'] = False
+            self.event('artworkFailed', {'documentEpoch': self._document_epoch,
+                'artworkRevision': self.artwork_state.revision, 'message': 'Artwork task cancelled'})
+        for task in self._artwork_jobs:
+            if task[0] == 'export':
+                task[3].cancel()
+        self._artwork_jobs.clear()
+        running = getattr(self, '_artwork_running', None)
+        self._artwork_started = {key: value for key, value in self._artwork_started.items()
+                                 if running is not None and running[0] == 'layout' and key == running[1]}
+        if running is not None and running[0] == 'export':
+            running[3].cancel()
+
+    def _start_artwork_tasks(self):
+        if self._artwork_active:
+            return
+        if not any(task[0] == 'layout' or task[2].done() for task in self._artwork_jobs):
+            return
+        self._artwork_active = True
+        self._artwork_stop = threading.Event()
+        backend = self.backend
+        self._artwork_preview_thread = backend._suspend_preview_compile(backend._callbacks)
+        backend._busy = backend._local_png_active = True
+        backend._emit('busy', True)
+        self._next_artwork_task()
+
+    def _next_artwork_task(self):
+        backend = self.backend
+        task = None
+        for candidate in list(self._artwork_jobs):
+            if candidate[0] == 'layout' and candidate[1] != (self._document_epoch, self.artwork_state.revision) and not self.artwork_state.is_pinned(candidate[1]):
+                self._artwork_jobs.remove(candidate)
+                self._artwork_started.pop(candidate[1], None)
+                continue
+            # 等底图的导出不能阻塞其布局或暂停准备底图的线程。
+            if candidate[0] == 'export' and not candidate[2].done():
+                continue
+            self._artwork_jobs.remove(candidate)
+            task = candidate
+            break
+        if task is None:
+            self._artwork_active = False
+            self._artwork_running = None
+            backend._local_render_thread = None
+            backend._busy = backend._local_png_active = False
+            backend._emit('busy', False)
+            pending, backend._pending_preview = backend._pending_preview, None
+            if pending is not None:
+                cb, style, force, diagnostics, opening = pending
+                backend.compile_preview_scene(cb, style, force=force, _diagnostics=diagnostics, _opening=opening)
+            return
+        self._artwork_running = task
+        stop = self._artwork_stop
+        session = backend.session
+        def check_cancel():
+            if stop.is_set() or session is not backend.session:
+                raise RuntimeError('Artwork task cancelled or document changed')
+            if task[0] == 'layout' and task[1] != (self._document_epoch, self.artwork_state.revision) and not self.artwork_state.is_pinned(task[1]):
+                raise RuntimeError('Artwork layout superseded')
+        def progress(percent, message, stage='layout'):
+            check_cancel()
+            if task[0] == 'layout' and task[5]:
+                def notify():
+                    if not stop.is_set():
+                        self._artwork_progress(task[1], task[6].get('operationId'), stage, percent, message)
+                self.scheduler.call_soon(notify)
+        progress.supports_stage_progress = True
+        def worker():
+            value, error, diagnostics = None, None, {}
+            temporary = None
+            try:
+                preview = self._artwork_preview_thread
+                while preview is not None and preview.is_alive():
+                    check_cancel()
+                    preview.join(.05)
+                check_cancel()
+                if task[0] == 'layout':
+                    from .transit_artwork import build_transit_artwork
+                    from .city_artwork import build_city_artwork
+                    import copy
+                    with tempfile.TemporaryDirectory(prefix='csl-artwork-mapping-') as mapping_dir:
+                        job = copy.deepcopy(task[2])
+                        mapping_path = Path(mapping_dir) / 'poi_direct_mapping.json'
+                        mapping_path.write_text(json.dumps(job['_poi_mapping_snapshot']), encoding='utf-8')
+                        job['ui']['poi_mapping_override'] = str(mapping_path)
+                        build_artwork = build_city_artwork if job['kind'] == 'normal' else build_transit_artwork
+                        extra = {'draft': True} if task[5] else {}
+                        compute_started = time.perf_counter()
+                        value = build_artwork(job, task[3].document, session=task[3],
+                            document_epoch=task[1][0], revision=task[1][1], sizing=task[4],
+                            diagnostics=diagnostics, progress=progress, **extra)
+                        diagnostics['request'] = {'waitSeconds': compute_started-self._artwork_started[task[1]],
+                            'readySeconds': time.perf_counter()-self._artwork_started[task[1]], **task[6]}
+                elif not task[3].cancelled():
+                    from .artwork import render_artwork
+                    from .export import export_png
+                    snapshot = task[2].result()
+                    edge = max(snapshot.to_dict()['canvas'][key] for key in ('width', 'height'))
+                    image = render_artwork(snapshot, scale=(task[5] or edge)/edge, aa=task[6])
+                    try:
+                        check_cancel()
+                        parent = Path(task[4]).parent
+                        parent.mkdir(parents=True, exist_ok=True)
+                        with tempfile.NamedTemporaryFile(prefix='.csl-artwork-', suffix='.png', dir=parent, delete=False) as staged:
+                            temporary = Path(staged.name)
+                        export_png(image, str(temporary))
+                        value = task[4]
+                    finally:
+                        image.close()
+                check_cancel()
+            except Exception as exc:
+                error = exc
+            def finish():
+                if task[1][0] == self._document_epoch and not stop.is_set():
+                    if task[0] == 'layout':
+                        previous = self.artwork_state.snapshot
+                        if error is not None:
+                            current = self.artwork_state.fail(task[1], str(error))
+                            if current and task[5] and self._city_draft is not None:
+                                self.event('artworkFailed', {'documentEpoch': task[1][0],
+                                    'operationId': task[6].get('operationId'),
+                                    'artworkRevision': task[1][1], 'message': str(error)})
+                        elif self.artwork_state.accept(value):
+                            self.artwork_diagnostics = diagnostics
+                            if task[5] and self._city_draft is not None:
+                                self._artwork_progress(task[1], task[6].get('operationId'), 'delivering', 0)
+                                delivery_started = time.perf_counter()
+                                payload = value.to_dict()
+                                if (self._city_draft.get('incremental') and previous is not None
+                                        and self.artwork_state.presented == previous.identity):
+                                    old = previous.to_dict()
+                                    payload['baseRevision'] = old['revision']
+                                    payload['resources'] = {key: resource for key, resource in payload['resources'].items()
+                                                            if key not in old['resources']}
+                                    if payload['objects'] == old['objects']:
+                                        del payload['objects']
+                                diagnostics['delivery'] = {'payloadDictMs': (time.perf_counter()-delivery_started)*1000,
+                                                           'artworkBytes': len(value._encoded)}
+                                emitting = time.perf_counter()
+                                self._artwork_progress(task[1], task[6].get('operationId'), 'delivering', 100)
+                                self.event('artworkReady', {'artwork': payload,
+                                    'operationId': task[6].get('operationId'),
+                                    'diagnostics': {key: diagnostics[key] for key in
+                                        ('timings', 'request', 'payload', 'delivery', 'reusedLayout') if key in diagnostics},
+                                    **task[2]['_preview_binding']})
+                                diagnostics['delivery']['emitMs'] = (time.perf_counter()-emitting)*1000
+                    elif not task[3].done():
+                        if error is not None:
+                            task[3].set_exception(error)
+                        else:
+                            try:
+                                temporary.replace(task[4])
+                            except OSError as exc:
+                                task[3].set_exception(exc)
+                            else:
+                                task[3].set_result(value)
+                elif task[0] == 'export':
+                    task[3].cancel()
+                if task[0] == 'layout':
+                    if error is not None or task[1] != (self._document_epoch, self.artwork_state.revision):
+                        self._artwork_started.pop(task[1], None)
+                    if task[5] and self._city_draft is None:
+                        for service in ('city.artwork.draft', 'city.artwork.label-placement', 'transit.artwork.base', 'transit.artwork.symbols'):
+                            task[3].service_cache.invalidate(service)
+                if temporary is not None:
+                    temporary.unlink(missing_ok=True)
+                self._next_artwork_task()
+            self.scheduler.call_soon(finish)
+        backend._local_render_thread = threading.Thread(target=worker, name='winui-artwork', daemon=True)
+        backend._local_render_thread.start()
+
     def dispatch(self, method: str, params: dict) -> Any:
         """校验并分派 WinUI 协议命令，统一返回结果或边界错误。"""
         backend = self.backend
+        if method == 'restoreCityArtworkPreview':
+            self._require_document_epoch(params)
+            if self._city_draft is None:
+                raise RuntimeError('No city draft is active')
+            bundle = getattr(backend, '_preview_bundle', None)
+            if bundle is None or getattr(backend, '_preview_bundle_session', None) is not backend.session:
+                raise RuntimeError('The city draft preview is no longer available')
+            self._scene_ready(bundle, backend._preview_server.manifest_url)
+            return {'restored': True}
+        if method == 'getCityArtworkCloseup':
+            self._require_document_epoch(params)
+            config = self._city_draft
+            if (config is None or config['epoch'] != self._document_epoch
+                    or backend.document is None or backend.session is None):
+                raise RuntimeError('No city draft is active')
+            if not isinstance(params.get('section'), str):
+                raise ValueError('Invalid closeup section')
+            for key in ('roadLevel', 'labelType'):
+                if params.get(key) is not None and not isinstance(params[key], str):
+                    raise ValueError(f'Invalid closeup {key}')
+            from .city_artwork_closeup import city_artwork_closeup
+            bounds = city_artwork_closeup(backend.session, config['job'], params['section'],
+                road_level=params.get('roadLevel'), label_type=params.get('labelType'))
+            return {'documentEpoch': self._document_epoch,
+                    'bounds': list(bounds) if bounds is not None else None}
+        if method == 'getCityArtworkState':
+            self._require_document_epoch(params)
+            return self._city_draft_state()
+        if method == 'getCityArtworkSnapshot':
+            self._require_document_epoch(params)
+            snapshot = self.artwork_state.snapshot
+            if (not self._city_draft or snapshot is None or
+                    snapshot.identity != (self._document_epoch, params['artworkRevision'])):
+                return None
+            return snapshot.to_dict()
+        if method in {'beginCityArtwork', 'refreshCityArtwork', 'updateCityArtwork', 'previewCityArtworkTheme'}:
+            self._require_document_epoch(params)
+            operation_id = params.get('operationId')
+            if operation_id is not None and (type(operation_id) is not int or operation_id <= 0):
+                raise ValueError('Invalid artwork operation identity')
+            if method == 'beginCityArtwork':
+                if self._artwork_scene is None:
+                    raise RuntimeError('Start the map preview before entering the editor')
+                config, rotation, job, canvas = self._city_draft_job(params)
+                self._city_draft = {'epoch': self._document_epoch, 'started': time.perf_counter(),
+                    'params': config, 'rotation': rotation, 'job': job, 'canvas': canvas,
+                    'waiting': False, 'kind': 'initial', 'incremental': params.get('incremental') is True}
+            elif self._city_draft is None:
+                raise RuntimeError('No city draft is active')
+            else:
+                if params.get('expectedRevision', self._city_draft['revision']) != self._city_draft['revision']:
+                    raise RuntimeError('The city draft has changed; refresh its configuration')
+                if method == 'previewCityArtworkTheme' and 'data' not in params:
+                    raise ValueError('Missing editor theme data')
+                config, rotation, job, canvas = self._city_draft_job(params, self._city_draft)
+                self._city_draft = copy.deepcopy(self._city_draft)
+                self._city_draft.update(params=config, rotation=rotation, job=job, canvas=canvas)
+                if method == 'previewCityArtworkTheme':
+                    self._city_draft['themeData'] = copy.deepcopy(job['ui']['style_overrides'][job['style']])
+                    self._city_draft['themeId'] = job['style']
+                self._city_draft['started'] = time.perf_counter()
+                self._city_draft['kind'] = 'update'
+                if self._city_draft['waiting']:
+                    self._city_draft['baseWaitStarted'] = self._city_draft['started']
+            self._city_draft['operationId'] = operation_id
+            self._city_draft['revision'] = 0
+            self._cancel_city_edit_timer()
+            if method != 'beginCityArtwork' and params.get('debounce') is True:
+                return self._schedule_city_edit()
+            try:
+                return self._start_city_draft()
+            except Exception as exc:
+                self._city_draft['waiting'] = False
+                self.artwork_state.fail((self._document_epoch, self.artwork_state.revision), str(exc))
+                raise
+        if method == 'leaveCityArtwork':
+            self._require_document_epoch(params)
+            self._cancel_city_edit_timer()
+            self._city_draft = None
+            self._city_waiting_drafts = {identity: config for identity, config in self._city_waiting_drafts.items()
+                                         if self.artwork_state.is_pinned(identity)}
+            if backend.session is not None:
+                for service in ('city.artwork.draft', 'city.artwork.label-placement', 'transit.artwork.base', 'transit.artwork.symbols'):
+                    backend.session.service_cache.invalidate(service)
+            self.artwork_state.request()
+            self.artwork_state.snapshot = None
+            self.artwork_state.presented = None
+            self.artwork_diagnostics = {}
+            live_layouts = {task[1] for task in self._artwork_jobs if task[0] == 'layout'}
+            running = getattr(self, '_artwork_running', None)
+            if running is not None and running[0] == 'layout':
+                live_layouts.add(running[1])
+            self._artwork_started = {key: value for key, value in self._artwork_started.items() if key in live_layouts}
+            return {'left': True}
+        if method == 'getArtworkDiagnostics':
+            return {'status': self.artwork_state.status, 'details': copy.deepcopy(self.artwork_diagnostics)}
+        if method == 'artworkPresented':
+            self._require_document_epoch(params)
+            identity = (params['documentEpoch'], params['artworkRevision'])
+            operation_id = self.artwork_diagnostics.get('request', {}).get('operationId')
+            if params.get('operationId') is not None and operation_id is not None and params['operationId'] != operation_id:
+                return {'accepted': False}
+            accepted = self.artwork_state.acknowledge(identity)
+            if accepted and identity in self._artwork_started:
+                started = self._artwork_started.pop(identity)
+                self.artwork_diagnostics['presentation'] = {
+                    'requestToPresentedSeconds': time.perf_counter()-started,
+                    'operationId': params.get('operationId'), 'operationKind': params.get('operationKind'),
+                    'viewer': params.get('performance'), 'hostElapsedMs': params.get('hostElapsedMs'),
+                    'hostDelivery': params.get('hostDelivery')}
+            return {'accepted': accepted}
+        if method == 'exportCityArtwork':
+            self._require_document_epoch(params)
+            if self._city_draft is None:
+                raise RuntimeError('No city draft is active')
+            if params.get('expectedRevision', self._city_draft['revision']) != self._city_draft['revision']:
+                raise RuntimeError('The city draft has changed; export its latest revision')
+            result = self.export_artwork(params['target'], long_edge=params.get('longEdge'), aa=params.get('aa', 1))
+            epoch = self._document_epoch
+            metadata = {'documentEpoch': epoch}
+            if 'requestId' in params:
+                metadata.update(requestId=params['requestId'], context=self._city_draft['job'].get('kind', 'normal'),
+                                format='PNG', target=params['target'])
+            def completed(future):
+                if epoch != self._document_epoch:
+                    return
+                if future.cancelled() or future.exception() is not None:
+                    message = 'Export cancelled' if future.cancelled() else str(future.exception())
+                    self.event('artworkExportFailed', {**metadata, 'category': 'export', 'message': message})
+                else:
+                    self.event('artworkExported', {**metadata, 'path': future.result()})
+            result.add_done_callback(completed)
+            return {'started': True}
         if (self._external_busy or self._saving_export or
                 (self._export.request_id and self._export.format == "HTML")) and method in {
-            "openDocument", "setTheme", "setLayerVisibility", "setField", "resetLayer",
+            "openDocument", "setTheme", "setLayerVisibility", "applySatelliteRecommendations", "setField", "resetLayer",
             "setLabelChild", "setTransitOption", "setTransitType", "setTransitLines",
             "setMetroOutline", "renderMetro", "resetMetroGenerationOptions",
             "commitThemeDraft", "setMergeOverride", "setFacilitySelection",
             "savePoiMapping", "renderInterchanges", "setRegionSelection",
             "setOutputOption", "setTextIconSettings", "setPoiDensity", "setPoiVisibility", "setDecorativePoiVisibility", "resetFields",
             "resetProfileFields", "setRangeSelection", "compilePreview", "refreshPreview",
-            "export", "clearCache", "setInspectorField", "resetInspectorGroup", "undoInspector", "redoInspector",
+            "export", "openBrowserPreview", "clearCache", "setInspectorField", "resetInspectorGroup", "undoInspector", "redoInspector",
         }:
             raise RuntimeError(i18n.tr('ui.winui_engine.dispatch.dfeec4838c'))
         if method == "hello":
@@ -1176,6 +1947,16 @@ class EngineServer:
             return {"protocolVersion": PROTOCOL_VERSION}
         if method == "startPreview":
             return {"viewerUrl": backend.start_preview_server()}
+        if method == "renderCompatibilityPreview":
+            return self._render_compatibility_preview(params)
+        if method == "releaseCompatibilityPreview":
+            request_id = params.get("requestId")
+            if not isinstance(request_id, str):
+                raise ValueError("A preview requestId is required")
+            path = self._compatibility_files.pop(request_id, None)
+            if path is not None:
+                path.unlink(missing_ok=True)
+            return {"released": path is not None}
         if method == "setPreviewEnabled":
             enabled = params["enabled"]
             if not isinstance(enabled, bool):
@@ -1198,7 +1979,9 @@ class EngineServer:
             self._require_document_epoch(params)
             if not backend.has_document:
                 raise RuntimeError(i18n.tr('ui.winui_engine.dispatch.ae3f8c8a07'))
-            use_names = bool(backend.poi_game_names)
+            use_names = params.get("useGameNames", bool(backend.poi_game_names))
+            if type(use_names) is not bool:
+                raise ValueError("useGameNames must be a boolean")
             catalog = getattr(self, "_building_catalog", None)
             if (catalog is None or catalog.document is not backend.document
                     or catalog.use_game_names != use_names):
@@ -1217,11 +2000,12 @@ class EngineServer:
             if not isinstance(frame, dict):
                 raise ValueError("Object selection is required")
             context = str(params.get("context", "map"))
-            options = self.transit_options() if context == "transit" else {}
+            options = self.transit_options() if context == "transit" else backend.map_transit_options()
             if getattr(self, "_inspector_history_epoch", None) != self._document_epoch:
                 self._inspector_history_epoch = self._document_epoch
                 self._inspector_undo, self._inspector_redo = [], []
-            model, _ = describe(backend, frame, context, options)
+            style_data = self._city_draft.get('themeData') if method == 'getObjectInspector' and self._city_draft is not None else None
+            model, _ = describe(backend, frame, context, options, style_data=style_data)
             if method != "getObjectInspector":
                 if params.get("settingsRevision") != model["settingsRevision"]:
                     raise RuntimeError(i18n.tr('ui.winui_engine.dispatch.80bd243ed5'))
@@ -1231,13 +2015,11 @@ class EngineServer:
                     if not source:
                         raise ValueError(i18n.tr('ui.winui_engine.dispatch.5f67276ac1'))
                     record = source[-1]
-                    record_options = self.transit_options() if record["context"] == "transit" else {}
+                    record_options = self.transit_options() if record["context"] == "transit" else backend.map_transit_options()
                     current, _ = describe(backend, record["object"], record["context"], record_options)
                     if current["settingsRevision"] != record["revision"]:
                         raise RuntimeError(i18n.tr('ui.winui_engine.dispatch.8d612deac2'))
                     updated_options = restore(backend, record["before"] if method == "undoInspector" else record["after"], record_options)
-                    if record["context"] == "transit":
-                        self._transit_session_options = updated_options
                     current, _ = describe(backend, record["object"], record["context"], updated_options)
                     source.pop()
                     record["revision"] = current["settingsRevision"]
@@ -1245,13 +2027,13 @@ class EngineServer:
                     for stack in (source, destination):
                         if stack:
                             top = stack[-1]
-                            top_options = self.transit_options() if top["context"] == "transit" else {}
+                            top_options = self.transit_options() if top["context"] == "transit" else backend.map_transit_options()
                             top_model, _ = describe(backend, top["object"], top["context"], top_options)
                             top["revision"] = top_model["settingsRevision"]
                 else:
                     if self._inspector_undo:
                         top = self._inspector_undo[-1]
-                        top_options = self.transit_options() if top["context"] == "transit" else {}
+                        top_options = self.transit_options() if top["context"] == "transit" else backend.map_transit_options()
                         top_model, _ = describe(backend, top["object"], top["context"], top_options)
                         if top["revision"] != top_model["settingsRevision"]:
                             # 新编辑不能使旧记录覆盖其间发生的外部修改。
@@ -1262,9 +2044,7 @@ class EngineServer:
                     previous_revision = model["settingsRevision"]
                     apply(backend, frame, context, options,
                           key=params.get("key"), value=params.get("value"), reset_group=group)
-                    if context == "transit" and str(params.get("key", "")).startswith("view."):
-                        self._transit_session_options = {**options, str(params["key"])[5:]: params["value"]}
-                    options = self.transit_options() if context == "transit" else {}
+                    options = self.transit_options() if context == "transit" else backend.map_transit_options()
                     after = capture(backend, frame, context, options, targets=before)
                     current, _ = describe(backend, frame, context, options)
                     if current["settingsRevision"] != previous_revision:
@@ -1272,7 +2052,7 @@ class EngineServer:
                             "before": before, "after": after, "revision": current["settingsRevision"]})
                         self._inspector_undo = self._inspector_undo[-50:]
                         self._inspector_redo.clear()
-                options = self.transit_options() if context == "transit" else {}
+                options = self.transit_options() if context == "transit" else backend.map_transit_options()
                 model, _ = describe(backend, frame, context, options)
             from .fonts import available_font_options
             model["fonts"] = [{"value": v, "label": label} for v, label in available_font_options()]
@@ -1314,7 +2094,10 @@ class EngineServer:
             return {"saved": count}
         if method == "getThemeDraft":
             self.backend.reset_style_preview_regions()
-            return self.theme_draft()
+            theme_id = params.get('theme', backend.theme_stem)
+            if theme_id not in {choice['id'] for choice in backend.theme_choices()}:
+                raise ValueError('Unknown theme')
+            return self.theme_draft(theme_id=theme_id)
         if method == "newThemeDraft":
             base_id = params.get("baseTheme")
             if base_id not in {stem for _, stem in THEME_CHOICES}:
@@ -1324,28 +2107,39 @@ class EngineServer:
             return self.theme_draft(data=data, base_id=base_id, new=True)
         if method == "copyThemeDraft":
             data = self.validate_theme_draft(params["data"], backend.current_style_data())
-            record = backend.user_themes.get(backend.theme_stem) or backend._legacy_themes.get(backend.theme_stem)
+            record = backend.user_themes.get(backend.theme_stem)
             base_id = params.get("baseTheme", record["base"] if record else backend.theme_stem)
             data["name"] = backend.suggest_theme_name(str(data.get("name", "")) + " · " + tr("gui.theme.copy"))
             return self.theme_draft(data=data, base_id=base_id, new=True)
         if method == "validateThemeName":
             from .theme_library import validate_name
-            return {"name": validate_name(params["name"], [item["name"] for item in backend.theme_choices() if item["id"] != params.get("theme")])}
+            return {"name": validate_name(params["name"], [item["name"] for item in backend.theme_choices() if not item["builtin"] and item["id"] != params.get("theme")])}
         if method == "importThemeDraft":
             import yaml
-            path = Path(params["path"])
+            path = Path(params["path"]).resolve()
             if path.suffix.lower() not in {".yaml", ".yml"}:
                 raise ValueError(tr("gui.theme.error.file"))
-            with path.open("r", encoding="utf-8") as stream:
+            raw = path.read_bytes()
+            digest = hashlib.sha256(raw).hexdigest()
+            origin = str(path)
+            imported = backend._theme_file_imports.get(origin, {})
+            existing = imported.get("theme") if imported.get("sha256") == digest else None
+            if existing in backend.user_themes:
+                data = backend.theme_data(existing)
+            else:
                 try:
-                    data = yaml.safe_load(stream)
-                except yaml.YAMLError as error:
+                    data = yaml.safe_load(raw.decode("utf-8-sig"))
+                except (UnicodeError, yaml.YAMLError) as error:
                     raise ValueError(tr("gui.theme.error.file")) from error
-            data = normalize_theme(self.validate_theme_draft(data))
-            from .theme_library import validate_name
-            name = validate_name(data.get("name", path.stem))
-            data["name"] = backend.suggest_theme_name(name)
-            return self.theme_draft(data=data, new=True)
+                if not isinstance(data, dict):
+                    raise ValueError(tr("gui.theme.error.file"))
+                from .theme_migration import convert_theme
+                data = normalize_theme(self.validate_theme_draft(convert_theme(data, origin)))
+                from .theme_library import validate_name
+                data["name"] = backend.suggest_theme_name(validate_name(data.get("name", path.stem)))
+            token = uuid.uuid4().hex
+            self._theme_import = (token, self._document_epoch, origin, digest)
+            return {**self.theme_draft(data=data, new=True), "importToken": token}
         if method == "exportThemeDraft":
             from .theme_library import export_file, validate_name
             data = self.validate_theme_draft(params["data"], backend.current_style_data())
@@ -1370,54 +2164,119 @@ class EngineServer:
             self._require_document_epoch(params)
             if params.get("settingsRevision") is not None and params["settingsRevision"] != self.theme_revision():
                 raise RuntimeError(i18n.tr('ui.winui_engine.dispatch.69d8708938'))
-            if str(params["theme"]) != backend.theme_stem:
+            selected_theme = str(params['theme'])
+            embedded = params.get('artwork') is True and self._city_draft is not None
+            if selected_theme != backend.theme_stem and not (embedded and selected_theme in {choice['id'] for choice in backend.theme_choices()}):
                 raise RuntimeError(i18n.tr('ui.winui_engine.dispatch.43f245906a'))
-            data = self.validate_theme_draft(params["data"], backend.current_style_data())
+            data = self.validate_theme_draft(params["data"], backend.theme_data(selected_theme) if embedded else backend.current_style_data())
             if params.get("savePath") is not None:
                 from .theme_library import export_file
                 export_file(str(params["savePath"]), data)
                 return {"applied": False, "saved": False, "exported": True,
                         "theme": backend.theme_stem, "settingsRevision": self.theme_revision()}
-            record = backend.user_themes.get(backend.theme_stem) or backend._legacy_themes.get(backend.theme_stem)
+            record = backend.user_themes.get(selected_theme)
             creating = params.get("new", False)
             if not isinstance(creating, bool):
                 raise ValueError("new must be a boolean")
-            creating = creating or record is None
-            base_id = params.get("baseTheme", record["base"] if record else backend.theme_stem)
             name = params.get("name", data.get("name"))
+            identity = None if creating or record is None else selected_theme
+            base_id = params.get("baseTheme", record.get("legacyBase") if record else selected_theme)
+            source = None
+            if (token := params.get("importToken")) is not None:
+                pending = self._theme_import
+                if not creating or pending is None or pending[:2] != (token, self._document_epoch):
+                    raise ValueError("Theme import preview expired")
+                origin, digest = pending[2:]
+                if hashlib.sha256(Path(origin).read_bytes()).hexdigest() != digest:
+                    raise ValueError(f"Theme file changed after preview: {origin}")
+                imported = backend._theme_file_imports.get(origin, {})
+                if imported.get("sha256") == digest and imported.get("theme") in backend.user_themes:
+                    identity = imported["theme"]
+                source = (origin, digest)
+                base_id = None
+            if not creating and record is None:
+                current = backend.theme_data(selected_theme)
+                if name == current.get("name") and normalize_theme(current) == normalize_theme(data):
+                    return {"applied": False, "saved": False, "theme": backend.theme_stem,
+                            "settingsRevision": self.theme_revision(), "draft": self.theme_draft(theme_id=selected_theme)}
             if record is None and name == backend.theme_display():
                 name = backend.suggest_theme_name(name + " · " + tr("gui.theme.personal"))
-            backend.save_personal_theme(data, identity=None if creating else backend.theme_stem,
-                                        base_id=base_id, name=name)
+            with self._theme_preview_lock:
+                backend.save_personal_theme(data, identity=identity, base_id=base_id, name=name, source=source)
+            self.queue_theme_thumbnail(backend.theme_stem)
+            if source is not None:
+                self._theme_import = None
+            if self._city_draft is not None:
+                self._city_draft.pop('themeData', None)
+                self._city_draft.pop('themeId', None)
             return {"applied": True, "saved": True, "theme": backend.theme_stem,
                     "settingsRevision": self.theme_revision(), "draft": self.theme_draft()}
+        if method == 'deleteTheme':
+            from .theme_thumbnail import cache_prefix
+            self._require_document_epoch(params)
+            if params['settingsRevision'] != self.theme_revision():
+                raise ValueError('Theme changed after the deletion confirmation')
+            identity = params['theme']
+            with self._theme_preview_lock:
+                backend.delete_personal_theme(identity)
+                self._theme_thumbnail_pending.pop(identity, None)
+                try:
+                    for path in (backend._settings_dir / 'theme-previews').glob(cache_prefix(identity) + '*.png'):
+                        path.unlink()
+                except OSError as error:
+                    self.event('themeThumbnailFailed', {'theme': identity, 'message': str(error)})
+            if self._city_draft is not None:
+                self._city_draft.pop('themeData', None)
+                self._city_draft.pop('themeId', None)
+            return {'deleted': identity, 'draft': self.theme_draft()}
         if method == "getPreviewTheme":
             return backend.preview_theme()
         if method == "clearCache":
             backend.clear_cache()
             return {"cleared": True}
         if method == "openDocument":
+            self._city_draft = None
+            self._city_waiting_drafts.clear()
+            self._artwork_scene = None
+            self.cancel_artwork()
             pending = getattr(self, "_rmp_pending", None)
             if self._render_mode == "rmp" and pending:
                 self.event("rmpProjectError", {"requestId": pending[2], "message": "源地图已改变，请重新打开编辑器"})
                 self._rmp_pending = None
                 self._render_mode = None
             self._document_epoch += 1
+            self.artwork_state.set_document(self._document_epoch)
             self.event("documentOpening", {"documentEpoch": self._document_epoch})
             self._stats_cache = None
             self._building_catalog = None
-            self._transit_session_options = None
+            backend._map_line_ids = backend._transit_line_ids = None
+            backend._preview_map_transport = True
             self._poi_editor_token = None
             self._poi_editor_mtime = None
             with self._theme_preview_lock:
                 self._theme_preview_request_id = None
                 self._theme_preview_pending = None
             return {"started": backend.open_file(str(params["path"]), self.callbacks)}
+        if method == "saveDraftTransitOptions":
+            self._require_document_epoch(params)
+            self._draft_transit_options()
+            changes = self._city_draft["params"].get("transitChanges", {})
+            if changes:
+                theme = self._city_draft.get("themeId")
+                options = {**backend.transit_options(theme=theme), **changes}
+                backend.update_transit_options(False, options, theme=theme)
+                changes.clear()
+            return {"saved": True}
         if method == "getTransitLines":
             metro = bool(params.get("metro", False))
-            return {"lines": backend.transit_line_catalog(), "documentEpoch": self._document_epoch,
-                    "lineIds": (self.metro_options() if metro
-                                else self.transit_options()).get("line_ids")}
+            options = (self.metro_options() if metro else self._draft_transit_options() if params.get("draft")
+                       else backend.map_transit_options() if params.get("map") else self.transit_options())
+            style = None
+            if params.get('draft'):
+                job = self._city_draft['job']
+                style = job['ui']['style_overrides'][job['style']]
+            lines = backend.transit_line_catalog(color_mode=options.get("line_color_mode"), style=style)
+            return {"lines": lines, "documentEpoch": self._document_epoch, "lineIds": options.get("line_ids")}
         if method == "pickRandomRegion":
             bounds = backend.pick_random_preview_region(**({"scene": params.get("scene", "overall"), "seed": params.get("seed")} if params else {}))
             return {"bounds": None if bounds is None else list(bounds)}
@@ -1434,27 +2293,36 @@ class EngineServer:
                 raise ValueError(i18n.tr('ui.winui_engine.dispatch.9c2202a4e4'))
             if ids is not None and not set(ids) <= known:
                 raise ValueError("unknown transit line id")
+            if params.get("draft"):
+                self._draft_transit_options()
+                self._stage_transit_option("line_ids", ids)
+                return {"lineIds": ids}
+            if params.get("map") and not metro:
+                backend._map_line_ids = ids
+                return {"lineIds": ids}
             options = self.metro_options() if metro else self.transit_options()
-            if ids is None:
-                if metro:
-                    options["line_ids"] = None
-                else:
-                    options.pop("line_ids", None)
-                    options.pop("station_line_ids", None)
-            else:
-                options["line_ids"] = ids
-            if not metro:
-                self._transit_session_options = options
+            options["line_ids"] = ids
             backend.update_transit_options(metro, options)
             return {"lineIds": ids}
         if method == "setTheme":
             changed = backend.set_theme(str(params["theme"]))
             return {"changed": changed, "snapshot": self.snapshot()}
+        if method == "applySatelliteRecommendations":
+            self._require_document_epoch(params)
+            self._check_satellite_texture(backend.theme_data("satellite"), params.get("maxTextureSize"))
+            backend.apply_satellite_recommendations()
+            return {"snapshot": self.snapshot(), "mapLayers": backend.map_layer_visibility()}
+        if method == "getThemeUpdate":
+            return {"notice": self.theme_update_notice(include_handled=True, identity=params.get("theme"))}
         if method == "acknowledgeThemeUpdate":
-            use_previous = params.get("usePrevious", False)
-            if not isinstance(use_previous, bool):
-                raise ValueError("usePrevious must be a boolean")
-            backend.acknowledge_theme_update(use_previous)
+            self._require_document_epoch(params)
+            apply = params["apply"]
+            if not isinstance(apply, bool):
+                raise ValueError("apply must be a boolean")
+            identity = str(params["theme"])
+            backend.acknowledge_theme_update(apply, identity, str(params["revision"]), str(params["sourceDigest"]))
+            if apply and self._city_draft is not None and self._city_draft.get('themeId') == identity:
+                self._city_draft['themeData'] = backend.theme_data(identity)
             return {"snapshot": self.snapshot()}
         if method == "getTextIconSettings":
             target = canonical_profile_target(str(params["target"]))
@@ -1504,7 +2372,7 @@ class EngineServer:
                 if field.kind == "toggle":
                     valid = isinstance(value, bool)
                 elif field.kind == "number":
-                    parts = list(value.values()) if isinstance(value, dict) and set(value) <= {"fixed", "scaled"} else [value]
+                    parts = [value]
                     valid = bool(parts) and all(type(v) in (int, float) and math.isfinite(v) and v >= 0 for v in parts)
                     valid = valid and field.low <= sum(parts) <= field.high
                 elif field.kind == "color":
@@ -1532,15 +2400,28 @@ class EngineServer:
                 current = self.metro_options() if target == "metro" else self.transit_options()
                 current.update(checked_options)
                 backend.update_transit_options(target == "metro", current)
-                if target == "transit":
-                    self._transit_session_options = current
             return {"applied": True}
+        if method == "getPreviewSettings":
+            return {"documentEpoch": self._document_epoch,
+                    "performanceDiagnostics": backend.performance_diagnostics_enabled}
         if method == "previewPresented":
             name = str(params["bundleId"])
             if backend._preview_server.acknowledge_bundle(name):
                 if params.get("completion") == "base":
                     backend.acknowledge_preview_base(int(params["revision"]))
+                if params.get("completion") == "complete":
+                    backend.complete_preview_diagnostics(int(params["revision"]), params.get("performance"))
+                elif int(params["revision"]) in backend._preview_diagnostics:
+                    recorder, _path = backend._preview_diagnostics[int(params["revision"])]
+                    recorder.update_metadata(base_viewer=params.get("performance"))
             return {}
+        if method == "setPreviewSettings":
+            self._require_document_epoch(params)
+            enabled = params.get("performanceDiagnostics")
+            if not isinstance(enabled, bool):
+                raise ValueError(i18n.tr('ui.winui_engine.dispatch.115c909476'))
+            backend.set_performance_diagnostics(enabled)
+            return {"performanceDiagnostics": enabled}
         if method == "setPoiVisibility":
             self._require_document_epoch(params)
             if not backend.has_document:
@@ -1564,19 +2445,7 @@ class EngineServer:
                 raise ValueError(f"unknown layer: {key}")
             enabled = bool(params["enabled"])
             if key == "satellite" and enabled:
-                from .satellite_image import ensure_satellite
-                if backend.document is None:
-                    raise ValueError(tr("gui.satellite.unavailable"))
-                png = ensure_satellite(backend.document, progress=self._render_progress)
-                limit = params.get("maxTextureSize")
-                if limit is not None:
-                    if type(limit) is not int or limit <= 0:
-                        raise ValueError("Invalid texture size limit")
-                    import io
-                    from PIL import Image
-                    with Image.open(io.BytesIO(png)) as image:
-                        if max(image.size) > limit:
-                            raise ValueError(tr("satellite_texture_limit", size=max(image.size), limit=limit))
+                self._check_satellite_texture(backend.current_style_data(), params.get("maxTextureSize"))
             if key == "poi":
                 if "documentEpoch" in params:
                     self._require_document_epoch(params)
@@ -1654,19 +2523,24 @@ class EngineServer:
                 options["types"] = [name for name, _ in TRANSIT_TYPES if name in selected]
                 backend.update_transit_options(True, options)
                 return {"types": options["types"]}
+            if params.get("draft"):
+                selected = set(self._draft_transit_options()["types"])
+                (selected.add if enabled else selected.discard)(key)
+                types = [name for name, _ in TRANSIT_TYPES if name in selected]
+                self._stage_transit_option("types", types)
+                return {"types": types}
             if bool(params.get("context", False)):
                 options = self.transit_options()
                 selected = set(options["types"])
                 (selected.add if enabled else selected.discard)(key)
                 options["types"] = [name for name, _ in TRANSIT_TYPES if name in selected]
-                self._transit_session_options = options
                 backend.update_transit_options(False, options)
                 return {"types": options["types"]}
             backend.set_transit_type_enabled(key, enabled)
             return {"types": list(backend.transit_types)}
         if method == "getTransitSchema":
             metro = bool(params.get("metro", False))
-            return option_schema(self.metro_options() if metro else self.transit_options())
+            return option_schema(self.metro_options() if metro else backend.map_transit_options() if params.get("map") else self.transit_options())
         if method == "resetMetroGenerationOptions":
             from .view_settings import default_view_settings, view_options
             defaults = view_options(default_view_settings()["metro"], True)
@@ -1679,13 +2553,19 @@ class EngineServer:
         if method == "setTransitOption":
             metro = bool(params.get("metro", False))
             key = str(params["key"])
+            if params.get("draft"):
+                options = self._draft_transit_options()
+                value = validate_option(options, key, params["value"])
+                self._stage_transit_option(key, value)
+                return {"options": self._draft_transit_options()}
+            if params.get("map") and not metro:
+                options = backend.map_transit_options()
+                validate_option(options, key, params["value"])
+                backend.set_map_transit_option(key, params["value"])
+                return {"options": backend.map_transit_options()}
             options = self.metro_options() if metro else self.transit_options()
             validate_option(options, key, params["value"])
-            if not metro and key in STYLE_FIELDS:
-                backend.apply_style_override(STYLE_FIELDS[key], params["value"])
             options[key] = params["value"]
-            if not metro:
-                self._transit_session_options = options
             backend.update_transit_options(metro, options)
             return {"options": self.metro_options() if metro else self.transit_options()}
         if method == "setMetroOutline":
@@ -1739,9 +2619,12 @@ class EngineServer:
                 target = str(params["profileTarget"])
                 if target not in OUTPUT_PROFILE_TARGETS:
                     raise ValueError(f"unknown output profile target: {target!r}")
-                if key not in {"size", "rotation"}:
+                if key not in {"size", "rotation", "htmlQuality", "elementScale"}:
                     raise ValueError(f"unknown output profile field: {key}")
-                profile = backend.set_output_profile(target, {key: value})
+                changes = {key: value}
+                if key == 'size' and params.get('elementScale') is not None:
+                    changes['elementScale'] = params['elementScale']
+                profile = backend.set_output_profile(target, changes)
                 return {"profileTarget": target, "profile": profile}
             setters = {"size": backend.set_size, "rotation": backend.set_rotation,
                        "rangeN": backend.set_range_n,
@@ -1753,6 +2636,8 @@ class EngineServer:
         if method == "compilePreview":
             return {"started": backend.compile_preview_scene(self.callbacks, force=bool(params.get("force", False)))}
         if method == "refreshPreview":
+            if "map" in params:
+                backend._preview_map_transport = bool(params["map"])
             if not backend.has_document:
                 return {"started": False}
             if backend.preview_needs_rebuild():
@@ -1779,8 +2664,15 @@ class EngineServer:
             raise ValueError("原生地铁 PNG 已退役，请使用 RMP 工程编辑器生成与输出")
         if method == "getExportProfile":
             return self._export_profile(params)
-        if method == "export":
+        if method in {"export", "openBrowserPreview"}:
             self._require_document_epoch(params)
+            if method == "openBrowserPreview":
+                if params.get("context", "normal") not in {"normal", "transit"}:
+                    raise ValueError("Browser preview supports normal and transit maps")
+                params = {"documentEpoch": params["documentEpoch"],
+                          "requestId": params.get("requestId"),
+                          "context": params.get("context", "normal"), "format": "HTML",
+                          "target": str(Path(self._preview_files.name) / f"map-{uuid.uuid4().hex}.html")}
             request = ExportRequest.from_dict(params)
             capabilities = self._format_capabilities(request.context)
             if request.format not in capabilities:
@@ -1799,8 +2691,9 @@ class EngineServer:
                 extension = ".html" if output_format == "HTML" else ".png"
                 requested_target = str(Path(backend.output_dir) / f"map{extension}")
             output_path = Path(requested_target).resolve()
-            backend.output_dir = str(output_path if output_format in {"RMG", "RMP"}
-                                     else output_path.parent)
+            if method == "export":
+                backend.output_dir = str(output_path if output_format in {"RMG", "RMP"}
+                                         else output_path.parent)
             self._export.request_id = export_id
             self._export.document_epoch = self._document_epoch
             self._export.context = context_name
@@ -1865,6 +2758,9 @@ class EngineServer:
             return {"started": started}
 
         if method == "cancel":
+            if self._artwork_active:
+                self.cancel_artwork()
+                return {'cancelled': False, 'cancelRequested': True}
             if self._export.request_id and self._export.format == "HTML":
                 backend.cancel_export()
                 return {"cancelled": False, "cancelRequested": True}
@@ -1885,6 +2781,7 @@ class EngineServer:
             self._render_mode = None
             return {"cancelled": True}
         if method == "close":
+            self.cancel_artwork()
             self.running = False
             return {"closed": True}
         raise ValueError(f"unknown method: {method}")
@@ -1919,7 +2816,7 @@ class EngineServer:
                     raise ValueError("request must be an object")
                 self.requests.put(frame)
             except Exception as exc:  # noqa: BLE001
-                self.event("protocolError", {"message": str(exc)})
+                self.event("protocolError", error_payload(exc, stage="readProtocol"))
             self.scheduler.wakeup.set()
         self.requests.put(None)
         self.scheduler.wakeup.set()
@@ -1941,8 +2838,11 @@ class EngineServer:
             return 1 if self._output_failed else 0
         finally:
             with self._theme_preview_lock:
+                self.running = False
+                self._theme_thumbnail_pending.clear()
                 self._theme_preview_request_id = None
                 self._theme_preview_pending = None
+            self.cancel_artwork()
             self.backend.close()
             self._preview_files.cleanup()
 

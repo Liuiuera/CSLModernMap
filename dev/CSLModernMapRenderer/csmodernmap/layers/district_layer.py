@@ -2,7 +2,8 @@
 
 对应 SPEC F006（区划渲染）。数据来源为 Mod v6.5+ 导出的 <DistrictGrid>
 （每个区划的采样格点，世界坐标，见 parser._parse_district_grid）。
-旧存档无网格数据时本图层自动跳过（区划名称仍由 LabelLayer 负责标注）。
+网格数据按采样点重建；只有导出边界时直接绘制游戏提供的多边形。
+两者均无时跳过区域面（区划名称仍由 LabelLayer 负责标注）。
 
 独立功能：默认关闭（与"用地类型"图层互不叠加），由 GUI/CLI 显式启用。
 
@@ -63,6 +64,14 @@ def visible_administrative_districts(source) -> list:
             if not is_base_district(district, cell)]
 
 
+def renderable_administrative_districts(source, show_ids=None) -> list:
+    """预览与正式输出共用区域筛选顺序，调色板按此顺序循环。"""
+    return [district for district in visible_administrative_districts(source)
+            if (show_ids is None or district.id in show_ids)
+            and (district.grid_points or
+                 (district.boundary and len(district.boundary.points) >= 3))]
+
+
 def _poly_area(poly) -> float:
     """多边形面积（世界坐标 m²）。"""
     s = 0.0
@@ -112,33 +121,44 @@ class DistrictLayer(Layer):
         cfg = ctx.style.get("district", {})
         if not cfg or not cfg.get("enabled", True):
             return
-        districts = [d for d in visible_administrative_districts(document)
-                     if d.grid_points]
-        if self.show_ids is not None:
-            districts = [d for d in districts if d.id in self.show_ids]
+        districts = renderable_administrative_districts(document, self.show_ids)
         if not districts:
-            return  # 无区划网格数据（旧存档）或白名单过滤为空 → 本图层无输出
+            return
 
         # 网格单元大小：优先用 Mod 导出的 'cell=' 值；旧存档回退按格点
         # 间距推断（中位数，避免相邻区划格点互相污染最小值）
         cell = float(document.district_cell or 0.0)
-        if cell <= 0:
-            cell = self._infer_cell(districts)
-        if cell <= 0:
-            return
+        grid_districts = [d for d in districts if d.grid_points]
+        if cell <= 0 and grid_districts:
+            cell = self._infer_cell(grid_districts)
         smooth_blur = float(cfg.get("smooth_blur", 1.0) or 0.0)
         upscale = max(1, int(cfg.get("contour_upscale", CONTOUR_UPSCALE) or 1))
         smooth_iters = int(cfg.get("smooth_iters", SMOOTH_ITERS) or 0)
         border_color = hex_to_rgb(cfg.get("border", "#B0B0B0"))
-        border_w = self._border_px(cfg.get("border_width", 1), ctx.zoom)
+        border_w = self._border_px(cfg.get("border_width", 1), ctx.zoom / ctx.final_zoom)
         fill_alpha = int(cfg.get("fill_alpha", 64))
         fill_colors = cfg.get("fill_colors") or DEFAULT_FILL_COLORS
         # 1. 统一掩膜：每格 = 区划序号 + 1（0 = 无区划）
-        mask_result = self._build_mask(districts, cell, ctx)
-        if mask_result is None:
-            return
-        mask, ox, oz = mask_result
-        arr = np.asarray(mask, dtype=np.int32)
+        mask_result = self._build_mask(districts, cell, ctx) if grid_districts and cell > 0 else None
+        if mask_result is not None:
+            mask, ox, oz = mask_result
+            arr = np.asarray(mask, dtype=np.int32)
+
+        def polygons():
+            for idx, district in enumerate(districts):
+                if district.grid_points:
+                    if mask_result is None:
+                        continue
+                    for points in grid_rings(arr, idx + 1, cell, ox, oz,
+                                             upscale, smooth_blur):
+                        if len(points) < 3:
+                            continue
+                        pixels = [ctx.transform(float(x), float(z)) for x, z in points]
+                        pixels = chaikin(pixels, smooth_iters)
+                        if len(pixels) >= 3:
+                            yield idx, pixels
+                else:
+                    yield idx, [ctx.transform(point.x, point.z) for point in district.boundary.points]
 
         agg = aggdraw.Draw(ctx.image)
 
@@ -146,31 +166,16 @@ class DistrictLayer(Layer):
         # 注意：aggdraw 的 Brush 不支持 rgba 4 元组，半透明须用
         # Brush(颜色3元组, opacity=透明度)（Polygon 需扁平坐标）。
         if fill_alpha > 0:
-            for idx, d in enumerate(districts):
+            for idx, pix in polygons():
                 fill = hex_to_rgb(fill_colors[idx % len(fill_colors)])
-                for pts in grid_rings(arr, idx + 1, cell, ox, oz,
-                                            upscale, smooth_blur):
-                    if len(pts) < 3:
-                        continue
-                    pix = [ctx.transform(float(p[0]), float(p[1])) for p in pts]
-                    pix = chaikin(pix, smooth_iters)
-                    if len(pix) >= 3:
-                        coords = tuple(v for xy in pix for v in xy)
-                        agg.polygon(coords, None,
-                                    aggdraw.Brush(fill, opacity=fill_alpha))
+                coords = tuple(v for xy in pix for v in xy)
+                agg.polygon(coords, None, aggdraw.Brush(fill, opacity=fill_alpha))
 
         # 3. 再画边界线（盖在填充之上，相邻区划接缝清晰）
         if border_w > 0:
-            for idx, d in enumerate(districts):
-                for pts in grid_rings(arr, idx + 1, cell, ox, oz,
-                                           upscale, smooth_blur):
-                    if len(pts) < 3:
-                        continue
-                    pix = [ctx.transform(float(p[0]), float(p[1])) for p in pts]
-                    pix = chaikin(pix, smooth_iters)
-                    if len(pix) >= 3:
-                        coords = tuple(v for xy in pix for v in xy)
-                        agg.line(coords, aggdraw.Pen(border_color, border_w))
+            for _idx, pix in polygons():
+                coords = tuple(v for xy in pix for v in xy)
+                agg.line(coords, aggdraw.Pen(border_color, border_w))
 
         agg.flush()
 
@@ -239,8 +244,5 @@ class DistrictLayer(Layer):
 
     # ---- 工具 ----
 
-    def _border_px(self, val, zoom: float) -> float:
-        """边界线宽（像素）：数字=固定像素；dict {fixed, scaled}=fixed+scaled*缩放。"""
-        if isinstance(val, dict):
-            return val.get("fixed", 0.0) + val.get("scaled", 0.0) * zoom
-        return float(val)
+    def _border_px(self, val, raster_scale: float) -> float:
+        return float(val) * raster_scale

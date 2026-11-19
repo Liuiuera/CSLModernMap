@@ -20,6 +20,7 @@ from __future__ import annotations
 from ..path_model import normalize_angle, move_towards
 
 from ..style import hex_to_rgb
+from ..theme_contract import field_default
 
 import math
 import re
@@ -27,11 +28,13 @@ import re
 import aggdraw
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
-from .. import transit
+from .. import transit, transit_badge_layout
+from ..transit_label_styles import badge_layout_options
 from .._paths import resource_dir
 from ..cmm import TransitKind
 from ..data import MapData, Point
 from ..fonts import load_pillow_font
+from ..transit_station_symbols import interchange_master, station_circle_metrics
 
 # TransitKind → TYPE_REGISTRY key 映射（替代旧的 transit.normalize_type）
 _TYPE_KIND_TO_KEY: dict[TransitKind, str] = {
@@ -50,11 +53,8 @@ _TYPE_KIND_TO_KEY: dict[TransitKind, str] = {
 from ..i18n import tr as i18n_tr
 from ..schematic import edge_key
 from ..path_model import OpenPath, from_point_list
+from ..performance import perf_span
 from .base import Layer, RenderContext
-
-# 中文字体候选（与 label_layer 一致）
-
-# 粗体候选（换乘站名加粗用，优先微软雅黑粗体）
 
 def _natural_text_key(value: str) -> tuple:
     """Sort labels as users read them: 1号线, 2号线, 10号线."""
@@ -64,16 +64,9 @@ def _natural_text_key(value: str) -> tuple:
     )
 
 
-#: ``render_scale`` 中对应「长边 1024px 成图」的取值（= 1024 / 4096）。
-#: 线路标签的视觉规范以该成图尺寸为基准书写，换算见 ``styles/bright.yaml``
-#: 的 ``transports.transit_view`` 段。
-_BASELINE_1024_SCALE = 0.25
 
-
-def _resolve_size(val, render_scale: float) -> float:
-    if isinstance(val, dict):
-        return val.get("fixed", 0.0) + val.get("scaled", 0.0) * render_scale
-    return float(val)
+def _resolve_size(val, raster_scale=1.0) -> float:
+    return float(val) * raster_scale
 
 
 
@@ -895,10 +888,12 @@ class TransportLayer(Layer):
     def __init__(self, transit_view: bool = False):
         super().__init__()
         self.transit_view = transit_view
+        self._artwork = None
         self._transit_model = None
         self._render_lines = ()
         self._raw_line_by_id = {}
         self._line_by_id = {}
+        self._view_colors = {}
         self._geometry_by_line_id = {}
         self._schematic_pos_by_stop_key = {}
         self._station_fixes_active = False
@@ -906,6 +901,7 @@ class TransportLayer(Layer):
         self._group_of = {}
         # 同向重叠别名 id 集合（共享度归并的交路线：同几何同色重叠绘制）
         self._overlay_ids: set = set()
+        self._performance = None
         self._schematic_offset = (0, 0)
         self._font_family = None
         self._station_facilities = {}
@@ -918,7 +914,8 @@ class TransportLayer(Layer):
 
     def _build_transit_render_context(self, mapdata: MapData, cfg: dict, enabled: list):
         from ..transit_context import build_transit_context
-        return build_transit_context(mapdata, cfg, enabled, facilities=False)
+        return build_transit_context(mapdata, cfg, enabled, facilities=False,
+                                     session=getattr(self.ctx, 'session', None))
 
     def _station_lines(self, station) -> list:
         """通过 T02 线路索引解析站点所属的原始线路。"""
@@ -979,7 +976,12 @@ class TransportLayer(Layer):
         if not enabled:
             return
         self.ctx = ctx
+        self._artwork = ctx.shared.get("artwork_capture")
+        self._performance = ctx.performance
         self._cfg = cfg
+        from ..pixel_sizes import validate
+        validate(ctx.style.data)
+        self._pixel_aa = ctx.zoom / ctx.final_zoom
         self._legend_panel = None
         self._legend_panel_margin = 0
         self._legend_rect = None
@@ -988,7 +990,7 @@ class TransportLayer(Layer):
         self._font_family = (cfg.get("label", {}) or {}).get("font") or "SimHei"
         # 公共交通图模式的线路样式/标签覆盖（YAML transports.transit_view 可调）
         self._tv = cfg.get("transit_view", {}) if self.transit_view else {}
-        # 放大倍数（相对 4096 全图基准），线宽/站点徽章随特写等比放大
+        # 几何布局使用世界坐标到当前栅格的比例。
         self.render_scale = ctx.zoom
         self._font_cache = {}
         # 抽象化开关：true=示意图（站点直连），false=沿真实路线（默认）
@@ -1012,6 +1014,10 @@ class TransportLayer(Layer):
          self._geometry_by_line_id) = cached_context
         self._station_fixes_active = bool(
             getattr(self._transit_model, "station_fix_applied", False))
+        from ..services.transit.color import view_line_colors
+        if "line_color_mode" in cfg:
+            lines = ctx.session.document.transit_lines if ctx.session is not None else mapdata.transports
+            self._view_colors = view_line_colors(lines, cfg["line_color_mode"])
         self._raw_line_by_id = {
             int(item.id): item for item in self._render_lines
         }
@@ -1044,8 +1050,8 @@ class TransportLayer(Layer):
         self._light_outline_color = str(
             light_cfg.get("color", "#344054"))
         self._light_outline_width = _resolve_size(
-            light_cfg.get("width", {"fixed": 1.2, "scaled": 1.2}),
-            self.render_scale,
+            light_cfg.get("width", field_default(tuple("transports.line.light_outline.width".split(".")))),
+            self._pixel_aa,
         )
         # 网格 A* 布局结果（abstract + octilinear 时生效）：
         # 站点合并组 → 八方向网格路由（拐弯惩罚 + 拥堵分离）→ fit 画布。
@@ -1183,6 +1189,8 @@ class TransportLayer(Layer):
                 line_list, mapdata, samples)
             self._draw_nonabstract_bundles(agg, bundle_plans)
         for idx, tr in enumerate(line_list):
+            if self._artwork is not None:
+                self._artwork.prefix = f"line:{tr.id}"
             td = transit.type_def(tr.type)
             self.ctx.report(idx / total_lines, tr.name or tr.type)
             if use_grid:
@@ -1240,7 +1248,7 @@ class TransportLayer(Layer):
         min_zoom = float(label_cfg.get("min_zoom", 0.5))
         if abstract and self._octilinear:
             min_zoom = 0.0
-        if label_cfg.get("enabled", True) and self.render_scale >= min_zoom:
+        if line_list and label_cfg.get("enabled", True) and self.render_scale >= min_zoom:
             if use_grid:
                 # 抽象地铁图：只预生成独立图例面板；最终画布扩展与合成
                 # 延迟到 Renderer 完成所有 late 图层之后。
@@ -1248,8 +1256,12 @@ class TransportLayer(Layer):
                 if bool((cfg.get("legend") or {}).get("enabled", True)):
                     self._draw_legend(line_list, label_cfg)
             elif self.transit_view:
-                self._draw_line_labels_view(
-                    mapdata, enabled, label_cfg, abstract, samples)
+                if self._artwork is not None:
+                    self._artwork.labels.append(lambda: self._draw_line_labels_view(
+                        mapdata, enabled, label_cfg, abstract, samples))
+                else:
+                    self._draw_line_labels_view(
+                        mapdata, enabled, label_cfg, abstract, samples)
             else:
                 placed = []
                 for tr in self._render_lines:
@@ -1316,32 +1328,38 @@ class TransportLayer(Layer):
         if abstract:
             pts = self._line_pixels(tr, td, mapdata, abstract, samples)
             return [(pts, 0.0)] if len(pts) >= 2 else []
-        geometry = self._geometry_by_line_id.get(int(tr.id))
-        world_pts = geometry.points if geometry is not None else ()
-        if len(world_pts) < 2:
-            return []
-        visible = []
-        for part in geometry.parts or (world_pts,):
-            source_box = (min(point.x for point in part), min(point.z for point in part),
-                          max(point.x for point in part), max(point.z for point in part))
-            visible.extend(_clip_world_polyline(
-                part, (self.ctx.world_x0, self.ctx.world_z0, self.ctx.world_x1, self.ctx.world_z1),
-                source_box=source_box))
-        scale = abs(float(getattr(self.ctx.transform, "scale", 0.0)))
-        if scale <= 0.0:
-            scale = 1.0
-        paths = []
-        for segment, start_world in visible:
-            pixels = []
-            for point in segment:
-                px, py = self.ctx.transform(point.x, point.z)
-                if (pixels and abs(px - pixels[-1][0]) < 0.5
-                        and abs(py - pixels[-1][1]) < 0.5):
-                    continue
-                pixels.append((px, py))
-            if len(pixels) >= 2:
-                paths.append((pixels, start_world * scale))
-        return paths
+        with perf_span(self._performance, "transport.line_geometry_clip"):
+            geometry = self._geometry_by_line_id.get(int(tr.id))
+            world_pts = geometry.points if geometry is not None else ()
+            if len(world_pts) < 2:
+                return []
+            visible = []
+            for part in geometry.parts or (world_pts,):
+                source_box = (min(point.x for point in part), min(point.z for point in part),
+                              max(point.x for point in part), max(point.z for point in part))
+                visible.extend(_clip_world_polyline(
+                    part, (self.ctx.world_x0, self.ctx.world_z0, self.ctx.world_x1, self.ctx.world_z1),
+                    source_box=source_box))
+            scale = abs(float(getattr(self.ctx.transform, "scale", 0.0)))
+            if scale <= 0.0:
+                scale = 1.0
+            paths = []
+            for segment, start_world in visible:
+                pixels = []
+                for point in segment:
+                    px, py = self.ctx.transform(point.x, point.z)
+                    if (pixels and abs(px - pixels[-1][0]) < 0.5
+                            and abs(py - pixels[-1][1]) < 0.5):
+                        continue
+                    pixels.append((px, py))
+                if len(pixels) >= 2:
+                    paths.append((pixels, start_world * scale))
+            if self._performance is not None:
+                self._performance.add_counter(
+                    "transport.world_points", len(world_pts))
+                self._performance.add_counter(
+                    "transport.visible_segments", len(paths))
+            return paths
 
 
     def _bundle_lanes(self, occupants) -> list[dict]:
@@ -1471,6 +1489,7 @@ class TransportLayer(Layer):
                         "points": pixels,
                         "lanes": lanes,
                         "dash_offset": 0.0,
+                        "artwork_key": "segments:" + ",".join(map(str, sorted(segment_ids))),
                     })
         # 缺失 Path 链的线路不猜测共廊：保留中心线几何，
         # 但仍纳入统一的“先外框、后色芯”绘制，避免白边相互切割。
@@ -1502,7 +1521,13 @@ class TransportLayer(Layer):
                         "points": sampled,
                         "lanes": [lane],
                         "dash_offset": dash_offset,
+                        "artwork_key": f"line:{tr.id}",
                     })
+        if self._performance is not None:
+            self._performance.add_counter(
+                "transport.bundle_segments", len(segment_lines))
+            self._performance.add_counter(
+                "transport.bundle_paths", len(plans))
         return plans
 
 
@@ -1524,44 +1549,24 @@ class TransportLayer(Layer):
             self._halo_ratio - 1.0, 0.35)
         return stripe_width, core_width, casing_width
 
-    def _station_radius_for_lines(self, base_radius: float, lines,
-                                  transfer_is_circle: bool, station=None) -> float:
-        """让圆形换乘站完整盖住相接的复合走廊端面。
 
-        多条共线线路合成一根多色宽线后，线芯宽度会随颜色数增长；
-        若换乘图标仍保持单线尺寸，外侧色带会从站点两侧露出，看起来
-        像线路没有真正接入车站。这里复用复合走廊自身的宽度计算，保证
-        站点半径至少覆盖其白色外框，而非另设一套缩放规则。
-        """
-        radius = max(float(base_radius), 1.0)
-        count = (self._station_group_count(station, lines)
-                 if station is not None else self._line_color_count(lines))
-        if not transfer_is_circle or count < 2:
-            return radius
-        line_ids = [id(line) for line in (lines or ())
-                    if id(line) in self._tr_by_id]
-        lanes = self._bundle_lanes(line_ids)
-        if len(lanes) < 2:
-            return radius
-        _stripe_width, _core_width, casing_width = self._bundle_metrics(lanes)
-        edge_clearance = max(1.0, float(self._light_outline_width) * 0.5)
-        return max(radius, casing_width * 0.5 + edge_clearance)
-
-    @staticmethod
-    def _agg_line(agg, points, color: str, width: float) -> None:
+    def _agg_line(self, agg, points, color: str, width: float) -> None:
         if len(points) < 2 or width <= 0:
             return
         agg.line([coordinate for point in points for coordinate in point],
                  aggdraw.Pen(color, width))
+        if self._artwork is not None:
+            self._artwork.line(points, width, color)
 
-    @staticmethod
-    def _agg_cap(agg, point, color: str, width: float) -> None:
+    def _agg_cap(self, agg, point, color: str, width: float) -> None:
         radius = max(float(width), 0.0) / 2.0
         if radius <= 0:
             return
         agg.ellipse((point[0] - radius, point[1] - radius,
                      point[0] + radius, point[1] + radius),
                     None, aggdraw.Brush(color))
+        if self._artwork is not None:
+            self._artwork.cap(point, width, color)
 
     def _draw_bundle_casing(self, agg, plan) -> None:
         points, lanes = plan["points"], plan["lanes"]
@@ -1611,8 +1616,12 @@ class TransportLayer(Layer):
     def _draw_nonabstract_bundles(self, agg, plans) -> None:
         """全部走廊先画一次外框，再画复合色芯，杜绝白边覆盖。"""
         for plan in plans:
+            if self._artwork is not None:
+                self._artwork.prefix = "corridor:" + plan["artwork_key"] + ":casing"
             self._draw_bundle_casing(agg, plan)
         for plan in plans:
+            if self._artwork is not None:
+                self._artwork.prefix = "corridor:" + plan["artwork_key"] + ":core"
             self._draw_bundle_core(agg, plan)
 
     def _compute_line_pixels(self, tr, td, mapdata, abstract: bool, samples: int) -> list:
@@ -1652,24 +1661,7 @@ class TransportLayer(Layer):
         return (self._cfg.get("types") or {}).get(key) or {}
 
     def _resolve_width(self, td) -> float:
-        tcfg = self._type_cfg(td.key)
-        if "width" in tcfg:
-            w = _resolve_size(tcfg["width"], self.render_scale)
-        elif "width" in self._cfg:
-            w = _resolve_size(self._cfg["width"], self.render_scale)
-        else:
-            w = _resolve_size(td.style.get("width", 1.0), self.render_scale)
-        # 公共交通图只保留固定的视图加粗倍率。分辨率增长
-        # 已由线路 width 的 fixed + scaled * render_scale 处理；
-        # 若此处再随 render_scale 增长，区域特写会变成平方级放大。
-        if self.transit_view:
-            w *= float(self._tv.get("width_scale", 1.7))
-        # 仅公共交通专用视图保留可读性钳位；普通地图按主题值原样绘制。
-        # 这样不会把普通渲染中误放大的交通线宽再次“托底”到粗线。
-        if self.transit_view:
-            min_w = 2.0 if getattr(td, 'track_flag', None) else 1.5
-            w = max(w, min_w)
-        return w
+        return float(self._type_cfg(td.key)['width']) * self._pixel_aa
 
     def _resolve_dash(self, td) -> tuple:
         tcfg = self._type_cfg(td.key)
@@ -1678,27 +1670,18 @@ class TransportLayer(Layer):
             d = td.style.get("dash")
         if not d:
             return ()
-        return tuple(float(x) for x in d if float(x) > 0)
+        return tuple(float(x) * (self._pixel_aa) for x in d if float(x) > 0)
 
     def _resolve_color(self, tr, td) -> str:
-        # 优先级：T02 用户色 → T02 服务自动色 → 类型默认色 → 兜底灰。
+        from ..services.transit.color import display_color
         line = self._line_by_id.get(int(tr.id))
-        if line is not None and line.user_color:
-            r, g, b = line.user_color[:3]
-            return "#%02X%02X%02X" % (r, g, b)
-        # 私有几何和布局辅助函数可单独测试，此时未构建模型，但显式源颜色仍是有效输入。
-        if self._transit_model is None:
-            raw_color = tuple(getattr(tr, "color", ()) or ())
-            if raw_color and tuple(raw_color[-3:]) != (255, 255, 255):
-                return _rgba_to_hex(raw_color)
-        auto_color = (self._transit_model.auto_colors.get(int(tr.id))
-                      if self._transit_model is not None else None)
-        if auto_color:
-            return _rgba_to_hex(auto_color)
-        c = self._type_cfg(td.key).get("color") or td.style.get("color")
-        if c:
-            return c
-        return "#8A8F99"
+        if line is not None:
+            return display_color(line, self._transit_model, self._type_cfg(td.key), td.style, self._view_colors)
+        # 单独调用几何辅助函数时，源对象仍使用旧 ARGB 格式。
+        raw_color = getattr(tr, "color", ())
+        if transit._is_user_color(raw_color):
+            return _rgba_to_hex(raw_color)
+        return self._type_cfg(td.key).get("color") or td.style.get("color") or "#8A8F99"
 
     # ---- 线路名徽章 ----
 
@@ -1743,6 +1726,9 @@ class TransportLayer(Layer):
     ) -> None:
         """按虚实模式分段绘制（aggdraw 不支持虚线，手工切段）。"""
         segments = _dashed_segments(pts, dash, dash_offset=dash_offset)
+        if self._performance is not None:
+            self._performance.add_counter(
+                "transport.dash_segments", len(segments))
         for sub in segments:
             if len(sub) < 2:
                 continue
@@ -1774,14 +1760,11 @@ class TransportLayer(Layer):
         """统一线路描边：白色隔离带 → 浅色对比框 → 线路色。"""
         if len(pts) < 2:
             return
-        coords = [c for p in pts for c in p]
-        agg.line(coords, aggdraw.Pen(
-            self._halo_color, width * self._halo_ratio))
+        self._agg_line(agg, pts, self._halo_color, width * self._halo_ratio)
         contrast_width = self._contrast_width(color, width)
         if contrast_width is not None:
-            agg.line(coords, aggdraw.Pen(
-                self._light_outline_color, contrast_width))
-        agg.line(coords, aggdraw.Pen(color, width))
+            self._agg_line(agg, pts, self._light_outline_color, contrast_width)
+        self._agg_line(agg, pts, color, width)
 
     def _draw_round_cap(self, agg, point, color: str, width: float) -> None:
         """线端与主线使用相同的三层描边，避免浅色端点消失。"""
@@ -1790,9 +1773,7 @@ class TransportLayer(Layer):
         x, y = point
 
         def circle(diameter: float, fill: str) -> None:
-            radius = diameter / 2.0
-            agg.ellipse((x - radius, y - radius, x + radius, y + radius),
-                        None, aggdraw.Brush(fill))
+            self._agg_cap(agg, (x, y), fill, diameter)
 
         circle(width * self._halo_ratio, self._halo_color)
         contrast_width = self._contrast_width(color, width)
@@ -2029,11 +2010,8 @@ class TransportLayer(Layer):
         deg = math.degrees(math.atan2(vy, vx))
         return round(deg / 45.0) * 45.0
 
-    def _decoration_size(self, value, _zoom=None):
-        """先按 1024 像素确定页面装饰，再等比缩放全部尺寸。"""
-        width = getattr(self.ctx, "canvas_width", 0) or self.ctx.image.width
-        height = getattr(self.ctx, "canvas_height", 0) or self.ctx.image.height
-        return _resolve_size(value, 0.25) * min(width, height) / 1024.0
+    def _decoration_size(self, value):
+        return float(value) * self._pixel_aa
 
     def _draw_legend(self, line_list: list, cfg: dict) -> None:
         """生成抽象地铁图的独立图例面板。
@@ -2096,38 +2074,28 @@ class TransportLayer(Layer):
                                 == kind
                                 for item in self._station_facilities.values())]
 
-        # 图例卡片尺寸按 fixed + scaled*zoom 解析；宽度由实际文本决定，
+        # 图例尺寸读取已解析的像素长度；宽度由实际文本决定，
         # 供成品画布向右扩展，而不是把名称压缩到主图比例预算内。
         font_size = max(int(round(self._decoration_size(
-            cfg.get("size", {"fixed": 15, "scaled": 11}),
-            self.render_scale))), 8)
+            cfg.get("size", field_default(tuple("transports.label.size".split("."))))))), 1)
         title_size = max(int(round(self._decoration_size(
-            cfg.get("title_size", {"fixed": 16, "scaled": 12}),
-            self.render_scale))), font_size)
+            cfg.get("title_size", field_default(tuple("transports.label.title_size".split("."))))))), 1)
         pad = max(int(round(self._decoration_size(
-            cfg.get("padding", {"fixed": 10, "scaled": 8}),
-            self.render_scale))), 6)
+            cfg.get("padding", field_default(tuple("transports.label.padding".split("."))))))), 0)
         gap = max(int(round(self._decoration_size(
-            cfg.get("gap", {"fixed": 6, "scaled": 4}),
-            self.render_scale))), 3)
+            cfg.get("gap", field_default(tuple("transports.label.gap".split("."))))))), 0)
         column_gap = max(int(round(self._decoration_size(
-            cfg.get("column_gap", {"fixed": 18, "scaled": 12}),
-            self.render_scale))), gap * 2)
+            cfg.get("column_gap", field_default(tuple("transports.label.column_gap".split("."))))))), 0)
         swatch_w = max(int(round(self._decoration_size(
-            cfg.get("swatch_width", {"fixed": 28, "scaled": 20}),
-            self.render_scale))), 14)
+            cfg.get("swatch_width", field_default(tuple("transports.label.swatch_width".split("."))))))), 0)
         swatch_h = max(int(round(self._decoration_size(
-            cfg.get("swatch_height", {"fixed": 10, "scaled": 8}),
-            self.render_scale))), 6)
+            cfg.get("swatch_height", field_default(tuple("transports.label.swatch_height".split("."))))))), 0)
         border_w = max(int(round(self._decoration_size(
-            cfg.get("border_width", {"fixed": 0.8, "scaled": 0.8}),
-            self.render_scale))), 1)
+            cfg.get("border_width", field_default(tuple("transports.label.border_width".split("."))))))), 0)
         radius = max(int(round(self._decoration_size(
-            cfg.get("radius", {"fixed": 6, "scaled": 3}),
-            self.render_scale))), 4)
+            cfg.get("radius", field_default(tuple("transports.label.border_radius".split("."))))))), 0)
         margin = max(int(round(self._decoration_size(
-            cfg.get("margin", {"fixed": 14, "scaled": 14}),
-            self.render_scale))), 10)
+            cfg.get("margin", field_default(tuple("transports.label.margin".split("."))))))), 0)
         row_h = max(
             # 标签本体高 1.75× 字号；图例行高额外留出约 0.45× 字号，
             # 避免连续色块贴得过紧。
@@ -2228,15 +2196,13 @@ class TransportLayer(Layer):
             card_w = max(card_w, pad * 2 + symbol_w)
 
         # 圆角只承担轻微卡片修饰，避免在小图例上形成“胶囊”外观。
-        radius = min(radius, max(4, min(card_w, card_h) // 5))
+        radius = min(radius, min(card_w, card_h) // 5)
 
         shadow_enabled = bool(cfg.get("shadow", False))
         shadow_blur = max(int(round(self._decoration_size(
-            cfg.get("shadow_blur", {"fixed": 4, "scaled": 5}),
-            self.render_scale))), 2)
+            cfg.get("shadow_blur", field_default(tuple("transports.label.shadow_blur".split("."))))))), 0)
         shadow_offset = max(int(round(self._decoration_size(
-            cfg.get("shadow_offset", {"fixed": 2, "scaled": 2}),
-            self.render_scale))), 1)
+            cfg.get("shadow_offset", field_default(tuple("transports.label.shadow_offset".split("."))))))), 0)
         shadow_pad = shadow_blur * 2 + shadow_offset if shadow_enabled else 0
         legend_img = Image.new(
             "RGBA",
@@ -2480,37 +2446,6 @@ class TransportLayer(Layer):
                 out[r] = list(lines.values())
         return out
 
-    @staticmethod
-    def _transfer_aspect(n_lines: int, scfg: dict) -> float:
-        """兼容旧胶囊样式的长宽比（半长 / 半高）。
-
-        参考 railmapgen 的做法：胶囊宽度随换乘线数温和增长，
-        但设上限，避免复杂枢纽把站间走廊整段遮住。
-        """
-        base = max(float(scfg.get("transfer_scale", 2.4)), 1.4)
-        per_line = max(float(scfg.get("transfer_per_line", 0.4)), 0.0)
-        limit = max(float(scfg.get("transfer_max_scale", 4.0)), base)
-        return min(base + per_line * max(n_lines - 2, 0), limit)
-
-    @staticmethod
-    def _transfer_is_circle(scfg: dict) -> bool:
-        """是否使用重庆轨道交通式圆形换乘标记。"""
-        design = str(scfg.get("transfer_design", "capsule")).strip().lower()
-        return design in {"chongqing", "circle", "circular"}
-
-    def _uses_chongqing_transfer_icon(self, scfg: dict) -> bool:
-        """公共交通视图与地铁示意图统一使用当前圆形换乘图标。"""
-        return self.transit_view or self._transfer_is_circle(scfg)
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -2532,29 +2467,7 @@ class TransportLayer(Layer):
         merged = self._merged
         if merged is None:
             return []
-        radius = _resolve_size(scfg.get("size", {"fixed": 2.5, "scaled": 5.0}),
-                               self.render_scale)
-        if "diameter_per_1k" in scfg:
-            radius = float(scfg["diameter_per_1k"]) * min(self.ctx.image.size) / 2048
-        outline = scfg.get("outline", "#3A3F4A")
-        fill = scfg.get("fill", "#FFFFFF")
-        # 站点设计：rmg = railmapgen 经典式（白底 + 线路色描边，无中心色点）
-        design = str(scfg.get("design", ""))
-        # 换乘站描边色（缺省沿用普通描边色）；旧胶囊样式仍支持分色刻度
-        t_outline = scfg.get("transfer_outline", outline)
-        # 公共交通视图不再使用主题里的旧胶囊；与地铁示意图复用同一
-        # ChongqingRTIntStation SVG。普通地图仍尊重主题配置。
-        transfer_is_circle = self._uses_chongqing_transfer_icon(scfg)
-        ticks_on = bool(scfg.get("ticks", True))
-        border = max(
-            int(_resolve_size(scfg.get("border_width", 1.0),
-                              self.render_scale) * 2), 1)
-        transfer_halo = max(float(scfg.get("transfer_halo", 2.0)), 0.0)
-        transfer_height_scale = max(
-            float(scfg.get("transfer_height_scale", 0.78)), 0.5)
-        tick_height = max(int(_resolve_size(
-            scfg.get("tick_height", {"fixed": 4, "scaled": 4}),
-            self.render_scale)), 2)
+        radius = scfg['diameter'] * self._pixel_aa / 2
         w, h = self.ctx.image.width, self.ctx.image.height
         grid = self._schematic
 
@@ -2562,14 +2475,14 @@ class TransportLayer(Layer):
         st_info = []  # 站点绘制参数依次为位置、半径、线路数、颜色、换乘状态、角度和偏移。
         cl_lines_st = self._cluster_lines(merged) \
             if grid is not None else None
-        for ms in merged:
+        for ms in sorted(merged, key=lambda item: item.id) if self._artwork else merged:
             if grid is not None and ms.id in grid.node_grid:
                 px, py = self._schematic_to_px(*grid.node_grid[ms.id])
             elif ms.position is not None:
                 px, py = self.ctx.transform(ms.position.x, ms.position.z)
             else:
                 continue
-            if not (0 <= px <= w and 0 <= py <= h):
+            if self._artwork is None and not (0 <= px <= w and 0 <= py <= h):
                 continue
             if grid is not None and grid.cluster_of.get(ms.id, ms.id) != ms.id:
                 continue
@@ -2579,8 +2492,11 @@ class TransportLayer(Layer):
                                 else self._station_lines(ms))
             else:
                 lines_for_st = self._station_lines(ms)
-            r = self._station_radius_for_lines(
-                radius, lines_for_st, transfer_is_circle, ms)
+            # 适应预览时以冻结的屏幕尺寸为准，线宽不再额外放大换乘标记。
+            r = (radius)
+            if self._artwork is not None:
+                self._artwork.diagnostics['symbols'].append({'id': f'station:{ms.id}',
+                    'baseRadius': radius, 'radius': r, 'constraint': 'corridor-casing' if r > radius else 'base'})
             n_lines = self._station_group_count(ms, lines_for_st)
             line_colors = []
             seen_c = set()
@@ -2600,8 +2516,7 @@ class TransportLayer(Layer):
             sx = 1.0
             station_type = self._station_type_overrides.get(ms.id, "auto")
             if is_interchange:
-                sx = (1.0 if transfer_is_circle
-                      else self._transfer_aspect(n_lines, scfg))
+                sx = (1.0)
                 angle = (self._station_angle(ms.id)
                          if grid is not None else 0.0)
             elif station_type == "terminal" and grid is not None:
@@ -2620,21 +2535,21 @@ class TransportLayer(Layer):
 
         from functools import partial
         from .poi_icon_layer import POIItem
-        ncfg = scfg.get("names") or scfg.get("station_names") or {}
-        size = max(round(_resolve_size(ncfg.get("size", ncfg.get("font_size", 11)), self.render_scale)),
-                   6 if self.transit_view else 8)
+        ncfg = scfg['names']
+        resolved_size = (ncfg['size'])
+        size = (resolved_size * self._pixel_aa)
         items = []
         for info in st_info:
             px, py, r, _, _, transfer, _, sx = info[:8]
             station = info[11]
-            extent = r * sx + (transfer_halo if transfer_is_circle else tick_height) + 2 if transfer else r + 4
-            font_size = max(size, round(size * float(ncfg.get("transfer_size_scale", 1)))) if transfer else size
+            extent = r
+            font_size = (size)
             name_style = {
                 "name_size": font_size,
                 "name_color": ncfg.get("transfer_color", ncfg.get("color", "#344054")) if transfer else ncfg.get("color", "#344054"),
-                "name_offset": max(float(ncfg.get("gap", 5)), 1),
+                "name_offset": float(ncfg['gap']) * self._pixel_aa,
                 "name_stroke": ncfg.get("stroke_fill", "#FFFFFF"),
-                "name_stroke_ratio": float(ncfg.get("stroke_width", 1 if ncfg.get("halo", True) else 0)) / font_size,
+                "name_stroke_width": float(ncfg.get("stroke_width", 1)) * self._pixel_aa,
             }
             items.append(POIItem(px, py, "", station.name.text, "station", 100, "station",
                 poi_id=f"station:{station.id}", group_id=f"station:{station.id}", poi_group="transit",
@@ -2643,7 +2558,8 @@ class TransportLayer(Layer):
                 symbol=partial(self._paint_station_symbols, [info], scfg),
                 symbol_box=(px-extent, py-extent, px+extent, py+extent),
                 name_style=name_style,
-                name_font=self._get_font(font_size, bold=bool(ncfg.get("transfer_bold" if transfer else "bold", False))),
+                name_font=self._get_font(font_size, bold=bool(ncfg.get("transfer_bold" if transfer else "bold", False)),
+                    minimum_size=1),
                 serving_line_ids=tuple(station.serving_line_ids), member_stop_ids=tuple(station.member_stop_ids)))
         return items
 
@@ -2653,127 +2569,67 @@ class TransportLayer(Layer):
         POIIconLayer().render_station_items(self.ctx, items)
 
     def _paint_station_symbols(self, st_info, scfg):
-        outline = scfg.get("outline", "#3A3F4A")
-        fill = scfg.get("fill", "#FFFFFF")
-        # 站点设计：rmg = railmapgen 经典式（白底 + 线路色描边，无中心色点）
-        design = str(scfg.get("design", ""))
-        # 换乘站描边色（缺省沿用普通描边色）；旧胶囊样式仍支持分色刻度
-        t_outline = scfg.get("transfer_outline", outline)
-        # 公共交通视图不再使用主题里的旧胶囊；与地铁示意图复用同一
-        # ChongqingRTIntStation SVG。普通地图仍尊重主题配置。
-        transfer_is_circle = self._uses_chongqing_transfer_icon(scfg)
-        ticks_on = bool(scfg.get("ticks", True))
-        border = max(
-            int(_resolve_size(scfg.get("border_width", 1.0),
-                              self.render_scale) * 2), 1)
-        transfer_halo = max(float(scfg.get("transfer_halo", 2.0)), 0.0)
-        transfer_height_scale = max(
-            float(scfg.get("transfer_height_scale", 0.78)), 0.5)
-        tick_height = max(int(_resolve_size(
-            scfg.get("tick_height", {"fixed": 4, "scaled": 4}),
-            self.render_scale)), 2)
-        # 第二阶段：旧胶囊样式继续用 aggdraw；重庆式圆形标记在下一阶段
-        # 用 ImageDraw 绘制，以便叠加清晰的双向箭头。
-        if not transfer_is_circle and any(s[5] for s in st_info):
-            agg = aggdraw.Draw(self.ctx.image)
-            halo_brush = aggdraw.Brush("#FFFFFF")
-            outline_brush = aggdraw.Brush(t_outline)
-            fill_brush = aggdraw.Brush(fill)
-            for info in st_info:
-                px, py, r, n_lines, line_colors, is_int, angle, sx = info[:8]
-                if not is_int:
-                    continue
-                ry = r * transfer_height_scale
-                pts_halo = _capsule_points(
-                    px, py, r * sx + transfer_halo,
-                    ry + transfer_halo, angle)
-                agg.polygon([c for p in pts_halo for c in p],
-                            None, halo_brush)
-                pts_outer = _capsule_points(px, py, r * sx, ry, angle)
-                agg.polygon([c for p in pts_outer for c in p],
-                            None, outline_brush)
-                inner_r = max(ry - border, 1.0)
-                inner_half_len = max(r * sx - border, inner_r)
-                pts_inner = _capsule_points(
-                    px, py, inner_half_len, inner_r, angle)
-                agg.polygon([c for p in pts_inner for c in p],
-                            None, fill_brush)
-            agg.flush()
+        return self._paint_pixel_stations(st_info, scfg)
 
-        # 第三阶段：图标单独以高分辨率局部画布绘制，再缩回原尺寸。
-        # 不能为整张 4K 图创建 4 倍画布，否则会造成不必要的内存峰值。
-        icon_aa = max(int(scfg.get("icon_antialias", 4)), 1)
-        image_w, image_h = self.ctx.image.size
-
-        def composite_icon(bounds, painter):
-            x0 = max(0, int(math.floor(bounds[0])))
-            y0 = max(0, int(math.floor(bounds[1])))
-            x1 = min(image_w, int(math.ceil(bounds[2])))
-            y1 = min(image_h, int(math.ceil(bounds[3])))
-            if x1 <= x0 or y1 <= y0:
-                return
-            patch = Image.new(
-                "RGBA", ((x1 - x0) * icon_aa, (y1 - y0) * icon_aa),
-                (0, 0, 0, 0),
-            )
-            painter(ImageDraw.Draw(patch), x0, y0, icon_aa)
-            if icon_aa > 1:
-                patch = patch.resize((x1 - x0, y1 - y0),
-                                     Image.Resampling.LANCZOS)
-            self.ctx.image.alpha_composite(patch, (x0, y0))
-
+    def _paint_pixel_stations(self, st_info, scfg):
+        """所有角色共用外径框；素材、描边与端点标记均限制在框内。"""
+        from ..transit_station_symbols import interchange_master
         for info in st_info:
-            px, py, r, n_lines, line_colors, is_int, angle, sx = info[:8]
-            primary_type = info[8] if len(info) > 8 else ""
-            has_track = info[9] if len(info) > 9 else True
-            station_type = info[10] if len(info) > 10 else "auto"
-            if is_int:
-                if transfer_is_circle:
-                    extent = r + transfer_halo + 2
-
-                    def paint_transfer(d, x0, y0, aa):
-                        self._draw_chongqing_interchange(
-                            d, (px - x0) * aa, (py - y0) * aa,
-                            r * aa, fill, t_outline, transfer_halo * aa,
-                            max(int(round(border * aa)), 1),
-                            scfg.get("transfer_arrow", t_outline))
-
-                    composite_icon(
-                        (px - extent, py - extent, px + extent, py + extent),
-                        paint_transfer)
-                elif ticks_on:
-                    extent = r * sx + tick_height + 2
-
-                    def paint_ticks(d, x0, y0, aa):
-                        self._draw_interchange_ticks(
-                            d, (px - x0) * aa, (py - y0) * aa,
-                            r * aa, sx, angle, line_colors,
-                            tick_height * aa,
-                            max(int(round(border * aa)), 1))
-
-                    composite_icon(
-                        (px - extent, py - extent, px + extent, py + extent),
-                        paint_ticks)
+            px, py, radius, _, colors, transfer, angle = info[:7]
+            diameter = radius * 2
+            bounds = (px-radius, py-radius, px+radius, py+radius)
+            aa = 4
+            side = max(1, math.ceil(diameter * aa))
+            patch = Image.new('RGBA', (side, side))
+            outline = scfg.get('transfer_outline', scfg.get('outline', '#3A3F4A')) if transfer else scfg.get('outline', '#3A3F4A')
+            fill = scfg.get('fill', '#FFFFFF')
+            if transfer:
+                patch = interchange_master().resize((side, side), Image.Resampling.LANCZOS)
+            elif scfg.get('design') == 'rmg':
+                patch = _rmp_icon_bitmap('chongqingrt-basic', side,
+                                         color=colors[0] if colors else outline)
             else:
-                extent = r + 4
-
-                def paint_station(d, x0, y0, aa):
-                    self._draw_station_marker(
-                        d, (px - x0) * aa, (py - y0) * aa, r * aa,
-                        fill, outline, max(int(round(border * aa)), 1),
-                        line_colors, design, has_track, 2 * aa)
-                    if station_type == "terminal":
-                        cx, cy = (px - x0) * aa, (py - y0) * aa
-                        length = max(r * 0.62 * aa, 2.0)
-                        rad = math.radians(angle + 90.0)
-                        dx, dy = math.cos(rad) * length, math.sin(rad) * length
-                        d.line((cx - dx, cy - dy, cx + dx, cy + dy),
-                               fill=outline,
-                               width=max(int(round(border * aa)), 2))
-
-                composite_icon(
-                    (px - extent, py - extent, px + extent, py + extent),
-                    paint_station)
+                # AGG 采用连续坐标，保留小数外径；描边通过内部填充实现。
+                draw = aggdraw.Draw(patch)
+                has_track = info[9] if len(info) > 9 else True
+                if has_track:
+                    draw.ellipse((0, 0, side, side), None, aggdraw.Brush(outline))
+                else:
+                    # 无轨类型仍用方形标记，长边与圆形使用同一个外径。
+                    draw.polygon((0, 0, side, 0, side, side, 0, side), None, aggdraw.Brush(outline))
+                border = min(float(scfg['border_width']) * self._pixel_aa / diameter, .5) * side
+                if border < side/2:
+                    if has_track:
+                        draw.ellipse((border, border, side-border, side-border), None, aggdraw.Brush(fill))
+                    else:
+                        draw.rectangle((border, border, side-border, side-border), None, aggdraw.Brush(fill))
+                draw.flush()
+                if colors:
+                    draw = aggdraw.Draw(patch)
+                    inner = side * .175
+                    draw.ellipse((side/2-inner, side/2-inner, side/2+inner, side/2+inner),
+                                 None, aggdraw.Brush(colors[0]))
+                    draw.flush()
+            if len(info) > 10 and info[10] == 'terminal':
+                d = ImageDraw.Draw(patch)
+                rad = math.radians(angle + 90)
+                dx, dy = math.cos(rad)*side*.3, math.sin(rad)*side*.3
+                d.line((side/2-dx, side/2-dy, side/2+dx, side/2+dy), fill=outline,
+                       width=max(1, round(min(float(scfg['border_width'])*self._pixel_aa/diameter, .25)*side)))
+            if self._artwork is not None:
+                self._artwork.image(f'station:{info[11].id}', patch, bounds)
+            # 同一外径框放到像素网格，小数位置只在最后一次采样时量化。
+            x0, y0 = math.floor(bounds[0]), math.floor(bounds[1])
+            x1, y1 = math.ceil(bounds[2]), math.ceil(bounds[3])
+            local = patch.transform((max(1, (x1-x0)*aa), max(1, (y1-y0)*aa)),
+                Image.Transform.AFFINE, (side/diameter/aa, 0, (x0-bounds[0])*side/diameter,
+                                         0, side/diameter/aa, (y0-bounds[1])*side/diameter),
+                Image.Resampling.BICUBIC)
+            local = local.resize((x1-x0, y1-y0), Image.Resampling.LANCZOS)
+            if self.ctx.image.mode == 'RGBA':
+                self.ctx.image.alpha_composite(local, (x0, y0))
+            else:
+                self.ctx.image.paste(local, (x0, y0), local)
 
     def _draw_station_marker(self, d, px, py, r, fill, outline, border,
                              line_colors, design, has_track, halo) -> None:
@@ -2890,12 +2746,14 @@ class TransportLayer(Layer):
     def _draw_line_labels(self, tr, smooth: list, cfg: dict, placed: list) -> None:
         if len(smooth) < 2:
             return
-        # 采样间距（像素，分辨率自适应）：与徽章字号同比例随 render_scale 缩放，
+        # 采样间距与徽章字号使用相同的像素单位，
         # 保持"每条线路固定数量徽章、徽章间屏幕间距恒定"——否则高分辨率下
         # 线路像素变长而间隔不变，沿线徽章数量线性暴增、市中心挤成一团。
-        # 与 label_layer._draw_road_names 的 spacing*render_scale 处理一致。
-        interval_px = float(cfg.get("repeat_interval", 600)) * self.render_scale
-        min_gap = float(cfg.get("min_gap", 350)) * self.render_scale
+        # 抗锯齿倍率只在进入当前栅格时应用。
+        interval_px = float(cfg.get("repeat_interval", 600)) * self._pixel_aa
+        min_gap = float(cfg.get("min_gap", 350)) * self._pixel_aa
+        if self._artwork is not None:
+            interval_px, min_gap = float(cfg['repeat_interval']), float(cfg['min_gap'])
         max_per_line = int(cfg.get("max_per_line", 4))
         line_color = self._resolve_color(tr, transit.type_def(tr.type))
         rgb = hex_to_rgb(line_color)
@@ -2941,7 +2799,8 @@ class TransportLayer(Layer):
             angle = math.degrees(
                 math.atan2(smooth[i1][1] - smooth[i0][1], smooth[i1][0] - smooth[i0][0])
             )
-            badge = self._make_badge(tr.name, rgb, cfg)
+            raster_scale = 4 if self._artwork is not None else 1
+            badge = self._make_badge(tr.name, rgb, cfg, raster_scale=raster_scale)
             if badge is None:
                 continue
             # 徽章文字沿线路视觉方向保持正立可读（normalize_angle 归一化防倒置）
@@ -2950,158 +2809,38 @@ class TransportLayer(Layer):
                 expand=True,
                 resample=Image.BICUBIC,
             )
-            x = int(round(px - img.width / 2))
-            y = int(round(py - img.height / 2))
-            self.ctx.image.paste(img, (x, y), img)
+            if self._artwork is not None:
+                x, y = px-img.width/8, py-img.height/8
+                font = self._get_font(max(_resolve_size(cfg.get('size', 9), self._pixel_aa)*8, 1), bold=True)
+                run = self._artwork.font_details(tr.name, font) | {
+                    'text': tr.name, 'fontSize': font.size/8,
+                    'angle': normalize_angle(angle), 'rasterScale': 4}
+                self._artwork.image(f'line-label:{tr.id}', img,
+                    (x, y, x+img.width/4, y+img.height/4), text_run=run)
+            else:
+                x = int(round(px - img.width / 2))
+                y = int(round(py - img.height / 2))
+                self.ctx.image.paste(img, (x, y), img)
             placed.append((px, py))
             count += 1
 
     # ---- 公共交通图：重合线路拼接标签（参考逆向 MergedLineNumbering） ----
 
-    def _label_candidates(self, tr, smooth: list, cfg: dict) -> list:
-        """单线路的沿线标签候选点 [(px, py, name, rgb), ...]（公共交通图用）。"""
-        if len(smooth) < 2 or not tr.name:
-            return []
-        interval_px = float(cfg.get("repeat_interval", 600)) * self.render_scale
-        max_per_line = int(cfg.get("max_per_line", 4))
-        candidate_interval = min(
-            interval_px,
-            max(float(cfg.get("candidate_interval", 120.0))
-                * float(cfg.get("layout_scale", self.render_scale)), 24.0),
-        )
-        candidate_limit = max(
-            int(cfg.get("candidate_limit", max_per_line * 6)),
-            max_per_line,
-        )
-        line_color = self._resolve_color(tr, transit.type_def(tr.type))
-        rgb = hex_to_rgb(line_color)
-        # 累计弧长
-        cum = [0.0]
-        for i in range(1, len(smooth)):
-            cum.append(cum[-1] + math.hypot(
-                smooth[i][0] - smooth[i - 1][0], smooth[i][1] - smooth[i - 1][1]))
-        total = cum[-1]
-        if total <= 0:
-            return []
-        # 候选采样比最终重复间隔更密；最终数量与间距在全局净空评分后决定。
-        # 从半个步长起采样，避免默认把超长徽章压在线路端点/站点上。
-        targets = []
-        if total <= candidate_interval:
-            targets.append(total / 2.0)
-        else:
-            target = candidate_interval * 0.5
-            while target < total and len(targets) < candidate_limit:
-                targets.append(target)
-                target += candidate_interval
-        mid = total / 2.0
-        if all(abs(t - mid) > candidate_interval * 0.35 for t in targets):
-            targets.append(mid)
-        targets.sort()
-        out = []
-        for t in targets[:candidate_limit]:
-            i = 0
-            while i < len(cum) - 2 and cum[i + 1] < t:
-                i += 1
-            p0, p1 = smooth[i], smooth[i + 1]
-            tt = (t - cum[i]) / max(cum[i + 1] - cum[i], 1e-9)
-            px = p0[0] + (p1[0] - p0[0]) * tt
-            py = p0[1] + (p1[1] - p0[1]) * tt
-            if not (0 <= px <= self.ctx.image.width and 0 <= py <= self.ctx.image.height):
-                continue
-            out.append((px, py, tr.name, rgb))
-        return out
-
-    @staticmethod
-    def _line_label_obstacle_score(bb, obstacle_points, canvas_size,
-                                   clearance_padding: float = 12.0):
-        """标签框对站点/交通 POI 与画布边缘的冲突和净空评分。"""
-        width, height = canvas_size
-        outside = (
-            max(0.0, -bb[0]) + max(0.0, -bb[1])
-            + max(0.0, bb[2] - width) + max(0.0, bb[3] - height)
-        )
-        safe = max(float(clearance_padding), (bb[3] - bb[1]) * 0.75, 4.0)
-        cost = 0.0
-        nearest = max(width, height, 1)
-        for px, py in obstacle_points:
-            dx = max(bb[0] - px, 0.0, px - bb[2])
-            dy = max(bb[1] - py, 0.0, py - bb[3])
-            distance = math.hypot(dx, dy)
-            nearest = min(nearest, distance)
-            if distance < safe:
-                cost += (safe - distance) / safe
-        edge_clearance = min(
-            bb[0], bb[1], width - bb[2], height - bb[3])
-        nearest = min(nearest, max(edge_clearance, 0.0))
-        return outside, cost, nearest
-
-    @staticmethod
-    def _bbox_hit(bb, placed, pad: float = 2.0) -> bool:
-        """bbox 与已放标签是否相交。"""
-        for p in placed:
-            if not (bb[2] + pad < p[0] or p[2] + pad < bb[0]
-                    or bb[3] + pad < p[1] or p[3] + pad < bb[1]):
-                return True
-        return False
-
     def _draw_line_labels_view(self, mapdata, enabled: list, label_cfg: dict,
                                abstract: bool, samples: int) -> None:
-        """公共交通图：标签更密更大更清晰；重合线路同一处横向拼接徽章。
-
-        统一视觉规范（两端共用）见
-        ``docs/tasks/公共交通视图-整改-20260910/01-线路标签视觉统一-20260914.md``：
-        线路色实心胶囊；文字色按 Rec.709 亮度自适应；无文字描边；
-        一圈半透明细轮廓；重合线路各色块直接并排、共用同一圈轮廓。
-        """
+        """按共享预设放置沿线标签，并横向拼接相近的线路标签。"""
         tv = self._tv
-        # 标签按成品长边缩放，不随选区的地理放大倍数增长。
-        # ctx.zoom 含选区放大倍率，直接用于字号会让局部导出的胶囊遮住地图。
-        # 使用完整画布尺寸，矩形、旋转和分块均保持相同比例；AA 画布同比放大。
-        width = getattr(self.ctx, "canvas_width", 0) or self.ctx.image.width
-        height = getattr(self.ctx, "canvas_height", 0) or self.ctx.image.height
-        output_scale = max(width, height) / 1024.0
-        layout_scale = output_scale * _BASELINE_1024_SCALE
-        # YAML 的 {fixed, scaled} 先在 1024px 基准解析，再按输出分辨率缩放。
-        lv = {
-            "repeat_interval": float(label_cfg.get("repeat_interval", 300)),
-            "min_gap": float(label_cfg.get("min_gap", 180)),
-            "max_per_line": int(label_cfg.get("max_per_line", 12)),
-            "size": {"fixed": 0.0, "scaled": 60.0},
-            "outer_border_color": "#101828",
-            "outer_border_alpha": 0.55,
-            "text_on_light": "#101828",
-            "text_on_dark": "#FFFFFF",
-            "luminance_threshold": 165.0,
-            "merge_dist": 40.0,
-            "candidate_interval": 110.0,
-            "candidate_limit": 72,
-            "clearance_padding": 14.0,
-        }
-        for k, v in tv.items():
-            if k.startswith("label_"):
-                lv[k[len("label_"):]] = v
-        # 内边距 / 轮廓 / 缝一律由**字号**等比例派生（规范基准：字号 15px@1024
-        # → 内边距 9、轮廓 2、缝 3，即 0.60 / 2⁄15 / 0.20）。侧栏把「名称字号」
-        # 拉大时整个胶囊等比放大，而不是字变大、边距不变。
-        # 主题若显式写了 ``transit_view.label_padding`` 等，仍以主题为准。
-        _size_1024 = _resolve_size(lv["size"], _BASELINE_1024_SCALE)
-        for _key, _ratio in (("padding", 0.60),
-                             ("border_width", 2.0 / 15.0),
-                             ("seam_width", 3.0 / 15.0)):
-            if _key not in lv:
-                lv[_key] = {
-                    "fixed": 0.0,
-                    "scaled": _size_1024 * _ratio / _BASELINE_1024_SCALE,
-                }
-        for key in ("size", "padding", "border_width", "seam_width", "corner_radius"):
-            if key in lv and lv[key] is not None:
-                lv[key] = _resolve_size(lv[key], _BASELINE_1024_SCALE) * output_scale
+        layout_scale = self._pixel_aa
+        lv = badge_layout_options(label_cfg, tv)
+        lv['size'] = float(lv['size']) * self._pixel_aa
         min_gap = float(lv["min_gap"]) * layout_scale
         merge_dist = float(lv["merge_dist"]) * layout_scale
 
+        step = min(float(lv['repeat_interval']), float(lv['candidate_interval'])) * layout_scale
+        candidate_limit = max(int(lv['candidate_limit']), int(lv['max_per_line']))
         # 收集所有启用线路的沿线候选点
         cands: list = []
-        for tr in self._render_lines:
+        for tr in sorted(self._render_lines, key=lambda line: line.id) if self._artwork else self._render_lines:
             td = transit.type_def(tr.type)
             if (td is None
                     or (transit.normalize_type(tr.type) or tr.type)
@@ -3111,26 +2850,13 @@ class TransportLayer(Layer):
             pts = self._line_pixels(tr, td, mapdata, abstract, samples)
             if len(pts) < 2:
                 continue
-            cands.extend(self._label_candidates(tr, pts, {
-                "repeat_interval": float(lv["repeat_interval"]),
-                "max_per_line": int(lv["max_per_line"]),
-                "candidate_interval": float(lv["candidate_interval"]),
-                "candidate_limit": int(lv["candidate_limit"]),
-                "layout_scale": layout_scale,
-            }))
+            rgb = hex_to_rgb(self._resolve_color(tr, td))
+            kind = transit.normalize_type(tr.type) or tr.type
+            points = transit_badge_layout.candidate_points(
+                pts, step, candidate_limit, *self.ctx.image.size)
+            cands.extend((x, y, (tr.name, rgb), kind) for x, y in points)
 
-        # 重合合并：距离阈值内拼进同一徽章（组心 = 首个候选位置）
-        groups: list = []
-        for c in cands:
-            found = None
-            for g in groups:
-                if math.hypot(g[0] - c[0], g[1] - c[1]) < merge_dist:
-                    found = g
-                    break
-            if found is None:
-                groups.append([c[0], c[1], [c]])
-            else:
-                found[2].append(c)
+        groups = transit_badge_layout.group_candidates(cands, merge_dist)
 
         # 站点与交通 POI 共用 transport stop 位置；POI 图层稍后绘制，
         # 因此在这里先把这些位置作为障碍物纳入净空评分。
@@ -3156,25 +2882,22 @@ class TransportLayer(Layer):
         # 先生成所有实际尺寸的徽章，再综合评价：画布外溢、站点/POI
         # 冲突、当前交通图像素占用、最近净空。评分最低者优先放置。
         prepared = []
-        for gx, gy, items in groups:
-            seen = set()
-            uniq: list = []
-            for _, _, name, rgb in items:
-                key = (name, rgb)
-                if key in seen:
-                    continue
-                seen.add(key)
-                uniq.append((name, rgb))
-            if not uniq:
-                continue
-            badge = self._make_view_badge(uniq, lv)
+        badges = {}
+        for gx, gy, uniq, kinds in groups:
+            badge_key = (tuple(uniq), tuple(kinds))
+            if badge_key not in badges:
+                badges[badge_key] = self._make_view_badge(uniq,
+                    {**lv, 'size': float(lv['size'])*4} if self._artwork else lv, kinds=kinds)
+            badge = badges[badge_key]
             if badge is None:
                 continue
-            x = int(round(gx - badge.width / 2))
-            y = int(round(gy - badge.height / 2))
-            bb = (x, y, x + badge.width, y + badge.height)
+            raster_scale = 4 if self._artwork else 1
+            bw, bh = badge.width/raster_scale, badge.height/raster_scale
+            x = int(round(gx - bw / 2))
+            y = int(round(gy - bh / 2))
+            bb = (x, y, x + bw, y + bh)
             outside, obstacle_cost, clearance = (
-                self._line_label_obstacle_score(
+                transit_badge_layout.obstacle_score(
                     bb, obstacle_points, self.ctx.image.size,
                     float(lv.get("clearance_padding", 14.0))
                     * layout_scale,
@@ -3185,174 +2908,70 @@ class TransportLayer(Layer):
             visual_occupancy = self._legend_occupancy(
                 self.ctx.image,
                 x - visual_pad, y - visual_pad,
-                badge.width + visual_pad * 2,
-                badge.height + visual_pad * 2,
+                math.ceil(bw) + visual_pad * 2,
+                math.ceil(bh) + visual_pad * 2,
             )
             prepared.append((
                 outside, obstacle_cost, visual_occupancy, -clearance,
-                gx, gy, bb, badge, uniq,
+                gx, gy, bb, badge, uniq, kinds,
             ))
 
-        prepared.sort(key=lambda item: item[:4])
+        transit_badge_layout.rank_candidates(prepared)
         placed: list = []
-        placed_boxes = []
+        shared_occupancy = self.ctx.shared.get('poi_name_occupancy') if self._artwork else None
+        blocked = shared_occupancy.overlaps if shared_occupancy is not None else lambda box: False
         label_counts = {}
         max_per_line = max(int(lv.get("max_per_line", 12)), 1)
         for (_outside, _obstacle_cost, _occupancy, _neg_clearance,
-             gx, gy, bb, badge, uniq) in prepared:
+             gx, gy, bb, badge, uniq, kinds) in prepared:
             keys = [(name, rgb) for name, rgb in uniq]
-            if all(label_counts.get(key, 0) >= max_per_line for key in keys):
-                continue
-            if any(math.hypot(gx - px, gy - py) < min_gap
-                   for px, py in placed):
-                continue
-            if self._bbox_hit(bb, placed_boxes, pad=4.0):
+            reason = transit_badge_layout.placement_reason(
+                gx, gy, bb, keys, min_gap, max_per_line, placed, label_counts, blocked)
+            if reason != 'placed':
+                if self._artwork:
+                    self._artwork.diagnostics['badges'].append({'box': bb, 'reason': reason})
                 continue
             x, y = int(bb[0]), int(bb[1])
-            self.ctx.image.paste(badge, (x, y), badge)
-            placed.append((gx, gy))
-            placed_boxes.append(bb)
-            for key in keys:
-                label_counts[key] = label_counts.get(key, 0) + 1
+            painted = badge.resize((max(round(bb[2]-bb[0]), 1), max(round(bb[3]-bb[1]), 1)), Image.Resampling.LANCZOS) if self._artwork else badge
+            self.ctx.image.paste(painted, (x, y), painted)
+            if self._artwork is not None:
+                key = ",".join(sorted(name for name, _rgb in uniq))
+                text = "".join(name for name, _rgb in uniq)
+                font = self._get_font(max(round(float(lv["size"]) * 8), 1), bold=True, minimum_size=1)
+                details = self._artwork.font_details(text, font)
+                self._artwork.image("line-label:" + key, badge, bb,
+                    text_run={**details, "text": text,
+                              'fontSize': font.size/4,
+                              "labels": [name for name, _rgb in uniq], "rasterScale": 4})
+                shared_occupancy.add(bb, 'line-label:'+key)
+                self._artwork.diagnostics['badges'].append({'box': bb, 'labels': keys, 'reason': 'placed'})
 
-    def _make_view_badge(self, items: list, lv: dict):
-        """拼接徽章（2x 超采样抗锯齿）。
+    def _make_view_badge(self, items: list, lv: dict, *, kinds=None):
+        """使用共享线路标签预设绘制，可保留整组线路的颜色与类型。"""
+        from ..transit_label_styles import DEFAULT_PRESET, render_badges
+        size = max(float(float(lv["size"])), 1.0)
+        preset = lv.get("preset", DEFAULT_PRESET)
+        if preset == "classic":
+            preset = DEFAULT_PRESET
+        return render_badges(items, kinds, preset, size,
+                             self._get_font(max(round(size * 2), 1), bold=True, minimum_size=1),
+                             self.ctx.style.data.get("canvas", {}).get("background", "#F6F7F9"))
 
-        统一视觉规范（导出与预览共用）见
-
-        - 底色：线路色实心胶囊（单条）或各线路色块直接并排（多条）；
-        - 字色：按 Rec.709 亮度自适应，≥ ``luminance_threshold`` 用深字，
-          否则白字；**不再画文字描边**，可读性由字重承担；
-        - 轮廓：整条／整组共用一圈半透明细边（``outer_border_color`` ×
-          ``outer_border_alpha``），取代旧的 3px 实心黑框与白底组框；
-        - 多条重合：色块之间留 ``seam_width`` 的透明缝（透出底图底色），
-          两端圆角、内部直角，视觉上仍是「一条胶囊被切成几段」。
-
-        与 ``viewer/src/main.ts`` 的 ``.map-transit-badge`` 使用同一组值。
-        """
-        threshold = float(lv.get("luminance_threshold", 165.0))
-        on_light = hex_to_rgb(str(lv.get("text_on_light", "#101828")))
-        on_dark = hex_to_rgb(str(lv.get("text_on_dark", "#FFFFFF")))
-
-        def adaptive_rgba(rgb) -> tuple:
-            return ((on_light + (255,)) if _luminance709(rgb) >= threshold
-                    else (on_dark + (255,)))
-
-        # 主题参数可能来自用户编辑或旧版本配置；绘制前统一限制为合法值，
-        # 避免极小缩放/负边距把 Pillow 的矩形高度截断为 0 或负数。
-        size = max(float(_resolve_size(lv.get("size", 12), self.render_scale)), 1.0)
-        pad = max(float(_resolve_size(lv.get("padding", 6), self.render_scale)), 0.0)
-        border_w = max(
-            float(_resolve_size(lv.get("border_width", 2.0), self.render_scale)),
-            0.0,
-        )
-        seam = max(
-            float(_resolve_size(lv.get("seam_width", 3.0), self.render_scale)),
-            0.0,
-        )
-        outer_alpha = max(0.0, min(float(
-            lv.get("outer_border_alpha", 0.55)), 1.0))
-        outer_rgba = (hex_to_rgb(str(lv.get("outer_border_color", "#101828")))
-                      + (int(round(outer_alpha * 255)),))
-        configured_radius = lv.get("corner_radius")
-        radius2 = (None if configured_radius is None else max(int(round(
-            _resolve_size(configured_radius, self.render_scale) * 2)), 0))
-        # 公共交通图徽章一律加粗：取消文字描边后，可读性由字重承担。
-        font = self._get_font(max(int(size * 2), 6), bold=True)
-        probe = ImageDraw.Draw(Image.new("RGBA", (4, 4), (0, 0, 0, 0)))
-        meas = []
-        for name, rgb in items:
-            bbox = probe.textbbox((0, 0), name, font=font)
-            meas.append((bbox, bbox[2] - bbox[0], bbox[3] - bbox[1]))
-        th = max(m[2] for m in meas)
-        # 文本高度非正时（空/纯空白线路名、字体退化）badge 无意义且会让
-        # rounded_rectangle 出现 y1<y0 崩溃，直接跳过该组（与 _make_badge 一致）。
-        if th <= 0:
-            return None
-        blocks = []
-        # 胶囊高固定为 1.75 × 字号（与预览侧 .map-transit-badge 同式），
-        # 不跟着文字 bbox 高度漂移，两端高度才能对上。
-        badge_h = max(int(round(size * 3.5)), 2)
-        for (bbox, tw, thh), (name, rgb) in zip(meas, items):
-            # pad 是 1x 域的每侧水平内边距；这里在 2x 域作画，故两侧共 pad * 4
-            bw2 = max(int(math.ceil(tw + pad * 4)), 2)
-            blocks.append((name, rgb, bbox, bw2, badge_h))
-
-        def draw_label(d, x0, y0, bw2, bh2, bbox, name, rgb) -> None:
-            """按该色块自身底色亮度取字色（描边已取消）。"""
-            d.text((x0 + (bw2 - (bbox[2] - bbox[0])) / 2 - bbox[0],
-                    y0 + (bh2 - (bbox[3] - bbox[1])) / 2 - bbox[1]),
-                   name, font=font, fill=adaptive_rgba(rgb))
-
-        if len(blocks) == 1:
-            name, rgb, bbox, bw2, bh2 = blocks[0]
-            img2 = Image.new("RGBA", (bw2, bh2), (0, 0, 0, 0))
-            d = ImageDraw.Draw(img2)
-            radius = (min(bw2, bh2) // 2 if radius2 is None
-                      else min(radius2, min(bw2, bh2) // 2))
-            d.rounded_rectangle((0, 0, bw2 - 1, bh2 - 1),
-                                radius=radius,
-                                fill=rgb + (255,))
-            d.rounded_rectangle((0, 0, bw2 - 1, bh2 - 1),
-                                radius=radius,
-                                outline=outer_rgba,
-                                width=max(int(round(border_w * 2)), 1))
-            draw_label(d, 0, 0, bw2, bh2, bbox, name, rgb)
-        else:
-            n = len(blocks)
-            inner_h = max(b[4] for b in blocks)
-            seam2 = seam * 2.0
-            total_w = max(int(math.ceil(
-                sum(b[3] for b in blocks) + seam2 * (n - 1))), 2)
-            total_h = max(int(math.ceil(inner_h)), inner_h, 2)
-            img2 = Image.new("RGBA", (total_w, total_h), (0, 0, 0, 0))
-            d = ImageDraw.Draw(img2)
-            x = 0.0
-            cy = max((total_h - inner_h) // 2, 0)
-            for idx, (name, rgb, bbox, bw2, bh2) in enumerate(blocks):
-                # 圆角：仅整组两端的左/右侧为胶囊，内部拼接处为竖直直线
-                if idx == 0:
-                    corners = (True, False, False, True)   # 右接拼线，仅左端圆
-                elif idx == n - 1:
-                    corners = (False, True, True, False)   # 左接拼线，仅右端圆
-                else:
-                    corners = (False, False, False, False)  # 中间段直线
-                x0 = int(round(x))
-                y0 = int(cy)
-                x1 = max(x0 + bw2 - 1, x0)
-                y1 = max(y0 + bh2 - 1, y0)
-                # Pillow 在仅启用部分 corners 时会继续绘制侧边矩形；
-                # 徽标过小时，半径过大会让内部侧边的 y1 小于 y0。
-                block_radius = max(min(x1 - x0 + 1, y1 - y0 + 1) - 3, 0) // 2
-                d.rounded_rectangle((x0, y0, x1, y1),
-                                    radius=block_radius,
-                                    fill=rgb + (255,),
-                                    corners=corners)
-                draw_label(d, x0, y0, bw2, bh2, bbox, name, rgb)
-                x += bw2 + seam2
-            # 整组共用一圈细轮廓（不再有白底组框）
-            d.rounded_rectangle((0, 0, total_w - 1, total_h - 1),
-                                radius=min(total_w, total_h) // 2,
-                                outline=outer_rgba,
-                                width=max(int(round(border_w * 2)), 1))
-        w1 = max(int(round(img2.width / 2)), 1)
-        h1 = max(int(round(img2.height / 2)), 1)
-        return img2.resize((w1, h1), Image.LANCZOS)
-
-    def _make_badge(self, text: str, line_rgb, cfg: dict):
+    def _make_badge(self, text: str, line_rgb, cfg: dict, *, raster_scale=1):
         """绘制线路名徽章（白底圆角矩形 + 线路色文字/边框），2x 超采样抗锯齿。"""
-        size = max(float(_resolve_size(cfg.get("size", 9), self.render_scale)), 1.0)
-        pad = max(float(_resolve_size(cfg.get("padding", 6), self.render_scale)), 0.0)
+        size = max(float(_resolve_size(cfg.get("size", 9), self._pixel_aa)), 1.0)
+        pad = max(float(_resolve_size(cfg.get("padding", 6), self._pixel_aa)), 0.0)
         border_w = max(
-            float(_resolve_size(cfg.get("border_width", 1.2), self.render_scale)),
+            float(_resolve_size(cfg.get("border_width", 1.2), self._pixel_aa)),
             0.0,
         )
+        size, pad, border_w = (value*raster_scale for value in (size, pad, border_w))
         bg = cfg.get("bg", "#FFFFFF")
         # color_fill：线路色底白字胶囊（RMG 式）；缺省白底彩边
         badge_style = cfg.get("badge_style")
 
         # 线路名徽章统一黑体加粗，辨识度更高
-        font = self._get_font(max(size * 2, 6), bold=True)
+        font = self._get_font(max(size * 2, 1), bold=True)
         # 文字颜色：线路色过亮时自动转深色保证可读
         text_color = cfg.get("text_color")
         if not text_color:
@@ -3366,8 +2985,9 @@ class TransportLayer(Layer):
         tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
         if tw <= 0 or th <= 0:
             return None
-        bw2 = max(int(math.ceil(tw + (pad + border_w + 3) * 2)), 2)
-        bh2 = max(int(math.ceil(th + (pad + border_w + 3) * 2)), 2)
+        padding = cfg.get('capture_padding', 3) * self._pixel_aa * raster_scale
+        bw2 = max(int(math.ceil(tw + (pad + border_w + padding) * 2)), 2)
+        bh2 = max(int(math.ceil(th + (pad + border_w + padding) * 2)), 2)
         radius = min(bw2, bh2) // 2
         img = Image.new("RGBA", (bw2, bh2), (0, 0, 0, 0))
         d = ImageDraw.Draw(img)
@@ -3402,9 +3022,9 @@ class TransportLayer(Layer):
         h1 = max(int(round(bh2 / 2)), 1)
         return img.resize((w1, h1), Image.LANCZOS)
 
-    def _get_font(self, size_px: int, bold: bool = False) -> ImageFont.FreeTypeFont:
-        key = (size_px, bold)
+    def _get_font(self, size_px: int, bold: bool = False, *, minimum_size: int = 6) -> ImageFont.FreeTypeFont:
+        key = (size_px, bold, minimum_size)
         if key not in self._font_cache:
             self._font_cache[key] = load_pillow_font(
-                size_px, font_name=self._font_family, bold=bold)
+                size_px, font_name=self._font_family, bold=bold, minimum_size=minimum_size)
         return self._font_cache[key]

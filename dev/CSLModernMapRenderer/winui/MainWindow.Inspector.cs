@@ -42,6 +42,19 @@ public sealed partial class MainWindow
         var model = await Read();
         if (!Current()) return;
         _buildingList?.ShowDetails(model, selection);
+        if (_artworkEditor is { } editor)
+        {
+            var path = model.TryGetProperty("stylePath", out var stylePath) ? stylePath.GetString()! : model.GetProperty("themeSection").GetString()!;
+            editor.FocusStyle(path);
+            var facts = new ObjectInspectorPanel(model,
+                (_, _, _, _) => throw new InvalidOperationException("Read-only object facts"), Current,
+                section => editor.FocusStyle(section),
+                () => { SendViewer(new { type = "clearObjectSelection" }); ShowArtworkProperties(); },
+                () => SendViewer(new { type = "locateObject", featureId = selection.TryGetProperty("featureId", out var selectedId) ? selectedId.GetString() : "" }),
+                factsOnly: true);
+            ShowArtworkProperties(facts);
+            return;
+        }
         var kind = model.GetProperty("objectType").GetString()!;
         if (!_inspectorExpansion.TryGetValue(kind, out var expansion))
             _inspectorExpansion[kind] = expansion = new();

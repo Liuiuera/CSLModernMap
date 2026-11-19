@@ -1,4 +1,4 @@
-"""Shared light and dark colors for WinUI resources."""
+"""WinUI 与资源生成工具共用的浅色、深色配色。"""
 
 from __future__ import annotations
 
@@ -59,6 +59,7 @@ PANEL_TITLE = PRIMARY
 #: 上下文标签仍需区分，但限制在蓝色族。
 CONTEXT_TRANSIT = PRIMARY
 CONTEXT_METRO = "#5262A3"
+#: 上下文标签文字色，随底色切换以保持可读性。
 CONTEXT_TITLE_TEXT = "#FFFFFF"
 
 #: 语义域 → (图标/前景色, 色块底色)。

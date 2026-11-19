@@ -9,11 +9,12 @@ import zlib
 from PIL import Image
 
 
-def read_archive(path):
+def read_archive(path, *, on_satellite_error=None):
     with open(path, "rb") as source:
         if source.read(2) != b"PK":
             return None
     entries = {}
+    satellite_error = None
     limits = {"city.json": 512 * 1024**2, "satellite.png": 256 * 1024**2,
               "edits.json": 64 * 1024**2}
     for name in ("land", "water", "water_color_reference", "water_black_reference", "water_white_reference"):
@@ -27,7 +28,13 @@ def read_archive(path):
                     raise ValueError("Duplicate or invalid CMM member: " + entry.filename)
                 if entry.file_size > limits[entry.filename]:
                     raise ValueError("CMM member exceeds size limit: " + entry.filename)
-                entries[entry.filename] = archive.read(entry)
+                try:
+                    entries[entry.filename] = archive.read(entry)
+                except (zipfile.BadZipFile, zlib.error, EOFError) as error:
+                    if on_satellite_error is None or not entry.filename.startswith(("satellite/", "satellite.")):
+                        raise
+                    entries[entry.filename] = None
+                    satellite_error = f"{entry.filename}: {error}"
     except (zipfile.BadZipFile, zlib.error, EOFError) as error:
         raise ValueError("Invalid CMM archive") from error
     if "city.json" not in entries:
@@ -36,9 +43,28 @@ def read_archive(path):
     raw = json.loads(text)
     if not isinstance(raw, dict) or raw.get("schema_version") != "cmm1.1":
         raise ValueError("CMM ZIP requires schema_version cmm1.1")
-    info = raw.get("satellite")
+    edits = None
+    if "edits.json" in entries:
+        edits = json.loads(entries["edits.json"].decode("utf-8-sig"))
+        if not isinstance(edits, dict):
+            raise ValueError("Invalid CMM edits")
+    try:
+        if satellite_error is not None:
+            raise ValueError(satellite_error)
+        png, info, layer_bytes = _satellite(raw.get("satellite"), entries)
+    except (ValueError, OSError, SyntaxError, OverflowError, Image.DecompressionBombError) as error:
+        if on_satellite_error is None:
+            raise
+        on_satellite_error(str(error))
+        png, info, layer_bytes = None, None, {}
+    return text, png, info, edits, layer_bytes
+
+
+def _satellite(info, entries):
     png = entries.get("satellite.png")
     layers = info.get("layers") if isinstance(info, dict) else None
+    if layers is None and any(name.startswith("satellite/") for name in entries):
+        raise ValueError("CMM satellite layers have no metadata")
     if (png is None and layers is None) != (info is None):
         raise ValueError("CMM satellite image and coordinates must both be present")
     if info is not None:
@@ -55,7 +81,7 @@ def read_archive(path):
             raise ValueError("CMM satellite layers require square world bounds")
         dimensions = None
         for name, member in layers.items():
-            if member != f"satellite/{name}.png" or member not in limits or member not in entries:
+            if member != f"satellite/{name}.png" or member not in entries:
                 raise ValueError(f"Missing or invalid CMM satellite member: {name}")
             data = entries[member]
             with Image.open(io.BytesIO(data)) as image:
@@ -81,12 +107,7 @@ def read_archive(path):
                                        or image.size != (target, target)):
                 raise ValueError("Invalid CMM satellite output size")
             image.verify()
-    edits = None
-    if "edits.json" in entries:
-        edits = json.loads(entries["edits.json"].decode("utf-8-sig"))
-        if not isinstance(edits, dict):
-            raise ValueError("Invalid CMM edits")
-    return text, png, info, edits, layer_bytes
+    return png, info, layer_bytes
 
 
 def write_archive(document, path):

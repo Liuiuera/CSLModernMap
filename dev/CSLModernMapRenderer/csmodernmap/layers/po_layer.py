@@ -116,11 +116,7 @@ class POLayer(Layer):
             for cat in CATEGORY_KEYS
         }
         # 边框
-        bw = cfg.get("border_width", {"fixed": 0.20, "scaled": 0.08})
-        if isinstance(bw, dict):
-            self.border_px = bw.get("fixed", 0.0) + bw.get("scaled", 0.0) * self.render_scale
-        else:
-            self.border_px = float(bw)
+        self.border_px = float(cfg['border_width']) * ctx.zoom / ctx.final_zoom
         self.border_color = hex_to_rgb(cfg.get("border", "#C6CAD3"))
         # 用户染色 alpha（区分原生分类色和玩家主动染色，增加饱和度微降效果）
         self.custom_alpha = float(cfg.get("custom_color_alpha", 1.0))

@@ -1097,6 +1097,7 @@
 
     "localStorageQuotaExceeded": "本地存储空间已达上限。无法保存新更改。",
     "cmm": {
+    "transfer": "换乘",
     "properties": "属性",
     "otherProperties": "其他属性",
     "moreActions": "更多操作",

@@ -1,5 +1,7 @@
 // 将预览器快捷操作接入宿主设置与首次引导。
 using System.Text.Json;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 
 namespace CSLModernMapWinUI;
 
@@ -7,13 +9,15 @@ public sealed partial class MainWindow
 {
     private readonly Dictionary<string, (string Scene, int Revision)> _previewLayerWrites = new();
     private bool _mapInteractionGuideSeen, _mapGuideOpen, _mapGuideOffered;
+    private bool _draftWelcomeSeen, _draftWelcomeOpen;
     private (string Scene, int Revision)? _presentedGuideScene, _appliedGuideScene;
 
     private void SendPreviewUiState()
     {
         if (!_viewerReady || _snapshot.ValueKind != JsonValueKind.Object) return;
         SendViewer(new { type = "setPreviewUiState", layers = _snapshot.GetProperty("layers"),
-            enabled = _documentEnabled && _context == "map", guideAvailable = _simplifiedRibbonIntro?.IsOpen != true,
+            immersive = _immersive,
+            enabled = _documentEnabled && _context == "map", guideAvailable = !_draftWelcomeOpen && _simplifiedRibbonIntro?.IsOpen != true,
             pendingLayers = _previewLayerWrites.Where(item => item.Value == (_sceneId, _revision)).Select(item => item.Key).ToArray(),
             sceneId = _sceneId, revision = _revision });
     }
@@ -52,11 +56,52 @@ public sealed partial class MainWindow
 
     private void TryShowMapInteractionGuide()
     {
-        if (_mapInteractionGuideSeen || _mapGuideOffered || _mapGuideOpen || _closing || !_viewerReady ||
+        if (_mapGuideOpen || _draftWelcomeOpen || _openingArtwork || _cityArtwork || _closing || !_viewerReady ||
             !_documentEnabled || _context == "metro" || _mapTask.Active || _engineBusy || _engineUnavailable ||
-            OperationError.IsOpen || _simplifiedRibbonIntro?.IsOpen == true ||
+            OperationError.IsOpen && OperationError.Severity == InfoBarSeverity.Error || _simplifiedRibbonIntro?.IsOpen == true ||
             _presentedGuideScene != (_sceneId, _revision) || _appliedGuideScene != (_sceneId, _revision)) return;
+        if (!_draftWelcomeSeen && CommandEnabled("map.edit_city", _commands["map.edit_city"]))
+        {
+            if (VisualTreeHelper.GetOpenPopupsForXamlRoot(Root.XamlRoot).FirstOrDefault() is { } popup)
+            {
+                popup.Closed -= RetryAfterPopup;
+                popup.Closed += RetryAfterPopup;
+                return;
+            }
+            _ = RunAsync(ShowDraftWelcomeAsync);
+            return;
+        }
+        if (_mapInteractionGuideSeen || _mapGuideOffered || OperationError.IsOpen) return;
         _mapGuideOffered = _mapGuideOpen = true;
         SendViewer(new { type = "showMapInteractionGuide", sceneId = _sceneId, revision = _revision });
+    }
+
+    private void RetryAfterPopup(object? sender, object args)
+    {
+        ((Microsoft.UI.Xaml.Controls.Primitives.Popup)sender!).Closed -= RetryAfterPopup;
+        Root.DispatcherQueue.TryEnqueue(TryShowMapInteractionGuide);
+    }
+
+    private async Task ShowDraftWelcomeAsync()
+    {
+        var generation = _documentGeneration;
+        _draftWelcomeOpen = true;
+        try
+        {
+            SendPreviewUiState();
+            var dialog = new DraftWelcomeDialog { XamlRoot = Root.XamlRoot, RequestedTheme = Root.ActualTheme };
+            var choice = await dialog.ShowAsync();
+            if (_closing || _allowMainClose || generation != _documentGeneration) return;
+            _draftWelcomeSeen = true;
+            // 关闭欢迎页后直接交还地图；本次会话仍可从地图帮助手动打开操作提示。
+            _mapGuideOffered = true;
+            UserData.MarkDraftWelcomeSeen(_ribbonLayoutDirectory);
+            if (choice == ContentDialogResult.Primary) await ExecuteCommandAsync("map.edit_city");
+        }
+        finally
+        {
+            _draftWelcomeOpen = false;
+            if (!_closing) SendPreviewUiState();
+        }
     }
 }

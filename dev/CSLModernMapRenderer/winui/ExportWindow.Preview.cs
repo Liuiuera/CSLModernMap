@@ -6,16 +6,13 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
-using Microsoft.UI.Xaml.Shapes;
 using Path = System.IO.Path;
 
 namespace CSLModernMapWinUI;
 
 internal sealed partial class ExportWindow
 {
-    private readonly Image _rangeImage = new() { Stretch = Stretch.Fill };
-    private readonly Rectangle _rangeOutline = new() { StrokeThickness = 2, IsHitTestVisible = false };
-    private readonly Canvas _rangeCanvas = new() { Width = 164, Height = 164, HorizontalAlignment = HorizontalAlignment.Center };
+    private readonly MapRangePreview _rangeCanvas = new(164);
     private readonly StackPanel _rangePreview = new() { Spacing = 8, Visibility = Visibility.Collapsed };
     private readonly TextBlock _contentSummary = ExportDesign.Text("");
     private readonly StackPanel _resultActions = new() { Orientation = Orientation.Horizontal, Spacing = 8,
@@ -29,9 +26,10 @@ internal sealed partial class ExportWindow
     private readonly InfoBar _gameRunningNotice = new() { IsOpen = false, IsClosable = false,
         Severity = InfoBarSeverity.Warning, Visibility = Visibility.Collapsed,
         Message = UiLanguage.Text("ExportWindow_GameRunningNotice") };
-    private readonly RadioButton _rangeFull = new() { Content = UiLanguage.Text("ExportWindow_Preview__rangeFull_653AEA4D67") };
-    private readonly RadioButton _rangeEntry = new() { Content = UiLanguage.Text("ExportWindow_Preview__rangeEntry_157A8D388F") };
-    private readonly RadioButton _rangeCustom = new() { Content = UiLanguage.Text("ExportWindow_Preview__rangeCustom_4EAFA9E925") };
+    private readonly MapRangeControls _rangeControls = new();
+    private RadioButton _rangeFull => _rangeControls.Full;
+    private RadioButton _rangeEntry => _rangeControls.Entry;
+    private RadioButton _rangeCustom => _rangeControls.Custom;
     private readonly ComboBox _sizePreset = new() { Header = UiLanguage.Text("ExportWindow_Preview__sizePreset_C08C3589C7"), HorizontalAlignment = HorizontalAlignment.Stretch };
     private readonly StackPanel _sizeFields = new() { Spacing = 8 };
     private readonly Dictionary<string, RadioButton> _formatChoices = new();
@@ -39,8 +37,6 @@ internal sealed partial class ExportWindow
     private string _sharedSignature = "";
     private bool _ready, _closed, _syncingRange, _syncingSize, _refreshingShared, _refreshSharedAgain;
     private bool _customSizeSelected;
-    private double[]? _rangeWorld;
-    private string? _rangeOverviewUri;
     private readonly TextBlock _sizeHelp = ExportDesign.Text(UiLanguage.Text("ExportWindow_Preview__sizeHelp_A073C771CC"));
     private readonly TextBlock _rotationHelp = ExportDesign.Text(UiLanguage.Text("ExportWindow_Preview__rotationHelp_4787583E64"));
 
@@ -153,24 +149,8 @@ internal sealed partial class ExportWindow
 
     private void BuildRangeControls(StackPanel extent)
     {
-        var group = Guid.NewGuid().ToString("N");
-        var modes = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
-        var controls = new StackPanel { Spacing = 8 };
-        foreach (var radio in new[] { _rangeFull, _rangeEntry, _rangeCustom })
-        {
-            radio.GroupName = group;
-            radio.MinWidth = 0;
-            modes.Children.Add(radio); _editable.Add(radio);
-        }
-        modes.SizeChanged += (_, _) => modes.Orientation = modes.ActualWidth >= 340 ? Orientation.Horizontal : Orientation.Vertical;
-        controls.Children.Add(modes);
-        controls.Children.Add(_range);
-        _rangeCanvas.Children.Add(_rangeImage); _rangeCanvas.Children.Add(_rangeOutline);
-        _rangeOutline.Stroke = (Brush)Application.Current.Resources["AccentFillColorDefaultBrush"];
-        _rangeCanvas.SizeChanged += (_, _) => DrawRangeOutline();
-        AutomationProperties.SetName(_rangeCanvas, UiLanguage.Text("ExportWindow_Preview_BuildRangeControls_647B8C0BCB"));
-        controls.Children.Add(_chooseRange);
-        extent.Children.Add(controls);
+        foreach (var radio in new[] { _rangeFull, _rangeEntry, _rangeCustom }) _editable.Add(radio);
+        extent.Children.Add(_rangeControls);
         _rangeFull.Checked += (_, _) =>
         {
             if (_syncingRange) return;
@@ -206,25 +186,7 @@ internal sealed partial class ExportWindow
         DrawRangeOutline();
     }
 
-    private void DrawRangeOutline()
-    {
-        var w = _rangeCanvas.ActualWidth;
-        if (_rangeWorld is not { Length: 4 } b || w <= 0) return;
-        var spanX = b[2] - b[0]; var spanZ = b[3] - b[1];
-        if (spanX <= 0 || spanZ <= 0) return;
-        var canvasHeight = _rangeCanvas.Height;
-        var scale = Math.Min(w / spanZ, canvasHeight / spanX);
-        var mapW = spanZ * scale; var mapH = spanX * scale;
-        var left = (w - mapW) / 2; var top = (canvasHeight - mapH) / 2;
-        _rangeImage.Width = mapW; _rangeImage.Height = mapH;
-        Canvas.SetLeft(_rangeImage, left); Canvas.SetTop(_rangeImage, top);
-        var selected = EffectiveBounds();
-        // 地图总览的屏幕向右是负 Z，向上是正 X。
-        Canvas.SetLeft(_rangeOutline, left + Math.Clamp((b[3] - selected[3]) / spanZ, 0, 1) * mapW);
-        Canvas.SetTop(_rangeOutline, top + Math.Clamp((b[2] - selected[2]) / spanX, 0, 1) * mapH);
-        _rangeOutline.Width = Math.Clamp((selected[3] - selected[1]) / spanZ, 0, 1) * mapW;
-        _rangeOutline.Height = Math.Clamp((selected[2] - selected[0]) / spanX, 0, 1) * mapH;
-    }
+    private void DrawRangeOutline() => _rangeCanvas.Select(EffectiveBounds());
 
     private void BuildDensityControls(StackPanel image, JsonElement profile)
     {
@@ -345,6 +307,18 @@ internal sealed partial class ExportWindow
     private StackPanel BuildStatePane(JsonElement profile)
     {
         var pane = new StackPanel { Spacing = 12 };
+        if (_draftState.HasValue)
+        {
+            pane.Children.Add(ExportDesign.Text(UiLanguage.Text("CityEditor_Draft"), true));
+            pane.Children.Add(_contentSummary);
+            pane.Children.Add(ExportDesign.Text(UiLanguage.Text("Export_DraftSettingsHelp")));
+            var go = new Button { Content = UiLanguage.Text("Export_GoToDraft") };
+            AutomationProperties.SetAutomationId(go, "export.goToDraft");
+            go.Click += async (_, _) => { GoToDraft = true; await _window.RequestCloseAsync(); };
+            _editable.Add(go);
+            pane.Children.Add(go);
+            return pane;
+        }
         if (_exportRmp is not null)
         {
             pane.Children.Add(ExportDesign.Text(UiLanguage.Text("ExportWindow_Preview_BuildStatePane_2584921CF7"), true));
@@ -460,7 +434,7 @@ internal sealed partial class ExportWindow
 
     internal async Task RefreshSharedSnapshotAsync()
     {
-        if (_exportRmp is not null || !_ready || _closed || _engineFailed || _busy || _choosing) return;
+        if (_draftState.HasValue || _exportRmp is not null || !_ready || _closed || _engineFailed || _busy || _choosing) return;
         if (_refreshingShared) { _refreshSharedAgain = true; return; }
         _refreshingShared = true;
         try
@@ -495,14 +469,12 @@ internal sealed partial class ExportWindow
 
     private async Task LoadRangeOverviewAsync()
     {
-        if (_context == "metro" || _closed || _engineFailed) return;
+        if (_draftState.HasValue || _context == "metro" || _closed || _engineFailed) return;
         try
         {
             var range = await _engine.RequestAsync("getRangeProfile");
             if (_closed || !range.GetProperty("available").GetBoolean()) return;
-            _rangeWorld = range.GetProperty("worldBounds").EnumerateArray().Select(value => value.GetDouble()).ToArray();
-            _rangeOverviewUri = range.GetProperty("previews").GetProperty("world").GetString();
-            await PreviewImages.SetAsync(_rangeImage, _rangeOverviewUri!, () => !_closed && !_engineFailed,
+            await _rangeCanvas.LoadAsync(range, () => !_closed && !_engineFailed,
                 loaded: () =>
                 {
                     _rangePreview.Visibility = ShowsRange ? Visibility.Visible : Visibility.Collapsed;

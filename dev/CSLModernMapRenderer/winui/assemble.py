@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import shutil
+import sys
 import subprocess
 from pathlib import Path
 
@@ -25,6 +26,7 @@ def complete_engine(directory: Path) -> bool:
     if not all((directory / relative).exists() for relative in (
         "CSLModernMapEngine.exe", "viewer/dist/index.html", "styles",
         "resources/i18n/catalogs.json", "resources/i18n/languages.json",
+        "resources/theme-pixel-defaults.json", "resources/theme-sizing-calibration.json",
     )):
         return False
     expected = json.loads((HERE.parent / "resources/i18n/languages.json").read_text(encoding="utf-8"))
@@ -38,7 +40,7 @@ def complete_engine(directory: Path) -> bool:
         for language in languages)
 
 
-def assemble(*, publish: bool, engine_source: Path | None) -> Path:
+def assemble(*, publish: bool, engine_source: Path | None, payload: bool = False) -> Path:
     published = DIST / "publish"
     if publish:
         # publish 不会移除已退役依赖，避免旧 DLL 混入新发行目录。
@@ -75,6 +77,15 @@ def assemble(*, publish: bool, engine_source: Path | None) -> Path:
         shutil.rmtree(target)
     shutil.copytree(published, target)
     shutil.copytree(engine, target / "engine")
+    if payload:
+        sys.path.insert(0, str(REPO))
+        from tools.renderer_payload import RENDERER_PAYLOAD, build_renderer_payload
+
+        artifact = DIST / "winui" / RENDERER_PAYLOAD
+        digest = build_renderer_payload(target, artifact, version=json.loads((REPO / 'version.json').read_text(encoding='utf-8'))['version'])
+        (artifact.parent / (artifact.name + ".sha256")).write_text(
+            digest + "\n", encoding="ascii")
+        print(f"载荷：{artifact} SHA-256 {digest}")
     print(f"WinUI 装配目录：{target}")
     return target
 
@@ -82,9 +93,10 @@ def assemble(*, publish: bool, engine_source: Path | None) -> Path:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--publish", action="store_true", help="先构建 WinUI Release 产物")
+    parser.add_argument("--payload", action="store_true", help="生成随模组分发的查看器 ZIP 与校验值")
     parser.add_argument("--engine-source", type=Path, help="已有 Nuitka standalone 引擎目录")
     args = parser.parse_args()
-    assemble(publish=args.publish, engine_source=args.engine_source)
+    assemble(publish=args.publish, engine_source=args.engine_source, payload=args.payload)
     return 0
 
 

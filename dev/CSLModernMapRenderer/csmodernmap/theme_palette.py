@@ -11,7 +11,7 @@ _COLOR_PATHS = {
     "road_edge": "roads.highway.border",
     "road2": "roads.main.fill",
     "road2_edge": "roads.main.border",
-    "building": "buildings.residential",
+    "building": "buildings.default",
     "building_edge": "buildings.border",
 }
 

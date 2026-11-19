@@ -1,0 +1,31 @@
+<ContentDialog
+    x:Class="CSLModernMapWinUI.MapWorkflowDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel Spacing="8">
+        <Button x:Name="PrimaryOption" Style="{StaticResource AccentButtonStyle}"
+                HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Padding="12,10" Click="SelectOption">
+            <Grid ColumnSpacing="12">
+                <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                <SymbolIcon x:Name="PrimaryIcon"/>
+                <StackPanel Grid.Column="1" Spacing="4">
+                    <TextBlock x:Name="PrimaryTitle" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                    <TextBlock x:Name="PrimaryDescription" Style="{StaticResource CaptionTextBlockStyle}" TextWrapping="Wrap"/>
+                </StackPanel>
+            </Grid>
+        </Button>
+        <Button x:Name="SecondaryOption" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                Padding="12,10" Click="SelectOption">
+            <Grid ColumnSpacing="12">
+                <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                <SymbolIcon x:Name="SecondaryIcon"/>
+                <StackPanel Grid.Column="1" Spacing="4">
+                    <TextBlock x:Name="SecondaryTitle" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                    <TextBlock x:Name="SecondaryDescription" Style="{StaticResource CaptionTextBlockStyle}" TextWrapping="Wrap"/>
+                </StackPanel>
+            </Grid>
+        </Button>
+        <TextBlock x:Name="Unavailable" Style="{StaticResource CaptionTextBlockStyle}" TextWrapping="Wrap"/>
+        <CheckBox x:Name="Remember" AutomationProperties.AutomationId="workflow.remember"/>
+    </StackPanel>
+</ContentDialog>

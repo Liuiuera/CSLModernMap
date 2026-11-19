@@ -12,18 +12,19 @@ public sealed partial class MainWindow
     private int _previewInstance;
     private string? _previewFailure;
     private CancellationTokenSource? _previewWait;
+    private bool _fullSceneCompiled, _previewWaitDismissed, _previewNoticeDismissed;
     private bool PreviewInteractive => _viewerReady && _mapTask.HasMap && !_loadingDocument &&
         (!_mapTask.Active || _mapTask.Background);
 
     private async Task InitializePreviewAsync()
     {
         if (_closing || _engineUnavailable || _previewStarting) return;
+        _previewNoticeDismissed = false;
         var instance = ++_previewInstance;
         _viewerReady = false; _previewStarting = true; _previewFailure = null; _previewSlow = false;
         _presentedGuideScene = _appliedGuideScene = null;
         if (!_loadingDocument) _mapTask.Reset(false);
         ApplyMapTaskState();
-        ObservePreviewWait();
         try
         {
             var preview = await _engine.RequestAsync("startPreview");
@@ -46,6 +47,9 @@ public sealed partial class MainWindow
             StartupTrace.Write($"Preview initialized: runtime={environment.BrowserVersionString}, instance={instance}");
             core.Settings.AreDefaultContextMenusEnabled = false;
             core.Settings.AreDevToolsEnabled = false;
+            await core.AddScriptToExecuteOnDocumentCreatedAsync("window.__CSL_PREVIEW_QUALITY__ = " +
+                JsonSerializer.Serialize(_previewQuality, PreviewQualitySettings.JsonOptions) + ";");
+            if (_closing || instance != _previewInstance) return;
             core.WebMessageReceived += (sender, args) => Root.DispatcherQueue.TryEnqueue(() =>
             {
                 if (_closing || instance != _previewInstance) return;
@@ -66,7 +70,7 @@ public sealed partial class MainWindow
                 StartupTrace.Write("Preview process failure: " + details);
                 if (args.ProcessFailedKind == CoreWebView2ProcessFailedKind.RenderProcessUnresponsive)
                 {
-                    _previewSlow = true; ApplyMapTaskState();
+                    if (_fullSceneCompiled && !_previewWaitDismissed) { _previewSlow = true; ApplyMapTaskState(); }
                 }
                 else if (args.ProcessFailedKind is CoreWebView2ProcessFailedKind.BrowserProcessExited or CoreWebView2ProcessFailedKind.RenderProcessExited)
                     _ = FailPreviewAsync(new IOException(details), "browserProcess");
@@ -81,9 +85,11 @@ public sealed partial class MainWindow
 
     private async Task StopPreviewAsync()
     {
+        _previewQualityCompletion?.TrySetException(new InvalidOperationException(UiLanguage.Text("PreviewQuality_Restarted")));
         ++_previewInstance;
         _viewerReady = _previewStarting = _previewSlow = false;
         _previewWait?.Cancel();
+        _fullSceneCompiled = false;
         _awaitingScene = _waitingSceneReady = false;
         _discardSceneResults = true;
         if (!_previewClosed) { MapView.Close(); _previewClosed = true; }
@@ -111,19 +117,24 @@ public sealed partial class MainWindow
 
     private async Task RetryPreviewAsync()
     {
+        _compatibilityPreview = false;
+        ResetCompatibilityImage();
         await StopPreviewAsync();
         OperationError.IsOpen = false;
         await InitializePreviewAsync();
     }
 
-    private async Task ExportWithoutPreviewAsync(bool html)
+    private async Task OpenExternalPreviewAsync()
     {
+        _compatibilityPending = false;
+        _compatibilityDelay?.Cancel();
         await StopPreviewAsync();
-        await ShowExportAsync(html ? "HTML" : "PNG", quickPng: !html);
+        await OpenBrowserPreviewAsync();
     }
 
     private async void ObservePreviewWait()
     {
+        _previewNoticeDismissed = false;
         _previewWait?.Cancel();
         _previewWait?.Dispose();
         _previewWait = new CancellationTokenSource();
@@ -131,7 +142,7 @@ public sealed partial class MainWindow
         try
         {
             await Task.Delay(TimeSpan.FromSeconds(30), cancellation);
-            if (!_closing && (_previewStarting || _mapTask.Active))
+            if (!_closing && _fullSceneCompiled && !_previewWaitDismissed && _mapTask.Active)
             {
                 _previewSlow = true;
                 ApplyMapTaskState();
@@ -142,21 +153,40 @@ public sealed partial class MainWindow
 
     private void ApplyPreviewStatus()
     {
+        RefreshPreviewQualitySection();
         var available = _snapshot.ValueKind == JsonValueKind.Object &&
             _snapshot.GetProperty("hasDocument").GetBoolean() && !_loadingDocument && !_engineUnavailable;
         var stopped = !_viewerReady && !_previewStarting;
-        var show = _context != "metro" && (stopped || _previewSlow);
+        var show = _context != "metro" && !_compatibilityPreview && !_previewNoticeDismissed && (stopped || _previewSlow);
         PreviewActions.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
-        PreviewContinue.Visibility = _previewSlow ? Visibility.Visible : Visibility.Collapsed;
+        PreviewCompatibility.IsEnabled = available && !_engineBusy;
         PreviewRetry.IsEnabled = !_previewStarting && !_engineUnavailable && !_engineBusy;
-        PreviewPng.IsEnabled = PreviewHtml.IsEnabled = available && !_engineBusy;
+        PreviewHtml.IsEnabled = available && !_engineBusy;
         if (show && !_loadingDocument)
         {
-            MapOverlay.Visibility = Visibility.Visible;
-            MapOverlayText.Text = _previewFailure ?? UiLanguage.Text(_previewSlow ? "Preview_Slow" : "Preview_Stopped");
-            MapOverlayDetail.Text = UiLanguage.Text(available ? "Preview_DataAvailable" : "Preview_OpenMap");
-            MapOverlayDetail.Visibility = Visibility.Visible;
+            MapOverlay.Visibility = Visibility.Collapsed;
+            PreviewNoticeTitle.Text = UiLanguage.Text(_previewSlow ? "Preview_Slow" : "Preview_Stopped");
+            PreviewNoticeDetail.Text = UiLanguage.Text("Preview_NotRunningDetail");
         }
-        MapView.IsHitTestVisible = PreviewInteractive;
+        if (_fullSceneCompiled && !_loadingDocument && !_artworkEntryPreparing && !(_cityArtworkUpdating && _cityArtworkOperation?.Kind == "initial"))
+            MapOverlay.Visibility = Visibility.Collapsed;
+        var imageMode = _compatibilityPreview && _context != "metro";
+        CompatibilitySurface.Visibility = CompatibilityNotice.Visibility = imageMode ? Visibility.Visible : Visibility.Collapsed;
+        CompatibilityUpdating.Visibility = imageMode && (_compatibilityPending || _compatibilityRendering)
+            ? Visibility.Visible : Visibility.Collapsed;
+        CompatibilityRetry.IsEnabled = !_engineBusy && !_engineUnavailable;
+        MapView.Visibility = _context == "metro" || _compatibilityPreview || _previewClosed ? Visibility.Collapsed : Visibility.Visible;
+        if (imageMode && !_loadingDocument) MapOverlay.Visibility = Visibility.Collapsed;
+        MapView.IsHitTestVisible = PreviewInteractive && !_artworkEntryPreparing && !(_cityArtworkUpdating && _cityArtworkOperation?.Kind == "initial");
+    }
+
+    private void DismissPreviewNotice()
+    {
+        _previewNoticeDismissed = true;
+
+        _previewWaitDismissed = true;
+        _previewWait?.Cancel();
+        _previewSlow = false;
+        ApplyMapTaskState();
     }
 }

@@ -36,7 +36,7 @@ def test_satellite_theme_edit_save_reopen_and_text_halo(tmp_path):
         data['labels']['road']['size'] = 24
         sample_args = {'data': data, 'type': 'road', 'text': 'Satellite Avenue', 'documentEpoch': 0}
         sharp = server.dispatch('renderThemeTextSample', sample_args)
-        data['labels']['road']['stroke_blur'] = {'fixed': 3, 'scaled': 0}
+        data['labels']['road']['stroke_blur'] = 3
         soft = server.dispatch('renderThemeTextSample', sample_args)
         assert soft['strokeBlur'] == 3
         with Image.open(url2pathname(urlparse(sharp['url']).path)) as a, Image.open(url2pathname(urlparse(soft['url']).path)) as b:
@@ -49,9 +49,8 @@ def test_satellite_theme_edit_save_reopen_and_text_halo(tmp_path):
         reopened = backend_at(tmp_path)
         try:
             assert reopened.theme_stem == result['theme']
-            assert reopened.user_themes[result['theme']]['base'] == 'satellite'
             assert reopened.current_style_data()['roads']['opacity'] == .42
-            assert reopened.current_style_data()['labels']['road']['stroke_blur']['fixed'] == 3
+            assert reopened.current_style_data()['labels']['road']['stroke_blur'] == 3
         finally:
             reopened.close()
     finally:
@@ -70,8 +69,7 @@ def test_theme_preview_keeps_satellite_background_and_overlay(tmp_path, scene):
     doc._satellite_info = {'world_bounds_xz': [0,0,1280,1280], 'output_size': 64}
     backend.document = doc
     backend.session = DocumentSession(doc)
-    backend.layer_visibility['satellite'] = True
-    backend.layer_visibility['road'] = True
+    backend.apply_satellite_recommendations()
     backend._style_editor_regions['roads'] = (0,0,1280,1280)
     backend._style_editor_regions['overall'] = (0,0,1280,1280)
     data = load_style(str(resource_dir('styles') / 'satellite.yaml')).data
@@ -80,6 +78,10 @@ def test_theme_preview_keeps_satellite_background_and_overlay(tmp_path, scene):
         image = backend.style_preview_render(data, 256, scene)
         assert image.getpixel((250,250))[:3] == (32,48,64)
         assert backend.layer_visibility == before
+        backend.layer_visibility['terrain'] = True
+        covered = backend.style_preview_render(data, 256, scene)
+        assert covered.getpixel((250,250))[:3] != (32,48,64)
+        backend.layer_visibility['terrain'] = False
         data['roads']['opacity'] = 0
         hidden = backend.style_preview_render(data, 256, scene)
         assert ImageChops.difference(image.convert('RGB'), hidden.convert('RGB')).getbbox()

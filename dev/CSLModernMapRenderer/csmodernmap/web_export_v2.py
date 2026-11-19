@@ -184,10 +184,12 @@ def _payload_from_bundle(bundle, progress=None, *, include_navigation=True, visi
 def payload_from_preview_bundle(bundle, *, theme: dict[str, Any] | None = None,
                                 visibility: dict[str, bool] | None = None,
                                 region=None, rotation: Any = None, view: dict | None = None,
-                                navigation_enabled=True) -> dict:
+                                navigation_enabled=True, html_quality="standard") -> dict:
     """将已发布的中央预览打包为单文件 HTML；几何资源复用原包，实时主题和旋转写入清单副本。"""
     payload = _payload_from_bundle(bundle, include_navigation=navigation_enabled, visibility=visibility)
     manifest = dict(payload["manifest"])
+    from .output_profiles import validate_html_quality
+    manifest["htmlQuality"] = validate_html_quality(html_quality)
     if theme is not None:
         manifest["theme"] = theme
     if visibility is not None:
@@ -251,16 +253,11 @@ def render_export_html(payload: dict, viewer_dist: Path, city: str = "") -> str:
     vellum_notice = notice_path.read_text(encoding="utf-8") if notice_path.is_file() else ""
     i18next_notice_path = viewer_dist / "I18NEXT_LICENSE.txt"
     i18next_notice = i18next_notice_path.read_text(encoding="utf-8") if i18next_notice_path.is_file() else ""
-    dependency_notices = (viewer_dist / "THIRD_PARTY_LICENSES.txt").read_text(encoding="utf-8")
-    dependency_notices = dependency_notices.replace("--", "&#45;&#45;")
     navigation_notice_path = viewer_dist / "NAVIGATION_LICENSES.txt"
     navigation_notice = navigation_notice_path.read_text(encoding="utf-8") if navigation_notice_path.is_file() else ""
     return f"""<!DOCTYPE html>
 <html lang="{escape(i18n.LANG, quote=True)}">
 <head>
-<!-- Web preview dependencies
-{dependency_notices}
--->
 <!-- Vellum
 {vellum_notice}
 -->
@@ -295,11 +292,11 @@ def export_preview_bundle(bundle, city: str, out_path, *,
                           theme: dict[str, Any] | None = None,
                           visibility: dict[str, bool] | None = None,
                           region=None, rotation: Any = None, view: dict | None = None,
-                          navigation_enabled=True) -> str:
+                          navigation_enabled=True, html_quality="standard") -> str:
     """将当前中央预览保存为独立 HTML，不重新解析文档或编译场景。"""
     payload = payload_from_preview_bundle(
         bundle, theme=theme, visibility=visibility, region=region,
-        rotation=rotation, view=view, navigation_enabled=navigation_enabled)
+        rotation=rotation, view=view, navigation_enabled=navigation_enabled, html_quality=html_quality)
     viewer_dist = resource_dir("viewer") / "dist"
     html = render_export_html(payload, viewer_dist, city=city)
     out = Path(out_path)
@@ -316,7 +313,7 @@ def export_web(mapdata_or_session, style: Any, city: str, out_path,
     mapdata_or_session：DocumentSession 或 MapDocument（自动包成会话）。
     style：Style 或主题 data dict（与实时预览一致，注意 POI 密度/合并设置）。
     out_path：输出 .html 路径。options：透传给场景编译的选项
-    （revision/progress/visibility/rotation 等）。
+    （revision/performance/progress/visibility/rotation 等）。
     ``rotation`` 为输出旋转角度（顺时针度数）；callbacks 可选键：
     ``progress(pct, msg)`` / ``web_done(path)`` / ``error(exc)``。
     返回实际写入的路径。
@@ -333,6 +330,9 @@ def export_web(mapdata_or_session, style: Any, city: str, out_path,
         payload = build_scene_payload(
             session, style_data, {**options, "revision": revision},
             visibility=options.get("visibility"), progress=progress)
+        from .output_profiles import validate_html_quality
+        payload["manifest"]["htmlQuality"] = validate_html_quality(options.get("htmlQuality", "standard"))
+        payload["htmlQuality"] = payload["manifest"]["htmlQuality"]
         if progress is not None:
             progress(95, i18n.tr('ui.web_export_v2.export_web.eae840aba7'))
         viewer_dist = resource_dir("viewer") / "dist"

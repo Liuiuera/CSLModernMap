@@ -7,7 +7,8 @@ import pytest
 from csmodernmap.cmm import DocumentSession
 from csmodernmap.cmm.loader import load_document
 from csmodernmap.preview_scene import PreviewSceneCompiler, PreviewSceneServer
-from csmodernmap.style import Style
+from csmodernmap._paths import resource_dir
+from csmodernmap.style import load_style
 
 pytestmark = pytest.mark.skipif(os.environ.get("CSL_PREVIEW_BROWSER_TEST") != "1",
                                 reason="opt-in Chromium WebGL test")
@@ -33,7 +34,7 @@ def test_base_and_complete_messages_include_native_host_fields():
                     addEventListener: () => {}}};""")
                 previous = None
                 for phase, expected in (("base", "base"), ("full", "complete")):
-                    bundle = PreviewSceneCompiler.compile_full(session, Style({}), 1,
+                    bundle = PreviewSceneCompiler.compile_full(session, load_style(str(resource_dir("styles") / "modern.yaml")), 1,
                         previous=previous, options={"phase": phase})
                     server.replace_bundle(bundle)
                     if previous is None:

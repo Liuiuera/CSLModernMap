@@ -1098,6 +1098,7 @@
 
     "localStorageQuotaExceeded": "Local storage limit reached. Unable to save new changes.",
     "cmm": {
+    "transfer": "Transfer",
     "properties": "Properties",
     "otherProperties": "Other properties",
     "moreActions": "More actions",

@@ -46,12 +46,11 @@ public sealed partial class MainWindow
     private void ShowMapOverview()
     {
         ClearLayerPanel(SettingsPanel);
+        OverviewButton.Visibility = Visibility.Collapsed;
         if (_overview is null)
         {
             _overview = new StackPanel { Spacing = 16 };
-            _overview.Children.Add(new TextBlock { Text = UiLanguage.Text("MainWindow_Overview_ShowMapOverview_41AB2E0ECB"), FontSize = 24, FontWeight = Microsoft.UI.Text.FontWeights.SemiBold });
-            _overview.Children.Add(new TextBlock { Text = UiLanguage.Text("MainWindow_Overview_ShowMapOverview_24300AC2FE"), TextWrapping = TextWrapping.Wrap });
-            var map = OverviewSection(_overview, UiLanguage.Text("MainWindow_Overview_ShowMapOverview_41AB2E0ECB"));
+            var map = OverviewSection(_overview, UiLanguage.Text("CityEditor_Theme"));
             _overviewTheme = new ComboBox { Header = UiLanguage.Text("MainWindow_Overview_ShowMapOverview_788DB1CFEC"), HorizontalAlignment = HorizontalAlignment.Stretch };
             _overviewTheme.SelectionChanged += async (_, _) =>
             {
@@ -63,7 +62,7 @@ public sealed partial class MainWindow
             var stats = OverviewSection(_overview, UiLanguage.Text("MainWindow_Overview_ShowMapOverview_DCC3E7A6FA"));
             foreach (var (key, label, glyph) in new[] { ("name", UiLanguage.Text("MainWindow_Overview_ShowMapOverview_ED84A1665F"), "\uEC06"), ("buildings", UiLanguage.Text("MainWindow_Overview_ShowMapOverview_5B46860A8E"), "\uE80F"), ("road_length", UiLanguage.Text("MainWindow_Overview_ShowMapOverview_BDA7B29CF3"), "\uE816"),
                 ("transit_length", UiLanguage.Text("MainWindow_Overview_ShowMapOverview_B553EA09A3"), "\uE806"), ("built_area", UiLanguage.Text("MainWindow_Overview_ShowMapOverview_66ED35BB59"), "\uE822"),
-                ("districts", UiLanguage.Text("MainWindow_Overview_ShowMapOverview_BE41515DE2"), "\uE81E"), ("regions", UiLanguage.Text("MainWindow_Overview_ShowMapOverview_3595B7C819"), "\uE707") })
+                ("districts", UiLanguage.Text("MainWindow_Overview_ShowMapOverview_BE41515DE2"), "\uE81E") })
             {
                 var row = new Grid { ColumnSpacing = 8 };
                 row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
@@ -75,9 +74,17 @@ public sealed partial class MainWindow
                 row.Children.Add(icon);
                 var value = new TextBlock { Text = label + "：—", TextWrapping = TextWrapping.Wrap,
                     VerticalAlignment = VerticalAlignment.Center };
+                if (key == "transit_length")
+                {
+                    var help = UiLanguage.Text("Sidebar_TransitDistance");
+                    ToolTipService.SetToolTip(value, help);
+                    Microsoft.UI.Xaml.Automation.AutomationProperties.SetHelpText(value, help);
+                }
                 Grid.SetColumn(value, 1); row.Children.Add(value); stats.Children.Add(row);
                 _overviewStats[key] = value; value.Tag = label;
             }
+            BuildingListButton.Content = UiLanguage.Text("BuildingList_Open");
+            stats.Children.Add(BuildingListButton);
         }
         SettingsPanel.Children.Add(_overview);
         RefreshMapOverview();
@@ -103,7 +110,7 @@ public sealed partial class MainWindow
             foreach (ComboBoxItem item in _overviewTheme.Items)
                 if (item.Tag is string id && id == _snapshot.GetProperty("theme").GetString()) _overviewTheme.SelectedItem = item;
             var info = _snapshot.GetProperty("cityInfo");
-            // 六项统计由引擎算好下发；未装城市时不编数字。
+            // 统计由引擎算好下发；未装城市时不编数字。
             var stats = _snapshot.TryGetProperty("stats", out var node) ? node : default;
             var ready = stats.ValueKind == JsonValueKind.Object
                         && stats.TryGetProperty("available", out var flag) && flag.GetBoolean();
@@ -119,7 +126,6 @@ public sealed partial class MainWindow
                     "transit_length" => (stats.GetProperty("transitMeters").GetDouble() / 1000).ToString("0.0") + " km",
                     "built_area" => (stats.GetProperty("builtArea").GetDouble() / 1_000_000).ToString("0.00") + " km²",
                     "districts" => stats.GetProperty("districts").GetInt32().ToString("N0"),
-                    "regions" => stats.GetProperty("regions").GetInt32().ToString("N0"),
                     _ => "—",
                 };
                 control.Text = control.Tag + "：" + text;
@@ -130,6 +136,7 @@ public sealed partial class MainWindow
 
     private void ShowInspectorHome()
     {
+        if (_artworkEditor is not null) { ShowArtworkProperties(); return; }
         _inspectorRequest++;
         _inspectorSelection = null;
         _buildingList?.SelectBuilding(null);
@@ -155,12 +162,14 @@ public sealed partial class MainWindow
                 return Task.CompletedTask;
             }, iconId: "layer.built_area"));
             explore.Children.Add(OverviewCommand("style.edit_theme", UiLanguage.Text("MainWindow_Overview_ShowInspectorHome_74F45217E6"), iconId: "style.edit_theme"));
+            _inspectorHome.Children.Add(WorkspaceSection.Create(QualityText("Title"), CreatePreviewQualitySection()));
             var output = OverviewSection(_inspectorHome, UiLanguage.Text("MainWindow_Overview_ShowInspectorHome_FB04ADDB4C"), emphasizeHeader: true);
             var export = OverviewCommand("map.export", UiLanguage.Text("MainWindow_Overview_ShowInspectorHome_76420433F2"));
             export.Style = (Style)Application.Current.Resources["AccentButtonStyle"];
             output.Children.Add(export);
         }
         InspectorPanel.Children.Add(_inspectorHome);
+        RefreshPreviewQualitySection();
         UpdateCommandStates();
     }
 }

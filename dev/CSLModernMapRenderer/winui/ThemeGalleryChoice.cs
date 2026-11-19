@@ -12,11 +12,18 @@ public sealed class ThemeGalleryChoice
         Id = id;
         Name = name;
         PreviewId = previewId ?? (id.StartsWith("user_", StringComparison.Ordinal) ? null : id);
-        Preview = PreviewId is null ? null : new BitmapImage(new Uri($"ms-appx:///Assets/Themes/{PreviewId}.png"));
+        if (PreviewId is not null)
+        {
+            var uri = PreviewId.StartsWith("file:", StringComparison.OrdinalIgnoreCase)
+                ? new Uri(PreviewId) : new Uri($"ms-appx:///Assets/Themes/{PreviewId}.png");
+            Preview = new BitmapImage { CreateOptions = uri.IsFile ? BitmapCreateOptions.IgnoreImageCache : BitmapCreateOptions.None,
+                UriSource = uri };
+        }
     }
 
     public string Id { get; }
     public string Name { get; }
+    public string Category => UiLanguage.Text(Id.StartsWith("user_", StringComparison.Ordinal) ? "ThemeEditor_Personal" : "ThemeEditor_Builtins");
     public string? PreviewId { get; }
     public BitmapImage? Preview { get; }
 }

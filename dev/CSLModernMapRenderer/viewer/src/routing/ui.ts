@@ -1,4 +1,4 @@
-import * as maplibregl from 'maplibre-gl';
+import maplibregl from 'maplibre-gl';
 import type {ExpressionSpecification, GeoJSONSource, Map as MapLibreMap, MapMouseEvent} from 'maplibre-gl';
 import {i18n} from '../i18n';
 import {controlIcon, setButtonContent, type ControlIcon} from '../control-icons';
@@ -8,7 +8,7 @@ import {RoutingError} from './types';
 import {completedRouteColor, missingRouteTrafficColor, trafficColor} from '../traffic-paint';
 import {NavigationSimulation} from './simulation';
 import type {Preview3D} from '../preview-3d';
-import {routeStrokeFeatures, type RouteStroke} from './route-stroke';
+import {renderRouteFeatures, routeStrokeFeatures, type RouteStroke} from './route-stroke';
 import {arrowOutlineWidth, turnArrowFeatures} from './turn-arrows';
 import type {Edge, Endpoint, NavigationPackage, RouteResult, RoutingProfile, XYZ} from './types';
 import {searchGroups, type Candidate, type SearchFeature} from '../preview-search';
@@ -54,6 +54,8 @@ export type NavigationRoadStyle = {
 export class NavigationControl {
   readonly simulation: NavigationSimulation;
   private routeStrokes: GeoJSON.Feature[] = [];
+  private routeFeatures: GeoJSON.Feature[] = [];
+  private renderZoom = -1;
   private progressMeters: number | null = null;
   private completedStrokes = 0;
   private routeArrows: GeoJSON.Feature[] = [];
@@ -61,6 +63,8 @@ export class NavigationControl {
   private readonly root = document.createElement('section');
   private readonly panel = document.createElement('div');
   private panelOpened: () => void = () => {};
+  onNavigationOpened: () => void = () => {};
+  private immersive = false;
   private readonly message = document.createElement('div');
   private readonly summary = document.createElement('div');
   private readonly steps = document.createElement('ol');
@@ -117,7 +121,14 @@ export class NavigationControl {
   private previewTimer = 0;
   private readonly languageChanged = () => this.translate();
   private readonly keydown = (event: KeyboardEvent) => {
-    if (event.key === 'Escape') { if (this.simulation.active) this.simulation.stop(); else this.cancel(); }
+    if (event.key !== 'Escape' || event.defaultPrevented) return;
+    if (this.simulation.active) this.simulation.stop();
+    else if (!this.immersive || this.picking || this.busy || this.popup?.isOpen()) this.cancel();
+    else if (this.detailsOpen) this.showTransitDetails(false);
+    else if (!this.panel.hidden) {
+      this.hidePanel(); this.root.querySelector('button')?.focus();
+    } else return;
+    if (this.immersive) event.preventDefault();
   };
 
   constructor(private readonly map: MapLibreMap,
@@ -129,7 +140,7 @@ export class NavigationControl {
     const toggle = this.button('title', () => {
       if (this.simulation.active) { this.simulation.stop(); return; }
       this.panel.hidden = !this.panel.hidden; this.popup?.remove();
-      if (!this.panel.hidden) this.panelOpened();
+      if (!this.panel.hidden) { this.panelOpened(); this.onNavigationOpened(); }
       if (this.panel.hidden) this.cancel(); else { this.planningStarted(); this.activateMissingEndpoint(); }
     });
     toggle.setAttribute('aria-expanded', 'false');
@@ -207,6 +218,11 @@ export class NavigationControl {
     });
     for (const name of ['touchmove', 'touchend', 'dragstart'] as const)
       map.on(name, () => window.clearTimeout(this.longPress));
+    map.on('zoomend', () => {
+      const source = map.getSource('navigation') as GeoJSONSource | undefined;
+      if (source && this.routeFeatures.length && this.renderZoom !== Math.floor(map.getZoom()))
+        source.setData(this.renderCollection());
+    });
   }
 
   private button(key: string, action: () => void): HTMLButtonElement {
@@ -255,8 +271,7 @@ export class NavigationControl {
         this.markPlaceFocus(key);
       }
     });
-    const access = document.createElement('span'); access.className = 'navigation-endpoint-access';
-    row.append(label, input, access); return row;
+    row.append(label, input); return row;
   }
 
   setSearchCandidates(candidates: Candidate[], locate: (feature: SearchFeature) => void): void {
@@ -333,6 +348,7 @@ export class NavigationControl {
   }
 
   get selectingPoint(): boolean { return this.picking !== null; }
+  setImmersive(immersive: boolean): void { this.immersive = immersive; }
 
   private translate(): void {
     for (const element of this.root.querySelectorAll<HTMLElement>('[data-navigation-key]')) {
@@ -572,8 +588,6 @@ export class NavigationControl {
       const name = endpoint ? endpoint.place?.name || endpoint.snap.name || text('unnamed') : '';
       const input = this.placeInputs[key]; input.placeholder = text('placePlaceholder');
       if (this.picking !== key || document.activeElement !== input) input.value = name;
-      button.querySelector('.navigation-endpoint-access')!.textContent = endpoint
-        ? `${endpoint.place?.context ? `${text(endpoint.place.context)} · ` : ''}${endpoint.snap.name || text('unnamed')} · ${distanceLabel(endpoint.snap.distanceM)} · ${text('accessReference')}` : '';
       button.setAttribute('aria-pressed', String(this.picking === key));
     }
   }
@@ -662,14 +676,14 @@ export class NavigationControl {
         }
       }
       if (profile !== 'transit' && result && !this.busy) {
+        card.classList.add('navigation-route-card');
         if (profile === this.profile) {
           this.routeCard = document.createElement('div');
-          this.routeCard.className = 'navigation-route-card navigation-map-card';
+          this.routeCard.className = 'navigation-map-card';
           this.routeCard.dataset.routeProfile = profile;
           this.routeCard.setAttribute('aria-label', text('routeDetails'));
-          this.routeCard.append(...Array.from(card.childNodes));
-          card.append(label.cloneNode(true));
-        } else card.replaceChildren(label);
+          this.routeCard.append(label.cloneNode(true), duration.cloneNode(true));
+        }
       }
       card.addEventListener('click', () => {
         if (candidate) {
@@ -817,6 +831,12 @@ export class NavigationControl {
     }
   }
 
+  private renderCollection(features = this.routeFeatures): GeoJSON.FeatureCollection {
+    this.routeFeatures = features;
+    this.renderZoom = Math.floor(this.map.getZoom());
+    return {type: 'FeatureCollection', features: renderRouteFeatures(features, this.renderZoom)};
+  }
+
   private draw(): void {
     for (const marker of this.marks) marker.remove(); this.marks = [];
     const features: GeoJSON.Feature[] = [];
@@ -856,7 +876,7 @@ export class NavigationControl {
       element.setAttribute('aria-label', text(endpoint === 'origin' ? 'start' : 'end'));
       const marker = new maplibregl.Marker({element, draggable: true}).setLngLat(geo(value.position)).addTo(this.map);
       marker.on('dragstart', () => { this.cancel(); this.resetResults();
-        const source = this.map.getSource('navigation') as GeoJSONSource | undefined; source?.setData({type: 'FeatureCollection', features: []}); });
+        const source = this.map.getSource('navigation') as GeoJSONSource | undefined; source?.setData(this.renderCollection([])); });
       marker.on('drag', () => {
         window.clearTimeout(this.previewTimer);
         const operation = this.operation;
@@ -865,8 +885,8 @@ export class NavigationControl {
           void this.ensureClient().then(client => client.snap(position, this.profile)).then(snaps => {
             if (operation !== this.operation) return;
             const source = this.map.getSource('navigation') as GeoJSONSource | undefined;
-            source?.setData({type: 'FeatureCollection', features: [{type: 'Feature', properties: {mode: 'ACCESS'},
-              geometry: {type: 'LineString', coordinates: [geo(position), geo(snaps[0].position)]}}]});
+            source?.setData(this.renderCollection([{type: 'Feature', properties: {mode: 'ACCESS'},
+              geometry: {type: 'LineString', coordinates: [geo(position), geo(snaps[0].position)]}}]));
           }).catch(error => this.fail(error, operation));
         }, 150);
       });
@@ -874,11 +894,12 @@ export class NavigationControl {
       this.marks.push(marker);
       features.push({type: 'Feature', properties: {mode: 'ACCESS'}, geometry: {type: 'LineString', coordinates: [geo(value.position), geo(value.snap.position)]}});
     }
-    const collection: GeoJSON.FeatureCollection = {type: 'FeatureCollection', features};
+    const collection = this.renderCollection(features);
     const source = this.map.getSource('navigation') as GeoJSONSource | undefined;
     if (source) { this.map.removeFeatureState({source: 'navigation'}); source.setData(collection); }
     else {
       if (!this.loader) return;
+      // 短线段参与进度着色，不能由瓦片简化按长度过滤。
       this.map.addSource('navigation', {type: 'geojson', data: collection, tolerance: 0});
       for (const [id, casing] of [[lineIds[11], true], [lineIds[12], false]] as const)
         this.map.addLayer({id, type: 'line', source: 'navigation', filter: ['==', ['get', 'alternative'], true],

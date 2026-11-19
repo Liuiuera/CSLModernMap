@@ -1,3 +1,4 @@
 -r requirements.txt
 Babel==2.18.0
 pytest==9.1.1
+pscript==0.8.1

@@ -1,215 +1,132 @@
-"""Preset updates win conflicts while preserving the exact previous appearance."""
-import copy
-import io
+"""Release patches are reviewed before changing a personal theme."""
+from copy import deepcopy
 import json
-import shutil
-from types import SimpleNamespace
 
 import pytest
-import yaml
 
-from csmodernmap import guir_backend as module
-from csmodernmap.guir_backend import GuirBackend
-from csmodernmap.theme_library import content_digest, make_record, preset_update
-from csmodernmap.winui_engine import EngineServer
-
-
-def scheduler():
-    return SimpleNamespace(call_soon=lambda *_: 1, call_later=lambda *_: 1, cancel=lambda *_: None)
-
-
-def settings(path):
-    return json.loads((path / "settings.json").read_text(encoding="utf-8"))["values"]
-
-
-def test_three_way_update_only_changes_publisher_fields():
-    previous = {"water": {"color": "#112233"}, "roads": {"width_scale": 1},
-                "extension": {"delete": 1, "same": 2}, "ramp": [1, 2]}
-    personal = copy.deepcopy(previous)
-    personal["water"]["color"] = "#334455"
-    personal["roads"]["width_scale"] = 1.37
-    personal["extension"]["delete"] = 3
-    personal["own"] = {"keep": [7, 11]}
-    personal["ramp"] = [3, 4]
-    current = copy.deepcopy(previous)
-    current["water"]["color"] = "#556677"
-    current["extension"].pop("delete")
-    current["new"] = True
-    current["ramp"] = [5, 6]
-    original = copy.deepcopy(personal)
-    merged, changes, preserved = preset_update(previous, personal, current)
-    assert merged["water"]["color"] == "#556677"
-    assert merged["roads"]["width_scale"] == 1.37
-    assert merged["own"] == personal["own"] and merged["ramp"] == [5, 6]
-    assert merged["extension"] == {"same": 2} and merged["new"] is True
-    assert {tuple(item["path"]) for item in changes if item["conflict"]} == {("water", "color"), ("extension", "delete"), ("ramp",)}
-    assert ["roads", "width_scale"] in preserved and ["own"] in preserved
-    assert personal == original
+from csmodernmap import guir_backend as backend_module
+from csmodernmap import theme_preset_update as updates
+from csmodernmap.style import load_style
+from csmodernmap._paths import resource_dir
+from test_theme_library_v31 import backend_at, write_settings
 
 
 @pytest.fixture
-def old_install(tmp_path, monkeypatch):
-    bundle = tmp_path / "program"
-    shutil.copytree(module.resource_dir("styles"), bundle / "styles")
-    monkeypatch.setattr(module, "bundle_root", lambda: bundle)
-    original_resource = module.resource_dir
-    monkeypatch.setattr(module, "resource_dir", lambda name: bundle / "styles" if name == "styles" else original_resource(name))
-    old = json.loads((bundle / "styles/presets.current.json").read_text(encoding="utf-8"))["modern"]
-    current = copy.deepcopy(old)
-    current["water"]["color"] = "#224466"
-    current["terrain"]["hillshade"]["intensity"] = 0.6
-    current["new_update_field"] = {"keep": True}
-    manifest = json.loads((bundle / "styles/presets.current.json").read_text(encoding="utf-8"))
-    manifest["modern"] = current
-    (bundle / "styles/presets.current.json").write_text(json.dumps(manifest), encoding="utf-8")
-    hashes = json.loads((bundle / "styles/presets.sha256.json").read_text(encoding="utf-8"))
-    hashes["modern.yaml"]["content"] = content_digest(current)
-    (bundle / "styles/presets.sha256.json").write_text(json.dumps(hashes), encoding="utf-8")
-    (bundle / "styles/modern.yaml").write_text(yaml.safe_dump(current), encoding="utf-8")
-    personal = copy.deepcopy(old)
-    personal["water"]["color"] = "#123456"
-    personal["roads"]["width_scale"] = 1.37
-    personal["upgrade_extension"] = {"keep": [7, 11]}
-    user = tmp_path / "UserData"
-    user.mkdir()
-    return bundle, user, old, personal, current
+def pending(tmp_path, monkeypatch):
+    manifest = {'schemaVersion': 1, 'revision': 'test-release', 'fromVersion': '6.7.3', 'toVersion': '6.7.4',
+                'themes': {'modern': [{'path': ['water', 'color'], 'beforeExists': True,
+                    'afterExists': True, 'before': '#112233', 'after': '#224466'}]}}
+    monkeypatch.setattr(updates, 'release_manifest', lambda: manifest)
+    data = load_style(str(resource_dir('styles') / 'modern.yaml')).data
+    data['water']['color'] = '#123456'
+    data['extension'] = {'keep': [7, 11]}
+    write_settings(tmp_path, {'style_var': 'user_personal', 'unrelated': 42, 'user_themes': {
+        'user_personal': {'name': 'Personal', 'base': None, 'data': data, 'legacyBase': 'modern'}}}, 3.1)
+    return tmp_path, manifest, data
 
 
-def write_personal(user, old, personal):
-    record = make_record("Personal", personal, "modern", old)
-    record["presetData"] = old
-    (user / "settings.json").write_text(json.dumps({"version": 3, "values": {
-        "style_var": "user_active", "theme_library_version": 1, "user_themes": {"user_active": record}, "unrelated": 42}}), encoding="utf-8")
+def decide(backend, apply, identity=None):
+    notice = backend.pending_preset_update(identity, include_handled=True)
+    backend.acknowledge_theme_update(apply, notice['theme'], notice['revision'], notice['sourceDigest'])
 
 
-def test_saved_personal_updates_once_and_user_can_switch_previous(old_install):
-    _, user, old, personal, current = old_install
-    write_personal(user, old, personal)
-    backend = GuirBackend(scheduler(), settings_dir=user)
-    server = EngineServer(io.StringIO(), io.StringIO(), backend)
-    try:
-        assert backend.theme_stem == "user_active"
-        assert backend.current_style_data()["water"]["color"] == "#224466"
-        assert backend.current_style_data()["roads"]["width_scale"] == 1.37
-        assert backend.current_style_data()["upgrade_extension"] == personal["upgrade_extension"]
-        notice = server.snapshot()["themeUpdate"]
-        assert notice and any(item["conflict"] for item in notice["changes"])
-        previous = notice["previousTheme"]
-        assert content_digest(backend.theme_data(previous)) == content_digest(personal)
-        assert len(backend.user_themes) == 2
-        before = (user / "settings.json").read_bytes()
-        reopened = GuirBackend(scheduler(), settings_dir=user)
-        try:
-            assert (user / "settings.json").read_bytes() == before
-            assert reopened.theme_update_notice and len(reopened.user_themes) == 2
-        finally:
-            reopened.close()
-        server.dispatch("acknowledgeThemeUpdate", {"usePrevious": True})
-        assert backend.theme_stem == previous and server.snapshot()["themeUpdate"] is None
-        assert settings(user)["style_var"] == previous and "theme_update_notice" not in settings(user)
-    finally:
-        server._preview_files.cleanup()
-        backend.close()
-    reopened = GuirBackend(scheduler(), settings_dir=user)
-    try:
-        assert reopened.theme_stem == previous and reopened.theme_update_notice is None
-        assert content_digest(reopened.current_style_data()) == content_digest(personal)
-        assert len(reopened.user_themes) == 2 and settings(user)["unrelated"] == 42
-    finally:
-        reopened.close()
+def test_restart_does_not_apply_preset_or_create_archived_choice(pending):
+    directory, _, original = pending
+    for _ in range(2):
+        with backend_at(directory) as backend:
+            assert backend.theme_stem == 'user_personal'
+            assert backend.current_style_data()['water']['color'] == original['water']['color']
+            assert len(backend.user_themes) == 1
+            assert backend.pending_preset_update()['changes'][0]['conflict']
 
 
-def test_known_legacy_file_merges_using_verified_history(old_install):
-    bundle, user, old, personal, current = old_install
-    (bundle / "styles/presets.previous.json").write_text(json.dumps({"apple_maps": {"preset": "modern", "data": old}}), encoding="utf-8")
-    source = user / "styles/apple_maps.yaml"
-    source.parent.mkdir()
-    source.write_text(yaml.safe_dump(personal), encoding="utf-8")
-    raw = source.read_bytes()
-    backend = GuirBackend(scheduler(), settings_dir=user)
-    try:
-        assert backend.theme_update_notice and backend.theme_stem.startswith("user_updated_")
-        assert backend.current_style_data()["water"]["color"] == "#224466"
-        assert backend.current_style_data()["roads"]["width_scale"] == 1.37
-        assert source.read_bytes() == raw
-        assert len(backend.user_themes) == 2
-        assert next((user / "theme-backups").glob("*.yaml")).read_bytes() == raw
-        backend.acknowledge_theme_update(False)
-        assert not backend.theme_update_notice
-    finally:
-        backend.close()
+@pytest.mark.parametrize('apply', [True, False])
+def test_choice_is_saved_once_without_switching_identity(pending, apply):
+    directory, _, original = pending
+    with backend_at(directory) as backend:
+        decide(backend, apply)
+        assert backend.theme_stem == 'user_personal' and len(backend.user_themes) == 1
+        assert backend.current_style_data()['water']['color'] == ('#224466' if apply else original['water']['color'])
+        assert backend.current_style_data()['extension'] == original['extension']
+        assert backend.pending_preset_update() is None
+    with backend_at(directory) as backend:
+        assert backend.pending_preset_update() is None
+        assert (backend.pending_preset_update(include_handled=True) is not None) == (not apply)
+    assert json.loads((directory / 'settings.json').read_text(encoding='utf-8'))['values']['unrelated'] == 42
+    assert bool(list((directory / 'theme-backups').glob('preset-*.yaml'))) == apply
 
 
-def test_update_save_failure_rolls_back_and_keeps_old_personal_usable(old_install, monkeypatch):
-    _, user, old, personal, _ = old_install
-    write_personal(user, old, personal)
-    raw = (user / "settings.json").read_bytes()
-    monkeypatch.setattr(module, "save_settings", lambda *_: False)
-    backend = GuirBackend(scheduler(), settings_dir=user)
-    try:
-        assert backend._theme_migration_aborted and not backend.theme_update_notice
-        assert len(backend.user_themes) == 1
-        assert (user / "settings.json").read_bytes() == raw
-        assert content_digest(backend.current_style_data()) == content_digest(personal)
-    finally:
-        backend.close()
-
-
-def test_no_baseline_leaves_custom_file_unchanged(old_install):
-    _, user, _, personal, _ = old_install
-    source = user / "styles/my-theme.yaml"
-    source.parent.mkdir()
-    source.write_text(yaml.safe_dump(personal), encoding="utf-8")
-    backend = GuirBackend(scheduler(), settings_dir=user)
-    try:
-        assert len(backend.user_themes) == 1 and not backend.theme_update_notice
-        record = next(iter(backend.user_themes.values()))
-        assert content_digest(record["data"]) == content_digest(personal)
-    finally:
-        backend.close()
-
-
-def test_acknowledgement_save_failure_keeps_pending_notice_and_selection(old_install, monkeypatch):
-    _, user, old, personal, _ = old_install
-    write_personal(user, old, personal)
-    backend = GuirBackend(scheduler(), settings_dir=user)
-    try:
-        before = (user / "settings.json").read_bytes()
-        notice = copy.deepcopy(backend.theme_update_notice)
-        monkeypatch.setattr(module, "save_settings", lambda *_: False)
+def test_save_failure_preserves_original_settings_and_pending_notice(pending, monkeypatch):
+    directory, _, original = pending
+    with backend_at(directory) as backend:
+        backend.save_settings_now()
+        raw = (directory / 'settings.json').read_bytes()
+        monkeypatch.setattr(backend_module, 'save_settings', lambda *_: False)
         with pytest.raises(OSError):
-            backend.acknowledge_theme_update(True)
-        assert backend.theme_stem == "user_active" and backend.theme_update_notice == notice
-        assert (user / "settings.json").read_bytes() == before
-    finally:
-        backend.close()
+            decide(backend, True)
+        assert backend.pending_preset_update()
+        assert backend.current_style_data()['water']['color'] == original['water']['color']
+        assert (directory / 'settings.json').read_bytes() == raw
 
 
-def test_inactive_personal_updates_without_switching_or_showing_notice(old_install):
-    _, user, old, personal, _ = old_install
-    write_personal(user, old, personal)
-    data = json.loads((user / "settings.json").read_text(encoding="utf-8"))
-    data["values"]["style_var"] = "bright"
-    (user / "settings.json").write_text(json.dumps(data), encoding="utf-8")
-    backend = GuirBackend(scheduler(), settings_dir=user)
-    try:
-        assert backend.theme_stem == "bright" and not backend.theme_update_notice
-        assert len(backend.user_themes) == 2
-        assert backend.theme_data("user_active")["water"]["color"] == "#224466"
-    finally:
-        backend.close()
+def test_inactive_theme_can_be_reviewed_without_changing_current_theme(pending):
+    directory, _, _ = pending
+    with backend_at(directory) as backend:
+        backend.set_theme('bright')
+        assert backend.pending_preset_update() is None
+        decide(backend, True, 'user_personal')
+        assert backend.theme_stem == 'bright'
+        assert backend.theme_data('user_personal')['water']['color'] == '#224466'
 
 
-def test_modified_installed_preset_cannot_change_the_merged_result(old_install):
-    bundle, user, old, personal, _ = old_install
-    write_personal(user, old, personal)
-    installed = yaml.safe_load((bundle / "styles/modern.yaml").read_text(encoding="utf-8"))
-    installed["terrain"]["hillshade"]["intensity"] = 0.1
-    (bundle / "styles/modern.yaml").write_text(yaml.safe_dump(installed), encoding="utf-8")
-    backend = GuirBackend(scheduler(), settings_dir=user)
-    try:
-        assert backend.current_style_data()["terrain"]["hillshade"]["intensity"] == 0.6
-        assert backend.current_style_data()["roads"]["width_scale"] == 1.37
-        assert backend.user_themes["user_active"]["name"] == "Personal"
-    finally:
-        backend.close()
+def test_already_equal_and_unrelated_custom_fields_do_not_prompt(pending):
+    directory, _, _ = pending
+    with backend_at(directory) as backend:
+        backend.apply_style_override('water.color', '#224466')
+        assert backend.pending_preset_update() is None
+        assert backend.current_style_data()['extension'] == {'keep': [7, 11]}
+
+
+def test_next_release_can_offer_new_changes_after_keep(pending):
+    directory, manifest, _ = pending
+    with backend_at(directory) as backend:
+        decide(backend, False)
+        manifest['revision'] = 'next-release'
+        manifest['themes']['modern'][0]['after'] = '#556677'
+        notice = backend.pending_preset_update()
+        assert notice and notice['changes'][0]['after'] == '#556677'
+
+
+def test_known_source_release_uses_its_cumulative_changes(pending):
+    directory, manifest, _ = pending
+    cumulative = {'modern': updates.release_changes({'canvas': {'background': '#FFFFFF'}},
+                                                     {'canvas': {'background': '#ABCDEF'}})}
+    with backend_at(directory) as backend:
+        decide(backend, False)
+        manifest.update(fromVersion='6.7.5', toVersion='6.7.6', revision='newer-release',
+                        history={'6.7.4': {'themes': cumulative}})
+        notice = backend.pending_preset_update()
+        assert notice['fromVersion'] == '6.7.4'
+        assert notice['changes'][0]['path'] == ['canvas', 'background']
+        decide(backend, False)
+        assert backend.pending_preset_update(include_handled=True)['fromVersion'] == '6.7.4'
+
+
+def test_release_patch_handles_deletion_null_and_arrays_without_touching_other_values(pending):
+    _, _, original = pending
+    before = {'extension': {'deleted': 1, 'nullable': 1, 'array': [1, 2]}, 'name': 'Old'}
+    after = {'extension': {'nullable': None, 'array': [3, 4]}, 'name': 'New'}
+    changes = updates.release_changes(before, after)
+    assert len(changes) == 3
+    original['extension'] = {**before['extension'], 'keep': True}
+    result = updates.apply_changes(original, changes)
+    assert result['extension'] == {**after['extension'], 'keep': True}
+    assert original['extension']['deleted'] == 1
+
+
+def test_current_shipped_release_manifest_only_contains_actual_published_theme_origins():
+    data = json.loads((resource_dir('styles') / 'presets.updates.json').read_text(encoding='utf-8'))
+    assert set(data['themes']) == {'modern', 'bright', 'dark', 'warm_natural', 'vintage'}
+    assert data['fromVersion'] == '6.7.3' and data['toVersion'] == '6.7.4'
+    assert data['sourceRevision'].startswith('e0d7044')
+    assert all(change['path'][0] != 'size_contract' for changes in data['themes'].values() for change in changes)

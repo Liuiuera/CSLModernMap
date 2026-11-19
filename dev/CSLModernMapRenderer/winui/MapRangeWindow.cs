@@ -35,7 +35,7 @@ internal sealed class MapRangeWindow
 
     public MapRangeWindow(EngineClient engine, JsonElement profile, double[]? initialBounds = null, Window? owner = null)
     {
-        _window = new(UiLanguage.Text("MapRangeWindow_View_E00B2B4CBC"), 900, 650, translucent: true, owner: owner, modal: owner is not null);
+        _window = new(UiLanguage.Text("MapRangeWindow_View_E00B2B4CBC"), "marquee-2", 900, 650, translucent: true, owner: owner, modal: owner is not null);
         _engine = engine;
         _profile = profile.Clone();
         _world = Bounds(profile.GetProperty("worldBounds"));

@@ -1,6 +1,7 @@
 """定义功能区的展示结构和界面元数据。
 
 **本模块不含任何文案。** 字段名与各选项名都是翻译键，实际文字只存在于
+``resources/i18n/<lang>.json``（键规则见 docs/tasks/文案优化-20260914/04-i18n优雅化方案）：
 
     style.<字段键>.label              字段名      style.terrain.mode.label
     style.<字段键>.value.<选项值>      下拉项      style.terrain.mode.value.shade
@@ -12,7 +13,8 @@
 
 本模块**只**依赖 ``csmodernmap.i18n.tr`` 取词；其它取值机制（``local(zh, en)``、
 按中文原文反查的 ``tr_legacy``、内嵌中英对照表、构造后遍历控件改文字）
-均不使用。各语言目录须保持一致的键与占位符。
+都已**删除**（2026-09-15），见
+``tests/test_guir_i18n.py`` 的四条护栏。
 """
 from dataclasses import dataclass
 
@@ -32,6 +34,8 @@ class Field:
 
     @property
     def label_key(self) -> str:
+        if self.key.startswith("road.level."):
+            return "gui.style_editor.field." + self.key.rsplit(".", 1)[1]
         return f"style.{self.key}.label"
 
     @property
@@ -64,6 +68,7 @@ def color(key, value):
 
 
 FIELDS = {
+ 'satellite.quality': choice('satellite.quality', 'original', 'smooth', 'standard'),
  'satellite.preset': choice('satellite.preset', 'original', 'haze', 'grain', 'resolution', 'distortion', 'combined'),
  'satellite.intensity': number('satellite.intensity', 100, 0, 100),
  'theme': choice('theme', 'modern', 'bright', 'warm_natural', 'dark', 'paper'),
@@ -78,8 +83,7 @@ FIELDS = {
  'terrain.sun': number('terrain.sun', 315, 0, 360),
  'water.color': color('water.color', '#8DDBF6'),
  'water.border': color('water.border', '#72C3E2'),
- 'water.width': number('water.width', 1, 0, 8),
- 'road.width': number('road.width', 100, 25, 200),
+ 'water.width': number('water.width', 1, 0, 1e300),
  'road.color': color('road.color', '#FFFFFF'),
  'road.highway': color('road.highway', '#F4C77A'),
  'road.border': color('road.border', '#C6C5C0'),
@@ -105,40 +109,40 @@ FIELDS = {
  'transport.stations': toggle('transport.stations'),
  'transport.names': toggle('transport.names'),
  'transport.station_names': toggle('transport.station_names', False),
- 'transport.width': number('transport.width', 3, 1, 12),
- 'transport.size': number('transport.size', 8, 4, 24),
+ 'transport.width': number('transport.width', 3, 0, 1e300),
+ 'transport.diameter': number('transport.diameter', 8, .000001, 1e300),
  'transport.merge': toggle('transport.merge'),
  'transport.distance': number('transport.distance', 48, 0, 200),
  'transport.mask': number('transport.mask', 70, 0, 100),
  'transport.legend': choice('transport.legend', 'br', 'bl', 'none'),
- 'transport.font': number('transport.font', 12, 8, 24),
+ 'transport.font': number('transport.font', 12, 0, 1e300),
  'metro.names': choice('metro.names', 'all', 'custom', 'none'),
  'metro.language': choice('metro.language', 'zh', 'bilingual'),
  'metro.palette': choice('metro.palette', 'game', 'classic', 'soft'),
  'metro.title': Field('metro.title', '', 'text'),
  'poi.set': choice('poi.set', 'modern', 'modern-dark'),
- 'poi.size': number('poi.size', 24, 12, 48),
+ 'poi.size': number('poi.size', 24, 0, 1e300),
  'poi.names': toggle('poi.names'),
  'poi.game_names': toggle('poi.game_names', False),
  'poi.density': choice('poi.density', 'auto', 'sparse', 'full'),
  'poi.merge': toggle('poi.merge'),
  'poi.distance': number('poi.distance', 48, 0, 200),
  'poi.font': Field('poi.font', 'SimHei', 'font'),
- 'poi.name_size': number('poi.name_size', 11, 6, 48),
+ 'poi.name_size': number('poi.name_size', 11, 0, 1e300),
  'poi.name_stroke': color('poi.name_stroke', '#FFFFFF'),
- 'poi.name_stroke_ratio': number('poi.name_stroke_ratio', 0.12, 0, 0.5),
+ 'poi.name_stroke_width': number('poi.name_stroke_width', 1, 0, 1e300),
  'label.font.road': Field('label.font.road', 'Microsoft YaHei', 'font'),
  'label.font.district': Field('label.font.district', 'Microsoft YaHei', 'font'),
  'label.font.building': Field('label.font.building', 'Microsoft YaHei', 'font'),
  'label.font.park': Field('label.font.park', 'Microsoft YaHei', 'font'),
  'label.font.stop': Field('label.font.stop', 'Microsoft YaHei', 'font'),
- 'label.size': number('label.size', 12, 8, 32),
+ 'label.size': number('label.size', 12, 0, 1e300),
  'label.color': color('label.color', '#39424C'),
  'label.outline': toggle('label.outline'),
  'label.roads': toggle('label.roads'),
  'label.districts': toggle('label.districts'),
  'district.color': color('district.color', '#A6A6AD'),
- 'district.width': number('district.width', 1, 0, 8),
+ 'district.width': number('district.width', 1, 0, 1e300),
  'district.opacity': number('district.opacity', 45, 0, 100),
  'zone.color': color('zone.color', '#A89880'),
  'zone.opacity': number('zone.opacity', 70, 0, 100),
@@ -171,25 +175,24 @@ FIELDS = {
 # 显示名取 ``style.label.size.<类>.label``（由 FIELDS 派生，不另写一套）。
 LABEL_KINDS: tuple = ('road', 'district', 'building', 'park', 'stop',)
 
-# 各类文字的默认字号对齐 Viewer 里的最小字号（labelFontSize 的 minimums），
-# 免得"设了 12 却比屏幕上看到的 18 小"这种对不上的观感。
+# 元数据缺省基础像素值；实际读取以当前主题为准。
 _LABEL_KIND_SIZE = {"road": 12, "district": 18, "building": 11, "park": 14, "stop": 12}
 for _kind in LABEL_KINDS:
-    FIELDS[f'label.stroke_width.{_kind}'] = number(f'label.stroke_width.{_kind}', 2, 0, 12)
+    FIELDS[f'label.stroke_width.{_kind}'] = number(f'label.stroke_width.{_kind}', 2, 0, 1e300)
     FIELDS[f'label.stroke_color.{_kind}'] = color(f'label.stroke_color.{_kind}', '#FFFFFF')
-    FIELDS['label.size.road'] = number('label.size.road', _LABEL_KIND_SIZE['road'], 8, 32)
+    FIELDS['label.size.road'] = number('label.size.road', _LABEL_KIND_SIZE['road'], 0, 1e300)
     FIELDS['label.color.road'] = color('label.color.road', '#39424C')
     FIELDS['label.outline.road'] = toggle('label.outline.road')
-    FIELDS['label.size.district'] = number('label.size.district', _LABEL_KIND_SIZE['district'], 8, 32)
+    FIELDS['label.size.district'] = number('label.size.district', _LABEL_KIND_SIZE['district'], 0, 1e300)
     FIELDS['label.color.district'] = color('label.color.district', '#39424C')
     FIELDS['label.outline.district'] = toggle('label.outline.district')
-    FIELDS['label.size.building'] = number('label.size.building', _LABEL_KIND_SIZE['building'], 8, 32)
+    FIELDS['label.size.building'] = number('label.size.building', _LABEL_KIND_SIZE['building'], 0, 1e300)
     FIELDS['label.color.building'] = color('label.color.building', '#39424C')
     FIELDS['label.outline.building'] = toggle('label.outline.building')
-    FIELDS['label.size.park'] = number('label.size.park', _LABEL_KIND_SIZE['park'], 8, 32)
+    FIELDS['label.size.park'] = number('label.size.park', _LABEL_KIND_SIZE['park'], 0, 1e300)
     FIELDS['label.color.park'] = color('label.color.park', '#39424C')
     FIELDS['label.outline.park'] = toggle('label.outline.park')
-    FIELDS['label.size.stop'] = number('label.size.stop', _LABEL_KIND_SIZE['stop'], 8, 32)
+    FIELDS['label.size.stop'] = number('label.size.stop', _LABEL_KIND_SIZE['stop'], 0, 1e300)
     FIELDS['label.color.stop'] = color('label.color.stop', '#39424C')
     FIELDS['label.outline.stop'] = toggle('label.outline.stop')
 
@@ -213,54 +216,24 @@ _ROAD_LEVEL_BORDER = {"highway": "#AFB1B7", "main": "#BAC0CA", "branch": "#C3C8D
                       "special": "#E1E3E9", "quay": "#E1E3E9",
                       "beautification": "#E1E3E9"}
 for _lvl in ROAD_LEVELS:
-    FIELDS['road.level.highway.fill'] = color(
-        'road.level.highway.fill', _ROAD_LEVEL_FILL['highway'])
-    FIELDS['road.level.highway.border'] = color(
-        'road.level.highway.border', _ROAD_LEVEL_BORDER['highway'])
-    FIELDS['road.level.highway.width'] = number(
-        'road.level.highway.width', _ROAD_LEVEL_MIN_PX['highway'], 0.2, 6.0)
-    FIELDS['road.level.main.fill'] = color(
-        'road.level.main.fill', _ROAD_LEVEL_FILL['main'])
-    FIELDS['road.level.main.border'] = color(
-        'road.level.main.border', _ROAD_LEVEL_BORDER['main'])
-    FIELDS['road.level.main.width'] = number(
-        'road.level.main.width', _ROAD_LEVEL_MIN_PX['main'], 0.2, 6.0)
-    FIELDS['road.level.branch.fill'] = color(
-        'road.level.branch.fill', _ROAD_LEVEL_FILL['branch'])
-    FIELDS['road.level.branch.border'] = color(
-        'road.level.branch.border', _ROAD_LEVEL_BORDER['branch'])
-    FIELDS['road.level.branch.width'] = number(
-        'road.level.branch.width', _ROAD_LEVEL_MIN_PX['branch'], 0.2, 6.0)
-    FIELDS['road.level.special.fill'] = color(
-        'road.level.special.fill', _ROAD_LEVEL_FILL['special'])
-    FIELDS['road.level.special.border'] = color(
-        'road.level.special.border', _ROAD_LEVEL_BORDER['special'])
-    FIELDS['road.level.special.width'] = number(
-        'road.level.special.width', _ROAD_LEVEL_MIN_PX['special'], 0.2, 6.0)
-    FIELDS['road.level.quay.fill'] = color(
-        'road.level.quay.fill', _ROAD_LEVEL_FILL['quay'])
-    FIELDS['road.level.quay.border'] = color(
-        'road.level.quay.border', _ROAD_LEVEL_BORDER['quay'])
-    FIELDS['road.level.quay.width'] = number(
-        'road.level.quay.width', 0.5, 0.05, 1.0)
-    FIELDS['road.level.beautification.fill'] = color(
-        'road.level.beautification.fill', _ROAD_LEVEL_FILL['beautification'])
-    FIELDS['road.level.beautification.border'] = color(
-        'road.level.beautification.border', _ROAD_LEVEL_BORDER['beautification'])
-    FIELDS['road.level.beautification.width'] = number(
-        'road.level.beautification.width', _ROAD_LEVEL_MIN_PX['beautification'], 0.2, 6.0)
+    for _attr, _default in (('fill', _ROAD_LEVEL_FILL[_lvl]), ('border', _ROAD_LEVEL_BORDER[_lvl])):
+        _key = f'road.level.{_lvl}.{_attr}'
+        FIELDS[_key] = color(_key, _default)
+    for _attr, _default, _low in (('line_width', 4, .000001), ('footprint_scale', 1, .000001), ('border_width', 1, 0)):
+        _key = f'road.level.{_lvl}.{_attr}'
+        FIELDS[_key] = number(_key, _default, _low, 1e300)
 
 LAYER_FIELDS = {
- 'satellite': ('satellite.preset', 'satellite.intensity'),
+ 'satellite': ('satellite.quality', 'satellite.preset', 'satellite.intensity'),
  'terrain':('terrain.mode','terrain.color','terrain.forest','terrain.shade','terrain.sun'),
  'water':('water.color','water.border','water.width'),
  # 整体项在前，再按等级排（每级 填色 / 描边 / 宽度 挨在一起）。
  # 旧的 road.color / road.highway / road.border 已被等级分项取代、从面板撤下，
  # 但 FIELDS 与 handler 保留：老配置写进的就是各等级自己的键，仍然生效。
- 'road':('road.width','road.tunnel','road.bridge','road.names','road.accurate_intersections') + tuple(
+ 'road':('road.tunnel','road.bridge','road.names','road.accurate_intersections') + tuple(
      f'road.level.{_lvl}.{_attr}'
      for _lvl in ROAD_LEVELS
-     for _attr in ('fill', 'border', 'width')
+     for _attr in ('fill', 'border', 'line_width', 'footprint_scale', 'border_width')
  ),
  'building':('building.color_mode','building.default',
              'building.poi_tint.contrast','building.border','building.shadow'),
@@ -268,9 +241,9 @@ LAYER_FIELDS = {
  'poi_area':(),
  'railway':('railway.color','railway.sleepers'),
  'traffic':('traffic.free','traffic.slow','traffic.busy'),
- 'metro':('transport.stations','transport.station_names','transport.width','transport.size','transport.merge','transport.distance'),
+ 'metro':('transport.stations','transport.station_names','transport.width','transport.diameter','transport.merge','transport.distance'),
  'poi':('poi.set','poi.size','poi.font','poi.name_size',
-        'poi.name_stroke','poi.name_stroke_ratio'),
+        'poi.name_stroke','poi.name_stroke_width'),
  # 按文字类别排：每类 字体 / 字号 / 颜色 / 描边 四项挨在一起。
  'label':tuple(
      f'label.{_prefix}.{_kind}'

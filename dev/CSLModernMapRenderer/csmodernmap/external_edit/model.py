@@ -11,6 +11,7 @@ from ..cmm.session import DocumentSession
 @dataclass(frozen=True)
 class ExternalExportRequest:
     output_root: Path
+    bounds: tuple[float, float, float, float] | None = None
     theme_id: str = ""
     theme: Mapping[str, Any] = field(default_factory=dict)
     visibility: Mapping[str, bool] = field(default_factory=dict)
@@ -18,6 +19,11 @@ class ExternalExportRequest:
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "output_root", Path(self.output_root))
+        if self.bounds is not None:
+            bounds = tuple(float(value) for value in self.bounds)
+            if len(bounds) != 4 or bounds[0] >= bounds[2] or bounds[1] >= bounds[3]:
+                raise ValueError("invalid export bounds")
+            object.__setattr__(self, "bounds", bounds)
         if self.line_ids is not None:
             object.__setattr__(self, "line_ids", tuple(int(value) for value in self.line_ids))
 

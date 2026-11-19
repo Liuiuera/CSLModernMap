@@ -28,16 +28,17 @@ public sealed partial class MainWindow
         if (!_documentEnabled || !_openingEditors.Add("map-poi")) return;
         try
         {
+            var artworkEditor = _artworkEditor;
             var generation = _documentGeneration;
             var context = _context;
             var target = context == "map" ? "normal" : context;
             var epoch = _snapshot.GetProperty("documentEpoch").GetInt32();
             var data = await _engine.RequestAsync("getTextIconSettings", new { target });
-            bool Current() => !_closing && generation == _documentGeneration && context == _context;
+            bool Current() => !_closing && generation == _documentGeneration && context == _context && artworkEditor == _artworkEditor;
             if (!Current()) return;
             var title = context == "transit" ? UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_5A85707DE5") : UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_A5E8039E52");
             var window = _mapPoiSettingsWindow = new EditorWindow(
-                title + " · " + UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_4F0C1E4BF0"), 960, 740, translucent: true,
+                title + " · " + UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_4F0C1E4BF0"), "typography", 960, 740, translucent: true,
                 owner: _exportWindow?.OwnerWindow ?? this, modal: _exportWindow is not null)
                 { ActionsRightAligned = true };
             var original = JsonNode.Parse(data.GetProperty("fields").GetRawText())!.AsObject();
@@ -72,19 +73,19 @@ public sealed partial class MainWindow
             body.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             body.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
             body.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            body.Children.Add(Help(UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_15D45E8CB2")));
+            body.Children.Add(Help(UiLanguage.Text(artworkEditor is null
+                ? "MainWindow_MapSettings_ShowMapPoiSettingsAsync_15D45E8CB2" : "CityEditor_ContentScope")));
             Grid.SetRow(workspace, 1); body.Children.Add(workspace);
             Grid.SetRow(status, 2); body.Children.Add(status);
 
             void UpdateSamples() { foreach (var update in samples) update(); }
             JsonNode OptionValue(string key) => options[key] ?? JsonNode.Parse(data.GetProperty("options").GetProperty(key).GetRawText())!;
-            FrameworkElement Field(string key, string label, StackPanel? scaling = null)
+            FrameworkElement Field(string key, string label)
             {
                 editableFields.Add(key);
                 return AppearanceControls.Create(_snapshot.GetProperty("fieldSchema").GetProperty(key),
                     _snapshot.GetProperty("fonts"), fields[key]!, value => { fields[key] = value; UpdateSamples(); },
-                    checks, label, compact: true, displayMultiplier: key == "poi.name_stroke_ratio" ? 100 : 1,
-                    scalingControls: scaling);
+                    checks, label, compact: true, displayMultiplier: 1);
             }
             FrameworkElement Option(string key, string label)
             {
@@ -167,7 +168,7 @@ public sealed partial class MainWindow
                     var size = ReferenceSize(fields[poi ? "poi.name_size" : $"label.size.{kind}"]!);
                     var textBrush = poi ? new SolidColorBrush(Microsoft.UI.Colors.DodgerBlue)
                         : new SolidColorBrush(AppearanceControls.ParseColor(fields[$"label.color.{kind}"]!.GetValue<string>()));
-                    var stroke = poi ? size * fields["poi.name_stroke_ratio"]!.GetValue<double>()
+                    var stroke = poi ? fields["poi.name_stroke_width"]!.GetValue<double>()
                         : ReferenceSize(fields[$"label.stroke_width.{kind}"]!);
                     var strokeBrush = new SolidColorBrush(AppearanceControls.ParseColor(
                         fields[poi ? "poi.name_stroke" : $"label.stroke_color.{kind}"]!.GetValue<string>()));
@@ -243,7 +244,19 @@ public sealed partial class MainWindow
                         var style = new Button { Content = UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_C8FFBDF157"), MinWidth = 0, Padding = new Thickness(4, 6, 4, 6),
                             HorizontalAlignment = HorizontalAlignment.Center };
                         AutomationProperties.SetName(style, label + " · " + UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_C8FFBDF157"));
-                        style.Click += (_, _) => SelectPage(stylePage);
+                        style.Click += async (_, _) =>
+                        {
+                            if (artworkEditor is null) { SelectPage(stylePage); return; }
+                            style.IsEnabled = false;
+                            try
+                            {
+                                if (!await ApplySettingsAsync() || !Current()) return;
+                                if (stylePage is "road" or "district") artworkEditor.FocusStyle("labels", labelType: stylePage);
+                                else artworkEditor.FocusStyle(stylePage == "poi" ? "poi_icons" : "transports");
+                                ShowArtworkProperties(); Activate();
+                            }
+                            finally { style.IsEnabled = true; }
+                        };
                         Grid.SetRow(style, row); Grid.SetColumn(style, 3); table.Children.Add(style);
                     }
                     gates.Add((icon, name, attached));
@@ -271,9 +284,13 @@ public sealed partial class MainWindow
                     Row(UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_F7CCD76BF8"), UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_AAE29EF00E"), OptionCheck("facilities_enabled", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_4C2772DFEA")),
                         null,
                         target == "transit" ? "poi" : null, attached: true);
-                Row(UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_BFBFD61DB2"), UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_788576AD8B"),
-                    target == "normal" ? FieldCheck("transport.stations", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_53E88DD68F")) : OptionCheck("stations", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_53E88DD68F")),
-                    target == "normal" ? FieldCheck("transport.station_names", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_B57E2D89DD")) : null);
+                if (artworkEditor is not null)
+                    Row(UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_BFBFD61DB2"), UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_788576AD8B"),
+                        null, null, "transports");
+                else
+                    Row(UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_BFBFD61DB2"), UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_788576AD8B"),
+                        target == "normal" ? FieldCheck("transport.stations", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_53E88DD68F")) : OptionCheck("stations", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_53E88DD68F")),
+                        target == "normal" ? FieldCheck("transport.station_names", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_B57E2D89DD")) : null);
                 display.Children.Add(table);
                 if (target == "transit")
                 {
@@ -323,34 +340,30 @@ public sealed partial class MainWindow
                 if (master is not null) master.Toggled += (_, _) => ApplyDisplayGates();
                 ApplyDisplayGates();
 
-                if (target == "normal")
-                    foreach (var (kind, label) in new[] { ("road", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_8C919EE4A4")), ("district", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_5939962905")) })
-                    {
-                        var page = Page(kind, label, label, UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_DEA33AAC15"));
-                        var scaling = new StackPanel { Spacing = 10 };
-                        page.Children.Add(new AppearanceFieldGrid(
-                            Field($"label.font.{kind}", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_078838DA42")),
-                            Field($"label.size.{kind}", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_F9CCBFE15E"), scaling),
-                            Field($"label.color.{kind}", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_F21EF4ABA5")),
-                            Field($"label.stroke_width.{kind}", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_A0DF88327C"),
-                                fields[$"label.stroke_width.{kind}"] is JsonObject ? scaling : null),
-                            Field($"label.stroke_color.{kind}", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_D86FD32B7C"))));
-                        AddSample(page, kind);
-                        scaling.Children.Add(Help(UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_4D2A6ECC62")));
-                        page.Children.Add(WorkspaceSection.Create(UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_EC7FFA2896"), scaling, expanded: false));
-                    }
-                var poiPage = Page("poi", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_9AB9CE990C"), UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_9AB9CE990C"),
-                    UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_AB9506AB75"));
-                var poiScaling = new StackPanel { Spacing = 10 };
-                poiPage.Children.Add(new AppearanceFieldGrid(Field("poi.set", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_2BCCB49F29")),
-                    Field("poi.size", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_CC7213031E"), poiScaling),
-                    Field("poi.font", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_6882633176")), Field("poi.name_size", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_F9CCBFE15E"), poiScaling),
-                    Field("poi.name_stroke", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_D86FD32B7C")), Field("poi.name_stroke_ratio", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_8373A5D587"))));
-                AddSample(poiPage, "poi");
-                if (target == "transit")
-                    poiPage.Children.Add(Help(UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_5B818B9F10")));
-                poiScaling.Children.Add(Help(UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_4D2A6ECC62")));
-                poiPage.Children.Add(WorkspaceSection.Create(UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_EC7FFA2896"), poiScaling, expanded: false));
+                if (artworkEditor is null)
+                {
+                    if (target == "normal")
+                        foreach (var (kind, label) in new[] { ("road", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_8C919EE4A4")), ("district", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_5939962905")) })
+                        {
+                            var page = Page(kind, label, label, UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_DEA33AAC15"));
+                            page.Children.Add(new AppearanceFieldGrid(
+                                Field($"label.font.{kind}", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_078838DA42")),
+                                Field($"label.size.{kind}", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_F9CCBFE15E")),
+                                Field($"label.color.{kind}", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_F21EF4ABA5")),
+                                Field($"label.stroke_width.{kind}", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_A0DF88327C")),
+                                Field($"label.stroke_color.{kind}", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_D86FD32B7C"))));
+                            AddSample(page, kind);
+                        }
+                    var poiPage = Page("poi", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_9AB9CE990C"), UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_9AB9CE990C"),
+                        UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_AB9506AB75"));
+                    poiPage.Children.Add(new AppearanceFieldGrid(Field("poi.set", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_2BCCB49F29")),
+                        Field("poi.size", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_CC7213031E")),
+                        Field("poi.font", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_6882633176")), Field("poi.name_size", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_F9CCBFE15E")),
+                        Field("poi.name_stroke", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_D86FD32B7C")), Field("poi.name_stroke_width", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_8373A5D587"))));
+                    AddSample(poiPage, "poi");
+                    if (target == "transit")
+                        poiPage.Children.Add(Help(UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_5B818B9F10")));
+                }
                 var merge = Page("merge", UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_4E318B9011"), UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_58D54FC2B1"), UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_7F4BF2E908"));
                 editor = new PoiProfileEditorPanel(target, defaults ? data.GetProperty("profileDefaults") : data.GetProperty("profile"),
                     _ => Task.CompletedTask, message => status.Text = message);
@@ -375,26 +388,28 @@ public sealed partial class MainWindow
                 Build(true); return Task.CompletedTask;
             });
             window.AddAction(UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_2CD0F3BE87"), () => window.RequestCloseAsync());
-            var apply = window.AddAction(UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_63C73C4730"), async () =>
+            async Task<bool> ApplySettingsAsync()
             {
-                if (!Current()) { status.Text = UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_316B8B9770"); return; }
+                if (!Current()) { status.Text = UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_316B8B9770"); return false; }
                 try
                 {
                     window.CommitFocusedInput();
                     foreach (var check in checks) check();
                     editor?.Commit();
                     var edits = new JsonObject();
-                    foreach (var (key, value) in fields)
-                        if (!JsonNode.DeepEquals(value, original[key])) edits[key] = value?.DeepClone();
+                    foreach (var key in editableFields)
+                        if (!JsonNode.DeepEquals(fields[key], original[key])) edits[key] = fields[key]?.DeepClone();
                     await _engine.RequestAsync("setTextIconSettings", new { target, enabled = textIconsEnabled, theme = data.GetProperty("theme").GetString(),
                         fields = edits, profile = editor?.Snapshot ?? JsonNode.Parse(data.GetProperty("profile").GetRawText())!.AsObject(),
                         visibility, options, documentEpoch = epoch });
                     await RefreshLivePreviewAsync(); await ApplyContextAsync();
                     await RefreshSnapshotAsync();
                     await window.RequestCloseAsync();
+                    return true;
                 }
-                catch (Exception error) { status.Text = UiLanguage.Text("Failure_Operation"); SetError(error); }
-            });
+                catch (Exception error) { status.Text = UiLanguage.Text("Failure_Operation"); SetError(error); return false; }
+            }
+            var apply = window.AddAction(UiLanguage.Text("MainWindow_MapSettings_ShowMapPoiSettingsAsync_63C73C4730"), async () => { await ApplySettingsAsync(); });
             apply.Style = (Style)Application.Current.Resources["AccentButtonStyle"];
             try { await window.ShowAsync(); }
             finally { if (_mapPoiSettingsWindow == window) _mapPoiSettingsWindow = null; }
@@ -406,7 +421,6 @@ public sealed partial class MainWindow
             var copy = new TextBlock { Text = text, TextWrapping = TextWrapping.Wrap };
             ExportDesign.Secondary(copy); return copy;
         }
-        static double ReferenceSize(JsonNode value) => value is JsonObject pair
-            ? (pair["fixed"]?.GetValue<double>() ?? 0) + (pair["scaled"]?.GetValue<double>() ?? 0) : value.GetValue<double>();
+        static double ReferenceSize(JsonNode value) => value.GetValue<double>();
     }
 }

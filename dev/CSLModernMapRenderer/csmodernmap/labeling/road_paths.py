@@ -94,12 +94,12 @@ def street_chains(mapdata, *, road_ids=None):
     return result
 
 
-def text_path(points, width, spacing, stroke, height):
+def text_path(points, width, spacing, stroke, height, *, padding=4):
     """为排版后的整段文字生成清晰的栅格条带位置。"""
     points = [tuple(point) for point in points]
     lengths = [hypot(b[0]-a[0], b[1]-a[1]) for a, b in zip(points, points[1:])]
     total = sum(lengths)
-    margin = width / 2 + stroke + 4
+    margin = width / 2 + stroke + padding
     if total < 2 * margin:
         return []
 
@@ -136,7 +136,7 @@ def text_path(points, width, spacing, stroke, height):
         angles = [strip[2] for strip in strips]
         if max(angles)-min(angles) > 60 or any(abs(b-a) > 30 for a, b in zip(angles, angles[1:])):
             continue
-        extent = height / 2 + stroke + 4
+        extent = height / 2 + stroke + padding
         box = (min(strip[0] for strip in strips)-extent, min(strip[1] for strip in strips)-extent,
                max(strip[0] for strip in strips)+extent, max(strip[1] for strip in strips)+extent)
         result.append((middle, strips, box))

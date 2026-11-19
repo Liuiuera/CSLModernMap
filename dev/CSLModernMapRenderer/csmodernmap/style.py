@@ -37,12 +37,7 @@ def hex_to_rgba(color: str):
 
 
 def style_scalar(value, default):
-    if isinstance(value, dict):
-        value = value.get("scaled", value.get("fixed", default))
-    try:
-        return float(value)
-    except (TypeError, ValueError):
-        return float(default)
+    return float(default if value is None else value)
 
 
 # 地铁图专用配置文件名（非地图主题：不参与主题枚举/选择器）。
@@ -54,6 +49,9 @@ class Style:
     """样式配置对象。"""
 
     def __init__(self, data: Dict[str, Any]):
+        from .pixel_sizes import is_pixel_theme, validate
+        if is_pixel_theme(data):
+            validate(data)
         if isinstance(data.get("poi_icons"), dict):
             # 旧版主题不能再选择已停用的私有图稿。
             poi = {**data["poi_icons"], "icons_dir": "cn_icons"}
@@ -105,39 +103,11 @@ def strip_retired_region_palette_fields(data: dict) -> dict:
     return data
 
 
-def scale_style_sizes(data, factor: float):
-    """深度遍历样式数据，把 size / font_size 数值字段乘以 factor。
-
-    用于「全局字号倍率」（W2）：只缩放字号相关字段，不改动线宽/间距等。
-    - 标量：size: 20 → 20 * factor
-    - dict 形式（fixed+scaled 分量同时缩放）：size: {fixed: 8, scaled: 1.5}
-    factor == 1.0 时原样返回（零拷贝），保持默认路径无开销。
-    """
-    if factor == 1.0:
-        return data
-    if isinstance(data, dict):
-        out = {}
-        for key, val in data.items():
-            if key in ("size", "font_size"):
-                if isinstance(val, dict):
-                    out[key] = {
-                        k: (v * factor if isinstance(v, (int, float)) else v)
-                        for k, v in val.items()
-                    }
-                elif isinstance(val, (int, float)):
-                    out[key] = val * factor
-                else:
-                    out[key] = val
-            else:
-                out[key] = scale_style_sizes(val, factor)
-        return out
-    if isinstance(data, list):
-        return [scale_style_sizes(v, factor) for v in data]
-    return data
 
 
-def load_style(path: str, font_scale: float = 1.0) -> Style:
-    """从 YAML 文件加载样式；font_scale 为全局字号倍率（W2，默认 1.0）。"""
+
+def load_style(path: str) -> Style:
+    """从 YAML 文件加载样式；只接受新版地图主题。"""
     try:
         import yaml
     except ImportError:
@@ -152,28 +122,26 @@ def load_style(path: str, font_scale: float = 1.0) -> Style:
     if Path(path).name != METRO_STYLE_FILE:
         from .theme_contract import cleanup_theme
         data = cleanup_theme(data)
-    if font_scale != 1.0:
-        data = scale_style_sizes(data, font_scale)
+        from .pixel_sizes import validate
+        validate(data)
     return Style(data)
 
 
-def load_metro_style(styles_dir: str, font_scale: float = 1.0) -> Style:
+def load_metro_style(styles_dir: str) -> Style:
     """加载独立的 RMP 生成参数；不作为普通地图主题枚举。"""
-    return load_style(str(Path(styles_dir) / METRO_STYLE_FILE),
-                      font_scale=font_scale)
+    return load_style(str(Path(styles_dir) / METRO_STYLE_FILE))
 
 
-def load_styles_dir(styles_dir: str, font_scale: float = 1.0) -> Dict[str, Style]:
+def load_styles_dir(styles_dir: str) -> Dict[str, Style]:
     """加载目录下所有 *.yaml 主题，返回 {主题名: Style}。
 
-    font_scale：全局字号倍率（W2，透传给 load_style）。
     地铁图专用配置（metro_map.yaml）不是地图主题，不在此返回。
     """
     styles: Dict[str, Style] = {}
     for path in sorted(Path(styles_dir).glob("*.yaml")):
         if path.name == METRO_STYLE_FILE:
             continue
-        styles[path.stem] = load_style(str(path), font_scale=font_scale)
+        styles[path.stem] = load_style(str(path))
     return styles
 
 

@@ -1,0 +1,451 @@
+name: 城市白图
+description: 白色画布、黑灰路网与浅灰建筑肌理，以蓝色水系和绿色植被突出城市结构。
+canvas:
+  width: 4096
+  height: 4096
+  background: '#FFFFFF'
+terrain:
+  elevation_colors:
+  - threshold: 0
+    color: '#FFFFFF'
+  mode: simple
+  elevation_mode: stepped
+  hillshade:
+    enabled: false
+    intensity: 0.3
+    azimuth: 315.0
+    altitude: 45.0
+    large_scale_meters: 320.0
+    small_scale_meters: 0.0
+    large_scale_weight: 0.35
+    small_scale_weight: 0.65
+water:
+  color: '#8CBAEA'
+  border: '#8CBAEA'
+  border_width: 0.0
+built_area:
+  enabled: true
+  cell_meters: 8.0
+  color: '#FCFCFC'
+  buffer_meters: 60.0
+  smooth_blur: 2.0
+  smooth_iters: 6
+  contour_upscale: 2
+  edge_meters: 8.0
+forest:
+  color: '#ACD89B'
+land_use:
+  enabled: false
+  detail: base
+  cell_meters: 16.0
+  smooth_blur: 1.5
+  smooth_iters: 3
+  contour_upscale: 2
+  alpha: 110
+  colors:
+    green: '#ACD89B'
+    public: '#FCFCFC'
+    residential: '#FCFCFC'
+    industrial: '#FCFCFC'
+    office: '#FCFCFC'
+    publictransport: '#FCFCFC'
+    commercial: '#FCFCFC'
+district:
+  enabled: false
+  border: '#C9CCCF'
+  border_width: 1.5
+  fill_alpha: 115
+  fill_colors:
+  - '#FCFCFC'
+  smooth_blur: 1.0
+  smooth_iters: 3
+  contour_upscale: 2
+zone:
+  enabled: false
+  border: '#C9CCCF'
+  border_width: 0.0
+  fill_alpha: 255
+  fill: '#FCFCFC'
+  smooth_blur: 1.0
+  smooth_iters: 3
+  contour_upscale: 2
+roads:
+  highway:
+    fill: '#454B50'
+    border: '#454B50'
+    border_width: 1.5
+    line_width: 3.8
+    footprint_scale: 1.0
+  main:
+    fill: '#62696E'
+    border: '#62696E'
+    border_width: 1.2
+    line_width: 5.3
+    footprint_scale: 1.0
+  branch:
+    fill: '#ADB2B6'
+    border: '#ADB2B6'
+    border_width: 0.8
+    line_width: 2.9
+    footprint_scale: 1.0
+  special:
+    fill: '#F8F9F8'
+    border: '#C9CCCF'
+    border_width: 0.8
+    line_width: 8.90003
+    footprint_scale: 1.0
+  beautification:
+    fill: '#F3F4F3'
+    border: '#D9DDDA'
+    border_width: 0.5
+    line_width: 1.697
+    footprint_scale: 1.0
+  quay:
+    fill: '#F3F4F3'
+    border: '#D9DDDA'
+    border_width: 0.5
+    footprint_scale: 0.5
+    line_width: 5.688888888888889
+  opacity: 1.0
+buildings:
+  default: '#E1E4E2'
+  border: '#BEC4C0'
+  poi_tint:
+    contrast: 0.38
+  border_width: 0.8
+  shadow:
+    enabled: false
+    offset:
+    - 2.0
+    - 2.0
+    color: '#00000012'
+  color_mode: uniform
+  category_colors:
+    residential:
+      enabled: false
+      color: '#E1E4E2'
+    commercial:
+      enabled: false
+      color: '#E1E4E2'
+    office:
+      enabled: false
+      color: '#E1E4E2'
+    industrial:
+      enabled: false
+      color: '#E1E4E2'
+    police:
+      enabled: false
+      color: '#E1E4E2'
+    prison:
+      enabled: false
+      color: '#E1E4E2'
+    fire:
+      enabled: false
+      color: '#E1E4E2'
+    healthcare:
+      enabled: false
+      color: '#E1E4E2'
+    deathcare:
+      enabled: false
+      color: '#E1E4E2'
+    education:
+      enabled: false
+      color: '#E1E4E2'
+    administration:
+      enabled: false
+      color: '#E1E4E2'
+    transport:
+      enabled: false
+      color: '#E1E4E2'
+    parking:
+      enabled: false
+      color: '#E1E4E2'
+    post_telecom:
+      enabled: false
+      color: '#E1E4E2'
+    electricity:
+      enabled: false
+      color: '#E1E4E2'
+    water:
+      enabled: false
+      color: '#E1E4E2'
+    garbage:
+      enabled: false
+      color: '#E1E4E2'
+    maintenance:
+      enabled: false
+      color: '#E1E4E2'
+    park:
+      enabled: false
+      color: '#E1E4E2'
+    amusement:
+      enabled: false
+      color: '#E1E4E2'
+    culture:
+      enabled: false
+      color: '#E1E4E2'
+    decoration:
+      enabled: false
+      color: '#E1E4E2'
+    unclassified:
+      enabled: false
+      color: '#E1E4E2'
+procedural_objects:
+  colors:
+    geometry: '#F8F9F8'
+    building: '#F8F9F8'
+    prop: '#F8F9F8'
+    tree: '#ACD89B'
+    street_furn: '#F8F9F8'
+    sign: '#F8F9F8'
+    unknown: '#F8F9F8'
+  border: '#C9CCCF'
+  border_width: 0.8999999999999999
+  custom_color_alpha: 0.0
+railway:
+  train:
+    line: '#747A7E'
+    dash: '#FFFFFF'
+    width: 3.2
+    station_width: 7.2
+    dash_width: 2.0
+  tram:
+    line: '#ADB2B6'
+    dash: '#FFFFFF'
+    width: 3.2
+    station_width: 7.2
+    dash_width: 2.0
+  metro:
+    line: '#ADB2B6'
+    dash: '#FFFFFF'
+    width: 3.2
+    station_width: 7.2
+    dash_width: 2.0
+  monorail:
+    line: '#ADB2B6'
+    dash: '#FFFFFF'
+    width: 3.2
+    station_width: 7.2
+    dash_width: 2.0
+  cablecar:
+    line: '#ADB2B6'
+    dash: '#FFFFFF'
+    width: 3.2
+    station_width: 7.2
+    dash_width: 2.0
+transports:
+  enabled:
+  - Metro
+  - Train
+  - Monorail
+  - Tram
+  - CableCar
+  - Ship
+  - Ferry
+  - Bus
+  - Trolleybus
+  - Airplane
+  - Helicopter
+  auto_color: false
+  width: 2.55
+  smooth: 10
+  transit_view:
+    mask_intensity: 0.6
+    label_size: 15.0
+    label_merge_dist: 40.0
+    label_candidate_interval: 110.0
+    label_clearance_padding: 14.0
+  types:
+    Metro:
+      width: 2.55
+      dash: []
+    Train:
+      width: 2.7
+      dash: []
+    Monorail:
+      width: 2.25
+      dash: []
+    Tram:
+      width: 2.1
+      dash: []
+    CableCar:
+      width: 2.1
+      dash: []
+    Ship:
+      width: 2.325
+      dash:
+      - 8.0
+      - 6.0
+      color: '#3F7FBF'
+    Ferry:
+      width: 2.325
+      dash:
+      - 8.0
+      - 6.0
+      color: '#3F7FBF'
+    Bus:
+      width: 1.875
+      dash: []
+      color: '#5C6670'
+    Trolleybus:
+      width: 1.875
+      dash:
+      - 4.0
+      - 4.0
+      color: '#7C8590'
+    Airplane:
+      width: 2.1
+      dash:
+      - 10.0
+      - 8.0
+      color: '#8F98A6'
+    Helicopter:
+      width: 1.6500000000000001
+      dash:
+      - 6.0
+      - 6.0
+      color: '#8F98A6'
+  label:
+    enabled: true
+    font: SimHei
+    min_zoom: 0.5
+    size: 14.0
+    padding: 8.5
+    border_width: 1.5
+    bg: '#FFFFFF'
+    repeat_interval: 600.0
+    min_gap: 350.0
+    max_per_line: 4
+    capture_padding: 3.0
+    title_size: 76.0
+    gap: 28.0
+    column_gap: 84.0
+    swatch_width: 132.0
+    swatch_height: 48.0
+    border_radius: 27.0
+    margin: 70.0
+    shadow_blur: 21.0
+    shadow_offset: 10.0
+  station:
+    border_width: 2
+    names:
+      size: 11.0
+      gap: 5.0
+      stroke_width: 1.0
+    diameter: 15.0
+  line:
+    light_outline:
+      width: 2.4
+poi_icons:
+  enabled: true
+  icons_dir: cn_icons
+  icon_size: 24.0
+  grid_size: 120.0
+  max_per_cell: 2
+  min_priority: 10
+  bg_circle: false
+  bg_circle_size: 34.0
+  show_name: true
+  name_size: 13.0
+  name_offset: 3.0
+  merge_enabled: true
+  merge_distance: 48.0
+  facility_hierarchy:
+    enabled: true
+    children_enabled: true
+    child_min_zoom: 1.0
+    area_labels_enabled: true
+  categories: []
+  hidden_categories:
+  - traffic_light
+  - highway_entrance
+  - highway_exit
+  font: SimHei
+  icon_gap: 3.0
+  symbol_padding: 2.0
+  name_padding: 4.0
+  name_stroke_width: 2
+labels:
+  district:
+    font: PingFang SC
+    size: 20.4
+    color: '#555A5E'
+    stroke: '#FFFFFF'
+    stroke_width: 3.2
+    bold: true
+    stroke_blur: 0.0
+  road:
+    font: PingFang SC
+    size: 7.0
+    color: '#555A5E'
+    stroke: '#FFFFFF'
+    stroke_width: 1.0
+    stroke_blur: 0.0
+    by_level:
+      highway:
+        size: 11.200000000000001
+        stroke_width: 1.6
+      main:
+        size: 8.75
+        stroke_width: 1.25
+      special:
+        size: 5.25
+        stroke_width: 0.75
+      beautification:
+        size: 5.25
+        stroke_width: 0.75
+      quay:
+        size: 5.25
+        stroke_width: 0.75
+  building:
+    font: PingFang SC
+    size: 16.0
+    color: '#555A5E'
+  park:
+    font: PingFang SC
+    size: 14.0
+    color: '#6F9361'
+    stroke: '#FFFFFF'
+    stroke_width: 1.5
+  stop:
+    font: PingFang SC
+    size: 20.0
+    color: '#555A5E'
+  road_repeat: 400.0
+  padding: 4.0
+watermark:
+  enabled: true
+  mod_name: CSLModernMap
+  font: PingFang SC
+  position: left_bottom
+  font_size: 12
+  separator: ' · '
+  margin:
+    x: 20.0
+    y: 20.0
+  padding:
+    x: 12.0
+    y: 6.0
+  border_radius: 6.0
+  background: transparent
+  time_format: '%Y-%m-%d %H:%M:%S'
+  city_color: '#555A5E'
+  info_color: '#555A5E'
+  meta_color: '#ADB2B6'
+  content:
+    mod_name: true
+    city_name: true
+    render_time: true
+    style_name: true
+    resolution: true
+    traffic_time: true
+    custom_text: false
+satellite:
+  preset: original
+  intensity: 100
+  quality: original
+traffic:
+  free: '#61A96A'
+  slow: '#E6B54D'
+  busy: '#D85B4A'
+size_contract: pixel-v2

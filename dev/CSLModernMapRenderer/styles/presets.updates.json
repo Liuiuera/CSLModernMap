@@ -1,0 +1,252 @@
+{
+  "schemaVersion": 1,
+  "fromVersion": "6.7.3",
+  "toVersion": "6.7.4",
+  "targetRevision": "b63da2a926bbf393e3aead29064f842bdf6d64bf",
+  "sourceRevision": "e0d7044c55331fa17f5c886bd862c7c888b25d0d",
+  "themes": {
+    "bright": [
+      {
+        "path": [
+          "terrain",
+          "elevation_mode"
+        ],
+        "beforeExists": true,
+        "afterExists": true,
+        "before": "continuous",
+        "after": "stepped"
+      },
+      {
+        "path": [
+          "terrain",
+          "hillshade",
+          "enabled"
+        ],
+        "beforeExists": true,
+        "afterExists": true,
+        "before": true,
+        "after": false
+      },
+      {
+        "path": [
+          "terrain",
+          "mode"
+        ],
+        "beforeExists": true,
+        "afterExists": true,
+        "before": "shade",
+        "after": "simple"
+      }
+    ],
+    "modern": [
+      {
+        "path": [
+          "built_area",
+          "edge_meters"
+        ],
+        "beforeExists": false,
+        "afterExists": true,
+        "before": null,
+        "after": 8.0
+      },
+      {
+        "path": [
+          "canvas",
+          "background"
+        ],
+        "beforeExists": true,
+        "afterExists": true,
+        "before": "#EBF0CF",
+        "after": "#F2F0E6"
+      },
+      {
+        "path": [
+          "terrain",
+          "elevation_colors"
+        ],
+        "beforeExists": true,
+        "afterExists": true,
+        "before": [
+          {
+            "threshold": 0,
+            "color": "#EBF0CF"
+          },
+          {
+            "threshold": 80,
+            "color": "#DDE8BD"
+          },
+          {
+            "threshold": 220,
+            "color": "#CADCAD"
+          },
+          {
+            "threshold": 400,
+            "color": "#B5CCA0"
+          },
+          {
+            "threshold": 600,
+            "color": "#A4BC90"
+          },
+          {
+            "threshold": 900,
+            "color": "#91AA80"
+          },
+          {
+            "threshold": 1300,
+            "color": "#819875"
+          }
+        ],
+        "after": [
+          {
+            "threshold": 0,
+            "color": "#F2F0E6"
+          },
+          {
+            "threshold": 80,
+            "color": "#EEF0DF"
+          },
+          {
+            "threshold": 220,
+            "color": "#E2EBC2"
+          },
+          {
+            "threshold": 400,
+            "color": "#CEE3A6"
+          },
+          {
+            "threshold": 600,
+            "color": "#B9D88F"
+          },
+          {
+            "threshold": 900,
+            "color": "#E7EDD7"
+          },
+          {
+            "threshold": 1300,
+            "color": "#F1F0E7"
+          }
+        ]
+      },
+      {
+        "path": [
+          "terrain",
+          "elevation_mode"
+        ],
+        "beforeExists": true,
+        "afterExists": true,
+        "before": "continuous",
+        "after": "stepped"
+      },
+      {
+        "path": [
+          "terrain",
+          "mode"
+        ],
+        "beforeExists": true,
+        "afterExists": true,
+        "before": "continuous",
+        "after": "simple"
+      }
+    ],
+    "dark": [
+      {
+        "path": [
+          "terrain",
+          "elevation_mode"
+        ],
+        "beforeExists": true,
+        "afterExists": true,
+        "before": "continuous",
+        "after": "stepped"
+      },
+      {
+        "path": [
+          "terrain",
+          "hillshade",
+          "enabled"
+        ],
+        "beforeExists": true,
+        "afterExists": true,
+        "before": true,
+        "after": false
+      },
+      {
+        "path": [
+          "terrain",
+          "mode"
+        ],
+        "beforeExists": true,
+        "afterExists": true,
+        "before": "shade",
+        "after": "simple"
+      }
+    ],
+    "warm_natural": [
+      {
+        "path": [
+          "terrain",
+          "elevation_mode"
+        ],
+        "beforeExists": true,
+        "afterExists": true,
+        "before": "continuous",
+        "after": "stepped"
+      },
+      {
+        "path": [
+          "terrain",
+          "hillshade",
+          "enabled"
+        ],
+        "beforeExists": true,
+        "afterExists": true,
+        "before": true,
+        "after": false
+      },
+      {
+        "path": [
+          "terrain",
+          "mode"
+        ],
+        "beforeExists": true,
+        "afterExists": true,
+        "before": "shade",
+        "after": "simple"
+      }
+    ],
+    "vintage": [
+      {
+        "path": [
+          "terrain",
+          "elevation_mode"
+        ],
+        "beforeExists": true,
+        "afterExists": true,
+        "before": "continuous",
+        "after": "stepped"
+      },
+      {
+        "path": [
+          "terrain",
+          "hillshade",
+          "enabled"
+        ],
+        "beforeExists": true,
+        "afterExists": true,
+        "before": true,
+        "after": false
+      },
+      {
+        "path": [
+          "terrain",
+          "mode"
+        ],
+        "beforeExists": true,
+        "afterExists": true,
+        "before": "shade",
+        "after": "simple"
+      }
+    ]
+  },
+  "revision": "044a140b76f4ff5d18014048f844df164edc9df0022e5aca3feb3c4afb17364b"
+}

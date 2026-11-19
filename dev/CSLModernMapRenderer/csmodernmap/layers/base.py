@@ -66,6 +66,8 @@ class RenderContext:
     # 整体进度区间；图层内长任务（等值线/平滑/逐多边形填充）可细分上报，
     # 让进度条平滑推进（低配专项#5/#7）。
     progress: Optional[Callable[[float, str], None]] = None
+    # 可选性能记录器；默认 None，不改变普通渲染路径。
+    performance: Any = None
     # 分块渲染时，示意图等需要全局布局的图层使用整图尺寸和 tile 偏移。
     canvas_width: int = 0
     canvas_height: int = 0

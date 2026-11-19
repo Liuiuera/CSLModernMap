@@ -74,7 +74,7 @@ def test_road_edits_follow_actual_level_and_mode(server, level, mode):
 
 def test_independent_elevated_override_and_scoped_reset(server):
     style = server.backend._style_data_mut()
-    style['roads']['branch_elevated'] = {'fill': '#AABBCC', 'border': '#BBCCDD', 'min_fill_px': 1.2}
+    style['roads']['branch_elevated'] = {**style['roads']['branch'], 'fill': '#AABBCC', 'border': '#BBCCDD', 'line_width': 1.2}
     obj = selection('road', level='branch', mode='elevated')
     before_main = deepcopy(road_theme(style)['levels']['main:ground'])
     model = write(server, obj, read(server, obj), 'road.fill', '#123456')
@@ -113,15 +113,14 @@ def test_poi_group_visibility_preserves_other_groups_and_can_reenable(server):
 def test_line_and_station_controls_use_different_channels(server):
     line = read(server, selection('transit_line', kind='metro'))
     station = read(server, selection('transit_station', kind='metro'))
-    assert 'line.width' in fields(line) and 'transport.size' not in fields(line)
-    assert 'transport.size' in fields(station) and 'line.width' not in fields(station)
-    assert 'visibility.names' in fields(station)
-    assert 'poi.name_size' in fields(station)
+    assert 'view.line_width' in fields(line) and 'view.station_diameter' not in fields(line)
+    assert 'view.station_diameter' in fields(station) and 'view.line_width' not in fields(station)
+    assert 'view.station_name_size' in fields(station)
+    assert 'view.facilities_enabled' in fields(station)
 
 
 def test_transit_context_options_update_server_session_without_touching_map_labels(server):
     obj = selection('transit_line', kind='metro')
-    server._transit_session_options = server.transit_options()
     before = deepcopy(server.backend.current_style_data()['transports'].get('label', {}))
     model = write(server, obj, read(server, obj, 'transit'), 'view.line_label_size', 23, 'transit')
     assert server.transit_options()['line_label_size'] == 23
@@ -154,8 +153,8 @@ def test_railway_edit_materializes_inherited_color_without_changing_other_types(
 
 
 @pytest.mark.parametrize('key,value', [('road.fill', 'red'), ('road.fill', 'roads.primary.fill'),
-                                     ('road.minimum', math.nan), ('road.minimum', True),
-                                     ('road.minimum', 99), ('arbitrary.path', '#112233')])
+                                     ('road.line_width', math.nan), ('road.line_width', True),
+                                     ('road.line_width', 0), ('arbitrary.path', '#112233')])
 def test_invalid_or_arbitrary_mutation_is_rejected_without_changes(server, key, value):
     obj = selection('road', level='branch')
     model = read(server, obj)
@@ -163,6 +162,22 @@ def test_invalid_or_arbitrary_mutation_is_rejected_without_changes(server, key, 
     with pytest.raises(ValueError):
         write(server, obj, model, key, value)
     assert server.backend.current_style_data() == before
+
+
+def test_zero_width_keeps_selected_theme_and_allows_further_edits(server):
+    obj = selection('road', level='branch')
+    model = read(server, obj)
+    theme = server.backend.theme_stem
+    width = fields(model)['road.line_width']
+    assert width['low'] > 0
+    with pytest.raises(ValueError, match='outside the supported range'):
+        write(server, obj, model, 'road.line_width', 0)
+    assert server.backend.theme_stem == theme
+    assert read(server, obj)['settingsRevision'] == model['settingsRevision']
+    model = write(server, obj, model, 'road.line_width', 2.5)
+    model = write(server, obj, model, 'road.border_width', 0)
+    assert fields(model)['road.line_width']['value'] == 2.5
+    assert fields(model)['road.border_width']['value'] == 0
 
 
 def test_stale_epoch_and_changed_settings_are_rejected(server):
@@ -217,23 +232,21 @@ def history(server, obj, model, method, context='map'):
                                     'settingsRevision': model['settingsRevision']})
 
 
-def test_undo_redo_restore_only_the_edited_style_path_and_exact_formula(server):
+def test_undo_redo_restore_only_the_edited_style_path_and_pixel_width(server):
     obj = selection('road', level='branch')
     before = deepcopy(server.backend.current_style_data())
     model = write(server, obj, read(server, obj), 'road.fill', '#123456')
-    model = write(server, obj, model, 'road.minimum', 2.5)
-    personal_theme = server.backend.theme_stem
-    before['name'] = server.backend.current_style_data()['name']
+    before['name'] = server.backend.current_style_data()['name']  # Editing a preset creates a personal theme.
+    model = write(server, obj, model, 'road.line_width', 2.5)
     assert model['canUndo']
     model = history(server, obj, model, 'undoInspector')
-    assert road_theme(server.backend.current_style_data())['levels']['branch:ground']['minFillPx'] == .8
+    assert road_theme(server.backend.current_style_data())['levels']['branch:ground']['lineWidth'] == road_theme(before)['levels']['branch:ground']['lineWidth']
     assert fields(model)['road.fill']['value'] == '#123456'
     model = history(server, obj, model, 'undoInspector')
-    assert server.backend.theme_stem == personal_theme
     assert server.backend.current_style_data() == before
     model = history(server, obj, model, 'redoInspector')
     model = history(server, obj, model, 'redoInspector')
-    assert fields(model)['road.minimum']['value'] == 2.5
+    assert fields(model)['road.line_width']['value'] == 2.5
     assert fields(model)['road.fill']['value'] == '#123456'
     assert not model['canRedo']
 

@@ -11,6 +11,13 @@ namespace CSLModernMapWinUI;
 internal sealed partial class ThemeEditorDialog
 {
     private readonly List<Action> _responsiveUpdates = new();
+    private double _elementScale = 1;
+    internal void SetElementScale(double value)
+    {
+        if (_elementScale == value) return;
+        _elementScale = value;
+        UpdateSamples();
+    }
     private JsonElement? Field(string[] path)
     {
         if (_metadata.GetProperty("fields").TryGetProperty(string.Join('.', path), out var field)) return field;
@@ -20,8 +27,6 @@ internal sealed partial class ThemeEditorDialog
     }
     private string Label(string[] path)
     {
-        if (path[^1] == "fixed") return UiLanguage.Text("ThemeEditorDialog_Fields_Label_803A1B3A33");
-        if (path[^1] == "scaled") return UiLanguage.Text("ThemeEditorDialog_Fields_Label_606D5B2CC1");
         return Field(path) is { } field ? field.GetProperty("label").GetString()! : path[^1].Replace('_', ' ');
     }
     private bool Hidden(string[] path)
@@ -37,6 +42,8 @@ internal sealed partial class ThemeEditorDialog
         if (Hidden(path)) return false;
         var query = _search.Text.Trim();
         if (query.Length == 0 || SectionLabel(path[0]).Contains(query, StringComparison.OrdinalIgnoreCase)) return true;
+        if (IsEmbedded && path.Length >= 2 && path[0] == "roads" &&
+            RoadLevels.Any(level => level.Key == path[1] && level.Label.Contains(query, StringComparison.OrdinalIgnoreCase))) return true;
         return string.Join('.', path).Contains(query, StringComparison.OrdinalIgnoreCase) || Label(path).Contains(query, StringComparison.OrdinalIgnoreCase);
     }
     private bool Matches(JsonNode node, string[] path)
@@ -64,10 +71,19 @@ internal sealed partial class ThemeEditorDialog
                 var clear = new Button { Content = UiLanguage.Text("ThemeEditorDialog_Fields_RebuildFields_EE32F25F70") }; clear.Click += (_, _) => _search.Text = "";
                 _fieldsPanel.Children.Add(clear); return;
             }
-            _fieldsPanel.Children.Add(new TextBlock { Text = SectionLabel(_section), FontSize = 20, FontWeight = Microsoft.UI.Text.FontWeights.SemiBold });
+            _sectionTitle.Text = SectionLabel(_section);
+            if (IsEmbedded && _section == "roads")
+                _sectionTitle.Text = _roadLevel is null ? UiLanguage.Text("ThemeEditor_AllRoads")
+                    : RoadLevels.FirstOrDefault(level => level.Key == _roadLevel).Label ?? Label(["roads", _roadLevel]);
+            _fieldsPanel.Children.Add(_pageHeader);
+            if (_section is "__basic__" or "roads")
+                _fieldsPanel.Children.Add(new TextBlock { Text = PageDescription(), TextWrapping = TextWrapping.Wrap,
+                    FontSize = 12, Opacity = .8 });
+            if (IsEmbedded) _fieldsPanel.Children.Add(_sampleSurface);
             ToolTipService.SetToolTip(_restore, _search.Text.Trim().Length == 0 ? UiLanguage.Text("ThemeEditorDialog_Fields_RebuildFields_AFF535F598") : UiLanguage.Text("ThemeEditorDialog_Fields_RebuildFields_04016999A1"));
             _restore.Content = _search.Text.Trim().Length == 0 ? UiLanguage.Text("ThemeEditorDialog_Fields_RebuildFields_AC9EA45E9D") : UiLanguage.Text("ThemeEditorDialog_Fields_RebuildFields_3B5E729BF4");
             if (_section == "__basic__") BuildBasicPage();
+            else if (IsEmbedded && _section == "roads") BuildFocusedRoadsPage();
             else if (_search.Text.Trim().Length > 0 && !SectionLabel(_section).Contains(_search.Text.Trim(), StringComparison.OrdinalIgnoreCase))
                 BuildNode(_working[_section]!, [_section], _fieldsPanel);
             else if (_section == "roads") BuildRoadsPage();
@@ -76,7 +92,12 @@ internal sealed partial class ThemeEditorDialog
             else if (_section == "labels") BuildLabelsPage();
             else BuildOtherPage();
         }
-        finally { BuildSamples(); _building = false; UpdateStatus(); UpdateSamples(); }
+        finally
+        {
+            if (IsEmbedded) _fieldsPanel.Children.Add(_restore);
+            BuildSamples(); _building = false; UpdateStatus(); UpdateSamples();
+            if (IsEmbedded) NavigationChanged?.Invoke(this, EventArgs.Empty);
+        }
     }
     private string PageDescription() => _section switch
     {
@@ -91,14 +112,14 @@ internal sealed partial class ThemeEditorDialog
     private void BuildNode(JsonNode node, string[] path, StackPanel panel)
     {
         if (!Matches(node, path)) return;
-        if (node is JsonObject obj && !IsPair(obj))
+        if (node is JsonObject obj)
         {
             foreach (var (key, child) in obj)
             {
                 if (child is null || Hidden(path.Append(key).ToArray())) continue;
                 var childPath = path.Append(key).ToArray();
                 if (!Matches(child, childPath)) continue;
-                if (child is JsonObject inner && !IsPair(inner))
+                if (child is JsonObject inner)
                 {
                     var contents = new StackPanel { Spacing = 10 };
                     BuildNode(inner, childPath, contents); AddGroup(Label(childPath), contents, panel, string.Join('.', childPath));
@@ -127,17 +148,8 @@ internal sealed partial class ThemeEditorDialog
         { error.Text = message ?? ""; error.Visibility = message is null ? Visibility.Collapsed : Visibility.Visible;
             if (message is null) _errors.Remove(key); else _errors.Add(key); UpdateStatus(); }
         if (showLabel) panel.Children.Add(new TextBlock { Text = label, TextWrapping = TextWrapping.Wrap });
-        if (node is JsonObject objectValue && !IsPair(objectValue))
+        if (node is JsonObject objectValue)
             BuildNode(objectValue, path, panel);
-        else if (node is JsonObject pair && IsPair(pair))
-        {
-            var fixedPart = MakeField(pair["fixed"]!, path.Append("fixed").ToArray(), UiLanguage.Text("ThemeEditorDialog_Fields_MakeField_986E6B84D7"));
-            var scaledPart = MakeField(pair["scaled"]!, path.Append("scaled").ToArray(), UiLanguage.Text("ThemeEditorDialog_Fields_MakeField_606D5B2CC1"));
-            panel.Children.Add(PairRow(fixedPart, scaledPart));
-            panel.Children.Add(new TextBlock { Text = UiLanguage.Text("ThemeEditorDialog_Fields_MakeField_CF663DC217"), FontSize = 12, TextWrapping = TextWrapping.Wrap, Opacity = .8 });
-            foreach (var (extra, value) in pair.Where(pair => pair.Key is not "fixed" and not "scaled"))
-                if (value is not null) { var extras = new StackPanel { Spacing = 8 }; BuildNode(value, path.Append(extra).ToArray(), extras); AddGroup(Label(path.Append(extra).ToArray()), extras, panel, key + "." + extra); }
-        }
         else if (node is JsonArray array)
         {
             if (kind == "ramp" || path[^1] is "elevation_colors" or "mountain_colors") BuildRamp(array, path, panel);
@@ -168,8 +180,6 @@ internal sealed partial class ThemeEditorDialog
                 var low = field is { } f && f.TryGetProperty("low", out var lo) ? lo.GetDouble() : path[^1] == "threshold" ? 0 : 0;
                 var high = field is { } g && g.TryGetProperty("high", out var hi) ? hi.GetDouble() : path[^1] == "threshold" ? 3000 : 100000;
                 var step = field is { } h && h.TryGetProperty("step", out var st) ? st.GetDouble() : value.TryGetInt64(out _) ? 1 : .1;
-                if (path[^1] is "fixed" or "scaled" && Field(path[..^1]) is { } parent)
-                { low = 0; high = parent.GetProperty("high").GetDouble(); step = parent.GetProperty("step").GetDouble(); }
                 var initial = value.GetDouble();
                 var number = new NumberBox { Value = initial, SmallChange = step, Minimum = Math.Min(low, initial), Maximum = Math.Max(high, initial),
                     ValidationMode = NumberBoxValidationMode.Disabled, SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Hidden,
@@ -205,6 +215,12 @@ internal sealed partial class ThemeEditorDialog
                     InvalidateInputPreview();
                 });
                 _checks[key] = Commit; panel.Children.Add(number);
+                if (field is { } length && length.TryGetProperty("pixelLength", out var pixel) && pixel.GetBoolean())
+                {
+                    var actual = new TextBlock { FontSize = 12, TextWrapping = TextWrapping.Wrap };
+                    void UpdateActual() => actual.Text = UiLanguage.Format("Pixel_Actual", (Numeric(Node(path)!) * _elementScale).ToString("F2"));
+                    _sampleUpdates.Add(UpdateActual); UpdateActual(); panel.Children.Add(actual);
+                }
                 if (showLabel && field is { } n && n.TryGetProperty("hint", out var hint))
                     panel.Children.Add(new TextBlock { Text = hint.GetString(), FontSize = 12, Opacity = .7, TextWrapping = TextWrapping.Wrap });
             }
@@ -243,6 +259,9 @@ internal sealed partial class ThemeEditorDialog
                 input.TextChanged += (_, _) => InvalidateInputPreview();
             }
         }
+        if (key == "satellite.quality" && field is { } qualityField)
+            panel.Children.Add(new TextBlock { Text = qualityField.GetProperty("description").GetString(),
+                FontSize = 12, Opacity = .7, TextWrapping = TextWrapping.Wrap });
         panel.Children.Add(error); return panel;
     }
     private FrameworkElement ColorField(string initial, string[] path, string label, Action<string?> error)
@@ -336,7 +355,7 @@ internal sealed partial class ThemeEditorDialog
             if (!FlushInputs()) return;
             var input = new TextBox { Header = kind == "colors" ? UiLanguage.Text("ThemeEditorDialog_Fields_BuildList_AA2CA3DEE7") : kind == "numbers" ? UiLanguage.Text("ThemeEditorDialog_Fields_BuildList_C5500A58E0") : UiLanguage.Text("ThemeEditorDialog_Fields_BuildList_CDA1D55C52") };
             var message = new TextBlock { TextWrapping = TextWrapping.Wrap }; var body = new StackPanel { Spacing = 8 }; body.Children.Add(input); body.Children.Add(message);
-            var dialog = new ContentDialog { XamlRoot = _window.Root.XamlRoot, Title = UiLanguage.Text("ThemeEditorDialog_Fields_BuildList_7A8A11EAD5") + Label(path), Content = body, PrimaryButtonText = UiLanguage.Text("ThemeEditorDialog_Fields_BuildList_7A8A11EAD5"), CloseButtonText = UiLanguage.Text("ThemeEditorDialog_Fields_BuildList_2CD0F3BE87") };
+            var dialog = new ContentDialog { XamlRoot = DialogRoot, Title = UiLanguage.Text("ThemeEditorDialog_Fields_BuildList_7A8A11EAD5") + Label(path), Content = body, PrimaryButtonText = UiLanguage.Text("ThemeEditorDialog_Fields_BuildList_7A8A11EAD5"), CloseButtonText = UiLanguage.Text("ThemeEditorDialog_Fields_BuildList_2CD0F3BE87") };
             JsonNode? added = null;
             dialog.PrimaryButtonClick += (_, args) =>
             {
@@ -354,9 +373,11 @@ internal sealed partial class ThemeEditorDialog
     { JsonNode? value = _working; foreach (var part in path) value = value is JsonArray array ? array[int.Parse(part)] : value?[part]; return value; }
     private void InvalidateInputPreview()
     {
-        if (_building || _flushingPreviewInputs) return;
+        if (_building || _flushingPreviewInputs || _flushingEmbeddedPreview) return;
+        _pendingInput = true;
         CancelPreview(); _sampleCancellation?.Cancel(); _sampleRevision++;
         _previewStatus.Text = UiLanguage.Text("ThemeEditorDialog_Fields_InvalidateInputPreview_F0E4729FC1");
         SchedulePreview();
+        UpdateStatus();
     }
 }

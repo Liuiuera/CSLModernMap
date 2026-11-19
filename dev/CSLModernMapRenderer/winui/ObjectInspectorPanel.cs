@@ -17,6 +17,7 @@ internal sealed class ObjectInspectorPanel : StackPanel
     private readonly Action _clear;
     private readonly Action _locate;
     private readonly Dictionary<string, bool> _expanded;
+    private readonly bool _factsOnly;
     private readonly List<Control> _editors = new();
     private readonly TextBlock _status = new() { TextWrapping = TextWrapping.Wrap };
     private bool _syncing, _busy, _available = true;
@@ -26,11 +27,12 @@ internal sealed class ObjectInspectorPanel : StackPanel
     internal ObjectInspectorPanel(JsonElement model,
         Func<string, string, object?, string, Task<JsonElement>> write,
         Func<bool> current, Action<string> openTheme, Action clear, Action locate,
-        Dictionary<string, bool>? expansionState = null)
+        Dictionary<string, bool>? expansionState = null, bool factsOnly = false)
     {
         _model = model.Clone(); _write = write; _current = current;
         _openTheme = openTheme; _clear = clear; _locate = locate;
         _expanded = expansionState ?? new();
+        _factsOnly = factsOnly;
         Spacing = 8;
         Loaded += (_, _) => Children.OfType<FrameworkElement>().FirstOrDefault()?.StartBringIntoView();
         Render();
@@ -84,7 +86,7 @@ internal sealed class ObjectInspectorPanel : StackPanel
                 button.Click += async (_, _) => await CommitAsync(key, "", null);
                 _editors.Add(button); history.Children.Add(button);
             }
-            Children.Add(history);
+            if (!_factsOnly) Children.Add(history);
             foreach (var fact in _model.GetProperty("summary").EnumerateArray())
             {
                 var value = fact.GetProperty("value").GetString()!;
@@ -101,7 +103,7 @@ internal sealed class ObjectInspectorPanel : StackPanel
             }
             foreach (var notice in _model.GetProperty("notices").EnumerateArray()) Children.Add(Note(notice.GetString()!));
             Status(""); Children.Add(_status);
-            foreach (var section in _model.GetProperty("sections").EnumerateArray())
+            foreach (var section in _factsOnly ? Array.Empty<JsonElement>() : _model.GetProperty("sections").EnumerateArray().ToArray())
             {
                 var key = section.GetProperty("key").GetString()!;
                 var body = new StackPanel { Spacing = 8 };
@@ -118,7 +120,7 @@ internal sealed class ObjectInspectorPanel : StackPanel
                 AddSection(key, section.GetProperty("title").GetString()!, body,
                     section.GetProperty("expanded").GetBoolean());
             }
-            if (_model.GetProperty("sections").GetArrayLength() > 0)
+            if (!_factsOnly && _model.GetProperty("sections").GetArrayLength() > 0)
             {
                 var complete = new Button { Content = UiLanguage.Text("ObjectInspectorPanel_Render_33A982C362"), HorizontalAlignment = HorizontalAlignment.Stretch };
                 complete.Click += (_, _) => { if (_current()) _openTheme(_model.GetProperty("themeSection").GetString()!); };

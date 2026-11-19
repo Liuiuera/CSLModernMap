@@ -40,6 +40,7 @@ public sealed partial class MainWindow
         }
         foreach (var key in new[] { "terrain", "water", "road", "building", "railway", "metro", "label" })
             _layerButtons[key].SimplifiedVisibility = RibbonSimplifiedVisibility.Pinned;
+        _lineLabelToggles.Single(item => item.Context == "map").Toggle.Button.SimplifiedVisibility = RibbonSimplifiedVisibility.Pinned;
         _returnToMapLayers!.SimplifiedVisibility = RibbonSimplifiedVisibility.Pinned;
 
         var labels = _layerButtons["label"];
@@ -96,26 +97,28 @@ public sealed partial class MainWindow
             menu.Items.Add(item);
             return item;
         }
-        var simplified = AddOption("Ribbon_Simplified", "ribbonLayout", RibbonIcons.Named("layout-navbar"), () => Ribbon.DisplayMode = RibbonDisplayMode.Simplified);
-        var classic = AddOption("Ribbon_Classic", "ribbonLayout", RibbonIcons.Named("layout-rows"), () => Ribbon.DisplayMode = RibbonDisplayMode.Classic);
+        void SelectLayout(RibbonDisplayMode mode)
+        {
+            SetImmersiveMode(false);
+            Ribbon.DisplayMode = mode;
+        }
+        var simplified = AddOption("Ribbon_Simplified", "ribbonLayout", RibbonIcons.Named("layout-navbar"), () => SelectLayout(RibbonDisplayMode.Simplified));
+        var classic = AddOption("Ribbon_Classic", "ribbonLayout", RibbonIcons.Named("layout-rows"), () => SelectLayout(RibbonDisplayMode.Classic));
+        var immersive = AddOption("Workspace_Immersive", "ribbonLayout", RibbonIcons.Named("maximize"), () => SetImmersiveMode(true));
         menu.Opening += (_, _) =>
         {
-            simplified.IsChecked = Ribbon.DisplayMode == RibbonDisplayMode.Simplified;
-            classic.IsChecked = Ribbon.DisplayMode == RibbonDisplayMode.Classic;
+            simplified.IsChecked = !_immersive && Ribbon.DisplayMode == RibbonDisplayMode.Simplified;
+            classic.IsChecked = !_immersive && Ribbon.DisplayMode == RibbonDisplayMode.Classic;
+            immersive.IsChecked = _immersive;
         };
-        var display = new Button
-        {
-            Flyout = menu,
-            Style = (Style)Application.Current.Resources["RibbonChromeButtonStyle"],
-        };
+        WorkspaceModeButton.Flyout = menu;
         void UpdateMode()
         {
             var isSimplified = Ribbon.DisplayMode == RibbonDisplayMode.Simplified;
-            display.Content = UiLanguage.Text(isSimplified ? "Ribbon_Simplified" : "Ribbon_Classic");
+            WorkspaceModeButton.Content = UiLanguage.Text(isSimplified ? "Ribbon_Simplified" : "Ribbon_Classic");
             _settingsOpen = _inspectorOpen = !isSimplified;
             UpdateScaleAndLayout();
         }
-        Ribbon.TabStripEndContent = display;
         Ribbon.RegisterPropertyChangedCallback(Ribbon.DisplayModeProperty, (_, _) => UpdateMode());
         UpdateMode();
     }
@@ -131,9 +134,14 @@ public sealed partial class MainWindow
     private void ConfigureRibbonLayout()
     {
         ConfigureSimplifiedLayers();
+        // 图层页保留按钮尺寸，空间不足时使用控件自带的左右翻页。
+        void UpdateLayerPaging() => Ribbon.IsAdaptiveLayoutEnabled = !ReferenceEquals(Ribbon.SelectedTab, _layersTab);
+        Ribbon.RegisterPropertyChangedCallback(Ribbon.SelectedTabProperty, (_, _) => UpdateLayerPaging());
+        UpdateLayerPaging();
         ConfigureRibbonDisplayMenu();
         _ribbonLayout = UserData.ReadRibbonLayout(_ribbonLayoutDirectory);
         _mapInteractionGuideSeen = UserData.ReadMapInteractionGuideSeen(_ribbonLayoutDirectory);
+        _draftWelcomeSeen = UserData.DraftWelcomeSeen(_ribbonLayoutDirectory);
         // 仅恢复布局；选项卡、命令与地图参数仍由现有逻辑管理。
         Ribbon.ApplyState(new RibbonState
         {
@@ -174,12 +182,12 @@ public sealed partial class MainWindow
 
     private void TryShowSimplifiedRibbonIntro()
     {
-        if (!_simplifiedIntroPending || _mapGuideOpen || _closing || !_viewerReady || _mapTask.Active || _mapTask.Phase == MapTaskPhase.Error || _engineBusy || OperationError.IsOpen ||
+        if (!_simplifiedIntroPending || _mapGuideOpen || _draftWelcomeOpen || _closing || !_viewerReady || _mapTask.Active || _mapTask.Phase == MapTaskPhase.Error || _engineBusy || OperationError.IsOpen ||
             Ribbon.DisplayMode != RibbonDisplayMode.Classic || Root.XamlRoot is null) return;
         _simplifiedIntroPending = false;
         var tip = _simplifiedRibbonIntro = new TeachingTip
         {
-            Target = (FrameworkElement)Ribbon.TabStripEndContent!,
+            Target = WorkspaceModeButton,
             Title = UiLanguage.Text("Ribbon_IntroTitle"),
             Subtitle = UiLanguage.Text("Ribbon_IntroDescription"),
             ActionButtonContent = UiLanguage.Text("Ribbon_IntroTry"),
@@ -221,7 +229,13 @@ public sealed partial class MainWindow
             if (HasFocusedField(Microsoft.UI.Xaml.Media.VisualTreeHelper.GetChild(root, i))) return true;
         return false;
     }
-    internal async Task ApplyEditorChangesAsync() { if (_closing || _allowMainClose) return; await RefreshLivePreviewAsync(); await RefreshSnapshotAsync(); }
+    internal Task ApplyEditorChangesAsync() => ApplyEditorChangesAsync(null);
+    internal async Task ApplyEditorChangesAsync(long? artworkStarted)
+    {
+        if (_closing || _allowMainClose) return;
+        await RefreshLivePreviewAsync(artworkStarted: artworkStarted);
+        await RefreshSnapshotAsync();
+    }
     private async Task CloseEditorsAndWindowAsync()
     {
         if (_closingEditors) return;
@@ -230,6 +244,7 @@ public sealed partial class MainWindow
         {
             if (!await ReleaseRmpAsync()) return;
             if (!await CloseEditorsAsync()) return;
+            await FlushContextWritesAsync();
             _closing = true;
             UpdateCommandStates();
             StatusText.Text = UiLanguage.Text("MainWindow_Commands_CloseEditorsAndWindowAsync_663E1A1ED3");
@@ -240,16 +255,20 @@ public sealed partial class MainWindow
     }
     private async Task<bool> CloseEditorsAsync()
     {
-        CloseBuildingList();
         if (_exportWindow is { } export && !await export.RequestCloseAsync()) return false;
+        if (_cityArtwork && !await TryLeaveArtworkEditorAsync()) return false;
+        CloseBuildingList();
         if (_themeEditor is { } theme && !await theme.RequestCloseAsync()) return false;
         if (_poiEditor is { } poi && !await poi.RequestCloseAsync()) return false;
         if (_mapPoiSettingsWindow is { } settings && !await settings.RequestCloseAsync()) return false;
+        if (_previewSettingsWindow is { } previewSettings && !await previewSettings.RequestCloseAsync()) return false;
         return true;
     }
     private ExportWindow? _exportWindow;
     private async Task ShowExportAsync(string? format = null, string? contextOverride = null, object? regionOverride = null, bool quickPng = false)
     {
+        await FlushContextWritesAsync();
+        var fromDraft = _cityArtwork && contextOverride is null && format is null or "PNG";
         var context = contextOverride ?? (_context == "map" ? "normal" : _context);
         if (context == "metro" && format == "RMP")
         {
@@ -269,11 +288,24 @@ public sealed partial class MainWindow
         {
         var generation = _documentGeneration;
         var expectedContext = _context;
+        JsonElement? draftState = null;
+        var editor = _artworkEditor;
+        if (fromDraft)
+        {
+            if (_themeGalleries is { } galleries) await galleries.PendingSelection;
+            if (!_cityArtwork || editor != _artworkEditor) return;
+            if (editor is not null && !await editor.FlushForExportAsync()) return;
+            await _artworkWriteTail;
+            var state = await _engine.RequestAsync("getCityArtworkState", new { documentEpoch = _engineDocumentEpoch });
+            if (!state.GetProperty("active").GetBoolean()) return;
+            draftState = state;
+        }
         var profileTarget = context == "transit" ? "transit_png" : context == "metro" ? null : "normal_png";
         var profile = profileTarget is null
             ? await _engine.RequestAsync("getExportProfile", new { context })
             : await _engine.RequestAsync("getExportProfile", new { context, profileTarget });
-        if (_closing || _allowMainClose || generation != _documentGeneration || _context != expectedContext) return;
+        if (_closing || _allowMainClose || generation != _documentGeneration || _context != expectedContext ||
+            (fromDraft && (!_cityArtwork || editor != _artworkEditor))) return;
         if (context == "metro" && !rmp)
         {
             var sourceExport = JsonNode.Parse(profile.GetRawText())!.AsObject();
@@ -282,9 +314,25 @@ public sealed partial class MainWindow
         }
         var window = _exportWindow = new ExportWindow(_engine, profile, regionOverride, format,
             owner: this, editMapSettings: ShowMapPoiSettingsAsync, appearancePalettes: _appearancePalettes,
-            settingsChanged: ApplyEditorChangesAsync, rotationChanged: RefreshSnapshotAsync,
-            exportRmp: rmp ? _rmpView!.ExportFileAsync : null, quickPng: quickPng);
-        try { await window.ShowAsync(); }
+            settingsChanged: ApplyEditorChangesAsync, rotationChanged: async () =>
+            {
+                await RefreshSnapshotAsync();
+                if (_compatibilityPreview) QueueCompatibilityPreview();
+            },
+            exportRmp: rmp ? _rmpView!.ExportFileAsync : null, quickPng: quickPng && !fromDraft,
+            draftState: draftState);
+        if (fromDraft) window.BusyChanged += ApplyMapTaskState;
+        try
+        {
+            await window.ShowAsync();
+            if (window.GoToDraft && _cityArtwork && editor == _artworkEditor && _artworkPages is not null)
+            {
+                if (_artworkTab is not null) Ribbon.SelectedTab = _artworkTab;
+                _settingsOpen = true;
+                _artworkPages.SelectedItem = _artworkDraftTab;
+                UpdateScaleAndLayout();
+            }
+        }
         finally
         {
             if (_exportWindow == window) _exportWindow = null;
@@ -321,7 +369,8 @@ public sealed partial class MainWindow
     {
         var busy = _engineBusy || _engineUnavailable;
         if (_closing) return false;
-        if (id == "app.cancel") return !_engineUnavailable && (_generatingRmp ? _mapTask.CanCancel && !_cancellingRmp : busy || _mapTask.Active);
+        if (id.StartsWith("editor.", StringComparison.Ordinal)) return EditorCommandEnabled(id);
+        if (id == "app.cancel") return !_engineUnavailable && (_generatingRmp ? _mapTask.CanCancel && !_cancellingRmp : busy || _mapTask.Active || _cityArtwork);
         if (RmpBlocked) return false;
         if (id == "view.metro.refresh") return _context == "metro" && _documentEnabled && !busy;
         if (id == "rmp.open") return _context == "metro" && !busy;
@@ -330,6 +379,8 @@ public sealed partial class MainWindow
                 (id != "rmp.showDefaultNames" || RmpState("showNames")) &&
                 (id != "rmp.undo" || RmpState("canUndo")) && (id != "rmp.redo" || RmpState("canRedo"));
         if (id == "app.language") return !busy && _pendingFieldWrites == 0 && !_closingEditors && !_changingLanguage;
+        if (id == "map.edit_city") return _documentEnabled && PreviewInteractive && _context != "metro" &&
+            !_cityArtwork && !_openingArtwork && !_compatibilityPreview && !string.IsNullOrEmpty(_sceneId) && !busy;
         if (id is "map.rotate_counterclockwise" or "map.rotate_clockwise")
             return _documentEnabled && _context != "metro" && !busy;
         if (id is "file.open" or "file.open_city" or "map.save_png" or "workspace.saveAs" or "workspace.export" && busy) return false;
@@ -348,10 +399,15 @@ public sealed partial class MainWindow
     }
     private void UpdateCommandStates()
     {
+        _workflowDialog?.SetDraftAvailable(CanChooseDraft);
+        if (_artworkThemeGallery is not null) _artworkThemeGallery.IsEnabled = EditorCommandEnabled("editor.themes");
         foreach (var (id, command) in _commands)
             foreach (var control in command.Controls)
             {
                 control.IsEnabled = CommandEnabled(id, command);
+                if (id == "map.select_region")
+                    ToolTipService.SetToolTip(control, UiLanguage.Text(_compatibilityPreview
+                        ? "Preview_CompatibilityNotice/Text" : "MainWindow_Commands_BuildWorkspaceCommands_840A04872A"));
                 if (id == "map.save_png" && control is RibbonButton saveButton)
                     saveButton.Label = _context == "metro" ? RmpText("Save") : UiLanguage.Text("MainWindow_xaml_BuildRibbon_76420433F2");
                 if (id == "layer.poi.facilities")
@@ -360,23 +416,47 @@ public sealed partial class MainWindow
         if (_facilitySelectionGroup is not null)
             _facilitySelectionGroup.IsGroupVisible = HasCs2Document;
     }
+    private readonly List<(Button Button, MenuFlyoutItem Overflow)> _mapToolbarActions = new();
+    private Button? _mapToolbarMore;
     private void LayoutToolbar()
     {
+        if (_mapToolbarMore is null) return;
         var width = ViewerToolbar.ActualWidth;
-        var buttonWidth = 0.0;
-        foreach (FrameworkElement button in ViewerToolbar.Children)
+        var sizes = _mapToolbarActions.Select(item =>
         {
-            button.Measure(new Windows.Foundation.Size(double.PositiveInfinity, double.PositiveInfinity));
-            buttonWidth = Math.Max(buttonWidth, button.DesiredSize.Width);
+            var content = (FrameworkElement)item.Button.Content;
+            content.Measure(new Windows.Foundation.Size(double.PositiveInfinity, double.PositiveInfinity));
+            return content.DesiredSize.Width + item.Button.Padding.Left + item.Button.Padding.Right +
+                item.Button.BorderThickness.Left + item.Button.BorderThickness.Right;
+        }).ToArray();
+        _mapToolbarMore.Visibility = Visibility.Visible;
+        _mapToolbarMore.Measure(new Windows.Foundation.Size(double.PositiveInfinity, double.PositiveInfinity));
+        var available = sizes.Sum() + Math.Max(0, sizes.Length - 1) * ViewerToolbar.ColumnSpacing <= width
+            ? width : width - _mapToolbarMore.DesiredSize.Width - ViewerToolbar.ColumnSpacing;
+        var used = 0.0;
+        var visible = 0;
+        while (visible < sizes.Length && used + sizes[visible] <= available)
+        {
+            used += sizes[visible] + ViewerToolbar.ColumnSpacing;
+            visible++;
         }
-        var columns = Math.Max(1, Math.Min(ViewerToolbar.Children.Count,
-            (int)((width + ViewerToolbar.ColumnSpacing) / (buttonWidth + ViewerToolbar.ColumnSpacing))));
         ViewerToolbar.ColumnDefinitions.Clear(); ViewerToolbar.RowDefinitions.Clear();
-        for (var i = 0; i < columns; i++) ViewerToolbar.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-        for (var i = 0; i < ViewerToolbar.Children.Count; i++)
+        for (var i = 0; i < _mapToolbarActions.Count; i++)
         {
-            if (i % columns == 0) ViewerToolbar.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            Grid.SetRow((FrameworkElement)ViewerToolbar.Children[i], i / columns); Grid.SetColumn((FrameworkElement)ViewerToolbar.Children[i], i % columns);
+            var (button, overflow) = _mapToolbarActions[i];
+            button.Visibility = i < visible ? Visibility.Visible : Visibility.Collapsed;
+            overflow.Visibility = i < visible ? Visibility.Collapsed : Visibility.Visible;
+            if (i < visible)
+            {
+                ViewerToolbar.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+                Grid.SetColumn(button, i);
+            }
+        }
+        _mapToolbarMore.Visibility = visible < sizes.Length ? Visibility.Visible : Visibility.Collapsed;
+        if (visible < sizes.Length)
+        {
+            ViewerToolbar.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            Grid.SetColumn(_mapToolbarMore, visible);
         }
     }
     private void ApplyCommandMetadata(JsonElement metadata)
@@ -389,9 +469,17 @@ public sealed partial class MainWindow
     }
     private void BuildWorkspaceCommands()
     {
+        ArtworkEntryButton.Content = UiLanguage.Text("Artwork_Enter");
+        RegisterCommand("map.edit_city", CreateCityArtworkAsync, true, ArtworkEntryButton);
+        ArtworkEntryButton.Click += async (_, _) => await ExecuteCommandAsync("map.edit_city");
+        var previewSettingsCommand = new Button { Visibility = Visibility.Collapsed };
+        RegisterCommand("settings.preview", ShowPreviewSettingsAsync, false, previewSettingsCommand);
         OverviewButton.Click += (_, _) => ShowMapOverview();
         BuildingListButton.Click += (_, _) => _ = RunAsync(ShowBuildingListAsync);
         ViewerToolbar.SizeChanged += (_, _) => LayoutToolbar();
+        MapToolbarHeader.SizeChanged += (_, _) =>
+            ContextText.Visibility = MapToolbarHeader.ActualWidth < 900 ? Visibility.Collapsed : Visibility.Visible;
+        ConfigureImmersiveMode();
         SettingsPanel.LostFocus += (_, _) => Root.DispatcherQueue.TryEnqueue(ApplyPendingSettingsSnapshot);
         InspectorPanel.LostFocus += (_, _) => Root.DispatcherQueue.TryEnqueue(ApplyPendingSettingsSnapshot);
         InspectorClose.Click += (_, _) => { _inspectorOpen = false; UpdateScaleAndLayout(); };
@@ -399,6 +487,7 @@ public sealed partial class MainWindow
         SettingsToggle.Click += (_, _) => { _settingsOpen = !_settingsOpen; UpdateScaleAndLayout(); };
         var mapActions = new (string Id, string Label, IconElement Icon, Func<Task> Run, VirtualKey? Shortcut)[]
         {
+            ("map.edit_city", UiLanguage.Text("Artwork_Enter"), new SymbolIcon(Symbol.Edit), CreateCityArtworkAsync, null),
             ("map.rotate_counterclockwise", UiLanguage.Text("Map_RotateCounterclockwise"), RibbonIcons.Named("rotate"), () => RotateMapAsync(-90), null),
             ("map.rotate_clockwise", UiLanguage.Text("Map_RotateClockwise"), RibbonIcons.Named("rotate-clockwise"), () => RotateMapAsync(90), null),
             ("map.select_region", UiLanguage.Text("MainWindow_Commands_BuildWorkspaceCommands_840A04872A"), new SymbolIcon(Symbol.SelectAll), () => { _selectedRegionSource = "selection"; SendViewer(new { type = "beginSelection" }); return Task.CompletedTask; }, null),
@@ -414,28 +503,48 @@ public sealed partial class MainWindow
             content.Children.Add(new Viewbox { Child = icon, Width = 14, Height = 14 });
             content.Children.Add(new TextBlock { Text = label, FontSize = 12, VerticalAlignment = VerticalAlignment.Center });
             var button = new Button { Content = content, HorizontalAlignment = HorizontalAlignment.Left,
-                MinWidth = 0, MinHeight = 28, Padding = new Thickness(8, 3, 8, 3) };
+                MinWidth = 0, MinHeight = 32, Height = 32, Padding = new Thickness(8, 3, 8, 3) };
             Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(button, label);
             RegisterCommand(id, run, true, button, shortcut);
             button.Click += async (_, _) => await ExecuteCommandAsync(id);
             ViewerToolbar.Children.Add(button);
+            var overflow = new MenuFlyoutItem { Text = label };
+            RegisterCommand(id, run, true, overflow);
+            overflow.Click += async (_, _) => await ExecuteCommandAsync(id);
+            _mapToolbarActions.Add((button, overflow));
         }
+        var moreMenu = new MenuFlyout();
+        foreach (var (_, overflow) in _mapToolbarActions) moreMenu.Items.Add(overflow);
+        _mapToolbarMore = new Button { Content = new SymbolIcon(Symbol.More), Flyout = moreMenu,
+            Height = 32, MinHeight = 32, Padding = new Thickness(8, 3, 8, 3) };
+        Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(_mapToolbarMore, UiLanguage.Text("Workspace_MoreActions"));
+        ToolTipService.SetToolTip(_mapToolbarMore, UiLanguage.Text("Workspace_MoreActions"));
+        ViewerToolbar.Children.Add(_mapToolbarMore);
         var export = new Button { Visibility = Visibility.Collapsed };
-        RegisterCommand("map.export", () => ShowExportAsync(), true, export);
+        RegisterCommand("map.export", () => _context == "metro" ? ShowExportAsync() : ChooseExportAsync(), true, export);
         UpdateCommandStates();
     }
 
     private async Task RotateMapAsync(int delta)
     {
+        if (_cityArtwork && _artworkConfig is { } config && _artworkRotation is not null)
+        {
+            var next = (config.GetProperty("rotation").GetInt32() + delta + 360) % 360;
+            _artworkRotation.SelectedItem = _artworkRotation.Items.OfType<ComboBoxItem>().Single(item => (int)item.Tag == next);
+            await UpdateArtworkConfigurationAsync(); return;
+        }
         var state = await _engine.RequestAsync("getSnapshot");
         var current = state.GetProperty("output").GetProperty("rotation").GetInt32();
         var rotation = (current + delta + 360) % 360;
         await _engine.RequestAsync("setOutputOption", new { key = "rotation", value = rotation });
+        if (_compatibilityPreview) QueueCompatibilityPreview();
         await RefreshSnapshotAsync();
+        if (_cityArtwork) await RefreshCityArtworkAsync();
     }
 
     private void ApplySharedRotation()
     {
+        if (_cityArtwork) return;
         var rotation = _snapshot.GetProperty("output").GetProperty("rotation").GetInt32();
         SendViewer(new { type = "setOutputRotation", rotation });
         _exportWindow?.SetSharedRotation(rotation);

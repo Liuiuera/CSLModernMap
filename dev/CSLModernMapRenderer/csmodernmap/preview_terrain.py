@@ -9,6 +9,7 @@ from .layers.base import RenderContext
 from .layers.terrain_layer import TerrainLayer
 from .terrain import resolve_terrain_config
 from .style import Style
+from .performance import perf_span
 
 
 def raster_session_for_bounds(session, bounds):
@@ -75,7 +76,9 @@ class PreviewTerrainCompiler:
         ctx = RenderContext(image, ImageDraw.Draw(image), transform, Style(data),
                             world_x0=x0, world_z0=z0, world_x1=x1, world_z1=z1,
                             session=session)
-        TerrainLayer().render(ctx, session.document)
-        image.save(root / "terrain.png")
+        with perf_span(None, "preview.terrain.render"):
+            TerrainLayer().render(ctx, session.document)
+        with perf_span(None, "preview.terrain.png"):
+            image.save(root / "terrain.png")
         return [world_to_geo(x1, z1), world_to_geo(x1, z0),
                 world_to_geo(x0, z0), world_to_geo(x0, z1)]

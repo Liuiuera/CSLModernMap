@@ -1,6 +1,8 @@
 """将独立于主题的 CMM 数据编译为共享表面模型。"""
 from __future__ import annotations
 
+from ..performance import measured
+
 import hashlib
 import json
 from dataclasses import dataclass
@@ -70,6 +72,7 @@ def _update_array(digest, value: np.ndarray | None) -> None:
     digest.update(array.view(np.uint8))
 
 
+@measured("surface.fingerprint")
 def document_surface_fingerprint(document: MapDocument) -> str:
     """计算影响表面编译结果的数据指纹。"""
     digest = hashlib.sha256()
@@ -117,6 +120,7 @@ def surface_cache_key(document: MapDocument, options: SurfaceCompileOptions, *, 
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
+@measured("surface.resample_water")
 def _resample_scalar(document: MapDocument, transform: WorldTransform) -> np.ndarray | None:
     grid = document.terrain.water_depth
     source = grid.values
@@ -141,6 +145,7 @@ def _resample_scalar(document: MapDocument, transform: WorldTransform) -> np.nda
     return (top * (1.0 - fz)[:, None] + bottom * fz[:, None]).astype(np.float16)
 
 
+@measured("surface.buildings_distance")
 def _building_fields(document: MapDocument, transform: WorldTransform,
                      options: SurfaceCompileOptions) -> tuple[np.ndarray, np.ndarray]:
     got = _build_mask(
@@ -208,6 +213,7 @@ def _draw_polygon(draw: ImageDraw.ImageDraw, points: Iterable, transform: WorldT
         draw.polygon(pixels, fill=fill)
 
 
+@measured("surface.districts")
 def _district_field(document: MapDocument, transform: WorldTransform
                     ) -> tuple[np.ndarray, dict[int, int]]:
     image = Image.new("I", (transform.cols, transform.rows), 0)

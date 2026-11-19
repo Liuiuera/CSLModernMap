@@ -11,3 +11,10 @@ def isolated_user_data(monkeypatch, tmp_path):
     i18n.set_lang("zh-CN")
     yield
     i18n.set_lang(language)
+
+
+@pytest.fixture
+def modern_style():
+    from csmodernmap._paths import resource_dir
+    from csmodernmap.style import load_style
+    return load_style(str(resource_dir('styles') / 'modern.yaml'))

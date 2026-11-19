@@ -1,6 +1,7 @@
 # Chinese (Simplified, China) translations for CSLModernMap.
-# Copyright (C) 2026 CSLModernMap contributors
+# Copyright (C) 2026 ORGANIZATION
 # This file is distributed under the same license as the CSLModernMap project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
 #, fuzzy
 msgid ""
@@ -9,9 +10,9 @@ msgstr ""
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2026-10-13 12:51+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: CSLModernMap contributors\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_CN\n"
-"Language-Team: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -291,6 +292,9 @@ msgstr "清除本次会话错误"
 msgid "gui.diagnostics.context_label"
 msgstr "预览上下文"
 
+msgid "gui.diagnostics.enable_perf_log"
+msgstr "记录性能日志"
+
 msgid "gui.diagnostics.error_prefix"
 msgstr "预览：{error}"
 
@@ -308,6 +312,9 @@ msgstr "打开性能日志目录"
 
 msgid "gui.diagnostics.opened"
 msgstr "已打开"
+
+msgid "gui.diagnostics.perf_hint"
+msgstr "记录预览生成各阶段和各图层的耗时。"
 
 msgid "gui.diagnostics.preview_state"
 msgstr "预览状态"
@@ -332,6 +339,9 @@ msgstr "错误信息"
 
 msgid "gui.diagnostics.tab_map"
 msgstr "地图诊断"
+
+msgid "gui.diagnostics.tab_perf"
+msgstr "性能日志"
 
 msgid "gui.diagnostics.title"
 msgstr "诊断中心"
@@ -515,6 +525,15 @@ msgstr "范围大小必须是数字"
 
 msgid "gui.error.range_n_range"
 msgstr "范围大小必须在 {min}–{max} 之间"
+
+msgid "gui.error.runtime_pyside"
+msgstr "PySide6 版本为 {actual}，需要 {expected}。"
+
+msgid "gui.error.runtime_saribbon_missing"
+msgstr "找不到功能区组件：{path}"
+
+msgid "gui.error.runtime_saribbon_stale"
+msgstr "检测到旧版功能区组件，它会导致程序空闲时持续占用 CPU。"
 
 msgid "gui.error.task_submit_failed"
 msgstr "提交渲染任务失败：{error}"
@@ -714,6 +733,9 @@ msgstr "外部工程已生成：{path}"
 msgid "gui.external.preparing"
 msgstr "正在准备城市数据…"
 
+msgid "gui.external.qgis"
+msgstr "导出 QGIS 项目"
+
 msgid "gui.external.rmg"
 msgstr "导出 RMG 项目"
 
@@ -851,12 +873,6 @@ msgstr "字体、字号、颜色、描边按文字类别分开设：“建筑 / 
 msgid "gui.label_detail.title"
 msgstr "标签详细设置"
 
-msgid "gui.language.contribute"
-msgstr "欢迎在 GitHub 提交本地语言翻译，帮助改进。"
-
-msgid "gui.language.notice"
-msgstr "简体中文为原文，其他语言由 ChatGPT 自动翻译，可能存在不准确或不清晰的表达。"
-
 msgid "gui.layer.building"
 msgstr "建筑"
 
@@ -904,12 +920,6 @@ msgstr "Procedural Objects 自定义物件"
 
 msgid "gui.layer.poi"
 msgstr "地点图标"
-
-msgid "gui.layer.poi_area"
-msgstr "建筑区上色"
-
-msgid "gui.layer.poi_area_desc"
-msgstr "复用建筑轮廓和颜色，仅填充建筑内部，不绘制边框。可独立于建筑图层显示。"
 
 msgid "gui.layer.poi_desc"
 msgstr "医院、学校、车站等地点图标。图标上的文字在“文字标签”里单独控制。"
@@ -979,9 +989,6 @@ msgstr "公共交通"
 
 msgid "gui.layer.title.poi"
 msgstr "地点图标"
-
-msgid "gui.layer.title.poi_area"
-msgstr "建筑用途上色"
 
 msgid "gui.layer.title.procedural_objects"
 msgstr "自定义物体"
@@ -1795,39 +1802,6 @@ msgstr "校验"
 
 msgid "gui.poi_editor.yaml_title"
 msgstr "POI 映射管理"
-
-msgid "gui.poi_shared.all_games"
-msgstr "全部游戏"
-
-msgid "gui.poi_shared.close"
-msgstr "关闭"
-
-msgid "gui.poi_shared.display"
-msgstr "显示图标"
-
-msgid "gui.poi_shared.external_change"
-msgstr "映射已被外部修改，请关闭窗口后重新打开。"
-
-msgid "gui.poi_shared.image_search"
-msgstr "搜索图标"
-
-msgid "gui.poi_shared.no_image"
-msgstr "不显示图标"
-
-msgid "gui.poi_shared.restore"
-msgstr "恢复默认"
-
-msgid "gui.poi_shared.save"
-msgstr "保存"
-
-msgid "gui.poi_shared.saved"
-msgstr "已保存，所有地图共用此配置。"
-
-msgid "gui.poi_shared.search"
-msgstr "搜索名称或原生 ID"
-
-msgid "gui.poi_shared.unsaved"
-msgstr "保存未保存的修改？"
 
 msgid "gui.poi_style.color"
 msgstr "彩色"
@@ -3022,6 +2996,15 @@ msgstr "物件"
 msgid "gui.style_editor.field.public"
 msgstr "公共"
 
+msgid "gui.style_editor.field.quay"
+msgstr "护岸"
+
+msgid "gui.style_editor.field.quay_elevated"
+msgstr "高架护岸"
+
+msgid "gui.style_editor.field.quay_tunnel"
+msgstr "隧道护岸"
+
 msgid "gui.style_editor.field.publictransport"
 msgstr "公共交通"
 
@@ -3443,8 +3426,17 @@ msgstr "公共交通视图"
 msgid "gui.terrain_relief.unit.degree"
 msgstr "°"
 
+msgid "gui.theme.choice.bright"
+msgstr "明亮地图"
+
+msgid "gui.theme.choice.modern"
+msgstr "轻简现代"
+
 msgid "gui.theme.choice.dark"
 msgstr "暗黑风格"
+
+msgid "gui.theme.choice.warm_natural"
+msgstr "暖色自然"
 
 msgid "gui.theme.choice.vintage"
 msgstr "复古风格"
@@ -3644,9 +3636,6 @@ msgstr "站点和站名已按线路同步"
 msgid "gui.transit.view_summary"
 msgstr "公共交通视图：已选择 {count} 条线路；{state}"
 
-msgid "gui.transit.water_unverified"
-msgstr "水域未验证，已生成不含水面的示意图。"
-
 msgid "gui.transit_line.color.note"
 msgstr "线路颜色由存档线路定义；选择具体线路后可在此查看。"
 
@@ -3799,6 +3788,9 @@ msgstr "↑ 北"
 
 msgid "metro.annotation.scale_adaptive"
 msgstr "示意比例：1格≈{spacing}m；局部倍率 {low}–{high}×；强度 {strength}%；画布缩放 {zoom}×"
+
+msgid "metro.annotation.scale_debug"
+msgstr "比例调试：蓝=压缩，灰=基准，橙=舒展"
 
 msgid "metro.annotation.scale_fixed"
 msgstr "示意比例：1格≈{spacing}m；动态缩放关闭；画布缩放 {zoom}×"
@@ -4115,12 +4107,6 @@ msgstr "图标风格"
 msgid "style.poi.set.value.color"
 msgstr "彩色图标"
 
-msgid "style.poi.set.value.modern"
-msgstr "CSLModernMap"
-
-msgid "style.poi.set.value.modern-dark"
-msgstr "深色"
-
 msgid "style.poi.set.value.simple"
 msgstr "简约图标"
 
@@ -4184,9 +4170,6 @@ msgstr "显示桥梁"
 msgid "style.road.color.label"
 msgstr "普通道路"
 
-msgid "style.road.game_names.label"
-msgstr "使用游戏自动道路名"
-
 msgid "style.road.highway.label"
 msgstr "高速公路"
 
@@ -4234,6 +4217,15 @@ msgstr "特殊道路填色"
 
 msgid "style.road.level.special.width.label"
 msgstr "特殊道路宽度"
+
+msgid "style.road.level.quay.border.label"
+msgstr "护岸描边"
+
+msgid "style.road.level.quay.fill.label"
+msgstr "护岸颜色"
+
+msgid "style.road.level.quay.width.label"
+msgstr "护岸宽度比例"
 
 msgid "style.road.names.label"
 msgstr "显示道路名"
@@ -4283,6 +4275,9 @@ msgstr "植被颜色"
 msgid "style.terrain.mode.label"
 msgstr "地形表现"
 
+msgid "style.terrain.mode.value.shade"
+msgstr "连续过渡加光影"
+
 msgid "style.terrain.mode.value.simple"
 msgstr "分层设色"
 
@@ -4295,8 +4290,14 @@ msgstr "光照方向"
 msgid "style.theme.label"
 msgstr "地图主题"
 
+msgid "style.theme.value.bright"
+msgstr "明亮地图"
+
 msgid "style.theme.value.dark"
 msgstr "暗黑风格"
+
+msgid "style.theme.value.warm_natural"
+msgstr "暖色自然"
 
 msgid "style.theme.value.modern"
 msgstr "轻简现代"
@@ -5167,22 +5168,6 @@ msgstr "显示图标"
 msgid "ui.object_inspector.visibility_field.a98585871c"
 msgstr "显示名称"
 
-#: csmodernmap/object_inspector.py
-msgid "ui.poi_density.extremely_dense"
-msgstr "极多"
-
-#: csmodernmap/object_inspector.py
-msgid "ui.poi_density.extremely_sparse"
-msgstr "极少"
-
-#: csmodernmap/object_inspector.py
-msgid "ui.poi_density.very_dense"
-msgstr "很多"
-
-#: csmodernmap/object_inspector.py
-msgid "ui.poi_density.very_sparse"
-msgstr "很少"
-
 #: dev/CSLModernMapRenderer/csmodernmap/web_export_v2.py:151
 msgid "ui.web_export_v2._payload_from_bundle.cea7853717"
 msgstr "打包场景数据"
@@ -5256,6 +5241,10 @@ msgid "ui.winui_engine._start_external_project_export.fd1e2dca12"
 msgstr "请选择导出目录"
 
 #: dev/CSLModernMapRenderer/csmodernmap/winui_engine.py:1435
+msgid "ui.winui_engine.dispatch.115c909476"
+msgstr "performanceDiagnostics 必须是布尔值"
+
+#: dev/CSLModernMapRenderer/csmodernmap/winui_engine.py:1760
 msgid "ui.winui_engine.dispatch.19bb4eb8a9"
 msgstr "外部工程写入不能中途取消"
 
@@ -5373,14 +5362,120 @@ msgstr "存档"
 msgid "watermark.traffic_at"
 msgstr "路况"
 
+msgid "gui.language.notice"
+msgstr "简体中文为原文，其他语言由 ChatGPT 自动翻译，可能存在不准确或不清晰的表达。"
+
+msgid "gui.language.contribute"
+msgstr "欢迎在 GitHub 提交本地语言翻译，帮助改进。"
+
 msgid "gui.transit.water_degraded"
 msgstr "水域已保留，但部分岸线美化未完成。"
 
 msgid "gui.transit.rmp_water_omitted"
 msgstr "RMP 水域组件 {component} 未能转换，已保留站线、设施及其他可用水域：{reason}"
 
+msgid "gui.transit.water_unverified"
+msgstr "水域未验证，已生成不含水面的示意图。"
+
+#: csmodernmap/object_inspector.py
+msgid "ui.poi_density.extremely_sparse"
+msgstr "极少"
+
+#: csmodernmap/object_inspector.py
+msgid "ui.poi_density.very_sparse"
+msgstr "很少"
+
+#: csmodernmap/object_inspector.py
+msgid "ui.poi_density.very_dense"
+msgstr "很多"
+
+#: csmodernmap/object_inspector.py
+msgid "ui.poi_density.extremely_dense"
+msgstr "极多"
+
+msgid "style.road.game_names.label"
+msgstr "使用游戏自动道路名"
+
+msgid "gui.layer.poi_area"
+msgstr "建筑区上色"
+
+msgid "gui.layer.poi_area_desc"
+msgstr "复用建筑轮廓和颜色，仅填充建筑内部，不绘制边框。可独立于建筑图层显示。"
+
+msgid "gui.layer.title.poi_area"
+msgstr "建筑用途上色"
+
+msgid "gui.poi_shared.all_games"
+msgstr "全部游戏"
+
+msgid "gui.poi_shared.search"
+msgstr "搜索名称或原生 ID"
+
+msgid "gui.poi_shared.display"
+msgstr "显示图标"
+
+msgid "gui.poi_shared.image_search"
+msgstr "搜索图标"
+
+msgid "gui.poi_shared.restore"
+msgstr "恢复默认"
+
+msgid "gui.poi_shared.save"
+msgstr "保存"
+
+msgid "gui.poi_shared.close"
+msgstr "关闭"
+
+msgid "gui.poi_shared.no_image"
+msgstr "不显示图标"
+
+msgid "gui.poi_shared.external_change"
+msgstr "映射已被外部修改，请关闭窗口后重新打开。"
+
+msgid "gui.poi_shared.saved"
+msgstr "已保存，所有地图共用此配置。"
+
+msgid "gui.poi_shared.unsaved"
+msgstr "保存未保存的修改？"
+
+msgid "style.poi.set.value.modern"
+msgstr "浅色"
+
+msgid "style.poi.set.value.modern-dark"
+msgstr "深色"
+
 msgid "ui.export.possible_memory_exhaustion"
 msgstr "可能是内存不足，渲染进程已意外退出。如果游戏仍在运行，请先关闭游戏，并关闭其他占用内存较多的程序，或减小导出尺寸后重试。"
+
+msgid "ui.failure.internal"
+msgstr "程序发生异常，可以将此错误反馈给作者"
+
+msgid "ui.failure.permission"
+msgstr "无法访问所需文件，请检查文件或文件夹的访问权限后重试"
+
+msgid "ui.failure.missing_file"
+msgstr "找不到所需文件，请确认文件仍在原位置后重试"
+
+msgid "ui.failure.memory"
+msgstr "内存分配失败，请减小输出尺寸或关闭占用内存的程序后重试"
+
+msgid "ui.failure.operation.metro"
+msgstr "地铁示意图生成失败"
+
+msgid "ui.failure.operation.preview"
+msgstr "地图预览生成失败"
+
+msgid "ui.failure.operation.export"
+msgstr "地图导出失败"
+
+msgid "ui.failure.operation.open"
+msgstr "地图打开失败"
+
+msgid "ui.failure.operation.operation"
+msgstr "操作失败"
+
+msgid "ui.failure.city_json"
+msgstr "城市文件的 JSON 格式无效，请从游戏重新导出；若仍失败，可将错误详情反馈给作者"
 
 msgid "gui.progress.convert_data"
 msgstr "正在转换地图数据…"
@@ -5529,161 +5624,324 @@ msgstr "CSLMAP 是兼容格式，可能不支持部分新特性和功能。建�
 msgid "gui.file.unversioned_xml"
 msgstr "此 CSLMAP 文件未标注版本，已按兼容格式打开，可能不支持部分新特性和功能。建议使用 CMM 格式导出地图。"
 
-msgid "ui.failure.internal"
-msgstr "程序发生异常，可以将此错误反馈给作者"
-
-msgid "ui.failure.permission"
-msgstr "无法访问所需文件，请检查文件或文件夹的访问权限后重试"
-
-msgid "ui.failure.missing_file"
-msgstr "找不到所需文件，请确认文件仍在原位置后重试"
-
-msgid "ui.failure.memory"
-msgstr "内存分配失败，请减小输出尺寸或关闭占用内存的程序后重试"
-
-msgid "ui.failure.operation.metro"
-msgstr "地铁示意图生成失败"
-
-msgid "ui.failure.operation.preview"
-msgstr "地图预览生成失败"
-
-msgid "ui.failure.operation.export"
-msgstr "地图导出失败"
-
-msgid "ui.failure.operation.open"
-msgstr "地图打开失败"
-
-msgid "ui.failure.operation.operation"
-msgstr "操作失败"
-
-msgid "ui.failure.city_json"
-msgstr "城市文件的 JSON 格式无效，请从游戏重新导出；若仍失败，可将错误详情反馈给作者"
-
-msgid "style.road.level.quay.width.label"
-msgstr "护岸宽度比例"
-
-msgid "gui.satellite.unavailable"
-msgstr "当前地图没有卫星影像"
-
-msgid "gui.style_editor.field.opacity"
-msgstr "道路不透明度"
+msgid "gui.layer.satellite"
+msgstr "卫星影像"
 
 msgid "gui.layer.title.satellite"
 msgstr "卫星影像"
 
-msgid "style.satellite.preset.value.combined"
-msgstr "组合成像"
-
-msgid "gui.style_editor.field.stroke_blur"
-msgstr "光晕柔化"
-
-msgid "satellite_texture_limit"
-msgstr "卫星影像尺寸 {size} 超过设备纹理限制 {limit}"
-
-msgid "gui.theme.error.write"
-msgstr "无法写入用户设置。"
-
-msgid "style.terrain.mode.value.continuous"
-msgstr "连续过渡"
-
-msgid "style.satellite.preset.desc"
-msgstr "仅处理卫星底图，道路、POI、文字等叠加内容不受影响。"
-
-msgid "style.satellite.preset.value.resolution"
-msgstr "模糊与采样损失"
-
-msgid "gui.theme.choice.modern"
-msgstr "轻简现代"
-
-msgid "gui.theme.copy"
-msgstr "副本"
-
-msgid "style.road.level.quay.border.label"
-msgstr "护岸描边"
-
-msgid "gui.satellite.filtering"
-msgstr "正在处理卫星影像质感…"
+msgid "gui.satellite.composing"
+msgstr "正在合成卫星影像…"
 
 msgid "gui.satellite.ready"
 msgstr "卫星影像已就绪"
 
-msgid "gui.style_editor.field.quay"
-msgstr "护岸"
+msgid "gui.satellite.unavailable"
+msgstr "当前地图没有卫星影像"
 
-msgid "gui.theme.error.builtin"
-msgstr "不能覆盖内置主题文件。"
+msgid "satellite_texture_limit"
+msgstr "卫星影像尺寸 {size} 超过设备纹理限制 {limit}"
 
-msgid "gui.theme.choice.satellite"
-msgstr "卫星暖色"
+msgid "style.satellite.preset.label"
+msgstr "影像质感"
 
-msgid "gui.theme.error.duplicate"
-msgstr "该主题名称已存在。"
-
-msgid "gui.style_editor.desc.labels.stroke_blur"
-msgstr "柔化文字周围的光晕，保持字面清晰。"
-
-msgid "style.satellite.intensity.label"
-msgstr "质感强度（%）"
-
-msgid "style.road.level.quay.fill.label"
-msgstr "护岸颜色"
-
-msgid "gui.satellite.composing"
-msgstr "正在合成卫星影像…"
-
-msgid "gui.layer.satellite"
-msgstr "卫星影像"
-
-msgid "gui.theme.error.file"
-msgstr "请选择 YAML 主题文件。"
-
-msgid "style.satellite.preset.value.grain"
-msgstr "感光颗粒"
-
-msgid "gui.theme.error.name"
-msgstr "名称须为 1–64 个字符，不能包含控制字符。"
-
-msgid "style.satellite.preset.value.haze"
-msgstr "薄雾与散射"
-
-msgid "style.theme.value.warm_natural"
-msgstr "暖色自然"
-
-msgid "gui.theme.legacy"
-msgstr "旧版"
-
-msgid "style.satellite.preset.value.distortion"
-msgstr "成像失真"
-
-msgid "gui.theme.choice.warm_natural"
-msgstr "暖色自然"
-
-msgid "gui.theme.choice.bright"
-msgstr "明亮地图"
-
-msgid "gui.theme.personal"
-msgstr "我的主题"
-
-msgid "style.theme.value.bright"
-msgstr "明亮地图"
-
-msgid "style.terrain.mode.value.shade"
-msgstr "连续过渡加光影"
+msgid "style.satellite.preset.desc"
+msgstr "仅处理卫星底图，道路、POI、文字等叠加内容不受影响。"
 
 msgid "style.satellite.preset.value.original"
 msgstr "原图"
 
-msgid "gui.style_editor.desc.roads.opacity"
-msgstr "道路叠加的不透明度：0 为完全透明，1 为不透明。"
+msgid "style.satellite.preset.value.haze"
+msgstr "薄雾与散射"
+
+msgid "style.satellite.preset.value.grain"
+msgstr "感光颗粒"
+
+msgid "style.satellite.preset.value.resolution"
+msgstr "模糊与采样损失"
+
+msgid "style.satellite.preset.value.distortion"
+msgstr "成像失真"
+
+msgid "style.satellite.preset.value.combined"
+msgstr "组合成像"
+
+msgid "style.satellite.intensity.label"
+msgstr "质感强度（%）"
 
 msgid "style.satellite.intensity.desc"
 msgstr "0 恢复原图，100 使用完整预设效果。"
 
-msgid "gui.style_editor.field.quay_elevated"
-msgstr "高架护岸"
+msgid "gui.satellite.filtering"
+msgstr "正在处理卫星影像质感…"
 
-msgid "gui.style_editor.field.quay_tunnel"
-msgstr "隧道护岸"
+msgid "gui.theme.choice.satellite"
+msgstr "卫星暖色"
 
-msgid "style.satellite.preset.label"
-msgstr "影像质感"
+msgid "gui.style_editor.field.opacity"
+msgstr "道路不透明度"
+
+msgid "gui.style_editor.field.stroke_blur"
+msgstr "光晕柔化"
+
+msgid "gui.style_editor.desc.roads.opacity"
+msgstr "道路叠加的不透明度：0 为完全透明，1 为不透明。"
+
+msgid "gui.style_editor.desc.labels.stroke_blur"
+msgstr "柔化文字周围的光晕，保持字面清晰。"
+
+msgid "gui.theme.personal"
+msgstr "我的主题"
+
+msgid "gui.theme.copy"
+msgstr "副本"
+
+msgid "gui.theme.legacy"
+msgstr "旧版"
+
+msgid "gui.theme.error.duplicate"
+msgstr "该主题名称已存在。"
+
+msgid "gui.theme.error.file"
+msgstr "请选择 YAML 主题文件。"
+
+msgid "gui.theme.error.builtin"
+msgstr "不能覆盖内置主题文件。"
+
+msgid "gui.theme.error.write"
+msgstr "无法写入用户设置。"
+
+msgid "gui.theme.error.name"
+msgstr "名称须为 1–64 个字符，不能包含控制字符。"
+
+msgid "style.terrain.mode.value.continuous"
+msgstr "连续过渡"
+
+msgid "style.satellite.quality.label"
+msgstr "图像质量"
+
+msgid "style.satellite.quality.desc"
+msgstr "卫星图质量会影响加载和渲染性能、内存占用及导出文件大小。降低质量可减少资源消耗，但放大后的细节会减少。"
+
+msgid "style.satellite.quality.value.smooth"
+msgstr "流畅（最长边 2048 像素）"
+
+msgid "style.satellite.quality.value.standard"
+msgstr "标准（最长边 4096 像素）"
+
+msgid "style.satellite.quality.value.original"
+msgstr "原始（原图分辨率）"
+
+
+msgid "gui.satellite.guidance.title"
+msgstr "卫星地图显示建议"
+
+msgid "gui.satellite.guidance.body"
+msgstr "建议搭配“卫星暖色”主题，并开启道路、图标和文字图层。\n\n铁路、公共交通和路况图层可按需要开启，应用推荐设置会保留它们的当前选择。\n\n建筑、地形、水域、建成区、用地类型、POI 足迹和 PO 对象可能遮挡卫星影像，不建议开启。应用推荐设置会关闭这些图层。"
+
+msgid "gui.satellite.guidance.apply"
+msgstr "应用推荐设置"
+
+msgid "gui.satellite.guidance.keep"
+msgstr "保持当前设置"
+
+msgid "gui.theme.choice.urban_white"
+msgstr "城市白图"
+
+msgid "gui.transit_view.label_style"
+msgstr "标签样式"
+
+msgid "gui.transit_view.label_style.classic"
+msgstr "原有胶囊"
+
+msgid "gui.transit_view.label_style.side-sign"
+msgstr "白底色签"
+
+msgid "gui.transit_view.label_style.split-sign"
+msgstr "图标分段"
+
+msgid "gui.transit_view.label_style.solid-sign"
+msgstr "轻量实色"
+
+msgid "gui.transit_view.label_style.frame-sign"
+msgstr "细框路牌"
+
+msgid "gui.transit_view.label_style.underline-sign"
+msgstr "下沿色带"
+
+msgid "style.transport.fit_preview.label"
+msgstr "站点与线路标签大小适应预览"
+
+msgid "style.transport.fit_preview.desc"
+msgstr "按当前交互预览适应全图时的大小输出公共交通 PNG 的站点与线路标签。其他图标和名称保持原有尺寸规则，标签密度可能改变。无交互预览时沿用原有尺寸。"
+
+msgid "gui.file.records_skipped"
+msgstr "{count} 个项目被跳过：解析失败。"
+
+msgid "gui.file.dependencies_skipped"
+msgstr "另有 {count} 个关联项目因缺少必要数据被跳过。"
+
+msgid "gui.file.invalid_terrain"
+msgstr "地图地形数据无效或不完整，无法安全读取。请从游戏中重新导出地图。"
+
+msgid "gui.style_editor.field.line_width"
+msgstr "无轮廓时的线宽（px）"
+
+msgid "gui.style_editor.field.footprint_scale"
+msgstr "轮廓宽度倍率"
+
+msgid "gui.style_editor.desc.road_footprint"
+msgstr "倍率 1 保留该类道路原有的足迹宽度。元素大小只影响无足迹道路的线宽和道路描边。"
+
+msgid "gui.file.preview_details_skipped"
+msgstr "地图细节加载失败。可继续查看基础地图，也可刷新预览重试。"
+
+msgid "gui.file.satellite_skipped"
+msgstr "卫星图不可用。你仍可查看和导出普通地图。如需卫星图，请在游戏中重新导出。"
+
+msgid "style.transport.diameter.label"
+msgstr "站点直径 (px)"
+
+msgid "style.transport.diameter.desc"
+msgstr "所有站点使用像素直径乘元素缩放，描边向内绘制。"
+
+msgid "style.road.level.highway.line_width.label"
+msgstr "无足迹道路宽度 (px)"
+
+msgid "style.road.level.highway.line_width.desc"
+msgstr "按元素缩放计算实际大小。"
+
+msgid "style.road.level.highway.footprint_scale.label"
+msgstr "足迹宽度倍率"
+
+msgid "style.road.level.highway.footprint_scale.desc"
+msgstr "倍率 1 保留该类道路原有的足迹宽度。元素大小只影响无足迹道路的线宽和道路描边。"
+
+msgid "style.road.level.highway.border_width.label"
+msgstr "描边宽度 (px)"
+
+msgid "style.road.level.highway.border_width.desc"
+msgstr "按元素缩放计算实际大小。"
+
+msgid "style.road.level.main.line_width.label"
+msgstr "无足迹道路宽度 (px)"
+
+msgid "style.road.level.main.line_width.desc"
+msgstr "按元素缩放计算实际大小。"
+
+msgid "style.road.level.main.footprint_scale.label"
+msgstr "足迹宽度倍率"
+
+msgid "style.road.level.main.footprint_scale.desc"
+msgstr "倍率 1 保留该类道路原有的足迹宽度。元素大小只影响无足迹道路的线宽和道路描边。"
+
+msgid "style.road.level.main.border_width.label"
+msgstr "描边宽度 (px)"
+
+msgid "style.road.level.main.border_width.desc"
+msgstr "按元素缩放计算实际大小。"
+
+msgid "style.road.level.branch.line_width.label"
+msgstr "无足迹道路宽度 (px)"
+
+msgid "style.road.level.branch.line_width.desc"
+msgstr "按元素缩放计算实际大小。"
+
+msgid "style.road.level.branch.footprint_scale.label"
+msgstr "足迹宽度倍率"
+
+msgid "style.road.level.branch.footprint_scale.desc"
+msgstr "倍率 1 保留该类道路原有的足迹宽度。元素大小只影响无足迹道路的线宽和道路描边。"
+
+msgid "style.road.level.branch.border_width.label"
+msgstr "描边宽度 (px)"
+
+msgid "style.road.level.branch.border_width.desc"
+msgstr "按元素缩放计算实际大小。"
+
+msgid "style.road.level.special.line_width.label"
+msgstr "无足迹道路宽度 (px)"
+
+msgid "style.road.level.special.line_width.desc"
+msgstr "按元素缩放计算实际大小。"
+
+msgid "style.road.level.special.footprint_scale.label"
+msgstr "足迹宽度倍率"
+
+msgid "style.road.level.special.footprint_scale.desc"
+msgstr "倍率 1 保留该类道路原有的足迹宽度。元素大小只影响无足迹道路的线宽和道路描边。"
+
+msgid "style.road.level.special.border_width.label"
+msgstr "描边宽度 (px)"
+
+msgid "style.road.level.special.border_width.desc"
+msgstr "按元素缩放计算实际大小。"
+
+msgid "style.road.level.quay.line_width.label"
+msgstr "无足迹道路宽度 (px)"
+
+msgid "style.road.level.quay.line_width.desc"
+msgstr "按元素缩放计算实际大小。"
+
+msgid "style.road.level.quay.footprint_scale.label"
+msgstr "足迹宽度倍率"
+
+msgid "style.road.level.quay.footprint_scale.desc"
+msgstr "倍率 1 保留该类道路原有的足迹宽度。元素大小只影响无足迹道路的线宽和道路描边。"
+
+msgid "style.road.level.quay.border_width.label"
+msgstr "描边宽度 (px)"
+
+msgid "style.road.level.quay.border_width.desc"
+msgstr "按元素缩放计算实际大小。"
+
+msgid "style.road.level.beautification.line_width.label"
+msgstr "无足迹道路宽度 (px)"
+
+msgid "style.road.level.beautification.line_width.desc"
+msgstr "按元素缩放计算实际大小。"
+
+msgid "style.road.level.beautification.footprint_scale.label"
+msgstr "足迹宽度倍率"
+
+msgid "style.road.level.beautification.footprint_scale.desc"
+msgstr "倍率 1 保留该类道路原有的足迹宽度。元素大小只影响无足迹道路的线宽和道路描边。"
+
+msgid "style.road.level.beautification.border_width.label"
+msgstr "描边宽度 (px)"
+
+msgid "style.road.level.beautification.border_width.desc"
+msgstr "按元素缩放计算实际大小。"
+
+msgid "style.poi.name_stroke_width.label"
+msgstr "名称描边（px）"
+
+msgid "style.poi.name_stroke_width.desc"
+msgstr "名称描边的基础像素宽度，乘元素缩放。"
+
+msgid "gui.style_editor.field.name_stroke_width"
+msgstr "名称描边宽度"
+
+msgid "gui.style_editor.desc.built_area.cell_meters"
+msgstr "计算边界时每个网格的边长（米）"
+
+msgid "gui.style_editor.desc.built_area.contour_upscale"
+msgstr "边界轮廓的分辨率倍率"
+
+msgid "gui.style_editor.desc.built_area.smooth_blur"
+msgstr "边界模糊半径"
+
+msgid "gui.style_editor.desc.built_area.smooth_iters"
+msgstr "边界平滑处理的次数"
+
+msgid "gui.rmp.progress.model"
+msgstr "准备交通模型"
+
+msgid "gui.rmp.progress.layout"
+msgstr "生成示意布局与水域"
+
+msgid "gui.rmp.progress.facilities"
+msgstr "整理可编辑站线与设施"
+
+msgid "gui.rmp.progress.ready"
+msgstr "工程草稿已生成"

@@ -1,0 +1,54 @@
+<UserControl
+    x:Class="CSLModernMapWinUI.DraftWelcomeMap"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    IsHitTestVisible="False" AutomationProperties.AccessibilityView="Raw">
+    <Viewbox Stretch="Uniform" MaxHeight="180">
+        <Grid Width="238" Height="151" CornerRadius="4">
+            <Canvas Width="238" Height="151" Background="#F2F0E6">
+                <Canvas.Clip><RectangleGeometry Rect="0,0,238,151"/></Canvas.Clip>
+                <Canvas Width="238" Height="151" Background="#F2F0E6">
+                    <Canvas.RenderTransform><ScaleTransform x:Name="Camera" CenterX="119" CenterY="76"/></Canvas.RenderTransform>
+                    <!-- 轻简现代内置主题的水域、林地、建筑和道路。 -->
+                    <Path Fill="#F1F0EB" Data="M38 151 Q79 130 73 94 T102 0 H238 V151Z"/>
+                    <Path Fill="#8DDBF6" Stroke="#72C3E2" Data="M-4 -4 H86 Q90 13 68 32 T53 73 Q64 102 30 118 T2 156 H-4Z"/>
+                    <Path Fill="#BFE89D" Data="M137 -2 H221 L186 32 Q182 38 171 39 L136 41 Q130 38 132 30Z"/>
+                    <Path Fill="#DADCD5" Stroke="#B7BDB2" StrokeThickness="0.8"
+                        Data="M98 9 L119 11 116 31 95 29Z M87 39 L114 42 111 57 84 54Z M149 49 L165 47 167 60 150 62Z M177 46 L201 42 203 55 179 60Z M80 91 L103 92 101 107 91 107 90 101 78 100Z M71 116 L100 118 98 136 69 132Z M124 93 L143 90 146 108 127 111Z M153 87 L174 82 177 97 156 103Z M184 82 L215 74 219 90 187 98Z M133 125 L155 121 158 139 136 144Z M172 113 L192 108 199 132 178 137Z"/>
+                    <Path Stroke="#C4C8C0" StrokeThickness="4" Data="M132 -4 L118 59 Q114 72 117 87 L124 155 M71 147 Q77 125 106 120 L244 87"/>
+                    <Path Stroke="White" StrokeThickness="2.9" Data="M132 -4 L118 59 Q114 72 117 87 L124 155 M71 147 Q77 125 106 120 L244 87"/>
+                    <Path Stroke="#ADB6C2" StrokeThickness="8" Data="M-6 73 Q33 73 71 78 T151 72 L245 49"/>
+                    <Path Stroke="#D1D7DF" StrokeThickness="5.3" Data="M-6 73 Q33 73 71 78 T151 72 L245 49"/>
+                    <Canvas x:Name="Station" Canvas.Left="88" Canvas.Top="77">
+                        <Ellipse Width="9" Height="9" Canvas.Left="-4.5" Canvas.Top="-4.5" Fill="White" Stroke="#2F6FA3" StrokeThickness="2"/>
+                        <TextBlock x:Name="StationName" Canvas.Left="6" Canvas.Top="-19" Foreground="#2F6FA3" FontSize="12" FontWeight="SemiBold"/>
+                    </Canvas>
+                    <Canvas x:Name="Park" Canvas.Left="128" Canvas.Top="52">
+                        <Ellipse Width="7" Height="7" Canvas.Left="-3.5" Canvas.Top="-3.5" Fill="#557D52" Stroke="White"/>
+                        <TextBlock x:Name="ParkName" Canvas.Left="6" Canvas.Top="-9" Foreground="#557D52" FontSize="12" FontWeight="SemiBold"/>
+                    </Canvas>
+                    <Canvas x:Name="Shop" Canvas.Left="126" Canvas.Top="103">
+                        <Rectangle Width="7" Height="7" Canvas.Left="-3.5" Canvas.Top="-3.5" Fill="#596574" Stroke="White"/>
+                        <TextBlock x:Name="ShopName" Canvas.Left="6" Canvas.Top="-9" Foreground="#596574" FontSize="12" FontWeight="SemiBold"/>
+                    </Canvas>
+                    <Canvas x:Name="Pier" Canvas.Left="67" Canvas.Top="90">
+                        <Ellipse Width="7" Height="7" Canvas.Left="-3.5" Canvas.Top="-3.5" Fill="#2F6FA3" Stroke="White"/>
+                        <TextBlock x:Name="PierName" Canvas.Left="6" Canvas.Top="-9" Foreground="#2F6FA3" FontSize="12" FontWeight="SemiBold"/>
+                    </Canvas>
+                    <Canvas x:Name="Cafe" Canvas.Left="80" Canvas.Top="52">
+                        <Rectangle Width="7" Height="7" Canvas.Left="-3.5" Canvas.Top="-3.5" Fill="#75614D" Stroke="White"/>
+                        <TextBlock x:Name="CafeName" Canvas.Left="6" Canvas.Top="-9" Foreground="#75614D" FontSize="12" FontWeight="SemiBold"/>
+                    </Canvas>
+                    <Canvas x:Name="Market" Canvas.Left="139" Canvas.Top="68">
+                        <Rectangle Width="7" Height="7" Canvas.Left="-3.5" Canvas.Top="-3.5" Fill="#75614D" Stroke="White"/>
+                        <TextBlock x:Name="MarketName" Canvas.Left="6" Canvas.Top="-9" Foreground="#75614D" FontSize="12" FontWeight="SemiBold"/>
+                    </Canvas>
+                    <Canvas x:Name="Clinic" Canvas.Left="106" Canvas.Top="90">
+                        <Rectangle Width="7" Height="7" Canvas.Left="-3.5" Canvas.Top="-3.5" Fill="#8B5959" Stroke="White"/>
+                        <TextBlock x:Name="ClinicName" Canvas.Left="6" Canvas.Top="-9" Foreground="#8B5959" FontSize="12" FontWeight="SemiBold"/>
+                    </Canvas>
+                </Canvas>
+            </Canvas>
+        </Grid>
+    </Viewbox>
+</UserControl>

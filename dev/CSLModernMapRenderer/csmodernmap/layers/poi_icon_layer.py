@@ -88,6 +88,7 @@ class _Occupancy:
     """供两个 POI 子图层共用的像素空间碰撞索引。"""
     def __init__(self):
         self.cells = {}
+        self.identities = {}
 
     def _keys(self, box):
         x0, y0, x1, y1 = box
@@ -95,9 +96,16 @@ class _Occupancy:
             for y in range(math.floor(y0 / 64), math.floor(y1 / 64) + 1):
                 yield x, y
 
-    def add(self, box):
+    def add(self, box, object_id=None):
+        if object_id is not None:
+            self.identities[id(box)] = object_id
         for key in self._keys(box):
             self.cells.setdefault(key, []).append(box)
+
+    def conflicts(self, box):
+        neighbors = {id(b): b for key in self._keys(box) for b in self.cells.get(key, ())}
+        return [{'id': self.identities.get(key), 'box': b} for key, b in neighbors.items()
+                if box[0] < b[2] and b[0] < box[2] and box[1] < b[3] and b[1] < box[3]]
 
     def overlaps(self, box):
         return any(box[0] < b[2] and b[0] < box[2] and box[1] < b[3] and b[1] < box[3]
@@ -111,10 +119,8 @@ class _Occupancy:
                    for b in neighbors.values())
 
 
-def _resolve_size(val, render_scale: float) -> float:
-    if isinstance(val, dict):
-        return val.get("fixed", 0.0) + val.get("scaled", 0.0) * render_scale
-    return float(val)
+def _resolve_size(val, raster_scale=1.0) -> float:
+    return float(val) * raster_scale
 
 
 def _active_profile(cfg: dict) -> dict:
@@ -152,7 +158,6 @@ class POIIconLayer(Layer):
         self._icon_sources = {}
         self._color_cache = {}         # icon_id -> 主色 #RRGGBB
         self._font_cache = {}          # 字体尺寸到 ImageFont 的缓存。
-        self._transit_view_scale = 1.0
         self._prepared_catalogs = {}
 
     def supports(self, document) -> bool:
@@ -208,7 +213,10 @@ class POIIconLayer(Layer):
         if catalog is None:
             catalog = (shared or {}).get(key)
         if catalog is None:
-            if override_path:
+            session = getattr(self.ctx, 'session', None)
+            if session is not None:
+                catalog = session.poi_catalog(params, override_path=override_path)
+            elif override_path:
                 catalog = produce_poi_catalog(
                     mapdata, params, override_path=override_path)
             else:
@@ -329,8 +337,10 @@ class POIIconLayer(Layer):
         self._raster_scale = 1.0
         self._collision_scale = 1.0
         self._static_png_profile = False
-        self._transit_view_scale = 1.0
         self._poi_cfg = {"show_name": True}
+        if ctx.shared.get('artwork_capture') is not None:
+            self._active_profile = _active_profile(ctx.style.get('poi_icons', {}))
+            self._overlap_avoidance = bool(self._active_profile.get('overlap_avoidance', True))
         self._occupancy = ctx.shared.setdefault("poi_name_occupancy", _Occupancy())
         self._defer_names = True
         self._pending_names = []
@@ -339,7 +349,11 @@ class POIIconLayer(Layer):
         for item in items:
             self._draw_icon(item, 0, False, 0)
         for args in self._pending_names:
-            self._draw_icon_name(*args)
+            capture = ctx.shared.get('artwork_capture')
+            if capture is not None:
+                capture.station_names.append((self, args))
+            else:
+                self._draw_icon_name(*args)
 
     def render(self, ctx: RenderContext, document) -> None:
         """筛选并布局当前画布中的 POI 图标与名称。"""
@@ -359,6 +373,14 @@ class POIIconLayer(Layer):
                 child._defer_names = True
                 child._pending_names = []
                 child.render(ctx, document)
+            capture = ctx.shared.get('artwork_capture')
+            if capture is not None:
+                for draw_labels in capture.labels:
+                    draw_labels()
+                for owner, args in capture.station_names:
+                    owner._draw_icon_name(*args)
+                capture.labels.clear()
+                capture.station_names.clear()
             for child in self._children:
                 for args in child._pending_names:
                     child._draw_icon_name(*args)
@@ -407,29 +429,14 @@ class POIIconLayer(Layer):
         self.render_scale = ctx.zoom
 
         transit_only = self.transit_only
-        if transit_only:
-            try:
-                transit_scale = float(cfg.get("transit_view_scale", 1.15))
-            except (TypeError, ValueError):
-                transit_scale = 1.15
-            # 公共交通视图相对常规地图至少略大一档，同时限制异常主题值。
-            self._transit_view_scale = max(1.05, min(transit_scale, 2.0))
-        else:
-            self._transit_view_scale = 1.0
-
-        size_zoom = ctx.final_zoom if static_profile else self.render_scale
+        size_zoom = 1.0 if static_profile else self._raster_scale
         raster_scale = self._raster_scale if static_profile else 1.0
-        icon_size_value = (_resolve_size(cfg.get("icon_size", 22), size_zoom)
-                           * self._transit_view_scale)
-        icon_max_size = cfg.get("icon_max_size")
-        if isinstance(icon_max_size, (int, float)):
-            icon_size_value = min(icon_size_value,
-                                  float(icon_max_size) * self._transit_view_scale)
+        icon_size_value = _resolve_size(cfg['icon_size'], size_zoom)
         self._logical_icon_size = icon_size_value if static_profile else None
         icon_size = max(int(round(icon_size_value * raster_scale)), 1)
         bg_circle = cfg.get("bg_circle", True)
         bg_circle_size_value = (_resolve_size(cfg.get("bg_circle_size", 30), size_zoom)
-                                * self._transit_view_scale)
+                               )
         self._logical_bg_circle_size = bg_circle_size_value if static_profile else None
         bg_circle_size = max(int(round(bg_circle_size_value * raster_scale)), 1)
         min_priority = int(cfg.get("min_priority", 15))
@@ -451,7 +458,15 @@ class POIIconLayer(Layer):
 
         # 实体身份判定与屏幕密度判定分开进行。
         icon_candidates = [poi for poi in pois if not self.icon_map.is_hidden(poi.icon_id)]
+        if ctx.shared.get('artwork_capture') is not None:
+            icon_candidates.sort(key=lambda p: p.poi_id)
         selected = self._visual_cluster(icon_candidates, cfg)
+        capture = ctx.shared.get('artwork_capture')
+        if capture is not None:
+            selected_ids = {poi.poi_id for poi in selected}
+            capture.diagnostics['facilitySelection'].extend(
+                {'id': poi.poi_id, 'reason': 'selected' if poi.poi_id in selected_ids else 'density',
+                 'iconStatus': self.icon_map.icon_status(poi.icon_id)} for poi in icon_candidates)
 
         # 3. 加载精灵图
         self._load_sprite(cfg)
@@ -493,12 +508,7 @@ class POIIconLayer(Layer):
                     active_profile.get("allow_different_station_names", False)),
             )
             aa = self.ctx.zoom / self.ctx.final_zoom
-            width = self.ctx.canvas_width or self.ctx.image.width
-            height = self.ctx.canvas_height or self.ctx.image.height
-            output_scale = max(width, height) / aa / 4096.0
-            # 跨输出尺寸与分块保持主题的 4K 显示配额；世界距离和名称筛选不改变身份。
-            view_zoom = self.ctx.final_zoom / output_scale
-            grid = _resolve_size(cfg.get("grid_size", 90), view_zoom) * output_scale
+            grid = float(cfg.get('grid_size', 90))
             limit = int(cfg.get("max_per_cell", 2))
             return select_pois(
                 selected, grid_size=grid, max_per_cell=limit,
@@ -541,7 +551,7 @@ class POIIconLayer(Layer):
             return list(pois)
         final_zoom = float(self.ctx.final_zoom)
         aa = self.ctx.zoom / final_zoom if final_zoom > 0 else 1.0
-        grid = _resolve_size(cfg.get("grid_size", 90), final_zoom)
+        grid = float(cfg.get("grid_size", 90))
         limit = int(cfg.get("max_per_cell", 2))
         if not self.force_detail:
             grid *= self.ctx.detail_policy.poi_grid_multiplier
@@ -611,7 +621,10 @@ class POIIconLayer(Layer):
         if poi.symbol is not None:
             poi.symbol()
             x0, y0, x1, y1 = poi.symbol_box
-            self._occupancy.add(poi.symbol_box)
+            capture = self.ctx.shared.get('artwork_capture')
+            self._occupancy.add(poi.symbol_box, poi.poi_id if capture is not None else None)
+            if capture is not None:
+                capture.diagnostics['symbols'].append({'id': poi.poi_id, 'box': poi.symbol_box})
             if poi.draw_name and poi.label:
                 self._pending_names.append((poi, icon_size, x0, y0, x1-x0, y1-y0))
             return
@@ -642,13 +655,10 @@ class POIIconLayer(Layer):
         source_img = self._icon_sources.get(poi.icon_id)
         bg_circle = bg_circle and not self.icon_map.get_icon(poi.icon_id).get("borderless", False)
 
-        # 站台圆点避让（仅公共交通图叠加层）：沿线路垂直方向让出距离，
-        # 露出站点圆点。距离默认按 图标半宽+圆点半径+间隙 随 zoom 等比自适应，
-        # 可用 poi_icons.station_avoid_dist 覆盖；方向不可算时兜底斜上方。
         ox = oy = 0.0
         if poi.station_box is not None:
             # 屏幕右上方的边界间隙；不查询线路法向或搜索空位。
-            gap = 3 * (self._raster_scale if self._static_png_profile else 1.0)
+            gap = self._poi_cfg.get('icon_gap', 3) * self._raster_scale
             half_w = max(icon_img.width, bg_circle_size if bg_circle else 0) / 2
             half_h = max(icon_img.height, bg_circle_size if bg_circle else 0) / 2
             ox = poi.station_box[2] - poi.px + half_w + gap
@@ -660,8 +670,7 @@ class POIIconLayer(Layer):
         png_policy = self._poi_cfg.get("png_export")
         png_output = bool(png_policy) or bool(
             getattr(self, "_static_png_profile", False))
-        pad = (2 * self._raster_scale if self._static_png_profile
-               else 2 * self.ctx.zoom if png_output else 2)
+        pad = self._poi_cfg.get('symbol_padding', 2) * self._raster_scale
         box = (x + visible[0] - pad, y + visible[1] - pad,
                x + visible[2] + pad, y + visible[3] + pad)
         icon_occupancy = getattr(self, "_icon_occupancy", None)
@@ -686,10 +695,10 @@ class POIIconLayer(Layer):
             source_visible = source_img.getbbox() or (
                 0, 0, source_img.width, source_img.height)
             static_layout_box = (
-                logical_x + source_visible[0] * source_factor - 2.0,
-                logical_y + source_visible[1] * source_factor - 2.0,
-                logical_x + source_visible[2] * source_factor + 2.0,
-                logical_y + source_visible[3] * source_factor + 2.0,
+                logical_x + source_visible[0] * source_factor - self._poi_cfg.get('symbol_padding', 2),
+                logical_y + source_visible[1] * source_factor - self._poi_cfg.get('symbol_padding', 2),
+                logical_x + source_visible[2] * source_factor + self._poi_cfg.get('symbol_padding', 2),
+                logical_y + source_visible[3] * source_factor + self._poi_cfg.get('symbol_padding', 2),
             )
             if bg_circle:
                 radius = float(getattr(self, "_logical_bg_circle_size", bg_circle_size)) / 2.0
@@ -720,6 +729,10 @@ class POIIconLayer(Layer):
                          else self._collision_box(box))
         if (declutter and icon_occupancy is not None
                 and icon_occupancy.overlaps(collision_box)):
+            capture = self.ctx.shared.get('artwork_capture')
+            if capture is not None:
+                capture.diagnostics['symbols'].append({'id': poi.poi_id, 'box': collision_box,
+                                                      'reason': 'icon-overlap'})
             return
         if declutter and icon_occupancy is not None:
             icon_occupancy.add(collision_box)
@@ -749,10 +762,20 @@ class POIIconLayer(Layer):
             cx = int(round(poi.px + ox - circle.width / 2))
             cy = int(round(poi.py + oy - circle.height / 2))
             self.ctx.image.paste(circle, (cx, cy), circle)
+            capture = self.ctx.shared.get("artwork_capture")
+            if capture is not None:
+                capture.image(poi.poi_id + ":background", circle,
+                              (cx, cy, cx + circle.width, cy + circle.height))
 
         self.ctx.image.paste(icon_img, (x, y), icon_img)
-        if declutter and hasattr(self, "_occupancy"):
-            self._occupancy.add(collision_box)
+        capture = self.ctx.shared.get("artwork_capture")
+        if capture is not None:
+            capture.image(poi.poi_id + ":icon", source_img,
+                          (x, y, x + icon_img.width, y + icon_img.height))
+        if (declutter or capture is not None) and hasattr(self, "_occupancy"):
+            self._occupancy.add(collision_box, poi.poi_id if capture is not None else None)
+        if capture is not None:
+            capture.diagnostics['symbols'].append({'id': poi.poi_id, 'box': collision_box})
 
         # 名称放在完整符号边界外，避免候选位置与自己的图标碰撞而丢失。
         if poi.draw_name and poi.label:
@@ -802,17 +825,17 @@ class POIIconLayer(Layer):
         self._color_cache[icon_id] = color
         return color
 
-    def _get_font(self, size: float, text: str = "") -> ImageFont.FreeTypeFont:
+    def _get_font(self, size: float, text: str = "", *, minimum_size: int = 6) -> ImageFont.FreeTypeFont:
         cfg = getattr(self, "_poi_cfg", {})
         path = resolve_text_font(cfg.get("font"), text=text)
-        key = (round(size, 1), str(path or ""))
+        key = (round(size, 1), str(path or ""), minimum_size)
         if key not in self._font_cache:
-            size_px = max(int(round(size)), 6)
+            size_px = max(int(round(size)), minimum_size)
             try:
                 self._font_cache[key] = (ImageFont.truetype(str(path), size_px)
-                                         if path else load_pillow_font(size_px))
+                                         if path else load_pillow_font(size_px, minimum_size=minimum_size))
             except OSError:
-                self._font_cache[key] = load_pillow_font(size_px)
+                self._font_cache[key] = load_pillow_font(size_px, minimum_size=minimum_size)
         return self._font_cache[key]
 
     def _draw_icon_name(self, poi: POIItem, icon_size: int,
@@ -833,27 +856,23 @@ class POIIconLayer(Layer):
             return
         static_layout = bool(getattr(self, "_static_png_profile", False))
         scale = max(float(self._raster_scale), 1e-9)
-        size_zoom = self.ctx.final_zoom if static_layout else self.render_scale
-        if self.transit_only and "transit_name_size" in cfg:
-            size = max(6, _resolve_size(cfg["transit_name_size"], size_zoom))
+        size_zoom = 1.0 if static_layout or poi.name_style is not None else self._raster_scale
+        transit_name = self.transit_only and "transit_name_size" in cfg
+        minimum_size = 1
+        if transit_name:
+            size = max(1, _resolve_size(cfg["transit_name_size"], size_zoom))
         else:
-            size = _resolve_size(cfg.get("name_size", {"fixed": 11, "scaled": 2}),
-                                 size_zoom) * self._transit_view_scale
-            max_size = cfg.get("name_max_size")
-            if isinstance(max_size, (int, float)):
-                size = min(size, float(max_size) * self._transit_view_scale)
-        if size < 6:
+            size = _resolve_size(cfg["name_size"],
+                                 size_zoom)
+        if size < minimum_size:
             return
         offset = (_resolve_size(cfg.get("name_offset", 3), size_zoom)
-                  * self._transit_view_scale)
-        font = poi.name_font or self._get_font(size, poi.label)
-        # 描边颜色与宽度比例从主题读：预览侧 halos['poi'] 用同一组键判断要不要画
-        # 描边（preview_scene._poi_name_halo），两端必须同源。缺省保持内置的
-        # 「白色描边 + 字号 × 0.12」，即本层原来的硬编码行为。
+                 )
+        font = poi.name_font or self._get_font(size, poi.label, minimum_size=minimum_size)
+        # 预览与导出读取相同的描边颜色和像素宽度。
         stroke_hex = str(cfg.get("name_stroke", "#FFFFFF") or "")
-        stroke_ratio = float(cfg.get("name_stroke_ratio", 0.12) or 0.0)
-        stroke = (max(int(round(size * stroke_ratio)), 1)
-                  if stroke_hex and stroke_ratio > 0 else 0)
+        stroke_width = float(cfg['name_stroke_width']) * size_zoom
+        stroke = max(0, round(stroke_width)) if stroke_hex else 0
         fill = hex_to_rgb(cfg["name_color"] if "name_color" in cfg else self._icon_color(poi.icon_id)) + (255,)
         stroke_rgb = (hex_to_rgb(stroke_hex) + (255,)) if stroke_hex else fill
 
@@ -862,12 +881,31 @@ class POIIconLayer(Layer):
         tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
         if tw <= 0 or th <= 0:
             return
-        pad = stroke + 4
+        pad = stroke + cfg.get('name_padding', 4) * size_zoom
         logical_width = tw + pad * 2
         logical_height = th + pad * 2
-        if static_layout:
+        capture = self.ctx.shared.get('artwork_capture')
+        if capture is not None:
+            raster_font = font.font_variant(size=max(round(size*4), 1))
+            raster_stroke = max(round(stroke_width*4), 0) if stroke_hex else 0
+            raster_bbox = raster_font.getbbox(poi.label, stroke_width=raster_stroke)
+            padding = cfg.get('name_padding', 4)
+            raster_pad = max(round((raster_stroke/4+padding)*4), 1)
+            raster = Image.new('RGBA', (raster_bbox[2]-raster_bbox[0]+2*raster_pad,
+                                        raster_bbox[3]-raster_bbox[1]+2*raster_pad))
+            ImageDraw.Draw(raster).text((raster_pad-raster_bbox[0], raster_pad-raster_bbox[1]),
+                poi.label, font=raster_font, fill=fill, stroke_width=raster_stroke, stroke_fill=stroke_rgb)
+            logical_width, logical_height = raster.width/4, raster.height/4
+            run = capture.text_run(poi.label, raster_font,
+                ((raster_pad-raster_bbox[0])/4, (raster_pad-raster_bbox[1])/4),
+                stroke_width=raster_stroke/4)
+            run['fontSize'] /= 4
+            run['advance'] /= 4
+            run['baseline'][1] -= raster_font.getmetrics()[0]*3/4
+            run['rasterScale'] = 4
+        if static_layout and capture is None:
             # 按最终像素测量，只在字形抗锯齿时进行超采样。
-            raster_font = self._get_font(size * scale, poi.label)
+            raster_font = self._get_font(size * scale, poi.label, minimum_size=minimum_size)
             raster_stroke = (
                 max(int(round(stroke * scale)), 1) if stroke > 0 else 0)
             raster_bbox = probe.textbbox(
@@ -884,12 +922,14 @@ class POIIconLayer(Layer):
                     raster_pad - raster_bbox[1]), poi.label,
                    font=raster_font, fill=fill,
                    stroke_width=raster_stroke, stroke_fill=stroke_rgb)
-        else:
-            img = Image.new("RGBA", (logical_width, logical_height),
+        elif capture is None:
+            img = Image.new("RGBA", (max(round(logical_width), 1), max(round(logical_height), 1)),
                             (0, 0, 0, 0))
             d = ImageDraw.Draw(img)
             d.text((pad - bbox[0], pad - bbox[1]), poi.label, font=font,
                    fill=fill, stroke_width=stroke, stroke_fill=stroke_rgb)
+        if capture is not None:
+            img = raster.resize((max(round(logical_width), 1), max(round(logical_height), 1)), Image.Resampling.LANCZOS)
         # 文字垂直居中于图标，水平位于图标右侧（始终水平正立）
         if static_layout:
             if layout_box is None:
@@ -904,7 +944,7 @@ class POIIconLayer(Layer):
             cx = ix + iw + offset + tox
             ty = iy + ih / 2 + toy
             x = int(round(cx))
-            y = int(round(ty - img.height / 2))
+            y = int(round(ty - (logical_height if capture is not None else img.height) / 2))
         occupancy = getattr(self, "_occupancy", None)
         candidates = [(x, y), (int(round(ix - offset - logical_width)), y),
                       (int(round(ix + iw / 2 - logical_width / 2)),
@@ -915,6 +955,9 @@ class POIIconLayer(Layer):
             "preview", "normal_png", "transit_png"}
         avoid = (bool(getattr(self, "_overlap_avoidance", True))
                  if profile_layout else True)
+        candidate_boxes = [(px, py, px+logical_width, py+logical_height) for px, py in candidates]
+        scores = ([occupancy.overlap_area(box if static_layout else self._collision_box(box))
+                   if occupancy is not None else 0 for box in candidate_boxes] if capture is not None else [])
         if avoid and occupancy is not None:
             def score(point):
                 x, y = point
@@ -924,11 +967,23 @@ class POIIconLayer(Layer):
         for x, y in candidates:
             box = (x, y, x + logical_width, y + logical_height)
             collision_box = box if static_layout else self._collision_box(box)
-            if avoid and occupancy is not None:
-                occupancy.add(collision_box)
+            overlap = occupancy.overlap_area(collision_box) if capture is not None and occupancy is not None else 0
+            conflicts = occupancy.conflicts(collision_box) if capture is not None and occupancy is not None else []
+            if (avoid or capture is not None) and occupancy is not None:
+                occupancy.add(collision_box, poi.poi_id+':name' if capture is not None else None)
             paste_x = int(round(x * scale)) if static_layout else x
             paste_y = int(round(y * scale)) if static_layout else y
             self.ctx.image.paste(img, (paste_x, paste_y), img)
+            capture = self.ctx.shared.get("artwork_capture")
+            if capture is not None:
+                run['baseline'][0] += x
+                run['baseline'][1] += y
+                capture.image(poi.poi_id + ":name", raster,
+                              (x, y, x + logical_width, y + logical_height), text_run=run)
+                capture.diagnostics['names'].append({'id': poi.poi_id, 'text': poi.label,
+                    'candidates': candidate_boxes, 'scores': scores, 'box': box,
+                    'overlap': overlap, 'conflicts': conflicts,
+                    'avoid': avoid})
             self.ctx.shared.setdefault("painted_poi_name_groups", set()).add(poi.group_id)
             break
 

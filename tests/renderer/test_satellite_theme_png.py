@@ -8,8 +8,9 @@ from PIL import Image, ImageDraw
 from csmodernmap.layers.base import RenderContext
 from csmodernmap.layers.label_layer import LabelLayer
 from csmodernmap.layers.road_layer import RoadLayer
-from csmodernmap.style import Style, hex_to_rgba
-from test_preview_road_order import scene_from_lines
+from csmodernmap.style import hex_to_rgba
+from style_fixtures import pixel_style
+from road_fixtures import scene_from_lines
 
 
 class Transform:
@@ -26,7 +27,7 @@ def background(mode="RGB"):
 
 
 def context(image, style=None, **kwargs):
-    return RenderContext(image, ImageDraw.Draw(image), Transform(), Style(style or {}),
+    return RenderContext(image, ImageDraw.Draw(image), Transform(), pixel_style(style or {}),
                          world_x0=-128, world_z0=-128, world_x1=128, world_z1=128,
                          **kwargs)
 
@@ -34,7 +35,7 @@ def context(image, style=None, **kwargs):
 class ColoredRoads(RoadLayer):
     def _cfg_record(self, road):
         return {"fill": ("#e6b45a", "#64c8e6")[road.id-1],
-                "border": "#242830", "border_width": 3}
+                "border": "#242830", "border_width": 3, "line_width": 20, "footprint_scale": 1}
 
 
 def draw_roads(image, scene, opacity=None):
@@ -103,6 +104,7 @@ def draw_text(image, kind, *, fill="#ffffff", stroke="#000000", width=3,
               blur=0, angle=0):
     layer = LabelLayer()
     layer.ctx = context(image)
+    layer._aa_k = 1
     if kind == "district":
         layer._render_text((128, 128), "HH", 48, fill, width, stroke,
                            angle=angle, stroke_blur=blur)
@@ -155,6 +157,7 @@ def test_opaque_labels_keep_original_pillow_raster(kind):
     layer = LabelLayer()
     image = Image.new("RGB", (256, 256), "#809060")
     layer.ctx = context(image)
+    layer._aa_k = 1
     font = layer._get_font(48, text="HH")
     bbox = font.getbbox("HH", stroke_width=3)
     tw, th = bbox[2]-bbox[0], bbox[3]-bbox[1]
@@ -179,16 +182,16 @@ def test_opaque_labels_keep_original_pillow_raster(kind):
 
 @pytest.mark.parametrize("kind,method", [("DISTRICT_NAME", "_render_text"),
                                         ("ROAD_NAME", "_render_text_run")])
-def test_style_stroke_blur_uses_fixed_plus_scaled_pixels(monkeypatch, kind, method):
+def test_style_stroke_blur_scales_pixel_size(monkeypatch, kind, method):
     layer = LabelLayer()
     layer.ctx = context(background())
     layer.render_scale, layer._aa_k = 2, 1
     captured = []
     monkeypatch.setattr(layer, method, lambda *args, **kwargs: captured.append(kwargs))
     layer._paint([SimpleNamespace(label=SimpleNamespace(type=kind, priority=1, text="Road"),
-        style={"stroke_blur": {"fixed": 1, "scaled": 2}}, x=128, y=128,
+        style={"size": 24, "stroke_blur": 3}, x=128, y=128,
         bbox=(50, 50, 200, 200), metadata={"text_run": []})])
-    assert captured[0]["stroke_blur"] == 5
+    assert captured[0]["stroke_blur"] == 6
 
 
 @pytest.mark.parametrize("blur", [-1, float("nan"), float("inf")])

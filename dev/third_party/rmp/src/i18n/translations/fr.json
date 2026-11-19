@@ -1,5 +1,6 @@
 {
     "cmm": {
+        "transfer": "Correspondance",
         "properties": "Propriétés",
         "otherProperties": "Autres propriétés",
         "moreActions": "Autres actions",

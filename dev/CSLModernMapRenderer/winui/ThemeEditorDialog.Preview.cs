@@ -15,7 +15,7 @@ internal sealed partial class ThemeEditorDialog
     private void BuildSamples()
     {
         _samplePanel.Children.Clear(); _textSideSample = null;
-        if (_section == "roads" && _working["roads"] is JsonObject roads)
+        if (_section == "roads" && (!IsEmbedded || _roadLevel is not null) && _working["roads"] is JsonObject roads)
         {
             if (roads[_selectedRoad] is not JsonObject) _selectedRoad = RoadLevels.FirstOrDefault(level => roads[level.Key] is JsonObject).Key ?? "highway";
             var line = new Border { HorizontalAlignment = HorizontalAlignment.Stretch, Margin = new Thickness(10, 12, 10, 8) };
@@ -27,15 +27,10 @@ internal sealed partial class ThemeEditorDialog
                 line.Opacity = Numeric(_working["roads"]!["opacity"]!);
                 if (cfg["fill"] is { } fill) line.Background = BrushFor(fill.GetValue<string>());
                 if (cfg["border"] is { } border) line.BorderBrush = BrushFor(border.GetValue<string>());
-                var minimum = cfg["min_fill_px"] is { } minFill ? Numeric(minFill) : 0;
-                var borderWidth = cfg["border_width"] is { } bw ? SizeAt(bw, 1) : 1;
-                var scale = roads["width_scale"] is { } widthScale ? Numeric(widthScale) : .15;
+                var borderWidth = Numeric(cfg["border_width"]!) * _elementScale;
                 line.BorderThickness = new Thickness(borderWidth / 2);
-                line.Height = (_selectedRoad == "quay" ? 16 * Numeric(cfg["footprint_scale"]!)
-                    : Math.Max(.5 + 16 * scale, minimum)) + borderWidth;
-                caption.Text = _selectedRoad == "quay"
-                    ? Label(["roads", "quay", "footprint_scale"]) + $" {Numeric(cfg["footprint_scale"]!):P0}"
-                    : RoadLevels.First(level => level.Key == _selectedRoad).Label + UiLanguage.Format("ThemeEditorDialog_Preview_BuildSamples_1A0787C40B", minimum);
+                line.Height = Numeric(cfg["line_width"]!) * _elementScale + borderWidth;
+                caption.Text = UiLanguage.Format("Pixel_Actual", (Numeric(cfg["line_width"]!) * _elementScale).ToString("F2"));
             });
         }
         else if (_section == "terrain" && _working["terrain"]?["elevation_colors"] is JsonArray)
@@ -68,8 +63,9 @@ internal sealed partial class ThemeEditorDialog
     {
         try
         {
+            await Task.Delay(350, token);
             var result = await _engine.RequestAsync("renderThemeTextSample", new
-            { data = JsonNode.Parse(Snapshot()), type = _labelType, renderScale = 1, documentEpoch = _documentEpoch }, token);
+            { data = JsonNode.Parse(Snapshot()), type = _labelType, elementScale = _elementScale, documentEpoch = _documentEpoch }, token);
             if (_invalidated || token.IsCancellationRequested || revision != _sampleRevision) return;
             var url = result.GetProperty("url").GetString()!;
             bool Current() => !_invalidated && !token.IsCancellationRequested && revision == _sampleRevision;
@@ -88,24 +84,27 @@ internal sealed partial class ThemeEditorDialog
     { _previewDelay?.Cancel(); _previewDelay?.Dispose(); _previewDelay = null; _previewRequestId = null; }
     private void SchedulePreview(bool immediate = false)
     {
-        if (_invalidated || _building || _flushingPreviewInputs) return;
+        if (_invalidated || _building || _flushingPreviewInputs || _flushingEmbeddedPreview) return;
         CancelPreview();
         _previewDelay = new CancellationTokenSource();
         _previewStatus.Text = UiLanguage.Text("ThemeEditorDialog_Preview_SchedulePreview_A8EECC3509");
+        UpdateStatus();
         _ = PreviewAfterDelayAsync(_previewDelay.Token, immediate);
     }
     private async Task PreviewAfterDelayAsync(CancellationToken token, bool immediate)
     {
         try
         {
-            if (!immediate) await Task.Delay(350, token);
+            // 内嵌编辑还有引擎的 350 ms 草稿合并窗口，普通输入总等待约半秒。
+            if (!immediate) await Task.Delay(IsEmbedded ? 150 : 350, token);
             if (_invalidated || token.IsCancellationRequested) return;
             _flushingPreviewInputs = true;
             try
             {
-                if (!FlushInputs()) { _previewStatus.Text = UiLanguage.Text("ThemeEditorDialog_Preview_PreviewAfterDelayAsync_E04BCC3467"); return; }
+                if (!FlushInputs()) { _previewStatus.Text = UiLanguage.Text("ThemeEditorDialog_Preview_PreviewAfterDelayAsync_E04BCC3467"); UpdateStatus(); return; }
             }
             finally { _flushingPreviewInputs = false; }
+            if (IsEmbedded) { await PublishEmbeddedPreviewAsync(token); return; }
             var requestId = _previewRequestId = Guid.NewGuid().ToString("N");
             var scene = _metadata.GetProperty("scenes").TryGetProperty(_section, out var mapped) ? mapped.GetString() : "overall";
             var data = JsonNode.Parse(Snapshot());
@@ -115,11 +114,15 @@ internal sealed partial class ThemeEditorDialog
                 _previewStatus.Text = result.GetProperty("message").GetString()!;
         }
         catch (OperationCanceledException) { }
-        catch (InvalidOperationException error) { if (!_invalidated && !token.IsCancellationRequested) _previewStatus.Text = UiLanguage.Text("ThemeEditorDialog_Preview_PreviewAfterDelayAsync_DE72B02080") + error.Message; }
+        catch (InvalidOperationException error)
+        {
+            if (!_invalidated && !token.IsCancellationRequested)
+            { _previewStatus.Text = UiLanguage.Text("ThemeEditorDialog_Preview_PreviewAfterDelayAsync_DE72B02080") + error.Message; UpdateStatus(); }
+        }
     }
     public void HandlePreviewEvent(string name, JsonElement payload)
     {
-        if (_invalidated || payload.GetProperty("requestId").GetString() != _previewRequestId) return;
+        if (_invalidated || IsEmbedded || payload.GetProperty("requestId").GetString() != _previewRequestId) return;
         if (name == "themePreviewFailed") { _previewStatus.Text = UiLanguage.Text("ThemeEditorDialog_Preview_HandlePreviewEvent_DE72B02080") + payload.GetProperty("message").GetString(); return; }
         var requestId = _previewRequestId;
         _ = PreviewImages.SetAsync(_preview, payload.GetProperty("url").GetString()!,

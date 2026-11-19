@@ -9,14 +9,15 @@ import pytest
 
 from csmodernmap.cmm import DocumentSession
 from csmodernmap.preview_scene import PreviewSceneBundle, PreviewSceneCompiler, PreviewSceneServer
-from csmodernmap.style import Style
+from csmodernmap._paths import resource_dir
+from csmodernmap.style import load_style
 from preview_fixtures import facility_document
 
 
 @pytest.mark.parametrize("accurate", [False, True])
 def test_base_full_signatures_and_disabled_areas_do_not_compute(accurate):
     session = DocumentSession(facility_document())
-    style = Style({"roads": {"accurate_intersections": accurate}})
+    style = load_style(str(resource_dir("styles") / "modern.yaml")).merged({"roads": {"accurate_intersections": accurate}})
     base = PreviewSceneCompiler.compile_full(session, style, 1, options={"phase": "base"}, visibility={"poi_area": False})
     try:
         assert base.manifest["completion"] == "base"
@@ -86,7 +87,7 @@ def test_cancel_during_compile_removes_temporary_bundle(monkeypatch, tmp_path):
         if calls == 3:
             raise Cancelled()
     with pytest.raises(Cancelled):
-        PreviewSceneCompiler.compile_full(session, Style({}), 1, options={"check_cancel": check})
+        PreviewSceneCompiler.compile_full(session, load_style(str(resource_dir("styles") / "modern.yaml")), 1, options={"check_cancel": check})
     assert not root.exists()
 
 

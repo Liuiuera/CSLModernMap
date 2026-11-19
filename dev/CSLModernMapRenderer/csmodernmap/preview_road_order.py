@@ -3,6 +3,7 @@
 预览和 PNG 共用本模块。绘制等级作用于完整路面而非单次描边；通过交叉点之间的分段消除整条道路的循环约束。人为切分边不会成为道路边界。"""
 from __future__ import annotations
 
+from .performance import measured, perf_span, current_recorder
 
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
@@ -220,19 +221,45 @@ class RoadPaint:
     polygons: tuple = ()
 
 
-def display_paint_regions(piece, quay_scale, centerlines):
-    """两套绘图器共用收窄后的护岸填充和源边；原排序几何保持不变。"""
+def display_paint_regions(piece, quay_scale, centerlines, *, footprint_factors=None):
+    """两套绘图器共用横向缩放的填充和源边；原排序几何保持不变。"""
     regions = piece.paint_regions
-    if piece.road.level is not RoadLevel.QUAY or quay_scale == 1.0:
+    if footprint_factors is None and (piece.road.level is not RoadLevel.QUAY or quay_scale == 1.0):
         return regions
-    def shrink(points):
-        return scale_footprint_width(points, centerlines[piece.road.id], quay_scale)
-    return tuple(RoadPaint(region.road,
+    result = []
+    for region in regions:
+        # 接缝重着色不改变足迹归属；同一道路的各色区域必须使用同一投影轴。
+        road = piece.road
+        factor = (footprint_factors[road.level.value, road.mode]
+                  if footprint_factors is not None else quay_scale)
+        def shrink(points):
+            try:
+                return scale_footprint_width(points, centerlines[road.id], factor)
+            except ValueError as error:
+                raise ValueError(f'Road {road.id}: {error}') from error
+        result.append(RoadPaint(region.road,
                           tuple(shrink(ring) for ring in region.rings),
                           tuple(shrink(line) for line in region.boundaries),
                           tuple(tuple(shrink(ring) for ring in polygon)
-                                for polygon in region.polygons))
-                 for region in regions)
+                                for polygon in region.polygons)))
+    return tuple(result)
+
+
+def pixel_road_geometry(scene, order, factors):
+    """显示范围来自缩放后的几何；不可用原足迹范围裁掉放宽的道路。"""
+    from .road_geometry import footprint_centerlines
+    axes = footprint_centerlines(scene)
+    regions, bounds = {}, {}
+    for road in scene.roads:
+        points = []
+        for piece in order.pieces[road.id]:
+            paints = display_paint_regions(piece, 1, axes, footprint_factors=factors)
+            regions[road.id, piece.index] = paints
+            points.extend(point for paint in paints for ring in paint.rings for point in ring)
+        bounds[road.id] = ((min(p[0] for p in points), min(p[1] for p in points),
+                            max(p[0] for p in points), max(p[1] for p in points))
+                           if points else road.bbox)
+    return regions, bounds
 
 
 @dataclass
@@ -567,6 +594,7 @@ def _outer_boundaries(road, original, scene, paths, incidence, neighbor_cache=No
     return tuple(lines)
 
 
+@measured("roads.build_order")
 def build_road_order(scene, *, accurate=True):
     """返回完全覆盖的片段及局部绘制顺序；无法消除的循环仅在强连通组内取消分层。"""
     roads = scene.roads_by_id
@@ -579,83 +607,86 @@ def build_road_order(scene, *, accurate=True):
     projection_indexes = {}
     height_ranges = {road.id: (min(p.y for p in road.points), max(p.y for p in road.points))
                      for road in scene.roads}
-    for road in scene.roads:
-        if road.footprint is not None and len(road.footprint.points) >= 3:
-            path = _path([(p.x, p.z) for p in road.footprint.points])
-        else:
-            stroke = QPainterPathStroker()
-            stroke.setWidth(max(road.width, .1))
-            stroke.setCapStyle(Qt.PenCapStyle.RoundCap)
-            stroke.setJoinStyle(Qt.PenJoinStyle.RoundJoin)
-            path = stroke.createStroke(_path([(p.x, p.z) for p in road.points], False))
-        paths[road.id] = path
-        if accurate:
-            bbox = path.boundingRect()
-            for gx in range(floor(bbox.left()/256), floor(bbox.right()/256)+1):
-                for gz in range(floor(bbox.top()/256), floor(bbox.bottom()/256)+1):
-                    grid[gx, gz].append(road.id)
+    with perf_span(None, "roads.order.paths_index"):
+        for road in scene.roads:
+            if road.footprint is not None and len(road.footprint.points) >= 3:
+                path = _path([(p.x, p.z) for p in road.footprint.points])
+            else:
+                stroke = QPainterPathStroker()
+                stroke.setWidth(max(road.width, .1))
+                stroke.setCapStyle(Qt.PenCapStyle.RoundCap)
+                stroke.setJoinStyle(Qt.PenJoinStyle.RoundJoin)
+                path = stroke.createStroke(_path([(p.x, p.z) for p in road.points], False))
+            paths[road.id] = path
+            if accurate:
+                bbox = path.boundingRect()
+                for gx in range(floor(bbox.left()/256), floor(bbox.right()/256)+1):
+                    for gz in range(floor(bbox.top()/256), floor(bbox.bottom()/256)+1):
+                        grid[gx, gz].append(road.id)
     seen = set()
-    if accurate and scene.height_reliable:
-        for bucket in grid.values():
-            for i, aid in enumerate(bucket):
-                for bid in bucket[i+1:]:
-                    pair = min(aid, bid), max(aid, bid)
-                    if pair in seen:
-                        continue
-                    seen.add(pair)
-                    a, b = roads[aid], roads[bid]
-                    if not paths[aid].boundingRect().intersects(paths[bid].boundingRect()):
-                        continue
-                    low_a, high_a = height_ranges[aid]
-                    low_b, high_b = height_ranges[bid]
-                    if max(high_a, high_b)-min(low_a, low_b) < HEIGHT_EPSILON-1e-9:
-                        continue
-                    overlap = paths[aid].intersected(paths[bid])
-                    for ring in _rings(overlap):
-                        # 顶点加内部边采样能发现宽重叠区域中的高度反转，而不只看中心。
-                        samples = list(ring[:-1])
-                        samples += [((p[0]+q[0])*.5, (p[1]+q[1])*.5)
-                                    for p, q in zip(ring, ring[1:])]
-                        for x, z in samples:
-                            ay, ad = _projection(a, x, z, projection_indexes)
-                            by, bd = _projection(b, x, z, projection_indexes)
-                            if abs(ay-by) <= HEIGHT_EPSILON:
-                                continue
-                            events.append((aid, ad, bid, bd) if ay < by else (bid, bd, aid, ad))
-                            overlap_samples += 1
-    # 事件位置只为去重而量化，不参与高度排序。
-    events = sorted(set((a, round(ad, 5), b, round(bd, 5)) for a, ad, b, bd in events))
-    cuts = {road.id: [] for road in scene.roads}
-    positions = defaultdict(set)
-    roles = defaultdict(set)
-    for a, ad, b, bd in events:
-        positions[a].add(ad); positions[b].add(bd)
-        roles[a].add((ad, 0)); roles[b].add((bd, 1))
+    with perf_span(None, "roads.order.overlaps"):
+        if accurate and scene.height_reliable:
+            for bucket in grid.values():
+                for i, aid in enumerate(bucket):
+                    for bid in bucket[i+1:]:
+                        pair = min(aid, bid), max(aid, bid)
+                        if pair in seen:
+                            continue
+                        seen.add(pair)
+                        a, b = roads[aid], roads[bid]
+                        if not paths[aid].boundingRect().intersects(paths[bid].boundingRect()):
+                            continue
+                        low_a, high_a = height_ranges[aid]
+                        low_b, high_b = height_ranges[bid]
+                        if max(high_a, high_b)-min(low_a, low_b) < HEIGHT_EPSILON-1e-9:
+                            continue
+                        overlap = paths[aid].intersected(paths[bid])
+                        for ring in _rings(overlap):
+                            # 顶点加内部边采样能发现宽重叠区域中的高度反转，而不只看中心。
+                            samples = list(ring[:-1])
+                            samples += [((p[0]+q[0])*.5, (p[1]+q[1])*.5)
+                                        for p, q in zip(ring, ring[1:])]
+                            for x, z in samples:
+                                ay, ad = _projection(a, x, z, projection_indexes)
+                                by, bd = _projection(b, x, z, projection_indexes)
+                                if abs(ay-by) <= HEIGHT_EPSILON:
+                                    continue
+                                events.append((aid, ad, bid, bd) if ay < by else (bid, bd, aid, ad))
+                                overlap_samples += 1
+    with perf_span(None, "roads.order.rank_constraints"):
+        # 事件位置只为去重而量化，不参与高度排序。
+        events = sorted(set((a, round(ad, 5), b, round(bd, 5)) for a, ad, b, bd in events))
+        cuts = {road.id: [] for road in scene.roads}
+        positions = defaultdict(set)
+        roles = defaultdict(set)
+        for a, ad, b, bd in events:
+            positions[a].add(ad); positions[b].add(bd)
+            roles[a].add((ad, 0)); roles[b].add((bd, 1))
 
-    def key(road_id, distance):
-        from bisect import bisect_right
-        return road_id, bisect_right(cuts[road_id], distance)
+        def key(road_id, distance):
+            from bisect import bisect_right
+            return road_id, bisect_right(cuts[road_id], distance)
 
-    nodes = [(road.id, 0) for road in scene.roads]
-    constraints = {(key(a, ad), key(b, bd)) for a, ad, b, bd in events}
-    ranks, cyclic = _ranks(nodes, constraints)
-    if cyclic:
-        # 只在连续冲突位置之间切分受阻道路，以消除空间上的循环顺序而不制造虚假高度。
-        for road_id, _ in cyclic:
-            samples = sorted(roles[road_id])
-            cuts[road_id] = sorted(set((a+b)*.5 for (a, ar), (b, br)
-                                       in zip(samples, samples[1:])
-                                       if ar != br and b-a > .01))
-        nodes = [(road.id, i) for road in scene.roads for i in range(len(cuts[road.id])+1)]
+        nodes = [(road.id, 0) for road in scene.roads]
         constraints = {(key(a, ad), key(b, bd)) for a, ad, b, bd in events}
         ranks, cyclic = _ranks(nodes, constraints)
-    if cyclic:
-        for road_id, _ in cyclic:
-            samples = sorted(positions[road_id])
-            cuts[road_id] = [(a+b)*.5 for a, b in zip(samples, samples[1:]) if b-a > .01]
-        nodes = [(road.id, i) for road in scene.roads for i in range(len(cuts[road.id])+1)]
-        constraints = {(key(a, ad), key(b, bd)) for a, ad, b, bd in events}
-        ranks, cyclic = _ranks(nodes, constraints)
+        if cyclic:
+            # 只在连续冲突位置之间切分受阻道路，以消除空间上的循环顺序而不制造虚假高度。
+            for road_id, _ in cyclic:
+                samples = sorted(roles[road_id])
+                cuts[road_id] = sorted(set((a+b)*.5 for (a, ar), (b, br)
+                                           in zip(samples, samples[1:])
+                                           if ar != br and b-a > .01))
+            nodes = [(road.id, i) for road in scene.roads for i in range(len(cuts[road.id])+1)]
+            constraints = {(key(a, ad), key(b, bd)) for a, ad, b, bd in events}
+            ranks, cyclic = _ranks(nodes, constraints)
+        if cyclic:
+            for road_id, _ in cyclic:
+                samples = sorted(positions[road_id])
+                cuts[road_id] = [(a+b)*.5 for a, b in zip(samples, samples[1:]) if b-a > .01]
+            nodes = [(road.id, i) for road in scene.roads for i in range(len(cuts[road.id])+1)]
+            constraints = {(key(a, ad), key(b, bd)) for a, ad, b, bd in events}
+            ranks, cyclic = _ranks(nodes, constraints)
     result = RoadOrder()
     skipped_cuts = []
     incidence = defaultdict(list)
@@ -663,42 +694,44 @@ def build_road_order(scene, *, accurate=True):
     for road in scene.roads:
         incidence[road.start_node_id].append(road.id)
         incidence[road.end_node_id].append(road.id)
-    paint_masks, junction_seams = _junction_paint_masks(scene, paths, height_ranges)
-    for road in scene.roads:
-        bounds = [0.0, *cuts[road.id], road.length]
-        remainder = paths[road.id]
-        original = tuple((p.x, p.z) for p in road.footprint.points) if road.footprint else ()
-        if original and original[0] != original[-1]:
-            original += (original[0],)
-        boundaries = ()
-        if original:
-            boundaries = (_outer_boundaries(road, original, scene, paths, incidence,
-                           neighbor_cache, projection_indexes, height_ranges, junction_seams)
-                          if accurate else (original,))
-        pieces, actual_cuts = [], []
-        start = 0.0
-        for end in bounds[1:]:
-            region = remainder
-            if original and end != road.length:
-                try:
-                    region, remainder = _split_surface(remainder, road, start, end)
-                except LocalRoadCutError as error:
-                    skipped_cuts.append({'roadId': road.id, 'distance': end,
-                                         'reason': error.reason})
-                    continue
-            if end != road.length:
-                actual_cuts.append(end)
-            piece = RoadPiece(road, len(pieces), start, end)
+    with perf_span(None, "roads.order.junction_paints"):
+        paint_masks, junction_seams = _junction_paint_masks(scene, paths, height_ranges)
+    with perf_span(None, "roads.order.fragments_boundaries"):
+        for road in scene.roads:
+            bounds = [0.0, *cuts[road.id], road.length]
+            remainder = paths[road.id]
+            original = tuple((p.x, p.z) for p in road.footprint.points) if road.footprint else ()
+            if original and original[0] != original[-1]:
+                original += (original[0],)
+            boundaries = ()
             if original:
-                piece.rings = tuple(_rings(region))
-                piece.boundaries = _clip_lines(boundaries, region, piece.rings) if cuts[road.id] else boundaries
-                if road.id in paint_masks:
-                    piece.paints = _paint_regions(road, region, piece.boundaries,
-                        paint_masks[road.id])
-            pieces.append(piece)
-            start = end
-        cuts[road.id] = actual_cuts
-        result.pieces[road.id] = pieces
+                boundaries = (_outer_boundaries(road, original, scene, paths, incidence,
+                               neighbor_cache, projection_indexes, height_ranges, junction_seams)
+                              if accurate else (original,))
+            pieces, actual_cuts = [], []
+            start = 0.0
+            for end in bounds[1:]:
+                region = remainder
+                if original and end != road.length:
+                    try:
+                        region, remainder = _split_surface(remainder, road, start, end)
+                    except LocalRoadCutError as error:
+                        skipped_cuts.append({'roadId': road.id, 'distance': end,
+                                             'reason': error.reason})
+                        continue
+                if end != road.length:
+                    actual_cuts.append(end)
+                piece = RoadPiece(road, len(pieces), start, end)
+                if original:
+                    piece.rings = tuple(_rings(region))
+                    piece.boundaries = _clip_lines(boundaries, region, piece.rings) if cuts[road.id] else boundaries
+                    if road.id in paint_masks:
+                        piece.paints = _paint_regions(road, region, piece.boundaries,
+                            paint_masks[road.id])
+                pieces.append(piece)
+                start = end
+            cuts[road.id] = actual_cuts
+            result.pieces[road.id] = pieces
     nodes = [(road_id, piece.index) for road_id, pieces in result.pieces.items() for piece in pieces]
     flat = {}
     if skipped_cuts or cyclic:
@@ -735,4 +768,10 @@ def build_road_order(scene, *, accurate=True):
         'flatGroups': [{'id': group, 'pieces': sorted(pieces, key=lambda p: (p['roadId'], p['fragmentIndex']))}
                        for group, pieces in sorted(flat_groups.items())],
     }
+    if (recorder := current_recorder()) is not None:
+        recorder.set_counter("roads.order.grid_candidate_pairs", sum(len(v)*(len(v)-1)//2 for v in grid.values()))
+        recorder.set_counter("roads.order.unique_pairs", len(seen))
+        for key, value in result.diagnostics.items():
+            if isinstance(value, (int, float)):
+                recorder.set_counter(f"roads.order.{key}", value)
     return result

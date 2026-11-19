@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 from typing import Any
+from dataclasses import replace
+from copy import deepcopy
 import math
 
 import numpy as np
@@ -41,10 +43,8 @@ def _text_image(font, text, bbox, stroke, fill, stroke_fill, pad, blur):
     return image
 
 
-def _resolve_size(val: Any, render_scale: float) -> float:
-    if isinstance(val, dict):
-        return float(val.get("fixed", 0.0)) + float(val.get("scaled", 0.0)) * render_scale
-    return float(val)
+def _resolve_size(val, raster_scale: float) -> float:
+    return float(val) * raster_scale
 
 
 class LabelLayer(Layer):
@@ -105,33 +105,59 @@ class LabelLayer(Layer):
                    else document)
         self.ctx = ctx
         self.mapdata = mapdata
-        self.render_scale = ctx.zoom
+        self.render_scale = ctx.zoom / ctx.final_zoom
         self._aa_k = ctx.zoom / ctx.final_zoom if ctx.final_zoom else 1.0
         self._font_cache = {}
-        pipeline = LabelPipeline()
-        pipeline.run(
+        if ctx.shared.get('artwork_capture') is not None:
+            ctx.shared['base_text_metrics'] = self._artwork_metrics
+        job = self._job(ctx)
+        capture = ctx.shared.get('artwork_capture')
+        if capture is not None and capture.draft and ctx.session is not None:
+            layout_style = deepcopy(ctx.style.get('labels', {}))
+            for section in ('road', 'district'):
+                cfg = layout_style.get(section, {})
+                cfg.pop('color', None)
+                cfg.pop('stroke', None)
+            placement_job = job.to_dict()
+            del placement_job['layers']
+            key = {'job': placement_job, 'style': layout_style}
+            cache = ctx.session.service_cache
+            cached = cache.get('city.artwork.label-placement', key)
+            if cached is not None:
+                from ..labeling.style_resolver import resolve_with_override
+                placements, summary = cached
+                styles = {ref: resolve_with_override(ref, ctx.style, job.style_override)
+                          for ref in {p.label.style_ref for p in placements}}
+                self._paint(replace(p, style=styles[p.label.style_ref]) for p in placements)
+                capture.diagnostics['baseLabels'] = summary
+                return
+        result = LabelPipeline().run(
             mapdata,
-            self._job(ctx),
+            job,
             ctx.style,
             detail_policy=ctx.detail_policy,
             context=ctx,
             measure_text=self._text_width_px,
             painter=self._paint,
         )
+        if capture is not None:
+            capture.diagnostics['baseLabels'] = result.summary
+            if capture.draft and ctx.session is not None:
+                cache.keep_only('city.artwork.label-placement', key)
+                cache.put('city.artwork.label-placement', key, (result.placed, result.summary))
 
     def _paint(self, placements) -> None:
         # 先绘制低优先级再绘制高优先级，保持道路和行政区叠放顺序。
         ordered = sorted(placements, key=lambda item: item.label.priority)
         for placed in ordered:
             label = placed.label
+            self._artwork_label = label
             cfg = dict(placed.style)
             blur = _resolve_size(cfg.get("stroke_blur", 0), self.render_scale)
             if not math.isfinite(blur) or blur < 0:
                 raise ValueError("labels stroke_blur must be finite and nonnegative")
             if label.type == "DISTRICT_NAME":
-                floor_final = 12.0 * min(self.ctx.final_zoom, 1.0)
-                size = max(_resolve_size(cfg.get("size", 20), self.render_scale),
-                           floor_final * self._aa_k)
+                size = _resolve_size(cfg['size'], self.render_scale)
                 stroke = _resolve_size(cfg.get("stroke_width", 2), self.render_scale)
                 self._render_text(
                     (placed.x, placed.y), label.text, size,
@@ -154,22 +180,55 @@ class LabelLayer(Layer):
 
     def _text_width_px(self, text: str, size: float,
                        font_family: str | None = None) -> float:
+        if self.ctx.shared.get('artwork_capture') is not None:
+            font = self._get_font(size*4, font_family, text=text, minimum_size=1)
+            bbox = font.getbbox(text)
+            return (bbox[2]-bbox[0])/4
         font = self._get_font(max(int(round(size)), 6), font_family, text=text)
         probe = ImageDraw.Draw(Image.new("RGBA", (4, 4), (0, 0, 0, 0)))
         bbox = probe.textbbox((0, 0), text, font=font)
         return float(bbox[2] - bbox[0])
 
+    def _artwork_metrics(self, text, size, cfg, stroke):
+        font = self._get_font(size*4, cfg.get('font'), text=text,
+                              bold=bool(cfg.get('bold', False)), minimum_size=1)
+        bbox = font.getbbox(text, stroke_width=max(round(stroke*4), 0))
+        return (bbox[2]-bbox[0])/4, (bbox[3]-bbox[1])/4
+
     def _render_text_run(self, strips, bounds, text, size, fill, stroke_w,
                          stroke_fill, font_family=None, stroke_blur=0.0):
-        font = self._get_font(size, font_family, text=text)
+        capture = self.ctx.shared.get('artwork_capture')
+        logical_strips = strips
+        if capture is not None:
+            strips = [(x*4, y*4, angle, offset*4, span*4) for x, y, angle, offset, span in strips]
+            bounds = tuple(value*4 for value in bounds)
+            size, stroke_w, stroke_blur = size*4, stroke_w*4, stroke_blur*4
+        font = self._get_font(size, font_family, text=text, minimum_size=1 if capture else 6)
         stroke = max(int(round(stroke_w)), 0)
         bbox = font.getbbox(text, stroke_width=stroke)
         tw, th = bbox[2]-bbox[0], bbox[3]-bbox[1]
         pad = math.ceil(3 * stroke_blur)
         run = _text_image(font, text, bbox, stroke, fill, stroke_fill, pad, stroke_blur)
-        bleed = math.ceil(pad * math.sqrt(2))
+        bleed = 0 if capture is not None else math.ceil(pad * math.sqrt(2))
         left, top = int(np.floor(bounds[0]))-bleed, int(np.floor(bounds[1]))-bleed
         right, bottom = int(np.ceil(bounds[2]))+bleed, int(np.ceil(bounds[3]))+bleed
+        if capture is not None and capture.draft:
+            from ..artwork import image_resource
+            from ..artwork_sampling import sample_path
+            patch = sample_path(run, strips, (left, top, right, bottom), th, pad, 1)
+            box = (left/4, top/4, right/4, bottom/4)
+            details = capture.font_details(text, font) | {'text': text, 'fontSize': font.size/4,
+                'strokeWidth': stroke/4, 'rasterScale': 4,
+                'path': [list(strip) for strip in logical_strips]}
+            recipe = {'source': image_resource(run), 'strips': strips,
+                      'bounds': (left, top, right, bottom), 'textHeight': th, 'pad': pad}
+            capture.image(f'label:{self._artwork_label.id}', patch, box,
+                          text_run=details, path_recipe=recipe)
+            capture.diagnostics.setdefault('labelBoxes', []).append(
+                {'id': self._artwork_label.id, 'type': self._artwork_label.type, 'box': box})
+            run.close()
+            patch.close()
+            return
         yy, xx = np.mgrid[top:bottom, left:right].astype(float)
         best = np.full(xx.shape, np.inf)
         u = np.zeros(xx.shape)
@@ -201,14 +260,24 @@ class LabelLayer(Layer):
                                  out=np.zeros_like(out[..., :3]), where=alpha > 0)
         out[~valid] = 0
         patch = Image.fromarray(np.uint8(np.clip(out, 0, 255)))
+        if capture is not None:
+            box = (left/4, top/4, right/4, bottom/4)
+            run = capture.font_details(text, font) | {'text': text, 'fontSize': font.size/4,
+                'strokeWidth': stroke/4, 'rasterScale': 4,
+                'path': [list(strip) for strip in logical_strips]}
+            capture.image(f'label:{self._artwork_label.id}', patch, box, text_run=run)
+            capture.diagnostics.setdefault('labelBoxes', []).append(
+                {'id': self._artwork_label.id, 'type': self._artwork_label.type, 'box': box})
+            return
         if self.ctx.image.mode == "RGB":
             self.ctx.image.paste(patch, (left, top), patch)
         else:
             self.ctx.image.alpha_composite(patch, (left, top))
 
     def _get_font(self, size: float, font_family: str | None = None,
-                  text: str | None = None, bold: bool = False) -> ImageFont.FreeTypeFont:
-        size_px = max(int(round(size)), 6)
+                  text: str | None = None, bold: bool = False,
+                  minimum_size: int = 6) -> ImageFont.FreeTypeFont:
+        size_px = max(int(round(size)), minimum_size)
         path = resolve_text_font(font_family, text=text, bold=bold)
         key = (size_px, str(path) if path is not None else "", bold)
         if key not in self._font_cache:
@@ -225,14 +294,19 @@ class LabelLayer(Layer):
                      stroke_w: float, stroke_fill: str, angle: float = 0.0,
                      font_family: str | None = None, bold: bool = False,
                      stroke_blur: float = 0.0) -> None:
-        font = self._get_font(size, font_family, text=text, bold=bold)
+        capture = self.ctx.shared.get('artwork_capture')
+        if capture is not None:
+            size, stroke_w, stroke_blur = size*4, stroke_w*4, stroke_blur*4
+        font = self._get_font(size, font_family, text=text, bold=bold,
+                              minimum_size=1 if capture else 6)
         stroke = max(int(round(stroke_w)), 0)
         probe = ImageDraw.Draw(Image.new("RGBA", (4, 4), (0, 0, 0, 0)))
         bbox = probe.textbbox((0, 0), text, font=font, stroke_width=stroke)
         tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
         if tw <= 0 or th <= 0:
             return
-        pad = stroke + 4 + math.ceil(3 * stroke_blur)
+        padding = 4*self.ctx.style.get('labels.padding', 4) if capture else self.ctx.style.get('labels.padding', 4)*self._aa_k
+        pad = stroke + math.ceil(padding) + math.ceil(3 * stroke_blur)
         img = _text_image(font, text, bbox, stroke, fill, stroke_fill, pad, stroke_blur)
         if angle:
             # 双三次插值会使半透明文字的透明度过冲；旧版不透明路径保持原样。
@@ -242,6 +316,16 @@ class LabelLayer(Layer):
         px, py = pos
         x = int(round(px - img.width / 2))
         y = int(round(py - img.height / 2))
+        if capture is not None:
+            box = (px-img.width/8, py-img.height/8, px+img.width/8, py+img.height/8)
+            baseline = ((pad-bbox[0])/4+box[0], (pad-bbox[1]+font.getmetrics()[0])/4+box[1])
+            run = capture.font_details(text, font) | {'text': text, 'fontSize': font.size/4,
+                'advance': font.getlength(text)/4, 'baseline': list(baseline),
+                'strokeWidth': stroke/4, 'rasterScale': 4}
+            capture.image(f'label:{self._artwork_label.id}', img, box, text_run=run)
+            capture.diagnostics.setdefault('labelBoxes', []).append(
+                {'id': self._artwork_label.id, 'type': self._artwork_label.type, 'box': box})
+            return
         if self.ctx.image.mode == "RGB":
             self.ctx.image.paste(img, (x, y), img)
         else:

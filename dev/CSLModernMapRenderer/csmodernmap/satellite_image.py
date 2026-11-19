@@ -6,8 +6,8 @@ from PIL import Image
 from .i18n import tr
 
 
-INTERFERING_LAYERS = ("terrain", "water", "building", "built_area", "land_use",
-                      "poi_area", "procedural_objects", "road", "railway", "traffic")
+COVERING_LAYERS = ("terrain", "water", "building", "built_area", "land_use",
+                   "poi_area", "procedural_objects")
 
 
 def ensure_satellite(document, progress=None):

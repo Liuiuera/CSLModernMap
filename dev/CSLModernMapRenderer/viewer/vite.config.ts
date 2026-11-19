@@ -1,9 +1,10 @@
-import { build, defineConfig } from 'vite';
-import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { defineConfig } from 'vite';
+import { copyFileSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { dirname, resolve } from 'node:path';
 
 const workerSource = resolve(
-  'node_modules/maplibre-gl/dist/maplibre-gl-worker.mjs');
+  'node_modules/maplibre-gl/dist/maplibre-gl-csp-worker.js');
 const workerTarget = resolve('dist/assets/maplibre-gl-csp-worker.js');
 
 export default defineConfig({
@@ -15,19 +16,19 @@ export default defineConfig({
     target: 'es2022',
   },
   plugins: [{
+    name: 'check-transit-badge-layout',
+    buildStart() {
+      const source = readFileSync(resolve('../csmodernmap/transit_badge_layout.py'), 'utf8').replace(/\r\n/g, '\n');
+      const hash = createHash('sha256').update(source).digest('hex');
+      if (!readFileSync(resolve('src/transit-badge-layout.js'), 'utf8').split(/\r?\n/, 1)[0].endsWith(hash)) {
+        throw new Error('Regenerate the shared layout with python ../scripts/generate_transit_badge_layout.py');
+      }
+    },
+  }, {
     name: 'copy-maplibre-csp-worker',
-    async closeBundle() {
+    closeBundle() {
       mkdirSync(dirname(workerTarget), { recursive: true });
-      // 单文件 Worker 同时供本地预览和离线 HTML 的 Blob 使用。
-      await build({
-        configFile: false,
-        build: {
-          outDir: dirname(workerTarget),
-          emptyOutDir: false,
-          target: 'es2022',
-          lib: { entry: workerSource, formats: ['iife'], fileName: () => 'maplibre-gl-csp-worker.js', name: 'MapLibreWorker' },
-        },
-      });
+      copyFileSync(workerSource, workerTarget);
       const lock = JSON.parse(readFileSync('package-lock.json', 'utf8'));
       const notices: string[] = [];
       for (const [path, entry] of Object.entries(lock.packages) as [string, { dev?: boolean; version?: string; license?: string }][]) {
@@ -40,7 +41,9 @@ export default defineConfig({
         }
       }
       writeFileSync('dist/THIRD_PARTY_LICENSES.txt', notices.join('\n\n'));
-      writeFileSync('dist/NAVIGATION_LICENSES.txt', notices.join('\n\n'));
+      writeFileSync(resolve('dist/NAVIGATION_LICENSES.txt'), notices.join('\n\n')
+        + '\n\nPScript 0.8.1\n' + readFileSync(resolve('PScript-LICENSE.txt'), 'utf8')
+        + '\n\nTabler Icons 2.47.0\n' + readFileSync(resolve('../resources/fonts/Tabler-LICENSE.txt'), 'utf8'));
     },
   }],
 });

@@ -29,30 +29,6 @@
     <value>{0}：請輸入介於 {1} 至 {2} 的數值。</value>
     <comment>AppearanceControls.cs:153</comment>
   </data>
-  <data name="AppearanceControls_Number_0DA36741DE" xml:space="preserve">
-    <value>固定部分（px）</value>
-    <comment>AppearanceControls.cs:136</comment>
-  </data>
-  <data name="AppearanceControls_Number_2C7E083699" xml:space="preserve">
-    <value>隨縮放部分（參考像素）</value>
-    <comment>AppearanceControls.cs:138</comment>
-  </data>
-  <data name="AppearanceControls_Number_9FC85F1C9F" xml:space="preserve">
-    <value>維持固定大小</value>
-    <comment>AppearanceControls.cs:198</comment>
-  </data>
-  <data name="AppearanceControls_Number_C42BC5D941" xml:space="preserve">
-    <value>{0}：請輸入有效數值。</value>
-    <comment>AppearanceControls.cs:148</comment>
-  </data>
-  <data name="AppearanceControls_Number_EE9964568E" xml:space="preserve">
-    <value>固定部分 + 隨縮放變化部分</value>
-    <comment>AppearanceControls.cs:198</comment>
-  </data>
-  <data name="AppearanceControls_Number_F1463D39A7" xml:space="preserve">
-    <value>隨地圖縮放</value>
-    <comment>AppearanceControls.cs:198</comment>
-  </data>
   <data name="ContextRibbonToggle_Refresh_645432A5BF" xml:space="preserve">
     <value>，已開啟</value>
     <comment>ContextRibbonToggle.cs:31</comment>
@@ -216,6 +192,10 @@
   <data name="ExportWindow_Preview_FormatDescription_D1B9C29526" xml:space="preserve">
     <value>路網專案 · 在 Rail Map Painter 中編輯</value>
     <comment>ExportWindow.Preview.cs:93</comment>
+  </data>
+  <data name="ExportWindow_Preview_FormatDescription_F3E27B053E" xml:space="preserve">
+    <value>GeoPackage (.gpkg) + GeoTIFF (.tif) + QGIS (.qml)</value>
+    <comment>ExportWindow.Preview.cs:91</comment>
   </data>
   <data name="ExportWindow_Preview_InitializeResults_0A07FEF6ED" xml:space="preserve">
     <value>重試匯出</value>
@@ -445,6 +425,10 @@
     <value>地鐵示意圖</value>
     <comment>ExportWindow.cs:679</comment>
   </data>
+  <data name="ExportWindow_UpdateContextCopy_19744772B2" xml:space="preserve">
+    <value>GeoPackage (.gpkg) + GeoTIFF (.tif) + QGIS (.qml)</value>
+    <comment>ExportWindow.cs:348</comment>
+  </data>
   <data name="ExportWindow_UpdateContextCopy_2F52FBFF32" xml:space="preserve">
     <value>依目前的地鐵路網與路線選取匯出輔助專案。</value>
     <comment>ExportWindow.cs:357</comment>
@@ -468,6 +452,10 @@
   <data name="ExportWindow_UpdateContextCopy_6339D3A748" xml:space="preserve">
     <value>依目前的主題、圖層與選取範圍匯出地圖。</value>
     <comment>ExportWindow.cs:376</comment>
+  </data>
+  <data name="ExportWindow_UpdateContextCopy_694B1FB788" xml:space="preserve">
+    <value>GeoPackage / GeoTIFF + QML</value>
+    <comment>ExportWindow.cs:347</comment>
   </data>
   <data name="ExportWindow_UpdateContextCopy_7BE47589C1" xml:space="preserve">
     <value>匯出 .rmp.json 後，匯入 Rail Map Painter 編輯路線。</value>
@@ -817,6 +805,10 @@
     <value>匯出 PNG…</value>
     <comment>MainWindow.File.cs:32</comment>
   </data>
+  <data name="MainWindow_File_BuildFileMenu_D9A515CF72" xml:space="preserve">
+    <value>GeoPackage / GeoTIFF + QML…</value>
+    <comment>MainWindow.File.cs:34</comment>
+  </data>
   <data name="MainWindow_File_RefreshFileRecent_95D7E39D01" xml:space="preserve">
     <value>檔案已移動或不存在：</value>
     <comment>MainWindow.File.cs:63</comment>
@@ -1145,10 +1137,6 @@
     <value>大眾運輸圖示</value>
     <comment>MainWindow.MapSettings.cs:278</comment>
   </data>
-  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_4D2A6ECC62" xml:space="preserve">
-    <value>參考尺寸以全城 4096 像素為基準。</value>
-    <comment>MainWindow.MapSettings.cs:350; MainWindow.MapSettings.cs:365</comment>
-  </data>
   <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_4D8D19C70F" xml:space="preserve">
     <value>設定類別</value>
     <comment>MainWindow.MapSettings.cs:57; MainWindow.MapSettings.cs:58; MainWindow.MapSettings.cs:59</comment>
@@ -1361,10 +1349,6 @@
     <value>顯示文字與圖示</value>
     <comment>MainWindow.MapSettings.cs:216</comment>
   </data>
-  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_EC7FFA2896" xml:space="preserve">
-    <value>縮放時的尺寸變化</value>
-    <comment>MainWindow.MapSettings.cs:351; MainWindow.MapSettings.cs:366</comment>
-  </data>
   <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_ED236491A4" xml:space="preserve">
     <value>遊戲自動名稱</value>
     <comment>MainWindow.MapSettings.cs:311</comment>
@@ -1388,6 +1372,10 @@
   <data name="MainWindow_OverviewButton.Content" xml:space="preserve">
     <value>地圖概況</value>
     <comment>dev\CSLModernMapRenderer\winui\MainWindow.xaml:50</comment>
+  </data>
+  <data name="MainWindow_Overview_ShowInspectorHome_064FC61A89" xml:space="preserve">
+    <value>在 QGIS 中繼續編輯</value>
+    <comment>MainWindow.Overview.cs:131</comment>
   </data>
   <data name="MainWindow_Overview_ShowInspectorHome_1CDED5B3FD" xml:space="preserve">
     <value>物件屬性</value>
@@ -1433,10 +1421,6 @@
     <value>地圖主題與目前城市概況</value>
     <comment>MainWindow.Overview.cs:39</comment>
   </data>
-  <data name="MainWindow_Overview_ShowMapOverview_3595B7C819" xml:space="preserve">
-    <value>區域數量</value>
-    <comment>MainWindow.Overview.cs:53</comment>
-  </data>
   <data name="MainWindow_Overview_ShowMapOverview_41AB2E0ECB" xml:space="preserve">
     <value>地圖</value>
     <comment>MainWindow.Overview.cs:38; MainWindow.Overview.cs:40</comment>
@@ -1450,7 +1434,7 @@
     <comment>MainWindow.Overview.cs:52</comment>
   </data>
   <data name="MainWindow_Overview_ShowMapOverview_6F1C3CB04A" xml:space="preserve">
-    <value>編輯主題…</value>
+    <value>編輯主題參數…</value>
     <comment>MainWindow.Overview.cs:48</comment>
   </data>
   <data name="MainWindow_Overview_ShowMapOverview_788DB1CFEC" xml:space="preserve">
@@ -1458,7 +1442,7 @@
     <comment>MainWindow.Overview.cs:41</comment>
   </data>
   <data name="MainWindow_Overview_ShowMapOverview_B553EA09A3" xml:space="preserve">
-    <value>大眾運輸營運里程</value>
+    <value>公共運輸路線總長</value>
     <comment>MainWindow.Overview.cs:52</comment>
   </data>
   <data name="MainWindow_Overview_ShowMapOverview_BDA7B29CF3" xml:space="preserve">
@@ -1480,6 +1464,34 @@
   <data name="MainWindow_Overview_ShowMapOverview_ED84A1665F" xml:space="preserve">
     <value>城市</value>
     <comment>MainWindow.Overview.cs:51</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_2CD0F3BE87" xml:space="preserve">
+    <value>取消</value>
+    <comment>MainWindow.PreviewSettings.cs:36</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_3279E8322A" xml:space="preserve">
+    <value>預覽效能</value>
+    <comment>MainWindow.PreviewSettings.cs:19</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_63C73C4730" xml:space="preserve">
+    <value>套用</value>
+    <comment>MainWindow.PreviewSettings.cs:37</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_8B710BEF56" xml:space="preserve">
+    <value>目前城市已變更，請重新開啟設定。</value>
+    <comment>MainWindow.PreviewSettings.cs:39</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_BA2E93E730" xml:space="preserve">
+    <value>還原預設值</value>
+    <comment>MainWindow.PreviewSettings.cs:35</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_BD4DD78F2D" xml:space="preserve">
+    <value>記錄城市載入、地圖產生與繪製耗時，以協助診斷預覽延遲。</value>
+    <comment>MainWindow.PreviewSettings.cs:29</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_F15F7C4642" xml:space="preserve">
+    <value>記錄預覽效能</value>
+    <comment>MainWindow.PreviewSettings.cs:22</comment>
   </data>
   <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_07C030A101" xml:space="preserve">
     <value>重複間距（公尺）</value>
@@ -2055,12 +2067,20 @@
     <comment>MainWindow.Workflows.cs:202</comment>
   </data>
   <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_2E765B0E76" xml:space="preserve">
-    <value>開啟記錄資料夾</value>
+    <value>開啟記錄檔資料夾</value>
     <comment>MainWindow.Workflows.cs:197</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_3B1EF565E6" xml:space="preserve">
+    <value>效能</value>
+    <comment>MainWindow.Workflows.cs:213</comment>
   </data>
   <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_41AB2E0ECB" xml:space="preserve">
     <value>地圖</value>
     <comment>MainWindow.Workflows.cs:213</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_51464DD5DC" xml:space="preserve">
+    <value>效能診斷</value>
+    <comment>MainWindow.Workflows.cs:194</comment>
   </data>
   <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_6EDFD8773A" xml:space="preserve">
     <value>重新整理預覽</value>
@@ -2337,6 +2357,10 @@ Esc  取消目前工作</value>
   <data name="MainWindow_xaml_BuildRibbon_62AEEB8B65" xml:space="preserve">
     <value>區域與行政區</value>
     <comment>MainWindow.xaml.cs:165</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_694B1FB788" xml:space="preserve">
+    <value>GeoPackage / GeoTIFF + QML</value>
+    <comment>MainWindow.xaml.cs:141; MainWindow.xaml.cs:218</comment>
   </data>
   <data name="MainWindow_xaml_BuildRibbon_6BEB3C5ED7" xml:space="preserve">
     <value>地圖創作</value>
@@ -3371,18 +3395,6 @@ Esc  取消目前工作</value>
     <value>正在編輯輸入；提交有效值後會更新預覽</value>
     <comment>ThemeEditorDialog.Fields.cs:348</comment>
   </data>
-  <data name="ThemeEditorDialog_Fields_Label_606D5B2CC1" xml:space="preserve">
-    <value>隨算圖比例增加部分</value>
-    <comment>ThemeEditorDialog.Fields.cs:23</comment>
-  </data>
-  <data name="ThemeEditorDialog_Fields_Label_803A1B3A33" xml:space="preserve">
-    <value>固定部分</value>
-    <comment>ThemeEditorDialog.Fields.cs:22</comment>
-  </data>
-  <data name="ThemeEditorDialog_Fields_MakeField_606D5B2CC1" xml:space="preserve">
-    <value>隨算圖比例增加部分</value>
-    <comment>ThemeEditorDialog.Fields.cs:134</comment>
-  </data>
   <data name="ThemeEditorDialog_Fields_MakeField_66FE53367D" xml:space="preserve">
     <value>請輸入介於 {0} 至 {1} 之間的數值</value>
     <comment>ThemeEditorDialog.Fields.cs:181</comment>
@@ -3394,14 +3406,6 @@ Esc  取消目前工作</value>
   <data name="ThemeEditorDialog_Fields_MakeField_870D5FE5D4" xml:space="preserve">
     <value>請輸入 JSON 陣列</value>
     <comment>ThemeEditorDialog.Fields.cs:150</comment>
-  </data>
-  <data name="ThemeEditorDialog_Fields_MakeField_986E6B84D7" xml:space="preserve">
-    <value>固定部分（px）</value>
-    <comment>ThemeEditorDialog.Fields.cs:133</comment>
-  </data>
-  <data name="ThemeEditorDialog_Fields_MakeField_CF663DC217" xml:space="preserve">
-    <value>最終尺寸 = 固定部分 + 隨比例增加部分 × 算繪比例</value>
-    <comment>ThemeEditorDialog.Fields.cs:136</comment>
   </data>
   <data name="ThemeEditorDialog_Fields_MakeField_D9E21007A0" xml:space="preserve">
     <value>（目前值）</value>
@@ -3420,11 +3424,11 @@ Esc  取消目前工作</value>
     <comment>ThemeEditorDialog.Fields.cs:84</comment>
   </data>
   <data name="ThemeEditorDialog_Fields_PageDescription_5986B685A1" xml:space="preserve">
-    <value>依道路等級調整填色、外框和最小顯示寬度。</value>
+    <value>依道路等級調整填色、外框和無輪廓寬度（px）。</value>
     <comment>ThemeEditorDialog.Fields.cs:82</comment>
   </data>
   <data name="ThemeEditorDialog_Fields_PageDescription_7245F659EA" xml:space="preserve">
-    <value>編輯主題名稱與說明，並儲存目前的主題設定。</value>
+    <value>儲存預設的修改會建立個人主題；儲存個人主題會更新原主題。匯出可另存為 YAML 檔案。</value>
     <comment>ThemeEditorDialog.Fields.cs:85</comment>
   </data>
   <data name="ThemeEditorDialog_Fields_PageDescription_8714276423" xml:space="preserve">
@@ -3536,7 +3540,7 @@ Esc  取消目前工作</value>
     <comment>ThemeEditorDialog.Layout.cs:43</comment>
   </data>
   <data name="ThemeEditorDialog_Layout_BuildWorkbench_BA1125B2AC" xml:space="preserve">
-    <value>編輯完整主題資料（JSON）…</value>
+    <value>編輯 JSON…</value>
     <comment>ThemeEditorDialog.Layout.cs:60</comment>
   </data>
   <data name="ThemeEditorDialog_Layout_BuildWorkbench_EC9A1CEB6D" xml:space="preserve">
@@ -3699,10 +3703,6 @@ Esc  取消目前工作</value>
     <value>請輸入 {0} 至 {1} m 的高度及有效的 HEX 色碼</value>
     <comment>ThemeEditorDialog.Pages.cs:189</comment>
   </data>
-  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_01EEE2E647" xml:space="preserve">
-    <value>係數越大，道路整體越粗。</value>
-    <comment>ThemeEditorDialog.Pages.cs:61</comment>
-  </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_05FB7CBA47" xml:space="preserve">
     <value>填滿</value>
     <comment>ThemeEditorDialog.Pages.cs:29</comment>
@@ -3712,23 +3712,19 @@ Esc  取消目前工作</value>
     <comment>ThemeEditorDialog.Pages.cs:42</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_1D68EDF7EB" xml:space="preserve">
-    <value>最小 px</value>
+    <value>無道路面資料時的線寬（像素）</value>
     <comment>ThemeEditorDialog.Pages.cs:29</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_3001DE3658" xml:space="preserve">
     <value>各等級外觀</value>
     <comment>ThemeEditorDialog.Pages.cs:24</comment>
   </data>
-  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_37AE912BEC" xml:space="preserve">
-    <value>整體粗細</value>
-    <comment>ThemeEditorDialog.Pages.cs:59</comment>
-  </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_512DF348F2" xml:space="preserve">
-    <value>最小寬度控制遠景可見性，實際寬度會隨道路尺寸變化；外框會包住填色。</value>
+    <value>有足跡：足跡寬度 × 足跡倍率。無足跡：像素寬度 × 元素倍率。描邊也按元素倍率縮放。</value>
     <comment>ThemeEditorDialog.Pages.cs:56</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_593A6AFD98" xml:space="preserve">
-    <value>各等級外框寬度</value>
+    <value>外框寬度（像素）／道路面寬度倍率</value>
     <comment>ThemeEditorDialog.Pages.cs:63</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_80A57E03F0" xml:space="preserve">
@@ -3750,10 +3746,6 @@ Esc  取消目前工作</value>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_C2AE96D4A6" xml:space="preserve">
     <value>高架與隧道</value>
     <comment>ThemeEditorDialog.Pages.cs:72</comment>
-  </data>
-  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_E9C68028D9" xml:space="preserve">
-    <value>道路寬度比例</value>
-    <comment>ThemeEditorDialog.Pages.cs:60</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_FBE666F1E0" xml:space="preserve">
     <value>道路等級</value>
@@ -3794,11 +3786,6 @@ Esc  取消目前工作</value>
   <data name="ThemeEditorDialog_Preview_BuildSamples_1350C527B6" xml:space="preserve">
     <value>顏色與尺寸變更會顯示在實際地圖預覽中。</value>
     <comment>ThemeEditorDialog.Preview.cs:50</comment>
-  </data>
-  <data name="ThemeEditorDialog_Preview_BuildSamples_1A0787C40B" xml:space="preserve">
-    <value> · 最小 {0:0.##} px
-範例道路 16 m，算圖比例 1</value>
-    <comment>ThemeEditorDialog.Preview.cs:33</comment>
   </data>
   <data name="ThemeEditorDialog_Preview_BuildSamples_5BD3906590" xml:space="preserve">
     <value>尚無高度節點</value>
@@ -4320,7 +4307,7 @@ Esc  取消目前工作</value>
   <data name="MainWindow_File_OpenConfigurationFolder" xml:space="preserve">
     <value>開啟設定資料夾</value>
   </data>
-  <data name="RmpEditor_Title" xml:space="preserve"><value>Metro diagram editor</value></data>
+  <data name="RmpEditor_Title" xml:space="preserve"><value>捷運路線圖編輯器</value></data>
   <data name="RmpEditor_Edit" xml:space="preserve"><value>Edit</value></data>
   <data name="RmpEditor_Save" xml:space="preserve"><value>Save project</value></data>
   <data name="RmpEditor_SaveAs" xml:space="preserve"><value>Save as…</value></data>
@@ -4332,20 +4319,20 @@ Esc  取消目前工作</value>
   <data name="RmpEditor_Cancel" xml:space="preserve"><value>Cancel</value></data>
   <data name="RmpEditor_Discard" xml:space="preserve"><value>Discard changes</value></data>
   <data name="RmpEditor_Unsaved" xml:space="preserve"><value>Unsaved project</value></data>
-  <data name="RmpEditor_UnsavedPrompt" xml:space="preserve"><value>Save changes before continuing?</value></data>
-  <data name="RmpEditor_Independent" xml:space="preserve"><value>Changes belong to this editor only.</value></data>
-  <data name="RmpEditor_NativeAppearance" xml:space="preserve"><value>RMP uses native symbol sizes, Noto Sans SC and opaque water colours composed over the canvas background.</value></data>
-  <data name="RmpEditor_Detached" xml:space="preserve"><value>This project is not linked to the current source map.</value></data>
-  <data name="RmpEditor_MissingAssets" xml:space="preserve"><value>RMP assets are missing. Rebuild the WinUI application.</value></data>
-  <data name="RmpEditor_LoadFailed" xml:space="preserve"><value>Unable to load the RMP editor</value></data>
-  <data name="RmpEditor_ProcessFailed" xml:space="preserve"><value>The editor process stopped. Unsaved changes could not be recovered.</value></data>
-  <data name="RmpEditor_InvalidProject" xml:space="preserve"><value>Not a supported RMP project (save version 1–77).</value></data>
-  <data name="RmpEditor_BlockedResource" xml:space="preserve"><value>An external resource was blocked by the offline editor.</value></data>
+  <data name="RmpEditor_UnsavedPrompt" xml:space="preserve"><value>要先儲存變更再繼續嗎？</value></data>
+  <data name="RmpEditor_Independent" xml:space="preserve"><value>修改僅套用於這份草稿。</value></data>
+  <data name="RmpEditor_NativeAppearance" xml:space="preserve"><value>RMP 採用符號原始尺寸與 Noto Sans SC 字型。水域與畫布底色混合後會以不透明色彩顯示。</value></data>
+  <data name="RmpEditor_Detached" xml:space="preserve"><value>此專案未連結至目前的來源地圖。</value></data>
+  <data name="RmpEditor_MissingAssets" xml:space="preserve"><value>缺少 RMP 資源，請重新建置 WinUI 應用程式。</value></data>
+  <data name="RmpEditor_LoadFailed" xml:space="preserve"><value>無法載入 RMP 編輯器</value></data>
+  <data name="RmpEditor_ProcessFailed" xml:space="preserve"><value>編輯器程序已停止，無法復原尚未儲存的變更。</value></data>
+  <data name="RmpEditor_InvalidProject" xml:space="preserve"><value>不支援此 RMP 專案，支援的存檔版本為 1 至 77。</value></data>
+  <data name="RmpEditor_BlockedResource" xml:space="preserve"><value>離線編輯器已封鎖外部資源。</value></data>
   <data name="RmpEditor_RegeneratePrompt" xml:space="preserve"><value>Replace this draft with the automatic diagram captured when this window opened? This does not change the main window.</value></data>
   <data name="RmpEditor_Exported" xml:space="preserve"><value>Exported:</value></data>
-  <data name="RmpEditor_MismatchPrompt" xml:space="preserve"><value>The saved project does not match its source metadata. Open it independently, or create a new draft without overwriting it?</value></data>
-  <data name="RmpEditor_OpenExisting" xml:space="preserve"><value>Open existing project</value></data>
-  <data name="RmpEditor_NewDraft" xml:space="preserve"><value>Create new draft</value></data>
+  <data name="RmpEditor_MismatchPrompt" xml:space="preserve"><value>已儲存的專案與來源中繼資料不符。要單獨開啟，還是保留原始檔案並建立新草稿？</value></data>
+  <data name="RmpEditor_OpenExisting" xml:space="preserve"><value>開啟現有專案</value></data>
+  <data name="RmpEditor_NewDraft" xml:space="preserve"><value>建立新草稿</value></data>
   <data name="RmpEditor_Fit" xml:space="preserve"><value>Fit diagram</value></data>
   <data name="RmpEditor_Undo" xml:space="preserve"><value>復原</value></data>
   <data name="RmpEditor_Redo" xml:space="preserve"><value>重做</value></data>
@@ -4377,6 +4364,312 @@ Esc  取消目前工作</value>
   <data name="ExportWindow_RmpContent" xml:space="preserve"><value>匯出目前編輯中的地鐵示意圖，包含已修改的路線、車站及其他元素。字型隨檔案嵌入。</value></data>
   <data name="ExportWindow_RmpSvgDescription" xml:space="preserve"><value>向量圖片，可縮放與繼續編輯</value></data>
   <data name="RmpEditor_DefaultTitle" xml:space="preserve"><value>{cityName}地鐵圖</value></data>
+  <data name="Poi_Area" xml:space="preserve"><value>功能區</value></data>
+  <data name="Poi_AreaIcons" xml:space="preserve"><value>功能區圖示</value></data>
+  <data name="Poi_AreaNames" xml:space="preserve"><value>功能區名稱</value></data>
+  <data name="Poi_AreaDescription" xml:space="preserve"><value>遊戲匯出的功能區域及其名稱。</value></data>
+  <data name="Poi_PngInternalBuildings" xml:space="preserve"><value>PNG 顯示功能區內部建築圖示</value></data>
+  <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
+    <value>偵測到遊戲仍在執行，會佔用較多記憶體。建議儲存城市並退出遊戲後再匯出；也可以繼續嘗試。</value>
+  </data>
+  <data name="ExportWindow_BeforeExportNotice" xml:space="preserve">
+    <value>匯出前建議儲存城市並退出遊戲，關閉其他佔用較多記憶體的程式。大尺寸匯出會佔用更多記憶體。</value>
+  </data>
+  <data name="Poi_AreaMerge" xml:space="preserve">
+    <value>功能區近鄰合併（二代）</value>
+  </data>
+  <data name="Poi_AreaMergeDescription" xml:space="preserve">
+    <value>相同原生類型、同名的二代功能區在指定距離內共用一個標註；保留各自區域邊界。</value>
+  </data>
+  <data name="Map_RotateCounterclockwise" xml:space="preserve">
+    <value>逆時針 90°</value>
+  </data>
+  <data name="Map_RotateClockwise" xml:space="preserve">
+    <value>順時針 90°</value>
+  </data>
+  <data name="Failure_Internal" xml:space="preserve"><value>發生未預期的錯誤。您可以向作者回報此錯誤。</value></data>
+  <data name="Failure_Operation" xml:space="preserve"><value>Operation failed</value></data>
+  <data name="Failure_Metro" xml:space="preserve"><value>地鐵路線圖產生失敗</value></data>
+  <data name="Failure_Export" xml:space="preserve"><value>地圖匯出失敗</value></data>
+  <data name="Failure_Permission" xml:space="preserve"><value>無法存取必要的檔案。請檢查檔案或資料夾權限後重試。</value></data>
+  <data name="Failure_MissingFile" xml:space="preserve"><value>找不到必要檔案。請確認檔案位置後再試一次。</value></data>
+  <data name="Failure_Memory" xml:space="preserve"><value>記憶體配置失敗。請縮小輸出尺寸，或關閉佔用大量記憶體的應用程式後重試。</value></data>
+  <data name="Failure_EngineStopped" xml:space="preserve"><value>繪圖引擎已停止。請重新開啟檢視器後再試一次。</value></data>
+  <data name="Failure_ViewDetails" xml:space="preserve"><value>View details</value></data>
+  <data name="Failure_CopyDetails" xml:space="preserve"><value>複製錯誤詳細資料</value></data>
+  <data name="Failure_Close" xml:space="preserve"><value>Close</value></data>
+  <data name="Failure_Copied" xml:space="preserve"><value>Copied</value></data>
+  <data name="Failure_CopyFailed" xml:space="preserve"><value>複製失敗，請再試一次。</value></data>
+  <data name="Ribbon_MoreLayers" xml:space="preserve"><value>更多圖層</value></data>
+  <data name="Ribbon_Simplified" xml:space="preserve"><value>精簡</value></data>
+  <data name="Ribbon_Classic" xml:space="preserve"><value>傳統</value></data>
+  <data name="Sidebar_ShowSettings" xml:space="preserve"><value>展開左欄</value></data>
+  <data name="Sidebar_HideSettings" xml:space="preserve"><value>收合左欄</value></data>
+  <data name="Sidebar_ShowInspector" xml:space="preserve"><value>展開右欄</value></data>
+  <data name="Sidebar_HideInspector" xml:space="preserve"><value>收合右欄</value></data>
+  <data name="Ribbon_IntroTitle" xml:space="preserve"><value>試試新的精簡模式</value></data>
+  <data name="Ribbon_IntroDescription" xml:space="preserve"><value>精簡模式提供更舒適、更簡單的地圖瀏覽方式，你可以隨時切換回傳統模式。</value></data>
+  <data name="Ribbon_IntroTry" xml:space="preserve"><value>試用精簡模式</value></data>
+  <data name="Ribbon_IntroLater" xml:space="preserve"><value>暫不</value></data>
+  <data name="RmpEditor_showNames" xml:space="preserve"><value>顯示站名</value></data>
+  <data name="RmpEditor_showDefaultNames" xml:space="preserve"><value>顯示預設站名</value></data>
+  <data name="BuildingCategory_Help" xml:space="preserve"><value>選擇「分類上色」後生效。開啟「指定顏色」影響該類別的全部建築；關閉可恢復自動 POI 取色。分類依據現有遊戲欄位，未分類物件不會按名稱猜測。</value></data>
+  <data name="Poi_ShowDecorative" xml:space="preserve"><value>顯示裝飾物 POI</value></data>
+  <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>控制已收錄裝飾物的圖示與名稱，保留建築和地物。</value></data>
+  <data name="MetroSettings_Reset" xml:space="preserve"><value>還原預設值</value></data>
+  <data name="Preview_Failed" xml:space="preserve"><value>地圖預覽無法載入</value></data>
+  <data name="Preview_Slow" xml:space="preserve"><value>地圖預覽耗時較長</value></data>
+  <data name="Preview_Stopped" xml:space="preserve"><value>預覽器未執行</value></data>
+  <data name="Preview_DataAvailable" xml:space="preserve"><value>地圖資料已讀取，可以選擇主題並繼續匯出。</value></data>
+  <data name="Preview_OpenMap" xml:space="preserve"><value>可以開啟地圖檔案，讀取成功後繼續匯出。</value></data>
+  <data name="Preview_AutoStart" xml:space="preserve"><value>啟動時載入內嵌預覽</value></data>
+  <data name="Preview_Retry.Content" xml:space="preserve"><value>重試</value></data>
+  <data name="Preview_Png.Content" xml:space="preserve"><value>匯出 PNG（2048 像素）</value></data>
+  <data name="Preview_Html.Content" xml:space="preserve"><value>在外部瀏覽器開啟</value></data>
+  <data name="Preview_Continue.Content" xml:space="preserve"><value>繼續等待</value></data>
+  <data name="Preview_OpenFailed" xml:space="preserve"><value>網頁已產生，但無法開啟瀏覽器。可以開啟輸出目錄，手動開啟 HTML 檔案。</value></data>
+  <data name="ThemeEditor_Select" xml:space="preserve"><value>選擇主題</value></data>
+  <data name="ThemeEditor_Unsaved" xml:space="preserve"><value>未儲存</value></data>
+  <data name="ThemeEditor_Builtins" xml:space="preserve"><value>預設</value></data>
+  <data name="ThemeEditor_Personal" xml:space="preserve"><value>我的主題</value></data>
+  <data name="ThemeEditor_New" xml:space="preserve"><value>新增主題</value></data>
+  <data name="ThemeEditor_Copy" xml:space="preserve"><value>複製主題</value></data>
+  <data name="ThemeEditor_Rename" xml:space="preserve"><value>重新命名</value></data>
+  <data name="ThemeEditor_Import" xml:space="preserve"><value>匯入主題…</value></data>
+  <data name="ThemeEditor_Export" xml:space="preserve"><value>匯出 YAML…</value></data>
+  <data name="ThemeEditor_Base" xml:space="preserve"><value>基礎預設</value></data>
+  <data name="ThemeEditor_Cancel" xml:space="preserve"><value>取消</value></data>
+  <data name="ThemeEditor_Name" xml:space="preserve"><value>主題名稱</value></data>
+  <data name="ThemeEditor_Save" xml:space="preserve"><value>儲存到我的主題</value></data>
+  <data name="ThemeEditor_Exported" xml:space="preserve"><value>主題已匯出</value></data>
+  <data name="ThemeEditor_InvalidName" xml:space="preserve"><value>名稱須為 1–64 個字元，不能包含控制字元。</value></data>
+  <data name="ThemeEditor_MigrationWarning" xml:space="preserve"><value>部分舊主題無法讀取，原始檔案已備份：</value></data>
+  <data name="BuildingList_Open" xml:space="preserve"><value>建築清單</value></data>
+  <data name="BuildingList_Back" xml:space="preserve"><value>返回地圖概況</value></data>
+  <data name="BuildingList_Search" xml:space="preserve"><value>搜尋建築名稱</value></data>
+  <data name="BuildingList_Category" xml:space="preserve"><value>建築類別</value></data>
+  <data name="BuildingList_OutsideFilter" xml:space="preserve"><value>所選建築不在目前篩選結果中。</value></data>
+  <data name="BuildingList_Clear" xml:space="preserve"><value>清除篩選</value></data>
+  <data name="BuildingList_All" xml:space="preserve"><value>全部</value></data>
+  <data name="BuildingList_Unnamed" xml:space="preserve"><value>未命名建築</value></data>
+  <data name="BuildingList_Empty" xml:space="preserve"><value>沒有符合條件的建築</value></data>
+  <data name="BuildingList_Count" xml:space="preserve"><value>顯示 {0:N0} / {1:N0} 棟建築（組合建築合併計數）</value></data>
+  <data name="BuildingList_Members" xml:space="preserve"><value>附屬建築</value></data>
+  <data name="BuildingList_OpenButton.Content" xml:space="preserve"><value>建築清單</value></data>
+  <data name="BuildingList_Sort" xml:space="preserve"><value>排序</value></data>
+  <data name="BuildingList_NameAsc" xml:space="preserve"><value>名稱：升冪</value></data>
+  <data name="BuildingList_NameDesc" xml:space="preserve"><value>名稱：降冪</value></data>
+  <data name="BuildingList_CategoryAsc" xml:space="preserve"><value>類別：升冪</value></data>
+  <data name="BuildingList_CategoryDesc" xml:space="preserve"><value>類別：降冪</value></data>
+  <data name="BuildingList_IdAsc" xml:space="preserve"><value>ID：升冪</value></data>
+  <data name="BuildingList_IdDesc" xml:space="preserve"><value>ID：降冪</value></data>
+  <data name="BuildingList_Details" xml:space="preserve"><value>建築詳細資訊</value></data>
+  <data name="BuildingList_DetailHint" xml:space="preserve"><value>選取建築以查看詳細資訊。</value></data>
+  <data name="ThemeEditor_CurrentUnreadable" xml:space="preserve"><value>目前的主題無法讀取，請選擇其他主題。原始檔案已保留。</value></data>
+  <data name="BuildingList_GameNames" xml:space="preserve"><value>使用遊戲隨機名稱</value></data>
+  <data name="BuildingList_NameHint" xml:space="preserve"><value>名稱設定與地圖同步；保留玩家自訂名稱。</value></data>
+  <data name="BuildingList_Name" xml:space="preserve"><value>建築名稱</value></data>
+  <data name="BuildingList_Id" xml:space="preserve"><value>ID</value></data>
+  <data name="BuildingList_Info" xml:space="preserve"><value>建築資訊</value></data>
+  <data name="BuildingList_NameSource" xml:space="preserve"><value>名稱來源</value></data>
+  <data name="BuildingList_CustomName" xml:space="preserve"><value>玩家自訂</value></data>
+  <data name="BuildingList_OfficialName" xml:space="preserve"><value>遊戲官方分類</value></data>
+  <data name="BuildingList_NoName" xml:space="preserve"><value>未提供名稱</value></data>
+  <data name="BuildingList_GameCategory" xml:space="preserve"><value>遊戲分類</value></data>
+  <data name="BuildingList_Height" xml:space="preserve"><value>建築高度</value></data>
+  <data name="BuildingList_Group" xml:space="preserve"><value>組合建築</value></data>
+  <data name="BuildingList_GroupCount" xml:space="preserve"><value>{0} 棟（含主建築）</value></data>
+  <data name="BuildingList_GameName" xml:space="preserve"><value>遊戲隨機名稱</value></data>
+  <data name="ThemeUpdate_Title" xml:space="preserve"><value>預設更新</value></data>
+  <data name="ThemeUpdate_Intro" xml:space="preserve"><value>可將新版預設的下列變更套用至「{0}」。</value></data>
+  <data name="ThemeUpdate_Archived" xml:space="preserve"><value>套用前會備份目前的主題。</value></data>
+  <data name="ThemeUpdate_Continue" xml:space="preserve"><value>套用更新</value></data>
+  <data name="ThemeUpdate_UsePrevious" xml:space="preserve"><value>保持現狀</value></data>
+  <data name="ThemeUpdate_Conflict" xml:space="preserve"><value>此項將取代你的自訂設定。</value></data>
+  <data name="ThemeUpdate_ColorRamp" xml:space="preserve"><value>高程色帶</value></data>
+  <data name="ThemeUpdate_Unset" xml:space="preserve"><value>未設定</value></data>
+  <data name="ThemeUpdate_On" xml:space="preserve"><value>開啟</value></data>
+  <data name="ThemeUpdate_Off" xml:space="preserve"><value>關閉</value></data>
+  <data name="ThemeUpdate_Custom" xml:space="preserve"><value>自訂設定</value></data>
+  <data name="SatelliteGuidance_Title" xml:space="preserve"><value>衛星地圖顯示建議</value></data>
+  <data name="SatelliteGuidance_Body" xml:space="preserve"><value>建議搭配衛星暖色主題，突顯道路、圖示和文字。</value></data>
+  <data name="SatelliteGuidance_Apply" xml:space="preserve"><value>套用建議設定</value></data>
+  <data name="SatelliteGuidance_Keep" xml:space="preserve"><value>保留目前設定</value></data>
+  <data name="SatelliteGuidance_Unavailable" xml:space="preserve"><value>目前地圖沒有衛星影像</value></data>
+  <data name="SatelliteGuidance_EnableTitle" xml:space="preserve"><value>建議開啟</value></data>
+  <data name="SatelliteGuidance_EnableLayers" xml:space="preserve"><value>道路、圖示、文字</value></data>
+  <data name="SatelliteGuidance_OptionalTitle" xml:space="preserve"><value>按需開啟</value></data>
+  <data name="SatelliteGuidance_OptionalLayers" xml:space="preserve"><value>鐵路、大眾運輸、路況</value></data>
+  <data name="SatelliteGuidance_DisableTitle" xml:space="preserve"><value>建議關閉</value></data>
+  <data name="SatelliteGuidance_DisableLayers" xml:space="preserve"><value>建築、地形、水域等覆蓋圖層</value></data>
+  <data name="SatelliteGuidance_Preserve" xml:space="preserve"><value>保留目前選擇</value></data>
+  <data name="SatelliteGuidance_Details" xml:space="preserve"><value>檢視調整詳情</value></data>
+  <data name="SatelliteGuidance_DetailBody" xml:space="preserve"><value>建築、地形、水域、建成區、土地利用、POI 範圍和 PO 物件可能遮擋衛星影像，不建議開啟。套用建議設定會關閉這些圖層。</value></data>
+  <data name="Preview_Compatibility.Content" xml:space="preserve"><value>相容預覽</value></data>
+  <data name="Preview_CompatibilityNotice.Text" xml:space="preserve"><value>相容模式：使用圖片預覽，不支援全部功能。</value></data>
+  <data name="Preview_Interactive.Content" xml:space="preserve"><value>切回互動預覽</value></data>
+  <data name="Preview_ImageUpdating.Text" xml:space="preserve"><value>正在更新預覽</value></data>
+  <data name="Preview_ImageFailed" xml:space="preserve"><value>圖片預覽更新失敗：</value></data>
+  <data name="Preview_BrowserOpenFailed" xml:space="preserve"><value>無法開啟瀏覽器，已產生的 HTML 檔案保留在下方位置。</value></data>
+  <data name="Preview_OpenFolder" xml:space="preserve"><value>開啟資料夾</value></data>
+  <data name="Workspace_Immersive" xml:space="preserve"><value>沉浸</value></data>
+  <data name="Workspace_ExitImmersive" xml:space="preserve"><value>退出沉浸</value></data>
+  <data name="Workspace_ImmersiveHint" xml:space="preserve"><value>收起工作區面板，為路線與地圖保留更多空間。</value></data>
+  <data name="Workspace_TryImmersive" xml:space="preserve"><value>試用沉浸模式</value></data>
+  <data name="Workspace_MoreActions" xml:space="preserve"><value>更多地圖操作</value></data>
+  <data name="TransitLabelStyle_Label" xml:space="preserve">
+    <value>標籤樣式</value>
+  </data>
+  <data name="TransitLabelStyle_Classic" xml:space="preserve">
+    <value>原有膠囊</value>
+  </data>
+  <data name="TransitLabelStyle_SideSign" xml:space="preserve">
+    <value>白底色籤</value>
+  </data>
+  <data name="TransitLabelStyle_SplitSign" xml:space="preserve">
+    <value>圖示分段</value>
+  </data>
+  <data name="TransitLabelStyle_SolidSign" xml:space="preserve">
+    <value>輕量實色</value>
+  </data>
+  <data name="TransitLabelStyle_FrameSign" xml:space="preserve">
+    <value>細框路牌</value>
+  </data>
+  <data name="TransitLabelStyle_UnderlineSign" xml:space="preserve">
+    <value>下緣色帶</value>
+  </data>
+  <data name="Artwork_Enter" xml:space="preserve"><value>建立地圖草稿…</value></data>
+  <data name="Artwork_Export" xml:space="preserve"><value>匯出目前作品</value></data>
+  <data name="Artwork_PreviewRequired" xml:space="preserve"><value>請先開啟城市地圖預覽。</value></data>
+  <data name="Artwork_OutputSize" xml:space="preserve"><value>匯出長邊（像素）</value></data>
+  <data name="Artwork_Cancel" xml:space="preserve"><value>取消</value></data>
+  <data name="CityEditor_Title" xml:space="preserve"><value>地圖編輯器</value></data>
+  <data name="CityEditor_Theme" xml:space="preserve"><value>主題</value></data>
+  <data name="CityEditor_SaveAs" xml:space="preserve"><value>另存主題</value></data>
+  <data name="CityEditor_Manage" xml:space="preserve"><value>管理主題</value></data>
+  <data name="CityEditor_Selection" xml:space="preserve"><value>地圖選取範圍</value></data>
+  <data name="CityEditor_Select" xml:space="preserve"><value>框選</value></data>
+  <data name="CityEditor_PickStyle" xml:space="preserve"><value>擷取樣式</value></data>
+  <data name="CityEditor_Pan" xml:space="preserve"><value>平移</value></data>
+  <data name="CityEditor_Clear" xml:space="preserve"><value>清除選取</value></data>
+  <data name="CityEditor_Edit" xml:space="preserve"><value>編輯</value></data>
+  <data name="CityEditor_Undo" xml:space="preserve"><value>復原</value></data>
+  <data name="CityEditor_Redo" xml:space="preserve"><value>重做</value></data>
+  <data name="CityEditor_View" xml:space="preserve"><value>檢視</value></data>
+  <data name="CityEditor_Fit" xml:space="preserve"><value>符合地圖範圍</value></data>
+  <data name="CityEditor_Actual" xml:space="preserve"><value>100%</value></data>
+  <data name="CityEditor_Output" xml:space="preserve"><value>儲存與輸出</value></data>
+  <data name="CityEditor_Save" xml:space="preserve"><value>儲存主題</value></data>
+  <data name="CityEditor_Export" xml:space="preserve"><value>匯出 PNG</value></data>
+  <data name="CityEditor_Close" xml:space="preserve"><value>關閉</value></data>
+  <data name="CityEditor_Leave" xml:space="preserve"><value>離開編輯器</value></data>
+  <data name="CityEditor_Range" xml:space="preserve"><value>地圖範圍</value></data>
+  <data name="CityEditor_WholeCity" xml:space="preserve"><value>全城</value></data>
+  <data name="CityEditor_SelectedRange" xml:space="preserve"><value>所選範圍</value></data>
+  <data name="CityEditor_Preset" xml:space="preserve"><value>畫布預設尺寸</value></data>
+  <data name="CityEditor_Create" xml:space="preserve"><value>建立城市地圖草稿</value></data>
+  <data name="CityEditor_InvalidSize" xml:space="preserve"><value>畫布長邊須為 1 到 32768 之間的整數像素。</value></data>
+  <data name="CityEditor_CanvasPixels" xml:space="preserve"><value>畫布長邊（像素）</value></data>
+  <data name="CityEditor_Rotation" xml:space="preserve"><value>輸出旋轉角度</value></data>
+  <data name="CityEditor_Styles" xml:space="preserve"><value>樣式</value></data>
+  <data name="CityEditor_Draft" xml:space="preserve"><value>草稿</value></data>
+  <data name="CityEditor_ApplyCanvas" xml:space="preserve"><value>套用畫布設定</value></data>
+  <data name="CityEditor_SelectRange" xml:space="preserve"><value>選取地圖範圍</value></data>
+  <data name="CityEditor_UseSelection" xml:space="preserve"><value>使用所選範圍</value></data>
+  <data name="CityEditor_UseWholeCity" xml:space="preserve"><value>使用全城範圍</value></data>
+  <data name="CityEditor_NoSelection" xml:space="preserve"><value>請先在地圖上選取有效範圍。</value></data>
+  <data name="CityEditor_RangeHelp" xml:space="preserve"><value>先在地圖框選，再套用選取範圍。變更範圍會一併套用上方的畫布設定並重新排版。縮放檢視只改變觀察距離。</value></data>
+  <data name="CityEditor_ObjectFacts" xml:space="preserve"><value>所選物件資訊</value></data>
+  <data name="CityEditor_Scope" xml:space="preserve"><value>主題樣式會套用於整個類別，醒目標示則指出目前選取的物件。</value></data>
+  <data name="CityEditor_Unsaved" xml:space="preserve"><value>主題有尚未儲存的變更</value></data>
+  <data name="CityEditor_Saved" xml:space="preserve"><value>主題已儲存</value></data>
+  <data name="CityEditor_Updating" xml:space="preserve"><value>正在更新草稿</value></data>
+  <data name="CityEditor_ExportScale" xml:space="preserve"><value>等比例換算，僅套用於本次匯出：</value></data>
+  <data name="ThemeEditor_AllRoads" xml:space="preserve"><value>全部道路設定</value></data>
+  <data name="ThemeEditor_ThemeSwitchUnavailable" xml:space="preserve"><value>無法讀取所選主題，請更新渲染器後重試。</value></data>
+  <data name="ThemeEditor_ExternalThemeChanged" xml:space="preserve"><value>主題已被其他操作修改，請重新開啟主題編輯器。</value></data>
+  <data name="CityEditor_ContentScope" xml:space="preserve"><value>內容與顯示設定會獨立於主題儲存，並立即生效。</value></data>
+  <data name="CityEditor_CreateIntro" xml:space="preserve"><value>從目前的地圖開始，調整配色與標註，製作屬於你的城市地圖。</value></data>
+  <data name="CityEditor_CreateRangeUnselected" xml:space="preserve"><value>先從全城開始。如需只製作一部分，可取消後在地圖上框選區塊。</value></data>
+  <data name="CityEditor_CreateRangeHelp" xml:space="preserve"><value>使用已框選的區塊，或切換為全城，決定這張地圖包含哪些區域。</value></data>
+  <data name="CityEditor_CreateCanvasTitle" xml:space="preserve"><value>畫布大小</value></data>
+  <data name="CityEditor_CreateCanvasHelp" xml:space="preserve"><value>4096 像素適合日常出圖。需要更大圖片時，可選擇預設或輸入長邊像素；畫布會保持地圖比例。</value></data>
+  <data name="CityEditor_CreateRotationHelp" xml:space="preserve"><value>順時針旋轉地圖。</value></data>
+  <data name="CityEditor_CreateAdjustLater" xml:space="preserve"><value>建立後仍可在左側「草稿」中調整範圍、大小和方向。</value></data>
+  <data name="CityEditor_LoadingEnter" xml:space="preserve"><value>正在開啟地圖編輯器</value></data>
+  <data name="CityEditor_LoadingUpdate" xml:space="preserve"><value>正在更新地圖樣式</value></data>
+  <data name="CityEditor_LoadingTheme" xml:space="preserve"><value>正在讀取主題與畫布設定</value></data>
+  <data name="CityEditor_LoadingBase" xml:space="preserve"><value>正在準備底圖與道路資料</value></data>
+  <data name="CityEditor_LoadingLayout" xml:space="preserve"><value>正在計算草稿版面配置</value></data>
+  <data name="CityEditor_LoadingLabels" xml:space="preserve"><value>正在配置地圖文字</value></data>
+  <data name="CityEditor_LoadingIcons" xml:space="preserve"><value>正在配置地點圖示</value></data>
+  <data name="CityEditor_LoadingTransport" xml:space="preserve"><value>正在配置路線與站點</value></data>
+  <data name="CityEditor_LoadingDelivery" xml:space="preserve"><value>正在傳送草稿並準備影像</value></data>
+  <data name="CityEditor_LoadingPresent" xml:space="preserve"><value>正在繪製地圖，等待畫面完成</value></data>
+  <data name="Preview_NotRunningDetail" xml:space="preserve"><value>預覽器目前未正常執行，可能是環境設定、記憶體不足等多種原因。你可以選擇下列方式繼續。</value></data>
+  <data name="Preview_Cancel.Content" xml:space="preserve"><value>取消</value></data>
+  <data name="CityEditor_CloseupUnavailable" xml:space="preserve"><value>目前草稿範圍內沒有可用於此樣式特寫的要素。</value></data>
+  <data name="Pixel_Scale" xml:space="preserve"><value>元素縮放比例（%）</value></data>
+  <data name="Pixel_Actual" xml:space="preserve"><value>實際大小：{0} 像素</value></data>
+  <data name="Pixel_Recommended" xml:space="preserve"><value>此解析度的建議值：{0}%</value></data>
+  <data name="Pixel_InvalidScale" xml:space="preserve"><value>請輸入大於零的有限數值。</value></data>
+  <data name="Pixel_Help" xml:space="preserve"><value>長邊加倍，元素縮放也會加倍。可單獨調整此比例，改變文字、圖示和線寬。</value></data>
+  <data name="RoadCategoryQuay" xml:space="preserve"><value>護岸</value></data>
+  <data name="CityEditor_ResetCanvas" xml:space="preserve"><value>重設畫布</value></data>
+  <data name="CityEditor_ResetCanvasHelp" xml:space="preserve"><value>重新啟動畫布預覽，保留目前草稿、主題修改與檢視位置。</value></data>
+  <data name="ThemeUpdate_Review" xml:space="preserve"><value>查看預設更新</value></data>
+  <data name="ThemeUpdate_None" xml:space="preserve"><value>沒有可套用的預設變更。</value></data>
+  <data name="CityEditor_Resolution" xml:space="preserve"><value>解析度</value></data>
+  <data name="CityEditor_PresetResolution" xml:space="preserve"><value>預設解析度</value></data>
+  <data name="CityEditor_CustomResolution" xml:space="preserve"><value>自訂解析度</value></data>
+  <data name="ThemeUpdate_Current" xml:space="preserve"><value>目前主題</value></data>
+  <data name="ThemeUpdate_Preset" xml:space="preserve"><value>新版預設</value></data>
+  <data name="CityEditor_PixelWidth" xml:space="preserve"><value>寬度（px）</value></data>
+  <data name="CityEditor_PixelHeight" xml:space="preserve"><value>高度（px）</value></data>
+  <data name="CityEditor_ElementSize" xml:space="preserve"><value>元素大小</value></data>
+  <data name="CityEditor_SizeLinked" xml:space="preserve"><value>依所選範圍維持長寬比。</value></data>
+  <data name="DraftWelcome_Title" xml:space="preserve"><value>歡迎使用草稿編輯</value></data>
+  <data name="DraftWelcome_Intro" xml:space="preserve"><value>你正在探索檢視中瀏覽城市。準備匯出地圖時，可以進入草稿編輯，用佈景主題編輯器精確調整字級、圖示大小和道路線寬。</value></data>
+  <data name="DraftWelcome_ExploreTitle" xml:space="preserve"><value>探索檢視</value></data>
+  <data name="DraftWelcome_ExploreBody" xml:space="preserve"><value>拉近會顯示更多地點，拉遠會收起細節。文字和圖示會自動調整大小。</value></data>
+  <data name="DraftWelcome_DraftTitle" xml:space="preserve"><value>草稿編輯</value></data>
+  <data name="DraftWelcome_DraftBody" xml:space="preserve"><value>整張草稿等比例縮放。顯示的標註及其與街區的比例都維持不變。</value></data>
+  <data name="DraftWelcome_Enter" xml:space="preserve"><value>進入草稿編輯</value></data>
+  <data name="DraftWelcome_Continue" xml:space="preserve"><value>繼續探索</value></data>
+  <data name="DraftWelcome_Pause" xml:space="preserve"><value>暫停示範</value></data>
+  <data name="DraftWelcome_Resume" xml:space="preserve"><value>繼續播放</value></data>
+  <data name="DraftWelcome_NextLevel" xml:space="preserve"><value>查看下一級</value></data>
+  <data name="DraftWelcome_Pier" xml:space="preserve"><value>碼頭</value></data>
+  <data name="DraftWelcome_Market" xml:space="preserve"><value>市集</value></data>
+  <data name="DraftWelcome_Cafe" xml:space="preserve"><value>咖啡館</value></data>
+  <data name="DraftWelcome_Clinic" xml:space="preserve"><value>診所</value></data>
+  <data name="DraftWelcome_Station" xml:space="preserve"><value>河灣站</value></data>
+  <data name="DraftWelcome_Park" xml:space="preserve"><value>公園</value></data>
+  <data name="DraftWelcome_Shop" xml:space="preserve"><value>書店</value></data>
+  <data name="Sidebar_TransitDistance" xml:space="preserve"><value>各路線長度相加，共線路段依路線分別計入。</value></data>
+  <data name="Sidebar_RoadCommit" xml:space="preserve"><value>開關立即生效。離開輸入框時套用數值。</value></data>
+  <data name="Sidebar_Locate" xml:space="preserve"><value>選取後，地圖會定位到範圍內的同類要素。</value></data>
+  <data name="ThemeEditor_Edit" xml:space="preserve"><value>編輯主題</value></data>
+  <data name="ThemeEditor_Delete" xml:space="preserve"><value>刪除主題</value></data>
+  <data name="ThemeEditor_DeleteConfirm" xml:space="preserve"><value>刪除「{0}」？刪除後切換到「{1}」。</value></data>
+  <data name="ThemeEditor_ThumbnailFailed" xml:space="preserve"><value>主題已儲存，但縮圖無法更新。</value></data>
+  <data name="CityEditor_IconDensity" xml:space="preserve">
+    <value>圖示密度</value>
+  </data>
+  <data name="ThemeChoice_Title" xml:space="preserve"><value>選擇主題編輯器</value></data>
+  <data name="ThemeChoice_Interactive" xml:space="preserve"><value>互動式主題編輯器</value></data>
+  <data name="ThemeChoice_Description" xml:space="preserve"><value>在城市草稿上調整主題參數，直接確認地圖實際匯出時的效果。</value></data>
+  <data name="ThemeChoice_Traditional" xml:space="preserve"><value>傳統主題編輯器</value></data>
+  <data name="ThemeChoice_Unavailable" xml:space="preserve"><value>請先開啟城市地圖或大眾運輸地圖，並等候互動預覽就緒。</value></data>
+  <data name="ExportChoice_Title" xml:space="preserve"><value>選擇匯出方式</value></data>
+  <data name="ExportChoice_Direct" xml:space="preserve"><value>直接匯出</value></data>
+  <data name="ExportChoice_DirectHelp" xml:space="preserve"><value>使用目前的地圖設定，選擇格式並匯出。</value></data>
+  <data name="ExportChoice_Edit" xml:space="preserve"><value>編輯後匯出</value></data>
+  <data name="ExportChoice_EditHelp" xml:space="preserve"><value>先在草稿上調整地圖，滿意後再匯出。</value></data>
+  <data name="Workflow_Remember" xml:space="preserve"><value>記住我的選擇</value></data>
+  <data name="Workflow_Reset" xml:space="preserve"><value>重設主題編輯和匯出方式</value></data>
+  <data name="Export_DraftSettingsHelp" xml:space="preserve"><value>如需調整範圍、方向、元素大小或圖示密度，請前往草稿頁確認效果。</value></data>
+  <data name="Export_GoToDraft" xml:space="preserve"><value>前往草稿</value></data>
   <data name="RmpEditor_AddTitle" xml:space="preserve"><value>新增標題</value></data>
   <data name="RmpEditor_AddLegend" xml:space="preserve"><value>新增圖例</value></data>
   <data name="RmpEditor_AddIcon" xml:space="preserve"><value>新增圖示</value></data>
@@ -4422,136 +4715,37 @@ Esc  取消目前工作</value>
   <data name="PoiDirect_ImageSearch" xml:space="preserve"><value>搜尋圖片名稱或檔案名稱</value></data>
   <data name="PoiDirect_NoImage" xml:space="preserve"><value>不繪製圖示</value></data>
   <data name="PoiDirect_Count" xml:space="preserve"><value>{0} 個項目，{1} 項未儲存修改</value></data>
-<data name="Poi_Area" xml:space="preserve"><value>功能區</value></data>
-  <data name="Poi_AreaIcons" xml:space="preserve"><value>功能區圖示</value></data>
-  <data name="Poi_AreaNames" xml:space="preserve"><value>功能區名稱</value></data>
-  <data name="Poi_AreaDescription" xml:space="preserve"><value>遊戲匯出的功能區域及其名稱。</value></data>
-  <data name="Poi_PngInternalBuildings" xml:space="preserve"><value>PNG 顯示功能區內部建築圖示</value></data>
-  <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
-    <value>偵測到遊戲仍在執行，會佔用較多記憶體。建議儲存城市並退出遊戲後再匯出；也可以繼續嘗試。</value>
-  </data>
-  <data name="ExportWindow_BeforeExportNotice" xml:space="preserve">
-    <value>匯出前建議儲存城市並退出遊戲，關閉其他佔用較多記憶體的程式。大尺寸匯出會佔用更多記憶體。</value>
-  </data>
-  <data name="Poi_AreaMerge" xml:space="preserve">
-    <value>功能區近鄰合併（二代）</value>
-  </data>
-  <data name="Poi_AreaMergeDescription" xml:space="preserve">
-    <value>相同原生類型、同名的二代功能區在指定距離內共用一個標註；保留各自區域邊界。</value>
-  </data>
-  <data name="Map_RotateCounterclockwise" xml:space="preserve">
-    <value>逆時針 90°</value>
-  </data>
-  <data name="Map_RotateClockwise" xml:space="preserve">
-    <value>順時針 90°</value>
-  </data>
-  <data name="Failure_Internal" xml:space="preserve"><value>An unexpected error occurred. You can report this error to the author.</value></data>
-  <data name="Failure_Operation" xml:space="preserve"><value>Operation failed</value></data>
-  <data name="Failure_Metro" xml:space="preserve"><value>Metro map generation failed</value></data>
-  <data name="Failure_Export" xml:space="preserve"><value>Map export failed</value></data>
-  <data name="Failure_Permission" xml:space="preserve"><value>A required file could not be accessed. Check file or folder permissions and try again.</value></data>
-  <data name="Failure_MissingFile" xml:space="preserve"><value>A required file was not found. Check its location and try again.</value></data>
-  <data name="Failure_Memory" xml:space="preserve"><value>Memory allocation failed. Reduce the output size or close memory-intensive applications and try again.</value></data>
-  <data name="Failure_EngineStopped" xml:space="preserve"><value>The rendering engine has stopped. Reopen the viewer and try again.</value></data>
-  <data name="Failure_ViewDetails" xml:space="preserve"><value>View details</value></data>
-  <data name="Failure_CopyDetails" xml:space="preserve"><value>Copy error details</value></data>
-  <data name="Failure_Close" xml:space="preserve"><value>Close</value></data>
-  <data name="Failure_Copied" xml:space="preserve"><value>Copied</value></data>
-  <data name="Failure_CopyFailed" xml:space="preserve"><value>Copy failed. Please try again.</value></data>
-  <data name="Ribbon_MoreLayers" xml:space="preserve"><value>更多圖層</value></data>
-  <data name="Ribbon_Simplified" xml:space="preserve"><value>精簡</value></data>
-  <data name="Ribbon_Classic" xml:space="preserve"><value>傳統</value></data>
-  <data name="Sidebar_ShowSettings" xml:space="preserve"><value>展開左欄</value></data>
-  <data name="Sidebar_HideSettings" xml:space="preserve"><value>收合左欄</value></data>
-  <data name="Sidebar_ShowInspector" xml:space="preserve"><value>展開右欄</value></data>
-  <data name="Sidebar_HideInspector" xml:space="preserve"><value>收合右欄</value></data>
-  <data name="Ribbon_IntroTitle" xml:space="preserve"><value>試試新的精簡模式</value></data>
-  <data name="Ribbon_IntroDescription" xml:space="preserve"><value>精簡模式提供更舒適、更簡單的地圖瀏覽方式，你可以隨時切換回傳統模式。</value></data>
-  <data name="Ribbon_IntroTry" xml:space="preserve"><value>試用精簡模式</value></data>
-  <data name="Ribbon_IntroLater" xml:space="preserve"><value>暫不</value></data>
-  <data name="RmpEditor_showNames" xml:space="preserve"><value>顯示站名</value></data>
-  <data name="RmpEditor_showDefaultNames" xml:space="preserve"><value>顯示預設站名</value></data>
-  <data name="BuildingCategory_Help" xml:space="preserve"><value>選擇「分類上色」後生效。開啟「指定顏色」影響該類別的全部建築；關閉可恢復自動 POI 取色。分類依據現有遊戲欄位，未分類物件不會按名稱猜測。</value></data>
-  <data name="Poi_ShowDecorative" xml:space="preserve"><value>顯示裝飾物 POI</value></data>
-  <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>控制已收錄裝飾物的圖示與名稱，保留建築和地物。</value></data>
-  <data name="MetroSettings_Reset" xml:space="preserve"><value>還原預設值</value></data>
-  <data name="BuildingList_NoName" xml:space="preserve"><value>未提供名稱</value></data>
-  <data name="ThemeEditor_New" xml:space="preserve"><value>新增主題</value></data>
-  <data name="BuildingList_OfficialName" xml:space="preserve"><value>遊戲官方分類</value></data>
-  <data name="ThemeEditor_Name" xml:space="preserve"><value>主題名稱</value></data>
-  <data name="BuildingList_Search" xml:space="preserve"><value>搜尋建築名稱</value></data>
-  <data name="Preview_AutoStart" xml:space="preserve"><value>啟動時載入內嵌預覽</value></data>
-  <data name="BuildingList_DetailHint" xml:space="preserve"><value>選取建築以查看詳細資訊。</value></data>
-  <data name="BuildingList_Height" xml:space="preserve"><value>建築高度</value></data>
-  <data name="BuildingList_Open" xml:space="preserve"><value>建築清單</value></data>
-  <data name="BuildingList_Name" xml:space="preserve"><value>建築名稱</value></data>
-  <data name="Preview_Continue.Content" xml:space="preserve"><value>繼續等待</value></data>
-  <data name="ThemeUpdate_Intro" xml:space="preserve"><value>「{0}」已合併本次預設更新。</value></data>
-  <data name="BuildingList_Id" xml:space="preserve"><value>ID</value></data>
-  <data name="ThemeUpdate_Off" xml:space="preserve"><value>關閉</value></data>
-  <data name="BuildingList_CategoryDesc" xml:space="preserve"><value>類別：降冪</value></data>
-  <data name="ThemeEditor_Unsaved" xml:space="preserve"><value>未儲存</value></data>
-  <data name="BuildingList_IdDesc" xml:space="preserve"><value>ID：降冪</value></data>
-  <data name="ThemeEditor_MigrationWarning" xml:space="preserve"><value>部分舊主題無法讀取，原始檔案已備份：</value></data>
-  <data name="ThemeEditor_Select" xml:space="preserve"><value>選擇主題</value></data>
-  <data name="ThemeEditor_Copy" xml:space="preserve"><value>複製主題</value></data>
-  <data name="BuildingList_Info" xml:space="preserve"><value>建築資訊</value></data>
-  <data name="BuildingList_Unnamed" xml:space="preserve"><value>未命名建築</value></data>
-  <data name="BuildingList_CustomName" xml:space="preserve"><value>玩家自訂</value></data>
-  <data name="ThemeEditor_Cancel" xml:space="preserve"><value>取消</value></data>
-  <data name="ThemeUpdate_Continue" xml:space="preserve"><value>繼續使用</value></data>
-  <data name="BuildingList_NameSource" xml:space="preserve"><value>名稱來源</value></data>
-  <data name="BuildingList_Details" xml:space="preserve"><value>建築詳細資訊</value></data>
-  <data name="ThemeUpdate_UsePrevious" xml:space="preserve"><value>切換舊版</value></data>
-  <data name="ThemeUpdate_Archived" xml:space="preserve"><value>原主題已保留，可隨時從主題清單切換。</value></data>
-  <data name="BuildingList_All" xml:space="preserve"><value>全部</value></data>
-  <data name="ThemeEditor_Exported" xml:space="preserve"><value>主題已匯出</value></data>
-  <data name="BuildingList_Empty" xml:space="preserve"><value>沒有符合條件的建築</value></data>
-  <data name="ThemeUpdate_Kept" xml:space="preserve"><value>已保留你的修改</value></data>
-  <data name="BuildingList_Count" xml:space="preserve"><value>顯示 {0:N0} / {1:N0} 棟建築（組合建築合併計數）</value></data>
-  <data name="BuildingList_Back" xml:space="preserve"><value>返回地圖概況</value></data>
-  <data name="Preview_DataAvailable" xml:space="preserve"><value>地圖資料已讀取，可以選擇主題並繼續匯出。</value></data>
-  <data name="ThemeEditor_Personal" xml:space="preserve"><value>我的主題</value></data>
-  <data name="ThemeUpdate_ColorRamp" xml:space="preserve"><value>高程色帶</value></data>
-  <data name="ThemeEditor_Export" xml:space="preserve"><value>匯出主題…</value></data>
-  <data name="ThemeEditor_Import" xml:space="preserve"><value>匯入主題…</value></data>
-  <data name="BuildingList_OutsideFilter" xml:space="preserve"><value>所選建築不在目前篩選結果中。</value></data>
-  <data name="ThemeEditor_Base" xml:space="preserve"><value>基礎預設</value></data>
-  <data name="BuildingList_NameAsc" xml:space="preserve"><value>名稱：升冪</value></data>
-  <data name="BuildingList_GroupCount" xml:space="preserve"><value>{0} 棟（含主建築）</value></data>
-  <data name="ThemeEditor_CurrentUnreadable" xml:space="preserve"><value>目前的主題無法讀取，請選擇其他主題。原始檔案已保留。</value></data>
-  <data name="Preview_OpenFailed" xml:space="preserve"><value>網頁已產生，但無法開啟瀏覽器。可以開啟輸出目錄，手動開啟 HTML 檔案。</value></data>
-  <data name="ThemeEditor_Rename" xml:space="preserve"><value>重新命名</value></data>
-  <data name="Preview_OpenMap" xml:space="preserve"><value>可以開啟地圖檔案，讀取成功後繼續匯出。</value></data>
-  <data name="Preview_Slow" xml:space="preserve"><value>地圖預覽耗時較長</value></data>
-  <data name="ThemeUpdate_AllChanges" xml:space="preserve"><value>全部變更</value></data>
-  <data name="ThemeEditor_Builtins" xml:space="preserve"><value>內建主題</value></data>
-  <data name="BuildingList_OpenButton.Content" xml:space="preserve"><value>建築清單</value></data>
-  <data name="ThemeUpdate_Custom" xml:space="preserve"><value>自訂設定</value></data>
-  <data name="BuildingList_GameCategory" xml:space="preserve"><value>遊戲分類</value></data>
-  <data name="Preview_Retry.Content" xml:space="preserve"><value>重新載入預覽</value></data>
-  <data name="BuildingList_Members" xml:space="preserve"><value>附屬建築</value></data>
-  <data name="BuildingList_NameDesc" xml:space="preserve"><value>名稱：降冪</value></data>
-  <data name="BuildingList_IdAsc" xml:space="preserve"><value>ID：升冪</value></data>
-  <data name="BuildingList_Group" xml:space="preserve"><value>組合建築</value></data>
-  <data name="ThemeEditor_Save" xml:space="preserve"><value>儲存</value></data>
-  <data name="ThemeUpdate_On" xml:space="preserve"><value>開啟</value></data>
-  <data name="BuildingList_GameName" xml:space="preserve"><value>遊戲隨機名稱</value></data>
-  <data name="ThemeUpdate_Conflict" xml:space="preserve"><value>你也修改過此項，本次採用新版預設。</value></data>
-  <data name="Preview_Html.Content" xml:space="preserve"><value>在瀏覽器中開啟</value></data>
-  <data name="ThemeEditor_InvalidName" xml:space="preserve"><value>名稱須為 1–64 個字元，不能包含控制字元。</value></data>
-  <data name="Preview_Stopped" xml:space="preserve"><value>內嵌預覽已停止</value></data>
-  <data name="ThemeUpdate_MoreKept" xml:space="preserve"><value>另有 {0} 項修改已保留</value></data>
-  <data name="BuildingList_GameNames" xml:space="preserve"><value>使用遊戲隨機名稱</value></data>
-  <data name="Preview_Png.Content" xml:space="preserve"><value>匯出 PNG（2048 像素）</value></data>
-  <data name="BuildingList_CategoryAsc" xml:space="preserve"><value>類別：升冪</value></data>
-  <data name="BuildingList_Category" xml:space="preserve"><value>建築類別</value></data>
-  <data name="ThemeUpdate_Unset" xml:space="preserve"><value>未設定</value></data>
-  <data name="Preview_Failed" xml:space="preserve"><value>地圖預覽無法載入</value></data>
-  <data name="ThemeUpdate_Title" xml:space="preserve"><value>主題已更新</value></data>
-  <data name="BuildingList_Sort" xml:space="preserve"><value>排序</value></data>
-  <data name="BuildingList_NameHint" xml:space="preserve"><value>名稱設定與地圖同步；保留玩家自訂名稱。</value></data>
-  <data name="BuildingList_Clear" xml:space="preserve"><value>清除篩選</value></data>
   <data name="Satellite_LayerTitle" xml:space="preserve"><value>衛星影像</value></data>
   <data name="Satellite_Composing" xml:space="preserve"><value>正在合成衛星影像…</value></data>
+  <data name="PreviewQuality_Title" xml:space="preserve"><value>預覽畫質</value></data>
+  <data name="PreviewQuality_Preset" xml:space="preserve"><value>預覽畫質</value></data>
+  <data name="PreviewQuality_Smooth" xml:space="preserve"><value>流暢</value></data>
+  <data name="PreviewQuality_Standard" xml:space="preserve"><value>標準</value></data>
+  <data name="PreviewQuality_Fine" xml:space="preserve"><value>精細</value></data>
+  <data name="PreviewQuality_Custom" xml:space="preserve"><value>自訂</value></data>
+  <data name="PreviewQuality_Open" xml:space="preserve"><value>畫質設定…</value></data>
+  <data name="PreviewQuality_Clarity" xml:space="preserve"><value>清晰度</value></data>
+  <data name="PreviewQuality_ClarityHelp" xml:space="preserve"><value>地圖顯示的解析度。提高解析度能讓影像更清晰，但會增加運算負擔。</value></data>
+  <data name="PreviewQuality_Scale75" xml:space="preserve"><value>流暢</value></data>
+  <data name="PreviewQuality_Scale100" xml:space="preserve"><value>標準</value></data>
+  <data name="PreviewQuality_Scale125" xml:space="preserve"><value>精細</value></data>
+  <data name="PreviewQuality_Lines" xml:space="preserve"><value>道路</value></data>
+  <data name="PreviewQuality_LinesHelp" xml:space="preserve"><value>提高道路細節能讓線條與銜接處更平滑，但會明顯增加運算負擔。降低細節能提升效能，但可能造成道路變形或接縫明顯。</value></data>
+  <data name="PreviewQuality_LinesStandard" xml:space="preserve"><value>標準</value></data>
+  <data name="PreviewQuality_LinesFine" xml:space="preserve"><value>精細</value></data>
+  <data name="PreviewQuality_Polygons" xml:space="preserve"><value>建築物</value></data>
+  <data name="PreviewQuality_PolygonsHelp" xml:space="preserve"><value>建築細節會影響畫面上的建築密度。降低細節可能會隱藏部分較小的建築。</value></data>
+  <data name="PreviewQuality_PolygonsStandard" xml:space="preserve"><value>標準</value></data>
+  <data name="PreviewQuality_PolygonsFine" xml:space="preserve"><value>精細</value></data>
+  <data name="PreviewQuality_Details" xml:space="preserve"><value>個別調整</value></data>
+  <data name="PreviewQuality_Samples" xml:space="preserve"><value>比較效果</value></data>
+  <data name="PreviewQuality_Scope" xml:space="preserve"><value>僅套用於預覽，不影響最終匯出。</value></data>
+  <data name="PreviewQuality_Apply" xml:space="preserve"><value>套用</value></data>
+  <data name="PreviewQuality_Applied" xml:space="preserve"><value>已套用</value></data>
+  <data name="PreviewQuality_Saved" xml:space="preserve"><value>已儲存</value></data>
+  <data name="PreviewQuality_Busy" xml:space="preserve"><value>請等待目前的預覽作業完成，再套用畫質設定。</value></data>
+  <data name="PreviewQuality_Restarted" xml:space="preserve"><value>預覽已停止。請在預覽重新啟動後，再次套用畫質設定。</value></data>
+  <data name="PreviewQuality_ExportHint" xml:space="preserve"><value>請在匯出設定中選擇 HTML 畫質。</value></data>
+  <data name="PreviewQuality_Current" xml:space="preserve"><value>目前選取項目</value></data>
+  <data name="Export_HtmlQuality" xml:space="preserve"><value>HTML 畫質</value></data>
 </root>

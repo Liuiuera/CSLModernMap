@@ -1,0 +1,16 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; frame-src 'self'">
+<style>
+html,body{margin:0;height:100%;font:13px system-ui;color:#202020;background:#f7f8fa}
+body.dark{color:#f3f3f3;background:#252525}
+main{display:grid;grid-template-columns:1fr 1fr;gap:12px;height:100%}
+section{display:grid;grid-template-rows:26px 1fr;min-height:0;min-width:0}
+header{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+iframe{width:100%;height:100%;border:0;border-radius:6px;min-height:0}
+#error{position:fixed;bottom:0;background:#fff2c8;color:#542c00;max-width:100%}
+@media(max-width:450px){main{grid-template-columns:1fr;grid-template-rows:1fr 1fr}}
+</style></head><body><main>
+<section><header id="baseline"></header><iframe title="Standard" src="./index.html?qualitySample=1"></iframe></section>
+<section><header id="draft"></header><iframe title="Current selection" src="./index.html?qualitySample=1"></iframe></section>
+</main><div id="error" role="status"></div><script src="./quality-demo.js"></script></body></html>

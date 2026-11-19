@@ -11,14 +11,13 @@ import math
 import aggdraw
 from PIL import Image
 
-from ..preview_road_order import build_road_order, display_paint_regions, flat_piece_key
-from ..road_geometry import RoadRecord, build_junction_mesh, junction_primary, quay_centerlines, road_sort_key
+from ..preview_road_order import build_road_order, flat_piece_key, pixel_road_geometry
+from .. import pixel_sizes
+from ..road_geometry import RoadRecord, build_junction_mesh, junction_primary, road_sort_key
 from ..road_hierarchy import RoadLevel, road_style_config, visible_at_abstract_level
-from ..theme_contract import ROAD_MIN_FILL, ROAD_WIDTH_SCALE, QUAY_FOOTPRINT_SCALE
 from .base import Layer, RenderContext
 
 
-_LEVEL_MIN_PIX = ROAD_MIN_FILL
 _SCENE_KEY = "road_scene"
 _ORDER_KEY = "road_order"
 
@@ -58,22 +57,30 @@ class RoadLayer(Layer):
         self.render_scale = ctx.zoom
         self._lvl = ctx.detail_policy.abstract_level
         self._aa_k = ctx.zoom / max(ctx.final_zoom, 1e-9)
-        self.wscale = float(ctx.style.get("roads.width_scale", ROAD_WIDTH_SCALE))
+        pixel_sizes.validate(ctx.style.data)
         self.roads_cfg = ctx.style.get("roads", {})
-        self.quay_scale = float(self.roads_cfg.get("quay", {}).get(
-            "footprint_scale", QUAY_FOOTPRINT_SCALE))
         self._has_highways = any(r.level is RoadLevel.HIGHWAY for r in scene.roads)
         bbox = (ctx.world_x0, ctx.world_z0, ctx.world_x1, ctx.world_z1)
-        records = sorted((r for r in scene.roads_in(bbox) if self._visible(r)),
+        factors = pixel_sizes.footprint_factors(self.roads_cfg)
+        key = ('pixel_road_geometry', id(order), tuple(sorted(factors.items())))
+        if key not in ctx.shared:
+            ctx.shared[key] = pixel_road_geometry(scene, order, factors)
+        regions, bounds = ctx.shared[key]
+        # 线宽与描边属于像素；扩张候选范围后仍由最终显示几何裁切。
+        bleed = max((self._fill_width(r)+self._border_width(self._cfg_record(r))) * .5
+                    for r in scene.roads) / ctx.transform.scale
+        query = (bbox[0]-bleed, bbox[1]-bleed, bbox[2]+bleed, bbox[3]+bleed)
+        candidates = [r for r in scene.roads if bounds[r.id][0] <= query[2]
+                      and bounds[r.id][2] >= query[0] and bounds[r.id][1] <= query[3]
+                      and bounds[r.id][3] >= query[1]]
+        bbox = query
+        records = sorted((r for r in candidates if self._visible(r)),
                          key=lambda r: road_sort_key(r, False))
         by_rank = defaultdict(list)
         for record in records:
             for piece in order.pieces[record.id]:
                 by_rank[self._rank(piece)].append(piece)
         connectors = self._junctions(order, records, bbox)
-        centerlines = quay_centerlines(scene)
-        regions = {(piece.road.id, piece.index): display_paint_regions(piece, self.quay_scale, centerlines)
-                   for pieces in by_rank.values() for piece in pieces}
         # 先完成不透明道路之间的遮挡，再统一混合整层，避免交叠处累积透明度。
         target = ctx.image if opacity == 1.0 else Image.new("RGBA", ctx.image.size)
         draw = aggdraw.Draw(target)
@@ -86,7 +93,10 @@ class RoadLayer(Layer):
                     for region in regions[piece.road.id, piece.index]:
                         cfg = self._cfg_record(region.road)
                         color = hex_to_rgb(cfg.get("border", "#C3C8D2"))
-                        pen = aggdraw.Pen(color, max(self._border_width(cfg), .5))
+                        border = self._border_width(cfg)
+                        if border == 0:
+                            continue
+                        pen = aggdraw.Pen(color, border)
                         for line in region.boundaries:
                             coords = tuple(v for x, z in line for v in ctx.transform(x, z))
                             draw.line(coords, pen)
@@ -132,7 +142,7 @@ class RoadLayer(Layer):
         points = [self.ctx.transform(p.x, p.z) for p in piece.points]
         if len(points) < 2:
             return
-        width = max(self._fill_width(piece.road) + (self._border_width(cfg) if casing else 0), .5)
+        width = self._fill_width(piece.road) + (self._border_width(cfg) if casing else 0)
         coords = tuple(v for point in points for v in point)
         if casing and cfg.get("dash"):
             self._draw_fast_dashed(draw, coords, color, width, cfg["dash"])
@@ -197,8 +207,11 @@ class RoadLayer(Layer):
             )
 
     def _draw_fast_dashed(self, draw, coords, color, width, dash) -> None:
-        dash_len = max(float(dash[0]) * self.render_scale, 0.5)
-        gap_len = max(float(dash[1]) * self.render_scale, 0.5)
+        scale = self._aa_k
+        dash_len = float(dash[0]) * scale
+        gap_len = float(dash[1]) * scale
+        if dash_len <= 0 or gap_len <= 0:
+            raise ValueError('Road dash and gap lengths must be positive')
         pen = aggdraw.Pen(color, width)
         for index in range(0, len(coords) - 3, 2):
             ax, ay, bx, by = coords[index:index + 4]
@@ -229,17 +242,7 @@ class RoadLayer(Layer):
         return road_style_config(self.roads_cfg, record.level, record.mode)
 
     def _fill_width(self, record: RoadRecord) -> float:
-        if record.level is RoadLevel.QUAY:
-            return record.width * self.ctx.transform.scale * self.quay_scale
-        cfg = self._cfg_record(record)
-        minimum = float(cfg.get(
-            "min_fill_px", _LEVEL_MIN_PIX[record.level]
-        )) * self._aa_k
-        physical = 0.5 + record.width * self.wscale * self.render_scale
-        return max(physical, minimum)
+        return self._cfg_record(record)['line_width'] * self._aa_k
 
     def _border_width(self, cfg: dict) -> float:
-        bw = cfg.get("border_width", 1.0)
-        if isinstance(bw, dict):
-            return bw.get("fixed", 0.0) + bw.get("scaled", 0.0) * self.render_scale
-        return float(bw)
+        return cfg['border_width'] * self._aa_k

@@ -16,7 +16,7 @@ import math
 import copy
 import os
 import time
-from typing import Any, Callable, List, Optional
+from typing import Callable, List, Optional
 
 import numpy as np
 from PIL import Image, ImageDraw
@@ -24,6 +24,7 @@ from PIL import Image, ImageDraw
 from ._paths import writable_dir
 from .i18n import tr
 from .layers.base import RenderContext
+from .performance import PerformanceRecorder, perf_span
 from .progress import ProgressEvent
 from .style import Style
 from .system_info import total_memory_gb
@@ -261,6 +262,8 @@ class Renderer:
                  rotation: int = 0, detail_mode="auto", render_job=None):
         from .detail import normalize_detail_mode
 
+        from .pixel_sizes import validate
+        validate(style.data)
         self.style = style
         self.width = width
         self.height = height
@@ -268,6 +271,9 @@ class Renderer:
         self._layers: List = []
         # 最近一次渲染的各阶段耗时统计（秒）
         self.last_stats: dict = {}
+        # 可选性能诊断记录器；默认关闭，不改变普通渲染输出。
+        self.diagnostics: PerformanceRecorder | None = None
+        self._active_performance: PerformanceRecorder | None = None
         # 分块瓦片大小（像素，0 = 自动）。GUI/CLI 可显式传入。
         self.tile_size: int = 0
         self.tile_bleed: int = TILE_BLEED
@@ -434,6 +440,7 @@ class Renderer:
         region: tuple | None = None,
         final_size: int | None = None,
         aa_downsample: int = 1,
+        diagnostics: PerformanceRecorder | None = None,
         session: Any = None,
     ) -> Image.Image:
         """执行渲染；只接受 :class:`MapDocument`，不再自动转换旧模型。
@@ -456,13 +463,20 @@ class Renderer:
                 self._sessions = {id(document): session}
         self._active_session = session
         self._preview_last_at = None
-        return self._render_impl(
-            document=document,
-            progress=progress,
-            region=region,
-            final_size=final_size,
-            aa_downsample=aa_downsample,
-        )
+        performance = diagnostics if diagnostics is not None else self.diagnostics
+        previous = self._active_performance
+        self._active_performance = performance
+        try:
+            with perf_span(performance, "render.total"):
+                return self._render_impl(
+                    document=document,
+                    progress=progress,
+                    region=region,
+                    final_size=final_size,
+                    aa_downsample=aa_downsample,
+                )
+        finally:
+            self._active_performance = previous
 
     def _render_impl(
         self,
@@ -488,6 +502,15 @@ class Renderer:
         默认 memory_friendly=False：始终整图渲染，简单稳定。
         """
         tile = self._resolve_tile()
+        performance = self._active_performance
+        if performance is not None:
+            performance.set_counter("render.width", int(self.width))
+            performance.set_counter("render.height", int(self.height))
+            performance.set_counter("render.layer_count", len(self._layers))
+            performance.set_counter(
+                "render.parallel_workers_requested",
+                self._resolve_parallel_workers(),
+            )
         # 分块条件：显式 tile_size OR（（内存友好 或 磁盘画布）AND 超大图）
         use_tiled = self.tile_size > 0 or (
             self._resolve_parallel_workers() > 1
@@ -563,8 +586,10 @@ class Renderer:
                 aa_downsample=aa_downsample if using_aa else 1,
             )
             if using_aa:
-                image = (image.reduce(2) if image.size == (self.width * 2, self.height * 2)
-                         else image.resize((self.width, self.height), Image.LANCZOS))
+                # 整图 2× 渲染后整体下采样
+                with perf_span(performance, "render.antialias_downsample"):
+                    image = (image.reduce(2) if image.size == (self.width * 2, self.height * 2)
+                             else image.resize((self.width, self.height), Image.LANCZOS))
         else:
             image = self._render_tiled(
                 document=document,
@@ -697,6 +722,7 @@ class Renderer:
             final_zoom=final_zoom,
             detail_mode=self.detail_mode,
             rotation=self.rotation,
+            performance=self._active_performance,
             canvas_width=int(getattr(transform, "full_width", image.width)),
             canvas_height=int(getattr(transform, "full_height", image.height)),
             tile_offset_x=int(getattr(transform, "offset_x", 0)),
@@ -724,7 +750,9 @@ class Renderer:
                     tr("gui.progress.render_layer", layer=_cn(layer.name)),
                     (layer.name, 0.0),
                 )
-                layer.render(ctx, document)
+                with perf_span(
+                    self._active_performance, f"render.layer.{layer.name}"):
+                    layer.render(ctx, document)
                 if layer.name == 'road' and 'road_order_report' in ctx.shared:
                     self.last_stats['road_order'] = ctx.shared['road_order_report']
                 self.last_stats[f"{stats_prefix}{layer.name}"] = time.time() - t0
@@ -741,8 +769,10 @@ class Renderer:
         if aa_downsample and aa_downsample > 1:
             out_w = img_w // aa_downsample
             out_h = img_h // aa_downsample
-            image = (image.reduce(2) if aa_downsample == 2 and image.size == (out_w * 2, out_h * 2)
-                     else image.resize((out_w, out_h), Image.LANCZOS))
+            with perf_span(
+                    self._active_performance, "render.antialias_downsample"):
+                image = (image.reduce(2) if aa_downsample == 2 and image.size == (out_w * 2, out_h * 2)
+                         else image.resize((out_w, out_h), Image.LANCZOS))
         return image
 
     # ------------------------------------------------------------------
@@ -794,6 +824,7 @@ class Renderer:
             final_zoom=final_zoom,
             detail_mode=self.detail_mode,
             rotation=self.rotation,
+            performance=self._active_performance,
             shared=self._render_shared,
             session=self._active_session,
             render_job=self.render_job,
@@ -816,7 +847,9 @@ class Renderer:
                        layer=_cn(layer.name)),
                     (layer.name, 0.0),
                 )
-                layer.render(ctx, document)
+                with perf_span(
+                    self._active_performance, f"render.base_layer.{layer.name}"):
+                    layer.render(ctx, document)
                 self.last_stats[f"base_{layer.name}"] = time.time() - t0
                 self._publish_preview(canvas, layer.name)
                 _report_progress(
@@ -1017,6 +1050,9 @@ class Renderer:
             self.last_stats["parallel_tiles"] = time.perf_counter() - started
             self.last_stats["parallel_merge"] = merge_seconds
             self.last_stats["parallel_workers"] = workers
+            if self._active_performance is not None:
+                self._active_performance.set_counter(
+                    "render.parallel_workers", workers)
             return True
         finally:
             if state_shm is not None:
@@ -1067,6 +1103,10 @@ class Renderer:
         cols = math.ceil(W / tile_size)
         rows = math.ceil(H / tile_size)
         n_tiles = cols * rows
+        if self._active_performance is not None:
+            self._active_performance.add_counter("render.tiles", n_tiles)
+            self._active_performance.add_counter("render.tile_columns", cols)
+            self._active_performance.add_counter("render.tile_rows", rows)
         # early 图层共 len(layers) 项，整体进度占比按 [early / all] 估算
         early_share = max(len(layers), 1) / max(len(self._layers), 1)
         # full_canvas 图层（地形/建成区/水面等连续场）与矢量图层分组：
@@ -1078,6 +1118,11 @@ class Renderer:
                 "连续底图图层被错误分配到瓦片渲染组。"
             )
         use_base = bool(base_layers)
+        if self._active_performance is not None:
+            self._active_performance.set_counter(
+                "render.base_layer_count", len(base_layers))
+            self._active_performance.set_counter(
+                "render.tile_layer_count", len(tile_layers))
         base_frac = 0.06 if use_base else 0.0
 
         # 最终输出画布（按 W×H = 用户目标尺寸）
@@ -1168,25 +1213,27 @@ class Renderer:
 
                 _cb.supports_stage_progress = True
                 tile_progress = _cb
-            tile_img = self._render_early_onto(
-                document=document,
-                img_w=btw_in,
-                img_h=bth_in,
-                region=region,
-                final_size=final_size,
-                layers=tile_layers,  # 底图图层已整图渲染，瓦片只画矢量层
-                progress=tile_progress,
-                progress_start=0.0,
-                progress_total=1.0,
-                stats_prefix=f"tile{idx}_",
-                aa_downsample=aa_downsample if aa_downsample and aa_downsample > 1 else 1,
-                preset_transform=tile_transform,
-                preset_background=(
-                    self._tile_base_patch(
-                        base_canvas, bpx0_in, bpy0_in, bpx1_in, bpy1_in,
-                        btw_in, bth_in, scale_aa,
-                    ) if use_base else None),
-            )
+
+            with perf_span(self._active_performance, "render.tile"):
+                tile_img = self._render_early_onto(
+                    document=document,
+                    img_w=btw_in,
+                    img_h=bth_in,
+                    region=region,
+                    final_size=final_size,
+                    layers=tile_layers,  # 底图图层已整图渲染，瓦片只画矢量层
+                    progress=tile_progress,
+                    progress_start=0.0,
+                    progress_total=1.0,
+                    stats_prefix=f"tile{idx}_",
+                    aa_downsample=aa_downsample if aa_downsample and aa_downsample > 1 else 1,
+                    preset_transform=tile_transform,
+                    preset_background=(
+                        self._tile_base_patch(
+                            base_canvas, bpx0_in, bpy0_in, bpx1_in, bpy1_in,
+                            btw_in, bth_in, scale_aa,
+                        ) if use_base else None),
+                )
 
             # tile_img 已经是下采样后尺寸 (btw_in // scale_aa, bth_in // scale_aa)
             # 从中裁切"对应 tile (tw, th) 的准确子矩形"：
@@ -1266,6 +1313,7 @@ class Renderer:
             final_zoom=f_transform.zoom,
             detail_mode=self.detail_mode,
             rotation=self.rotation,
+            performance=self._active_performance,
             shared=self._render_shared,
             session=self._active_session,
             render_job=self.render_job,
@@ -1286,7 +1334,10 @@ class Renderer:
                     tr("gui.progress.render_layer", layer=_cn(layer.name)),
                     (layer.name, 0.0),
                 )
-                layer.render(f_ctx, document)
+                with perf_span(
+                    self._active_performance,
+                    f"render.late_layer.{layer.name}"):
+                    layer.render(f_ctx, document)
                 if layer.name == "transport" and "transit_layout_report" in f_ctx.shared:
                     self.last_stats["transit_layout"] = f_ctx.shared["transit_layout_report"]
                 self.last_stats[layer.name] = time.time() - t0

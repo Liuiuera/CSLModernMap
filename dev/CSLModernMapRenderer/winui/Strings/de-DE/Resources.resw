@@ -29,30 +29,6 @@
     <value>{0}: Wert zwischen {1} und {2} eingeben.</value>
     <comment>AppearanceControls.cs:153</comment>
   </data>
-  <data name="AppearanceControls_Number_0DA36741DE" xml:space="preserve">
-    <value>Fester Anteil (Pixel)</value>
-    <comment>AppearanceControls.cs:136</comment>
-  </data>
-  <data name="AppearanceControls_Number_2C7E083699" xml:space="preserve">
-    <value>Skalierter Anteil (Referenzpixel)</value>
-    <comment>AppearanceControls.cs:138</comment>
-  </data>
-  <data name="AppearanceControls_Number_9FC85F1C9F" xml:space="preserve">
-    <value>Feste Größe beibehalten</value>
-    <comment>AppearanceControls.cs:198</comment>
-  </data>
-  <data name="AppearanceControls_Number_C42BC5D941" xml:space="preserve">
-    <value>{0}: Bitte einen gültigen Zahlenwert eingeben.</value>
-    <comment>AppearanceControls.cs:148</comment>
-  </data>
-  <data name="AppearanceControls_Number_EE9964568E" xml:space="preserve">
-    <value>Fester Anteil + skalierter Anteil</value>
-    <comment>AppearanceControls.cs:198</comment>
-  </data>
-  <data name="AppearanceControls_Number_F1463D39A7" xml:space="preserve">
-    <value>Mit der Karte skalieren</value>
-    <comment>AppearanceControls.cs:198</comment>
-  </data>
   <data name="ContextRibbonToggle_Refresh_645432A5BF" xml:space="preserve">
     <value>, aktiviert</value>
     <comment>ContextRibbonToggle.cs:31</comment>
@@ -216,6 +192,10 @@ Webseite kann nicht geöffnet werden:</value>
   <data name="ExportWindow_Preview_FormatDescription_D1B9C29526" xml:space="preserve">
     <value>Netzwerkprojekt · in Rail Map Painter bearbeiten</value>
     <comment>ExportWindow.Preview.cs:93</comment>
+  </data>
+  <data name="ExportWindow_Preview_FormatDescription_F3E27B053E" xml:space="preserve">
+    <value>GeoPackage (.gpkg) + GeoTIFF (.tif) + QGIS (.qml)</value>
+    <comment>ExportWindow.Preview.cs:91</comment>
   </data>
   <data name="ExportWindow_Preview_InitializeResults_0A07FEF6ED" xml:space="preserve">
     <value>Export erneut versuchen</value>
@@ -445,6 +425,10 @@ Webseite kann nicht geöffnet werden:</value>
     <value>Metroplan</value>
     <comment>ExportWindow.cs:679</comment>
   </data>
+  <data name="ExportWindow_UpdateContextCopy_19744772B2" xml:space="preserve">
+    <value>GeoPackage (.gpkg) + GeoTIFF (.tif) + QGIS (.qml)</value>
+    <comment>ExportWindow.cs:348</comment>
+  </data>
   <data name="ExportWindow_UpdateContextCopy_2F52FBFF32" xml:space="preserve">
     <value>Hilfsprojekt anhand des aktuellen Metronetzes und der Linienauswahl exportieren.</value>
     <comment>ExportWindow.cs:357</comment>
@@ -468,6 +452,10 @@ Webseite kann nicht geöffnet werden:</value>
   <data name="ExportWindow_UpdateContextCopy_6339D3A748" xml:space="preserve">
     <value>Karte mit aktuellem Motiv, Ebenen und ausgewähltem Bereich exportieren.</value>
     <comment>ExportWindow.cs:376</comment>
+  </data>
+  <data name="ExportWindow_UpdateContextCopy_694B1FB788" xml:space="preserve">
+    <value>GeoPackage / GeoTIFF + QML</value>
+    <comment>ExportWindow.cs:347</comment>
   </data>
   <data name="ExportWindow_UpdateContextCopy_7BE47589C1" xml:space="preserve">
     <value>.rmp.json exportieren, dann in Rail Map Painter importieren und Linien bearbeiten.</value>
@@ -817,6 +805,10 @@ Webseite kann nicht geöffnet werden:</value>
     <value>PNG exportieren…</value>
     <comment>MainWindow.File.cs:32</comment>
   </data>
+  <data name="MainWindow_File_BuildFileMenu_D9A515CF72" xml:space="preserve">
+    <value>GeoPackage / GeoTIFF + QML…</value>
+    <comment>MainWindow.File.cs:34</comment>
+  </data>
   <data name="MainWindow_File_RefreshFileRecent_95D7E39D01" xml:space="preserve">
     <value>Datei verschoben oder nicht vorhanden:</value>
     <comment>MainWindow.File.cs:63</comment>
@@ -1145,10 +1137,6 @@ Webseite kann nicht geöffnet werden:</value>
     <value>ÖPNV-Symbole</value>
     <comment>MainWindow.MapSettings.cs:278</comment>
   </data>
-  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_4D2A6ECC62" xml:space="preserve">
-    <value>Referenzgrößen beziehen sich auf eine Stadtkarte mit 4096 Pixeln.</value>
-    <comment>MainWindow.MapSettings.cs:350; MainWindow.MapSettings.cs:365</comment>
-  </data>
   <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_4D8D19C70F" xml:space="preserve">
     <value>Einstellungskategorie</value>
     <comment>MainWindow.MapSettings.cs:57; MainWindow.MapSettings.cs:58; MainWindow.MapSettings.cs:59</comment>
@@ -1361,10 +1349,6 @@ Webseite kann nicht geöffnet werden:</value>
     <value>Text und Symbole anzeigen</value>
     <comment>MainWindow.MapSettings.cs:216</comment>
   </data>
-  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_EC7FFA2896" xml:space="preserve">
-    <value>Änderung der Größen beim Zoomen</value>
-    <comment>MainWindow.MapSettings.cs:351; MainWindow.MapSettings.cs:366</comment>
-  </data>
   <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_ED236491A4" xml:space="preserve">
     <value>Vom Spiel generierte Namen</value>
     <comment>MainWindow.MapSettings.cs:311</comment>
@@ -1388,6 +1372,10 @@ Webseite kann nicht geöffnet werden:</value>
   <data name="MainWindow_OverviewButton.Content" xml:space="preserve">
     <value>Stadtübersicht</value>
     <comment>dev\CSLModernMapRenderer\winui\MainWindow.xaml:50</comment>
+  </data>
+  <data name="MainWindow_Overview_ShowInspectorHome_064FC61A89" xml:space="preserve">
+    <value>In QGIS weiterbearbeiten</value>
+    <comment>MainWindow.Overview.cs:131</comment>
   </data>
   <data name="MainWindow_Overview_ShowInspectorHome_1CDED5B3FD" xml:space="preserve">
     <value>Objekteigenschaften</value>
@@ -1433,10 +1421,6 @@ Webseite kann nicht geöffnet werden:</value>
     <value>Kartenthema und Überblick über die aktuelle Stadt</value>
     <comment>MainWindow.Overview.cs:39</comment>
   </data>
-  <data name="MainWindow_Overview_ShowMapOverview_3595B7C819" xml:space="preserve">
-    <value>Anzahl der Gebiete</value>
-    <comment>MainWindow.Overview.cs:53</comment>
-  </data>
   <data name="MainWindow_Overview_ShowMapOverview_41AB2E0ECB" xml:space="preserve">
     <value>Karte</value>
     <comment>MainWindow.Overview.cs:38; MainWindow.Overview.cs:40</comment>
@@ -1450,7 +1434,7 @@ Webseite kann nicht geöffnet werden:</value>
     <comment>MainWindow.Overview.cs:52</comment>
   </data>
   <data name="MainWindow_Overview_ShowMapOverview_6F1C3CB04A" xml:space="preserve">
-    <value>Stil bearbeiten…</value>
+    <value>Themenparameter bearbeiten…</value>
     <comment>MainWindow.Overview.cs:48</comment>
   </data>
   <data name="MainWindow_Overview_ShowMapOverview_788DB1CFEC" xml:space="preserve">
@@ -1458,7 +1442,7 @@ Webseite kann nicht geöffnet werden:</value>
     <comment>MainWindow.Overview.cs:41</comment>
   </data>
   <data name="MainWindow_Overview_ShowMapOverview_B553EA09A3" xml:space="preserve">
-    <value>ÖPNV-Betriebslänge</value>
+    <value>Gesamtlänge der ÖPNV-Linien</value>
     <comment>MainWindow.Overview.cs:52</comment>
   </data>
   <data name="MainWindow_Overview_ShowMapOverview_BDA7B29CF3" xml:space="preserve">
@@ -1480,6 +1464,34 @@ Webseite kann nicht geöffnet werden:</value>
   <data name="MainWindow_Overview_ShowMapOverview_ED84A1665F" xml:space="preserve">
     <value>Stadt</value>
     <comment>MainWindow.Overview.cs:51</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_2CD0F3BE87" xml:space="preserve">
+    <value>Abbrechen</value>
+    <comment>MainWindow.PreviewSettings.cs:36</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_3279E8322A" xml:space="preserve">
+    <value>Vorschauleistung</value>
+    <comment>MainWindow.PreviewSettings.cs:19</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_63C73C4730" xml:space="preserve">
+    <value>Anwenden</value>
+    <comment>MainWindow.PreviewSettings.cs:37</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_8B710BEF56" xml:space="preserve">
+    <value>Die Stadt hat sich geändert. Einstellungen erneut öffnen.</value>
+    <comment>MainWindow.PreviewSettings.cs:39</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_BA2E93E730" xml:space="preserve">
+    <value>Standardwerte wiederherstellen</value>
+    <comment>MainWindow.PreviewSettings.cs:35</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_BD4DD78F2D" xml:space="preserve">
+    <value>Stadtladung, Kartenerstellung und Renderingzeiten erfassen, um langsame Vorschauen zu untersuchen. Text, Symbole und Zusammenführung in den aktuellen Ansichtseinstellungen anpassen.</value>
+    <comment>MainWindow.PreviewSettings.cs:29</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_F15F7C4642" xml:space="preserve">
+    <value>Vorschauleistung aufzeichnen</value>
+    <comment>MainWindow.PreviewSettings.cs:22</comment>
   </data>
   <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_07C030A101" xml:space="preserve">
     <value>Wiederholungsabstand (m)</value>
@@ -2058,9 +2070,17 @@ Vorschau: {1}</value>
     <value>Protokollordner öffnen</value>
     <comment>MainWindow.Workflows.cs:197</comment>
   </data>
+  <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_3B1EF565E6" xml:space="preserve">
+    <value>Leistung</value>
+    <comment>MainWindow.Workflows.cs:213</comment>
+  </data>
   <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_41AB2E0ECB" xml:space="preserve">
     <value>Karte</value>
     <comment>MainWindow.Workflows.cs:213</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_51464DD5DC" xml:space="preserve">
+    <value>Leistungsdiagnose</value>
+    <comment>MainWindow.Workflows.cs:194</comment>
   </data>
   <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_6EDFD8773A" xml:space="preserve">
     <value>Vorschau aktualisieren</value>
@@ -2337,6 +2357,10 @@ Esc  Aktuellen Auftrag abbrechen</value>
   <data name="MainWindow_xaml_BuildRibbon_62AEEB8B65" xml:space="preserve">
     <value>Gebiete und Bezirke</value>
     <comment>MainWindow.xaml.cs:165</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_694B1FB788" xml:space="preserve">
+    <value>GeoPackage / GeoTIFF + QML</value>
+    <comment>MainWindow.xaml.cs:141; MainWindow.xaml.cs:218</comment>
   </data>
   <data name="MainWindow_xaml_BuildRibbon_6BEB3C5ED7" xml:space="preserve">
     <value>Kartenerstellung</value>
@@ -3371,18 +3395,6 @@ Stadtkarten, ÖPNV-Karten und Metropläne.
     <value>Vorschau wird nach Eingabe eines gültigen Werts aktualisiert</value>
     <comment>ThemeEditorDialog.Fields.cs:348</comment>
   </data>
-  <data name="ThemeEditorDialog_Fields_Label_606D5B2CC1" xml:space="preserve">
-    <value>Komponente, die mit dem Rendemaßstab zunimmt</value>
-    <comment>ThemeEditorDialog.Fields.cs:23</comment>
-  </data>
-  <data name="ThemeEditorDialog_Fields_Label_803A1B3A33" xml:space="preserve">
-    <value>Fester Anteil</value>
-    <comment>ThemeEditorDialog.Fields.cs:22</comment>
-  </data>
-  <data name="ThemeEditorDialog_Fields_MakeField_606D5B2CC1" xml:space="preserve">
-    <value>Komponente, die mit dem Rendemaßstab zunimmt</value>
-    <comment>ThemeEditorDialog.Fields.cs:134</comment>
-  </data>
   <data name="ThemeEditorDialog_Fields_MakeField_66FE53367D" xml:space="preserve">
     <value>Wert zwischen {0} und {1} eingeben</value>
     <comment>ThemeEditorDialog.Fields.cs:181</comment>
@@ -3394,14 +3406,6 @@ Stadtkarten, ÖPNV-Karten und Metropläne.
   <data name="ThemeEditorDialog_Fields_MakeField_870D5FE5D4" xml:space="preserve">
     <value>JSON-Array eingeben</value>
     <comment>ThemeEditorDialog.Fields.cs:150</comment>
-  </data>
-  <data name="ThemeEditorDialog_Fields_MakeField_986E6B84D7" xml:space="preserve">
-    <value>Festanteil (px)</value>
-    <comment>ThemeEditorDialog.Fields.cs:133</comment>
-  </data>
-  <data name="ThemeEditorDialog_Fields_MakeField_CF663DC217" xml:space="preserve">
-    <value>Endgröße = fester Anteil + skalierter Anteil × Rendemaßstab</value>
-    <comment>ThemeEditorDialog.Fields.cs:136</comment>
   </data>
   <data name="ThemeEditorDialog_Fields_MakeField_D9E21007A0" xml:space="preserve">
     <value>(aktueller Wert)</value>
@@ -3420,11 +3424,11 @@ Stadtkarten, ÖPNV-Karten und Metropläne.
     <comment>ThemeEditorDialog.Fields.cs:84</comment>
   </data>
   <data name="ThemeEditorDialog_Fields_PageDescription_5986B685A1" xml:space="preserve">
-    <value>Füllung, Kontur und minimale sichtbare Breite je Straßenklasse anpassen.</value>
+    <value>Füllung, Kontur und Breite ohne Grundriss (px) je Straßenklasse anpassen.</value>
     <comment>ThemeEditorDialog.Fields.cs:82</comment>
   </data>
   <data name="ThemeEditorDialog_Fields_PageDescription_7245F659EA" xml:space="preserve">
-    <value>Motivnamen und Beschreibung bearbeiten, aktuelle Motiveinstellungen speichern.</value>
+    <value>Änderungen an einer Vorlage werden als persönliches Motiv gespeichert. Persönliche Motive werden aktualisiert. Export speichert eine separate YAML-Datei.</value>
     <comment>ThemeEditorDialog.Fields.cs:85</comment>
   </data>
   <data name="ThemeEditorDialog_Fields_PageDescription_8714276423" xml:space="preserve">
@@ -3536,7 +3540,7 @@ Stadtkarten, ÖPNV-Karten und Metropläne.
     <comment>ThemeEditorDialog.Layout.cs:43</comment>
   </data>
   <data name="ThemeEditorDialog_Layout_BuildWorkbench_BA1125B2AC" xml:space="preserve">
-    <value>Vollständige Motivdaten (JSON) bearbeiten…</value>
+    <value>JSON bearbeiten…</value>
     <comment>ThemeEditorDialog.Layout.cs:60</comment>
   </data>
   <data name="ThemeEditorDialog_Layout_BuildWorkbench_EC9A1CEB6D" xml:space="preserve">
@@ -3699,10 +3703,6 @@ Stadtkarten, ÖPNV-Karten und Metropläne.
     <value>Eine Höhe zwischen {0} und {1} m sowie einen gültigen HEX-Farbwert eingeben</value>
     <comment>ThemeEditorDialog.Pages.cs:189</comment>
   </data>
-  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_01EEE2E647" xml:space="preserve">
-    <value>Höherer Faktor macht Straßen insgesamt breiter.</value>
-    <comment>ThemeEditorDialog.Pages.cs:61</comment>
-  </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_05FB7CBA47" xml:space="preserve">
     <value>Füllung</value>
     <comment>ThemeEditorDialog.Pages.cs:29</comment>
@@ -3712,23 +3712,19 @@ Stadtkarten, ÖPNV-Karten und Metropläne.
     <comment>ThemeEditorDialog.Pages.cs:42</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_1D68EDF7EB" xml:space="preserve">
-    <value>Mindestpixel</value>
+    <value>Breite der Mittellinie (px)</value>
     <comment>ThemeEditorDialog.Pages.cs:29</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_3001DE3658" xml:space="preserve">
     <value>Darstellung je Klasse</value>
     <comment>ThemeEditorDialog.Pages.cs:24</comment>
   </data>
-  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_37AE912BEC" xml:space="preserve">
-    <value>Gesamtstärke</value>
-    <comment>ThemeEditorDialog.Pages.cs:59</comment>
-  </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_512DF348F2" xml:space="preserve">
-    <value>Mindestbreite steuert die Sichtbarkeit aus der Ferne; die tatsächliche Breite hängt von der Straßengröße ab. Die Kontur umschließt die Füllung.</value>
+    <value>Mit Grundriss: Grundrissbreite × Grundrissfaktor. Ohne Grundriss: Pixelbreite × Elementskalierung. Konturen folgen ebenfalls der Elementskalierung.</value>
     <comment>ThemeEditorDialog.Pages.cs:56</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_593A6AFD98" xml:space="preserve">
-    <value>Konturbreite nach Straßenklasse</value>
+    <value>Konturbreite (px) / Breitenfaktor der Straßenfläche</value>
     <comment>ThemeEditorDialog.Pages.cs:63</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_80A57E03F0" xml:space="preserve">
@@ -3750,10 +3746,6 @@ Stadtkarten, ÖPNV-Karten und Metropläne.
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_C2AE96D4A6" xml:space="preserve">
     <value>Hochstraßen und Tunnel</value>
     <comment>ThemeEditorDialog.Pages.cs:72</comment>
-  </data>
-  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_E9C68028D9" xml:space="preserve">
-    <value>Straßenbreitenmaßstab</value>
-    <comment>ThemeEditorDialog.Pages.cs:60</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_FBE666F1E0" xml:space="preserve">
     <value>Straßenklasse</value>
@@ -3794,11 +3786,6 @@ Stadtkarten, ÖPNV-Karten und Metropläne.
   <data name="ThemeEditorDialog_Preview_BuildSamples_1350C527B6" xml:space="preserve">
     <value>Änderungen an Farbe und Größe erscheinen in der Live-Kartenvorschau.</value>
     <comment>ThemeEditorDialog.Preview.cs:50</comment>
-  </data>
-  <data name="ThemeEditorDialog_Preview_BuildSamples_1A0787C40B" xml:space="preserve">
-    <value> · mindestens {0:0.##} px
-Beispielstraße: 16 m, Rendermultiplikator 1</value>
-    <comment>ThemeEditorDialog.Preview.cs:33</comment>
   </data>
   <data name="ThemeEditorDialog_Preview_BuildSamples_5BD3906590" xml:space="preserve">
     <value>Noch keine Höhenknoten</value>
@@ -4314,7 +4301,7 @@ Beispielstraße: 16 m, Rendermultiplikator 1</value>
   <data name="MainWindow_File_OpenConfigurationFolder" xml:space="preserve">
     <value>Konfigurationsordner öffnen</value>
   </data>
-  <data name="RmpEditor_Title" xml:space="preserve"><value>Metro diagram editor</value></data>
+  <data name="RmpEditor_Title" xml:space="preserve"><value>U-Bahn-Netzplaneditor</value></data>
   <data name="RmpEditor_Edit" xml:space="preserve"><value>Edit</value></data>
   <data name="RmpEditor_Save" xml:space="preserve"><value>Save project</value></data>
   <data name="RmpEditor_SaveAs" xml:space="preserve"><value>Save as…</value></data>
@@ -4326,20 +4313,20 @@ Beispielstraße: 16 m, Rendermultiplikator 1</value>
   <data name="RmpEditor_Cancel" xml:space="preserve"><value>Cancel</value></data>
   <data name="RmpEditor_Discard" xml:space="preserve"><value>Discard changes</value></data>
   <data name="RmpEditor_Unsaved" xml:space="preserve"><value>Unsaved project</value></data>
-  <data name="RmpEditor_UnsavedPrompt" xml:space="preserve"><value>Save changes before continuing?</value></data>
-  <data name="RmpEditor_Independent" xml:space="preserve"><value>Changes belong to this editor only.</value></data>
-  <data name="RmpEditor_NativeAppearance" xml:space="preserve"><value>RMP uses native symbol sizes, Noto Sans SC and opaque water colours composed over the canvas background.</value></data>
-  <data name="RmpEditor_Detached" xml:space="preserve"><value>This project is not linked to the current source map.</value></data>
-  <data name="RmpEditor_MissingAssets" xml:space="preserve"><value>RMP assets are missing. Rebuild the WinUI application.</value></data>
-  <data name="RmpEditor_LoadFailed" xml:space="preserve"><value>Unable to load the RMP editor</value></data>
-  <data name="RmpEditor_ProcessFailed" xml:space="preserve"><value>The editor process stopped. Unsaved changes could not be recovered.</value></data>
-  <data name="RmpEditor_InvalidProject" xml:space="preserve"><value>Not a supported RMP project (save version 1–77).</value></data>
-  <data name="RmpEditor_BlockedResource" xml:space="preserve"><value>An external resource was blocked by the offline editor.</value></data>
+  <data name="RmpEditor_UnsavedPrompt" xml:space="preserve"><value>Änderungen vor dem Fortfahren speichern?</value></data>
+  <data name="RmpEditor_Independent" xml:space="preserve"><value>Änderungen gelten nur für diesen Entwurf.</value></data>
+  <data name="RmpEditor_NativeAppearance" xml:space="preserve"><value>RMP verwendet die Originalgrößen der Symbole und die Schrift Noto Sans SC. Wasserfarben werden mit dem Hintergrund der Zeichenfläche zu deckenden Farben verrechnet.</value></data>
+  <data name="RmpEditor_Detached" xml:space="preserve"><value>Dieses Projekt ist nicht mit der aktuellen Quellkarte verknüpft.</value></data>
+  <data name="RmpEditor_MissingAssets" xml:space="preserve"><value>Die RMP-Ressourcen fehlen. Erstellen Sie die WinUI-Anwendung erneut.</value></data>
+  <data name="RmpEditor_LoadFailed" xml:space="preserve"><value>RMP-Editor konnte nicht geladen werden</value></data>
+  <data name="RmpEditor_ProcessFailed" xml:space="preserve"><value>Der Editorprozess wurde beendet. Nicht gespeicherte Änderungen konnten nicht wiederhergestellt werden.</value></data>
+  <data name="RmpEditor_InvalidProject" xml:space="preserve"><value>Nicht unterstütztes RMP-Projekt. Unterstützte Speicherformatversionen: 1–77.</value></data>
+  <data name="RmpEditor_BlockedResource" xml:space="preserve"><value>Der Offline-Editor hat eine externe Ressource blockiert.</value></data>
   <data name="RmpEditor_RegeneratePrompt" xml:space="preserve"><value>Replace this draft with the automatic diagram captured when this window opened? This does not change the main window.</value></data>
   <data name="RmpEditor_Exported" xml:space="preserve"><value>Exported:</value></data>
-  <data name="RmpEditor_MismatchPrompt" xml:space="preserve"><value>The saved project does not match its source metadata. Open it independently, or create a new draft without overwriting it?</value></data>
-  <data name="RmpEditor_OpenExisting" xml:space="preserve"><value>Open existing project</value></data>
-  <data name="RmpEditor_NewDraft" xml:space="preserve"><value>Create new draft</value></data>
+  <data name="RmpEditor_MismatchPrompt" xml:space="preserve"><value>Das gespeicherte Projekt passt nicht zu den Metadaten seiner Quelle. Möchten Sie es separat öffnen oder einen neuen Entwurf erstellen und das Original behalten?</value></data>
+  <data name="RmpEditor_OpenExisting" xml:space="preserve"><value>Vorhandenes Projekt öffnen</value></data>
+  <data name="RmpEditor_NewDraft" xml:space="preserve"><value>Neuen Entwurf erstellen</value></data>
   <data name="RmpEditor_Fit" xml:space="preserve"><value>Fit diagram</value></data>
   <data name="RmpEditor_Undo" xml:space="preserve"><value>Rückgängig</value></data>
   <data name="RmpEditor_Redo" xml:space="preserve"><value>Wiederholen</value></data>
@@ -4371,6 +4358,290 @@ Beispielstraße: 16 m, Rendermultiplikator 1</value>
   <data name="ExportWindow_RmpContent" xml:space="preserve"><value>Exportiert den aktuellen Metroplan mit bearbeiteten Linien, Stationen und weiteren Elementen. Schriftarten werden in die Datei eingebettet.</value></data>
   <data name="ExportWindow_RmpSvgDescription" xml:space="preserve"><value>Vektorgrafik zum Skalieren und Weiterbearbeiten</value></data>
   <data name="RmpEditor_DefaultTitle" xml:space="preserve"><value>{cityName} – U-Bahn-Plan</value></data>
+  <data name="Poi_Area" xml:space="preserve"><value>Funktionsbereiche</value></data>
+  <data name="Poi_AreaIcons" xml:space="preserve"><value>Symbole der Funktionsbereiche</value></data>
+  <data name="Poi_AreaNames" xml:space="preserve"><value>Namen der Funktionsbereiche</value></data>
+  <data name="Poi_AreaDescription" xml:space="preserve"><value>Vom Spiel exportierte Funktionsbereiche und Namen.</value></data>
+  <data name="Poi_PngInternalBuildings" xml:space="preserve"><value>Interne Gebäudesymbole der Bereiche in PNG anzeigen</value></data>
+  <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
+    <value>Das Spiel läuft noch und kann viel Arbeitsspeicher belegen. Speichern Sie Ihre Stadt und beenden Sie möglichst das Spiel vor dem Export. Sie können auch fortfahren.</value>
+  </data>
+  <data name="ExportWindow_BeforeExportNotice" xml:space="preserve">
+    <value>Speichere vor dem Exportieren deine Stadt, beende das Spiel und schließe andere speicherintensive Programme. Größere Exporte benötigen mehr Arbeitsspeicher.</value>
+  </data>
+  <data name="Poi_AreaMerge" xml:space="preserve">
+    <value>Benachbarte Gebietsmarkierungen (CS2)</value>
+  </data>
+  <data name="Poi_AreaMergeDescription" xml:space="preserve">
+    <value>Nahe CS2-Gebiete mit gleichem Originaltyp und Namen teilen eine Beschriftung. Ihre Grenzen bleiben getrennt.</value>
+  </data>
+  <data name="Map_RotateCounterclockwise" xml:space="preserve">
+    <value>90° gegen den Uhrzeigersinn</value>
+  </data>
+  <data name="Map_RotateClockwise" xml:space="preserve">
+    <value>90° im Uhrzeigersinn</value>
+  </data>
+  <data name="Failure_Internal" xml:space="preserve"><value>Ein unerwarteter Fehler ist aufgetreten. Sie können diesen Fehler dem Autor melden.</value></data>
+  <data name="Failure_Operation" xml:space="preserve"><value>Operation failed</value></data>
+  <data name="Failure_Metro" xml:space="preserve"><value>Erstellen der Metrokarte fehlgeschlagen</value></data>
+  <data name="Failure_Export" xml:space="preserve"><value>Kartenexport fehlgeschlagen</value></data>
+  <data name="Failure_Permission" xml:space="preserve"><value>Auf eine erforderliche Datei konnte nicht zugegriffen werden. Prüfen Sie die Datei- oder Ordnerberechtigungen und versuchen Sie es erneut.</value></data>
+  <data name="Failure_MissingFile" xml:space="preserve"><value>Eine benötigte Datei wurde nicht gefunden. Prüfen Sie den Speicherort und versuchen Sie es erneut.</value></data>
+  <data name="Failure_Memory" xml:space="preserve"><value>Speicher konnte nicht zugewiesen werden. Verringern Sie die Ausgabegröße oder schließen Sie speicherintensive Anwendungen und versuchen Sie es erneut.</value></data>
+  <data name="Failure_EngineStopped" xml:space="preserve"><value>Die Rendering-Engine wurde beendet. Öffnen Sie die Kartenansicht erneut und versuchen Sie es noch einmal.</value></data>
+  <data name="Failure_ViewDetails" xml:space="preserve"><value>View details</value></data>
+  <data name="Failure_CopyDetails" xml:space="preserve"><value>Fehlerdetails kopieren</value></data>
+  <data name="Failure_Close" xml:space="preserve"><value>Close</value></data>
+  <data name="Failure_Copied" xml:space="preserve"><value>Copied</value></data>
+  <data name="Failure_CopyFailed" xml:space="preserve"><value>Kopieren fehlgeschlagen. Versuchen Sie es erneut.</value></data>
+  <data name="Ribbon_MoreLayers" xml:space="preserve"><value>Weitere Ebenen</value></data>
+  <data name="Ribbon_Simplified" xml:space="preserve"><value>Vereinfacht</value></data>
+  <data name="Ribbon_Classic" xml:space="preserve"><value>Klassisch</value></data>
+  <data name="Sidebar_ShowSettings" xml:space="preserve"><value>Linken Bereich anzeigen</value></data>
+  <data name="Sidebar_HideSettings" xml:space="preserve"><value>Linken Bereich ausblenden</value></data>
+  <data name="Sidebar_ShowInspector" xml:space="preserve"><value>Rechten Bereich anzeigen</value></data>
+  <data name="Sidebar_HideInspector" xml:space="preserve"><value>Rechten Bereich ausblenden</value></data>
+  <data name="Ribbon_IntroTitle" xml:space="preserve"><value>Den neuen vereinfachten Modus ausprobieren</value></data>
+  <data name="Ribbon_IntroDescription" xml:space="preserve"><value>Der vereinfachte Modus macht das Erkunden der Karte angenehmer und einfacher. Sie können jederzeit zum klassischen Modus zurückwechseln.</value></data>
+  <data name="Ribbon_IntroTry" xml:space="preserve"><value>Vereinfachten Modus testen</value></data>
+  <data name="Ribbon_IntroLater" xml:space="preserve"><value>Jetzt nicht</value></data>
+  <data name="RmpEditor_showNames" xml:space="preserve"><value>Stationsnamen anzeigen</value></data>
+  <data name="RmpEditor_showDefaultNames" xml:space="preserve"><value>Standardnamen der Stationen anzeigen</value></data>
+  <data name="Poi_ShowDecorative" xml:space="preserve"><value>Dekorative POIs anzeigen</value></data>
+  <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>Symbole und Namen erfasster Dekorationen anzeigen. Gebäude und Kartenobjekte bleiben sichtbar.</value></data>
+  <data name="MetroSettings_Reset" xml:space="preserve"><value>Standardwerte wiederherstellen</value></data>
+  <data name="Preview_Failed" xml:space="preserve"><value>Kartenvorschau konnte nicht geladen werden</value></data>
+  <data name="Preview_Slow" xml:space="preserve"><value>Kartenvorschau dauert länger</value></data>
+  <data name="Preview_Stopped" xml:space="preserve"><value>Vorschau läuft nicht</value></data>
+  <data name="Preview_DataAvailable" xml:space="preserve"><value>Kartendaten sind geladen. Sie können ein Thema wählen und exportieren.</value></data>
+  <data name="Preview_OpenMap" xml:space="preserve"><value>Öffnen Sie eine Kartendatei, um ein Thema zu wählen und zu exportieren.</value></data>
+  <data name="Preview_AutoStart" xml:space="preserve"><value>Eingebettete Vorschau beim Start laden</value></data>
+  <data name="Preview_Retry.Content" xml:space="preserve"><value>Erneut versuchen</value></data>
+  <data name="Preview_Png.Content" xml:space="preserve"><value>PNG exportieren (2048 px)</value></data>
+  <data name="Preview_Html.Content" xml:space="preserve"><value>Im externen Browser öffnen</value></data>
+  <data name="Preview_Continue.Content" xml:space="preserve"><value>Weiter warten</value></data>
+  <data name="Preview_OpenFailed" xml:space="preserve"><value>Die HTML-Datei wurde gespeichert, konnte aber nicht geöffnet werden. Öffnen Sie sie manuell im Ausgabeordner.</value></data>
+  <data name="ThemeEditor_Select" xml:space="preserve"><value>Thema auswählen</value></data>
+  <data name="ThemeEditor_Unsaved" xml:space="preserve"><value>Nicht gespeichert</value></data>
+  <data name="ThemeEditor_Builtins" xml:space="preserve"><value>Voreinstellungen</value></data>
+  <data name="ThemeEditor_Personal" xml:space="preserve"><value>Meine Themen</value></data>
+  <data name="ThemeEditor_New" xml:space="preserve"><value>Neues Thema</value></data>
+  <data name="ThemeEditor_Copy" xml:space="preserve"><value>Thema duplizieren</value></data>
+  <data name="ThemeEditor_Rename" xml:space="preserve"><value>Umbenennen</value></data>
+  <data name="ThemeEditor_Import" xml:space="preserve"><value>Thema importieren…</value></data>
+  <data name="ThemeEditor_Export" xml:space="preserve"><value>Thema exportieren…</value></data>
+  <data name="ThemeEditor_Base" xml:space="preserve"><value>Basisvorlage</value></data>
+  <data name="ThemeEditor_Cancel" xml:space="preserve"><value>Abbrechen</value></data>
+  <data name="ThemeEditor_Name" xml:space="preserve"><value>Themenname</value></data>
+  <data name="ThemeEditor_Save" xml:space="preserve"><value>Speichern</value></data>
+  <data name="ThemeEditor_Exported" xml:space="preserve"><value>Thema exportiert</value></data>
+  <data name="ThemeEditor_InvalidName" xml:space="preserve"><value>Verwenden Sie 1–64 Zeichen ohne Steuerzeichen.</value></data>
+  <data name="ThemeEditor_MigrationWarning" xml:space="preserve"><value>Einige ältere Themen konnten nicht gelesen werden. Originaldateien wurden gesichert:</value></data>
+  <data name="BuildingList_Open" xml:space="preserve"><value>Gebäudeliste</value></data>
+  <data name="BuildingList_Back" xml:space="preserve"><value>Zurück zur Übersicht</value></data>
+  <data name="BuildingList_Search" xml:space="preserve"><value>Gebäudenamen suchen</value></data>
+  <data name="BuildingList_Category" xml:space="preserve"><value>Gebäudekategorie</value></data>
+  <data name="BuildingList_OutsideFilter" xml:space="preserve"><value>Das ausgewählte Gebäude entspricht nicht dem aktuellen Filter.</value></data>
+  <data name="BuildingList_Clear" xml:space="preserve"><value>Filter löschen</value></data>
+  <data name="BuildingList_All" xml:space="preserve"><value>Alle</value></data>
+  <data name="BuildingList_Unnamed" xml:space="preserve"><value>Unbenanntes Gebäude</value></data>
+  <data name="BuildingList_Empty" xml:space="preserve"><value>Keine passenden Gebäude</value></data>
+  <data name="BuildingList_Count" xml:space="preserve"><value>{0:N0} / {1:N0} Gebäude (Gebäudekomplexe zusammengefasst)</value></data>
+  <data name="BuildingList_Members" xml:space="preserve"><value>Nebengebäude</value></data>
+  <data name="BuildingList_OpenButton.Content" xml:space="preserve"><value>Gebäudeliste</value></data>
+  <data name="BuildingList_Sort" xml:space="preserve"><value>Sortieren</value></data>
+  <data name="BuildingList_NameAsc" xml:space="preserve"><value>Name: aufsteigend</value></data>
+  <data name="BuildingList_NameDesc" xml:space="preserve"><value>Name: absteigend</value></data>
+  <data name="BuildingList_CategoryAsc" xml:space="preserve"><value>Kategorie: aufsteigend</value></data>
+  <data name="BuildingList_CategoryDesc" xml:space="preserve"><value>Kategorie: absteigend</value></data>
+  <data name="BuildingList_IdAsc" xml:space="preserve"><value>ID: aufsteigend</value></data>
+  <data name="BuildingList_IdDesc" xml:space="preserve"><value>ID: absteigend</value></data>
+  <data name="BuildingList_Details" xml:space="preserve"><value>Gebäudedetails</value></data>
+  <data name="BuildingList_DetailHint" xml:space="preserve"><value>Wählen Sie ein Gebäude, um Details anzuzeigen.</value></data>
+  <data name="ThemeEditor_CurrentUnreadable" xml:space="preserve"><value>Das aktuelle Thema konnte nicht gelesen werden. Wählen Sie ein anderes Thema. Die Originaldateien bleiben erhalten.</value></data>
+  <data name="BuildingList_GameNames" xml:space="preserve"><value>Spielgenerierte Namen verwenden</value></data>
+  <data name="BuildingList_NameHint" xml:space="preserve"><value>Die Namenseinstellung wird mit der Karte synchronisiert. Eigene Namen bleiben erhalten.</value></data>
+  <data name="BuildingList_Name" xml:space="preserve"><value>Gebäudename</value></data>
+  <data name="BuildingList_Id" xml:space="preserve"><value>ID</value></data>
+  <data name="BuildingList_Info" xml:space="preserve"><value>Gebäudeinformationen</value></data>
+  <data name="BuildingList_NameSource" xml:space="preserve"><value>Namensquelle</value></data>
+  <data name="BuildingList_CustomName" xml:space="preserve"><value>Spielerdefiniert</value></data>
+  <data name="BuildingList_OfficialName" xml:space="preserve"><value>Offizielle Spielkategorie</value></data>
+  <data name="BuildingList_NoName" xml:space="preserve"><value>Kein Name vorhanden</value></data>
+  <data name="BuildingList_GameCategory" xml:space="preserve"><value>Spielkategorie</value></data>
+  <data name="BuildingList_Height" xml:space="preserve"><value>Gebäudehöhe</value></data>
+  <data name="BuildingList_Group" xml:space="preserve"><value>Gebäudegruppe</value></data>
+  <data name="BuildingList_GroupCount" xml:space="preserve"><value>{0} Gebäude (einschließlich Hauptgebäude)</value></data>
+  <data name="BuildingList_GameName" xml:space="preserve"><value>Spielgenerierter Name</value></data>
+  <data name="ThemeUpdate_Title" xml:space="preserve"><value>Voreinstellung aktualisieren</value></data>
+  <data name="ThemeUpdate_Intro" xml:space="preserve"><value>Diese Änderungen der Voreinstellung können auf „{0}“ angewendet werden.</value></data>
+  <data name="ThemeUpdate_Archived" xml:space="preserve"><value>Vor dem Anwenden wird das aktuelle Design gesichert.</value></data>
+  <data name="ThemeUpdate_Continue" xml:space="preserve"><value>Aktualisierung anwenden</value></data>
+  <data name="ThemeUpdate_UsePrevious" xml:space="preserve"><value>Aktuell beibehalten</value></data>
+  <data name="ThemeUpdate_Conflict" xml:space="preserve"><value>Diese Änderung ersetzt Ihre eigene Einstellung.</value></data>
+  <data name="ThemeUpdate_ColorRamp" xml:space="preserve"><value>Höhenfarben</value></data>
+  <data name="ThemeUpdate_Unset" xml:space="preserve"><value>Nicht festgelegt</value></data>
+  <data name="ThemeUpdate_On" xml:space="preserve"><value>Ein</value></data>
+  <data name="ThemeUpdate_Off" xml:space="preserve"><value>Aus</value></data>
+  <data name="ThemeUpdate_Custom" xml:space="preserve"><value>Eigene Einstellungen</value></data>
+  <data name="SatelliteGuidance_Title" xml:space="preserve"><value>Empfehlungen zur Satellitenkarte</value></data>
+  <data name="SatelliteGuidance_Body" xml:space="preserve"><value>Das Thema „Satellit Warm“ hebt Straßen, Symbole und Text hervor.</value></data>
+  <data name="SatelliteGuidance_Apply" xml:space="preserve"><value>Empfohlene Einstellungen anwenden</value></data>
+  <data name="SatelliteGuidance_Keep" xml:space="preserve"><value>Aktuelle Einstellungen behalten</value></data>
+  <data name="SatelliteGuidance_Unavailable" xml:space="preserve"><value>Diese Karte enthält keine Satellitenbilder</value></data>
+  <data name="SatelliteGuidance_EnableTitle" xml:space="preserve"><value>Einschalten empfohlen</value></data>
+  <data name="SatelliteGuidance_EnableLayers" xml:space="preserve"><value>Straßen, Symbole, Text</value></data>
+  <data name="SatelliteGuidance_OptionalTitle" xml:space="preserve"><value>Nach Bedarf</value></data>
+  <data name="SatelliteGuidance_OptionalLayers" xml:space="preserve"><value>Eisenbahn, öffentlicher Verkehr, Verkehrslage</value></data>
+  <data name="SatelliteGuidance_DisableTitle" xml:space="preserve"><value>Ausschalten empfohlen</value></data>
+  <data name="SatelliteGuidance_DisableLayers" xml:space="preserve"><value>Gebäude, Gelände, Wasser und weitere überdeckende Ebenen</value></data>
+  <data name="SatelliteGuidance_Preserve" xml:space="preserve"><value>Aktuelle Auswahl bleibt erhalten</value></data>
+  <data name="SatelliteGuidance_Details" xml:space="preserve"><value>Details zu den Änderungen</value></data>
+  <data name="SatelliteGuidance_DetailBody" xml:space="preserve"><value>Gebäude, Gelände, Wasser, bebaute Flächen, Flächennutzung, POI-Flächen und PO-Objekte können das Satellitenbild verdecken und werden nicht empfohlen. Beim Anwenden werden diese Ebenen deaktiviert.</value></data>
+  <data name="Preview_Compatibility.Content" xml:space="preserve"><value>Kompatibilitätsvorschau</value></data>
+  <data name="Preview_CompatibilityNotice.Text" xml:space="preserve"><value>Kompatibilitätsmodus: Bildvorschau; einige Funktionen sind nicht verfügbar.</value></data>
+  <data name="Preview_Interactive.Content" xml:space="preserve"><value>Zur interaktiven Vorschau</value></data>
+  <data name="Preview_ImageUpdating.Text" xml:space="preserve"><value>Vorschau wird aktualisiert</value></data>
+  <data name="Preview_ImageFailed" xml:space="preserve"><value>Bildvorschau fehlgeschlagen:</value></data>
+  <data name="Preview_BrowserOpenFailed" xml:space="preserve"><value>Der Browser konnte nicht geöffnet werden. Die HTML-Datei liegt am unten angegebenen Speicherort.</value></data>
+  <data name="Preview_OpenFolder" xml:space="preserve"><value>Ordner öffnen</value></data>
+  <data name="Workspace_Immersive" xml:space="preserve"><value>Immersiv</value></data>
+  <data name="Workspace_ExitImmersive" xml:space="preserve"><value>Immersiven Modus verlassen</value></data>
+  <data name="Workspace_ImmersiveHint" xml:space="preserve"><value>Arbeitsbereich ausblenden, um mehr Platz für Routen und Karte zu schaffen.</value></data>
+  <data name="Workspace_TryImmersive" xml:space="preserve"><value>Immersiven Modus testen</value></data>
+  <data name="Workspace_MoreActions" xml:space="preserve"><value>Weitere Kartenaktionen</value></data>
+  <data name="Artwork_Enter" xml:space="preserve"><value>Kartenentwurf erstellen…</value></data>
+  <data name="Artwork_Export" xml:space="preserve"><value>Aktuelles Werk exportieren</value></data>
+  <data name="Artwork_PreviewRequired" xml:space="preserve"><value>Öffnen Sie zuerst die Stadtvorschau.</value></data>
+  <data name="Artwork_OutputSize" xml:space="preserve"><value>Lange Ausgabeseite (Pixel)</value></data>
+  <data name="Artwork_Cancel" xml:space="preserve"><value>Abbrechen</value></data>
+  <data name="CityEditor_Title" xml:space="preserve"><value>Karteneditor</value></data>
+  <data name="CityEditor_Theme" xml:space="preserve"><value>Motiv</value></data>
+  <data name="CityEditor_SaveAs" xml:space="preserve"><value>Design speichern unter</value></data>
+  <data name="CityEditor_Manage" xml:space="preserve"><value>Designs verwalten</value></data>
+  <data name="CityEditor_Selection" xml:space="preserve"><value>Kartenauswahl</value></data>
+  <data name="CityEditor_Select" xml:space="preserve"><value>Bereich auswählen</value></data>
+  <data name="CityEditor_PickStyle" xml:space="preserve"><value>Stil übernehmen</value></data>
+  <data name="CityEditor_Pan" xml:space="preserve"><value>Verschieben</value></data>
+  <data name="CityEditor_Clear" xml:space="preserve"><value>Auswahl aufheben</value></data>
+  <data name="CityEditor_Edit" xml:space="preserve"><value>Bearbeiten</value></data>
+  <data name="CityEditor_Undo" xml:space="preserve"><value>Rückgängig</value></data>
+  <data name="CityEditor_Redo" xml:space="preserve"><value>Wiederholen</value></data>
+  <data name="CityEditor_View" xml:space="preserve"><value>Ansicht</value></data>
+  <data name="CityEditor_Fit" xml:space="preserve"><value>Karte einpassen</value></data>
+  <data name="CityEditor_Actual" xml:space="preserve"><value>100%</value></data>
+  <data name="CityEditor_Output" xml:space="preserve"><value>Speichern und Ausgabe</value></data>
+  <data name="CityEditor_Save" xml:space="preserve"><value>Motiv speichern</value></data>
+  <data name="CityEditor_Export" xml:space="preserve"><value>Als PNG exportieren</value></data>
+  <data name="CityEditor_Close" xml:space="preserve"><value>Schließen</value></data>
+  <data name="CityEditor_Leave" xml:space="preserve"><value>Editor verlassen</value></data>
+  <data name="CityEditor_Range" xml:space="preserve"><value>Kartenausschnitt</value></data>
+  <data name="CityEditor_WholeCity" xml:space="preserve"><value>Gesamte Stadt</value></data>
+  <data name="CityEditor_SelectedRange" xml:space="preserve"><value>Ausgewählter Bereich</value></data>
+  <data name="CityEditor_Preset" xml:space="preserve"><value>Zeichenflächenvorgabe</value></data>
+  <data name="CityEditor_Create" xml:space="preserve"><value>Stadtentwurf erstellen</value></data>
+  <data name="CityEditor_InvalidSize" xml:space="preserve"><value>Die längere Seite der Zeichenfläche muss eine ganze Zahl zwischen 1 und 32768 Pixeln sein.</value></data>
+  <data name="CityEditor_CanvasPixels" xml:space="preserve"><value>Längere Seite der Zeichenfläche (Pixel)</value></data>
+  <data name="CityEditor_Rotation" xml:space="preserve"><value>Drehung bei der Ausgabe</value></data>
+  <data name="CityEditor_Styles" xml:space="preserve"><value>Stile</value></data>
+  <data name="CityEditor_Draft" xml:space="preserve"><value>Entwurf</value></data>
+  <data name="CityEditor_ApplyCanvas" xml:space="preserve"><value>Zeichenflächeneinstellungen anwenden</value></data>
+  <data name="CityEditor_SelectRange" xml:space="preserve"><value>Kartenausschnitt auswählen</value></data>
+  <data name="CityEditor_UseSelection" xml:space="preserve"><value>Ausgewählten Bereich verwenden</value></data>
+  <data name="CityEditor_UseWholeCity" xml:space="preserve"><value>Gesamte Stadt verwenden</value></data>
+  <data name="CityEditor_NoSelection" xml:space="preserve"><value>Wählen Sie zunächst einen gültigen Kartenausschnitt aus.</value></data>
+  <data name="CityEditor_RangeHelp" xml:space="preserve"><value>Bereich aufziehen und übernehmen. Ein Bereichswechsel übernimmt auch die obigen Einstellungen und berechnet das Layout neu. Zoomen ändert nur die Ansicht.</value></data>
+  <data name="CityEditor_ObjectFacts" xml:space="preserve"><value>Angaben zum ausgewählten Objekt</value></data>
+  <data name="CityEditor_Scope" xml:space="preserve"><value>Stiländerungen gelten für alle Objekte der Kategorie. Die Hervorhebung kennzeichnet das ausgewählte Objekt.</value></data>
+  <data name="CityEditor_Unsaved" xml:space="preserve"><value>Ungespeicherte Designänderungen</value></data>
+  <data name="CityEditor_Saved" xml:space="preserve"><value>Motiv gespeichert</value></data>
+  <data name="CityEditor_Updating" xml:space="preserve"><value>Entwurf wird aktualisiert</value></data>
+  <data name="CityEditor_ExportScale" xml:space="preserve"><value>Proportionale Skalierung nur für diesen Export:</value></data>
+  <data name="ThemeEditor_AllRoads" xml:space="preserve"><value>Einstellungen für alle Straßen</value></data>
+  <data name="ThemeEditor_ThemeSwitchUnavailable" xml:space="preserve"><value>Das ausgewählte Design konnte nicht geladen werden. Aktualisieren Sie den Renderer und versuchen Sie es erneut.</value></data>
+  <data name="ThemeEditor_ExternalThemeChanged" xml:space="preserve"><value>Dieses Design wurde durch eine andere Aktion geändert. Öffnen Sie den Designeditor erneut.</value></data>
+  <data name="CityEditor_ContentScope" xml:space="preserve"><value>Inhalt und Sichtbarkeit werden getrennt vom Design gespeichert. Änderungen werden sofort wirksam.</value></data>
+  <data name="CityEditor_CreateIntro" xml:space="preserve"><value>Passen Sie Farben und Beschriftungen der aktuellen Karte an und gestalten Sie Ihre eigene Stadtkarte.</value></data>
+  <data name="CityEditor_CreateRangeUnselected" xml:space="preserve"><value>Beginnen Sie mit der gesamten Stadt. Für einen kleineren Ausschnitt brechen Sie ab und wählen zunächst einen Bereich auf der Karte aus.</value></data>
+  <data name="CityEditor_CreateRangeHelp" xml:space="preserve"><value>Legen Sie mit dem ausgewählten Bereich oder der gesamten Stadt fest, was Ihre Karte zeigen soll.</value></data>
+  <data name="CityEditor_CreateCanvasTitle" xml:space="preserve"><value>Größe der Zeichenfläche</value></data>
+  <data name="CityEditor_CreateCanvasHelp" xml:space="preserve"><value>4096 Pixel eignen sich für die meisten Karten. Für ein größeres Bild wählen Sie eine Vorgabe oder geben die Länge der längeren Seite ein. Das Seitenverhältnis bleibt erhalten.</value></data>
+  <data name="CityEditor_CreateRotationHelp" xml:space="preserve"><value>Karte im Uhrzeigersinn drehen.</value></data>
+  <data name="CityEditor_CreateAdjustLater" xml:space="preserve"><value>Bereich, Größe und Drehung können Sie später in der Seitenleiste „Entwurf“ anpassen.</value></data>
+  <data name="CityEditor_LoadingEnter" xml:space="preserve"><value>Karteneditor wird geöffnet</value></data>
+  <data name="CityEditor_LoadingUpdate" xml:space="preserve"><value>Kartenstile werden aktualisiert</value></data>
+  <data name="CityEditor_LoadingTheme" xml:space="preserve"><value>Design und Zeichenflächeneinstellungen werden gelesen</value></data>
+  <data name="CityEditor_LoadingBase" xml:space="preserve"><value>Kartengrundlage und Straßendaten werden vorbereitet</value></data>
+  <data name="CityEditor_LoadingLayout" xml:space="preserve"><value>Entwurfslayout wird berechnet</value></data>
+  <data name="CityEditor_LoadingLabels" xml:space="preserve"><value>Kartenbeschriftungen werden platziert</value></data>
+  <data name="CityEditor_LoadingIcons" xml:space="preserve"><value>Ortssymbole werden platziert</value></data>
+  <data name="CityEditor_LoadingTransport" xml:space="preserve"><value>Linien und Stationen werden platziert</value></data>
+  <data name="CityEditor_LoadingDelivery" xml:space="preserve"><value>Entwurf wird übertragen, Bilder werden vorbereitet</value></data>
+  <data name="CityEditor_LoadingPresent" xml:space="preserve"><value>Karte wird gezeichnet, Bildaufbau wird abgewartet</value></data>
+  <data name="Preview_NotRunningDetail" xml:space="preserve"><value>Die Vorschau funktioniert derzeit nicht richtig. Mögliche Ursachen sind Umgebungseinstellungen, zu wenig Arbeitsspeicher oder andere Probleme. Wählen Sie eine der folgenden Optionen, um fortzufahren.</value></data>
+  <data name="Preview_Cancel.Content" xml:space="preserve"><value>Abbrechen</value></data>
+  <data name="CityEditor_CloseupUnavailable" xml:space="preserve"><value>Dieser Entwurf enthält keine passenden Kartenobjekte für eine Detailansicht dieses Stils.</value></data>
+  <data name="Pixel_Scale" xml:space="preserve"><value>Elementskalierung (%)</value></data>
+  <data name="Pixel_Actual" xml:space="preserve"><value>Tatsächliche Größe: {0} px</value></data>
+  <data name="Pixel_Recommended" xml:space="preserve"><value>Empfohlen für diese Auflösung: {0} %</value></data>
+  <data name="Pixel_InvalidScale" xml:space="preserve"><value>Geben Sie eine endliche Zahl größer als null ein.</value></data>
+  <data name="Pixel_Help" xml:space="preserve"><value>Eine doppelte Kantenlänge verdoppelt auch die Elementskalierung. Der Prozentsatz für Text, Symbole und Linien lässt sich separat ändern.</value></data>
+  <data name="RoadCategoryQuay" xml:space="preserve"><value>Kai</value></data>
+  <data name="CityEditor_ResetCanvas" xml:space="preserve"><value>Leinwand zurücksetzen</value></data>
+  <data name="CityEditor_ResetCanvasHelp" xml:space="preserve"><value>Startet die Vorschau neu und behält Entwurf, Designänderungen und Ansichtsposition bei.</value></data>
+  <data name="ThemeUpdate_Review" xml:space="preserve"><value>Änderungen prüfen</value></data>
+  <data name="ThemeUpdate_None" xml:space="preserve"><value>Es sind keine Änderungen der Voreinstellung verfügbar.</value></data>
+  <data name="CityEditor_Resolution" xml:space="preserve"><value>Auflösung</value></data>
+  <data name="CityEditor_PresetResolution" xml:space="preserve"><value>Voreingestellte Auflösung</value></data>
+  <data name="CityEditor_CustomResolution" xml:space="preserve"><value>Eigene Auflösung</value></data>
+  <data name="ThemeUpdate_Current" xml:space="preserve"><value>Aktuelles Design</value></data>
+  <data name="ThemeUpdate_Preset" xml:space="preserve"><value>Neue Vorlage</value></data>
+  <data name="CityEditor_PixelWidth" xml:space="preserve"><value>Breite (px)</value></data>
+  <data name="CityEditor_PixelHeight" xml:space="preserve"><value>Höhe (px)</value></data>
+  <data name="CityEditor_ElementSize" xml:space="preserve"><value>Elementgröße</value></data>
+  <data name="CityEditor_SizeLinked" xml:space="preserve"><value>Seitenverhältnis des gewählten Bereichs beibehalten.</value></data>
+  <data name="DraftWelcome_Title" xml:space="preserve"><value>Willkommen im Entwurfseditor</value></data>
+  <data name="DraftWelcome_Intro" xml:space="preserve"><value>Sie erkunden gerade Ihre Stadt. Öffnen Sie vor dem Kartenexport einen Entwurf, um im Themeneditor Schriftgrößen, Symbolgrößen und Straßenbreiten genau einzustellen.</value></data>
+  <data name="DraftWelcome_ExploreTitle" xml:space="preserve"><value>Erkundungsansicht</value></data>
+  <data name="DraftWelcome_ExploreBody" xml:space="preserve"><value>Beim Heranzoomen erscheinen weitere Orte. Beim Herauszoomen verschwinden Details. Texte und Symbole passen ihre Größe an.</value></data>
+  <data name="DraftWelcome_DraftTitle" xml:space="preserve"><value>Entwurfseditor</value></data>
+  <data name="DraftWelcome_DraftBody" xml:space="preserve"><value>Der gesamte Entwurf wird skaliert. Die sichtbaren Beschriftungen und ihre Größe im Verhältnis zu den Straßen bleiben gleich.</value></data>
+  <data name="DraftWelcome_Enter" xml:space="preserve"><value>Entwurf bearbeiten</value></data>
+  <data name="DraftWelcome_Continue" xml:space="preserve"><value>Weiter erkunden</value></data>
+  <data name="DraftWelcome_Pause" xml:space="preserve"><value>Demo anhalten</value></data>
+  <data name="DraftWelcome_Resume" xml:space="preserve"><value>Demo fortsetzen</value></data>
+  <data name="DraftWelcome_NextLevel" xml:space="preserve"><value>Nächste Zoomstufe</value></data>
+  <data name="DraftWelcome_Pier" xml:space="preserve"><value>Kai</value></data>
+  <data name="DraftWelcome_Market" xml:space="preserve"><value>Markt</value></data>
+  <data name="DraftWelcome_Cafe" xml:space="preserve"><value>Café</value></data>
+  <data name="DraftWelcome_Clinic" xml:space="preserve"><value>Praxis</value></data>
+  <data name="DraftWelcome_Station" xml:space="preserve"><value>Bahnhof</value></data>
+  <data name="DraftWelcome_Park" xml:space="preserve"><value>Park</value></data>
+  <data name="DraftWelcome_Shop" xml:space="preserve"><value>Bücher</value></data>
+  <data name="Sidebar_TransitDistance" xml:space="preserve"><value>Die Länge wird je Linie summiert. Gemeinsame Abschnitte zählen für jede Linie.</value></data>
+  <data name="Sidebar_RoadCommit" xml:space="preserve"><value>Schalter wirken sofort. Zahlen werden beim Verlassen des Felds übernommen.</value></data>
+  <data name="Sidebar_Locate" xml:space="preserve"><value>Auswählen, um ein passendes Objekt im Entwurf zu finden.</value></data>
+  <data name="ThemeEditor_Edit" xml:space="preserve"><value>Design bearbeiten</value></data>
+  <data name="ThemeEditor_Delete" xml:space="preserve"><value>Design löschen</value></data>
+  <data name="ThemeEditor_DeleteConfirm" xml:space="preserve"><value>„{0}“ löschen? Danach zu „{1}“ wechseln.</value></data>
+  <data name="ThemeEditor_ThumbnailFailed" xml:space="preserve"><value>Das Design wurde gespeichert, aber die Vorschau konnte nicht aktualisiert werden.</value></data>
+  <data name="CityEditor_IconDensity" xml:space="preserve">
+    <value>Symboldichte</value>
+  </data>
+  <data name="ThemeChoice_Title" xml:space="preserve"><value>Themeneditor auswählen</value></data>
+  <data name="ThemeChoice_Interactive" xml:space="preserve"><value>Interaktiver Themeneditor</value></data>
+  <data name="ThemeChoice_Description" xml:space="preserve"><value>Passen Sie die Themeneinstellungen im Stadtentwurf an, um zu sehen, wie die exportierte Karte aussehen wird.</value></data>
+  <data name="ThemeChoice_Traditional" xml:space="preserve"><value>Klassischer Themeneditor</value></data>
+  <data name="ThemeChoice_Unavailable" xml:space="preserve"><value>Öffnen Sie eine Stadt- oder Nahverkehrskarte und warten Sie, bis die interaktive Vorschau bereit ist.</value></data>
+  <data name="ExportChoice_Title" xml:space="preserve"><value>Exportmethode wählen</value></data>
+  <data name="ExportChoice_Direct" xml:space="preserve"><value>Direkt exportieren</value></data>
+  <data name="ExportChoice_DirectHelp" xml:space="preserve"><value>Wählen Sie ein Format und exportieren Sie mit den aktuellen Karteneinstellungen.</value></data>
+  <data name="ExportChoice_Edit" xml:space="preserve"><value>Vor dem Export bearbeiten</value></data>
+  <data name="ExportChoice_EditHelp" xml:space="preserve"><value>Passen Sie die Karte im Entwurf an und exportieren Sie sie anschließend.</value></data>
+  <data name="Workflow_Remember" xml:space="preserve"><value>Auswahl merken</value></data>
+  <data name="Workflow_Reset" xml:space="preserve"><value>Auswahl für Themeneditor und Export zurücksetzen</value></data>
+  <data name="Export_DraftSettingsHelp" xml:space="preserve"><value>Öffne den Entwurf, um Ausschnitt, Drehung, Elementgröße oder Symboldichte anzupassen und das Ergebnis zu prüfen.</value></data>
+  <data name="Export_GoToDraft" xml:space="preserve"><value>Zum Entwurf</value></data>
   <data name="MetroSettings_WaterSmoothing" xml:space="preserve"><value>Küstenglättung</value></data>
   <data name="MetroSettings_WaterSmoothingHelp" xml:space="preserve"><value>Höhere Werte reduzieren Küstendetails und glätten Kurven. 0 deaktiviert die Vorglättung; der Standardwert ist 8. Schmale Flüsse und Inseln können die angewendete Stärke begrenzen.</value></data>
   <data name="RmpEditor_AddTitle" xml:space="preserve"><value>Titel hinzufügen</value></data>
@@ -4418,136 +4689,45 @@ Beispielstraße: 16 m, Rendermultiplikator 1</value>
   <data name="PoiDirect_ImageSearch" xml:space="preserve"><value>Bild- oder Dateinamen suchen</value></data>
   <data name="PoiDirect_NoImage" xml:space="preserve"><value>Kein Symbol</value></data>
   <data name="PoiDirect_Count" xml:space="preserve"><value>{0} Einträge, {1} ungespeicherte Änderungen</value></data>
-<data name="Poi_Area" xml:space="preserve"><value>Funktionsbereiche</value></data>
-  <data name="Poi_AreaIcons" xml:space="preserve"><value>Symbole der Funktionsbereiche</value></data>
-  <data name="Poi_AreaNames" xml:space="preserve"><value>Namen der Funktionsbereiche</value></data>
-  <data name="Poi_AreaDescription" xml:space="preserve"><value>Vom Spiel exportierte Funktionsbereiche und Namen.</value></data>
-  <data name="Poi_PngInternalBuildings" xml:space="preserve"><value>Interne Gebäudesymbole der Bereiche in PNG anzeigen</value></data>
-  <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
-    <value>Das Spiel läuft noch und kann viel Arbeitsspeicher belegen. Speichern Sie Ihre Stadt und beenden Sie möglichst das Spiel vor dem Export. Sie können auch fortfahren.</value>
-  </data>
-  <data name="ExportWindow_BeforeExportNotice" xml:space="preserve">
-    <value>Speichere vor dem Exportieren deine Stadt, beende das Spiel und schließe andere speicherintensive Programme. Größere Exporte benötigen mehr Arbeitsspeicher.</value>
-  </data>
-  <data name="Poi_AreaMerge" xml:space="preserve">
-    <value>Benachbarte Gebietsmarkierungen (CS2)</value>
-  </data>
-  <data name="Poi_AreaMergeDescription" xml:space="preserve">
-    <value>Nahe CS2-Gebiete mit gleichem Originaltyp und Namen teilen eine Beschriftung. Ihre Grenzen bleiben getrennt.</value>
-  </data>
-  <data name="Map_RotateCounterclockwise" xml:space="preserve">
-    <value>90° gegen den Uhrzeigersinn</value>
-  </data>
-  <data name="Map_RotateClockwise" xml:space="preserve">
-    <value>90° im Uhrzeigersinn</value>
-  </data>
-  <data name="Failure_Internal" xml:space="preserve"><value>An unexpected error occurred. You can report this error to the author.</value></data>
-  <data name="Failure_Operation" xml:space="preserve"><value>Operation failed</value></data>
-  <data name="Failure_Metro" xml:space="preserve"><value>Metro map generation failed</value></data>
-  <data name="Failure_Export" xml:space="preserve"><value>Map export failed</value></data>
-  <data name="Failure_Permission" xml:space="preserve"><value>A required file could not be accessed. Check file or folder permissions and try again.</value></data>
-  <data name="Failure_MissingFile" xml:space="preserve"><value>A required file was not found. Check its location and try again.</value></data>
-  <data name="Failure_Memory" xml:space="preserve"><value>Memory allocation failed. Reduce the output size or close memory-intensive applications and try again.</value></data>
-  <data name="Failure_EngineStopped" xml:space="preserve"><value>The rendering engine has stopped. Reopen the viewer and try again.</value></data>
-  <data name="Failure_ViewDetails" xml:space="preserve"><value>View details</value></data>
-  <data name="Failure_CopyDetails" xml:space="preserve"><value>Copy error details</value></data>
-  <data name="Failure_Close" xml:space="preserve"><value>Close</value></data>
-  <data name="Failure_Copied" xml:space="preserve"><value>Copied</value></data>
-  <data name="Failure_CopyFailed" xml:space="preserve"><value>Copy failed. Please try again.</value></data>
-  <data name="Ribbon_MoreLayers" xml:space="preserve"><value>Weitere Ebenen</value></data>
-  <data name="Ribbon_Simplified" xml:space="preserve"><value>Vereinfacht</value></data>
-  <data name="Ribbon_Classic" xml:space="preserve"><value>Klassisch</value></data>
-  <data name="Sidebar_ShowSettings" xml:space="preserve"><value>Linken Bereich anzeigen</value></data>
-  <data name="Sidebar_HideSettings" xml:space="preserve"><value>Linken Bereich ausblenden</value></data>
-  <data name="Sidebar_ShowInspector" xml:space="preserve"><value>Rechten Bereich anzeigen</value></data>
-  <data name="Sidebar_HideInspector" xml:space="preserve"><value>Rechten Bereich ausblenden</value></data>
-  <data name="Ribbon_IntroTitle" xml:space="preserve"><value>Den neuen vereinfachten Modus ausprobieren</value></data>
-  <data name="Ribbon_IntroDescription" xml:space="preserve"><value>Der vereinfachte Modus macht das Erkunden der Karte angenehmer und einfacher. Sie können jederzeit zum klassischen Modus zurückwechseln.</value></data>
-  <data name="Ribbon_IntroTry" xml:space="preserve"><value>Vereinfachten Modus testen</value></data>
-  <data name="Ribbon_IntroLater" xml:space="preserve"><value>Jetzt nicht</value></data>
-  <data name="RmpEditor_showNames" xml:space="preserve"><value>Show station names</value></data>
-  <data name="RmpEditor_showDefaultNames" xml:space="preserve"><value>Show default station names</value></data>
-  <data name="Poi_ShowDecorative" xml:space="preserve"><value>Dekorative POIs anzeigen</value></data>
-  <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>Symbole und Namen erfasster Dekorationen anzeigen. Gebäude und Kartenobjekte bleiben sichtbar.</value></data>
-  <data name="MetroSettings_Reset" xml:space="preserve"><value>Standardwerte wiederherstellen</value></data>
   <data name="BuildingCategory_Help" xml:space="preserve"><value>Wählen Sie Kategoriefarben, um diese Einstellungen anzuwenden. Aktivieren Sie Farbe überschreiben für alle Gebäude einer Kategorie; deaktivieren Sie es, um automatische POI-Farben wiederherzustellen. Unbekannte Nutzungen bleiben nicht klassifiziert.</value></data>
-  <data name="BuildingList_NoName" xml:space="preserve"><value>Kein Name vorhanden</value></data>
-  <data name="ThemeEditor_New" xml:space="preserve"><value>Neues Thema</value></data>
-  <data name="BuildingList_OfficialName" xml:space="preserve"><value>Offizielle Spielkategorie</value></data>
-  <data name="ThemeEditor_Name" xml:space="preserve"><value>Themenname</value></data>
-  <data name="BuildingList_Search" xml:space="preserve"><value>Gebäudenamen suchen</value></data>
-  <data name="Preview_AutoStart" xml:space="preserve"><value>Eingebettete Vorschau beim Start laden</value></data>
-  <data name="BuildingList_DetailHint" xml:space="preserve"><value>Wählen Sie ein Gebäude, um Details anzuzeigen.</value></data>
-  <data name="BuildingList_Height" xml:space="preserve"><value>Gebäudehöhe</value></data>
-  <data name="BuildingList_Open" xml:space="preserve"><value>Gebäudeliste</value></data>
-  <data name="BuildingList_Name" xml:space="preserve"><value>Gebäudename</value></data>
-  <data name="Preview_Continue.Content" xml:space="preserve"><value>Weiter warten</value></data>
-  <data name="ThemeUpdate_Intro" xml:space="preserve"><value>„{0}“ enthält jetzt die aktualisierte Vorlage.</value></data>
-  <data name="BuildingList_Id" xml:space="preserve"><value>ID</value></data>
-  <data name="ThemeUpdate_Off" xml:space="preserve"><value>Aus</value></data>
-  <data name="BuildingList_CategoryDesc" xml:space="preserve"><value>Kategorie: absteigend</value></data>
-  <data name="ThemeEditor_Unsaved" xml:space="preserve"><value>Nicht gespeichert</value></data>
-  <data name="BuildingList_IdDesc" xml:space="preserve"><value>ID: absteigend</value></data>
-  <data name="ThemeEditor_MigrationWarning" xml:space="preserve"><value>Einige ältere Themen konnten nicht gelesen werden. Originaldateien wurden gesichert:</value></data>
-  <data name="ThemeEditor_Select" xml:space="preserve"><value>Thema auswählen</value></data>
-  <data name="ThemeEditor_Copy" xml:space="preserve"><value>Thema duplizieren</value></data>
-  <data name="BuildingList_Info" xml:space="preserve"><value>Gebäudeinformationen</value></data>
-  <data name="BuildingList_Unnamed" xml:space="preserve"><value>Unbenanntes Gebäude</value></data>
-  <data name="BuildingList_CustomName" xml:space="preserve"><value>Spielerdefiniert</value></data>
-  <data name="ThemeEditor_Cancel" xml:space="preserve"><value>Abbrechen</value></data>
-  <data name="ThemeUpdate_Continue" xml:space="preserve"><value>Weiter</value></data>
-  <data name="BuildingList_NameSource" xml:space="preserve"><value>Namensquelle</value></data>
-  <data name="BuildingList_Details" xml:space="preserve"><value>Gebäudedetails</value></data>
-  <data name="ThemeUpdate_UsePrevious" xml:space="preserve"><value>Vorheriges nutzen</value></data>
-  <data name="ThemeUpdate_Archived" xml:space="preserve"><value>Ihr bisheriges Design wurde gespeichert. Sie können es in der Designliste auswählen.</value></data>
-  <data name="BuildingList_All" xml:space="preserve"><value>Alle</value></data>
-  <data name="ThemeEditor_Exported" xml:space="preserve"><value>Thema exportiert</value></data>
-  <data name="BuildingList_Empty" xml:space="preserve"><value>Keine passenden Gebäude</value></data>
-  <data name="ThemeUpdate_Kept" xml:space="preserve"><value>Ihre Änderungen bleiben erhalten</value></data>
-  <data name="BuildingList_Count" xml:space="preserve"><value>{0:N0} / {1:N0} Gebäude (Gebäudekomplexe zusammengefasst)</value></data>
-  <data name="BuildingList_Back" xml:space="preserve"><value>Zurück zur Übersicht</value></data>
-  <data name="Preview_DataAvailable" xml:space="preserve"><value>Kartendaten sind geladen. Sie können ein Thema wählen und exportieren.</value></data>
-  <data name="ThemeEditor_Personal" xml:space="preserve"><value>Meine Themen</value></data>
-  <data name="ThemeUpdate_ColorRamp" xml:space="preserve"><value>Höhenfarben</value></data>
-  <data name="ThemeEditor_Export" xml:space="preserve"><value>Thema exportieren…</value></data>
-  <data name="ThemeEditor_Import" xml:space="preserve"><value>Thema importieren…</value></data>
-  <data name="BuildingList_OutsideFilter" xml:space="preserve"><value>Das ausgewählte Gebäude entspricht nicht dem aktuellen Filter.</value></data>
-  <data name="ThemeEditor_Base" xml:space="preserve"><value>Basisvorlage</value></data>
-  <data name="BuildingList_NameAsc" xml:space="preserve"><value>Name: aufsteigend</value></data>
-  <data name="BuildingList_GroupCount" xml:space="preserve"><value>{0} Gebäude (einschließlich Hauptgebäude)</value></data>
-  <data name="ThemeEditor_CurrentUnreadable" xml:space="preserve"><value>Das aktuelle Thema konnte nicht gelesen werden. Wählen Sie ein anderes Thema. Die Originaldateien bleiben erhalten.</value></data>
-  <data name="Preview_OpenFailed" xml:space="preserve"><value>Die HTML-Datei wurde gespeichert, konnte aber nicht geöffnet werden. Öffnen Sie sie manuell im Ausgabeordner.</value></data>
-  <data name="ThemeEditor_Rename" xml:space="preserve"><value>Umbenennen</value></data>
-  <data name="Preview_OpenMap" xml:space="preserve"><value>Öffnen Sie eine Kartendatei, um ein Thema zu wählen und zu exportieren.</value></data>
-  <data name="Preview_Slow" xml:space="preserve"><value>Kartenvorschau dauert länger</value></data>
-  <data name="ThemeUpdate_AllChanges" xml:space="preserve"><value>Alle Änderungen</value></data>
-  <data name="ThemeEditor_Builtins" xml:space="preserve"><value>Integrierte Themen</value></data>
-  <data name="BuildingList_OpenButton.Content" xml:space="preserve"><value>Gebäudeliste</value></data>
-  <data name="ThemeUpdate_Custom" xml:space="preserve"><value>Eigene Einstellungen</value></data>
-  <data name="BuildingList_GameCategory" xml:space="preserve"><value>Spielkategorie</value></data>
-  <data name="Preview_Retry.Content" xml:space="preserve"><value>Vorschau neu laden</value></data>
-  <data name="BuildingList_Members" xml:space="preserve"><value>Nebengebäude</value></data>
-  <data name="BuildingList_NameDesc" xml:space="preserve"><value>Name: absteigend</value></data>
-  <data name="BuildingList_IdAsc" xml:space="preserve"><value>ID: aufsteigend</value></data>
-  <data name="BuildingList_Group" xml:space="preserve"><value>Gebäudegruppe</value></data>
-  <data name="ThemeEditor_Save" xml:space="preserve"><value>Speichern</value></data>
-  <data name="ThemeUpdate_On" xml:space="preserve"><value>Ein</value></data>
-  <data name="BuildingList_GameName" xml:space="preserve"><value>Spielgenerierter Name</value></data>
-  <data name="ThemeUpdate_Conflict" xml:space="preserve"><value>Diese Einstellung wurde auch von Ihnen geändert. Die neue Vorlage hat Vorrang.</value></data>
-  <data name="Preview_Html.Content" xml:space="preserve"><value>Im Browser öffnen</value></data>
-  <data name="ThemeEditor_InvalidName" xml:space="preserve"><value>Verwenden Sie 1–64 Zeichen ohne Steuerzeichen.</value></data>
-  <data name="Preview_Stopped" xml:space="preserve"><value>Eingebettete Vorschau ist gestoppt</value></data>
-  <data name="ThemeUpdate_MoreKept" xml:space="preserve"><value>{0} weitere Änderungen bleiben erhalten</value></data>
-  <data name="BuildingList_GameNames" xml:space="preserve"><value>Spielgenerierte Namen verwenden</value></data>
-  <data name="Preview_Png.Content" xml:space="preserve"><value>PNG exportieren (2048 px)</value></data>
-  <data name="BuildingList_CategoryAsc" xml:space="preserve"><value>Kategorie: aufsteigend</value></data>
-  <data name="BuildingList_Category" xml:space="preserve"><value>Gebäudekategorie</value></data>
-  <data name="ThemeUpdate_Unset" xml:space="preserve"><value>Nicht festgelegt</value></data>
-  <data name="Preview_Failed" xml:space="preserve"><value>Kartenvorschau konnte nicht geladen werden</value></data>
-  <data name="ThemeUpdate_Title" xml:space="preserve"><value>Design aktualisiert</value></data>
-  <data name="BuildingList_Sort" xml:space="preserve"><value>Sortieren</value></data>
-  <data name="BuildingList_NameHint" xml:space="preserve"><value>Die Namenseinstellung wird mit der Karte synchronisiert. Eigene Namen bleiben erhalten.</value></data>
-  <data name="BuildingList_Clear" xml:space="preserve"><value>Filter löschen</value></data>
   <data name="Satellite_LayerTitle" xml:space="preserve"><value>Satellitenbild</value></data>
   <data name="Satellite_Composing" xml:space="preserve"><value>Satellitenbild wird zusammengesetzt…</value></data>
+  <data name="PreviewQuality_Title" xml:space="preserve"><value>Vorschauqualität</value></data>
+  <data name="PreviewQuality_Preset" xml:space="preserve"><value>Vorschauqualität</value></data>
+  <data name="PreviewQuality_Smooth" xml:space="preserve"><value>Flüssig</value></data>
+  <data name="PreviewQuality_Standard" xml:space="preserve"><value>Standard</value></data>
+  <data name="PreviewQuality_Fine" xml:space="preserve"><value>Fein</value></data>
+  <data name="PreviewQuality_Custom" xml:space="preserve"><value>Benutzerdefiniert</value></data>
+  <data name="PreviewQuality_Open" xml:space="preserve"><value>Qualitätseinstellungen…</value></data>
+  <data name="PreviewQuality_Clarity" xml:space="preserve"><value>Schärfe</value></data>
+  <data name="PreviewQuality_ClarityHelp" xml:space="preserve"><value>Auflösung der Kartenanzeige. Eine höhere Auflösung liefert ein schärferes Bild, benötigt aber mehr Rechenleistung.</value></data>
+  <data name="PreviewQuality_Scale75" xml:space="preserve"><value>Flüssig</value></data>
+  <data name="PreviewQuality_Scale100" xml:space="preserve"><value>Standard</value></data>
+  <data name="PreviewQuality_Scale125" xml:space="preserve"><value>Fein</value></data>
+  <data name="PreviewQuality_Lines" xml:space="preserve"><value>Straßen</value></data>
+  <data name="PreviewQuality_LinesHelp" xml:space="preserve"><value>Mehr Straßendetails sorgen für glattere Linien und Übergänge, erfordern aber deutlich mehr Rechenleistung. Weniger Details verbessern die Leistung, können jedoch Straßen verzerren und sichtbare Nahtstellen verursachen.</value></data>
+  <data name="PreviewQuality_LinesStandard" xml:space="preserve"><value>Standard</value></data>
+  <data name="PreviewQuality_LinesFine" xml:space="preserve"><value>Fein</value></data>
+  <data name="PreviewQuality_Polygons" xml:space="preserve"><value>Gebäude</value></data>
+  <data name="PreviewQuality_PolygonsHelp" xml:space="preserve"><value>Die Gebäudedetailstufe bestimmt, wie dicht die Gebäude dargestellt werden. Bei einer niedrigeren Stufe können kleinere Gebäude ausgeblendet werden.</value></data>
+  <data name="PreviewQuality_PolygonsStandard" xml:space="preserve"><value>Standard</value></data>
+  <data name="PreviewQuality_PolygonsFine" xml:space="preserve"><value>Fein</value></data>
+  <data name="PreviewQuality_Details" xml:space="preserve"><value>Einzeln anpassen</value></data>
+  <data name="PreviewQuality_Samples" xml:space="preserve"><value>Vergleichen</value></data>
+  <data name="PreviewQuality_Scope" xml:space="preserve"><value>Gilt nur für die Vorschau. Die endgültige Ausgabe bleibt unverändert.</value></data>
+  <data name="PreviewQuality_Apply" xml:space="preserve"><value>Anwenden</value></data>
+  <data name="PreviewQuality_Applied" xml:space="preserve"><value>Angewendet</value></data>
+  <data name="PreviewQuality_Saved" xml:space="preserve"><value>Gespeichert</value></data>
+  <data name="PreviewQuality_Busy" xml:space="preserve"><value>Warten Sie, bis der aktuelle Vorschauvorgang abgeschlossen ist, bevor Sie die Qualitätseinstellungen anwenden.</value></data>
+  <data name="PreviewQuality_Restarted" xml:space="preserve"><value>Die Vorschau wurde angehalten. Wenden Sie die Qualitätseinstellungen nach dem Neustart erneut an.</value></data>
+  <data name="PreviewQuality_ExportHint" xml:space="preserve"><value>Die HTML-Qualität lässt sich in den Exporteinstellungen wählen.</value></data>
+  <data name="PreviewQuality_Current" xml:space="preserve"><value>Aktuelle Auswahl</value></data>
+  <data name="Export_HtmlQuality" xml:space="preserve"><value>HTML-Qualität</value></data>
+  <data name="TransitLabelStyle_Label" xml:space="preserve"><value>Beschriftungsstil</value></data>
+  <data name="TransitLabelStyle_Classic" xml:space="preserve"><value>Ursprüngliche Kapselform</value></data>
+  <data name="TransitLabelStyle_SideSign" xml:space="preserve"><value>Seitlicher Farbstreifen</value></data>
+  <data name="TransitLabelStyle_SplitSign" xml:space="preserve"><value>Schild mit getrenntem Symbolfeld</value></data>
+  <data name="TransitLabelStyle_SolidSign" xml:space="preserve"><value>Kompakte Farbfläche</value></data>
+  <data name="TransitLabelStyle_FrameSign" xml:space="preserve"><value>Schild mit feinem Rahmen</value></data>
+  <data name="TransitLabelStyle_UnderlineSign" xml:space="preserve"><value>Farbstreifen unten</value></data>
 </root>

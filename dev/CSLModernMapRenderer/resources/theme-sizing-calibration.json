@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "id": "quandu-cs1-4096-v1",
+  "sourceSha256": "7b53403f507eca22e272d1614868ac5db66c0e2b247dc3212f85f26d2e9a7657",
+  "scope": "city",
+  "mapKind": "normal",
+  "bounds": [
+    -8640,
+    -8640,
+    8640,
+    8640
+  ],
+  "rotation": 0,
+  "longEdge": 4096,
+  "padding": 0,
+  "fonts": {
+    "source": "effective-theme",
+    "measureGlyphs": false
+  },
+  "contentSettings": {
+    "source": "effective-theme",
+    "viewOverrides": {},
+    "detailMode": "full"
+  },
+  "roads": {
+    "highway": {
+      "id": 8,
+      "width": 22
+    },
+    "main": {
+      "id": 18,
+      "width": 32
+    },
+    "branch": {
+      "id": 77,
+      "width": 16
+    },
+    "special": {
+      "id": 614,
+      "width": 56.0002
+    },
+    "quay": {
+      "id": 225,
+      "width": 48
+    },
+    "beautification": {
+      "id": 114,
+      "width": 7.98
+    }
+  }
+}

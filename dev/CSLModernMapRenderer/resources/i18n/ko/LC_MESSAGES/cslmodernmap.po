@@ -1,6 +1,7 @@
 # Korean translations for CSLModernMap.
-# Copyright (C) 2026 CSLModernMap contributors
+# Copyright (C) 2026 ORGANIZATION
 # This file is distributed under the same license as the CSLModernMap project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
 msgid ""
 msgstr ""
@@ -8,9 +9,9 @@ msgstr ""
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2026-10-13 17:20+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: CSLModernMap contributors\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ko\n"
-"Language-Team: ko\n"
+"Language-Team: ko <LL@li.org>\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -290,6 +291,9 @@ msgstr "세션 오류 지우기"
 msgid "gui.diagnostics.context_label"
 msgstr "미리보기 컨텍스트"
 
+msgid "gui.diagnostics.enable_perf_log"
+msgstr "성능 로그 기록"
+
 msgid "gui.diagnostics.error_prefix"
 msgstr "미리보기: {error}"
 
@@ -307,6 +311,9 @@ msgstr "성능 로그 폴더 열기"
 
 msgid "gui.diagnostics.opened"
 msgstr "열림"
+
+msgid "gui.diagnostics.perf_hint"
+msgstr "미리보기 생성의 각 단계와 레이어에 걸린 시간을 기록합니다."
 
 msgid "gui.diagnostics.preview_state"
 msgstr "미리 보기 상태"
@@ -331,6 +338,9 @@ msgstr "오류 메시지"
 
 msgid "gui.diagnostics.tab_map"
 msgstr "지도 진단"
+
+msgid "gui.diagnostics.tab_perf"
+msgstr "성능 로그"
 
 msgid "gui.diagnostics.title"
 msgstr "진단 센터"
@@ -514,6 +524,15 @@ msgstr "범위 크기는 숫자여야 합니다"
 
 msgid "gui.error.range_n_range"
 msgstr "범위 크기는 {min}~{max} 사이여야 합니다"
+
+msgid "gui.error.runtime_pyside"
+msgstr "PySide6 버전은 {actual}입니다. 필요한 버전은 {expected}입니다."
+
+msgid "gui.error.runtime_saribbon_missing"
+msgstr "리본 구성 요소를 찾을 수 없습니다: {path}"
+
+msgid "gui.error.runtime_saribbon_stale"
+msgstr "오래된 리본 구성 요소가 감지되었습니다. 앱이 유휴 상태일 때 CPU를 계속 사용하게 만듭니다."
 
 msgid "gui.error.task_submit_failed"
 msgstr "렌더링 작업을 제출하지 못했습니다: {error}"
@@ -713,6 +732,9 @@ msgstr "외부 프로젝트 생성됨: {path}"
 msgid "gui.external.preparing"
 msgstr "도시 데이터 준비 중…"
 
+msgid "gui.external.qgis"
+msgstr "QGIS 프로젝트 내보내기"
+
 msgid "gui.external.rmg"
 msgstr "RMG 프로젝트 내보내기"
 
@@ -850,12 +872,6 @@ msgstr "글꼴, 크기, 색상 및 테두리는 텍스트 유형별로 설정합
 msgid "gui.label_detail.title"
 msgstr "레이블 세부 정보"
 
-msgid "gui.language.contribute"
-msgstr "GitHub에 각 언어 번역을 제출해 주시면 개선에 큰 도움이 됩니다. 번역 기여를 환영합니다."
-
-msgid "gui.language.notice"
-msgstr "간체 중국어가 원문이며, 다른 언어는 ChatGPT가 자동으로 번역했습니다. 부정확하거나 이해하기 어려운 표현이 있을 수 있습니다."
-
 msgid "gui.layer.building"
 msgstr "건물"
 
@@ -903,12 +919,6 @@ msgstr "Procedural Objects 모드의 사용자 지정 객체"
 
 msgid "gui.layer.poi"
 msgstr "장소 아이콘"
-
-msgid "gui.layer.poi_area"
-msgstr "건물 영역 채우기"
-
-msgid "gui.layer.poi_area_desc"
-msgstr "건물 윤곽과 색상을 재사용해 테두리 없이 내부만 채웁니다. 건물 레이어와 독립적으로 표시할 수 있습니다."
 
 msgid "gui.layer.poi_desc"
 msgstr "병원, 학교, 역 등의 아이콘입니다. 아이콘의 텍스트는 “텍스트 라벨”에서 별도로 설정합니다."
@@ -979,9 +989,6 @@ msgstr "대중교통"
 msgid "gui.layer.title.poi"
 msgstr "장소 아이콘"
 
-msgid "gui.layer.title.poi_area"
-msgstr "건물 용도별 색상"
-
 msgid "gui.layer.title.procedural_objects"
 msgstr "사용자 지정 개체"
 
@@ -1010,7 +1017,9 @@ msgid "gui.layer.traffic"
 msgstr "교통 정보"
 
 msgid "gui.layer.traffic_desc"
-msgstr "내보내기 시 저장된 도로 혼잡 스냅샷을 표시합니다. Cities: Skylines에서는 TM:PE 통계, Cities: Skylines II에서는 게임 기본 교통 통계를 사용합니다."
+msgstr ""
+"내보내기 시 저장된 도로 혼잡 스냅샷을 표시합니다. Cities: Skylines에서는 TM:PE 통계, Cities: Skylines II에서는 게임 기본 교통 통계를 "
+"사용합니다."
 
 msgid "gui.layer.transit"
 msgstr "대중교통"
@@ -1795,39 +1804,6 @@ msgstr "검증"
 msgid "gui.poi_editor.yaml_title"
 msgstr "POI 매핑 관리"
 
-msgid "gui.poi_shared.all_games"
-msgstr "모든 게임"
-
-msgid "gui.poi_shared.close"
-msgstr "닫기"
-
-msgid "gui.poi_shared.display"
-msgstr "아이콘 표시"
-
-msgid "gui.poi_shared.external_change"
-msgstr "매핑이 외부에서 변경되었습니다. 창을 닫은 뒤 다시 여세요."
-
-msgid "gui.poi_shared.image_search"
-msgstr "아이콘 검색"
-
-msgid "gui.poi_shared.no_image"
-msgstr "아이콘 없음"
-
-msgid "gui.poi_shared.restore"
-msgstr "기본값 복원"
-
-msgid "gui.poi_shared.save"
-msgstr "저장"
-
-msgid "gui.poi_shared.saved"
-msgstr "저장했습니다. 모든 지도에서 이 설정을 공유합니다."
-
-msgid "gui.poi_shared.search"
-msgstr "이름 또는 네이티브 ID 검색"
-
-msgid "gui.poi_shared.unsaved"
-msgstr "저장하지 않은 변경을 저장할까요?"
-
 msgid "gui.poi_style.color"
 msgstr "컬러"
 
@@ -2062,7 +2038,7 @@ msgid "gui.range.game.cs1"
 msgstr "Cities: Skylines · 오리지널"
 
 msgid "gui.range.game.cs2"
-msgstr "Cities: Skylines II"
+msgstr "시티즈: 스카이라인 II"
 
 msgid "gui.range.tiles"
 msgstr "{n} × {n} 토지 타일"
@@ -3021,6 +2997,15 @@ msgstr "소품"
 msgid "gui.style_editor.field.public"
 msgstr "공공"
 
+msgid "gui.style_editor.field.quay"
+msgstr "부두"
+
+msgid "gui.style_editor.field.quay_elevated"
+msgstr "고가 부두"
+
+msgid "gui.style_editor.field.quay_tunnel"
+msgstr "터널 부두"
+
 msgid "gui.style_editor.field.publictransport"
 msgstr "대중교통"
 
@@ -3442,8 +3427,17 @@ msgstr "대중교통 보기"
 msgid "gui.terrain_relief.unit.degree"
 msgstr "°"
 
+msgid "gui.theme.choice.bright"
+msgstr "밝은 지도"
+
+msgid "gui.theme.choice.modern"
+msgstr "미니멀 모던"
+
 msgid "gui.theme.choice.dark"
 msgstr "어두운 스타일"
+
+msgid "gui.theme.choice.warm_natural"
+msgstr "따뜻한 자연색"
 
 msgid "gui.theme.choice.vintage"
 msgstr "빈티지 스타일"
@@ -3643,9 +3637,6 @@ msgstr "정류장과 정류장 이름은 선택한 노선을 따릅니다"
 msgid "gui.transit.view_summary"
 msgstr "대중교통 보기: 노선 {count}개 선택됨; {state}"
 
-msgid "gui.transit.water_unverified"
-msgstr "수역을 확인하지 못하여 수면 없는 노선도를 생성했습니다."
-
 msgid "gui.transit_line.color.note"
 msgstr "노선 색상은 저장 파일에 정의되어 있습니다. 여기에서 색상을 보려면 노선을 선택하세요."
 
@@ -3707,7 +3698,9 @@ msgid "gui.transit_view.hint.labels"
 msgstr "“이름 간격”은 노선을 따라 노선명이 반복되는 간격이며, 클수록 덜 표시됩니다. “이름 크기”는 배지 글자 크기(픽셀)입니다."
 
 msgid "gui.transit_view.hint.stations"
-msgstr "‘역 크기’는 역 원의 지름(픽셀)이며 환승역은 테마에서 지정한 비율로 자동 확대됩니다. ‘가까운 정류장 합치기’를 켜면 ‘병합 거리’보다 가까운 정류장은 하나의 레이블로 합쳐집니다. 레이블에만 영향을 주며 노선 경로는 바뀌지 않습니다."
+msgstr ""
+"‘역 크기’는 역 원의 지름(픽셀)이며 환승역은 테마에서 지정한 비율로 자동 확대됩니다. ‘가까운 정류장 합치기’를 켜면 ‘병합 거리’보다 가까운 정류장은 하나의 레이블로 "
+"합쳐집니다. 레이블에만 영향을 주며 노선 경로는 바뀌지 않습니다."
 
 msgid "gui.transit_view.independent_layers"
 msgstr "독립 레이어"
@@ -3798,6 +3791,9 @@ msgstr "↑ 북쪽"
 
 msgid "metro.annotation.scale_adaptive"
 msgstr "개략도 비율: 1칸≈{spacing}m; 부분 배율 {low}–{high}×; 강도 {strength}%; 캔버스 확대 {zoom}×"
+
+msgid "metro.annotation.scale_debug"
+msgstr "축척 디버그: 파랑=압축, 회색=기준, 주황=확장"
 
 msgid "metro.annotation.scale_fixed"
 msgstr "노선도 축척: 1칸≈{spacing}m; 적응형 축척 끔; 캔버스 확대 {zoom}×"
@@ -4114,12 +4110,6 @@ msgstr "아이콘 스타일"
 msgid "style.poi.set.value.color"
 msgstr "컬러 아이콘"
 
-msgid "style.poi.set.value.modern"
-msgstr "CSLModernMap"
-
-msgid "style.poi.set.value.modern-dark"
-msgstr "어두움"
-
 msgid "style.poi.set.value.simple"
 msgstr "간단한 아이콘"
 
@@ -4183,9 +4173,6 @@ msgstr "교량 표시"
 msgid "style.road.color.label"
 msgstr "일반 도로"
 
-msgid "style.road.game_names.label"
-msgstr "게임에서 자동 생성한 도로명 사용"
-
 msgid "style.road.highway.label"
 msgstr "고속도로"
 
@@ -4233,6 +4220,15 @@ msgstr "특수 도로 채우기"
 
 msgid "style.road.level.special.width.label"
 msgstr "특수 도로 너비"
+
+msgid "style.road.level.quay.border.label"
+msgstr "부두 윤곽선"
+
+msgid "style.road.level.quay.fill.label"
+msgstr "호안 색상"
+
+msgid "style.road.level.quay.width.label"
+msgstr "호안 너비 비율"
 
 msgid "style.road.names.label"
 msgstr "도로 이름 표시"
@@ -4282,6 +4278,9 @@ msgstr "식생 색상"
 msgid "style.terrain.mode.label"
 msgstr "지형 스타일"
 
+msgid "style.terrain.mode.value.shade"
+msgstr "연속 전환 + 음영"
+
 msgid "style.terrain.mode.value.simple"
 msgstr "고도 구간"
 
@@ -4294,8 +4293,14 @@ msgstr "빛 방향"
 msgid "style.theme.label"
 msgstr "지도 테마"
 
+msgid "style.theme.value.bright"
+msgstr "밝은 지도"
+
 msgid "style.theme.value.dark"
 msgstr "어두운 스타일"
+
+msgid "style.theme.value.warm_natural"
+msgstr "따뜻한 자연색"
 
 msgid "style.theme.value.modern"
 msgstr "미니멀 모던"
@@ -4969,22 +4974,6 @@ msgstr "아이콘 표시"
 msgid "ui.object_inspector.visibility_field.a98585871c"
 msgstr "이름 표시"
 
-#: csmodernmap/object_inspector.py
-msgid "ui.poi_density.extremely_dense"
-msgstr "가장 많이"
-
-#: csmodernmap/object_inspector.py
-msgid "ui.poi_density.extremely_sparse"
-msgstr "가장 적게"
-
-#: csmodernmap/object_inspector.py
-msgid "ui.poi_density.very_dense"
-msgstr "매우 많이"
-
-#: csmodernmap/object_inspector.py
-msgid "ui.poi_density.very_sparse"
-msgstr "매우 적게"
-
 msgid "ui.web_export_v2._payload_from_bundle.cea7853717"
 msgstr "장면 데이터 패키징"
 
@@ -5039,6 +5028,9 @@ msgstr "도시를 먼저 여세요"
 
 msgid "ui.winui_engine._start_external_project_export.fd1e2dca12"
 msgstr "내보낼 폴더를 선택하세요"
+
+msgid "ui.winui_engine.dispatch.115c909476"
+msgstr "performanceDiagnostics는 부울이어야 합니다"
 
 msgid "ui.winui_engine.dispatch.19bb4eb8a9"
 msgstr "외부 프로젝트 쓰기는 중간에 취소할 수 없습니다"
@@ -5110,7 +5102,7 @@ msgid "ui.winui_engine.queue_theme_preview.ae3f8c8a07"
 msgstr "도시를 먼저 여세요"
 
 msgid "ui.winui_engine.theme_text_sample.c1fff780e0"
-msgstr "人民广场 · Central Avenue"
+msgstr "인민광장 · 중앙대로"
 
 msgid "ui.winui_engine.worker.bcd13e5ccc"
 msgstr "도시가 바뀌어 이전 문서의 내보내기 결과를 삭제했습니다"
@@ -5127,8 +5119,50 @@ msgstr "저장 시간"
 msgid "watermark.traffic_at"
 msgstr "교통량"
 
+msgid "gui.language.notice"
+msgstr "간체 중국어가 원문이며, 다른 언어는 ChatGPT가 자동으로 번역했습니다. 부정확하거나 이해하기 어려운 표현이 있을 수 있습니다."
+
+msgid "gui.language.contribute"
+msgstr "GitHub에 각 언어 번역을 제출해 주시면 개선에 큰 도움이 됩니다. 번역 기여를 환영합니다."
+
+#: csmodernmap/object_inspector.py
+msgid "ui.poi_density.extremely_sparse"
+msgstr "가장 적게"
+
+#: csmodernmap/object_inspector.py
+msgid "ui.poi_density.very_sparse"
+msgstr "매우 적게"
+
+#: csmodernmap/object_inspector.py
+msgid "ui.poi_density.very_dense"
+msgstr "매우 많이"
+
+#: csmodernmap/object_inspector.py
+msgid "ui.poi_density.extremely_dense"
+msgstr "가장 많이"
+
+msgid "style.road.game_names.label"
+msgstr "게임에서 자동 생성한 도로명 사용"
+
+msgid "gui.layer.poi_area"
+msgstr "건물 영역 채우기"
+
+msgid "gui.layer.poi_area_desc"
+msgstr "건물 윤곽과 색상을 재사용해 테두리 없이 내부만 채웁니다. 건물 레이어와 독립적으로 표시할 수 있습니다."
+
+msgid "gui.layer.title.poi_area"
+msgstr "건물 용도별 색상"
+
+msgid "style.poi.set.value.modern-dark"
+msgstr "어두움"
+
+msgid "style.poi.set.value.modern"
+msgstr "밝게"
+
 msgid "ui.export.possible_memory_exhaustion"
-msgstr "메모리 부족으로 인해 렌더링 프로세스가 예기치 않게 종료되었을 수 있습니다. 게임이 실행 중이면 게임과 메모리를 많이 사용하는 다른 프로그램을 종료하거나 내보내기 크기를 줄인 후 다시 시도하세요."
+msgstr ""
+"메모리 부족으로 인해 렌더링 프로세스가 예기치 않게 종료되었을 수 있습니다. 게임이 실행 중이면 게임과 메모리를 많이 사용하는 다른 프로그램을 종료하거나 내보내기 크기를 줄인"
+" 후 다시 시도하세요."
 
 msgid "gui.progress.convert_data"
 msgstr "지도 데이터 변환 중…"
@@ -5136,11 +5170,378 @@ msgstr "지도 데이터 변환 중…"
 msgid "gui.progress.transit_catalog"
 msgstr "대중교통 노선 정리 중: {done}/{total}"
 
+msgid "gui.layer.satellite"
+msgstr "위성 영상"
+
+msgid "gui.layer.title.satellite"
+msgstr "위성 영상"
+
+msgid "gui.satellite.composing"
+msgstr "위성 이미지를 합성하는 중…"
+
+msgid "gui.satellite.ready"
+msgstr "위성 이미지 준비 완료"
+
+msgid "gui.satellite.unavailable"
+msgstr "이 지도에는 위성 이미지가 없습니다"
+
+msgid "satellite_texture_limit"
+msgstr "위성 이미지 크기({size})가 기기의 텍스처 한도({limit})를 초과합니다."
+
+msgid "style.satellite.preset.label"
+msgstr "영상 질감"
+
+msgid "style.satellite.preset.desc"
+msgstr "위성 배경에만 적용되며 도로와 텍스트 등에는 영향을 주지 않습니다."
+
+msgid "style.satellite.preset.value.original"
+msgstr "원본"
+
+msgid "style.satellite.preset.value.haze"
+msgstr "안개와 산란"
+
+msgid "style.satellite.preset.value.grain"
+msgstr "센서 입자"
+
+msgid "style.satellite.preset.value.resolution"
+msgstr "흐림과 재표본화"
+
+msgid "style.satellite.preset.value.distortion"
+msgstr "영상 왜곡"
+
+msgid "style.satellite.preset.value.combined"
+msgstr "복합 효과"
+
+msgid "style.satellite.intensity.label"
+msgstr "효과 강도 (%)"
+
+msgid "style.satellite.intensity.desc"
+msgstr "0은 원본을 복원하고 100은 전체 효과를 적용합니다."
+
+msgid "gui.satellite.filtering"
+msgstr "위성 영상 효과 처리 중…"
+
+msgid "gui.theme.choice.satellite"
+msgstr "따뜻한 위성 지도"
+
+msgid "gui.style_editor.field.opacity"
+msgstr "도로 불투명도"
+
+msgid "gui.style_editor.field.stroke_blur"
+msgstr "후광 흐림"
+
+msgid "gui.style_editor.desc.roads.opacity"
+msgstr "도로 불투명도: 0은 완전 투명, 1은 불투명입니다."
+
+msgid "gui.style_editor.desc.labels.stroke_blur"
+msgstr "글자를 선명하게 유지하면서 후광을 부드럽게 합니다."
+
+msgid "gui.theme.personal"
+msgstr "내 테마"
+
+msgid "gui.theme.copy"
+msgstr "사본"
+
+msgid "gui.theme.legacy"
+msgstr "이전 버전"
+
+msgid "gui.theme.error.duplicate"
+msgstr "같은 이름의 테마가 이미 있습니다."
+
+msgid "gui.theme.error.file"
+msgstr "YAML 테마 파일을 선택하세요."
+
+msgid "gui.theme.error.builtin"
+msgstr "기본 테마 파일을 덮어쓸 수 없습니다."
+
+msgid "gui.theme.error.write"
+msgstr "사용자 설정을 저장할 수 없습니다."
+
+msgid "gui.theme.error.name"
+msgstr "제어 문자 없이 1–64자를 입력하세요."
+
+msgid "style.terrain.mode.value.continuous"
+msgstr "연속 전환"
+
+msgid "style.satellite.quality.label"
+msgstr "이미지 품질"
+
+msgid "style.satellite.quality.desc"
+msgstr "위성 이미지 품질은 로딩 및 렌더링 성능, 메모리 사용량과 내보내기 파일 크기에 영향을 줍니다. 품질을 낮추면 리소스 사용량이 줄지만 확대 시 세부 묘사가 줄어듭니다."
+
+msgid "style.satellite.quality.value.smooth"
+msgstr "원활 (긴 변 2048픽셀)"
+
+msgid "style.satellite.quality.value.standard"
+msgstr "표준 (긴 변 4096픽셀)"
+
+msgid "style.satellite.quality.value.original"
+msgstr "원본 (원본 해상도)"
+
+
+msgid "gui.satellite.guidance.title"
+msgstr "위성 지도 표시 권장 사항"
+
+msgid "gui.satellite.guidance.body"
+msgstr "따뜻한 위성 지도 테마를 사용하고 도로, 아이콘, 텍스트 레이어를 켜는 것을 권장합니다.\n\n철도, 대중교통, 교통 상황은 선택 사항입니다. 권장 설정을 적용해도 현재 선택이 유지됩니다.\n\n건물, 지형, 수역, 시가지, 토지 이용, POI 영역과 PO 객체는 위성 이미지를 가릴 수 있어 권장하지 않습니다. 권장 설정을 적용하면 이 레이어들이 꺼집니다."
+
+msgid "gui.satellite.guidance.apply"
+msgstr "권장 설정 적용"
+
+msgid "gui.satellite.guidance.keep"
+msgstr "현재 설정 유지"
+
+msgid "gui.theme.choice.urban_white"
+msgstr "어반 화이트"
+
+msgid "style.transport.fit_preview.label"
+msgstr "정류장 및 노선 라벨 크기를 미리보기에 맞추기"
+
+msgid "style.transport.fit_preview.desc"
+msgstr "교통 PNG의 정류장 기호와 노선 라벨 크기를 현재 전체 지도 미리보기에 맞춥니다. 다른 아이콘과 이름은 기존 크기를 유지하며 라벨 밀도는 달라질 수 있습니다. 대화형 미리보기가 없으면 기존 크기를 사용합니다."
+
+msgid "gui.file.records_skipped"
+msgstr "항목 {count}개를 건너뛰었습니다: 구문 분석 실패."
+
+msgid "gui.file.dependencies_skipped"
+msgstr "필수 데이터가 없어 관련 항목 {count}개를 추가로 건너뛰었습니다."
+
+msgid "gui.file.invalid_terrain"
+msgstr "지도 지형 데이터가 잘못되었거나 불완전하여 안전하게 읽을 수 없습니다. 게임에서 지도를 다시 내보내세요."
+
+msgid "gui.style_editor.field.line_width"
+msgstr "윤곽이 없을 때의 선 너비(px)"
+
+msgid "gui.style_editor.field.footprint_scale"
+msgstr "윤곽 너비 배율"
+
+msgid "gui.style_editor.desc.road_footprint"
+msgstr "배율이 1이면 이 도로 등급의 원래 풋프린트 너비가 유지됩니다. 요소 배율은 풋프린트가 없는 도로의 선 너비와 모든 도로의 테두리 너비에 적용됩니다."
+
+msgid "gui.file.preview_details_skipped"
+msgstr "지도 세부 정보를 불러오지 못했습니다. 기본 지도를 사용하거나 미리 보기를 새로 고쳐 다시 시도하세요."
+
+msgid "gui.file.satellite_skipped"
+msgstr "위성 이미지를 사용할 수 없습니다. 일반 지도는 계속 보거나 내보낼 수 있습니다. 위성 이미지가 필요하면 게임에서 다시 내보내세요."
+
+msgid "style.transport.diameter.label"
+msgstr "역 지름(px)"
+
+msgid "style.transport.diameter.desc"
+msgstr "모든 역의 지름은 픽셀 지름에 요소 배율을 곱한 값이며, 윤곽선은 안쪽에 그립니다."
+
+msgid "style.road.level.highway.line_width.label"
+msgstr "중심선 너비(px)"
+
+msgid "style.road.level.highway.line_width.desc"
+msgstr "실제 크기는 요소 배율에 따라 달라집니다."
+
+msgid "style.road.level.highway.footprint_scale.label"
+msgstr "도로 면 너비 배율"
+
+msgid "style.road.level.highway.footprint_scale.desc"
+msgstr "배율이 1이면 이 도로 등급의 원래 풋프린트 너비가 유지됩니다. 요소 배율은 풋프린트가 없는 도로의 선 너비와 모든 도로의 테두리 너비에 적용됩니다."
+
+msgid "style.road.level.highway.border_width.label"
+msgstr "윤곽선 너비(px)"
+
+msgid "style.road.level.highway.border_width.desc"
+msgstr "실제 크기는 요소 배율에 따라 달라집니다."
+
+msgid "style.road.level.main.line_width.label"
+msgstr "중심선 너비(px)"
+
+msgid "style.road.level.main.line_width.desc"
+msgstr "실제 크기는 요소 배율에 따라 달라집니다."
+
+msgid "style.road.level.main.footprint_scale.label"
+msgstr "도로 면 너비 배율"
+
+msgid "style.road.level.main.footprint_scale.desc"
+msgstr "배율이 1이면 이 도로 등급의 원래 풋프린트 너비가 유지됩니다. 요소 배율은 풋프린트가 없는 도로의 선 너비와 모든 도로의 테두리 너비에 적용됩니다."
+
+msgid "style.road.level.main.border_width.label"
+msgstr "윤곽선 너비(px)"
+
+msgid "style.road.level.main.border_width.desc"
+msgstr "실제 크기는 요소 배율에 따라 달라집니다."
+
+msgid "style.road.level.branch.line_width.label"
+msgstr "중심선 너비(px)"
+
+msgid "style.road.level.branch.line_width.desc"
+msgstr "실제 크기는 요소 배율에 따라 달라집니다."
+
+msgid "style.road.level.branch.footprint_scale.label"
+msgstr "도로 면 너비 배율"
+
+msgid "style.road.level.branch.footprint_scale.desc"
+msgstr "배율이 1이면 이 도로 등급의 원래 풋프린트 너비가 유지됩니다. 요소 배율은 풋프린트가 없는 도로의 선 너비와 모든 도로의 테두리 너비에 적용됩니다."
+
+msgid "style.road.level.branch.border_width.label"
+msgstr "윤곽선 너비(px)"
+
+msgid "style.road.level.branch.border_width.desc"
+msgstr "실제 크기는 요소 배율에 따라 달라집니다."
+
+msgid "style.road.level.special.line_width.label"
+msgstr "중심선 너비(px)"
+
+msgid "style.road.level.special.line_width.desc"
+msgstr "실제 크기는 요소 배율에 따라 달라집니다."
+
+msgid "style.road.level.special.footprint_scale.label"
+msgstr "도로 면 너비 배율"
+
+msgid "style.road.level.special.footprint_scale.desc"
+msgstr "배율이 1이면 이 도로 등급의 원래 풋프린트 너비가 유지됩니다. 요소 배율은 풋프린트가 없는 도로의 선 너비와 모든 도로의 테두리 너비에 적용됩니다."
+
+msgid "style.road.level.special.border_width.label"
+msgstr "윤곽선 너비(px)"
+
+msgid "style.road.level.special.border_width.desc"
+msgstr "실제 크기는 요소 배율에 따라 달라집니다."
+
+msgid "style.road.level.quay.line_width.label"
+msgstr "중심선 너비(px)"
+
+msgid "style.road.level.quay.line_width.desc"
+msgstr "실제 크기는 요소 배율에 따라 달라집니다."
+
+msgid "style.road.level.quay.footprint_scale.label"
+msgstr "도로 면 너비 배율"
+
+msgid "style.road.level.quay.footprint_scale.desc"
+msgstr "배율이 1이면 이 도로 등급의 원래 풋프린트 너비가 유지됩니다. 요소 배율은 풋프린트가 없는 도로의 선 너비와 모든 도로의 테두리 너비에 적용됩니다."
+
+msgid "style.road.level.quay.border_width.label"
+msgstr "윤곽선 너비(px)"
+
+msgid "style.road.level.quay.border_width.desc"
+msgstr "실제 크기는 요소 배율에 따라 달라집니다."
+
+msgid "style.road.level.beautification.line_width.label"
+msgstr "중심선 너비(px)"
+
+msgid "style.road.level.beautification.line_width.desc"
+msgstr "실제 크기는 요소 배율에 따라 달라집니다."
+
+msgid "style.road.level.beautification.footprint_scale.label"
+msgstr "도로 면 너비 배율"
+
+msgid "style.road.level.beautification.footprint_scale.desc"
+msgstr "배율이 1이면 이 도로 등급의 원래 풋프린트 너비가 유지됩니다. 요소 배율은 풋프린트가 없는 도로의 선 너비와 모든 도로의 테두리 너비에 적용됩니다."
+
+msgid "style.road.level.beautification.border_width.label"
+msgstr "윤곽선 너비(px)"
+
+msgid "style.road.level.beautification.border_width.desc"
+msgstr "실제 크기는 요소 배율에 따라 달라집니다."
+
+msgid "style.poi.name_stroke_width.label"
+msgstr "이름 윤곽선(px)"
+
+msgid "style.poi.name_stroke_width.desc"
+msgstr "이름 윤곽선의 기본 픽셀 너비에 요소 배율을 곱합니다."
+
+msgid "gui.style_editor.field.name_stroke_width"
+msgstr "이름 윤곽선 너비"
+
+msgid "gui.style_editor.desc.built_area.cell_meters"
+msgstr "경계 계산에 사용하는 격자 한 칸의 길이(미터)"
+
+msgid "gui.style_editor.desc.built_area.contour_upscale"
+msgstr "경계 윤곽선의 해상도 배율"
+
+msgid "gui.style_editor.desc.built_area.smooth_blur"
+msgstr "경계에 적용할 흐림 반경"
+
+msgid "gui.style_editor.desc.built_area.smooth_iters"
+msgstr "경계 평활화 반복 횟수"
+
+msgid "gui.rmp.progress.model"
+msgstr "교통 모델 준비 중"
+
+msgid "gui.rmp.progress.layout"
+msgstr "노선도 배치와 수역 생성 중"
+
+msgid "gui.rmp.progress.facilities"
+msgstr "편집 가능한 정류장, 노선 및 시설 준비 중"
+
+msgid "gui.rmp.progress.ready"
+msgstr "프로젝트 초안 준비 완료"
+
 msgid "gui.transit.water_degraded"
 msgstr "물 영역은 유지되었지만 일부 해안선 스타일을 완전히 적용하지 못했습니다."
 
 msgid "gui.transit.rmp_water_omitted"
 msgstr "RMP 물 구성 요소 {component}을(를) 변환하지 못했습니다. 역, 노선, 시설 및 사용 가능한 다른 물 영역은 유지되었습니다: {reason}"
+
+msgid "gui.transit.water_unverified"
+msgstr "수역을 확인하지 못하여 수면 없는 노선도를 생성했습니다."
+
+msgid "gui.poi_shared.all_games"
+msgstr "모든 게임"
+
+msgid "gui.poi_shared.search"
+msgstr "이름 또는 네이티브 ID 검색"
+
+msgid "gui.poi_shared.display"
+msgstr "아이콘 표시"
+
+msgid "gui.poi_shared.image_search"
+msgstr "아이콘 검색"
+
+msgid "gui.poi_shared.restore"
+msgstr "기본값 복원"
+
+msgid "gui.poi_shared.save"
+msgstr "저장"
+
+msgid "gui.poi_shared.close"
+msgstr "닫기"
+
+msgid "gui.poi_shared.no_image"
+msgstr "아이콘 없음"
+
+msgid "gui.poi_shared.external_change"
+msgstr "매핑이 외부에서 변경되었습니다. 창을 닫은 뒤 다시 여세요."
+
+msgid "gui.poi_shared.saved"
+msgstr "저장했습니다. 모든 지도에서 이 설정을 공유합니다."
+
+msgid "gui.poi_shared.unsaved"
+msgstr "저장하지 않은 변경을 저장할까요?"
+
+msgid "ui.failure.internal"
+msgstr "예기치 않은 오류가 발생했습니다. 제작자에게 보고할 수 있습니다."
+
+msgid "ui.failure.permission"
+msgstr "필요한 파일에 접근하지 못했습니다. 파일 또는 폴더 권한을 확인하고 다시 시도하세요."
+
+msgid "ui.failure.missing_file"
+msgstr "필요한 파일을 찾을 수 없습니다. 원래 위치에 있는지 확인하고 다시 시도하세요."
+
+msgid "ui.failure.memory"
+msgstr "메모리 할당에 실패했습니다. 출력 크기를 줄이거나 메모리를 많이 사용하는 앱을 닫고 다시 시도하세요."
+
+msgid "ui.failure.operation.metro"
+msgstr "지하철 노선도 생성 실패"
+
+msgid "ui.failure.operation.preview"
+msgstr "지도 미리 보기 생성 실패"
+
+msgid "ui.failure.operation.export"
+msgstr "지도 내보내기 실패"
+
+msgid "ui.failure.operation.open"
+msgstr "지도 열기 실패"
+
+msgid "ui.failure.operation.operation"
+msgstr "작업 실패"
+
+msgid "ui.failure.city_json"
+msgstr "도시 파일의 JSON이 잘못되었습니다. 게임에서 다시 내보내세요. 오류가 계속되면 상세 정보를 제작자에게 보내세요."
 
 msgid "building.category.residential"
 msgstr "주거"
@@ -5283,161 +5684,23 @@ msgstr "CSLMAP은 호환 형식이며 일부 새 기능을 지원하지 않을 �
 msgid "gui.file.unversioned_xml"
 msgstr "이 CSLMAP 파일에는 버전 번호가 없어 호환 모드로 열었습니다. 일부 새 기능을 지원하지 않을 수 있습니다. CMM 형식을 권장합니다."
 
-msgid "ui.failure.internal"
-msgstr "예기치 않은 오류가 발생했습니다. 제작자에게 보고할 수 있습니다."
+msgid "gui.transit_view.label_style"
+msgstr "라벨 스타일"
 
-msgid "ui.failure.permission"
-msgstr "필요한 파일에 접근하지 못했습니다. 파일 또는 폴더 권한을 확인하고 다시 시도하세요."
+msgid "gui.transit_view.label_style.classic"
+msgstr "기본 캡슐형"
 
-msgid "ui.failure.missing_file"
-msgstr "필요한 파일을 찾을 수 없습니다. 원래 위치에 있는지 확인하고 다시 시도하세요."
+msgid "gui.transit_view.label_style.side-sign"
+msgstr "측면 색 띠"
 
-msgid "ui.failure.memory"
-msgstr "메모리 할당에 실패했습니다. 출력 크기를 줄이거나 메모리를 많이 사용하는 앱을 닫고 다시 시도하세요."
+msgid "gui.transit_view.label_style.split-sign"
+msgstr "아이콘 분리형 표지"
 
-msgid "ui.failure.operation.metro"
-msgstr "지하철 노선도 생성 실패"
+msgid "gui.transit_view.label_style.solid-sign"
+msgstr "단색 소형 표지"
 
-msgid "ui.failure.operation.preview"
-msgstr "지도 미리 보기 생성 실패"
+msgid "gui.transit_view.label_style.frame-sign"
+msgstr "가는 테두리 표지"
 
-msgid "ui.failure.operation.export"
-msgstr "지도 내보내기 실패"
-
-msgid "ui.failure.operation.open"
-msgstr "지도 열기 실패"
-
-msgid "ui.failure.operation.operation"
-msgstr "작업 실패"
-
-msgid "ui.failure.city_json"
-msgstr "도시 파일의 JSON이 잘못되었습니다. 게임에서 다시 내보내세요. 오류가 계속되면 상세 정보를 제작자에게 보내세요."
-
-msgid "style.road.level.quay.width.label"
-msgstr "호안 너비 비율"
-
-msgid "gui.satellite.unavailable"
-msgstr "This map has no satellite imagery"
-
-msgid "gui.style_editor.field.opacity"
-msgstr "도로 불투명도"
-
-msgid "gui.layer.title.satellite"
-msgstr "위성 영상"
-
-msgid "style.satellite.preset.value.combined"
-msgstr "복합 효과"
-
-msgid "gui.style_editor.field.stroke_blur"
-msgstr "후광 흐림"
-
-msgid "satellite_texture_limit"
-msgstr "Satellite image size {size} exceeds the device texture limit {limit}"
-
-msgid "gui.theme.error.write"
-msgstr "사용자 설정을 저장할 수 없습니다."
-
-msgid "style.terrain.mode.value.continuous"
-msgstr "연속 전환"
-
-msgid "style.satellite.preset.desc"
-msgstr "위성 배경에만 적용되며 도로와 텍스트 등에는 영향을 주지 않습니다."
-
-msgid "style.satellite.preset.value.resolution"
-msgstr "흐림과 재표본화"
-
-msgid "gui.theme.choice.modern"
-msgstr "미니멀 모던"
-
-msgid "gui.theme.copy"
-msgstr "사본"
-
-msgid "style.road.level.quay.border.label"
-msgstr "부두 윤곽선"
-
-msgid "gui.satellite.filtering"
-msgstr "위성 영상 효과 처리 중…"
-
-msgid "gui.satellite.ready"
-msgstr "Satellite imagery ready"
-
-msgid "gui.style_editor.field.quay"
-msgstr "부두"
-
-msgid "gui.theme.error.builtin"
-msgstr "기본 테마 파일을 덮어쓸 수 없습니다."
-
-msgid "gui.theme.choice.satellite"
-msgstr "따뜻한 위성 지도"
-
-msgid "gui.theme.error.duplicate"
-msgstr "같은 이름의 테마가 이미 있습니다."
-
-msgid "gui.style_editor.desc.labels.stroke_blur"
-msgstr "글자를 선명하게 유지하면서 후광을 부드럽게 합니다."
-
-msgid "style.satellite.intensity.label"
-msgstr "효과 강도 (%)"
-
-msgid "style.road.level.quay.fill.label"
-msgstr "호안 색상"
-
-msgid "gui.satellite.composing"
-msgstr "Compositing satellite imagery…"
-
-msgid "gui.layer.satellite"
-msgstr "위성 영상"
-
-msgid "gui.theme.error.file"
-msgstr "YAML 테마 파일을 선택하세요."
-
-msgid "style.satellite.preset.value.grain"
-msgstr "센서 입자"
-
-msgid "gui.theme.error.name"
-msgstr "제어 문자 없이 1–64자를 입력하세요."
-
-msgid "style.satellite.preset.value.haze"
-msgstr "안개와 산란"
-
-msgid "style.theme.value.warm_natural"
-msgstr "따뜻한 자연색"
-
-msgid "gui.theme.legacy"
-msgstr "이전 버전"
-
-msgid "style.satellite.preset.value.distortion"
-msgstr "영상 왜곡"
-
-msgid "gui.theme.choice.warm_natural"
-msgstr "따뜻한 자연색"
-
-msgid "gui.theme.choice.bright"
-msgstr "밝은 지도"
-
-msgid "gui.theme.personal"
-msgstr "내 테마"
-
-msgid "style.theme.value.bright"
-msgstr "밝은 지도"
-
-msgid "style.terrain.mode.value.shade"
-msgstr "연속 전환 + 음영"
-
-msgid "style.satellite.preset.value.original"
-msgstr "원본"
-
-msgid "gui.style_editor.desc.roads.opacity"
-msgstr "도로 불투명도: 0은 완전 투명, 1은 불투명입니다."
-
-msgid "style.satellite.intensity.desc"
-msgstr "0은 원본을 복원하고 100은 전체 효과를 적용합니다."
-
-msgid "gui.style_editor.field.quay_elevated"
-msgstr "고가 부두"
-
-msgid "gui.style_editor.field.quay_tunnel"
-msgstr "터널 부두"
-
-msgid "style.satellite.preset.label"
-msgstr "영상 질감"
+msgid "gui.transit_view.label_style.underline-sign"
+msgstr "하단 색 띠"

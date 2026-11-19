@@ -93,6 +93,7 @@ def build_render_job(
     width: int | float = 4096,
     height: int | float | None = None,
     zoom: float | None = None,
+    element_scale: float = 1.0,
     detail_mode: str = "auto",
     detail: str | None = None,
     derive_params: Mapping[str, Any] | None = None,
@@ -111,6 +112,8 @@ def build_render_job(
     selected = (tuple(canonical_layer_key(item) for item in layers)
                 if layers is not None else tuple(preset["layers"]))
     params = dict(derive_params or {})
+    from .pixel_sizes import number
+    params['elementScale'] = number(element_scale, 'elementScale', positive=True)
     params.setdefault("render_scale", float(zoom))
     return RenderJob(
         kind=normalized_kind,
@@ -153,3 +156,20 @@ def build_transit_jobs(
         rule_overrides=shared_rules,
     )
     return base, overlay
+
+
+def build_artwork_job(kind: str, bounds, *, long_edge: int = 4096,
+                      rotation: int = 0, element_scale: float = 1.0) -> RenderJob:
+    """建立与观察窗口无关的二维作品作业。"""
+    from .export_region import normalize_bounds, output_dimensions, output_rotation
+    from .renderer import _build_transform
+
+    if kind not in {"normal", "transit"}:
+        raise ValueError("Artwork requires a normal or transit map")
+    region = normalize_bounds(bounds)
+    rotation = output_rotation(rotation)
+    width, height = output_dimensions(region, long_edge, rotation)
+    zoom = _build_transform(width, height, region, rotation).zoom
+    return build_render_job(kind, width=width, height=height, zoom=zoom, detail_mode="detailed",
+                            element_scale=element_scale,
+                            derive_params={"world_bounds": list(region), "rotation": rotation})

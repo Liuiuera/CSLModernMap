@@ -12,11 +12,12 @@ from pathlib import Path
 from typing import Any
 
 from .settings_store import settings_path
+from .transit_label_styles import DEFAULT_PRESET
 from ._paths import user_data_dir
 
 
 VIEWS_FILE = "views.json"
-VIEWS_VERSION = 2
+VIEWS_VERSION = 3
 
 DEFAULT_TRANSIT_TYPES = (
     "Metro",
@@ -40,28 +41,19 @@ def _default_transit() -> dict[str, Any]:
         "base_layers": {"water": True, "road": True, "district": True},
         "layers": {"lines": True},
         "types": list(DEFAULT_TRANSIT_TYPES),
-        "line_width": 3.0,
         "line_color_mode": "game",
         "station_name_placement": "icon",
-        "line_label": {"enabled": True, "size": 12.0, "interval": 800.0},
+        "line_label": {"enabled": True, "style": DEFAULT_PRESET},
         "stations": {
             "enabled": True,
-            "size": 8.0,
             "merge": True,
             "merge_range": 48.0,
         },
-        "station_names": {"size": 12.0},
+        "station_names": {},
         "facilities": {
             "enabled": True,
-            "icon_size": 24.0,
         },
         "ordinary_pois": "hidden",
-        "presentation": {
-            "label_scale": 1.0,
-            "icon_scale": 1.0,
-            "title_scale": 1.0,
-            "legend_scale": 1.0,
-        },
     }
 
 
@@ -93,16 +85,15 @@ DEFAULT_VIEW_SETTINGS = default_view_settings()
 # 持久化字段到 UI / 作业选项的单向投影；线路筛选的会话语义由调用方管理。
 TRANSIT_OPTION_PATHS = {
     "types": "types", "stations": "stations.enabled",
-    "station_size": "stations.size", "merge_enabled": "stations.merge",
-    "merge_range": "stations.merge_range", "station_name_size": "station_names.size",
+    "merge_enabled": "stations.merge",
+    "merge_range": "stations.merge_range",
     "station_name_placement": "station_name_placement", "line_color_mode": "line_color_mode",
-    "layers": "layers", "transit_mask": "mask", "line_width": "line_width",
+    "layers": "layers", "transit_mask": "mask",
     "base_water": "base_layers.water", "base_road": "base_layers.road",
     "base_district": "base_layers.district", "line_label_enabled": "line_label.enabled",
-    "line_label_size": "line_label.size", "line_label_interval": "line_label.interval",
-    "facilities_enabled": "facilities.enabled", "facility_icon_size": "facilities.icon_size",
+    "line_label_style": "line_label.style",
+    "facilities_enabled": "facilities.enabled",
     "ordinary_pois": "ordinary_pois",
-    **{key: "presentation." + key for key in ("label_scale", "icon_scale", "title_scale", "legend_scale")},
 }
 METRO_OPTION_PATHS = {
     "types": "types", "line_ids": "line_ids",
@@ -208,12 +199,14 @@ def _normalize_document(value: Mapping[str, Any]) -> dict[str, Any]:
         raw = wrapped
 
     version = _version(raw.get("version", VIEWS_VERSION))
-    if version not in (1, VIEWS_VERSION):
+    if version not in (1, 2, VIEWS_VERSION):
         raise ValueError(f"unsupported views.json version: {version!r}")
 
     raw = deepcopy(dict(raw))
     _migrate_line_label_aliases(raw.get("transit", {}))
     result = _deep_merge(DEFAULT_VIEW_SETTINGS, raw)
+    if result["transit"]["line_label"]["style"] == "classic":
+        result["transit"]["line_label"]["style"] = DEFAULT_PRESET
     if raw.get("display_contract") != 2:
         transit = result["transit"]
         gates = transit["layers"]
@@ -238,7 +231,7 @@ def _normalize_document(value: Mapping[str, Any]) -> dict[str, Any]:
     result["schematic_contract"] = 2
     transit = result["transit"]
     old = raw.get("transit", {})
-    presentation = transit["presentation"]
+    presentation = transit.get("presentation", {})
     if "line_color_mode" not in old:
         index = presentation.get("palette_index", 0)
         transit["line_color_mode"] = ("soft" if index == 2 else "classic"
@@ -270,6 +263,19 @@ def _normalize_document(value: Mapping[str, Any]) -> dict[str, Any]:
             result.pop(key)
     result["version"] = VIEWS_VERSION
     result["migrated"] = bool(raw.get("migrated", False))
+    pending = result.setdefault('migration', {}).setdefault('theme_sizes', {})
+    if version < 3:
+        pending['legacyDefaults'] = True
+    for path in ('line_width', 'stations.size', 'station_names.size', 'facilities.icon_size',
+                 'line_label.size', 'line_label.interval', 'presentation'):
+        keys = path.split('.')
+        parent = result['transit']
+        for key in keys[:-1]:
+            parent = parent.get(key, {})
+        if keys[-1] in parent:
+            pending[path] = parent.pop(keys[-1])
+    if not pending:
+        result['migration'].pop('theme_sizes', None)
     return _json_copy(result)
 
 
@@ -416,7 +422,7 @@ def migrate_legacy_settings(
     ):
         _put(transit, ("presentation", new), values, old)
 
-    # 地铁示意图视图设置。
+    # RMP 只迁移生成所需字段，旧展示设置退休。
     _put_list(metro, ("types",), values, "metro_view_types")
     _put_list(metro, ("line_ids",), values, "metro_view_line_ids")
     for name in ("adaptive_scale", "adaptive_strength", "spacing"):
@@ -426,6 +432,8 @@ def migrate_legacy_settings(
     _put(metro, ("facilities", "enabled"), values, "metro_view_facilities_enabled")
 
     result["migrated"] = bool(legacy or overrides)
+    if legacy:
+        result.setdefault('migration', {}).setdefault('theme_sizes', {})['legacyDefaults'] = True
     if base is not None:
         base = deepcopy(dict(base))
         _migrate_line_label_aliases(base.get("transit", {}))
@@ -452,7 +460,6 @@ def load_view_settings(directory: str | Path | None = None) -> dict[str, Any]:
                 legacy.update(raw.get("legacy", {}))
                 legacy.update(_legacy_keys(raw))
                 normalized = migrate_legacy_settings(legacy, base=raw)
-                save_view_settings(normalized, directory)
                 return normalized
             stations = raw.setdefault("metro", {}).setdefault("stations", {})
             if "merge" not in stations or "merge_range" not in stations:
@@ -461,8 +468,6 @@ def load_view_settings(directory: str | Path | None = None) -> dict[str, Any]:
                     for source, key in (("enabled", "merge"), ("distance", "merge_range"))
                     if source in overrides and key not in stations})
             normalized = _normalize_document(raw)
-            if raw.get("version") != VIEWS_VERSION:
-                save_view_settings(normalized, directory)
             return normalized
         except (TypeError, ValueError):
             # 损坏或较新版本的视图文件不能被覆盖；回退默认值，待显式保存时修复。
@@ -472,7 +477,6 @@ def load_view_settings(directory: str | Path | None = None) -> dict[str, Any]:
     if _legacy_keys(legacy):
         migrated = migrate_legacy_settings(legacy)
         # 迁移尽力保存；目录只读时返回内存结果，保存成功后下次无需依赖旧设置。
-        save_view_settings(migrated, directory)
         return migrated
     return default_view_settings()
 

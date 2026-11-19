@@ -23,6 +23,7 @@ import aggdraw
 import contourpy
 from PIL import Image
 
+from ..performance import perf_span
 from ..shoreline import prepare_shoreline, smooth_shoreline
 from .base import Layer, RenderContext
 from ..i18n import tr
@@ -392,12 +393,17 @@ class WaterLayer(Layer):
         # 仅在连续整图路径使用，避免把快路径带入分块接缝区域。
         if (full_world and int(getattr(ctx, "rotation", 0) or 0) % 360 == 0
                 and ctx.image.width <= 4096):
-            mask = self._raster_mask(ctx, water, _ox, _oz, _cell)
-            fill = water_color = hex_to_rgb(
-                ctx.style.get("water.color", "#80D4FE"))
-            if ctx.image.mode == "RGBA":
-                fill = (*water_color, 255)
-            ctx.image.paste(fill, (0, 0), mask)
+            with perf_span(ctx.performance, "water.raster_mask"):
+                mask = self._raster_mask(ctx, water, _ox, _oz, _cell)
+                fill = water_color = hex_to_rgb(
+                    ctx.style.get("water.color", "#80D4FE"))
+                if ctx.image.mode == "RGBA":
+                    fill = (*water_color, 255)
+                ctx.image.paste(fill, (0, 0), mask)
+            if ctx.performance is not None:
+                ctx.performance.set_counter("water.fast_mask", 1)
+                ctx.performance.set_counter("water.upscale_effective", 0)
+                ctx.performance.set_counter("water.contour_threads", 1)
             ctx.report(1.0, tr("gui.progress.water.mask"))
             return
 
@@ -416,6 +422,14 @@ class WaterLayer(Layer):
         scale_ratio = effective_upscale / requested_upscale
         effective_rdp = float(self._rdp_epsilon) * scale_ratio
         effective_min_area = float(self._min_area) * scale_ratio ** 2
+        if ctx.performance is not None:
+            ctx.performance.set_counter("water.grid_width", int(gw))
+            ctx.performance.set_counter("water.grid_height", int(gh))
+            ctx.performance.set_counter("water.contour_threads", 1)
+            ctx.performance.set_counter(
+                "water.upscale_requested", requested_upscale)
+            ctx.performance.set_counter(
+                "water.upscale_effective", effective_upscale)
         geometry = _get_water_geometry(
             document, water, upscale=effective_upscale,
             rdp_epsilon=effective_rdp,

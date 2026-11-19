@@ -18,27 +18,29 @@ class ThemeReadError(ValueError):
     """当前主题不可用；不能用其他外观代替它进行预览或导出。"""
 
 
+def comparison_value(value, path=()):
+    from .theme_metadata import field_kind
+    from .style import hex_to_rgba
+    if isinstance(value, dict):
+        return {key: comparison_value(child, (*path, key)) for key, child in value.items()}
+    if isinstance(value, list):
+        return [comparison_value(child, (*path, str(index))) for index, child in enumerate(value)]
+    if isinstance(value, float) and value.is_integer():
+        return int(value)
+    if isinstance(value, str) and value.startswith('#') and field_kind(path) == 'color':
+        return list(hex_to_rgba(value))
+    return value
+
+
 def comparison_data(data: dict) -> dict:
     """忽略展示信息和等价写法，保留未知字段。"""
     from .theme_contract import normalize_theme
-    from .theme_metadata import field_kind
-    from .style import hex_to_rgba
-    data = normalize_theme(Style(strip_retired_region_palette_fields(copy.deepcopy(data))).data)
+    from .pixel_sizes import is_pixel_theme
+    data = Style(copy.deepcopy(data)).data
+    data = normalize_theme(data) if is_pixel_theme(data) else copy.deepcopy(data)
     data.pop("name", None)
     data.pop("description", None)
-
-    def canonical(value, path=()):
-        if isinstance(value, dict):
-            return {key: canonical(child, (*path, key)) for key, child in value.items()}
-        if isinstance(value, list):
-            return [canonical(child, (*path, str(index))) for index, child in enumerate(value)]
-        if isinstance(value, float) and value.is_integer():
-            return int(value)
-        if isinstance(value, str) and value.startswith("#") and field_kind(path) == "color":
-            return list(hex_to_rgba(value))
-        return value
-
-    return canonical(data)
+    return comparison_value(data)
 
 
 def content_digest(data: dict) -> str:
@@ -49,6 +51,9 @@ def content_digest(data: dict) -> str:
 def preset_update(previous: dict, personal: dict, current: dict) -> tuple[dict, list, list]:
     """只应用发行方相对旧基准的修改；同项冲突采用新版，列表整体更新。"""
     from .theme_contract import normalize_theme
+    from .pixel_sizes import is_pixel_theme
+    if len({is_pixel_theme(value) for value in (previous, personal, current)}) != 1:
+        raise ValueError('Update the old theme and preset baseline to the same size contract before merging')
     before, user, after = (comparison_data(value) for value in (previous, personal, current))
     result = normalize_theme(Style(copy.deepcopy(personal)).data)
     new_values = normalize_theme(Style(copy.deepcopy(current)).data)
@@ -130,7 +135,9 @@ def resolve(record: dict, base: dict | None) -> dict:
     if base is None:
         data = copy.deepcopy(record["data"])
     else:
-        data = Style(base).merged(record["overrides"]).data
+        from .style import _deep_merge
+        data = copy.deepcopy(base)
+        _deep_merge(data, record["overrides"])
         for path in record["removed"]:
             parent = data
             for key in path[:-1]:
@@ -149,7 +156,7 @@ def make_record(name: str, data: dict, base_id: str | None, base: dict | None) -
         return {"name": name, "base": None, "data": copy.deepcopy(data)}
     changes, removed = difference(base, data)
     changes.pop("name", None)
-    return {"name": name, "base": base_id, "overrides": changes, "removed": removed}
+    return {"name": name, "base": base_id, "size_contract": "pixel-v2", "overrides": changes, "removed": removed}
 
 
 def export_file(path: str, data: dict) -> None:

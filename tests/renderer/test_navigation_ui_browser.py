@@ -15,12 +15,12 @@ from csmodernmap.cmm import DocumentSession
 from csmodernmap.preview_scene import PreviewSceneServer, _traffic_features
 from csmodernmap.web_export_v2 import payload_from_preview_bundle, render_export_html
 from test_navigation import driving_document
-from test_preview_road_browser import load, make_bundle, screenshot
-from test_preview_road_order import scene_from_lines
+from browser_support import load, make_bundle, screenshot
+from road_fixtures import scene_from_lines
 from test_traffic_direction import segment, lane, DIRECTION_BACKWARD
 
-pytestmark = pytest.mark.skipif(os.environ.get("CSL_PREVIEW_BROWSER_TEST") != "1",
-                              reason="opt-in Chromium navigation test")
+pytestmark = [pytest.mark.browser, pytest.mark.skipif(os.environ.get("CSL_PREVIEW_BROWSER_TEST") != "1",
+                              reason="opt-in Chromium navigation test")]
 VIEWER = Path(__file__).resolve().parents[2] / "dev/CSLModernMapRenderer/viewer/dist"
 
 
@@ -161,7 +161,7 @@ def test_two_profiles_and_responsive_layout(navigation_page, navigation_server, 
     recommended = last_route(page)
     assert recommended['costProfile'] == 'car-balanced'
     assert recommended['durationSeconds'] == pytest.approx(((recommended['distanceM']-40) / 20 + 40/2) * 1.3)
-    expect(page.locator('.navigation-duration')).to_have_text('不足 1 分钟')
+    expect(page.locator('.navigation-map-card .navigation-duration')).to_have_text('不足 1 分钟')
     assert page.locator('.navigation-duration').first.evaluate('(e) => parseFloat(getComputedStyle(e).fontSize)') == 28
     expect(page.locator('.navigation-distance').first).to_contain_text('按限速与导出时路况估算')
     assert page.locator('.navigation-distance').first.evaluate('(e) => parseFloat(getComputedStyle(e).fontSize)') < 24
@@ -253,7 +253,7 @@ def test_offline_html_omits_selection_and_recomputes_choices(tmp_path, navigatio
     expect(page.locator('[data-profile="car-balanced"]')).to_have_attribute('aria-pressed', 'true')
     expect(page.locator('input[data-layer="traffic"]')).to_be_checked()
     assert page.evaluate('window.__CSL_SCENE__.manifest.layers.traffic') is True
-    expect(page.locator('.navigation-duration')).to_have_text('不足 1 分钟')
+    expect(page.locator('.navigation-map-card .navigation-duration')).to_have_text('不足 1 分钟')
     page.locator('[data-profile="car-balanced"]').click()
     expect(page.locator('[data-profile="car-balanced"]')).to_have_attribute('aria-pressed', 'true')
     assert page.evaluate('window.routeQueries.length') == 2
@@ -273,7 +273,7 @@ def test_distance_only_snapshot_has_one_working_card(navigation_page, navigation
     assert page.evaluate('window.routeQueries') == ['car-shortest']
     assert last_route(page)['costProfile'] == 'car-shortest'
     assert last_route(page)['durationSeconds'] == pytest.approx(104)
-    expect(page.locator('.navigation-duration')).to_have_text('约 2 分钟')
+    expect(page.locator('.navigation-map-card .navigation-duration')).to_have_text('约 2 分钟')
 
 
 @pytest.mark.parametrize('congestion, model, seconds, label', [
@@ -364,7 +364,7 @@ def test_building_click_selects_nearest_road_and_keeps_place(navigation_page, na
     page.locator('.navigation-endpoint').first.click()
     page.mouse.click(550, 450)
     expect(page.locator('.navigation-endpoint-name').first).to_have_value('中央图书馆')
-    expect(page.locator('.navigation-endpoint-access').first).to_contain_text('道路12')
+    expect(page.locator('.navigation-endpoint-access')).to_have_count(0)
     expect(page.locator('.navigation-candidates button')).to_have_count(0)
     expect(page.locator('.navigation-pin.origin')).to_have_count(1)
     choose(page, 1, '20, 0', '道路11')
@@ -418,3 +418,19 @@ def test_transit_mode_transfer_details_and_offline_html(tmp_path, navigation_pag
     page.get_by_role('button', name='驾车', exact=True).click()
     expect(page.locator('.navigation-route-option:enabled')).to_have_count(2)
     assert last_route(page)['costProfile'] == 'car-balanced'
+
+
+def test_preview_controls_switch_to_each_shipped_language(navigation_page, navigation_server):
+    page = navigation_page
+    open_navigation(page, navigation_server)
+    catalogs = VIEWER.parent / 'src' / 'locales'
+    languages = json.loads((VIEWER.parents[1] / 'resources/i18n/languages.json').read_text(encoding='utf-8'))
+    for option in languages:
+        path = catalogs / (option['code'] + '.json')
+        messages = json.loads(path.read_text(encoding='utf-8'))
+        page.evaluate("language => window.cslPreview.dispatch({type: 'setLanguage', language})", path.stem)
+        expect(page.locator("button[data-preview-icon='zoom-in'] .preview-button-label").first).to_have_text(
+            messages['controls_zoomIn'])
+        expect(page.locator("button[data-preview-icon='3d-cube-sphere']").first).to_have_attribute(
+            'aria-label', messages['preview3d_title'])
+        expect(page.locator('.navigation-swap')).to_have_attribute('aria-label', messages['navigation_swap'])

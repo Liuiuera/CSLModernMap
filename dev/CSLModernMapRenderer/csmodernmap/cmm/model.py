@@ -4,6 +4,7 @@ CMM 与既有 MapData 并行存在；渲染器继续使用兼容模型，本模�
 from __future__ import annotations
 
 import base64
+from ..performance import measured, perf_span, current_recorder
 
 import gzip
 import json
@@ -169,6 +170,7 @@ class LabelSource(_StringEnum):
     CATEGORY = "CATEGORY"
 
 
+@measured("load.read_decompress_decode")
 def _read_document_text(path: Path) -> str:
     """按后缀选择读法：``.gz`` 走 gzip，其余按明文。
 
@@ -1506,7 +1508,7 @@ class Terrain(_Serializable):
         self.source_subsampled = int(self.source_subsampled)
 
     @classmethod
-    def from_dict(cls, value: Mapping[str, Any] | None) -> "Terrain":
+    def from_dict(cls, value: Mapping[str, Any] | None, *, recovery=None) -> "Terrain":
         value = value or {}
         rows = value.get("rows", 0)
         cols = value.get("cols", 0)
@@ -1520,9 +1522,22 @@ class Terrain(_Serializable):
         if isinstance(water_value, str):
             water_value = {"rows": rows, "cols": cols, "origin": origin.to_dict(), "cell": cell,
                            "data": water_value}
+        def grid(name, payload):
+            if payload is None:
+                return Grid()
+            if recovery is None:
+                return Grid.from_dict(payload) if isinstance(payload, Mapping) else Grid()
+            try:
+                if not isinstance(payload, Mapping):
+                    raise ValueError("expected a grid object")
+                return Grid.from_dict(payload)
+            except (ValueError, TypeError, OverflowError, IndexError, zlib.error) as error:
+                recovery.skip("grid", None, "terrain." + name, str(error))
+                return Grid()
+
         return cls(
-            height=Grid.from_dict(height_value) if isinstance(height_value, Mapping) else Grid(),
-            water_depth=Grid.from_dict(water_value) if isinstance(water_value, Mapping) else Grid(),
+            height=grid("height", height_value),
+            water_depth=grid("water_depth", water_value),
             origin=origin,
             cell=cell,
             rows=rows,
@@ -1612,15 +1627,18 @@ class DerivedCatalog(_Serializable):
                              for item in self.water_bodies]
 
     @classmethod
-    def from_dict(cls, value: Mapping[str, Any] | None) -> "DerivedCatalog":
+    def from_dict(cls, value: Mapping[str, Any] | None, *, read_records=None) -> "DerivedCatalog":
         value = value or {}
+        def records(name, model):
+            items = value.get(name, [])
+            return (read_records(name, items, model) if read_records is not None
+                    else [model.from_dict(item) for item in items])
         return cls(
-            stations=[Station.from_dict(item) for item in value.get("stations", [])],
-            pois=[POI.from_dict(item) for item in value.get("pois", [])],
-            facility_groups=[FacilityGroup.from_dict(item)
-                             for item in value.get("facility_groups", [])],
-            labels=[Label.from_dict(item) for item in value.get("labels", [])],
-            water_bodies=[WaterBody.from_dict(item) for item in value.get("water_bodies", [])],
+            stations=records("stations", Station),
+            pois=records("pois", POI),
+            facility_groups=records("facility_groups", FacilityGroup),
+            labels=records("labels", Label),
+            water_bodies=records("water_bodies", WaterBody),
             params=dict(value.get("params", {})),
         )
 
@@ -2030,25 +2048,39 @@ class MapDocument(_Serializable):
         return result
 
     @classmethod
-    def from_dict(cls, value: Mapping[str, Any]) -> "MapDocument":
+    def from_dict(cls, value: Mapping[str, Any], *, read_records=None, recovery=None) -> "MapDocument":
+        if recovery is not None:
+            read_records = recovery.read
+        def section(name, factory):
+            with perf_span(None, f"load.model.{name}"):
+                result = factory()
+            recorder = current_recorder()
+            if recorder is not None and isinstance(result, list):
+                recorder.set_counter(f"document.{name}", len(result))
+            return result
+
+        def records(name, model):
+            items = value.get(name, [])
+            return section(name, lambda: read_records(name, items, model) if read_records is not None
+                           else [model.from_dict(item) for item in items])
 
         return cls(
             schema_version=value.get("schema_version", "cmm-v1"),
-            metadata=Metadata.from_dict(value.get("metadata", {})),
+            metadata=section("metadata", lambda: Metadata.from_dict(value.get("metadata", {}))),
             sea_level=value.get("sea_level", 0),
-            nodes=[NetworkNode.from_dict(item) for item in value.get("nodes", [])],
-            networks=[NetworkSegment.from_dict(item) for item in value.get("networks", [])],
-            buildings=[Building.from_dict(item) for item in value.get("buildings", [])],
-            districts=[District.from_dict(item) for item in value.get("districts", [])],
-            stops=[Stop.from_dict(item) for item in value.get("stops", [])],
-            transit_lines=[TransitLine.from_dict(item) for item in value.get("transit_lines", [])],
-            routes=[Route.from_dict(item) for item in value.get("routes", [])],
-            terrain=Terrain.from_dict(value.get("terrain", {})),
-            derived=DerivedCatalog.from_dict(value.get("derived", {})),
-            forests=[Forest.from_dict(item) for item in value.get("forests", [])],
-            procedural_objects=[ProceduralObject.from_dict(item) for item in value.get("procedural_objects", [])],
+            nodes=records("nodes", NetworkNode),
+            networks=records("networks", NetworkSegment),
+            buildings=records("buildings", Building),
+            districts=records("districts", District),
+            stops=records("stops", Stop),
+            transit_lines=records("transit_lines", TransitLine),
+            routes=records("routes", Route),
+            terrain=section("terrain", lambda: Terrain.from_dict(value.get("terrain", {}), recovery=recovery)),
+            derived=section("derived", lambda: DerivedCatalog.from_dict(value.get("derived", {}), read_records=read_records)),
+            forests=records("forests", Forest),
+            procedural_objects=records("procedural_objects", ProceduralObject),
             traffic=value.get("traffic"),
-            issues=[MapIssue.from_dict(item) for item in value.get("issues", [])],
+            issues=records("issues", MapIssue),
             extensions=dict(value.get("extensions", {}) or {}),
         )
 
@@ -2056,23 +2088,32 @@ class MapDocument(_Serializable):
         return json.dumps(self.to_dict(), ensure_ascii=False, sort_keys=True, indent=indent)
 
     @classmethod
-    def from_json(cls, value: str | Path) -> "MapDocument":
+    def from_json(cls, value: str | Path, *, recover_records: bool = False) -> "MapDocument":
         satellite = None
+        satellite_errors = []
         if isinstance(value, Path):
             from .archive import read_archive
-            satellite = read_archive(value)
+            satellite = read_archive(value, on_satellite_error=satellite_errors.append if recover_records else None)
             text = satellite[0] if satellite else _read_document_text(value)
         elif isinstance(value, str) and not value.lstrip().startswith(("{", "[")) and Path(value).exists():
-            return cls.from_json(Path(value))
+            return cls.from_json(Path(value), recover_records=recover_records)
         else:
             text = value
-        raw = json.loads(text)
+        with perf_span(None, "load.json_parse"):
+            raw = json.loads(text)
         from .file_format import check_cmm
-        check_cmm(raw)
-        document = cls.from_dict(raw)
-        if satellite:
-            document._satellite_png, document._satellite_info, document._archive_edits, document._satellite_layers = satellite[1:]
-        return document
+        check_cmm(raw, recover_records=recover_records)
+        from .read_recovery import ReadRecovery
+        recovery = ReadRecovery() if recover_records else None
+        with perf_span(None, "load.model"):
+            document = cls.from_dict(raw, recovery=recovery)
+            if recovery is not None:
+                recovery.finish(document)
+            for reason in satellite_errors:
+                document._append_issue(MapIssue("warn", "READ_SATELLITE_SKIPPED", reason, []))
+            if satellite:
+                document._satellite_png, document._satellite_info, document._archive_edits, document._satellite_layers = satellite[1:]
+            return document
 
 
 def dump_json(document: MapDocument, path: str | Path, *, indent: int | None = 2) -> None:

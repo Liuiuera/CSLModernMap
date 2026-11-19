@@ -1,4 +1,4 @@
-import * as maplibregl from 'maplibre-gl';
+import maplibregl from 'maplibre-gl';
 import type {JumpToOptions, Map as MapLibreMap} from 'maplibre-gl';
 import {i18n} from '../i18n';
 import {setButtonContent, type ControlIcon} from '../control-icons';
@@ -11,6 +11,7 @@ import type {Preview3D} from '../preview-3d';
 
 const text = (key: string, values: Record<string, number> = {}): string => i18n.t(`simulation_${key}`, values);
 const distance = (m: number): string => m >= 1000 ? `${(m/1000).toFixed(1)} km` : `${Math.round(m)} m`;
+const speedPresets = {slow: 150, standard: 300, fast: 600, fastest: 1200};
 const simulationIcons: Record<string, ControlIcon> = {
   start: 'navigation', exit: 'logout', settings: 'adjustments', pause: 'player-pause', follow: 'navigation',
   restart: 'player-skip-back', overview: 'zoom-scan', play: 'player-play', resume: 'player-play', replay: 'arrow-back-up',
@@ -23,7 +24,9 @@ export class NavigationSimulation {
   private readonly footer = document.createElement('div');
   private readonly view = document.createElement('select');
   private readonly orientation = document.createElement('select');
-  private readonly speed = document.createElement('input');
+  private readonly speed = document.createElement('select');
+  private readonly customSpeed = document.createElement('input');
+  private readonly customSpeedField: HTMLLabelElement;
   private readonly zoom = document.createElement('input');
   private readonly smooth = document.createElement('input');
   private readonly progress = document.createElement('input');
@@ -44,7 +47,7 @@ export class NavigationSimulation {
   private playing = false;
   private entering = false;
   private following = true;
-  private speedKmh = 60;
+  private speedKmh = speedPresets.standard;
   private heading = 0;
   private bearing = 0;
   private pitch = 0;
@@ -81,11 +84,16 @@ export class NavigationSimulation {
     this.select(this.view, ['flat', 'tilt', 'buildings']); this.view.value = 'tilt';
     this.view.title = text('buildingHeight');
     this.select(this.orientation, ['north', 'heading']); this.orientation.value = 'heading';
-    this.range(this.speed, 20, 360, 10, 60); this.range(this.zoom, 14, 21, .1, 18);
+    this.select(this.speed, [...Object.keys(speedPresets), 'custom']); this.speed.value = 'standard';
+    this.customSpeed.type = 'number'; this.customSpeed.min = '0'; this.customSpeed.step = 'any';
+    this.customSpeed.required = true; this.customSpeed.value = String(this.speedKmh);
+    this.customSpeedField = this.field('customSpeed', this.customSpeed); this.customSpeedField.hidden = true;
+    this.range(this.zoom, 14, 21, .1, 18);
     this.smooth.type = 'checkbox'; this.smooth.checked = true;
-    this.speedValue.textContent = '60 km/h';
+    this.speedValue.textContent = `${this.speedKmh} km/h`;
     options.append(this.field('view', this.view), this.field('orientation', this.orientation),
-      this.field('speed', this.speed, this.speedValue), this.field('zoom', this.zoom), this.field('smooth', this.smooth));
+      this.field('speed', this.speed, this.speedValue), this.customSpeedField,
+      this.field('zoom', this.zoom), this.field('smooth', this.smooth));
     const settingsToggle = this.button('settings', () => {
       const expanded = this.settings.classList.toggle('expanded'); settingsToggle.setAttribute('aria-expanded', String(expanded));
     });
@@ -122,10 +130,13 @@ export class NavigationSimulation {
     };
     this.orientation.onchange = () => this.follow();
     this.smooth.onchange = () => this.wake();
-    this.speed.oninput = () => {
-      this.advanceClock(performance.now()); this.speedKmh = Number(this.speed.value);
-      this.speedValue.textContent = `${this.speedKmh} km/h`; this.updateUI();
+    this.speed.onchange = () => {
+      const custom = this.speed.value === 'custom'; this.customSpeedField.hidden = !custom;
+      if (custom) { this.applyCustomSpeed(); this.customSpeed.focus(); }
+      else this.setSpeed(speedPresets[this.speed.value as keyof typeof speedPresets]);
     };
+    this.customSpeed.oninput = () => this.applyCustomSpeed();
+    this.customSpeed.onchange = () => this.customSpeed.reportValidity();
     this.zoom.oninput = () => { this.follow(); this.map.setZoom(Number(this.zoom.value)); };
     this.progress.oninput = () => { if (this.track) this.seek(Number(this.progress.value)/1000*this.track.total); };
     map.on('pitchstart', this.mapGesture); map.on('dragstart', this.mapGesture); map.on('zoomstart', this.mapGesture); map.on('rotatestart', this.mapGesture);
@@ -136,6 +147,17 @@ export class NavigationSimulation {
 
   get active(): boolean { return this.savedCamera !== null; }
   get followingCamera(): boolean { return this.active && this.following; }
+
+  private setSpeed(speed: number): void {
+    this.advanceClock(performance.now()); this.speedKmh = speed;
+    this.speedValue.textContent = `${speed} km/h`; this.updateUI();
+  }
+  private applyCustomSpeed(): void {
+    const speed = this.customSpeed.valueAsNumber;
+    const valid = Number.isFinite(speed) && speed > 0;
+    this.customSpeed.setCustomValidity(valid ? '' : text('invalidSpeed'));
+    if (valid) this.setSpeed(speed);
+  }
 
   private button(key: string, action: () => void): HTMLButtonElement {
     const b = document.createElement('button'); b.type = 'button'; b.dataset.simulationKey = key;

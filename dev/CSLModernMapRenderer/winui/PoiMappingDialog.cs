@@ -39,7 +39,7 @@ internal sealed class PoiMappingDialog
         _entries = JsonNode.Parse(data.GetProperty("entries").GetRawText())!.AsObject();
         _libraries = data.GetProperty("libraries").Clone();
         _token = data.GetProperty("token").GetString()!;
-        _window = new EditorWindow(Text("Title"), 1080, 740);
+        _window = new EditorWindow(Text("Title"), "map-pin", 1080, 740);
         _window.AddAction(Text("Save"), async () => { if (await SaveAsync()) await _window.RequestCloseAsync(); });
         _window.AddAction(Text("Restore"), () => { RestoreDefaults(); return Task.CompletedTask; });
         _window.AddAction(Text("Cancel"), async () => { await _window.RequestCloseAsync(); });

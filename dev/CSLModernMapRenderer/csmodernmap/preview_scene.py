@@ -7,6 +7,7 @@ from .zone_geometry import grid_rings
 from .path_model import chaikin
 
 import hashlib
+import base64
 import json
 import logging
 import mimetypes
@@ -16,6 +17,8 @@ import shutil
 import tempfile
 import threading
 import time
+from contextlib import ExitStack
+from functools import lru_cache
 from math import cos, hypot, isfinite, log2, sin
 from dataclasses import dataclass, field
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -26,15 +29,16 @@ from urllib.parse import unquote, urlsplit
 import numpy as np
 from PIL import Image, ImageFilter
 
-from .road_geometry import clip_polyline_span, quay_centerlines
+from .performance import perf_span, measured, current_recorder
+from .road_geometry import clip_polyline_span
 from .road_hierarchy import (
     RoadLevel,
     road_style_candidates,
     road_style_config,
 )
 from .preview_road_order import (VERSION as ROAD_ORDER_VERSION, build_road_order,
-                                 display_paint_regions, flat_piece_key)
-from .theme_contract import QUAY_FOOTPRINT_SCALE
+                                 flat_piece_key, pixel_road_geometry)
+from . import pixel_sizes
 from .traffic import DIRECTION_BACKWARD, DIRECTION_FORWARD
 from .i18n import tr
 from .building_categories import building_categories, category_palette
@@ -42,7 +46,7 @@ from .building_categories import building_categories, category_palette
 
 LOGGER = logging.getLogger(__name__)
 
-# 路况分色的两个方向（顺序 = 产出 feature 的顺序）。提到模块级避免每条路段重建。
+# 路况方向统计的属性前缀。
 _TRAFFIC_BANDS = ((DIRECTION_FORWARD, "forward"), (DIRECTION_BACKWARD, "backward"))
 
 
@@ -97,6 +101,7 @@ def _json_bytes(value: Any) -> bytes:
     ).encode("utf-8")
 
 
+@measured("preview.fingerprint")
 def _document_fingerprint(document) -> str:
     metadata = getattr(document, "metadata", None)
     origin = getattr(metadata, "origin", None)
@@ -151,85 +156,51 @@ def _document_fingerprint(document) -> str:
     return hashlib.sha256(_json_bytes(payload)).hexdigest()[:24]
 
 
-def _border_width(cfg: dict) -> tuple[float, float]:
-    value = cfg.get("border_width", 1.0)
-    if isinstance(value, dict):
-        return float(value.get("fixed", 0.0)), float(value.get("scaled", 0.0))
-    return float(value), 0.0
+
 
 
 def road_theme(style: Any) -> dict:
-    """返回预览器使用的渲染器无关道路绘制参数。"""
-    data = getattr(style, "data", style) or {}
-    roads = data.get("roads", {})
+    data = getattr(style, 'data', style)
+    pixel_sizes.validate(data)
+    roads = data['roads']
     levels = {}
     for level in RoadLevel:
-        for mode in ("ground", "elevated", "tunnel"):
+        for mode in ('ground', 'elevated', 'tunnel'):
             cfg = road_style_config(roads, level, mode)
-            fixed, scaled = _border_width(cfg)
-            mode_enabled = True
-            if mode == "tunnel":
-                mode_enabled = bool(roads.get("tunnel", {}).get(
-                    "enabled", True))
-            elif mode == "elevated":
-                mode_enabled = bool(roads.get("bridge", {}).get(
-                    "enabled", True))
-            minimum = float(cfg.get(
-                "min_fill_px", _LEVEL_MIN_FILL_PX[level]))
-            levels[f"{level.value}:{mode}"] = {
-                "fill": cfg.get("fill", "#FFFFFF"),
-                "border": cfg.get("border", "#C3C8D2"),
-                "minFillPx": minimum,
-                "borderFixedPx": fixed,
-                "borderScale": scaled,
-                "dash": cfg.get("dash"),
-                "enabled": bool(cfg.get("enabled", True)) and mode_enabled,
-            }
-    return {
-        "background": data.get("canvas", {}).get("background", "#F6F7F9"),
-        "widthScale": float(roads.get("width_scale", 0.15)),
-        "opacity": min(1.0, max(0.0, float(roads.get("opacity", 1.0)))),
-        "levels": levels,
-    }
+            mode_enabled = roads.get({'tunnel': 'tunnel', 'elevated': 'bridge'}.get(mode, ''), {}).get('enabled', True)
+            levels[f'{level.value}:{mode}'] = {
+                'fill': cfg.get('fill', '#FFFFFF'), 'border': cfg.get('border', '#C3C8D2'),
+                'lineWidth': cfg['line_width'], 'borderPx': cfg['border_width'],
+                'dash': cfg.get('dash'), 'enabled': cfg.get('enabled', True) and mode_enabled}
+    return {'background': data.get('canvas', {}).get('background', '#F6F7F9'),
+            'sizeContract': pixel_sizes.CONTRACT, 'opacity': roads.get('opacity', 1), 'levels': levels}
 
 
 def _preview_number(value: Any, default: float) -> float:
-    """在标称比例下解析标量或固定值加缩放值的尺寸。"""
-    if isinstance(value, dict):
-        value = float(value.get("fixed", 0.0)) + float(value.get("scaled", 0.0))
-    try:
-        return float(value)
-    except (TypeError, ValueError):
-        return float(default)
+    return float(default if value is None else value)
 
 
-# 公共交通视图线路标签规范的尺寸基准 = 长边 1024px 的成图。
-# 导出侧 render_scale = 输出宽 / 4096，故 1024px 对应 0.25（见 transport_layer._resolve_size）。
-_TRANSIT_LABEL_BASELINE = 0.25
 
 
-def _preview_baseline_size(value: Any, default: float) -> float:
-    """把 ``{fixed, scaled}``／标量尺寸换算到「长边 1024px 成图」的等效值。
+def _preview_pixel_size(value: Any, default: float) -> float:
+    return float(default if value is None else value)
 
-    与导出侧 ``transport_layer._resolve_size`` 同一套公式，只是把
-    ``render_scale`` 固定成 ``_TRANSIT_LABEL_BASELINE``。预览拿到的是
-    「1024px 成图上的像素值」，再按 ``画布宽 / 1024`` 折算成 CSS 像素，
-    从而与导出的标签保持同样的相对大小。
-    """
-    if isinstance(value, dict):
-        value = (float(value.get("fixed", 0.0))
-                 + float(value.get("scaled", 0.0)) * _TRANSIT_LABEL_BASELINE)
-    try:
-        return float(value)
-    except (TypeError, ValueError):
-        return float(default)
+
+@lru_cache(maxsize=1)
+def _interchange_icon() -> str:
+    from io import BytesIO
+    from .transit_station_symbols import interchange_master
+    output = BytesIO()
+    interchange_master().save(output, format='PNG')
+    return "data:image/png;base64," + base64.b64encode(output.getvalue()).decode("ascii")
 
 
 def _transit_label_style(data: dict) -> dict:
     """公共交通视图线路标签的视觉 token。
 
     与导出侧共用主题 ``transit_view`` 段（规范全文见
-    尺寸统一换算到「长边 1024px 成图」基准后下发。
+    ``docs/tasks/公共交通视图-整改-20260910/01-线路标签视觉统一-20260914.md``），
+    尺寸使用入口已经解析元素倍率后的像素长度。
     """
     transport = data.get("transports") or data.get("transport") or {}
     # ``transit_view`` 与 ``label`` 都是 transports 段的子键（导出侧 cfg 即该段）；
@@ -237,33 +208,24 @@ def _transit_label_style(data: dict) -> dict:
     view = transport.get("transit_view") or data.get("transit_view") or {}
     label = transport.get("label") or {}
 
-    size = _preview_baseline_size(view.get("label_size"), 15.0)
+    size = _preview_pixel_size(view.get("label_size"), 15.0)
+    from .transit_label_styles import PRESETS, badge_layout_options, palette, preview_icons
+
+    layout = badge_layout_options(label, view)
 
     return {
+        "preset": str(view.get("label_preset", "split-sign")),
+        "presets": PRESETS,
+        "palette": palette(data.get("canvas", {}).get("background", "#F6F7F9")),
+        "icons": preview_icons(),
         "fontSizeBase": size,
-        # 内边距 / 轮廓 / 缝与导出侧同式，都由**字号**等比例派生
-        # （规范基准：字号 15 → 内边距 9 / 轮廓 2 / 缝 3，即 0.60 / 2⁄15 / 0.20）。
-        # 主题显式给出时以主题为准，避免预览与导出的口径分叉。
-        "paddingRatio": 0.60,
-        "outlineWidth": _preview_baseline_size(
-            view.get("label_border_width"), size * 2.0 / 15.0),
-        "outlineColor": str(view.get(
-            "label_outer_border_color", "#101828") or "#101828"),
-        "outlineAlpha": float(view.get("label_outer_border_alpha", 0.55) or 0.0),
-        "seamWidth": _preview_baseline_size(
-            view.get("label_seam_width"), size * 3.0 / 15.0),
-        "textOnLight": str(view.get(
-            "label_text_on_light", "#101828") or "#101828"),
-        "textOnDark": str(view.get(
-            "label_text_on_dark", "#FFFFFF") or "#FFFFFF"),
-        "luminanceThreshold": float(view.get(
-            "label_luminance_threshold", 165.0) or 0.0),
         # 导出侧 Pillow 只有「加粗 / 不加粗」两档，固定 700 与之对应
         "fontWeight": 700,
         "font": str(label.get("font") or "Microsoft YaHei"),
-        # 重合线路合并半径（与导出 label_merge_dist 对齐，供后续拼接使用）
-        "mergeDistance": _preview_baseline_size(
-            view.get("label_merge_dist"), 40.0),
+        "layout": {k: layout[k] for k in ("repeat_interval", "max_per_line", "min_gap",
+                                         "merge_dist", "candidate_interval", "candidate_limit",
+                                         "clearance_padding")},
+        "mergeDistance": layout["merge_dist"],
     }
 
 
@@ -273,7 +235,7 @@ def _label_halo(section: Any) -> bool:
     主题里描边由 ``stroke``（颜色）+ ``stroke_width`` 一起表达：颜色缺失、或宽度
     解析出来是 0，都算关闭（例如 modern 的 building / park / stop 就没有这两项）。
 
-    注意：这条规则对 POI 名字**不适用** —— 它的描边在导出侧是内置的、不读主题，
+    注意：这条规则对 POI 名字**不适用** —— 它的描边读取 poi_icons.name_stroke_width，
     单独走 :func:`_poi_name_halo`。
     """
     if not isinstance(section, dict) or not section.get("stroke"):
@@ -282,15 +244,15 @@ def _label_halo(section: Any) -> bool:
 
 
 def _poi_name_halo(poi: Any) -> bool:
-    """POI 描边使用名称字号比例；缺省为白色、0.12。"""
+    """POI 描边使用独立的像素宽度。"""
     if not isinstance(poi, dict):
         return True
-    return bool(poi.get("name_stroke", "#FFFFFF")) and float(poi.get("name_stroke_ratio", .12)) > 0
+    return bool(poi.get("name_stroke", "#FFFFFF")) and float(poi.get("name_stroke_width", 0)) > 0
 
 
 def _label_stroke(section: Any, default_color: str = "#FFFFFF",
                   default_width: float = 1.0) -> dict:
-    """该文字类别的描边参数：颜色 + 「长边 1024px 成图」基准下的宽度。
+    """该文字类别的描边参数：颜色与已解析的像素宽度。
 
     与导出侧 ``layers/label_layer.py`` 读同一组主题键（``stroke`` /
     ``stroke_width``）。没有颜色或宽度为 0 视为关闭，Viewer 直接不画。
@@ -299,9 +261,9 @@ def _label_stroke(section: Any, default_color: str = "#FFFFFF",
         return {"color": default_color, "width": 0.0, "blur": 0.0}
     return {
         "color": str(section.get("stroke")),
-        "width": float(_preview_baseline_size(
+        "width": float(_preview_pixel_size(
             section.get("stroke_width"), default_width)),
-        "blur": max(0.0, _preview_baseline_size(section.get("stroke_blur"), 0.0)),
+        "blur": max(0.0, _preview_pixel_size(section.get("stroke_blur"), 0.0)),
     }
 
 
@@ -316,6 +278,8 @@ def preview_theme(style: Any, options: dict[str, Any] | None = None) -> dict:
     buildings = data.get("buildings", {})
     land_use = data.get("land_use", {})
     district = data.get("district", {})
+    from .layers.district_layer import DEFAULT_FILL_COLORS
+    district_colors = district.get("fill_colors") or DEFAULT_FILL_COLORS
     zone = data.get("zone", {})
     transport = data.get("transports", data.get("transport", data.get("transit", {})))
     labels = data.get("labels", data.get("label", {}))
@@ -373,13 +337,17 @@ def preview_theme(style: Any, options: dict[str, Any] | None = None) -> dict:
                     "noDataColor": traffic["no_data_color"],
                     "widthScale": traffic["width_scale"],
                     "minLanePx": traffic["min_lane_px"]},
-        "transit": {"width": _preview_number(transport.get("width"), 3.0),
+        "transit": {"interchangeIcon": _interchange_icon(),
+                    "width": _preview_number(transport.get("width"), 3.0),
                     "typeWidths": {str(kind).lower(): _preview_number(
                         cfg.get("width", transport.get("width")), 3.0)
                         for kind, cfg in transport.get("types", {}).items()
                         if isinstance(cfg, dict)},
-                    "stationSize": _preview_number(
-                        transport.get("station", {}).get("size"), 8.0),
+                    **({'sizeContract': pixel_sizes.CONTRACT,
+                        'stationSize': transport['station']['diameter'],
+                        'stationBorder': transport['station']['border_width'],
+                        'stationFill': transport['station'].get('fill', '#FFFFFF'),
+                        'stationOutline': transport['station'].get('outline', '#3A3F4A')}),
                     "label": {
                         "enabled": bool(transport.get("label", {}).get(
                             "enabled", True)),
@@ -400,7 +368,8 @@ def preview_theme(style: Any, options: dict[str, Any] | None = None) -> dict:
                     "labelStyle": _transit_label_style(data)},
         "district": {"border": district.get("border", "#A6A6AD"),
                      "width": _preview_number(district.get("border_width"), 1.0),
-                     "fill": (district.get("fill_colors") or ["#D9E8CC"])[0],
+                     "fill": district_colors[0],
+                     "fillColors": district_colors,
                      "opacity": float(district.get("fill_alpha", 90)) / 255.0},
         "zone": {"border": zone.get("border", "#A89880"),
                  "width": _preview_number(zone.get("border_width"), 1.0),
@@ -416,14 +385,12 @@ def preview_theme(style: Any, options: dict[str, Any] | None = None) -> dict:
                   "metrics": {
                       "sizes": {**{key: section.get("size", 12.0)
                                    for key, section in label_sections.items()},
-                                "poi": poi.get("name_size", {"fixed": 11, "scaled": 2})},
+                                "poi": poi.get("name_size", 12)},
                       "strokeWidths": {key: section.get("stroke_width", 0)
                                        for key, section in label_sections.items()},
                       "strokeBlurs": {key: section.get("stroke_blur", 0)
                                       for key, section in label_sections.items()},
-                      "poiMaxSize": poi.get("name_max_size"),
-                      "poiStrokeRatio": float(poi.get("name_stroke_ratio", .12)),
-                      "poiTransitScale": min(2.0, max(1.05, float(poi.get("transit_view_scale", 1.15)))),
+                      "poiStrokeWidth": float(poi.get("name_stroke_width", 0)),
                       "station": (transport.get("station", {}).get("names") or {}),
                   },
                   # 文字开关属于展示状态，不属于数据源。Viewer 用这组值
@@ -467,9 +434,7 @@ def preview_theme(style: Any, options: dict[str, Any] | None = None) -> dict:
                   }, "poi": {
                       "color": str(poi.get("name_stroke", "#FFFFFF") or "#FFFFFF"),
                       # 导出侧 poi_icon_layer：描边宽 = 名字字号 × 0.12
-                      "width": (max(float(round(_preview_baseline_size(
-                          poi.get("name_size"), 11.0) * float(poi.get("name_stroke_ratio", .12)))), 1.0)
-                          if _poi_name_halo(poi) else 0.0),
+                      "width": float(poi.get('name_stroke_width', 0)),
                   }}},
         "procedural_objects": {
             "fill": po.get("color", po.get("colors", {}).get("unknown", "#D8D2C6")),
@@ -531,6 +496,7 @@ def _preview_transit_model(mapdata, style: Any, options: dict[str, Any], *, sess
         "station_merge_enabled", station_cfg.get("merge_enabled", True)))
     merge_range = float(options.get(
         "station_merge_range", station_cfg.get("merge_range", 48.0)))
+    from .services.transit.color import hex_palette
     params = selection.to_job_params(
         station_merge=StationMergeParams(
             merge_enabled=merge_enabled,
@@ -547,7 +513,8 @@ def _preview_transit_model(mapdata, style: Any, options: dict[str, Any], *, sess
                 grouping_cfg.get("merge_partial_overlap", True)),
             share_corridors=bool(grouping_cfg.get("share_corridors", False)),
         ),
-        auto_color=bool(transport_cfg.get("auto_color", True)),
+        auto_color="transit_color_mode" not in options and bool(transport_cfg.get("auto_color", True)),
+        palette=tuple(hex_palette(transport_cfg.get("palette", ()))),
     )
     return (session.transit_model(params) if session is not None
             else build_transit_model(mapdata, params))
@@ -846,9 +813,10 @@ def _road_navigation_anchor(points):
     return world_to_geo(point.x, point.y)
 
 
-def _ordered_road_features(scene, order=None, *, quay_scale=QUAY_FOOTPRINT_SCALE):
+@measured("preview.roads.order_features")
+def _ordered_road_features(scene, order=None, *, footprint_factors):
     order = build_road_order(scene) if order is None else order
-    centerlines = quay_centerlines(scene)
+    display = (pixel_road_geometry(scene, order, footprint_factors)[0])
     flat_pieces = sorted((piece for pieces in order.pieces.values() for piece in pieces
                           if piece.flat_group is not None), key=flat_piece_key)
     flat_order = {(piece.road.id, piece.index): index for index, piece in enumerate(flat_pieces)}
@@ -866,7 +834,8 @@ def _ordered_road_features(scene, order=None, *, quay_scale=QUAY_FOOTPRINT_SCALE
                 fallback_by_rank.setdefault(pieces[0].rank, []).append(road)
                 continue
         for piece in pieces:
-            for paint_index, region in enumerate(display_paint_regions(piece, quay_scale, centerlines)):
+            paints = display[road.id, piece.index]
+            for paint_index, region in enumerate(paints):
                 if surface:
                     if not region.rings:
                         continue
@@ -910,69 +879,10 @@ def _ordered_road_features(scene, order=None, *, quay_scale=QUAY_FOOTPRINT_SCALE
             feature['id'] = feature_id
             feature['properties'].update(featureId=feature_id, rank=rank)
             features.append(feature)
-    for feature in _legacy_width_transition_features(scene, fallback_ids):
-        road_id = feature['properties']['roadId']
-        feature['properties']['rank'] = order.pieces[road_id][0].rank
-        piece = order.pieces[road_id][0]
-        if piece.flat_group is not None:
-            feature['properties'].update(flatGroup=piece.flat_group, sortKey=flat_order[road_id, piece.index])
-        features.append(feature)
-    for feature in features:
-        if feature['properties'].get('quayLine'):
-            feature['properties']['physicalWidth'] *= quay_scale
     return features, order.diagnostics
 
 
-def _legacy_width_transition_features(scene, road_ids=None):
-    """将狭窄入射道路延伸到最宽的兼容路口分支。"""
-    features = []
-    for junction in scene.junctions:
-        records = [scene.roads_by_id.get(item) for item in junction.segment_ids]
-        if road_ids is not None:
-            records = [item for item in records
-                       if item is not None and item.id in road_ids]
-        compatible = {}
-        for record in (item for item in records if item is not None):
-            compatible.setdefault(_road_style_key(record), []).append(record)
-        for group in compatible.values():
-            if len(group) < 2:
-                continue
-            target_width = max(float(item.width) for item in group)
-            for narrow in group:
-                if target_width - float(narrow.width) <= _ROAD_WIDTH_EPSILON:
-                    continue
-                transition = min(
-                    max(12.0, min(30.0, 1.5 * target_width)),
-                    max(float(narrow.length) * 0.45, 0.0),
-                )
-                if transition <= 1e-6:
-                    continue
-                node_at_start = narrow.start_node_id == junction.node_id
-                for index in range(_ROAD_TRANSITION_SLICES):
-                    near = transition * index / _ROAD_TRANSITION_SLICES
-                    far = transition * (index + 1) / _ROAD_TRANSITION_SLICES
-                    center_from_node = (near + far) * 0.5
-                    center = (center_from_node if node_at_start
-                              else float(narrow.length) - center_from_node)
-                    points = clip_polyline_span(
-                        narrow.points, center, far - near)
-                    if len(points) < 2:
-                        continue
-                    fraction = center_from_node / transition
-                    width = target_width + (
-                        float(narrow.width) - target_width) * fraction
-                    feature_id = (
-                        f"road-transition:{junction.node_id}:{narrow.id}:{index}")
-                    features.append(_feature(
-                        feature_id, _line_geometry(points), roadId=int(narrow.id),
-                        nodeId=int(junction.node_id), level=narrow.level.value,
-                        mode=narrow.mode, styleKey=_road_style_key(narrow),
-                        physicalWidth=width, meanHeight=float(junction.mean_y),
-                        sortKey=_road_sort_value(narrow, junction.mean_y),
-                        geometryRole="road-transition",
-                        **({"quayLine": True}
-                           if narrow.level is RoadLevel.QUAY else {})))
-    return features
+
 
 
 def _region_geometry(region, rings):
@@ -1009,6 +919,7 @@ def _ring_geometries(rings):
     return [_region_geometry(reg, rings) for reg in regions.values()]
 
 
+@measured("preview.pois.atlas")
 def _compile_poi_atlas(root, cfg, keys, *, diagnostics=None):
     from PIL import Image, ImageOps
     from .layers.poi_icon_layer import POIIconLayer
@@ -1118,11 +1029,18 @@ def _building_category(building) -> str:
 def _write_geojson(root: Path, name: str, features: list[dict],
                    revision: int, sources: dict) -> None:
     filename = f"{name}.geojson"
-    payload = _json_bytes({"type": "FeatureCollection", "features": features})
-    (root / filename).write_bytes(payload)
+    recorder = current_recorder()
+    with perf_span(recorder, f"preview.serialize.{name}"):
+        payload = _json_bytes({"type": "FeatureCollection", "features": features})
+    with perf_span(recorder, f"preview.write.{name}"):
+        (root / filename).write_bytes(payload)
+    if recorder is not None:
+        recorder.set_counter(f"source.{name}.features", len(features))
+        recorder.set_counter(f"source.{name}.bytes", len(payload))
     sources[name] = f"{filename}?revision={revision}"
 
 
+@measured("preview.builtArea.texture")
 def _write_distance_texture(root: Path, field, revision: int) -> dict:
     """写出可供 WebGL 线性采样的有符号距离纹理。"""
     step_meters = 1.0
@@ -1167,7 +1085,7 @@ def preview_source_signatures(style, options):
     """只把几何依赖计入数据身份，绘制和可见性变化不重新编译数据。"""
     data = getattr(style, "data", style)
     from .built_area import DEFAULT_EXCLUDE_SERVICES
-    from .satellite_filter import filter_key
+    from .satellite_filter import image_key
     transit_selection = _preview_transit_selection(style, options)
     built_cfg = data.get("built_area", {})
     if (str(built_cfg.get("backend", "surface")).lower() == "legacy"
@@ -1199,13 +1117,10 @@ def preview_source_signatures(style, options):
             "facility_hierarchy",
         )},
     }
-    road_geometry = {"navigationAnchor": 1, "chainVersion": _ROAD_CHAIN_VERSION,
-                     "quayFootprintVersion": 1,
-                     "quayScale": data.get("roads", {}).get("quay", {}).get("footprint_scale", QUAY_FOOTPRINT_SCALE),
-                     "orderVersion": ROAD_ORDER_VERSION,
-                     "accurateIntersections": bool(data.get("roads", {}).get("accurate_intersections", True)),
-                     "widthEpsilon": _ROAD_WIDTH_EPSILON,
-                     "transitionSlices": _ROAD_TRANSITION_SLICES}
+    road_geometry = {'pixelGeometryVersion': 1, 'orderVersion': ROAD_ORDER_VERSION,
+                     'accurateIntersections': bool(data.get('roads', {}).get('accurate_intersections', True)),
+                     'footprintFactors': sorted((f'{level}:{mode}', factor) for (level, mode), factor
+                         in pixel_sizes.footprint_factors(data['roads']).items())}
     water_geometry = {"version": _WATER_PREVIEW_VERSION,
                       "upscale": _WATER_PREVIEW_UPSCALE,
                       "maxGridEdge": _WATER_PREVIEW_MAX_GRID_EDGE,
@@ -1215,7 +1130,7 @@ def preview_source_signatures(style, options):
     station_cfg = (data.get("transports") or {}).get("station", {}) or {}
     dependencies = {
         "satellite": [options.get("satelliteReady", False),
-                      filter_key(data)
+                      image_key(data)
                       if options.get("satelliteReady", False) else None],
         "terrain": [data.get("terrain", {}), options.get("terrain", {}), options.get("bounds")],
         "roads": road_geometry,
@@ -1238,7 +1153,8 @@ def preview_source_signatures(style, options):
             options.get("poi_mapping_revision", 0),
             poi_resources,
         ],
-        "transit": [transit_selection.to_dict(),
+        "transit": [transit_selection.to_dict(), options.get("transit_color_mode"),
+                    {key: cfg.get("color") for key, cfg in data.get("transports", {}).get("types", {}).items()},
                     (data.get("transports") or {}).get("grouping", {})],
         "stations": [transit_selection.to_dict(),
                      options.get("station_merge_enabled", station_cfg.get("merge_enabled", True)),
@@ -1247,6 +1163,7 @@ def preview_source_signatures(style, options):
                       for key, default in (("merge_bus_tram", True), ("merge_train_metro", False), ("merge_overrides", {}))}],
         "districts": [
             "navigation-anchor-v1",
+            "district-palette-index-v1",
             "facility-union-v1",
             sorted(options.get("district_ids") or []),
             sorted(options.get("park_ids") or []),
@@ -1390,6 +1307,7 @@ class PreviewSceneCompiler:
             from copy import deepcopy
             options["style"] = deepcopy(options["style"])
             options["style"].setdefault("roads", {})["accurate_intersections"] = False
+        performance = options.get("performance")
         report = options.get("progress", lambda _pct, _message: None)
         check_cancel = options.get("check_cancel", lambda: None)
         check_cancel()
@@ -1402,9 +1320,11 @@ class PreviewSceneCompiler:
         # 这些字符串会原样出现在状态栏里 —— 只写用户看得懂的动作，
         # 不带 WebGL / 场景 / 编译 / 版本号这类内部词。
         report(3, tr("gui.progress.scene.roads"))
-        scene = session.road_scene()
+        with perf_span(performance, "preview.road_scene"):
+            scene = session.road_scene()
         report(12, tr("gui.progress.scene.data"))
-        fingerprint = session.service_cache.get_or_compute("preview_identity", {}, lambda: _document_fingerprint(document))
+        with perf_span(performance, "preview.identity"):
+            fingerprint = session.service_cache.get_or_compute("preview_identity", {}, lambda: _document_fingerprint(document))
         check_cancel()
         scene_id = f"{fingerprint}-{id(session):x}"
         root = Path(tempfile.mkdtemp(prefix="csl-preview-scene-"))
@@ -1417,6 +1337,15 @@ class PreviewSceneCompiler:
             changed = ({key for key, value in signatures.items()
                         if old_signatures.get(key) != value}
                        if not options.get("force") else set(signatures))
+            if performance is not None:
+                signature_changes = sum(
+                    old_signatures.get(key) != value
+                    for key, value in signatures.items())
+                performance.set_counter("preview.signature_changed_sources",
+                                        signature_changes)
+                performance.set_counter("preview.rebuilt_sources", len(changed))
+                performance.update_metadata(
+                    preview_force_rebuild=bool(options.get("force")))
             sources = dict(previous_manifest.get("sources", {}))
             surface_fields = dict(previous_manifest.get("surfaceFields", {}))
             if previous:
@@ -1447,19 +1376,20 @@ class PreviewSceneCompiler:
                 (root / "built-area-surface.png").unlink(missing_ok=True)
             if "roads" in changed:
                 report(16, tr("gui.progress.scene.draw_roads"))
-                accurate = bool(options["style"].get("roads", {}).get("accurate_intersections", True))
-                quay_scale = float(options["style"].get("roads", {}).get("quay", {}).get(
-                    "footprint_scale", QUAY_FOOTPRINT_SCALE))
-                line_features, road_order = _ordered_road_features(
-                    scene, session.road_order(accurate=accurate), quay_scale=quay_scale)
+                with perf_span(performance, "preview.sources.roads"):
+                    accurate = bool(options["style"].get("roads", {}).get("accurate_intersections", True))
+                    line_features, road_order = _ordered_road_features(
+                        scene, session.road_order(accurate=accurate),
+                        footprint_factors=(pixel_sizes.footprint_factors(options['style']['roads'])))
                 check_cancel()
                 options["roadOrder"] = road_order
 
                 _write_geojson(root, "roads", line_features, revision, sources)
             report(26, tr("gui.progress.scene.layers"))
-            terrain_corners = cls._compile_domain_sources(
-                document, session, root, int(revision), sources, options or {},
-                )
+            with perf_span(performance, "preview.sources.domains"), ExitStack() as domain_scope:
+                terrain_corners = cls._compile_domain_sources(
+                    document, session, root, int(revision), sources, options or {},
+                    domain_scope=domain_scope)
             check_cancel()
 
             fonts = previous_manifest.get("fonts", {})
@@ -1472,6 +1402,7 @@ class PreviewSceneCompiler:
             wx0, wz0, wx1, wz1 = options.get("bounds") or document_bounds(document)
             manifest = {
                 "schemaVersion": SCHEMA_VERSION,
+                "performanceDiagnostics": bool(performance and performance.enabled),
                 "sceneId": scene_id,
                 "revision": int(revision),
                 "phase": phase,
@@ -1497,6 +1428,7 @@ class PreviewSceneCompiler:
                 "satelliteSize": options.get("satelliteSize", previous_manifest.get("satelliteSize")),
                 "satelliteCorners": options.get("satelliteCorners", previous_manifest.get("satelliteCorners")),
                 "surfaceFields": surface_fields,
+                "areaSurfaces": True,
                 "poiAtlas": {"image": "poi-sprite.png", "index": "poi-sprite.json"},
                 "poiIconDiagnostics": options.get("poiIconDiagnostics", {}),
                 "layers": {"satellite": False, **{key: True for key in (
@@ -1510,10 +1442,11 @@ class PreviewSceneCompiler:
                 "fonts": fonts,
                 "navigation": {"schemaVersion": 1, "url": "navigation.json"},
             }
-            if not (root / "poi-sprite.png").exists():
-                Image.new("RGBA", (1, 1)).save(root / "poi-sprite.png")
-                (root / "poi-sprite.json").write_text("{}", encoding="utf-8")
-            (root / "manifest.json").write_bytes(_json_bytes(manifest))
+            with perf_span(performance, "preview.manifest"):
+                if not (root / "poi-sprite.png").exists():
+                    Image.new("RGBA", (1, 1)).save(root / "poi-sprite.png")
+                    (root / "poi-sprite.json").write_text("{}", encoding="utf-8")
+                (root / "manifest.json").write_bytes(_json_bytes(manifest))
             report(94, tr("gui.progress.scene.ready"))
             return PreviewSceneBundle(root, scene_id, int(revision), manifest,
                                       navigation_session=session)
@@ -1535,7 +1468,9 @@ class PreviewSceneCompiler:
 
     @staticmethod
     def _compile_domain_sources(document, session, root: Path, revision: int,
-                                sources: dict, options: dict[str, Any]) -> list[list[float]] | None:
+                                sources: dict, options: dict[str, Any],
+                                *, domain_scope: ExitStack
+                                ) -> list[list[float]] | None:
         terrain_corners = options.get("terrainCorners")
         from .preview_terrain import raster_session_for_bounds
         raster_session = raster_session_for_bounds(session, options.get("bounds"))
@@ -1543,6 +1478,7 @@ class PreviewSceneCompiler:
         building_names = BuildingNames(document.buildings, options["style"].get(
             "poi_icons", {}).get("use_game_names", False))
         report = options.get("progress", lambda _pct, _message: None)
+        performance = options.get("performance")
         domain_order = [
             ("terrain", "地形纹理"), ("buildings", "建筑与用地"),
             ("builtArea", "建成区"), ("forest", "森林"),
@@ -1563,7 +1499,8 @@ class PreviewSceneCompiler:
             cached = options.get("_facility_catalog")
             if cached is not None:
                 return cached
-            cached = session.facility_catalog()
+            with perf_span(performance, "preview.facilities.catalog"):
+                cached = session.facility_catalog()
             options["_facility_catalog"] = cached
             return cached
 
@@ -1583,9 +1520,11 @@ class PreviewSceneCompiler:
 
         def start_domain(key: str, label: str) -> None:
             options.get("check_cancel", lambda: None)()
+            domain_scope.close()
             index = domain_index.get(key, 0)
             total = max(len(active_domains), 1)
             report(28 + 64 * index / total, tr("gui.progress.scene.draw_layer", label=label))
+            domain_scope.enter_context(perf_span(performance, f"preview.sources.{key}"))
 
         if "satellite" in options["changed"] and options.get("satelliteReady"):
             from .satellite_image import compile_satellite
@@ -1765,9 +1704,11 @@ class PreviewSceneCompiler:
         if "transit" in options["changed"]:
             start_domain("transit", "公共交通")
             from .services.transit.geometry import resolve_route_geometry
-            from .transit import line_display_color
+            from .transit import type_def
 
             mapdata = session._legacy_view()
+            from .services.transit.color import display_color, view_line_colors
+            view_colors = view_line_colors(session.document.transit_lines, options.get("transit_color_mode", "game"))
             transit = []
             geometry_cache = {}
             model = _preview_transit_model(
@@ -1788,10 +1729,10 @@ class PreviewSceneCompiler:
                 coordinates = [[world_to_geo(point.x, point.z) for point in part] for part in parts]
                 if not coordinates:
                     continue
-                rgb = line_display_color(source_line)
-                color = ("#%02X%02X%02X" % tuple(rgb)
-                         if rgb else "#4277C9")
                 line_id = int(line.id)
+                td = type_def(source_line.type)
+                type_cfg = options["style"].get("transports", {}).get("types", {}).get(td.key, {})
+                color = display_color(line, model, type_cfg, td.style, view_colors)
                 route_length = sum(
                     ((float(a.x) - float(b.x)) ** 2
                      + (float(a.z) - float(b.z)) ** 2) ** .5
@@ -1849,14 +1790,11 @@ class PreviewSceneCompiler:
             district_ids = options.get("district_ids")
             park_ids = options.get("park_ids")
             from .layers.district_layer import (
-                DistrictLayer, visible_administrative_districts,
+                DistrictLayer, renderable_administrative_districts,
             )
             from .layers.zone_layer import ZoneLayer
 
-            administrative = [
-                item for item in visible_administrative_districts(document)
-                if district_ids is None or int(item.id) in district_ids
-            ]
+            administrative = renderable_administrative_districts(document, district_ids)
             functional = [
                 item for item in document.districts
                 if item.kind == "PARK_ZONE"
@@ -1885,7 +1823,7 @@ class PreviewSceneCompiler:
                     f"area:{item.id}", geometry, areaId=int(item.id),
                     sourceAreaIds=source_ids, name=item.name.text, kind=item.kind,
                     zoneKind=_enum_text(item.zone_kind), geometryRole="area"))
-            for item in (*administrative, *(item for item in functional if item.grid_points)):
+            for palette_index, item in enumerate((*administrative, *(item for item in functional if item.grid_points))):
                 target = zone_features if item.kind == "PARK_ZONE" else district_features
                 contours = zone_contours if item.kind == "PARK_ZONE" else district_contours
                 geometries = list(contours.get(int(item.id), ()))
@@ -1901,7 +1839,8 @@ class PreviewSceneCompiler:
                     target.append(_feature(
                         f"area:{item.id}", geometry, areaId=int(item.id),
                         name=item.name.text, kind=item.kind,
-                        zoneKind=_enum_text(item.zone_kind), geometryRole="area"))
+                        zoneKind=_enum_text(item.zone_kind), geometryRole="area",
+                        **({"paletteIndex": palette_index} if item.kind != "PARK_ZONE" else {})))
             _write_geojson(root, "districts", district_features, revision, sources)
             _write_geojson(root, "zones", zone_features, revision, sources)
 
@@ -2173,6 +2112,8 @@ class PreviewSceneCompiler:
 class _PreviewHTTPServer(ThreadingHTTPServer):
     daemon_threads = True
     allow_reuse_address = False
+    # 重建画布会同时请求多个场景资源；默认的 5 个待接受连接会在 Windows 上拒绝突发请求。
+    request_queue_size = 64
 
     def __init__(self, address, owner):
         self.owner = owner

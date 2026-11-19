@@ -29,30 +29,6 @@
     <value>{0}: введите значение от {1} до {2}.</value>
     <comment>AppearanceControls.cs:153</comment>
   </data>
-  <data name="AppearanceControls_Number_0DA36741DE" xml:space="preserve">
-    <value>Фиксированная часть (пикс.)</value>
-    <comment>AppearanceControls.cs:136</comment>
-  </data>
-  <data name="AppearanceControls_Number_2C7E083699" xml:space="preserve">
-    <value>Масштабируемая часть (эталонные пиксели)</value>
-    <comment>AppearanceControls.cs:138</comment>
-  </data>
-  <data name="AppearanceControls_Number_9FC85F1C9F" xml:space="preserve">
-    <value>Сохранить фиксированный размер</value>
-    <comment>AppearanceControls.cs:198</comment>
-  </data>
-  <data name="AppearanceControls_Number_C42BC5D941" xml:space="preserve">
-    <value>{0}: введите допустимое значение.</value>
-    <comment>AppearanceControls.cs:148</comment>
-  </data>
-  <data name="AppearanceControls_Number_EE9964568E" xml:space="preserve">
-    <value>Фиксированная часть + масштабируемая часть</value>
-    <comment>AppearanceControls.cs:198</comment>
-  </data>
-  <data name="AppearanceControls_Number_F1463D39A7" xml:space="preserve">
-    <value>Масштабировать вместе с картой</value>
-    <comment>AppearanceControls.cs:198</comment>
-  </data>
   <data name="ContextRibbonToggle_Refresh_645432A5BF" xml:space="preserve">
     <value> , включено</value>
     <comment>ContextRibbonToggle.cs:31</comment>
@@ -216,6 +192,10 @@
   <data name="ExportWindow_Preview_FormatDescription_D1B9C29526" xml:space="preserve">
     <value>Проект сети · редактировать в Rail Map Painter</value>
     <comment>ExportWindow.Preview.cs:93</comment>
+  </data>
+  <data name="ExportWindow_Preview_FormatDescription_F3E27B053E" xml:space="preserve">
+    <value>GeoPackage (.gpkg) + GeoTIFF (.tif) + QGIS (.qml)</value>
+    <comment>ExportWindow.Preview.cs:91</comment>
   </data>
   <data name="ExportWindow_Preview_InitializeResults_0A07FEF6ED" xml:space="preserve">
     <value>Повторить экспорт</value>
@@ -445,6 +425,10 @@
     <value>Схема метро</value>
     <comment>ExportWindow.cs:679</comment>
   </data>
+  <data name="ExportWindow_UpdateContextCopy_19744772B2" xml:space="preserve">
+    <value>GeoPackage (.gpkg) + GeoTIFF (.tif) + QGIS (.qml)</value>
+    <comment>ExportWindow.cs:348</comment>
+  </data>
   <data name="ExportWindow_UpdateContextCopy_2F52FBFF32" xml:space="preserve">
     <value>Экспорт вспомогательного проекта для текущей сети и выбранных линий метро.</value>
     <comment>ExportWindow.cs:357</comment>
@@ -468,6 +452,10 @@
   <data name="ExportWindow_UpdateContextCopy_6339D3A748" xml:space="preserve">
     <value>Экспортировать карту с текущими темой, слоями и выбранной областью.</value>
     <comment>ExportWindow.cs:376</comment>
+  </data>
+  <data name="ExportWindow_UpdateContextCopy_694B1FB788" xml:space="preserve">
+    <value>GeoPackage / GeoTIFF + QML</value>
+    <comment>ExportWindow.cs:347</comment>
   </data>
   <data name="ExportWindow_UpdateContextCopy_7BE47589C1" xml:space="preserve">
     <value>Экспортируйте .rmp.json, затем импортируйте его в Rail Map Painter, чтобы редактировать маршруты.</value>
@@ -817,6 +805,10 @@
     <value>Экспорт PNG…</value>
     <comment>MainWindow.File.cs:32</comment>
   </data>
+  <data name="MainWindow_File_BuildFileMenu_D9A515CF72" xml:space="preserve">
+    <value>GeoPackage / GeoTIFF + QML…</value>
+    <comment>MainWindow.File.cs:34</comment>
+  </data>
   <data name="MainWindow_File_RefreshFileRecent_95D7E39D01" xml:space="preserve">
     <value>Файл перемещён или отсутствует: </value>
     <comment>MainWindow.File.cs:63</comment>
@@ -1145,10 +1137,6 @@
     <value>Транспортные значки</value>
     <comment>MainWindow.MapSettings.cs:278</comment>
   </data>
-  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_4D2A6ECC62" xml:space="preserve">
-    <value>Эталонный размер рассчитан на холст города 4096 пикселей.</value>
-    <comment>MainWindow.MapSettings.cs:350; MainWindow.MapSettings.cs:365</comment>
-  </data>
   <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_4D8D19C70F" xml:space="preserve">
     <value>Категория настроек</value>
     <comment>MainWindow.MapSettings.cs:57; MainWindow.MapSettings.cs:58; MainWindow.MapSettings.cs:59</comment>
@@ -1361,10 +1349,6 @@
     <value>Показывать текст и значки</value>
     <comment>MainWindow.MapSettings.cs:216</comment>
   </data>
-  <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_EC7FFA2896" xml:space="preserve">
-    <value>Как размер меняется при масштабировании</value>
-    <comment>MainWindow.MapSettings.cs:351; MainWindow.MapSettings.cs:366</comment>
-  </data>
   <data name="MainWindow_MapSettings_ShowMapPoiSettingsAsync_ED236491A4" xml:space="preserve">
     <value>Названия из игры</value>
     <comment>MainWindow.MapSettings.cs:311</comment>
@@ -1388,6 +1372,10 @@
   <data name="MainWindow_OverviewButton.Content" xml:space="preserve">
     <value>Обзор карты</value>
     <comment>dev\CSLModernMapRenderer\winui\MainWindow.xaml:50</comment>
+  </data>
+  <data name="MainWindow_Overview_ShowInspectorHome_064FC61A89" xml:space="preserve">
+    <value>Продолжить редактирование в QGIS</value>
+    <comment>MainWindow.Overview.cs:131</comment>
   </data>
   <data name="MainWindow_Overview_ShowInspectorHome_1CDED5B3FD" xml:space="preserve">
     <value>Свойства объекта</value>
@@ -1433,10 +1421,6 @@
     <value>Тема карты и обзор города</value>
     <comment>MainWindow.Overview.cs:39</comment>
   </data>
-  <data name="MainWindow_Overview_ShowMapOverview_3595B7C819" xml:space="preserve">
-    <value>Области</value>
-    <comment>MainWindow.Overview.cs:53</comment>
-  </data>
   <data name="MainWindow_Overview_ShowMapOverview_41AB2E0ECB" xml:space="preserve">
     <value>Карта</value>
     <comment>MainWindow.Overview.cs:38; MainWindow.Overview.cs:40</comment>
@@ -1450,7 +1434,7 @@
     <comment>MainWindow.Overview.cs:52</comment>
   </data>
   <data name="MainWindow_Overview_ShowMapOverview_6F1C3CB04A" xml:space="preserve">
-    <value>Редактировать тему…</value>
+    <value>Изменить параметры темы…</value>
     <comment>MainWindow.Overview.cs:48</comment>
   </data>
   <data name="MainWindow_Overview_ShowMapOverview_788DB1CFEC" xml:space="preserve">
@@ -1458,7 +1442,7 @@
     <comment>MainWindow.Overview.cs:41</comment>
   </data>
   <data name="MainWindow_Overview_ShowMapOverview_B553EA09A3" xml:space="preserve">
-    <value>Протяжённость общественного транспорта</value>
+    <value>Суммарная длина маршрутов транспорта</value>
     <comment>MainWindow.Overview.cs:52</comment>
   </data>
   <data name="MainWindow_Overview_ShowMapOverview_BDA7B29CF3" xml:space="preserve">
@@ -1480,6 +1464,34 @@
   <data name="MainWindow_Overview_ShowMapOverview_ED84A1665F" xml:space="preserve">
     <value>Город</value>
     <comment>MainWindow.Overview.cs:51</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_2CD0F3BE87" xml:space="preserve">
+    <value>Отмена</value>
+    <comment>MainWindow.PreviewSettings.cs:36</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_3279E8322A" xml:space="preserve">
+    <value>Производительность предпросмотра</value>
+    <comment>MainWindow.PreviewSettings.cs:19</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_63C73C4730" xml:space="preserve">
+    <value>Применить</value>
+    <comment>MainWindow.PreviewSettings.cs:37</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_8B710BEF56" xml:space="preserve">
+    <value>Город изменился. Откройте настройки заново.</value>
+    <comment>MainWindow.PreviewSettings.cs:39</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_BA2E93E730" xml:space="preserve">
+    <value>Восстановить по умолчанию</value>
+    <comment>MainWindow.PreviewSettings.cs:35</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_BD4DD78F2D" xml:space="preserve">
+    <value>Записывает время загрузки города, создания и отрисовки карты для диагностики медленного предпросмотра. Текущие настройки вида управляют текстом, значками и объединением.</value>
+    <comment>MainWindow.PreviewSettings.cs:29</comment>
+  </data>
+  <data name="MainWindow_PreviewSettings_ShowPreviewSettingsAsync_F15F7C4642" xml:space="preserve">
+    <value>Записывать производительность предпросмотра</value>
+    <comment>MainWindow.PreviewSettings.cs:22</comment>
   </data>
   <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_07C030A101" xml:space="preserve">
     <value>Интервал повторения (м)</value>
@@ -2058,9 +2070,17 @@
     <value>Открыть папку журналов</value>
     <comment>MainWindow.Workflows.cs:197</comment>
   </data>
+  <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_3B1EF565E6" xml:space="preserve">
+    <value>Производительность</value>
+    <comment>MainWindow.Workflows.cs:213</comment>
+  </data>
   <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_41AB2E0ECB" xml:space="preserve">
     <value>Карта</value>
     <comment>MainWindow.Workflows.cs:213</comment>
+  </data>
+  <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_51464DD5DC" xml:space="preserve">
+    <value>Диагностика производительности</value>
+    <comment>MainWindow.Workflows.cs:194</comment>
   </data>
   <data name="MainWindow_Workflows_ShowFullDiagnosticsAsync_6EDFD8773A" xml:space="preserve">
     <value>Обновить предпросмотр</value>
@@ -2337,6 +2357,10 @@ Esc  Отменить текущую задачу</value>
   <data name="MainWindow_xaml_BuildRibbon_62AEEB8B65" xml:space="preserve">
     <value>Регионы и районы</value>
     <comment>MainWindow.xaml.cs:165</comment>
+  </data>
+  <data name="MainWindow_xaml_BuildRibbon_694B1FB788" xml:space="preserve">
+    <value>GeoPackage / GeoTIFF + QML</value>
+    <comment>MainWindow.xaml.cs:141; MainWindow.xaml.cs:218</comment>
   </data>
   <data name="MainWindow_xaml_BuildRibbon_6BEB3C5ED7" xml:space="preserve">
     <value>Создание карт</value>
@@ -3371,18 +3395,6 @@ Shaotang Shaoxiancao Codex</value>
     <value>Предпросмотр обновится после ввода допустимого значения.</value>
     <comment>ThemeEditorDialog.Fields.cs:348</comment>
   </data>
-  <data name="ThemeEditorDialog_Fields_Label_606D5B2CC1" xml:space="preserve">
-    <value>Часть, увеличивающаяся при масштабировании рендеринга</value>
-    <comment>ThemeEditorDialog.Fields.cs:23</comment>
-  </data>
-  <data name="ThemeEditorDialog_Fields_Label_803A1B3A33" xml:space="preserve">
-    <value>Фиксированная часть</value>
-    <comment>ThemeEditorDialog.Fields.cs:22</comment>
-  </data>
-  <data name="ThemeEditorDialog_Fields_MakeField_606D5B2CC1" xml:space="preserve">
-    <value>Часть, увеличивающаяся при масштабировании рендеринга</value>
-    <comment>ThemeEditorDialog.Fields.cs:134</comment>
-  </data>
   <data name="ThemeEditorDialog_Fields_MakeField_66FE53367D" xml:space="preserve">
     <value>Введите значение от {0} до {1}</value>
     <comment>ThemeEditorDialog.Fields.cs:181</comment>
@@ -3394,14 +3406,6 @@ Shaotang Shaoxiancao Codex</value>
   <data name="ThemeEditorDialog_Fields_MakeField_870D5FE5D4" xml:space="preserve">
     <value>Введите массив JSON</value>
     <comment>ThemeEditorDialog.Fields.cs:150</comment>
-  </data>
-  <data name="ThemeEditorDialog_Fields_MakeField_986E6B84D7" xml:space="preserve">
-    <value>Фиксированная часть (пикс.)</value>
-    <comment>ThemeEditorDialog.Fields.cs:133</comment>
-  </data>
-  <data name="ThemeEditorDialog_Fields_MakeField_CF663DC217" xml:space="preserve">
-    <value>Итоговый размер = фиксированная часть + масштабируемая часть × масштаб рендеринга</value>
-    <comment>ThemeEditorDialog.Fields.cs:136</comment>
   </data>
   <data name="ThemeEditorDialog_Fields_MakeField_D9E21007A0" xml:space="preserve">
     <value>(текущее значение)</value>
@@ -3420,11 +3424,11 @@ Shaotang Shaoxiancao Codex</value>
     <comment>ThemeEditorDialog.Fields.cs:84</comment>
   </data>
   <data name="ThemeEditorDialog_Fields_PageDescription_5986B685A1" xml:space="preserve">
-    <value>Настройка заливки, обводки и минимальной видимой ширины по классам дорог.</value>
+    <value>Настройка заливки, обводки и ширины без контура поверхности (px) по классам дорог.</value>
     <comment>ThemeEditorDialog.Fields.cs:82</comment>
   </data>
   <data name="ThemeEditorDialog_Fields_PageDescription_7245F659EA" xml:space="preserve">
-    <value>Измените название и описание темы, затем сохраните текущие параметры темы.</value>
+    <value>Сохранение изменений предустановки создаёт личную тему; сохранение личной темы обновляет её. Экспорт сохраняет отдельный файл YAML.</value>
     <comment>ThemeEditorDialog.Fields.cs:85</comment>
   </data>
   <data name="ThemeEditorDialog_Fields_PageDescription_8714276423" xml:space="preserve">
@@ -3536,7 +3540,7 @@ Shaotang Shaoxiancao Codex</value>
     <comment>ThemeEditorDialog.Layout.cs:43</comment>
   </data>
   <data name="ThemeEditorDialog_Layout_BuildWorkbench_BA1125B2AC" xml:space="preserve">
-    <value>Редактировать все данные темы (JSON)…</value>
+    <value>Изменить JSON…</value>
     <comment>ThemeEditorDialog.Layout.cs:60</comment>
   </data>
   <data name="ThemeEditorDialog_Layout_BuildWorkbench_EC9A1CEB6D" xml:space="preserve">
@@ -3699,10 +3703,6 @@ Shaotang Shaoxiancao Codex</value>
     <value>Введите высоту от {0} до {1} м и правильный HEX-цвет</value>
     <comment>ThemeEditorDialog.Pages.cs:189</comment>
   </data>
-  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_01EEE2E647" xml:space="preserve">
-    <value>Чем выше коэффициент, тем толще становятся дороги.</value>
-    <comment>ThemeEditorDialog.Pages.cs:61</comment>
-  </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_05FB7CBA47" xml:space="preserve">
     <value>Заливка</value>
     <comment>ThemeEditorDialog.Pages.cs:29</comment>
@@ -3712,23 +3712,19 @@ Shaotang Shaoxiancao Codex</value>
     <comment>ThemeEditorDialog.Pages.cs:42</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_1D68EDF7EB" xml:space="preserve">
-    <value>Минимум, пикс.</value>
+    <value>Ширина осевой линии (пикс.)</value>
     <comment>ThemeEditorDialog.Pages.cs:29</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_3001DE3658" xml:space="preserve">
     <value>Внешний вид по классам</value>
     <comment>ThemeEditorDialog.Pages.cs:24</comment>
   </data>
-  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_37AE912BEC" xml:space="preserve">
-    <value>Общая толщина</value>
-    <comment>ThemeEditorDialog.Pages.cs:59</comment>
-  </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_512DF348F2" xml:space="preserve">
-    <value>Минимальная ширина определяет видимость издалека; фактическая ширина зависит от размера дороги. Обводка обрамляет заливку.</value>
+    <value>При наличии контура: его ширина × коэффициент контура. Без контура: ширина в пикселях × масштаб элементов. Обводка также зависит от масштаба элементов.</value>
     <comment>ThemeEditorDialog.Pages.cs:56</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_593A6AFD98" xml:space="preserve">
-    <value>Толщина обводки для уровней</value>
+    <value>Толщина обводки (пикс.) / коэффициент ширины дорожного полотна</value>
     <comment>ThemeEditorDialog.Pages.cs:63</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_80A57E03F0" xml:space="preserve">
@@ -3750,10 +3746,6 @@ Shaotang Shaoxiancao Codex</value>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_C2AE96D4A6" xml:space="preserve">
     <value>Эстакады и тоннели</value>
     <comment>ThemeEditorDialog.Pages.cs:72</comment>
-  </data>
-  <data name="ThemeEditorDialog_Pages_BuildRoadsPage_E9C68028D9" xml:space="preserve">
-    <value>Масштаб ширины дорог</value>
-    <comment>ThemeEditorDialog.Pages.cs:60</comment>
   </data>
   <data name="ThemeEditorDialog_Pages_BuildRoadsPage_FBE666F1E0" xml:space="preserve">
     <value>Класс дороги</value>
@@ -3794,11 +3786,6 @@ Shaotang Shaoxiancao Codex</value>
   <data name="ThemeEditorDialog_Preview_BuildSamples_1350C527B6" xml:space="preserve">
     <value>Изменения цвета и размера видны на предпросмотре реальной карты.</value>
     <comment>ThemeEditorDialog.Preview.cs:50</comment>
-  </data>
-  <data name="ThemeEditorDialog_Preview_BuildSamples_1A0787C40B" xml:space="preserve">
-    <value> · минимум {0:0.##} пикс.
-Тестовая дорога шириной 16 м, масштаб рендеринга 1</value>
-    <comment>ThemeEditorDialog.Preview.cs:33</comment>
   </data>
   <data name="ThemeEditorDialog_Preview_BuildSamples_5BD3906590" xml:space="preserve">
     <value>Узлы высоты ещё не добавлены</value>
@@ -4314,7 +4301,7 @@ Shaotang Shaoxiancao Codex</value>
   <data name="MainWindow_File_OpenConfigurationFolder" xml:space="preserve">
     <value>Открыть папку настроек</value>
   </data>
-  <data name="RmpEditor_Title" xml:space="preserve"><value>Metro diagram editor</value></data>
+  <data name="RmpEditor_Title" xml:space="preserve"><value>Редактор схемы метро</value></data>
   <data name="RmpEditor_Edit" xml:space="preserve"><value>Edit</value></data>
   <data name="RmpEditor_Save" xml:space="preserve"><value>Save project</value></data>
   <data name="RmpEditor_SaveAs" xml:space="preserve"><value>Save as…</value></data>
@@ -4326,20 +4313,20 @@ Shaotang Shaoxiancao Codex</value>
   <data name="RmpEditor_Cancel" xml:space="preserve"><value>Cancel</value></data>
   <data name="RmpEditor_Discard" xml:space="preserve"><value>Discard changes</value></data>
   <data name="RmpEditor_Unsaved" xml:space="preserve"><value>Unsaved project</value></data>
-  <data name="RmpEditor_UnsavedPrompt" xml:space="preserve"><value>Save changes before continuing?</value></data>
-  <data name="RmpEditor_Independent" xml:space="preserve"><value>Changes belong to this editor only.</value></data>
-  <data name="RmpEditor_NativeAppearance" xml:space="preserve"><value>RMP uses native symbol sizes, Noto Sans SC and opaque water colours composed over the canvas background.</value></data>
-  <data name="RmpEditor_Detached" xml:space="preserve"><value>This project is not linked to the current source map.</value></data>
-  <data name="RmpEditor_MissingAssets" xml:space="preserve"><value>RMP assets are missing. Rebuild the WinUI application.</value></data>
-  <data name="RmpEditor_LoadFailed" xml:space="preserve"><value>Unable to load the RMP editor</value></data>
-  <data name="RmpEditor_ProcessFailed" xml:space="preserve"><value>The editor process stopped. Unsaved changes could not be recovered.</value></data>
-  <data name="RmpEditor_InvalidProject" xml:space="preserve"><value>Not a supported RMP project (save version 1–77).</value></data>
-  <data name="RmpEditor_BlockedResource" xml:space="preserve"><value>An external resource was blocked by the offline editor.</value></data>
+  <data name="RmpEditor_UnsavedPrompt" xml:space="preserve"><value>Сохранить изменения перед продолжением?</value></data>
+  <data name="RmpEditor_Independent" xml:space="preserve"><value>Изменения относятся только к этому черновику.</value></data>
+  <data name="RmpEditor_NativeAppearance" xml:space="preserve"><value>RMP использует исходные размеры символов и шрифт Noto Sans SC. Цвет воды смешивается с фоном холста до получения непрозрачного цвета.</value></data>
+  <data name="RmpEditor_Detached" xml:space="preserve"><value>Этот проект не связан с текущей исходной картой.</value></data>
+  <data name="RmpEditor_MissingAssets" xml:space="preserve"><value>Ресурсы RMP отсутствуют. Пересоберите приложение WinUI.</value></data>
+  <data name="RmpEditor_LoadFailed" xml:space="preserve"><value>Не удалось загрузить редактор RMP</value></data>
+  <data name="RmpEditor_ProcessFailed" xml:space="preserve"><value>Процесс редактора остановлен. Восстановить несохранённые изменения не удалось.</value></data>
+  <data name="RmpEditor_InvalidProject" xml:space="preserve"><value>Неподдерживаемый проект RMP. Поддерживаются версии формата сохранения 1–77.</value></data>
+  <data name="RmpEditor_BlockedResource" xml:space="preserve"><value>Автономный редактор заблокировал внешний ресурс.</value></data>
   <data name="RmpEditor_RegeneratePrompt" xml:space="preserve"><value>Replace this draft with the automatic diagram captured when this window opened? This does not change the main window.</value></data>
   <data name="RmpEditor_Exported" xml:space="preserve"><value>Exported:</value></data>
-  <data name="RmpEditor_MismatchPrompt" xml:space="preserve"><value>The saved project does not match its source metadata. Open it independently, or create a new draft without overwriting it?</value></data>
-  <data name="RmpEditor_OpenExisting" xml:space="preserve"><value>Open existing project</value></data>
-  <data name="RmpEditor_NewDraft" xml:space="preserve"><value>Create new draft</value></data>
+  <data name="RmpEditor_MismatchPrompt" xml:space="preserve"><value>Сохранённый проект не соответствует метаданным источника. Открыть его отдельно или создать новый черновик, сохранив исходный файл?</value></data>
+  <data name="RmpEditor_OpenExisting" xml:space="preserve"><value>Открыть существующий проект</value></data>
+  <data name="RmpEditor_NewDraft" xml:space="preserve"><value>Создать новый черновик</value></data>
   <data name="RmpEditor_Fit" xml:space="preserve"><value>Fit diagram</value></data>
   <data name="RmpEditor_Undo" xml:space="preserve"><value>Отменить</value></data>
   <data name="RmpEditor_Redo" xml:space="preserve"><value>Повторить</value></data>
@@ -4371,6 +4358,290 @@ Shaotang Shaoxiancao Codex</value>
   <data name="ExportWindow_RmpContent" xml:space="preserve"><value>Экспорт текущей схемы метро с изменёнными линиями, станциями и другими элементами. Шрифты встраиваются в файл.</value></data>
   <data name="ExportWindow_RmpSvgDescription" xml:space="preserve"><value>Векторное изображение для масштабирования и редактирования</value></data>
   <data name="RmpEditor_DefaultTitle" xml:space="preserve"><value>{cityName} — Схема метро</value></data>
+  <data name="Poi_Area" xml:space="preserve"><value>Функциональные зоны</value></data>
+  <data name="Poi_AreaIcons" xml:space="preserve"><value>Значки функциональных зон</value></data>
+  <data name="Poi_AreaNames" xml:space="preserve"><value>Названия функциональных зон</value></data>
+  <data name="Poi_AreaDescription" xml:space="preserve"><value>Функциональные зоны и названия, экспортированные из игры.</value></data>
+  <data name="Poi_PngInternalBuildings" xml:space="preserve"><value>Показывать значки зданий внутри зон в PNG</value></data>
+  <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
+    <value>Игра ещё запущена и может занимать много памяти. Рекомендуется сохранить город и выйти из игры перед экспортом. Также можно продолжить.</value>
+  </data>
+  <data name="ExportWindow_BeforeExportNotice" xml:space="preserve">
+    <value>Перед экспортом рекомендуется сохранить город, выйти из игры и закрыть другие программы, использующие много памяти. Чем больше размер экспорта, тем больше памяти требуется.</value>
+  </data>
+  <data name="Poi_AreaMerge" xml:space="preserve">
+    <value>Подписи соседних областей (CS2)</value>
+  </data>
+  <data name="Poi_AreaMergeDescription" xml:space="preserve">
+    <value>Близкие области CS2 одного исходного типа с одинаковым названием используют общую подпись. Их границы остаются отдельными.</value>
+  </data>
+  <data name="Map_RotateCounterclockwise" xml:space="preserve">
+    <value>90° против часовой стрелки</value>
+  </data>
+  <data name="Map_RotateClockwise" xml:space="preserve">
+    <value>90° по часовой стрелке</value>
+  </data>
+  <data name="Failure_Internal" xml:space="preserve"><value>Произошла непредвиденная ошибка. Вы можете сообщить о ней автору.</value></data>
+  <data name="Failure_Operation" xml:space="preserve"><value>Operation failed</value></data>
+  <data name="Failure_Metro" xml:space="preserve"><value>Не удалось создать схему метро</value></data>
+  <data name="Failure_Export" xml:space="preserve"><value>Не удалось экспортировать карту</value></data>
+  <data name="Failure_Permission" xml:space="preserve"><value>Не удалось получить доступ к необходимому файлу. Проверьте права доступа к файлу или папке и повторите попытку.</value></data>
+  <data name="Failure_MissingFile" xml:space="preserve"><value>Не найден необходимый файл. Проверьте его расположение и повторите попытку.</value></data>
+  <data name="Failure_Memory" xml:space="preserve"><value>Не удалось выделить память. Уменьшите размер результата или закройте приложения, потребляющие много памяти, и повторите попытку.</value></data>
+  <data name="Failure_EngineStopped" xml:space="preserve"><value>Движок отрисовки остановлен. Снова откройте просмотрщик и повторите попытку.</value></data>
+  <data name="Failure_ViewDetails" xml:space="preserve"><value>View details</value></data>
+  <data name="Failure_CopyDetails" xml:space="preserve"><value>Скопировать сведения об ошибке</value></data>
+  <data name="Failure_Close" xml:space="preserve"><value>Close</value></data>
+  <data name="Failure_Copied" xml:space="preserve"><value>Copied</value></data>
+  <data name="Failure_CopyFailed" xml:space="preserve"><value>Не удалось скопировать. Повторите попытку.</value></data>
+  <data name="Ribbon_MoreLayers" xml:space="preserve"><value>Другие слои</value></data>
+  <data name="Ribbon_Simplified" xml:space="preserve"><value>Упрощённая</value></data>
+  <data name="Ribbon_Classic" xml:space="preserve"><value>Классическая</value></data>
+  <data name="Sidebar_ShowSettings" xml:space="preserve"><value>Показать левую панель</value></data>
+  <data name="Sidebar_HideSettings" xml:space="preserve"><value>Скрыть левую панель</value></data>
+  <data name="Sidebar_ShowInspector" xml:space="preserve"><value>Показать правую панель</value></data>
+  <data name="Sidebar_HideInspector" xml:space="preserve"><value>Скрыть правую панель</value></data>
+  <data name="Ribbon_IntroTitle" xml:space="preserve"><value>Попробуйте новый упрощённый режим</value></data>
+  <data name="Ribbon_IntroDescription" xml:space="preserve"><value>Упрощённый режим делает просмотр карты удобнее и проще. Вы можете вернуться к классическому режиму в любое время.</value></data>
+  <data name="Ribbon_IntroTry" xml:space="preserve"><value>Попробовать упрощённый режим</value></data>
+  <data name="Ribbon_IntroLater" xml:space="preserve"><value>Не сейчас</value></data>
+  <data name="RmpEditor_showNames" xml:space="preserve"><value>Показывать названия станций</value></data>
+  <data name="RmpEditor_showDefaultNames" xml:space="preserve"><value>Показывать стандартные названия станций</value></data>
+  <data name="Poi_ShowDecorative" xml:space="preserve"><value>Показывать декоративные POI</value></data>
+  <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>Показывать значки и названия декораций из списка. Здания и объекты карты остаются видимыми.</value></data>
+  <data name="MetroSettings_Reset" xml:space="preserve"><value>Восстановить по умолчанию</value></data>
+  <data name="Preview_Failed" xml:space="preserve"><value>Не удалось загрузить предпросмотр</value></data>
+  <data name="Preview_Slow" xml:space="preserve"><value>Предпросмотр загружается дольше обычного</value></data>
+  <data name="Preview_Stopped" xml:space="preserve"><value>Просмотрщик не запущен</value></data>
+  <data name="Preview_DataAvailable" xml:space="preserve"><value>Данные карты загружены. Можно выбрать тему и экспортировать карту.</value></data>
+  <data name="Preview_OpenMap" xml:space="preserve"><value>Откройте файл карты, чтобы выбрать тему и экспортировать карту.</value></data>
+  <data name="Preview_AutoStart" xml:space="preserve"><value>Загружать встроенный предпросмотр при запуске</value></data>
+  <data name="Preview_Retry.Content" xml:space="preserve"><value>Повторить</value></data>
+  <data name="Preview_Png.Content" xml:space="preserve"><value>Экспорт PNG (2048 пикс.)</value></data>
+  <data name="Preview_Html.Content" xml:space="preserve"><value>Открыть во внешнем браузере</value></data>
+  <data name="Preview_Continue.Content" xml:space="preserve"><value>Продолжить ожидание</value></data>
+  <data name="Preview_OpenFailed" xml:space="preserve"><value>HTML сохранён, но не удалось открыть его в браузере. Откройте файл вручную в папке вывода.</value></data>
+  <data name="ThemeEditor_Select" xml:space="preserve"><value>Выбрать тему</value></data>
+  <data name="ThemeEditor_Unsaved" xml:space="preserve"><value>Не сохранено</value></data>
+  <data name="ThemeEditor_Builtins" xml:space="preserve"><value>Предустановки</value></data>
+  <data name="ThemeEditor_Personal" xml:space="preserve"><value>Мои темы</value></data>
+  <data name="ThemeEditor_New" xml:space="preserve"><value>Новая тема</value></data>
+  <data name="ThemeEditor_Copy" xml:space="preserve"><value>Дублировать тему</value></data>
+  <data name="ThemeEditor_Rename" xml:space="preserve"><value>Переименовать</value></data>
+  <data name="ThemeEditor_Import" xml:space="preserve"><value>Импорт темы…</value></data>
+  <data name="ThemeEditor_Export" xml:space="preserve"><value>Экспорт темы…</value></data>
+  <data name="ThemeEditor_Base" xml:space="preserve"><value>Базовая предустановка</value></data>
+  <data name="ThemeEditor_Cancel" xml:space="preserve"><value>Отмена</value></data>
+  <data name="ThemeEditor_Name" xml:space="preserve"><value>Название темы</value></data>
+  <data name="ThemeEditor_Save" xml:space="preserve"><value>Сохранить</value></data>
+  <data name="ThemeEditor_Exported" xml:space="preserve"><value>Тема экспортирована</value></data>
+  <data name="ThemeEditor_InvalidName" xml:space="preserve"><value>Используйте от 1 до 64 символов без управляющих символов.</value></data>
+  <data name="ThemeEditor_MigrationWarning" xml:space="preserve"><value>Не удалось прочитать некоторые старые темы. Исходные файлы сохранены в резервной копии:</value></data>
+  <data name="BuildingList_Open" xml:space="preserve"><value>Список зданий</value></data>
+  <data name="BuildingList_Back" xml:space="preserve"><value>Назад к обзору</value></data>
+  <data name="BuildingList_Search" xml:space="preserve"><value>Поиск по названию здания</value></data>
+  <data name="BuildingList_Category" xml:space="preserve"><value>Категория здания</value></data>
+  <data name="BuildingList_OutsideFilter" xml:space="preserve"><value>Выбранное здание не соответствует текущему фильтру.</value></data>
+  <data name="BuildingList_Clear" xml:space="preserve"><value>Сбросить фильтры</value></data>
+  <data name="BuildingList_All" xml:space="preserve"><value>Все</value></data>
+  <data name="BuildingList_Unnamed" xml:space="preserve"><value>Здание без названия</value></data>
+  <data name="BuildingList_Empty" xml:space="preserve"><value>Подходящие здания не найдены</value></data>
+  <data name="BuildingList_Count" xml:space="preserve"><value>Показано {0:N0} / {1:N0} зданий (комплексы объединены)</value></data>
+  <data name="BuildingList_Members" xml:space="preserve"><value>Пристроенные здания</value></data>
+  <data name="BuildingList_OpenButton.Content" xml:space="preserve"><value>Список зданий</value></data>
+  <data name="BuildingList_Sort" xml:space="preserve"><value>Сортировка</value></data>
+  <data name="BuildingList_NameAsc" xml:space="preserve"><value>Название: по возрастанию</value></data>
+  <data name="BuildingList_NameDesc" xml:space="preserve"><value>Название: по убыванию</value></data>
+  <data name="BuildingList_CategoryAsc" xml:space="preserve"><value>Категория: по возрастанию</value></data>
+  <data name="BuildingList_CategoryDesc" xml:space="preserve"><value>Категория: по убыванию</value></data>
+  <data name="BuildingList_IdAsc" xml:space="preserve"><value>ID: по возрастанию</value></data>
+  <data name="BuildingList_IdDesc" xml:space="preserve"><value>ID: по убыванию</value></data>
+  <data name="BuildingList_Details" xml:space="preserve"><value>Сведения о здании</value></data>
+  <data name="BuildingList_DetailHint" xml:space="preserve"><value>Выберите здание для просмотра сведений.</value></data>
+  <data name="ThemeEditor_CurrentUnreadable" xml:space="preserve"><value>Не удалось прочитать текущую тему. Выберите другую тему. Исходные файлы сохранены.</value></data>
+  <data name="BuildingList_GameNames" xml:space="preserve"><value>Использовать названия из игры</value></data>
+  <data name="BuildingList_NameHint" xml:space="preserve"><value>Названия соответствуют настройке карты. Пользовательские названия сохраняются.</value></data>
+  <data name="BuildingList_Name" xml:space="preserve"><value>Название здания</value></data>
+  <data name="BuildingList_Id" xml:space="preserve"><value>ID</value></data>
+  <data name="BuildingList_Info" xml:space="preserve"><value>Информация о здании</value></data>
+  <data name="BuildingList_NameSource" xml:space="preserve"><value>Источник названия</value></data>
+  <data name="BuildingList_CustomName" xml:space="preserve"><value>Задано игроком</value></data>
+  <data name="BuildingList_OfficialName" xml:space="preserve"><value>Официальная категория игры</value></data>
+  <data name="BuildingList_NoName" xml:space="preserve"><value>Название отсутствует</value></data>
+  <data name="BuildingList_GameCategory" xml:space="preserve"><value>Категория игры</value></data>
+  <data name="BuildingList_Height" xml:space="preserve"><value>Высота здания</value></data>
+  <data name="BuildingList_Group" xml:space="preserve"><value>Группа зданий</value></data>
+  <data name="BuildingList_GroupCount" xml:space="preserve"><value>Зданий: {0} (включая главное)</value></data>
+  <data name="BuildingList_GameName" xml:space="preserve"><value>Название из игры</value></data>
+  <data name="ThemeUpdate_Title" xml:space="preserve"><value>Обновление предустановки</value></data>
+  <data name="ThemeUpdate_Intro" xml:space="preserve"><value>Эти изменения предустановки можно применить к «{0}».</value></data>
+  <data name="ThemeUpdate_Archived" xml:space="preserve"><value>Перед применением будет создана резервная копия текущей темы.</value></data>
+  <data name="ThemeUpdate_Continue" xml:space="preserve"><value>Применить обновление</value></data>
+  <data name="ThemeUpdate_UsePrevious" xml:space="preserve"><value>Сохранить текущие</value></data>
+  <data name="ThemeUpdate_Conflict" xml:space="preserve"><value>Это изменение заменит вашу настройку.</value></data>
+  <data name="ThemeUpdate_ColorRamp" xml:space="preserve"><value>Цвета высот</value></data>
+  <data name="ThemeUpdate_Unset" xml:space="preserve"><value>Не задано</value></data>
+  <data name="ThemeUpdate_On" xml:space="preserve"><value>Вкл.</value></data>
+  <data name="ThemeUpdate_Off" xml:space="preserve"><value>Выкл.</value></data>
+  <data name="ThemeUpdate_Custom" xml:space="preserve"><value>Свои настройки</value></data>
+  <data name="SatelliteGuidance_Title" xml:space="preserve"><value>Рекомендации для спутниковой карты</value></data>
+  <data name="SatelliteGuidance_Body" xml:space="preserve"><value>Тема «Спутник: тёплые тона» выделяет дороги, значки и текст.</value></data>
+  <data name="SatelliteGuidance_Apply" xml:space="preserve"><value>Применить рекомендации</value></data>
+  <data name="SatelliteGuidance_Keep" xml:space="preserve"><value>Сохранить текущие настройки</value></data>
+  <data name="SatelliteGuidance_Unavailable" xml:space="preserve"><value>На этой карте нет спутниковых снимков</value></data>
+  <data name="SatelliteGuidance_EnableTitle" xml:space="preserve"><value>Рекомендуется включить</value></data>
+  <data name="SatelliteGuidance_EnableLayers" xml:space="preserve"><value>Дороги, значки, текст</value></data>
+  <data name="SatelliteGuidance_OptionalTitle" xml:space="preserve"><value>По желанию</value></data>
+  <data name="SatelliteGuidance_OptionalLayers" xml:space="preserve"><value>Железные дороги, общественный транспорт, дорожная обстановка</value></data>
+  <data name="SatelliteGuidance_DisableTitle" xml:space="preserve"><value>Рекомендуется выключить</value></data>
+  <data name="SatelliteGuidance_DisableLayers" xml:space="preserve"><value>Здания, рельеф, воду и другие перекрывающие слои</value></data>
+  <data name="SatelliteGuidance_Preserve" xml:space="preserve"><value>Текущий выбор сохраняется</value></data>
+  <data name="SatelliteGuidance_Details" xml:space="preserve"><value>Подробности изменений</value></data>
+  <data name="SatelliteGuidance_DetailBody" xml:space="preserve"><value>Здания, рельеф, вода, застроенные территории, землепользование, области POI и объекты PO могут закрывать спутниковый снимок и не рекомендуются. При применении рекомендаций эти слои отключаются.</value></data>
+  <data name="Preview_Compatibility.Content" xml:space="preserve"><value>Совместимый просмотр</value></data>
+  <data name="Preview_CompatibilityNotice.Text" xml:space="preserve"><value>Режим совместимости: просмотр изображения; часть функций недоступна.</value></data>
+  <data name="Preview_Interactive.Content" xml:space="preserve"><value>Вернуться к интерактивному просмотру</value></data>
+  <data name="Preview_ImageUpdating.Text" xml:space="preserve"><value>Обновление просмотра</value></data>
+  <data name="Preview_ImageFailed" xml:space="preserve"><value>Ошибка просмотра изображения:</value></data>
+  <data name="Preview_BrowserOpenFailed" xml:space="preserve"><value>Не удалось открыть браузер. HTML-файл доступен по указанному ниже пути.</value></data>
+  <data name="Preview_OpenFolder" xml:space="preserve"><value>Открыть папку</value></data>
+  <data name="Workspace_Immersive" xml:space="preserve"><value>Погружение</value></data>
+  <data name="Workspace_ExitImmersive" xml:space="preserve"><value>Выйти из режима погружения</value></data>
+  <data name="Workspace_ImmersiveHint" xml:space="preserve"><value>Скрыть панели, чтобы освободить место для маршрутов и карты.</value></data>
+  <data name="Workspace_TryImmersive" xml:space="preserve"><value>Попробовать режим погружения</value></data>
+  <data name="Workspace_MoreActions" xml:space="preserve"><value>Другие действия с картой</value></data>
+  <data name="Artwork_Enter" xml:space="preserve"><value>Создать черновик карты…</value></data>
+  <data name="Artwork_Export" xml:space="preserve"><value>Экспортировать композицию</value></data>
+  <data name="Artwork_PreviewRequired" xml:space="preserve"><value>Сначала откройте предпросмотр города.</value></data>
+  <data name="Artwork_OutputSize" xml:space="preserve"><value>Длинная сторона (пиксели)</value></data>
+  <data name="Artwork_Cancel" xml:space="preserve"><value>Отмена</value></data>
+  <data name="CityEditor_Title" xml:space="preserve"><value>Редактор карты</value></data>
+  <data name="CityEditor_Theme" xml:space="preserve"><value>Тема</value></data>
+  <data name="CityEditor_SaveAs" xml:space="preserve"><value>Сохранить тему как</value></data>
+  <data name="CityEditor_Manage" xml:space="preserve"><value>Управление темами</value></data>
+  <data name="CityEditor_Selection" xml:space="preserve"><value>Выделение на карте</value></data>
+  <data name="CityEditor_Select" xml:space="preserve"><value>Выбрать</value></data>
+  <data name="CityEditor_PickStyle" xml:space="preserve"><value>Взять образец стиля</value></data>
+  <data name="CityEditor_Pan" xml:space="preserve"><value>Перемещение</value></data>
+  <data name="CityEditor_Clear" xml:space="preserve"><value>Снять выделение</value></data>
+  <data name="CityEditor_Edit" xml:space="preserve"><value>Редактировать</value></data>
+  <data name="CityEditor_Undo" xml:space="preserve"><value>Отменить</value></data>
+  <data name="CityEditor_Redo" xml:space="preserve"><value>Повторить</value></data>
+  <data name="CityEditor_View" xml:space="preserve"><value>Вид</value></data>
+  <data name="CityEditor_Fit" xml:space="preserve"><value>Вписать карту в окно</value></data>
+  <data name="CityEditor_Actual" xml:space="preserve"><value>100%</value></data>
+  <data name="CityEditor_Output" xml:space="preserve"><value>Сохранение и вывод</value></data>
+  <data name="CityEditor_Save" xml:space="preserve"><value>Сохранить тему</value></data>
+  <data name="CityEditor_Export" xml:space="preserve"><value>Экспортировать в PNG</value></data>
+  <data name="CityEditor_Close" xml:space="preserve"><value>Закрыть</value></data>
+  <data name="CityEditor_Leave" xml:space="preserve"><value>Выйти из редактора</value></data>
+  <data name="CityEditor_Range" xml:space="preserve"><value>Область карты</value></data>
+  <data name="CityEditor_WholeCity" xml:space="preserve"><value>Весь город</value></data>
+  <data name="CityEditor_SelectedRange" xml:space="preserve"><value>Выбранная область</value></data>
+  <data name="CityEditor_Preset" xml:space="preserve"><value>Предустановка холста</value></data>
+  <data name="CityEditor_Create" xml:space="preserve"><value>Создать черновик карты города</value></data>
+  <data name="CityEditor_InvalidSize" xml:space="preserve"><value>Длина большей стороны холста должна быть целым числом от 1 до 32768 пикселей.</value></data>
+  <data name="CityEditor_CanvasPixels" xml:space="preserve"><value>Длинная сторона холста (пиксели)</value></data>
+  <data name="CityEditor_Rotation" xml:space="preserve"><value>Поворот при экспорте</value></data>
+  <data name="CityEditor_Styles" xml:space="preserve"><value>Стили</value></data>
+  <data name="CityEditor_Draft" xml:space="preserve"><value>Черновик</value></data>
+  <data name="CityEditor_ApplyCanvas" xml:space="preserve"><value>Применить настройки холста</value></data>
+  <data name="CityEditor_SelectRange" xml:space="preserve"><value>Выбрать область карты</value></data>
+  <data name="CityEditor_UseSelection" xml:space="preserve"><value>Использовать выбранную область</value></data>
+  <data name="CityEditor_UseWholeCity" xml:space="preserve"><value>Использовать весь город</value></data>
+  <data name="CityEditor_NoSelection" xml:space="preserve"><value>Сначала выберите допустимую область карты.</value></data>
+  <data name="CityEditor_RangeHelp" xml:space="preserve"><value>Выделите область и примените её. Смена области также применяет параметры холста и пересчитывает размещение. Масштабирование меняет только вид.</value></data>
+  <data name="CityEditor_ObjectFacts" xml:space="preserve"><value>Сведения о выбранном объекте</value></data>
+  <data name="CityEditor_Scope" xml:space="preserve"><value>Стиль темы применяется ко всей категории. Подсветка указывает на выбранный объект.</value></data>
+  <data name="CityEditor_Unsaved" xml:space="preserve"><value>Несохранённые изменения темы</value></data>
+  <data name="CityEditor_Saved" xml:space="preserve"><value>Тема сохранена</value></data>
+  <data name="CityEditor_Updating" xml:space="preserve"><value>Обновление черновика</value></data>
+  <data name="CityEditor_ExportScale" xml:space="preserve"><value>Пропорциональное масштабирование только для этого экспорта:</value></data>
+  <data name="ThemeEditor_AllRoads" xml:space="preserve"><value>Настройки всех дорог</value></data>
+  <data name="ThemeEditor_ThemeSwitchUnavailable" xml:space="preserve"><value>Не удалось загрузить выбранную тему. Обновите модуль визуализации и повторите попытку.</value></data>
+  <data name="ThemeEditor_ExternalThemeChanged" xml:space="preserve"><value>Тема изменена другой операцией. Откройте редактор тем заново.</value></data>
+  <data name="CityEditor_ContentScope" xml:space="preserve"><value>Настройки содержимого и видимости сохраняются отдельно от темы и вступают в силу сразу.</value></data>
+  <data name="CityEditor_CreateIntro" xml:space="preserve"><value>Возьмите за основу текущую карту и настройте её цвета и подписи, чтобы создать собственную карту города.</value></data>
+  <data name="CityEditor_CreateRangeUnselected" xml:space="preserve"><value>Начните со всего города. Чтобы использовать меньшую область, отмените действие и сначала выделите её на карте.</value></data>
+  <data name="CityEditor_CreateRangeHelp" xml:space="preserve"><value>Выберите выделенную область или весь город, чтобы задать охват карты.</value></data>
+  <data name="CityEditor_CreateCanvasTitle" xml:space="preserve"><value>Размер холста</value></data>
+  <data name="CityEditor_CreateCanvasHelp" xml:space="preserve"><value>Для начала подойдёт 4096 пикселей. Для более крупного изображения выберите готовый размер или задайте длину большей стороны. Пропорции карты сохранятся.</value></data>
+  <data name="CityEditor_CreateRotationHelp" xml:space="preserve"><value>Поворачивает карту по часовой стрелке.</value></data>
+  <data name="CityEditor_CreateAdjustLater" xml:space="preserve"><value>Область, размер и угол поворота можно изменить позже на боковой панели черновика.</value></data>
+  <data name="CityEditor_LoadingEnter" xml:space="preserve"><value>Открытие редактора карты</value></data>
+  <data name="CityEditor_LoadingUpdate" xml:space="preserve"><value>Обновление стилей карты</value></data>
+  <data name="CityEditor_LoadingTheme" xml:space="preserve"><value>Чтение темы и настроек холста</value></data>
+  <data name="CityEditor_LoadingBase" xml:space="preserve"><value>Подготовка основы карты и дорожных данных</value></data>
+  <data name="CityEditor_LoadingLayout" xml:space="preserve"><value>Расчёт компоновки черновика</value></data>
+  <data name="CityEditor_LoadingLabels" xml:space="preserve"><value>Размещение подписей карты</value></data>
+  <data name="CityEditor_LoadingIcons" xml:space="preserve"><value>Размещение значков мест</value></data>
+  <data name="CityEditor_LoadingTransport" xml:space="preserve"><value>Размещение маршрутов и станций</value></data>
+  <data name="CityEditor_LoadingDelivery" xml:space="preserve"><value>Передача черновика и подготовка изображений</value></data>
+  <data name="CityEditor_LoadingPresent" xml:space="preserve"><value>Отрисовка карты и ожидание готовности кадра</value></data>
+  <data name="Preview_NotRunningDetail" xml:space="preserve"><value>Просмотрщик работает некорректно. Причиной могут быть настройки среды, нехватка памяти или другие проблемы. Выберите один из вариантов ниже, чтобы продолжить.</value></data>
+  <data name="Preview_Cancel.Content" xml:space="preserve"><value>Отмена</value></data>
+  <data name="CityEditor_CloseupUnavailable" xml:space="preserve"><value>В пределах черновика нет подходящих объектов для показа этого стиля крупным планом.</value></data>
+  <data name="Pixel_Scale" xml:space="preserve"><value>Масштаб элементов (%)</value></data>
+  <data name="Pixel_Actual" xml:space="preserve"><value>Фактический размер: {0} пикс.</value></data>
+  <data name="Pixel_Recommended" xml:space="preserve"><value>Для этого разрешения рекомендуется {0}%</value></data>
+  <data name="Pixel_InvalidScale" xml:space="preserve"><value>Введите конечное число больше нуля.</value></data>
+  <data name="Pixel_Help" xml:space="preserve"><value>При удвоении длинной стороны масштаб элементов также удваивается. Процент для текста, значков и толщины линий можно менять отдельно.</value></data>
+  <data name="RoadCategoryQuay" xml:space="preserve"><value>Набережная</value></data>
+  <data name="CityEditor_ResetCanvas" xml:space="preserve"><value>Сбросить холст</value></data>
+  <data name="CityEditor_ResetCanvasHelp" xml:space="preserve"><value>Перезапускает предпросмотр, сохраняя черновик, изменения темы и положение вида.</value></data>
+  <data name="ThemeUpdate_Review" xml:space="preserve"><value>Проверить обновление</value></data>
+  <data name="ThemeUpdate_None" xml:space="preserve"><value>Нет изменений предустановки для применения.</value></data>
+  <data name="CityEditor_Resolution" xml:space="preserve"><value>Разрешение</value></data>
+  <data name="CityEditor_PresetResolution" xml:space="preserve"><value>Готовое разрешение</value></data>
+  <data name="CityEditor_CustomResolution" xml:space="preserve"><value>Своё разрешение</value></data>
+  <data name="ThemeUpdate_Current" xml:space="preserve"><value>Текущая тема</value></data>
+  <data name="ThemeUpdate_Preset" xml:space="preserve"><value>Новый шаблон</value></data>
+  <data name="CityEditor_PixelWidth" xml:space="preserve"><value>Ширина (пкс)</value></data>
+  <data name="CityEditor_PixelHeight" xml:space="preserve"><value>Высота (пкс)</value></data>
+  <data name="CityEditor_ElementSize" xml:space="preserve"><value>Размер элементов</value></data>
+  <data name="CityEditor_SizeLinked" xml:space="preserve"><value>Сохранять пропорции выбранной области.</value></data>
+  <data name="DraftWelcome_Title" xml:space="preserve"><value>Добро пожаловать в редактор черновиков</value></data>
+  <data name="DraftWelcome_Intro" xml:space="preserve"><value>Сейчас вы изучаете свой город. Когда захотите экспортировать карту, откройте черновик и настройте размер текста и значков, а также ширину дорог в редакторе тем.</value></data>
+  <data name="DraftWelcome_ExploreTitle" xml:space="preserve"><value>Обзор города</value></data>
+  <data name="DraftWelcome_ExploreBody" xml:space="preserve"><value>При приближении появляются новые места, при отдалении детали скрываются. Размер подписей и значков меняется автоматически.</value></data>
+  <data name="DraftWelcome_DraftTitle" xml:space="preserve"><value>Черновик</value></data>
+  <data name="DraftWelcome_DraftBody" xml:space="preserve"><value>Масштаб меняется у всего черновика. Видны те же подписи, а их размер относительно улиц сохраняется.</value></data>
+  <data name="DraftWelcome_Enter" xml:space="preserve"><value>Открыть черновик</value></data>
+  <data name="DraftWelcome_Continue" xml:space="preserve"><value>Продолжить обзор</value></data>
+  <data name="DraftWelcome_Pause" xml:space="preserve"><value>Приостановить показ</value></data>
+  <data name="DraftWelcome_Resume" xml:space="preserve"><value>Продолжить показ</value></data>
+  <data name="DraftWelcome_NextLevel" xml:space="preserve"><value>Следующий масштаб</value></data>
+  <data name="DraftWelcome_Pier" xml:space="preserve"><value>Пирс</value></data>
+  <data name="DraftWelcome_Market" xml:space="preserve"><value>Рынок</value></data>
+  <data name="DraftWelcome_Cafe" xml:space="preserve"><value>Кафе</value></data>
+  <data name="DraftWelcome_Clinic" xml:space="preserve"><value>Клиника</value></data>
+  <data name="DraftWelcome_Station" xml:space="preserve"><value>Станция</value></data>
+  <data name="DraftWelcome_Park" xml:space="preserve"><value>Парк</value></data>
+  <data name="DraftWelcome_Shop" xml:space="preserve"><value>Книги</value></data>
+  <data name="Sidebar_TransitDistance" xml:space="preserve"><value>Длины суммируются по маршрутам. Общие участки учитываются в каждом маршруте.</value></data>
+  <data name="Sidebar_RoadCommit" xml:space="preserve"><value>Переключатели действуют сразу. Числа применяются при выходе из поля.</value></data>
+  <data name="Sidebar_Locate" xml:space="preserve"><value>Выберите, чтобы найти объект этого типа в пределах черновика.</value></data>
+  <data name="ThemeEditor_Edit" xml:space="preserve"><value>Изменить тему</value></data>
+  <data name="ThemeEditor_Delete" xml:space="preserve"><value>Удалить тему</value></data>
+  <data name="ThemeEditor_DeleteConfirm" xml:space="preserve"><value>Удалить «{0}»? Затем будет выбрана тема «{1}».</value></data>
+  <data name="ThemeEditor_ThumbnailFailed" xml:space="preserve"><value>Тема сохранена, но обновить миниатюру не удалось.</value></data>
+  <data name="CityEditor_IconDensity" xml:space="preserve">
+    <value>Плотность значков</value>
+  </data>
+  <data name="ThemeChoice_Title" xml:space="preserve"><value>Выберите редактор тем</value></data>
+  <data name="ThemeChoice_Interactive" xml:space="preserve"><value>Интерактивный редактор тем</value></data>
+  <data name="ThemeChoice_Description" xml:space="preserve"><value>Меняйте настройки темы на черновике карты города, чтобы увидеть, как карта будет выглядеть после экспорта.</value></data>
+  <data name="ThemeChoice_Traditional" xml:space="preserve"><value>Классический редактор тем</value></data>
+  <data name="ThemeChoice_Unavailable" xml:space="preserve"><value>Откройте карту города или общественного транспорта и дождитесь готовности интерактивного предпросмотра.</value></data>
+  <data name="ExportChoice_Title" xml:space="preserve"><value>Выберите способ экспорта</value></data>
+  <data name="ExportChoice_Direct" xml:space="preserve"><value>Экспортировать сразу</value></data>
+  <data name="ExportChoice_DirectHelp" xml:space="preserve"><value>Выберите формат и экспортируйте карту с текущими настройками.</value></data>
+  <data name="ExportChoice_Edit" xml:space="preserve"><value>Редактировать перед экспортом</value></data>
+  <data name="ExportChoice_EditHelp" xml:space="preserve"><value>Настройте карту в черновике, а затем экспортируйте её.</value></data>
+  <data name="Workflow_Remember" xml:space="preserve"><value>Запомнить мой выбор</value></data>
+  <data name="Workflow_Reset" xml:space="preserve"><value>Сбросить выбор редактора тем и способа экспорта</value></data>
+  <data name="Export_DraftSettingsHelp" xml:space="preserve"><value>Чтобы изменить область, поворот, размер элементов или плотность значков и проверить результат, откройте черновик.</value></data>
+  <data name="Export_GoToDraft" xml:space="preserve"><value>К черновику</value></data>
   <data name="MetroSettings_WaterSmoothing" xml:space="preserve"><value>Сглаживание береговой линии</value></data>
   <data name="MetroSettings_WaterSmoothingHelp" xml:space="preserve"><value>Чем выше значение, тем меньше деталей береговой линии и плавнее изгибы. 0 отключает предварительное сглаживание; значение по умолчанию — 8. Узкие реки и острова могут ограничивать применяемую силу.</value></data>
   <data name="RmpEditor_AddTitle" xml:space="preserve"><value>Добавить заголовок</value></data>
@@ -4418,136 +4689,45 @@ Shaotang Shaoxiancao Codex</value>
   <data name="PoiDirect_ImageSearch" xml:space="preserve"><value>Поиск названий изображений или файлов</value></data>
   <data name="PoiDirect_NoImage" xml:space="preserve"><value>Без значка</value></data>
   <data name="PoiDirect_Count" xml:space="preserve"><value>{0} объектов, {1} несохранённых изменений</value></data>
-<data name="Poi_Area" xml:space="preserve"><value>Функциональные зоны</value></data>
-  <data name="Poi_AreaIcons" xml:space="preserve"><value>Значки функциональных зон</value></data>
-  <data name="Poi_AreaNames" xml:space="preserve"><value>Названия функциональных зон</value></data>
-  <data name="Poi_AreaDescription" xml:space="preserve"><value>Функциональные зоны и названия, экспортированные из игры.</value></data>
-  <data name="Poi_PngInternalBuildings" xml:space="preserve"><value>Показывать значки зданий внутри зон в PNG</value></data>
-  <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
-    <value>Игра ещё запущена и может занимать много памяти. Рекомендуется сохранить город и выйти из игры перед экспортом. Также можно продолжить.</value>
-  </data>
-  <data name="ExportWindow_BeforeExportNotice" xml:space="preserve">
-    <value>Перед экспортом рекомендуется сохранить город, выйти из игры и закрыть другие программы, использующие много памяти. Чем больше размер экспорта, тем больше памяти требуется.</value>
-  </data>
-  <data name="Poi_AreaMerge" xml:space="preserve">
-    <value>Подписи соседних областей (CS2)</value>
-  </data>
-  <data name="Poi_AreaMergeDescription" xml:space="preserve">
-    <value>Близкие области CS2 одного исходного типа с одинаковым названием используют общую подпись. Их границы остаются отдельными.</value>
-  </data>
-  <data name="Map_RotateCounterclockwise" xml:space="preserve">
-    <value>90° против часовой стрелки</value>
-  </data>
-  <data name="Map_RotateClockwise" xml:space="preserve">
-    <value>90° по часовой стрелке</value>
-  </data>
-  <data name="Failure_Internal" xml:space="preserve"><value>An unexpected error occurred. You can report this error to the author.</value></data>
-  <data name="Failure_Operation" xml:space="preserve"><value>Operation failed</value></data>
-  <data name="Failure_Metro" xml:space="preserve"><value>Metro map generation failed</value></data>
-  <data name="Failure_Export" xml:space="preserve"><value>Map export failed</value></data>
-  <data name="Failure_Permission" xml:space="preserve"><value>A required file could not be accessed. Check file or folder permissions and try again.</value></data>
-  <data name="Failure_MissingFile" xml:space="preserve"><value>A required file was not found. Check its location and try again.</value></data>
-  <data name="Failure_Memory" xml:space="preserve"><value>Memory allocation failed. Reduce the output size or close memory-intensive applications and try again.</value></data>
-  <data name="Failure_EngineStopped" xml:space="preserve"><value>The rendering engine has stopped. Reopen the viewer and try again.</value></data>
-  <data name="Failure_ViewDetails" xml:space="preserve"><value>View details</value></data>
-  <data name="Failure_CopyDetails" xml:space="preserve"><value>Copy error details</value></data>
-  <data name="Failure_Close" xml:space="preserve"><value>Close</value></data>
-  <data name="Failure_Copied" xml:space="preserve"><value>Copied</value></data>
-  <data name="Failure_CopyFailed" xml:space="preserve"><value>Copy failed. Please try again.</value></data>
-  <data name="Ribbon_MoreLayers" xml:space="preserve"><value>Другие слои</value></data>
-  <data name="Ribbon_Simplified" xml:space="preserve"><value>Упрощённая</value></data>
-  <data name="Ribbon_Classic" xml:space="preserve"><value>Классическая</value></data>
-  <data name="Sidebar_ShowSettings" xml:space="preserve"><value>Показать левую панель</value></data>
-  <data name="Sidebar_HideSettings" xml:space="preserve"><value>Скрыть левую панель</value></data>
-  <data name="Sidebar_ShowInspector" xml:space="preserve"><value>Показать правую панель</value></data>
-  <data name="Sidebar_HideInspector" xml:space="preserve"><value>Скрыть правую панель</value></data>
-  <data name="Ribbon_IntroTitle" xml:space="preserve"><value>Попробуйте новый упрощённый режим</value></data>
-  <data name="Ribbon_IntroDescription" xml:space="preserve"><value>Упрощённый режим делает просмотр карты удобнее и проще. Вы можете вернуться к классическому режиму в любое время.</value></data>
-  <data name="Ribbon_IntroTry" xml:space="preserve"><value>Попробовать упрощённый режим</value></data>
-  <data name="Ribbon_IntroLater" xml:space="preserve"><value>Не сейчас</value></data>
-  <data name="RmpEditor_showNames" xml:space="preserve"><value>Show station names</value></data>
-  <data name="RmpEditor_showDefaultNames" xml:space="preserve"><value>Show default station names</value></data>
-  <data name="Poi_ShowDecorative" xml:space="preserve"><value>Показывать декоративные POI</value></data>
-  <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>Показывать значки и названия декораций из списка. Здания и объекты карты остаются видимыми.</value></data>
-  <data name="MetroSettings_Reset" xml:space="preserve"><value>Восстановить по умолчанию</value></data>
   <data name="BuildingCategory_Help" xml:space="preserve"><value>Выберите «Цвета категорий», чтобы применить настройки. Включите «Задать цвет» для всех зданий категории; выключите, чтобы восстановить автоматические цвета POI. Неизвестные назначения остаются без категории.</value></data>
-  <data name="BuildingList_NoName" xml:space="preserve"><value>Название отсутствует</value></data>
-  <data name="ThemeEditor_New" xml:space="preserve"><value>Новая тема</value></data>
-  <data name="BuildingList_OfficialName" xml:space="preserve"><value>Официальная категория игры</value></data>
-  <data name="ThemeEditor_Name" xml:space="preserve"><value>Название темы</value></data>
-  <data name="BuildingList_Search" xml:space="preserve"><value>Поиск по названию здания</value></data>
-  <data name="Preview_AutoStart" xml:space="preserve"><value>Загружать встроенный предпросмотр при запуске</value></data>
-  <data name="BuildingList_DetailHint" xml:space="preserve"><value>Выберите здание для просмотра сведений.</value></data>
-  <data name="BuildingList_Height" xml:space="preserve"><value>Высота здания</value></data>
-  <data name="BuildingList_Open" xml:space="preserve"><value>Список зданий</value></data>
-  <data name="BuildingList_Name" xml:space="preserve"><value>Название здания</value></data>
-  <data name="Preview_Continue.Content" xml:space="preserve"><value>Продолжить ожидание</value></data>
-  <data name="ThemeUpdate_Intro" xml:space="preserve"><value>«{0}» включает обновление предустановки.</value></data>
-  <data name="BuildingList_Id" xml:space="preserve"><value>ID</value></data>
-  <data name="ThemeUpdate_Off" xml:space="preserve"><value>Выкл.</value></data>
-  <data name="BuildingList_CategoryDesc" xml:space="preserve"><value>Категория: по убыванию</value></data>
-  <data name="ThemeEditor_Unsaved" xml:space="preserve"><value>Не сохранено</value></data>
-  <data name="BuildingList_IdDesc" xml:space="preserve"><value>ID: по убыванию</value></data>
-  <data name="ThemeEditor_MigrationWarning" xml:space="preserve"><value>Не удалось прочитать некоторые старые темы. Исходные файлы сохранены в резервной копии:</value></data>
-  <data name="ThemeEditor_Select" xml:space="preserve"><value>Выбрать тему</value></data>
-  <data name="ThemeEditor_Copy" xml:space="preserve"><value>Дублировать тему</value></data>
-  <data name="BuildingList_Info" xml:space="preserve"><value>Информация о здании</value></data>
-  <data name="BuildingList_Unnamed" xml:space="preserve"><value>Здание без названия</value></data>
-  <data name="BuildingList_CustomName" xml:space="preserve"><value>Задано игроком</value></data>
-  <data name="ThemeEditor_Cancel" xml:space="preserve"><value>Отмена</value></data>
-  <data name="ThemeUpdate_Continue" xml:space="preserve"><value>Продолжить</value></data>
-  <data name="BuildingList_NameSource" xml:space="preserve"><value>Источник названия</value></data>
-  <data name="BuildingList_Details" xml:space="preserve"><value>Сведения о здании</value></data>
-  <data name="ThemeUpdate_UsePrevious" xml:space="preserve"><value>Прежняя тема</value></data>
-  <data name="ThemeUpdate_Archived" xml:space="preserve"><value>Прежняя тема сохранена. Её можно выбрать в списке тем.</value></data>
-  <data name="BuildingList_All" xml:space="preserve"><value>Все</value></data>
-  <data name="ThemeEditor_Exported" xml:space="preserve"><value>Тема экспортирована</value></data>
-  <data name="BuildingList_Empty" xml:space="preserve"><value>Подходящие здания не найдены</value></data>
-  <data name="ThemeUpdate_Kept" xml:space="preserve"><value>Ваши изменения сохранены</value></data>
-  <data name="BuildingList_Count" xml:space="preserve"><value>Показано {0:N0} / {1:N0} зданий (комплексы объединены)</value></data>
-  <data name="BuildingList_Back" xml:space="preserve"><value>Назад к обзору</value></data>
-  <data name="Preview_DataAvailable" xml:space="preserve"><value>Данные карты загружены. Можно выбрать тему и экспортировать карту.</value></data>
-  <data name="ThemeEditor_Personal" xml:space="preserve"><value>Мои темы</value></data>
-  <data name="ThemeUpdate_ColorRamp" xml:space="preserve"><value>Цвета высот</value></data>
-  <data name="ThemeEditor_Export" xml:space="preserve"><value>Экспорт темы…</value></data>
-  <data name="ThemeEditor_Import" xml:space="preserve"><value>Импорт темы…</value></data>
-  <data name="BuildingList_OutsideFilter" xml:space="preserve"><value>Выбранное здание не соответствует текущему фильтру.</value></data>
-  <data name="ThemeEditor_Base" xml:space="preserve"><value>Базовая предустановка</value></data>
-  <data name="BuildingList_NameAsc" xml:space="preserve"><value>Название: по возрастанию</value></data>
-  <data name="BuildingList_GroupCount" xml:space="preserve"><value>Зданий: {0} (включая главное)</value></data>
-  <data name="ThemeEditor_CurrentUnreadable" xml:space="preserve"><value>Не удалось прочитать текущую тему. Выберите другую тему. Исходные файлы сохранены.</value></data>
-  <data name="Preview_OpenFailed" xml:space="preserve"><value>HTML сохранён, но не удалось открыть его в браузере. Откройте файл вручную в папке вывода.</value></data>
-  <data name="ThemeEditor_Rename" xml:space="preserve"><value>Переименовать</value></data>
-  <data name="Preview_OpenMap" xml:space="preserve"><value>Откройте файл карты, чтобы выбрать тему и экспортировать карту.</value></data>
-  <data name="Preview_Slow" xml:space="preserve"><value>Предпросмотр загружается дольше обычного</value></data>
-  <data name="ThemeUpdate_AllChanges" xml:space="preserve"><value>Все изменения</value></data>
-  <data name="ThemeEditor_Builtins" xml:space="preserve"><value>Встроенные темы</value></data>
-  <data name="BuildingList_OpenButton.Content" xml:space="preserve"><value>Список зданий</value></data>
-  <data name="ThemeUpdate_Custom" xml:space="preserve"><value>Свои настройки</value></data>
-  <data name="BuildingList_GameCategory" xml:space="preserve"><value>Категория игры</value></data>
-  <data name="Preview_Retry.Content" xml:space="preserve"><value>Перезагрузить предпросмотр</value></data>
-  <data name="BuildingList_Members" xml:space="preserve"><value>Пристроенные здания</value></data>
-  <data name="BuildingList_NameDesc" xml:space="preserve"><value>Название: по убыванию</value></data>
-  <data name="BuildingList_IdAsc" xml:space="preserve"><value>ID: по возрастанию</value></data>
-  <data name="BuildingList_Group" xml:space="preserve"><value>Группа зданий</value></data>
-  <data name="ThemeEditor_Save" xml:space="preserve"><value>Сохранить</value></data>
-  <data name="ThemeUpdate_On" xml:space="preserve"><value>Вкл.</value></data>
-  <data name="BuildingList_GameName" xml:space="preserve"><value>Название из игры</value></data>
-  <data name="ThemeUpdate_Conflict" xml:space="preserve"><value>Вы тоже изменили этот параметр. Применено новое значение предустановки.</value></data>
-  <data name="Preview_Html.Content" xml:space="preserve"><value>Открыть в браузере</value></data>
-  <data name="ThemeEditor_InvalidName" xml:space="preserve"><value>Используйте от 1 до 64 символов без управляющих символов.</value></data>
-  <data name="Preview_Stopped" xml:space="preserve"><value>Встроенный предпросмотр остановлен</value></data>
-  <data name="ThemeUpdate_MoreKept" xml:space="preserve"><value>Сохранено ещё {0} изменений</value></data>
-  <data name="BuildingList_GameNames" xml:space="preserve"><value>Использовать названия из игры</value></data>
-  <data name="Preview_Png.Content" xml:space="preserve"><value>Экспорт PNG (2048 пикс.)</value></data>
-  <data name="BuildingList_CategoryAsc" xml:space="preserve"><value>Категория: по возрастанию</value></data>
-  <data name="BuildingList_Category" xml:space="preserve"><value>Категория здания</value></data>
-  <data name="ThemeUpdate_Unset" xml:space="preserve"><value>Не задано</value></data>
-  <data name="Preview_Failed" xml:space="preserve"><value>Не удалось загрузить предпросмотр</value></data>
-  <data name="ThemeUpdate_Title" xml:space="preserve"><value>Тема обновлена</value></data>
-  <data name="BuildingList_Sort" xml:space="preserve"><value>Сортировка</value></data>
-  <data name="BuildingList_NameHint" xml:space="preserve"><value>Названия соответствуют настройке карты. Пользовательские названия сохраняются.</value></data>
-  <data name="BuildingList_Clear" xml:space="preserve"><value>Сбросить фильтры</value></data>
   <data name="Satellite_LayerTitle" xml:space="preserve"><value>Спутниковый снимок</value></data>
   <data name="Satellite_Composing" xml:space="preserve"><value>Создание спутникового снимка…</value></data>
+  <data name="PreviewQuality_Title" xml:space="preserve"><value>Качество предпросмотра</value></data>
+  <data name="PreviewQuality_Preset" xml:space="preserve"><value>Качество предпросмотра</value></data>
+  <data name="PreviewQuality_Smooth" xml:space="preserve"><value>Плавно</value></data>
+  <data name="PreviewQuality_Standard" xml:space="preserve"><value>Стандартно</value></data>
+  <data name="PreviewQuality_Fine" xml:space="preserve"><value>Детально</value></data>
+  <data name="PreviewQuality_Custom" xml:space="preserve"><value>Пользовательский</value></data>
+  <data name="PreviewQuality_Open" xml:space="preserve"><value>Настройки качества…</value></data>
+  <data name="PreviewQuality_Clarity" xml:space="preserve"><value>Чёткость</value></data>
+  <data name="PreviewQuality_ClarityHelp" xml:space="preserve"><value>Разрешение отображения карты. При повышении разрешения изображение становится чётче, но требуется больше вычислительных ресурсов.</value></data>
+  <data name="PreviewQuality_Scale75" xml:space="preserve"><value>Плавно</value></data>
+  <data name="PreviewQuality_Scale100" xml:space="preserve"><value>Стандартно</value></data>
+  <data name="PreviewQuality_Scale125" xml:space="preserve"><value>Детально</value></data>
+  <data name="PreviewQuality_Lines" xml:space="preserve"><value>Дороги</value></data>
+  <data name="PreviewQuality_LinesHelp" xml:space="preserve"><value>Высокая детализация делает линии и стыки дорог плавнее, но требует значительно больше ресурсов. Низкая повышает производительность, однако возможны искажения дорог и заметные швы.</value></data>
+  <data name="PreviewQuality_LinesStandard" xml:space="preserve"><value>Стандартно</value></data>
+  <data name="PreviewQuality_LinesFine" xml:space="preserve"><value>Детально</value></data>
+  <data name="PreviewQuality_Polygons" xml:space="preserve"><value>Здания</value></data>
+  <data name="PreviewQuality_PolygonsHelp" xml:space="preserve"><value>Уровень детализации определяет плотность отображения зданий. При низкой детализации некоторые небольшие здания могут быть скрыты.</value></data>
+  <data name="PreviewQuality_PolygonsStandard" xml:space="preserve"><value>Стандартно</value></data>
+  <data name="PreviewQuality_PolygonsFine" xml:space="preserve"><value>Детально</value></data>
+  <data name="PreviewQuality_Details" xml:space="preserve"><value>Настроить по отдельности</value></data>
+  <data name="PreviewQuality_Samples" xml:space="preserve"><value>Сравнить</value></data>
+  <data name="PreviewQuality_Scope" xml:space="preserve"><value>Настройки действуют только для предпросмотра и не влияют на экспорт.</value></data>
+  <data name="PreviewQuality_Apply" xml:space="preserve"><value>Применить</value></data>
+  <data name="PreviewQuality_Applied" xml:space="preserve"><value>Применено</value></data>
+  <data name="PreviewQuality_Saved" xml:space="preserve"><value>Сохранено</value></data>
+  <data name="PreviewQuality_Busy" xml:space="preserve"><value>Дождитесь завершения текущей операции предпросмотра, затем примените настройки качества.</value></data>
+  <data name="PreviewQuality_Restarted" xml:space="preserve"><value>Предпросмотр остановлен. После его перезапуска примените настройки качества ещё раз.</value></data>
+  <data name="PreviewQuality_ExportHint" xml:space="preserve"><value>Выберите качество HTML в настройках экспорта.</value></data>
+  <data name="PreviewQuality_Current" xml:space="preserve"><value>Текущий выбор</value></data>
+  <data name="Export_HtmlQuality" xml:space="preserve"><value>Качество HTML</value></data>
+  <data name="TransitLabelStyle_Label" xml:space="preserve"><value>Стиль подписи</value></data>
+  <data name="TransitLabelStyle_Classic" xml:space="preserve"><value>Исходная капсула</value></data>
+  <data name="TransitLabelStyle_SideSign" xml:space="preserve"><value>Цветная полоса сбоку</value></data>
+  <data name="TransitLabelStyle_SplitSign" xml:space="preserve"><value>Табличка с отдельным полем для значка</value></data>
+  <data name="TransitLabelStyle_SolidSign" xml:space="preserve"><value>Компактная цветная плашка</value></data>
+  <data name="TransitLabelStyle_FrameSign" xml:space="preserve"><value>Табличка с тонкой рамкой</value></data>
+  <data name="TransitLabelStyle_UnderlineSign" xml:space="preserve"><value>Цветная полоса снизу</value></data>
 </root>

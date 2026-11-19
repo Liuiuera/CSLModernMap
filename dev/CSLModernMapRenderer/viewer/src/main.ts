@@ -1,27 +1,48 @@
 // 初始化 MapLibre 预览器并处理地图交互命令。
 import { i18n, setLanguage } from './i18n';
-import * as maplibregl from 'maplibre-gl';
-import { type ExpressionSpecification, type Map as MapLibreMap, type Marker } from 'maplibre-gl';
+import maplibregl, { type ExpressionSpecification, type Map as MapLibreMap, type Marker } from 'maplibre-gl';
+import {clipLine} from 'maplibre-gl/src/symbol/clip_line';
 import './style.css';
+import {candidate_points, group_candidates, obstacle_score, placement_reason, rank_candidates,
+  type Point, type Box, type Candidate, type Placed} from './transit-badge-layout.js';
+import { PreviewPerformance } from './performance';
 import {stationAnchors, stationFacilityOffset, stationIconOffset} from './poi-anchors';
 import { setUiAppearance } from './ui-appearance';
 import { SurfaceDistanceLayer, type SurfaceDistanceSpec } from './surface-distance-layer';
+import { AreaSurfaceLayer } from './area-surface-layer';
 import { NavigationControl } from './routing/ui';
 import { Preview3D, BUILDINGS_3D, CAMERA_TRANSITION_MS } from './preview-3d';
 import { PreviewControls } from './preview-controls';
+import {ArtworkView, type ArtworkDelivery, type ArtworkTool, type ArtworkObserveAction, type ArtworkPick} from './artwork-view';
 import { trafficColor as trafficColorExpression } from './traffic-paint';
+import {applyPreviewQuality, DEFAULT_PREVIEW_QUALITY, htmlPreviewQuality, previewTolerance, readPreviewQuality,
+  type PreviewQuality} from './preview-quality';
 import type { Edge, Endpoint, NavigationPackage } from './routing/types';
 
 // 单文件导出模式：整份场景（manifest + sources + 图片）已内联在
 // window.__CSL_SCENE__ 中，worker 源码由 __CSL_SCENE_WORKER_SRC__ 提供。
+const QUALITY_SAMPLE = new URLSearchParams(window.location.search).has('qualitySample');
+if (QUALITY_SAMPLE) {
+  const read = async (path: string) => {
+    const response = await fetch(new URL(path, window.location.href));
+    if (!response.ok) throw new Error(`Quality sample: HTTP ${response.status}`);
+    return response;
+  };
+  const [scene, worker] = await Promise.all([
+    read('./assets/preview-quality-sample.json').then(response => response.json()),
+    read('./assets/maplibre-gl-csp-worker.js').then(response => response.text()),
+  ]);
+  window.__CSL_SCENE__ = scene;
+  window.__CSL_SCENE_WORKER_SRC__ = worker;
+  document.body.classList.add('quality-sample');
+}
 const EMBEDDED = !!(globalThis as any).__CSL_SCENE__;
 void setLanguage(document.documentElement.lang || 'zh-CN');
 if (EMBEDDED) {
   try {
     const workerSource = String((globalThis as any).__CSL_SCENE_WORKER_SRC__ ?? '');
-    // MapLibre 6 按 .cjs 后缀选择经典 Worker，供 file:// 离线页面使用。
     maplibregl.setWorkerUrl(URL.createObjectURL(
-      new Blob([workerSource], { type: 'text/javascript' })) + '#maplibre-gl-worker.cjs');
+      new Blob([workerSource], { type: 'text/javascript' })));
   } catch (error) {
     throw new Error(i18n.t("main_ui_2bce5cc92a"), { cause: error });
   }
@@ -29,11 +50,11 @@ if (EMBEDDED) {
   maplibregl.setWorkerUrl(new URL('./assets/maplibre-gl-csp-worker.js', window.location.href).href);
 }
 
-type RoadPaint = { fill: string; border: string; minFillPx: number; borderFixedPx: number;
-  borderScale: number; dash?: number[] | null; enabled: boolean };
-type RoadTheme = { background: string; widthScale: number; opacity?: number; levels: Record<string, RoadPaint> };
+type RoadPaint = { fill: string; border: string; lineWidth: number; borderPx: number; dash?: number[] | null; enabled: boolean };
+type RoadTheme = { background: string; sizeContract: 'pixel-v2'; opacity?: number; levels: Record<string, RoadPaint> };
 type FullTheme = Record<string, any> & { road: RoadTheme };
-type SceneManifest = { schemaVersion: number; sceneId: string; revision: number;
+type SceneManifest = { performanceDiagnostics?: boolean; schemaVersion: number; sceneId: string; revision: number;
+  htmlQuality?: string;
   roadOrder?: {flatGroups?: unknown[]};
   world: { bounds?: [number, number, number, number]; geoBounds: [[number, number], [number, number]] }; sources: Record<string, string>;
   sourceRevisions: Record<string, number>; poiAtlas: { image: string; index: string };
@@ -49,17 +70,23 @@ type SceneManifest = { schemaVersion: number; sceneId: string; revision: number;
   satelliteCorners?: [number, number][] | null;
   satelliteAvailable?: boolean;
   satelliteSize?: number[];
+  areaSurfaces?: boolean;
   surfaceFields?: {
     builtArea?: SurfaceDistanceSpec & { url: string; color?: string; bufferMeters?: number; edgeMeters?: number };
   };
   layers: Record<string, boolean>; renderStack?: string[]; theme: FullTheme };
 type PreviewCommand = { type: string; sceneId?: string; revision?: number; manifestUrl?: string;
+  artwork?: ArtworkDelivery; documentEpoch?: number; artworkRevision?: number;
+  observation?: {scale?: number; x?: number; y?: number};
+  tool?: ArtworkTool; action?: ArtworkObserveAction;
+  quality?: PreviewQuality; requestId?: string;
   theme?: FullTheme | RoadTheme; layer?: string; visible?: boolean; mode?: string;
   preset?: string; bounds?: [[number, number], [number, number]];
-  options?: Record<string, any>; appearance?: 'light' | 'dark';
+  options?: Record<string, any>; performanceRequestId?: string; appearance?: 'light' | 'dark';
   text?: string; language?: string; rotation?: number; worldBounds?: [number, number, number, number];
   featureId?: string; selection?: any; locate?: boolean; data?: GeoJSON.FeatureCollection;
-  layers?: Record<string, boolean>; enabled?: boolean; guideAvailable?: boolean; pendingLayers?: string[] };
+  layers?: Record<string, boolean>; enabled?: boolean; guideAvailable?: boolean; pendingLayers?: string[];
+  immersive?: boolean };
 // 单文件导出：整份场景内联数据的结构（与 web_export_v2.py 的 payload 对应）
 type EmbeddedPayload = {
   manifest: SceneManifest;
@@ -70,19 +97,19 @@ type EmbeddedPayload = {
     poiAtlasIndex: Record<string, any>;    // 文件名 -> 解析后的 atlas 索引
   };
 };
-declare global { interface Window { cslPreview: { dispatch: (command: PreviewCommand) => Promise<void> };
+type ExportSizing = {viewport: number[]; radius: number; stroke: number; badge_size: number; fill: string; outline: string};
+declare global { interface Window { cslPreview: { dispatch: (command: PreviewCommand) => Promise<void>;
+  artworkState: () => ReturnType<ArtworkView['snapshot']>;
+  exportSizing: () => ExportSizing | null };
   chrome?: { webview?: { postMessage: (message: string) => void;
     addEventListener: (name: string, listener: (event: MessageEvent) => void) => void } };
   webkit?: { messageHandlers?: { cslPreview?: { postMessage: (message: unknown) => void } } };
-  __CSL_SCENE__?: EmbeddedPayload; __CSL_SCENE_WORKER_SRC__?: string } }
+  __CSL_SCENE__?: EmbeddedPayload; __CSL_SCENE_WORKER_SRC__?: string;
+  __CSL_PREVIEW_QUALITY__?: PreviewQuality } }
 
 const MPP0 = 156543.03392804097;
-const WORLD_SIZE_METERS = 17280;
-const REFERENCE_RENDER_PX = 4096;
 const LOCAL_METERS_PER_DEGREE = 111195;
 const WEB_MERCATOR_METERS_PER_DEGREE = 2 * Math.PI * 6378137 / 360;
-const RENDER_SCALE_PER_PPM = WORLD_SIZE_METERS / REFERENCE_RENDER_PX
-  * WEB_MERCATOR_METERS_PER_DEGREE / LOCAL_METERS_PER_DEGREE;
 const status = document.querySelector<HTMLDivElement>('#status')!;
 
 /**
@@ -136,7 +163,8 @@ const sourceIds: Record<string, string> = { roads: 'roads',
   transitViewPois: 'transit-view-pois', labels: 'labels',
   proceduralObjects: 'procedural-objects', inspectorSelection: 'inspector-selection', searchSelection: 'search-selection',
   buildingHighlight: 'building-highlight' };
-const sourceTolerances: Record<string, number> = {roads: 1, labels: 1, railway: 1, buildings: .375, zones: .375};
+let previewQuality = EMBEDDED ? htmlPreviewQuality(window.__CSL_SCENE__!.manifest.htmlQuality ?? 'standard')
+  : readPreviewQuality(window.__CSL_PREVIEW_QUALITY__ ?? DEFAULT_PREVIEW_QUALITY);
 const groups: Record<string, string[]> = {
   satellite: ['satellite'], terrain: ['terrain', 'forest'], built_area: ['built-area', 'built-area-surface'], poi_area: ['poi-area'], land_use: ['land-use'],
   water: ['water-fill', 'water-shore'], building: ['buildings'],
@@ -145,7 +173,7 @@ const groups: Record<string, string[]> = {
       'railway-dash-cablecar', 'railway-dash-monorail', 'railway-dash-train',
       'railway-station'], traffic: ['traffic-base', 'traffic-forward-casing', 'traffic-backward-casing',
       'traffic-forward-fill', 'traffic-backward-fill'],
-  transit: ['tv-line', 'tv-station', 'tv-poi'],
+  transit: ['tv-line', 'tv-station', 'tv-station-interchange', 'tv-poi'],
   metro: ['transit', 'stations'],
   district: ['district-fill', 'district-border'], zone: ['zone-fill', 'zone-border'],
   poi: ['pois', 'transit-pois'], label: ['district-labels', 'zone-labels', 'road-labels'], procedural_objects: ['procedural-objects'], watermark: [] };
@@ -159,15 +187,16 @@ const renderGroups: Record<string, string[]> = {
     'railway-dash-cablecar', 'railway-dash-monorail', 'railway-dash-train',
     'railway-station'], traffic: ['traffic-base', 'traffic-forward-casing', 'traffic-backward-casing',
       'traffic-forward-fill', 'traffic-backward-fill'],
-  procedural_objects: ['procedural-objects'], district: ['district-fill', 'district-border'],
-  zone: ['zone-fill', 'zone-border'],
-  transit: ['transit', 'stations', 'tv-line', 'tv-station'],
+  procedural_objects: ['procedural-objects'], district: ['district-fill', 'district-border', 'district-surface'],
+  zone: ['zone-fill', 'zone-border', 'zone-surface'],
+  transit: ['transit', 'stations', 'tv-line', 'tv-station', 'tv-station-interchange'],
   poi: ['pois', 'transit-pois', 'tv-poi'], label: ['district-labels', 'zone-labels', 'road-labels'], watermark: [],
 };
 const customLayers: string[] = [];
 type LabelMarker = {marker: Marker; group: string; labelType: string; featureColor?: string; transitStationName?: boolean};
 const markers = new Map<string, LabelMarker>();
 let currentSceneId = '', currentRevision = -1, loadGeneration = 0;
+let artworkSceneReady = true;
 let focusAnimationGeneration = 0;
 let sourceData: Record<string, any> = {};
 let mapPoiDisplayFeatures: any[] = [];
@@ -185,6 +214,8 @@ const labelMeasure = document.createElement('canvas').getContext('2d')!;
 const labelWidths = new Map<string, {font: string; width: number}>();
 const loadedFonts = new Set<string>();
 let currentManifest: SceneManifest | null = null, currentTheme: FullTheme | null = null;
+let artworkBrowseTheme: FullTheme | null = null;
+let artworkBrowseLayers: Record<string, boolean> | null = null;
 const roadWarning = document.createElement('div');
 roadWarning.className = 'road-warning'; roadWarning.hidden = true;
 roadWarning.setAttribute('role', 'status'); document.body.appendChild(roadWarning);
@@ -201,6 +232,12 @@ let hoverPoint: {x: number; y: number} | null = null;
 let contextMode = 'map';
 let contextOptions: Record<string, any> = {};
 let builtSurfaceLayer: SurfaceDistanceLayer | null = null;
+const areaSources = {district: 'districts', zone: 'zones'} as const;
+const areaKinds = ['district', 'zone'] as const;
+const areaSurfaces: Partial<Record<keyof typeof areaSources, AreaSurfaceLayer>> = {};
+function usesAreaSurfaces(manifest: SceneManifest | null): boolean {
+  return !EMBEDDED && !QUALITY_SAMPLE && manifest?.areaSurfaces === true;
+}
 let pendingBuiltSurface: { image: ImageBitmap; spec: SurfaceDistanceSpec } | null = null;
 let inspectorSelectionId = '';
 let inspectorSelectedFeature: any | null = null;
@@ -209,6 +246,9 @@ watermark.className = 'preview-watermark'; document.body.appendChild(watermark);
 
 function postEvent(type: string, payload: Record<string, unknown> = {}): void {
   const event = { type, sceneId: currentSceneId, revision: currentRevision, ...payload };
+  if (QUALITY_SAMPLE && window.parent !== window) {
+    window.parent.postMessage(event, window.location.origin); return;
+  }
   if (window.chrome?.webview) window.chrome.webview.postMessage(JSON.stringify(event));
   else window.webkit?.messageHandlers?.cslPreview?.postMessage(event);
 }
@@ -221,18 +261,37 @@ const map: MapLibreMap = new maplibregl.Map({ container: 'map', style: { version
   layers: [{ id: 'background', type: 'background', paint: { 'background-color': '#eef1f4' } }] },
   center: [0, 0], zoom: 12, minZoom: 8, maxZoom: 24, attributionControl: false,
   renderWorldCopies: false, pitchWithRotate: false, dragRotate: false, maxPitch: 60,
-  localIdeographFontFamily: false });
+  localIdeographFontFamily: false, canvasContextAttributes: {antialias: true},
+  pixelRatio: window.devicePixelRatio * previewQuality.pixelScale });
+window.addEventListener('resize', () => {
+  const ratio = window.devicePixelRatio * previewQuality.pixelScale;
+  if (map.getPixelRatio() !== ratio) map.setPixelRatio(ratio);
+});
 map.on('error', event => reportError(event.error, undefined, false));
 map.on('webglcontextlost', () => postEvent('previewContextLost'));
 map.on('webglcontextrestored', () => postEvent('previewContextRestored'));
+const artworkView = new ArtworkView(map,
+  (type, data) => {
+    if (type === 'artworkViewChanged') drawWorldSelection();
+    postEvent(type, data);
+  }, () => {
+    if (selectionMode || selectionStart) clearWorldSelection();
+    if (artworkBrowseTheme) { const theme = artworkBrowseTheme; artworkBrowseTheme = null; applyTheme(theme); }
+    if (artworkBrowseLayers) {
+      const layers = artworkBrowseLayers; artworkBrowseLayers = null;
+      for (const [layer, visible] of Object.entries(layers)) void setLayerVisibility(layer, visible);
+    }
+    labelLayoutKey = ''; scheduleLabels(); }, pickObjectAt);
 map.addControl(new maplibregl.ScaleControl({ maxWidth: 140, unit: 'metric' }), 'bottom-left');
 const preview3d = new Preview3D(() => outputBearing(outputRotation), dismissHint);
 map.addControl(preview3d, 'bottom-right');
 const navigation: NavigationControl = new NavigationControl(map,
   () => selectionMode || selectionStart !== null, dismissHint,
   navigationPlaceAt, {properties: navigationRoadStyle, width: navigationWidth, widthMeters: navigationWidthMeters}, preview3d);
+navigation.onNavigationOpened = () => postEvent('navigationOpened');
 preview3d.onToggle = enabled => navigation.simulation.set3DEnabled(enabled);
 let quickLayersEnabled = EMBEDDED;
+let immersive = false;
 const previewControls = new PreviewControls(navigation, feature => {
   navigation.simulation.stop(); dismissHint(); locateGeometry(feature.geometry);
   setFeatureHighlight('search-selection', feature);
@@ -297,6 +356,11 @@ function categoryColor(values: Record<string, unknown>, fallback: string): strin
   const entries = Object.entries(values ?? {});
   return entries.length ? ['match', ['get', 'category'], ...entries.flat(), fallback] as unknown as ExpressionSpecification : fallback;
 }
+function districtFillColor(): ExpressionSpecification {
+  const district = token('district');
+  const colors = district.fillColors ?? [district.fill ?? '#D9E8CC'];
+  return ['to-color', ['at', ['%', ['coalesce', ['get', 'paletteIndex'], 0], colors.length], ['literal', colors]]];
+}
 function painterOrderedOpacity(value: number): ExpressionSpecification {
   // 自定义图层处于 MapLibre 半透明通道；水层常量透明度为一会被提前移入不透明通道。
   // 使用依赖数据的表达式保持实际透明度，同时阻止通道折叠。
@@ -308,32 +372,12 @@ function roadToken(field: keyof RoadPaint, fallback: string | number): Expressio
   for (const [key, paint] of Object.entries(currentTheme?.road.levels ?? {})) value.push(key, paint[field]);
   value.push(fallback); return value as ExpressionSpecification;
 }
-function renderScaleAt(z: number): number {
-  // 与 Python 渲染比例一致：世界米对应的像素数除以全图基准密度，并计入局部坐标投影比例。
-  return Math.pow(2, z) / MPP0 * RENDER_SCALE_PER_PPM;
+function widthAt(_z: number, casing = false): ExpressionSpecification {
+  const fill = roadToken('lineWidth', 0);
+  return casing ? ['+', fill, roadToken('borderPx', 0)] : fill;
 }
-function naturalWidthAt(z: number): ExpressionSpecification {
-  return ['max',
-    roadToken('minFillPx', .8),
-    ['+', .5, ['*', ['get', 'physicalWidth'], currentTheme?.road.widthScale ?? .15,
-      renderScaleAt(z)]]];
-}
-function quayWidthAt(z: number): ExpressionSpecification {
-  return ['*', ['get', 'physicalWidth'],
-    RENDER_SCALE_PER_PPM, renderScaleAt(z)];
-}
-function widthAt(z: number, casing = false): ExpressionSpecification {
-  const fill = ['case', ['has', 'quayLine'],
-    quayWidthAt(z), naturalWidthAt(z)] as ExpressionSpecification;
-  return casing ? ['+', fill, roadToken('borderFixedPx', 1),
-    ['*', roadToken('borderScale', 0), renderScaleAt(z)]] : fill;
-}
-function fillWidth(): ExpressionSpecification {
-  return ['interpolate', ['exponential', 2], ['zoom'], ...Array.from({length: 25}, (_, z) => [z, widthAt(z)]).flat()] as ExpressionSpecification;
-}
-function casingWidth(): ExpressionSpecification {
-  return ['interpolate', ['exponential', 2], ['zoom'], ...Array.from({length: 25}, (_, z) => [z, widthAt(z, true)]).flat()] as ExpressionSpecification;
-}
+function fillWidth(): ExpressionSpecification { return widthAt(0); }
+function casingWidth(): ExpressionSpecification { return widthAt(0, true); }
 function navigationRoadStyle(edge: Edge): Record<string, unknown> {
   const properties = navigationRoadProperties.get(edge.sourceSegmentId);
   return {physicalWidth: properties?.physicalWidth ?? edge.widthM ?? 0,
@@ -341,11 +385,13 @@ function navigationRoadStyle(edge: Edge): Record<string, unknown> {
     surfaceWidth: properties?.geometryRole === 'road-surface' ? properties.physicalWidth : 0};
 }
 function navigationWidth(casing: boolean): ExpressionSpecification {
+  const alternative = ['==', ['get', 'alternative'], true];
   return ['interpolate', ['exponential', 2], ['zoom'], ...Array.from({length: 25}, (_, z) => [z,
     ['case', ['==', ['get', 'mode'], 'RIDE'], casing ? 10 : 6,
-      ['+', casing ? 6 : 0, ['case', ['>', ['get', 'surfaceWidth'], 0],
-        ['*', ['get', 'surfaceWidth'], Math.pow(2, z)/MPP0*WEB_MERCATOR_METERS_PER_DEGREE/LOCAL_METERS_PER_DEGREE],
-        widthAt(z)]]]
+      ['+', casing ? 6 : 0, ['max', ['case', alternative, 5, 8],
+        ['*', ['case', alternative, 1.3, 1.6], ['case', ['>', ['get', 'surfaceWidth'], 0],
+          ['*', ['get', 'surfaceWidth'], Math.pow(2, z)/MPP0*WEB_MERCATOR_METERS_PER_DEGREE/LOCAL_METERS_PER_DEGREE],
+          widthAt(z)]]]]]
   ]).flat()] as ExpressionSpecification;
 }
 function navigationWidthMeters(edge: Edge): number {
@@ -354,14 +400,10 @@ function navigationWidthMeters(edge: Edge): number {
   if (Number(properties.surfaceWidth) > 0) return Number(properties.surfaceWidth)/2;
   const paint = currentTheme?.road.levels?.[String(properties.styleKey)];
   const ppm = 2**18/MPP0*WEB_MERCATOR_METERS_PER_DEGREE/LOCAL_METERS_PER_DEGREE;
-  const physical = Number(properties.physicalWidth)*(currentTheme?.road.widthScale ?? .15)*WORLD_SIZE_METERS/REFERENCE_RENDER_PX;
-  return Math.max(paint?.minFillPx ?? .8, .5+physical*ppm)/(ppm*2);
+  return Number(paint?.lineWidth ?? 0)/(ppm*2);
 }
 // 表面多边形已包含道路宽度，边界只绘制外沿，同时保留固定像素和缩放宽度。
-function borderWidth(): ExpressionSpecification {
-  return ['interpolate', ['exponential', 2], ['zoom'], ...Array.from({length: 25}, (_, z) => [z,
-    ['+', roadToken('borderFixedPx', 1), ['*', roadToken('borderScale', 0), renderScaleAt(z)]]]).flat()] as ExpressionSpecification;
-}
+function borderWidth(): ExpressionSpecification { return roadToken('borderPx', 0); }
 function enabledFilter(): ExpressionSpecification { const value: unknown[] = ['match', ['coalesce', ['get', 'sourceStyleKey'], ['get', 'styleKey']]];
   for (const [key, paint] of Object.entries(currentTheme?.road.levels ?? {})) value.push(key, paint.enabled);
   value.push(true); return ['==', value as ExpressionSpecification, true]; }
@@ -472,9 +514,12 @@ function buildingColor(): ExpressionSpecification {
   return ['match', ['get', 'colorCategory'],
     ...colors.flatMap(([category, color]) => [category, color]), automatic] as unknown as ExpressionSpecification;
 }
+function showsTransportOverlay(): boolean {
+  return contextMode === 'transit' || (currentManifest?.layers.metro === true && !!contextOptions.layers);
+}
 function effectivePoiIcons(): Record<string, boolean> {
   const icons = {...(token('poiVisibility').icons ?? {})} as Record<string, boolean>;
-  if (contextMode === 'transit') icons.transit = contextOptions.facilities_enabled !== false;
+  if (showsTransportOverlay()) icons.transit = contextOptions.facilities_enabled !== false;
   return icons;
 }
 function poiVisibilityFilter(): ExpressionSpecification {
@@ -493,7 +538,7 @@ function poiFilter(): ExpressionSpecification {
     ['<=', ['get', 'minZoom'], zoom], ['in', zoom, ['get', 'visibleZooms']]];
 }
 function transitPoiFilter(): ExpressionSpecification {
-  if (contextMode === 'transit') return alwaysFalseFilter();
+  if (showsTransportOverlay()) return alwaysFalseFilter();
   const zoom: ExpressionSpecification = ['zoom'];
   return ['all', poiVisibilityFilter(), ['==', ['get', 'owner'], 'transit'],
     ['<=', ['get', 'minZoom'], zoom], ['in', zoom, ['get', 'visibleZooms']]];
@@ -545,13 +590,23 @@ function updateTransitViewLayout(): void {
   if (inputs.every((value, index) => value === poiAnchorInputs[index])) return;
   poiAnchorInputs = inputs;
   const visible = stationVisibility();
+  const selected = new Set(selectedTransitRouteIds());
+  const groupOfLine = new Map<number, number>((sourceData.transit?.features ?? []).map((feature: any) =>
+    [Number(feature.properties.lineId), Number(feature.properties.groupId ?? feature.properties.lineId)]));
   const stations = (sourceData.stations?.features ?? []).filter(visible)
+    .map((feature: any) => {
+      const groups = new Set<number>((feature.properties.servingLineIds ?? [])
+        .filter((id: number) => selected.has(Number(id))).map((id: number) => groupOfLine.get(Number(id))));
+      groups.delete(undefined as unknown as number);
+      return {...feature, properties: {...feature.properties,
+        isInterchange: map.hasImage('cmm-station-interchange') && groups.size >= 2}};
+    })
     .sort((a: any, b: any) => Number(b.properties?.servingLineCount ?? 0) - Number(a.properties?.servingLineCount ?? 0));
   transitStationDisplayFeatures = stations;
   mapPoiDisplayFeatures = stationAnchors(sourceData.pois?.features ?? [], stations,
     contextOptions.stations !== false && currentManifest?.layers.metro !== false);
   mapSource?.setData({type: 'FeatureCollection', features: mapPoiDisplayFeatures});
-  if (contextMode === 'transit') {
+  if (showsTransportOverlay()) {
     stationSource?.setData({type: 'FeatureCollection', features: stations});
     transitPoiDisplayFeatures = stationAnchors(sourceData.transitViewPois?.features ?? [], stations,
       contextOptions.stations !== false);
@@ -559,9 +614,15 @@ function updateTransitViewLayout(): void {
   }
   labelLayoutKey = '';
 }
+// 直径包含描边；小圆圈的描边随外径缩小，不再额外撑大符号。
+function transitStationMetrics(): {outer: number; radius: number; stroke: number} {
+  const outer = Number(contextOptions.station_diameter ?? token('transit').stationSize) / 2;
+  const stroke = Math.min(Number(token('transit').stationBorder), outer);
+  return {outer, radius: outer - stroke, stroke};
+}
+function mapStationMetrics(): {radius: number; stroke: number} { return transitStationMetrics(); }
 function poiDimensions(transit: boolean): [number, number] {
-  return [Number(transit ? contextOptions.facility_icon_size ?? 24 : token('poi').size ?? 18),
-    Number(transit ? contextOptions.station_size ?? token('transit').stationSize ?? 8 : token('transit').stationSize ?? 8)];
+  return [Number((transit ? contextOptions.facility_icon_size : undefined) ?? token('poi').size), transitStationMetrics().outer * 2];
 }
 function updatePoiOffsets(): void {
   for (const id of ['pois', 'transit-pois', 'tv-poi']) if (map.getLayer(id))
@@ -569,70 +630,42 @@ function updatePoiOffsets(): void {
 }
 function poiScreenOffset(feature: any): [number, number] {
   return feature.properties?.stationAnchor
-    ? stationFacilityOffset(...poiDimensions(contextMode === 'transit' && feature.properties.owner === 'transit')) : [0, 0];
+    ? stationFacilityOffset(...poiDimensions(showsTransportOverlay() && feature.properties.owner === 'transit')) : [0, 0];
 }
 function poiScreenPoint(feature: any) {
   const point = map.project(feature.geometry.coordinates as [number, number]), offset = poiScreenOffset(feature);
   return {x: point.x + offset[0], y: point.y + offset[1]};
 }
-function transitViewColor(): ExpressionSpecification {
-  const colorMode = String(contextOptions.line_color_mode ?? 'game');
-  if (colorMode === 'game') return ['get', 'color'];
-  const expression: unknown[] = ['match', ['to-number', ['get', 'lineId']]];
-  const lines = sourceData.transit?.features ?? [];
-  lines.forEach((feature: any, index: number) => {
-    expression.push(Number(feature.properties?.lineId), transitViewFeatureColor(feature, index));
-  });
-  expression.push('#4277C9');
-  return expression as ExpressionSpecification;
-}
-function transitViewFeatureColor(feature: any, index: number): string {
-  const classic = ['#D94B4B', '#3978C5', '#2A9D69', '#E59A2F', '#8A5BB5', '#2A9DA8'];
-  const soft = ['#D98282', '#729BCD', '#72B795', '#E4B46F', '#A98AC3', '#6EB6BC'];
-  const colorMode = String(contextOptions.line_color_mode ?? 'game');
-  if (colorMode === 'game') {
-    return String(feature.properties?.color ?? '#4277C9');
-  }
-  const palette = colorMode === 'soft' ? soft : classic;
-  return palette[index % palette.length];
-}
-// 公共交通视图的线路标签改成「彩底 + 自动深浅文字」（与
-// legend_zoom 的图例胶囊一致：亮色用 #101828，暗色用 #FFFFFF）。
-// 阈值与 ``transport_layer._light_outline_threshold`` 同步，避免
-// 同一台机器上"图例深/字浅、标签深/字深"的不一致。
-function perceivedLuminance(hex: string): number {
-  const normalized = hex.startsWith('#') ? hex.slice(1) : hex;
-  if (normalized.length !== 6) return 0;
-  const r = parseInt(normalized.slice(0, 2), 16);
-  const g = parseInt(normalized.slice(2, 4), 16);
-  const b = parseInt(normalized.slice(4, 6), 16);
-  // sRGB gamma 已近似于线性后取加权和：0.2126R+0.7152G+0.0722B
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+function transportLineWidth(): ExpressionSpecification | number {
+  const width = Number(token('transit').width ?? 3);
+  const selected = Number(contextOptions.line_width ?? width);
+  const entries = Object.entries(token('transit').typeWidths ?? {});
+  if (!entries.length) return selected;
+  return ['match', ['downcase', ['to-string', ['get', 'kind']]],
+    ...entries.flatMap(([kind, value]) => [kind, width ? Number(value) * selected / width : selected]),
+    selected] as ExpressionSpecification;
 }
 /** 公共交通视图线路标签的视觉规范。
  *
  * 与导出侧 ``transport_layer._make_view_badge`` 共用主题 ``transit_view`` 段，
- * 由 ``preview_scene._transit_label_style`` 下发。尺寸基准 = 长边 1024px 的成图。
+ * 由 ``preview_scene._transit_label_style`` 下发。尺寸已经应用元素倍率，单位为像素。
+ * 规范全文：docs/tasks/公共交通视图-整改-20260910/01-线路标签视觉统一-20260914.md
  */
 type TransitLabelStyle = {
+  preset: string;
+  presets: Record<string, {padding: number; border: number; radius: number; height: number; accent: string; icon: boolean;
+    icon_size?: number; icon_gap?: number; icon_width?: number}>;
+  palette: {surface: string; text: string; border: string};
+  icons: Record<string, string>;
   fontSizeBase: number;
-  paddingRatio: number;
-  outlineWidth: number;
-  outlineColor: string;
-  outlineAlpha: number;
-  seamWidth: number;
-  textOnLight: string;
-  textOnDark: string;
-  luminanceThreshold: number;
   fontWeight: number;
   font: string;
   mergeDistance: number;
 };
 
 const TRANSIT_LABEL_FALLBACK: TransitLabelStyle = {
-  fontSizeBase: 15, paddingRatio: 0.6, outlineWidth: 2,
-  outlineColor: '#101828', outlineAlpha: 0.55, seamWidth: 3,
-  textOnLight: '#101828', textOnDark: '#FFFFFF', luminanceThreshold: 165,
+  preset: 'split-sign', presets: {}, palette: {surface: '#FFFFFF', text: '#26352F', border: '#D4DDD7'}, icons: {},
+  fontSizeBase: 15,
   fontWeight: 700, font: 'Microsoft YaHei', mergeDistance: 40,
 };
 
@@ -645,7 +678,9 @@ function transitLabelStyle(): TransitLabelStyle {
     if (typeof value === 'number' && !Number.isFinite(value)) continue;
     merged[key] = value;
   }
-  if (contextMode === 'transit') merged.fontSizeBase = Number(contextOptions.line_label_size ?? merged.fontSizeBase);
+
+  if (showsTransportOverlay()) merged.preset = String(contextOptions.line_label_style ?? merged.preset);
+  if (merged.preset === 'classic') merged.preset = 'split-sign';
   return merged as TransitLabelStyle;
 }
 
@@ -656,64 +691,89 @@ function hexToRgb(hex: string): [number, number, number] {
     parseInt(normalized.slice(2, 4), 16), parseInt(normalized.slice(4, 6), 16)];
 }
 
-/** 轮廓色：整条／整组共用一圈「深色 + 低透明度」的细边（与导出一致）。 */
-function transitOutlineColor(style: TransitLabelStyle): string {
-  const [r, g, b] = hexToRgb(style.outlineColor);
-  return `rgba(${r}, ${g}, ${b}, ${style.outlineAlpha})`;
-}
-
-function transitBadgeStyle(hex: string, style: TransitLabelStyle):
-    { color: string; border: string } {
-  // 阈值与权重必须与导出侧 _luminance709 同式，否则中间亮度的线路色
-  // 会在预览和导出图上判出相反的字色。
-  const light = perceivedLuminance(hex) >= style.luminanceThreshold;
-  return {
-    color: light ? style.textOnLight : style.textOnDark,
-    border: transitOutlineColor(style),
-  };
-}
-
-/** 当前画布下的线路标签几何（字号按画布宽折算 + 内边距 / 轮廓宽度）。 */
+/** 线路标签几何（已解析字号、内边距和轮廓宽度）。 */
 function transitBadgeMetrics() {
   const style = transitLabelStyle();
-  const canvasWidth = Math.max(map.getCanvas().clientWidth, 1);
-  // 规范基准是「长边 1024px 成图」，屏幕系数 = 画布宽 / 1024；
-  // 夹在 [6, 64]，与侧栏「名称字号」的可选范围（6~36）对齐 —— 早先夹在
-  // [12, 22] 会把小于 12 的值抬上来、大于 22 的值压下去，等于字号只有
-  // 中间一小段能真正生效，看起来就是「调了没反应」。
-  const size = Math.min(64, Math.max(6,
-    style.fontSizeBase * (canvasWidth / 1024)));
-  // 轮廓跟着「实际生效的字号缩放系数」走，而不是画布系数：字号被 [12, 22]
-  // 夹住时轮廓也同步被夹，「轮廓 / 字号」的比例才和导出侧恒定一致。
-  // 再取整到整数像素 —— CSS 的非整数边框会被反锯齿冲淡，1.5px 实际观感
-  // 只剩约一半浓度，这正是之前「设了轮廓却看不见」的直接原因。
-  const scale = style.fontSizeBase > 0 ? size / style.fontSizeBase : 1;
+  // 小字号也按设置缩小，避免预览另设下限使 1～6 的输入失效。
+  const size = Math.max(1, Number(contextOptions.line_label_size ?? style.fontSizeBase));
+  const preset = style.presets[style.preset];
+  const outline = preset.border * size;
+  const padX = preset.padding * size;
+  const iconSize = preset.icon ? size * preset.icon_size! : 0;
+  const iconGap = preset.icon ? size * preset.icon_gap! : 0;
+  const iconWidth = preset.accent === 'split' ? size * preset.icon_width! : 0;
+  const extraWidth = preset.accent === 'split'
+    ? iconWidth + iconGap + padX + outline * 2
+    : (padX + outline) * 2 + iconSize + iconGap;
   return {
-    style,
+    style, preset, extraWidth, iconSize, iconGap, iconWidth,
     size,
-    padX: size * style.paddingRatio,
-    padY: size * 0.375,          // 胶囊高 = 1.75 × 字号
-    outline: Math.max(Math.round(style.outlineWidth * scale), 1),
-    radius: size * 1.75 / 2,
+    padX,
+    outline,
+    height: size * preset.height,
+    radius: size * preset.radius,
   };
+}
+
+function transitContrastText(hex: string): string {
+  const luminance = (rgb: number[]) => rgb.map(v => v / 255)
+    .map(v => v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4)
+    .reduce((sum, v, i) => sum + v * [.2126, .7152, .0722][i], 0);
+  const value = luminance(hexToRgb(hex)), dark = luminance(hexToRgb('#26352F'));
+  return (Math.max(value, dark) + .05) / (Math.min(value, dark) + .05) >= 1.05 / (value + .05)
+    ? '#26352F' : '#FFFFFF';
 }
 
 /** 创建和主题更新共用线路徽章样式。 */
 function paintTransitBadge(el: HTMLElement, color: string,
                            metrics = transitBadgeMetrics()): void {
-  const {style} = metrics;
+  const {style, preset} = metrics;
+  const name = el.dataset.routeName ?? el.textContent ?? '';
+  el.dataset.preset = style.preset;
+  // MapLibre 在同一元素上维护定位 transform，只清理标签自身的样式。
+  for (const key of ['height', 'max-width', 'box-sizing', 'display', 'padding', 'box-shadow', 'overflow'])
+    el.style.removeProperty(key);
+  if (el.dataset.paintedPreset !== style.preset) {
+    const title = document.createElement('span'); title.className = 'transit-badge-name';
+    el.replaceChildren(title);
+    if (preset.icon) {
+      const tile = document.createElement('span'); tile.className = 'transit-badge-mode';
+      tile.setAttribute('aria-hidden', 'true');
+      const icon = document.createElement('span'); icon.className = 'transit-badge-icon';
+      tile.append(icon); el.prepend(tile);
+    }
+    el.dataset.paintedPreset = style.preset;
+  }
+  el.querySelector('.transit-badge-name')!.textContent = name;
+  el.style.setProperty('--badge-color', color);
+  el.style.setProperty('--badge-surface', style.palette.surface);
+  el.style.setProperty('--badge-text', preset.accent === 'fill' ? transitContrastText(color) : style.palette.text);
+  el.style.setProperty('--badge-border', preset.accent === 'frame' ? color : style.palette.border);
+  el.style.setProperty('--badge-pad', `${metrics.padX}px`);
+  el.style.setProperty('--badge-outline', `${metrics.outline}px`);
+  el.style.setProperty('--badge-radius', `${metrics.radius}px`);
+  el.style.setProperty('--badge-size', `${metrics.size}px`);
+  el.style.setProperty('--badge-icon-size', `${metrics.iconSize}px`);
+  el.style.setProperty('--badge-icon-gap', `${metrics.iconGap}px`);
+  el.style.setProperty('--badge-icon-width', `${metrics.iconWidth}px`);
+  el.style.boxSizing = 'border-box'; el.style.display = 'flex';
+  el.style.height = `${metrics.height}px`;
+  el.style.maxWidth = `${180 + metrics.extraWidth}px`;
+  el.style.overflow = 'hidden';
+  if (preset.icon) {
+    const icon = el.querySelector('.transit-badge-icon') as HTMLElement;
+    icon.style.maskImage = `url("${style.icons[el.dataset.routeKind ?? '']}")`;
+    const tile = el.querySelector('.transit-badge-mode') as HTMLElement;
+    tile.style.color = preset.accent === 'split' ? transitContrastText(color) : style.palette.text;
+  }
   el.style.fontSize = `${metrics.size}px`;
   el.style.fontWeight = String(style.fontWeight);
   el.style.fontFamily = `"${style.font}", "Microsoft YaHei", sans-serif`;
-  el.style.padding = `${metrics.padY}px ${metrics.padX}px`;
-  el.style.borderRadius = `${metrics.radius}px`;
+  el.style.background = preset.accent === 'fill' ? color : style.palette.surface;
+  el.style.color = preset.accent === 'fill' ? transitContrastText(color) : style.palette.text;
+  el.style.borderColor = preset.accent === 'frame' ? color : style.palette.border;
   el.style.borderWidth = `${metrics.outline}px`;
-  // 「线路色实心底 + 自适应深浅字 + 一圈半透明细轮廓」：与导出侧
-  // _make_view_badge 同一组值（主题 transit_view 段，经 labelStyle 下发）。
-  el.style.background = color;
-  const tone = transitBadgeStyle(color, style);
-  el.style.color = tone.color;
-  el.style.borderColor = tone.border;
+  el.style.borderRadius = `${metrics.radius}px`;
 }
 type TrafficDirection = 'forward' | 'backward';
 type TrafficLayer = {id: string; direction?: TrafficDirection; casing: boolean};
@@ -770,11 +830,17 @@ function addTrafficLayers(): void {
   }
   updateTrafficPaint();
 }
-function updateTrafficPaint(): void {
+function updateTrafficColors(): void {
   if (!map.getSource('traffic')) return;
   for (const layer of trafficLayers) {
     map.setPaintProperty(layer.id, 'line-color', layer.direction
       ? (layer.casing ? '#52635B' : trafficColor(layer.direction)) : token('traffic').noDataColor);
+  }
+}
+function updateTrafficPaint(): void {
+  if (!map.getSource('traffic')) return;
+  updateTrafficColors();
+  for (const layer of trafficLayers) {
     map.setLayoutProperty(layer.id, 'visibility', layer.direction || currentManifest?.layers.road === false
       ? 'visible' : 'none');
     map.setFilter(layer.id, trafficFilter(layer.direction));
@@ -801,7 +867,7 @@ async function syncTraffic(): Promise<void> {
   const request = new AbortController(); trafficRequest = request;
   const generation = loadGeneration;
   try {
-    const data = await provider.json(new URL(manifest.sources.traffic, provider.base), request.signal);
+    const data = await provider.json(new URL(manifest.sources.traffic, provider.base), undefined, request.signal);
     if (request.signal.aborted || generation !== loadGeneration || currentManifest !== manifest) return;
     map.addSource('traffic', {type: 'geojson', data, maxzoom: 18, buffer: 32,
       tolerance: .375, promoteId: 'featureId'});
@@ -820,20 +886,7 @@ function railTypePaint(field: string, fallback: string | number): ExpressionSpec
   value.push(fallback);
   return value as ExpressionSpecification;
 }
-function railWidth(field: 'width' | 'stationWidth' | 'dashWidth'): ExpressionSpecification {
-  return ['interpolate', ['exponential', 2], ['zoom'],
-    ...Array.from({length: 25}, (_, z) => {
-      const value: unknown[] = ['match', ['get', 'railType']];
-      for (const kind of RAIL_TYPES) {
-        const size = token('railway').types?.[kind]?.[field] ?? {fixed: 1, scaled: 0};
-        value.push(kind, Math.max(.5, Number(size.fixed ?? 0)
-          + Number(size.scaled ?? 0) * renderScaleAt(z)));
-      }
-      value.push(.5);
-      return [z, value as ExpressionSpecification];
-    }).flat()
-  ] as ExpressionSpecification;
-}
+function railWidth(field: 'width' | 'stationWidth' | 'dashWidth'): ExpressionSpecification { return railTypePaint(field, 0); }
 function railFilter(station: boolean): ExpressionSpecification {
   return ['all', ['==', ['get', 'geometryRole'], 'track'],
     ['==', ['get', 'station'], station]];
@@ -872,7 +925,7 @@ function addDomains(): void {
   const transit = token('transit');
   updateTransitViewLayout();
   if (!map.getSource('transit-view-stations')) map.addSource('transit-view-stations', {
-    type: 'geojson', data: {type: 'FeatureCollection', features: contextMode === 'transit' ? transitStationDisplayFeatures : []},
+    type: 'geojson', data: {type: 'FeatureCollection', features: showsTransportOverlay() ? transitStationDisplayFeatures : []},
     maxzoom: 24, buffer: 256, tolerance: 0, promoteId: 'featureId',
   });
   if (!map.getSource('transit-view-pois-displaced')) map.addSource('transit-view-pois-displaced', {
@@ -907,14 +960,23 @@ function addDomains(): void {
   add({ id: 'water-shore', type: 'line', source: 'water', filter: ['==', ['get', 'geometryRole'], 'water'],
     layout: { 'line-cap': 'round', 'line-join': 'round' },
     paint: { 'line-color': water.border ?? '#60C0E8', 'line-width': water.width ?? 1 } });
-  add({ id: 'district-fill', type: 'fill', source: 'districts', paint: {
-    'fill-color': district.fill ?? '#D9E8CC', 'fill-opacity': district.opacity ?? .3 } });
-  add({ id: 'district-border', type: 'line', source: 'districts', paint: {
-    'line-color': district.border ?? '#A6A6AD', 'line-width': 1.2 } });
-  add({ id: 'zone-fill', type: 'fill', source: 'zones', paint: {
-    'fill-color': zone.fill ?? '#C8C8C8', 'fill-opacity': zone.opacity ?? .35 } });
-  add({ id: 'zone-border', type: 'line', source: 'zones', paint: {
-    'line-color': zone.border ?? '#A89880', 'line-width': 1.2 } });
+  if (usesAreaSurfaces(currentManifest)) {
+    for (const kind of areaKinds) {
+      const surface = new AreaSurfaceLayer(`${kind}-surface`, sourceData[areaSources[kind]].features,
+        () => artworkView.observationScale);
+      areaSurfaces[kind] = surface;
+      add(surface);
+    }
+  } else {
+    add({ id: 'district-fill', type: 'fill', source: 'districts', paint: {
+      'fill-color': districtFillColor(), 'fill-opacity': district.opacity ?? .3 } });
+    add({ id: 'district-border', type: 'line', source: 'districts', paint: {
+      'line-color': district.border ?? '#A6A6AD', 'line-width': 1.2 } });
+    add({ id: 'zone-fill', type: 'fill', source: 'zones', paint: {
+      'fill-color': zone.fill ?? '#C8C8C8', 'fill-opacity': zone.opacity ?? .35 } });
+    add({ id: 'zone-border', type: 'line', source: 'zones', paint: {
+      'line-color': zone.border ?? '#A89880', 'line-width': 1.2 } });
+  }
   add({ id: 'buildings', type: 'fill', source: 'buildings', paint: {
     'fill-color': buildingColor(),
     'fill-outline-color': building.border ?? '#B9B2A5' } });
@@ -926,15 +988,22 @@ function addDomains(): void {
   add({ id: 'transit', type: 'line', source: 'transit', layout: { 'line-cap': 'round', 'line-join': 'round' },
     paint: { 'line-color': ['get', 'color'], 'line-width': transit.width ?? 3 } });
   add({ id: 'stations', type: 'circle', source: 'stations', paint: {
-    'circle-radius': Math.max(3, Number(transit.stationSize ?? 8) / 2), 'circle-color': '#fff',
-    'circle-stroke-color': '#39424C', 'circle-stroke-width': 1.5 } });
+    'circle-radius': mapStationMetrics().radius, 'circle-color': transit.stationFill ?? '#fff',
+    'circle-stroke-color': transit.stationOutline ?? '#39424C', 'circle-stroke-width': mapStationMetrics().stroke } });
   add({ id: 'tv-line', type: 'line', source: 'transit', filter: alwaysFalseFilter(),
     layout: { 'visibility': 'none', 'line-cap': 'round', 'line-join': 'round' },
     paint: { 'line-color': ['get', 'color'], 'line-width': transit.width ?? 3 } });
   add({ id: 'tv-station', type: 'circle', source: 'transit-view-stations',
+    filter: ['!=', ['get', 'isInterchange'], true],
     layout: { 'visibility': 'none' }, paint: {
-      'circle-radius': Math.max(3, Number(transit.stationSize ?? 8) / 2), 'circle-color': '#fff',
-      'circle-stroke-color': '#39424C', 'circle-stroke-width': 1.5 } });
+      'circle-radius': transitStationMetrics().radius, 'circle-color': transit.stationFill ?? '#fff',
+      'circle-stroke-color': transit.stationOutline ?? '#39424C', 'circle-stroke-width': transitStationMetrics().stroke } });
+  add({ id: 'tv-station-interchange', type: 'symbol', source: 'transit-view-stations',
+    filter: ['==', ['get', 'isInterchange'], true], layout: {
+      'visibility': 'none', 'icon-image': 'cmm-station-interchange',
+      'icon-size': transitStationMetrics().outer / 8,
+      'icon-allow-overlap': true, 'icon-ignore-placement': true, 'icon-padding': 0,
+      'icon-pitch-alignment': 'viewport', 'icon-rotation-alignment': 'viewport' } });
   add({ id: 'pois', type: 'symbol', source: 'map-pois-displaced',
     filter: poiFilter(),
     layout: { 'icon-image': ['get', 'iconKey'], 'icon-size': Number(token('poi').size ?? 18) / 24,
@@ -968,64 +1037,142 @@ function addDomains(): void {
   }
 }
 
+// Compare geometry and layer options separately from paints that can be applied in place.
+function basePaintOptions(theme: FullTheme) {
+  const {background, opacity, levels, ...road} = theme.road;
+  return {
+    road: {...road, levels: Object.fromEntries(Object.entries(levels).map(([id, {fill, border, ...rest}]) => [id, rest]))},
+    waterWidth: theme.water?.width,
+    railway: RAIL_TYPES.map(kind => {
+      const {baseColor, baseOpacity, dashColor, dashOpacity, ...options} = theme.railway?.types?.[kind] ?? {};
+      return options;
+    }),
+    districtWidth: theme.district?.width, zoneWidth: theme.zone?.width,
+    trafficWidth: theme.traffic?.widthScale, trafficMinLane: theme.traffic?.minLanePx,
+  };
+}
+
+function updateAreaSurfacePaint(kind: 'district' | 'zone') {
+  const paint = token(kind);
+  areaSurfaces[kind]?.updatePaint({colors: paint.fillColors ?? [paint.fill ?? (kind === 'district' ? '#D9E8CC' : '#C8C8C8')],
+    border: paint.border ?? (kind === 'district' ? '#A6A6AD' : '#A89880'), width: Number(paint.width ?? 1),
+    opacity: Number(paint.opacity ?? (kind === 'district' ? .3 : .35)),
+    fade: contextMode === 'transit' && contextOptions.base_district === false ? 0 : contextFade()});
+}
+
+function applyBaseColors(previous?: FullTheme): void {
+  const changed = (key: string) => !previous || JSON.stringify(previous[key]) !== JSON.stringify(currentTheme![key]);
+  const set = (id: string, prop: string, value: any) => {
+    if (map.getLayer(id) && value !== undefined) map.setPaintProperty(id, prop, value);
+  };
+  if (!previous || previous.road.background !== currentTheme!.road.background)
+    set('background', 'background-color', currentTheme!.road.background);
+  if (!previous || previous.road.opacity !== currentTheme!.road.opacity ||
+      JSON.stringify(previous.road.levels) !== JSON.stringify(currentTheme!.road.levels)) {
+    for (const layer of roadLayers) {
+      set(layer.id, `${layer.type}-opacity`, roadOpacity());
+      set(layer.id, `${layer.type}-color`, roadToken(layer.paint, layer.paint === 'border' ? '#c3c8d2' : '#fff'));
+    }
+  }
+  if (changed('building')) {
+    const fill = buildingColor();
+    set('buildings', 'fill-color', fill); set('poi-area', 'fill-color', fill);
+    set('buildings', 'fill-outline-color', token('building').border);
+  }
+  if (changed('water')) {
+    set('water-fill', 'fill-color', token('water').fill); set('water-shore', 'line-color', token('water').border);
+  }
+  if (changed('railway')) {
+    for (const id of ['railway-base', 'railway-station']) {
+      set(id, 'line-color', railTypePaint('baseColor', '#C36E69'));
+      set(id, 'line-opacity', railTypePaint('baseOpacity', 1));
+    }
+    for (const kind of RAIL_TYPES) {
+      const paint = token('railway').types?.[kind] ?? {};
+      set(`railway-dash-${kind}`, 'line-color', paint.dashColor ?? '#FFFFFF');
+      set(`railway-dash-${kind}`, 'line-opacity', Number(paint.dashOpacity ?? 1));
+    }
+  }
+  if (previous && changed('traffic')) updateTrafficColors();
+  if (changed('terrain')) {
+    set('forest', 'circle-color', token('terrain').forest);
+    set('terrain', 'raster-opacity', Number(token('terrain').opacity ?? 1) * contextFade());
+  }
+  if (changed('land_use')) {
+    set('land-use', 'fill-color', categoryColor(token('land_use').colors ?? {}, '#D8D0C8'));
+    set('land-use', 'fill-opacity', Number(token('land_use').opacity ?? .35) * contextFade());
+  }
+  if (changed('built_area')) {
+    const paint = token('built_area');
+    set('built-area', 'fill-color', paint.fill);
+    set('built-area', 'fill-opacity', Number(paint.opacity ?? 1) * contextFade());
+    builtSurfaceLayer?.updatePaint({color: paint.fill ?? '#F1F0EB', opacity: Number(paint.opacity ?? 1),
+      bufferMeters: paint.includeParks ? 0 : Number(paint.bufferMeters ?? 60), edgeMeters: Number(paint.edgeMeters ?? 0)});
+  }
+  for (const kind of areaKinds) if (changed(kind)) {
+    const paint = token(kind);
+    set(kind+'-fill', 'fill-color', kind === 'district' ? districtFillColor() : paint.fill);
+    set(kind+'-border', 'line-color', paint.border);
+    const fade = contextMode === 'transit' && contextOptions.base_district === false ? 0 : contextFade();
+    set(kind+'-fill', 'fill-opacity', Number(paint.opacity ?? (kind === 'district' ? .3 : .35)) * fade);
+    updateAreaSurfacePaint(kind);
+  }
+  if (changed('procedural_objects')) {
+    set('procedural-objects', 'fill-color', token('procedural_objects').fill);
+    set('procedural-objects', 'fill-outline-color', token('procedural_objects').border);
+  }
+}
+
+function applyArtworkTheme(theme: FullTheme): boolean {
+  const previous = currentTheme;
+  if (previous && JSON.stringify(basePaintOptions(previous)) === JSON.stringify(basePaintOptions(theme))) {
+    currentTheme = theme;
+    applyBaseColors(previous);
+    return false;
+  }
+  artworkView.restorePaint();
+  applyTheme(theme);
+  return true;
+}
+
 function applyTheme(theme: FullTheme): void {
-  currentTheme = theme; map.setPaintProperty('background', 'background-color', theme.road.background);
-  const set = (id: string, prop: Parameters<MapLibreMap['setPaintProperty']>[1], value: any) => { if (map.getLayer(id) && value !== undefined) map.setPaintProperty(id, prop, value); };
+  currentTheme = theme; applyBaseColors();
+  const set = (id: string, prop: string, value: any) => { if (map.getLayer(id) && value !== undefined) map.setPaintProperty(id, prop, value); };
   const filter = (id: string, value: any) => { if (map.getLayer(id)) map.setFilter(id, value); };
-  const layout = (id: string, prop: Parameters<MapLibreMap['setLayoutProperty']>[1], value: any) => { if (map.getLayer(id)) map.setLayoutProperty(id, prop, value); };
+  const layout = (id: string, prop: string, value: any) => { if (map.getLayer(id)) map.setLayoutProperty(id, prop, value); };
   for (const layer of roadLayers) {
     filter(layer.id, roadFilter(layer));
-    set(layer.id, `${layer.type}-opacity`, roadOpacity());
-    set(layer.id, `${layer.type}-color`, roadToken(layer.paint,
-      layer.paint === 'border' ? '#c3c8d2' : '#fff'));
     if (layer.type === 'line') set(layer.id, 'line-width',
       roadLineWidth(layer.width));
   }
-  set('water-fill', 'fill-color', token('water').fill); set('water-shore', 'line-color', token('water').border);
   set('water-shore', 'line-width', token('water').width);
-  set('built-area', 'fill-color', token('built_area').fill);
-  builtSurfaceLayer?.updatePaint({ color: token('built_area').fill ?? '#F1F0EB',
-    opacity: Number(token('built_area').opacity ?? 1),
-    bufferMeters: token('built_area').includeParks ? 0 : Number(token('built_area').bufferMeters ?? 60),
-    edgeMeters: Number(token('built_area').edgeMeters ?? 0) });
-  set('forest', 'circle-color', token('terrain').forest);
-  set('land-use', 'fill-color', categoryColor(token('land_use').colors ?? {}, '#D8D0C8'));
-  set('poi-area', 'fill-color', buildingColor());
-  set('land-use', 'fill-opacity', token('land_use').opacity);
-  set('buildings', 'fill-color', buildingColor());
-  set('buildings', 'fill-outline-color', token('building').border);
-  for (const id of ['railway-base', 'railway-station']) {
-    set(id, 'line-color', railTypePaint('baseColor', '#C36E69'));
-    set(id, 'line-opacity', railTypePaint('baseOpacity', 1));
-  }
   set('railway-base', 'line-width', railWidth('width'));
   set('railway-station', 'line-width', railWidth('stationWidth'));
   for (const kind of RAIL_TYPES) {
     const paint = token('railway').types?.[kind] ?? {};
     const id = `railway-dash-${kind}`;
-    set(id, 'line-color', paint.dashColor ?? '#FFFFFF');
-    set(id, 'line-opacity', Number(paint.dashOpacity ?? 1));
     set(id, 'line-width', railWidth('dashWidth'));
     set(id, 'line-dasharray', paint.dashPattern ?? [2, 4]);
     if (map.getLayer(id)) map.setLayoutProperty(
       id, 'visibility', paint.dashEnabled ? 'visible' : 'none');
   }
-  set('district-fill', 'fill-color', token('district').fill); set('district-border', 'line-color', token('district').border);
-  set('district-fill', 'fill-opacity', token('district').opacity);
   set('district-border', 'line-width', Number(token('district').width ?? 1));
-  set('zone-fill', 'fill-color', token('zone').fill); set('zone-border', 'line-color', token('zone').border);
-  set('zone-fill', 'fill-opacity', token('zone').opacity);
   set('zone-border', 'line-width', Number(token('zone').width ?? 1));
-  set('procedural-objects', 'fill-color', token('procedural_objects').fill);
   updateTrafficPaint();
   const modeWidths = Object.entries(token('transit').typeWidths ?? {});
   set('transit', 'line-width', modeWidths.length ? ['match', ['downcase', ['to-string', ['get', 'kind']]],
     ...modeWidths.flatMap(([kind, width]) => [kind, Number(width)]),
     Number(token('transit').width ?? 3)] : Number(token('transit').width ?? 3));
-  set('stations', 'circle-radius', Math.max(3, Number(token('transit').stationSize ?? 8) / 2));
-  set('tv-line', 'line-width', Number(contextOptions.line_width ?? token('transit').width ?? 3));
-  set('tv-station', 'circle-radius', Math.max(3, Number(
-    contextOptions.station_size ?? token('transit').stationSize ?? 8) / 2));
+  set('stations', 'circle-radius', mapStationMetrics().radius);
+  set('stations', 'circle-stroke-width', mapStationMetrics().stroke);
+  for (const id of ['stations', 'tv-station']) {
+    set(id, 'circle-color', token('transit').stationFill ?? '#fff');
+    set(id, 'circle-stroke-color', token('transit').stationOutline ?? '#39424C');
+  }
+  set('tv-line', 'line-width', transportLineWidth());
+  set('tv-station', 'circle-radius', transitStationMetrics().radius);
+  set('tv-station', 'circle-stroke-width', transitStationMetrics().stroke);
+  layout('tv-station-interchange', 'icon-size', transitStationMetrics().outer / 8);
   layout('pois', 'icon-size', Number(token('poi').size ?? 18) / 24);
   layout('transit-pois', 'icon-size', Number(token('poi').size ?? 18) / 24);
   if (map.getLayer('pois')) map.setFilter('pois', poiFilter());
@@ -1037,9 +1184,10 @@ function applyTheme(theme: FullTheme): void {
   watermark.classList.toggle('preview-watermark-left', wm.position === 'bl');
   for (const item of markers.values()) { const el = item.marker.getElement();
     if (item.group === 'transit-line') {
-      // 与 layoutLabels 共用同一套规范，避免这里用旧样式（白底 + 线路色字）
-      // 把徽章刷回去 —— 两处必须走同一个函数。
-      paintTransitBadge(el, item.featureColor ?? '#4277C9');
+      if (el.classList.contains('map-transit-badge')) paintTransitBadge(el, el.dataset.color!);
+      else for (const part of el.querySelectorAll<HTMLElement>('.map-transit-badge')) {
+        paintTransitBadge(part, part.dataset.color!);
+      }
     } else {
       el.style.color = labelColor(item.labelType, item.featureColor);
       el.style.fontSize = `${labelFontSize(item.labelType, item.transitStationName)}px`;
@@ -1070,6 +1218,10 @@ async function setLayerVisibility(layer: string, visible: boolean): Promise<void
     }
     map.setLayoutProperty(id, 'visibility', layerVisible ? 'visible' : 'none');
   }
+  if (layer === 'district' || layer === 'zone') {
+    const surface = areaSurfaces[layer];
+    if (surface) { surface.visible = visible; map.triggerRepaint(); }
+  }
   for (const item of markers.values()) if (item.group === layer) item.marker.getElement().style.display = visible ? '' : 'none';
   if (layer === 'watermark') watermark.style.display = visible ? '' : 'none';
   if (currentManifest) currentManifest.layers[layer] = visible;
@@ -1087,14 +1239,16 @@ async function setLayerVisibility(layer: string, visible: boolean): Promise<void
 }
 function applyContextStyling(): void {
   updateBaseTextLayers();
-  if (!map.getLayer('transit')) return;
   const active = contextMode === 'transit';
+  const overlay = showsTransportOverlay();
+  const fade = contextFade();
+  for (const kind of areaKinds) updateAreaSurfacePaint(kind);
+  if (!map.getLayer('transit')) return;
   const transitLayers = (contextOptions.layers ?? {}) as Record<string, unknown>;
   const transitLayerVisible = (key: string, fallback = true): boolean =>
     transitLayers[key] == null ? fallback : transitLayers[key] !== false;
-  const fade = contextFade();
   builtSurfaceLayer?.setFade(fade);
-  const set = (id: string, prop: Parameters<MapLibreMap['setPaintProperty']>[1], value: any) => {
+  const set = (id: string, prop: string, value: any) => {
     if (map.getLayer(id)) map.setPaintProperty(id, prop, value);
   };
   set('terrain', 'raster-opacity', Number(token('terrain').opacity ?? 1) * fade);
@@ -1125,15 +1279,17 @@ function applyContextStyling(): void {
   for (const layer of roadLayers) set(layer.id, `${layer.type}-opacity`, roadOpacity());
   const ordinaryPoiMode = String(contextOptions.ordinary_pois ?? 'hidden');
   set('pois', 'icon-opacity', active ? ordinaryPoiMode === 'visible' ? 1 : ordinaryPoiMode === 'dim' ? fade : 0 : 1);
-  set('transit-pois', 'icon-opacity', active ? 0 : 1);
-  set('transit', 'line-opacity', active ? 0 : 1);
-  set('stations', 'circle-opacity', active ? 0 : 1);
-  set('tv-line', 'line-opacity', active ? 1 : 0);
-  set('tv-line', 'line-width', Number(contextOptions.line_width ?? token('transit').width ?? 3));
-  set('tv-line', 'line-color', transitViewColor());
-  set('tv-station', 'circle-opacity', active ? 1 : 0);
-  set('tv-station', 'circle-radius', Math.max(3, Number(
-    contextOptions.station_size ?? token('transit').stationSize ?? 8) / 2));
+  set('transit-pois', 'icon-opacity', overlay ? 0 : 1);
+  set('transit', 'line-opacity', overlay ? 0 : 1);
+  set('stations', 'circle-opacity', overlay ? 0 : 1);
+  set('tv-line', 'line-opacity', overlay ? 1 : 0);
+  set('tv-line', 'line-width', transportLineWidth());
+  set('tv-line', 'line-color', ['get', 'color']);
+  set('tv-station', 'circle-opacity', overlay ? 1 : 0);
+  set('tv-station', 'circle-radius', transitStationMetrics().radius);
+  set('tv-station', 'circle-stroke-width', transitStationMetrics().stroke);
+  if (map.getLayer('tv-station-interchange')) map.setLayoutProperty('tv-station-interchange', 'icon-size',
+    transitStationMetrics().outer / 8);
   if (map.getLayer('tv-poi')) map.setLayoutProperty(
     'tv-poi', 'icon-size', Number(contextOptions.facility_icon_size ?? 24) / 24);
   for (const id of ['pois', 'transit-pois']) if (map.getLayer(id)) {
@@ -1151,13 +1307,15 @@ function applyContextStyling(): void {
   if (map.getLayer('tv-line')) map.setFilter('tv-line', transitViewLineFilter());
   updateTransitViewLayout();
   updatePoiOffsets(); updatePoiFilters();
-  if (active) {
+  if (overlay) {
     map.setLayoutProperty('transit', 'visibility', 'none');
     map.setLayoutProperty('stations', 'visibility', 'none');
     map.setLayoutProperty('transit-pois', 'visibility', 'none');
     map.setLayoutProperty('tv-line', 'visibility',
       transitLayerVisible('lines') ? 'visible' : 'none');
     map.setLayoutProperty('tv-station', 'visibility',
+      contextOptions.stations === false ? 'none' : 'visible');
+    map.setLayoutProperty('tv-station-interchange', 'visibility',
       contextOptions.stations === false ? 'none' : 'visible');
     map.setLayoutProperty('tv-poi', 'visibility',
       contextOptions.facilities_enabled === false ? 'none' : 'visible');
@@ -1168,6 +1326,7 @@ function applyContextStyling(): void {
     map.setLayoutProperty('transit-pois', 'visibility', currentManifest.layers.poi === false ? 'none' : 'visible');
     map.setLayoutProperty('tv-line', 'visibility', 'none');
     map.setLayoutProperty('tv-station', 'visibility', 'none');
+    map.setLayoutProperty('tv-station-interchange', 'visibility', 'none');
     map.setLayoutProperty('tv-poi', 'visibility', 'none');
     // 类型白名单：没带（undefined）就保持不过滤，带了就按类型收敛。
     if (map.getLayer('transit')) map.setFilter('transit', transitViewLineFilter());
@@ -1192,6 +1351,7 @@ const selectableObjects: Record<string, { objectType: string; styleLayer: string
   [BUILDINGS_3D]: {objectType: 'building', styleLayer: 'building', priority: 98},
   'tv-poi': {objectType: 'poi', styleLayer: 'poi', priority: 108},
   'tv-station': {objectType: 'transit_station', styleLayer: 'metro', priority: 97},
+  'tv-station-interchange': {objectType: 'transit_station', styleLayer: 'metro', priority: 97},
   'tv-line': {objectType: 'transit_line', styleLayer: 'metro', priority: 92},
   'transit-pois': {objectType: 'poi', styleLayer: 'poi', priority: 105},
   pois: {objectType: 'poi', styleLayer: 'poi', priority: 100},
@@ -1217,7 +1377,7 @@ function navigationPlaceAt(point: {x: number; y: number}): Endpoint['place'] {
   const building = sourceData.buildings?.features?.find((f: any) =>
     String(f.properties?.buildingId) === String(feature.properties?.buildingId));
   const selected = building ?? feature;
-  return {name: String(selected.properties?.name || feature.properties?.name || i18n.t('building', {ns: 'navigation'})), geometry: selected.geometry};
+  return {name: String(selected.properties?.name || feature.properties?.name || i18n.t('navigation_building')), geometry: selected.geometry};
 }
 
 function selectableLayerIds(): string[] {
@@ -1225,20 +1385,27 @@ function selectableLayerIds(): string[] {
 }
 function featureAt(point: {x: number; y: number}): any | null {
   const layers = selectableLayerIds();
-  if (!layers.length) return null;
   const radius = 5;
-  const features = map.queryRenderedFeatures(
-    [[point.x-radius, point.y-radius], [point.x+radius, point.y+radius]], {layers});
+  const left = point.x-radius, right = point.x+radius, top = point.y-radius, bottom = point.y+radius;
+  const features = layers.length ? map.queryRenderedFeatures([[left, top], [right, bottom]], {layers}) : [];
   const unique = new Map<string, any>();
   for (const feature of features) {
     const featureId = String(feature.properties?.featureId ?? feature.id ?? '');
     const key = `${feature.layer.id}:${featureId}`;
     if (!unique.has(key)) unique.set(key, feature);
   }
-  return [...unique.values()].sort((a, b) =>
+  const picked = [...unique.values()].sort((a, b) =>
     (selectableObjects[b.layer.id]?.priority ?? 0)
     - (selectableObjects[a.layer.id]?.priority ?? 0)
     || Number(b.properties?.rank ?? 0)-Number(a.properties?.rank ?? 0))[0] ?? null;
+  if (picked || !areaKinds.some(kind => areaSurfaces[kind]?.visible)) return picked;
+  const ring = [[left, top], [right, top], [right, bottom], [left, bottom], [left, top]]
+    .map(([x, y]) => map.unproject([x, y]).toArray());
+  for (const kind of ['zone', 'district'] as const) {
+    const feature = areaSurfaces[kind]?.pick([ring]);
+    if (feature) return {...feature, source: areaSources[kind], layer: {id: `${kind}-fill`}};
+  }
+  return null;
 }
 function setInspectorHighlight(feature: any | null): void {
   setFeatureHighlight('inspector-selection', feature);
@@ -1295,6 +1462,7 @@ function locateGeometry(geometry: GeoJSON.Geometry): void {
   }
   collect(coordinates);
   if (!points.length) return;
+  if (artworkView.active) { artworkView.locate(points as [number, number][]); return; }
   if (points.length === 1) { map.easeTo({center: points[0] as [number, number], zoom: Math.max(map.getZoom(), 15), duration: 260, bearing: outputBearing(outputRotation)}); return; }
   const bounds = new maplibregl.LngLatBounds();
   for (const point of points) bounds.extend(point as [number, number]);
@@ -1302,7 +1470,11 @@ function locateGeometry(geometry: GeoJSON.Geometry): void {
   map.fitBounds(bounds, {padding: {top: 65, bottom: 55, left: 35, right: Math.min(120, width / 4)},
     maxZoom: 17, duration: 260, bearing: outputBearing(outputRotation)});
 }
-function inspectFeature(feature: any): void {
+function pickObjectAt(point: {x: number; y: number}, artwork?: ArtworkPick): void {
+  const feature = featureAt(point);
+  if (feature) inspectFeature(feature, artwork); else clearInspectorSelection();
+}
+function inspectFeature(feature: any, artwork?: ArtworkPick): void {
   const descriptor = selectableObjects[feature.layer.id];
   if (!descriptor) return;
   const featureId = String(feature.properties?.featureId ?? feature.id ?? '');
@@ -1320,6 +1492,7 @@ function inspectFeature(feature: any): void {
     layerId: feature.layer.id,
     geometryType: String(feature.geometry?.type ?? ''),
     properties: {...(feature.properties ?? {})},
+    ...artwork,
   });
 }
 /**
@@ -1356,6 +1529,7 @@ function fitBounds(duration = 0): void {
   navigation.simulation.stop(duration === 0);
   preview3d.reset(false);
   if (!currentManifest) return;
+  map.resize();
   if (currentManifest.initialRegion?.length === 4) {
     fitWorldBounds(currentManifest.initialRegion, currentManifest.exportRegion ? 0 : 28, duration);
     return;
@@ -1430,11 +1604,7 @@ function clearScene(): void {
   for (const layer of roadLayers) delete selectableObjects[layer.id];
   roadLayers = [];
   builtSurfaceLayer = null; pendingBuiltSurface = null;
-}
-type Box = [number, number, number, number];
-function transitFeatureVisible(feature: any): boolean {
-  const ids = new Set(selectedTransitRouteIds());
-  return ids.has(Number(feature.properties?.lineId));
+  for (const kind of areaKinds) delete areaSurfaces[kind];
 }
 function stationVisibility(): (feature: any) => boolean {
   const ids = new Set(selectedTransitRouteIds());
@@ -1445,69 +1615,24 @@ function stationVisibility(): (feature: any) => boolean {
       || requestedTypes.has(String(feature.properties?.kind ?? '').toLowerCase()));
   };
 }
-function geoDistance(a: [number, number], b: [number, number]): number {
-  const rad = Math.PI / 180, lat1 = a[1] * rad, lat2 = b[1] * rad;
-  const dLat = (b[1] - a[1]) * rad, dLon = (b[0] - a[0]) * rad;
-  const h = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
-  return 12742000 * Math.asin(Math.min(1, Math.sqrt(h)));
-}
-function lineBadgePoints(feature: any, interval: number, maximum: number): [number, number][] {
-  const coordinates = feature.geometry?.coordinates as [number, number][] | undefined;
-  if (!coordinates || coordinates.length < 2 || maximum <= 0) return [];
-  const segments = coordinates.slice(1).map((point, index) => geoDistance(coordinates[index], point));
-  const total = segments.reduce((sum, value) => sum + value, 0);
-  if (total <= 0) return [];
-  const gap = Math.max(80, interval);
-  const count = Math.max(1, Math.min(maximum, Math.floor(total / gap) || 1));
-  const targets = Array.from({length: count}, (_, index) => (index + .5) * total / count);
-  const result: [number, number][] = [];
-  for (const target of targets) {
-    let traversed = 0;
-    for (let index = 0; index < segments.length; index++) {
-      const length = segments[index];
-      if (target <= traversed + length || index === segments.length - 1) {
-        const ratio = length > 0 ? Math.max(0, Math.min(1, (target - traversed) / length)) : 0;
-        result.push([
-          coordinates[index][0] + (coordinates[index + 1][0] - coordinates[index][0]) * ratio,
-          coordinates[index][1] + (coordinates[index + 1][1] - coordinates[index][1]) * ratio,
-        ]);
-        break;
-      }
-      traversed += length;
-    }
-  }
-  return result;
-}
 function resolvedLabelType(feature: any, group: string): string {
   if (group === 'transit') return 'stop';
   if (group === 'poi') return 'poi';
   return String(feature.properties?.labelType ?? 'default').toLowerCase();
 }
-function labelFontSize(labelType: string, transitStationName = false): number {
-  if (contextMode === 'transit' && transitStationName) {
-    return Math.max(6, Math.round(Number(contextOptions.station_name_size ?? 12)
-      * Math.max(map.getCanvas().clientWidth, 1) / 1024));
-  }
+function labelFontSize(labelType: string, _transitStationName = false): number {
   const label = token('label');
+  if (_transitStationName && contextOptions.station_name_size != null) return Number(contextOptions.station_name_size);
   const metrics = label.metrics;
   if (metrics) {
-    if (labelType === 'stop') return Math.max(8, Math.round(resolveTextSize(metrics.station?.size ?? 11)));
+    if (labelType === 'stop') return resolveTextSize(metrics.station?.size ?? 11);
     let size = resolveTextSize(metrics.sizes?.[labelType] ?? label.sizes?.[labelType] ?? 12);
-    if (labelType === 'poi') {
-      if (typeof metrics.poiMaxSize === 'number') size = Math.min(size, metrics.poiMaxSize);
-      if (contextMode === 'transit') size *= Number(contextOptions.label_scale ?? 1) * metrics.poiTransitScale;
-    }
     return size;
   }
   const configured = Number(label.sizes?.[labelType] ?? label.size ?? 12);
-  const contextScale = contextMode === 'transit' && labelType === 'stop'
-    ? Number(contextOptions.label_scale ?? 1) : 1;
-  return configured * contextScale;
+  return configured;
 }
-function resolveTextSize(value: number | {fixed?: number; scaled?: number}): number {
-  const scale = 512 * 2 ** map.getZoom() / (360 * 111195) / (4096 / 17280);
-  return typeof value === 'number' ? value : Number(value.fixed ?? 0) + Number(value.scaled ?? 0) * scale;
-}
+function resolveTextSize(value: number): number { return Number(value); }
 function labelColor(labelType: string, featureColor?: string): string {
   const label = token('label');
   if (labelType === 'poi' && label.colors?.poi) return String(label.colors.poi);
@@ -1531,12 +1656,12 @@ function labelHalo(labelType: string): boolean {
   const halos = (label.halos ?? {}) as Record<string, boolean>;
   return Boolean(halos[labelType] ?? label.halo ?? true);
 }
-/** 该类别的描边颜色与宽度（px）；宽度由主题 stroke_width 换算到 1024 基准下发。 */
+/** 该类别的描边颜色与宽度（px）；宽度由主题 stroke_width 应用元素倍率后下发。 */
 function labelStroke(labelType: string): {color: string; width: number} {
   const label = token('label');
   if (label.metrics) {
     if (labelType === 'poi') return {color: String(label.strokes?.poi?.color ?? '#FFFFFF'),
-      width: label.metrics.poiStrokeRatio > 0 ? Math.max(1, Math.round(labelFontSize('poi') * label.metrics.poiStrokeRatio)) : 0};
+      width: Number(label.metrics.poiStrokeWidth ?? 0)};
     if (labelType === 'stop') return {color: String(label.metrics.station?.stroke_fill ?? '#FFFFFF'),
       width: Number(label.metrics.station?.stroke_width ?? (label.metrics.station?.halo === false ? 0 : 1))};
     return {color: String(label.strokes?.[labelType]?.color ?? '#FFFFFF'),
@@ -1550,7 +1675,7 @@ function labelStroke(labelType: string): {color: string; width: number} {
     width: Number.isFinite(width) ? width : 1,
   };
 }
-/** 把描边开关 + 颜色/宽度落到元素上；text-shadow 的形状写在 style.css 里。 */
+/** 把主题描边应用到元素；先描边后填字面，双倍线宽对应相同的外扩宽度。 */
 function applyLabelHalo(el: HTMLElement, labelType: string): void {
   const stroke = labelStroke(labelType);
   const width = labelHalo(labelType) ? stroke.width : 0;
@@ -1584,21 +1709,15 @@ function nativeTextSize(labelType: string, stroke: 'width' | 'blur' | null = nul
   const value = stroke ? label.metrics?.[stroke === 'width' ? 'strokeWidths' : 'strokeBlurs']?.[labelType]
       ?? label.strokes?.[labelType]?.[stroke] ?? 0
     : label.metrics?.sizes?.[labelType] ?? label.sizes?.[labelType] ?? label.size ?? 12;
-  const cfg = token('baseText').road?.size_z ?? {};
-  const multiplier: ExpressionSpecification = ['match', ['get', 'roadLevel'],
-    'highway', Number(cfg.highway ?? 1.6), 'main', Number(cfg.main ?? cfg.road_wide ?? 1.25),
-    'branch', Number(cfg.branch ?? cfg.road ?? 1),
-    'special', Number(cfg.special ?? cfg.walk ?? .75),
-    'beautification', Number(cfg.beautification ?? cfg.walk ?? .75), 1];
-  // 与 Vellum 一样，继续放大时保持最终屏幕尺寸，不无限增大。
-  const stops = Array.from({length: 11}, (_, i) => {
-    const z = i + 8;
-    const size = typeof value === 'number' ? value
-      : Number(value.fixed ?? 0) + Number(value.scaled ?? 0) * 2 * renderScaleAt(z);
-    const scaled = labelType === 'road' ? ['*', size, multiplier] : size;
-    return [z, stroke ? ['max', 0, scaled] : ['max', 6, scaled]];
-  }).flat();
-  return ['interpolate', ['exponential', 2], ['zoom'], ...stops] as ExpressionSpecification;
+  const sizes = token('baseText').road?.by_level;
+  if (labelType === 'road' && sizes && stroke !== 'blur') {
+    const expression: unknown[] = ['match', ['get', 'roadLevel']];
+    for (const [level, config] of Object.entries(sizes)) expression.push(level,
+      Number((config as any)[stroke ? 'stroke_width' : 'size']));
+    expression.push(Number(value));
+    return expression as ExpressionSpecification;
+  }
+  return ['literal', Number(value)];
 }
 function baseTextFilter(scope: string): ExpressionSpecification {
   const visibility = token('label').visibility ?? {};
@@ -1666,6 +1785,7 @@ function cancelLabelLayout(): void {
   window.clearTimeout(labelTimer); labelTimer = 0; labelDirty = false; labelLayoutTime = -Infinity;
 }
 function scheduleLabels(): void {
+  if (artworkView.active) return;
   labelDirty = true;
   if (labelTimer || !currentManifest) return;
   const delay = Math.max(0, 250 - (performance.now() - labelLayoutTime));
@@ -1698,11 +1818,14 @@ function placeLabel(id: string, coordinates: [number, number], offset: [number, 
   return element;
 }
 function layoutLabels(): void {
+  if (artworkView.active) return;
   if (!currentManifest || map.isMoving()) return;
   labelLayoutTime = performance.now();
-  const renderedLayers = contextMode === 'transit'
+  const overlay = showsTransportOverlay();
+  const ordinary = contextMode === 'transit' ? contextOptions.ordinary_pois !== 'hidden' && contextOptions.ordinary_pois != null : currentManifest.layers.poi !== false;
+  const renderedLayers = overlay
     ? [contextOptions.facilities_enabled === false ? '' : 'tv-poi',
-       String(contextOptions.ordinary_pois ?? 'hidden') === 'hidden' ? '' : 'pois']
+       ordinary ? 'pois' : '']
     : currentManifest.layers.poi === false ? [] : ['pois', 'transit-pois'];
   const layers = renderedLayers.filter(id => id && map.getLayer(id));
   // GeoJSON 更新及瓦片切换期间，符号放置结果可能仍引用上一版要素索引。
@@ -1714,7 +1837,8 @@ function layoutLabels(): void {
   const poiNameVisibility = (token('poiVisibility').names ?? {}) as Record<string, boolean>;
   const key = JSON.stringify([currentRevision, map.getZoom(), map.getCenter(), map.getCanvas().clientWidth,
     map.getCanvas().clientHeight, icons.map(f => [f.id, f.geometry, f.properties?.stationAnchor, f.layer.id]).sort((a, b) => String(a[0]).localeCompare(String(b[0]))), currentManifest.layers,
-    map.getBearing(), map.getPitch(), contextMode, contextOptions, token('transit').label, labelVisibility, token('baseText'),
+    map.getBearing(), map.getPitch(), contextMode, contextOptions, token('transit').label,
+    token('transit').labelStyle, labelVisibility, token('baseText'),
     poiNameVisibility, effectivePoiIcons()]);
   if (key === labelLayoutKey) return;
   labelLayoutKey = key;
@@ -1732,27 +1856,27 @@ function layoutLabels(): void {
   for (const f of icons) { if (f.geometry.type !== 'Point') continue;
     const p = poiScreenPoint(f), r = poiDimensions(f.layer.id === 'tv-poi')[0] / 2;
     reserve([p.x-r, p.y-r, p.x+r, p.y+r]); }
-  const stationRadius = Math.max(3, Number(
-    contextOptions.station_size ?? token('transit').stationSize ?? 8) / 2);
-  if (contextMode === 'transit' && contextOptions.stations !== false) {
+  const stationRadius = transitStationMetrics().outer;
+  const stationPoints: Point[] = [];
+  if (overlay && contextOptions.stations !== false) {
     for (const feature of transitStationDisplayFeatures) {
       const p = map.project(feature.geometry.coordinates as [number, number]);
+      stationPoints.push([p.x, p.y]);
       reserve([p.x-stationRadius, p.y-stationRadius, p.x+stationRadius, p.y+stationRadius]);
     }
   }
   // 附属名称只跟随已显示图标；显式空图标保留纯文字。
   const iconById = new Map(icons.map(f => [String(f.properties?.poiId ?? f.properties?.featureId ?? f.id), f]));
   const width = map.getCanvas().clientWidth, height = map.getCanvas().clientHeight;
-  const sources = contextMode === 'transit'
-    ? [...transitPoiDisplayFeatures, ...(String(contextOptions.ordinary_pois ?? 'hidden') === 'hidden'
-      ? [] : mapPoiDisplayFeatures.filter((f: any) => f.properties?.owner !== 'transit'))]
+  const sources = overlay
+    ? [...transitPoiDisplayFeatures, ...(ordinary ? mapPoiDisplayFeatures.filter((f: any) => f.properties?.owner !== 'transit') : [])]
     : currentManifest.layers.poi === false ? [] : mapPoiDisplayFeatures;
   const labelSeen = new Set<string>();
   const selectedRoutes = new Set(selectedTransitRouteIds());
   const iconGroups = effectivePoiIcons();
   const bounds = map.getBounds();
   const stationIcons = contextOptions.station_name_placement === 'station'
-    && contextOptions.stations !== false && currentManifest.layers.metro !== false
+    && contextOptions.stations !== false && overlay
     ? transitStationDisplayFeatures : [];
   const labelIcons = sources.filter((f: any) => {
     if (f.geometry.type !== 'Point' || !bounds.contains(f.geometry.coordinates as [number, number])) return false;
@@ -1767,12 +1891,11 @@ function layoutLabels(): void {
     if (iconGroups[group] === false) return false;
     if (properties.iconStatus !== 'empty' && !iconById.has(id)) return false;
     if (map.getZoom() < Number(properties.minZoom ?? 0)) return false;
-    if (contextMode === 'transit' && properties.owner === 'transit' && contextOptions.facilities_enabled === false) return false;
+    if (overlay && properties.owner === 'transit' && contextOptions.facilities_enabled === false) return false;
     const point = poiScreenPoint(f);
     if (point.x < 0 || point.y < 0 || point.x > width || point.y > height) return false;
-    return Boolean(properties.drawName) && poiNameVisibility[group] !== false
-      && (contextMode !== 'transit' || group !== 'transit'
-        || contextOptions.station_name_placement === 'icon');
+    return Boolean(properties.drawName) && (overlay && group === 'transit'
+      ? contextOptions.station_name_placement === 'icon' : poiNameVisibility[group] !== false);
   });
   const candidates = [...labelIcons, ...stationIcons]
     .map((f: any) => ({f, group: 'poi', field: 'name'}))
@@ -1786,18 +1909,18 @@ function layoutLabels(): void {
   });
   for (const {f, group, field} of candidates) {
     const stationSymbol = f.properties?.symbolKind === 'station';
-    const contextVisible = stationSymbol || contextMode === 'transit' || currentManifest.layers.poi !== false;
+    const contextVisible = stationSymbol || overlay || currentManifest.layers.poi !== false;
     if (!contextVisible || f.geometry.type !== 'Point' || !f.properties?.[field]) continue;
     const p = poiScreenPoint(f);
     const labelType = stationSymbol ? 'stop' : resolvedLabelType(f, group);
-    const transitStationName = contextMode === 'transit'
+    const transitStationName = overlay
       && (stationSymbol || f.properties?.owner === 'transit');
     const fontSize = labelFontSize(labelType, transitStationName);
-    if (fontSize < 6) continue;
+    if (fontSize < (transitStationName ? 1 : 6)) continue;
     const font = `${fontSize}px ${labelFontFamily(labelType)}`;
     const text = String(f.properties[field]);
     const width = measuredLabelWidth(text, font)+10, height = fontSize+8;
-    const gap = (stationSymbol ? stationRadius : contextMode === 'transit' && f.properties?.owner === 'transit'
+    const gap = (stationSymbol ? stationRadius : overlay && f.properties?.owner === 'transit'
       ? Number(contextOptions.facility_icon_size ?? 24) / 2 : radius) + 5;
     const offsets: [number, number][] = [
       [gap + width/2, 0], [-gap - width/2, 0],
@@ -1805,7 +1928,7 @@ function layoutLabels(): void {
     ];
     const score = ([x, y]: [number, number]): number => overlapArea(
       [p.x+x-width/2, p.y+y-height/2, p.x+x+width/2, p.y+y+height/2]);
-    const avoid = token('poi')[contextMode === 'transit' ? 'transitOverlapAvoidance' : 'overlapAvoidance'] !== false;
+    const avoid = token('poi')[overlay ? 'transitOverlapAvoidance' : 'overlapAvoidance'] !== false;
     const position = !avoid ? offsets[0]
       : offsets.reduce((best, candidate) => score(candidate) < score(best) ? candidate : best);
     const [offsetX, offsetY] = position;
@@ -1824,42 +1947,82 @@ function layoutLabels(): void {
     applyLabelHalo(el, labelType);
   }
   const badge = token('transit').label ?? {};
-  if (contextMode === 'transit' && badge.enabled !== false
-      && contextOptions.line_label_enabled !== false
-      && (contextOptions.layers ?? {}).lines !== false
-     ) {
+  if (overlay && (contextOptions.line_label_enabled ?? badge.enabled) !== false
+      && (contextOptions.layers ?? {}).lines !== false) {
     const metrics = transitBadgeMetrics();
     const {style: badgeStyle, size: badgeSize} = metrics;
-    const interval = Number(badge.repeatInterval ?? contextOptions.line_label_interval ?? 600);
-    const maximum = Number(badge.maxPerLine ?? 4);
-    const font = `${badgeStyle.fontWeight} ${badgeSize}px `
-      + `"${badgeStyle.font}", "Microsoft YaHei", sans-serif`;
-    for (const [featureIndex, feature] of (sourceData.transit?.features ?? []).entries()) {
-      if (!transitFeatureVisible(feature)) continue;
-      const name = String(feature.properties?.name ?? '').trim();
+    const options = token('transit').labelStyle?.layout ?? {};
+    const interval = Number(contextOptions.line_label_interval ?? options.repeat_interval ?? badge.repeatInterval ?? 600);
+    const maximum = Math.max(1, Number(options.max_per_line ?? badge.maxPerLine ?? 4));
+    const step = Math.min(interval > 0 ? interval : Infinity, options.candidate_interval ?? 110);
+    const limit = Math.max(maximum, options.candidate_limit ?? 72);
+    const padding = Number(options.clearance_padding ?? 14);
+    const font = `${badgeStyle.fontWeight} ${badgeSize}px "${badgeStyle.font}", "Microsoft YaHei", sans-serif`;
+    type Member = {name: string; color: string; kind: string; width: number};
+    const samples: Candidate<Member>[] = [];
+    for (const feature of sourceData.transit?.features ?? []) {
+      const props = feature.properties;
+      if (!selectedRoutes.has(Number(props.lineId))) continue;
+      const name = String(props.name ?? '').trim();
       if (!name) continue;
-      const color = transitViewFeatureColor(feature, featureIndex);
-      const width = Math.min(180, measuredLabelWidth(name, font))
-        + (metrics.padX + metrics.outline) * 2;
-      const height = badgeSize + (metrics.padY + metrics.outline) * 2;
-      for (const [pointIndex, coordinate] of lineBadgePoints(feature, interval, maximum).entries()) {
-        const p = map.project(coordinate), box: Box = [p.x-width/2, p.y-height/2, p.x+width/2, p.y+height/2];
-        if (box[0] < 0 || box[1] < 0 || box[2] > map.getCanvas().clientWidth
-            || box[3] > map.getCanvas().clientHeight || overlaps(box)) continue;
-        reserve(box);
-        const id = `badge:${feature.properties.featureId ?? feature.id ?? featureIndex}:${pointIndex}`;
-        kept.add(id);
-        const el = placeLabel(id, coordinate, [0, 0], {group: 'transit-line', labelType: 'transit-line', featureColor: color});
-        el.classList.add('map-transit-badge');
-        if (el.textContent !== name) el.textContent = name;
-        paintTransitBadge(el, color, metrics);
+      const color = String(props.color), kind = String(props.kind ?? '').toLowerCase();
+      const member = {name, color, kind, width: Math.min(180, measuredLabelWidth(name, font)) + metrics.extraWidth};
+      const key = JSON.stringify([name, color.toLowerCase()]);
+      const paths: Point[][] = feature.geometry.type === 'MultiLineString'
+        ? feature.geometry.coordinates : [feature.geometry.coordinates];
+      // 先裁到视野，避免长线路在屏幕外用尽 PNG 的候选点配额。
+      const projected = paths.map(path => path.map(coord => map.project(coord)));
+      for (const path of clipLine(projected, 0, 0, width, height)) {
+        const pixels = path.map((p): Point => [p.x, p.y]);
+        for (const [x, y] of candidate_points(pixels, step, limit, width, height)) samples.push([x, y, key, member]);
       }
+    }
+    const seam = Math.max(1, Math.round(badgeSize * .4)) / 2;
+    const groups = group_candidates(samples, options.merge_dist ?? badgeStyle.mergeDistance);
+    const ranked: [number, number, number, number, {index: number; box: Box}][] = [];
+    groups.forEach(([x, y, , members], index) => {
+      const w = members.reduce((sum, m) => sum + m.width, seam * (members.length - 1));
+      const box: Box = [x - w/2, y - metrics.height/2, x + w/2, y + metrics.height/2];
+      const [outside, cost, clearance] = obstacle_score(box, stationPoints, [width, height], padding);
+      if (outside > 0) return;
+      const pad = Math.max(2, Math.round(padding));
+      const area = overlapArea([box[0]-pad, box[1]-pad, box[2]+pad, box[3]+pad]);
+      const occupancy = area / ((w + 2*pad) * (metrics.height + 2*pad));
+      ranked.push([outside, cost, occupancy, -clearance, {index, box}]);
+    });
+    rank_candidates(ranked);
+    const placed: Placed[] = [], counts: Record<string, number> = {};
+    for (const [, , , , {index, box}] of ranked) {
+      const [x, y, keys, members] = groups[index];
+      if (placement_reason(x, y, box, keys, options.min_gap ?? 350, maximum, placed, counts, overlaps) !== 'placed') continue;
+      reserve(box);
+      const id = `badge:${index}:${JSON.stringify(keys)}`;
+      kept.add(id);
+      const el = placeLabel(id, map.unproject([x, y]).toArray(), [0, 0], {group: 'transit-line', labelType: 'transit-line'});
+      if (members.length > 1) {
+        el.classList.add('map-transit-badge-group');
+        el.style.gap = `${seam}px`;
+        while (el.childElementCount < members.length) el.append(document.createElement('span'));
+      }
+      members.forEach((member, i) => {
+        const badge = members.length === 1 ? el : el.children[i] as HTMLElement;
+        badge.classList.add('map-transit-badge');
+        badge.dataset.routeName = member.name;
+        badge.dataset.routeKind = member.kind;
+        badge.dataset.color = member.color;
+        paintTransitBadge(badge, member.color, metrics);
+      });
     }
   }
   for (const [id, item] of markers) if (!kept.has(id)) { item.marker.remove(); markers.delete(id); }
 }
 map.on('move', scheduleLabels);
 map.on('moveend', scheduleLabels);
+if (QUALITY_SAMPLE) map.on('moveend', event => {
+  if (event.originalEvent) postEvent('sampleCamera', {
+    center: map.getCenter().toArray(), zoom: map.getZoom(), bearing: map.getBearing(), pitch: map.getPitch(),
+  });
+});
 map.on('idle', scheduleLabels);
 map.on('sourcedata', event => {
   if (event.isSourceLoaded && ['map-pois-displaced', 'transit-view-pois-displaced'].includes(event.sourceId)) scheduleLabels();
@@ -1885,22 +2048,28 @@ function embeddedImage(relativeUrl: string): string | undefined {
 // 均按同款相对 URL 规约取数，applyScene 的加载逻辑因此完全复用。
 type ResourceProvider = {
   base: string;
-  json(url: URL, signal?: AbortSignal): Promise<any>;
-  image(url: string): Promise<ImageBitmap>;
+  json(url: URL, trace?: PreviewPerformance, signal?: AbortSignal): Promise<any>;
+  image(url: string, trace?: PreviewPerformance): Promise<ImageBitmap>;
   imageUrlFor(url: string): string;
 };
 function httpProvider(base: string): ResourceProvider {
   return {
     base,
-    async json(url: URL, signal?: AbortSignal) {
+    async json(url: URL, trace?: PreviewPerformance, signal?: AbortSignal) {
       const response = await fetch(url, {signal});
       if (!response.ok) throw new Error(`${url.pathname}: HTTP ${response.status}`);
-      return response.json();
+      if (!trace?.enabled) return response.json();
+      const key = url.pathname.split('/').pop()!;
+      const text = await trace.async(`resource.${key}.body`, () => response.text());
+      return trace.sync(`resource.${key}.parse`, () => JSON.parse(text));
     },
-    async image(url: string) {
+    async image(url: string, trace?: PreviewPerformance) {
       const response = await fetch(new URL(url, base));
       if (!response.ok) throw new Error(`image HTTP ${response.status}`);
-      return createImageBitmap(await response.blob());
+      if (!trace?.enabled) return createImageBitmap(await response.blob());
+      const key = url.split('?')[0];
+      const blob = await trace.async(`resource.${key}.body`, () => response.blob());
+      return trace.async(`resource.${key}.decode`, () => createImageBitmap(blob));
     },
     imageUrlFor(url: string) { return new URL(url, base).href; },
   };
@@ -1928,10 +2097,23 @@ function embeddedProvider(): ResourceProvider {
   };
 }
 // 读取场景清单及资源，并把完整场景发布到预览地图。
-async function loadScene(provider: ResourceProvider, requestedRevision: number): Promise<void> {
+async function loadScene(provider: ResourceProvider, requestedRevision: number,
+  trace = new PreviewPerformance()): Promise<void> {
+  artworkSceneReady = false; artworkView.leave();
+  const loadStarted = trace.origin;
   const generation = ++loadGeneration;
   const manifestUrl = provider.base;
   const manifest = await provider.json(new URL(manifestUrl)) as SceneManifest;
+  const manifestReady = performance.now();
+  trace.enabled = !!manifest.performanceDiagnostics;
+  trace.record('manifest', loadStarted);
+  const originalProvider = provider;
+  provider = {...originalProvider,
+    json: (url, _trace, signal) => trace.async(`resource.${url.pathname.split('/').pop()}.total`,
+      () => originalProvider.json(url, trace, signal)),
+    image: url => trace.async(`resource.${url.split('?')[0]}.total`,
+      () => originalProvider.image(url, trace)),
+  };
   if (generation !== loadGeneration || manifest.revision < currentRevision || manifest.revision !== requestedRevision) {
     postEvent('sceneDiscarded', { sceneId: manifest.sceneId, revision: requestedRevision, outcome: 'stale' }); return;
   }
@@ -1939,12 +2121,15 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number):
   // 早期导出只保存 transit；普通地图的交通显隐使用 metro 分组。
   if (EMBEDDED && !('metro' in manifest.layers) && 'transit' in manifest.layers) manifest.layers.metro = manifest.layers.transit;
   const changed = manifest.sceneId !== currentSceneId;
+  const revisionChanged = manifest.revision !== currentRevision;
   const previousManifest = currentManifest;
   const needs = (key: string) => changed || manifest.sourceRevisions[key] !== previousManifest?.sourceRevisions[key];
   trafficRequest?.abort();
+  if (changed || revisionChanged) {
+    previewControls.resetSearch(); setFeatureHighlight('search-selection', null);
+  }
   if (changed) {
     ++focusAnimationGeneration; map.stop(); navigation.simulation.stop();
-    previewControls.resetSearch(); setFeatureHighlight('search-selection', null);
     clearWorldSelection(false); clearInspectorSelection(false); clearScene(); sourceData = {};
     for (const id of registeredIcons) if (map.hasImage(id)) map.removeImage(id);
     registeredIcons.clear(); currentSceneId = ''; currentManifest = null; sceneProvider = null;
@@ -1954,17 +2139,29 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number):
   let atlas: ImageBitmap | null = null, atlasIndex: Record<string, any> = {};
   let terrainUrl: string | null = null;
   let builtSurface: ImageBitmap | null = null;
+  const sourceStarts = new Map<string, {key: string; start: number}>();
+  const sourceReady = (event: maplibregl.MapSourceDataEvent) => {
+    const item = sourceStarts.get(event.sourceId);
+    if (item && event.isSourceLoaded) {
+      trace.record(`source_ready.${item.key}`, item.start);
+      sourceStarts.delete(event.sourceId);
+    }
+  };
+  if (trace.enabled) map.on('sourcedata', sourceReady);
   try {
-    if (needs('pois') || needs('transitViewPois')) { [atlas, atlasIndex] = await Promise.all([provider.image(manifest.poiAtlas.image), provider.json(new URL(manifest.poiAtlas.index, manifestUrl))]); }
+    if (!QUALITY_SAMPLE && (needs('pois') || needs('transitViewPois'))) { [atlas, atlasIndex] = await Promise.all([provider.image(manifest.poiAtlas.image), provider.json(new URL(manifest.poiAtlas.index, manifestUrl))]); }
     if (needs('terrain') && manifest.sources.terrain) {
       terrainUrl = provider.imageUrlFor(manifest.sources.terrain);
     }
     if (needs('builtArea') && manifest.surfaceFields?.builtArea)
       builtSurface = await provider.image(manifest.surfaceFields.builtArea.url);
     if (needs('labelFonts')) await loadSceneFonts(manifest, manifestUrl);
+    const resourcesReady = performance.now();
+    trace.record('resources', manifestReady);
     if (generation !== loadGeneration || manifest.revision < currentRevision) {
       postEvent('sceneDiscarded', { sceneId: manifest.sceneId, revision: requestedRevision, outcome: 'stale' }); return;
     }
+    const iconsStarted = performance.now();
     if (atlas) {
       const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d', {willReadFrequently: true})!;
       const searchIcons = new Map<string, ImageData>();
@@ -1978,6 +2175,18 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number):
       }
       previewControls.setSearchIcons(searchIcons);
     }
+    const interchangeIcon = manifest.theme.transit?.interchangeIcon;
+    if (interchangeIcon && !map.hasImage('cmm-station-interchange')) {
+      const image = new Image();
+      image.src = interchangeIcon;
+      await image.decode();
+      const canvas = document.createElement('canvas'); canvas.width = canvas.height = 64;
+      const ctx = canvas.getContext('2d')!;
+      ctx.imageSmoothingQuality = 'high'; ctx.drawImage(image, 0, 0, 64, 64);
+      map.addImage('cmm-station-interchange', ctx.getImageData(0, 0, 64, 64), {pixelRatio: 4});
+    }
+    trace.record('apply.icons', iconsStarted);
+    const surfacesStarted = performance.now();
     currentSceneId = manifest.sceneId; currentRevision = manifest.revision;
     currentManifest = manifest; currentTheme = manifest.theme; sceneProvider = provider;
     preview3d.setAvailable(EMBEDDED || !manifest.exportRegion);
@@ -2033,6 +2242,7 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number):
         customLayers.unshift('terrain');
       }
     }
+    trace.record('apply.surfaces', surfacesStarted);
     const landUseChanged = !changed && Boolean(manifest.sources.landUse) !== Boolean(previousManifest?.sources.landUse);
     if (landUseChanged) {
       map.removeLayer('land-use');
@@ -2049,6 +2259,10 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number):
       const data = fetched[key] ?? {type: 'FeatureCollection', features: []}; sourceData[key] = data;
       // 原始 POI 供搜索、检查和锚定使用，绘制只为 displaced 数据建立索引。
       if (key === 'pois' || key === 'transitViewPois') continue;
+      if (usesAreaSurfaces(manifest) && (key === 'districts' || key === 'zones')) {
+        areaSurfaces[key === 'districts' ? 'district' : 'zone']?.setFeatures(data.features);
+        continue;
+      }
       if (key === 'roads') {
         navigationRoadProperties.clear();
         for (const feature of data.features) {
@@ -2058,12 +2272,18 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number):
         }
       }
       const source = map.getSource(id) as maplibregl.GeoJSONSource | undefined;
-      if (source) source.setData(data); else map.addSource(id, {type: 'geojson', data, maxzoom: key === 'labels' ? 14 : 18, buffer: 256, tolerance: sourceTolerances[key] ?? 0, promoteId: 'featureId'});
+      if (trace.enabled) sourceStarts.set(id, {key, start: performance.now()});
+      trace.sync(`apply.source.${key}`, () => {
+        if (source) source.setData(data); else map.addSource(id, {type: 'geojson', data, maxzoom: key === 'labels' ? 14 : 18, buffer: 256, tolerance: previewTolerance(key, previewQuality), promoteId: 'featureId'});
+      });
     }
+    trace.sync('apply.layers', () => {
       if (changed) { addDomains(); pendingBuiltSurface = null; }
       else if (needsFromData('roads', fetched)) rebuildRoadLayers();
-    if (landUseChanged) addLandUseLayer();
-    if (needsFromData('buildings', fetched)) preview3d.setBuildings(sourceData.buildings?.features ?? []);
+      if (landUseChanged) addLandUseLayer();
+    });
+    const stylingStarted = performance.now();
+    if (changed || needsFromData('buildings', fetched)) preview3d.setBuildings(sourceData.buildings?.features ?? [], manifest.sceneId);
     applyRenderStack();
     applyTheme(manifest.theme);
     for (const [layer, visible] of Object.entries(manifest.layers)) {
@@ -2078,6 +2298,9 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number):
     if (changed && manifest.navigationRoute && !EMBEDDED) void navigation.restoreRoute(manifest.navigationRoute);
     if (changed) { fitBounds(); labelLayoutKey = ''; }
     // 同场景增量更新保留用户当前的相机朝向。
+    trace.record('apply.styling_camera', stylingStarted);
+    const applied = performance.now();
+    trace.record('apply', resourcesReady);
     // idle 发生在工作进程处理、瓦片上传和渲染之后；两次动画帧回调可能早于 GeoJSON 处理完成。
     const completion = await new Promise<string>(resolve => {
       const finish = (result: string) => {
@@ -2089,26 +2312,91 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number):
       const timer = setTimeout(() => finish('timeout'), 60000);
       map.on('idle', idle); map.on('render', stale); map.triggerRepaint();
     });
+    trace.record('presentation', applied, completion);
     if (generation !== loadGeneration) {
       postEvent('sceneDiscarded', {sceneId: manifest.sceneId, revision: requestedRevision, outcome: 'stale'}); return;
     }
+    const presented = performance.now();
+    trace.record('total', loadStarted, completion);
     updateRoadWarning();
     if (changed || ['buildings', 'roads', 'districts', 'zones', 'pois', 'transitViewPois', 'stations'].some(key => needsFromData(key, fetched)))
       previewControls.rebuild(sourceData, !changed);
     updateQuickLayers(true);
+    artworkSceneReady = true;
     postEvent('sceneLoaded', {bundleId: new URL(manifestUrl).pathname.split('/').at(-2),
-      completion: (manifest as any).completion ?? 'complete', performance: {completion} });
+      completion: (manifest as any).completion ?? 'complete', performance: {
+      steps: trace.steps, completion,
+      workerCount: maplibregl.getWorkerCount(),
+      manifestMs: manifestReady - loadStarted,
+      resourcesMs: resourcesReady - manifestReady,
+      applyMs: applied - resourcesReady,
+      presentationMs: presented - applied,
+      totalMs: presented - loadStarted,
+    } });
     if (completion === 'timeout') map.once('idle', () => {
       if (generation === loadGeneration) postEvent('scenePresentationReady', {completion: (manifest as any).completion ?? 'complete'});
     });
-  } finally {
+  } finally { map.off('sourcedata', sourceReady);
     atlas?.close(); builtSurface?.close();
   }
 }
 function needsFromData(key: string, data: Record<string, any>): boolean { return Object.prototype.hasOwnProperty.call(data, key); }
 async function dispatch(command: PreviewCommand): Promise<void> {
-  let outcome = 'applied';
+  const commandStarted = performance.now(); let outcome = 'applied';
+  const loadTrace = command.type === 'loadScene' ? new PreviewPerformance() : undefined;
   try {
+  if (['beginArtwork', 'loadArtwork', 'setArtworkView', 'setArtworkTool', 'artworkObserve', 'locateArtwork', 'cancelArtworkLocate', 'leaveArtwork'].includes(command.type)) {
+    if (!artworkSceneReady || currentSceneId &&
+        (command.sceneId !== currentSceneId || command.revision !== currentRevision)) return;
+    if (command.type === 'beginArtwork') {
+      if (!artworkView.request(command.documentEpoch!, command.artworkRevision!)) outcome = 'stale';
+      cancelLabelLayout();
+    } else if (command.type === 'loadArtwork') {
+      if (!command.artwork) throw new Error('Missing artwork payload');
+      const artwork = command.artwork;
+      const base = artwork.previewBase;
+      const prepareBase = base ? async () => {
+        if (base.sceneId !== currentSceneId || base.revision !== currentRevision ||
+            base.layoutRevision !== artwork.revision)
+          throw new Error('Artwork base belongs to another scene or revision');
+        const missing = base.requiredSources.filter(source => !currentManifest?.sources[source] &&
+          !(source === 'builtArea' && currentManifest?.surfaceFields?.builtArea));
+        if (missing.length) throw new Error(`Artwork base sources are not ready: ${missing.join(', ')}`);
+        if (!artworkBrowseTheme && currentTheme) artworkBrowseTheme = structuredClone(currentTheme);
+        if (!artworkBrowseLayers && currentManifest) artworkBrowseLayers = {...currentManifest.layers};
+        const changed = applyArtworkTheme(base.theme as FullTheme);
+        for (const layer of Object.keys(groups)) {
+          if (!artworkView.matches(artwork.documentEpoch, artwork.revision)) return false;
+          if (!['transit', 'metro', 'poi', 'label', 'watermark'].includes(layer) &&
+              currentManifest?.layers[layer] !== base.layers.includes(layer))
+            await setLayerVisibility(layer, base.layers.includes(layer));
+        }
+        return changed;
+      } : undefined;
+      if (!await artworkView.load(command.artwork, prepareBase)) {
+        outcome = 'stale';
+        postEvent('artworkDiscarded', {documentEpoch: command.artwork.documentEpoch,
+          artworkRevision: command.artwork.revision, outcome});
+      }
+    } else if (command.type === 'setArtworkView' && artworkView.matches(command.documentEpoch, command.artworkRevision)) {
+      artworkView.setView(command.observation ?? {});
+    } else if (command.type === 'setArtworkTool' && artworkView.matches(command.documentEpoch, command.artworkRevision)) {
+      if (selectionMode || selectionStart) clearWorldSelection();
+      artworkView.setTool(command.tool!);
+    } else if (command.type === 'artworkObserve' && artworkView.matches(command.documentEpoch, command.artworkRevision)) {
+      artworkView.observe(command.action!);
+    } else if (command.type === 'locateArtwork' && artworkView.matches(command.documentEpoch, command.artworkRevision)) {
+      const bounds = command.worldBounds;
+      if (!bounds || bounds.length !== 4 || !bounds.every(Number.isFinite) || bounds[0] >= bounds[2] || bounds[1] >= bounds[3])
+        throw new Error('Invalid artwork closeup bounds');
+      const [x0, z0, x1, z1] = bounds;
+      artworkView.locate([[x0,z0],[x0,z1],[x1,z1],[x1,z0]].map(([x,z]) =>
+        [-z/LOCAL_METERS_PER_DEGREE, x/LOCAL_METERS_PER_DEGREE]));
+    } else if (command.type === 'cancelArtworkLocate' && artworkView.matches(command.documentEpoch, command.artworkRevision)) {
+      artworkView.cancelPendingLocation();
+    } else if (command.type === 'leaveArtwork' && artworkView.matches(command.documentEpoch, command.artworkRevision)) artworkView.leave();
+    return;
+  }
   if (typeof command.revision === 'number' && command.revision < currentRevision) {
     outcome = 'stale';
     if (command.type === 'loadScene') postEvent(
@@ -2117,15 +2405,45 @@ async function dispatch(command: PreviewCommand): Promise<void> {
   }
   if (command.type !== 'loadScene' && currentSceneId && command.sceneId &&
       (command.sceneId !== currentSceneId || command.revision !== currentRevision)) { outcome = 'stale'; return; }
+  if (command.type === 'loadScene' || artworkView.active &&
+      !['setUiAppearance', 'setLanguage', 'setPreviewQuality', 'showHint', 'setPreviewUiState',
+        'applyTheme', 'applyRoadTheme', 'setLayerVisibility', 'setRoadVisibility', 'setOutputRotation',
+        'beginSelection', 'clearSelection', 'setSelection', 'clearObjectSelection', 'restoreObjectSelection',
+        'locateObject', 'selectCatalogBuilding', 'setBuildingHighlight', 'showMapInteractionGuide'].includes(command.type)) artworkView.leave();
   if (['setZoomPreset', 'fitBounds', 'fitGeoBounds',
     'focusGeoBounds', 'beginSelection', 'locateObject', 'selectCatalogBuilding'].includes(command.type)) navigation.simulation.stop();
   switch (command.type) {
-    case 'loadScene': if (command.manifestUrl && typeof command.revision === 'number') await loadScene(httpProvider(command.manifestUrl), command.revision); break;
-    case 'applyTheme': if (command.theme) applyTheme(command.theme as FullTheme); break;
+    case 'setSampleCamera':
+      if (QUALITY_SAMPLE && command.options) map.jumpTo(command.options);
+      break;
+    case 'setPreviewQuality': {
+      try {
+        const next = readPreviewQuality(command.quality);
+        applyPreviewQuality(map, previewQuality, next);
+        previewQuality = next;
+        postEvent('previewQualityApplied', {requestId: command.requestId, outcome: 'applied'});
+      } catch (error) {
+        postEvent('previewQualityApplied', {requestId: command.requestId, outcome: 'error',
+          message: error instanceof Error ? error.message : String(error)});
+      }
+      break;
+    }
+    case 'loadScene': if (command.manifestUrl && typeof command.revision === 'number') await loadScene(httpProvider(command.manifestUrl), command.revision, loadTrace); break;
+    case 'applyTheme': if (command.theme) {
+      if (artworkView.active) {
+        if (applyArtworkTheme(command.theme as FullTheme)) artworkView.refreshBase();
+      } else applyTheme(command.theme as FullTheme);
+    } break;
     case 'setUiAppearance': setUiAppearance(command.appearance); break;
     case 'setLanguage': if (command.language) await setLanguage(command.language); break;
-    case 'applyRoadTheme': if (command.theme) applyTheme({ ...(currentTheme ?? {}), road: command.theme as RoadTheme } as FullTheme); break;
-    case 'setLayerVisibility': if (command.layer) await setLayerVisibility(command.layer, Boolean(command.visible)); break;
+    case 'applyRoadTheme': if (command.theme) {
+      artworkView.restorePaint();
+      applyTheme({ ...(currentTheme ?? {}), road: command.theme as RoadTheme } as FullTheme);
+      artworkView.refreshBase();
+    } break;
+    case 'setLayerVisibility': if (command.layer) {
+      await setLayerVisibility(command.layer, Boolean(command.visible)); artworkView.keepOverlayLayersHidden();
+    } break;
     case 'setContextMode': setContextMode(command.mode ?? 'map', command.options ?? {}); break;
     case 'setZoomPreset': setZoomPreset(command.preset ?? 'city'); break;
     case 'setOutputRotation': applyOutputRotation(command.rotation ?? 0); break;
@@ -2133,7 +2451,7 @@ async function dispatch(command: PreviewCommand): Promise<void> {
     case 'fitBounds': fitBounds(); break;
     case 'fitGeoBounds': preview3d.reset(); if (command.bounds) map.fitBounds(command.bounds, {padding: 36, duration: 260, bearing: outputBearing(outputRotation)}); break;
     case 'focusGeoBounds': if (command.bounds) await focusGeoBounds(command.bounds); break;
-    case 'beginSelection': preview3d.suspendSelection(); selectionMode = true; map.getCanvas().style.cursor = 'crosshair'; document.body.classList.add('selecting'); break;
+    case 'beginSelection': artworkView.flushViewport(); preview3d.suspendSelection(); selectionMode = true; map.getCanvas().style.cursor = 'crosshair'; document.body.classList.add('selecting'); break;
     case 'clearSelection': clearWorldSelection(); break;
     case 'setSelection': selectedWorldBounds = command.worldBounds ?? null; drawWorldSelection(); break;
     case 'clearObjectSelection': clearInspectorSelection(); break;
@@ -2149,22 +2467,53 @@ async function dispatch(command: PreviewCommand): Promise<void> {
     case 'locateObject': locateInspectorObject(); break;
     case 'showHint': showHint(String(command.text ?? '')); break;
     case 'setPreviewUiState':
+      if (!EMBEDDED && typeof command.immersive === 'boolean') {
+        immersive = command.immersive;
+        previewControls.setImmersive(immersive); navigation.setImmersive(immersive);
+      }
       if (currentManifest && command.layers) Object.assign(currentManifest.layers, command.layers);
-      quickLayersEnabled = Boolean(command.enabled); updateQuickLayers(true, command.pendingLayers);
+      if (typeof command.enabled === 'boolean') quickLayersEnabled = command.enabled;
+      updateQuickLayers(true, command.pendingLayers);
       previewControls.setGuideAvailable(command.guideAvailable !== false); break;
     case 'showMapInteractionGuide': previewControls.showGuide(true); break;
-    case 'dispose': ++loadGeneration; releaseTraffic(); previewControls.dispose(); navigation.dispose(); cancelLabelLayout(); map.remove(); break;
+    case 'dispose': ++loadGeneration; artworkView.dispose(); releaseTraffic(); previewControls.dispose(); navigation.dispose(); cancelLabelLayout(); map.remove(); break;
   }
 } catch (error) { outcome = 'error'; reportError(error, {sceneId: command.sceneId,
     revision: command.revision, stage: command.type});
+  if (command.type === 'loadArtwork') postEvent('artworkFailed', {
+    documentEpoch: command.artwork?.documentEpoch, artworkRevision: command.artwork?.revision,
+    message: error instanceof Error ? error.message : String(error)});
   if (command.type === 'loadScene' && typeof command.revision === 'number') {
     postEvent('sceneDiscarded', { sceneId: command.sceneId, revision: command.revision, outcome: 'error',
+      performance: {steps: loadTrace?.steps ?? [], completion: 'error'},
       message: error instanceof Error ? error.message : String(error) });
   }
 }
-}
-
-window.cslPreview = { dispatch };
+finally {
+  if (command.performanceRequestId) {
+    await new Promise<void>(resolve => requestAnimationFrame(
+      () => requestAnimationFrame(() => resolve())));
+    postEvent('commandApplied', {
+      performanceRequestId: command.performanceRequestId,
+      commandType: command.type,
+      outcome,
+      performance: { applyMs: performance.now() - commandStarted },
+    });
+  }
+} }
+window.cslPreview = { dispatch, artworkState: () => artworkView.snapshot(), exportSizing: () => {
+  if (artworkView.active) return null;
+  if (!currentManifest || contextMode !== 'transit') return null;
+  map.resize();
+  const canvas = map.getCanvas();
+  const badge = document.querySelector<HTMLElement>('.map-transit-badge');
+  return {viewport: [canvas.clientWidth, canvas.clientHeight],
+    radius: transitStationMetrics().outer,
+    stroke: Number(map.getPaintProperty('tv-station', 'circle-stroke-width')),
+    fill: String(map.getPaintProperty('tv-station', 'circle-color')),
+    outline: String(map.getPaintProperty('tv-station', 'circle-stroke-color')),
+    badge_size: badge ? parseFloat(getComputedStyle(badge).fontSize) : transitBadgeMetrics().size};
+} };
 window.chrome?.webview?.addEventListener('message', event => { const command = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
   void dispatch(command as PreviewCommand); });
 function clearWorldSelection(report = true): void {
@@ -2174,9 +2523,9 @@ function clearWorldSelection(report = true): void {
   preview3d.restoreSelection();
   if (report) postEvent('selectionCleared');
 }
-function projectedRegion(bounds: [number, number, number, number]): maplibregl.Point[] {
+function projectedRegion(bounds: [number, number, number, number]): {x: number; y: number}[] {
   const [x0,z0,x1,z1] = bounds;
-  return [[x0,z0],[x0,z1],[x1,z1],[x1,z0]].map(([x,z]) => map.project([-z/111195,x/111195]));
+  return [[x0,z0],[x0,z1],[x1,z1],[x1,z0]].map(([x,z]) => artworkView.project([-z/111195,x/111195]));
 }
 function drawWorldSelection(): void {
   if (!selectedWorldBounds || selectionStart) return;
@@ -2232,7 +2581,11 @@ window.addEventListener('mouseup', event => {
   if (!bounds.every(Number.isFinite) || bounds[2]-bounds[0]<=1e-6 || bounds[3]-bounds[1]<=1e-6) { clearWorldSelection(); return; }
   selectedWorldBounds = bounds; preview3d.restoreSelection(); drawWorldSelection(); postEvent('selectionChanged',{bounds});
 });
-window.addEventListener('keydown', event => { if (event.key==='Escape' && (selectionMode || selectionStart)) clearWorldSelection(); });
+window.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && !event.defaultPrevented && (selectionMode || selectionStart)) {
+    clearWorldSelection(); event.preventDefault();
+  }
+});
 window.addEventListener('blur', () => { if (selectionStart) clearWorldSelection(); });
 // 用户真的动手了就把操作提示收掉 —— 他已经会了，这句不该再压在画面上。
 // 这也是提示**唯一**的退场路径：它不设自动消失计时，不懂怎么操作的人可以一直
@@ -2244,11 +2597,11 @@ map.on('rotatestart', dismissHint);
 map.getCanvas().addEventListener('wheel', dismissHint, { passive: true });
 map.getCanvas().addEventListener('touchstart', dismissHint, { passive: true });
 map.on('click', event => {
+  if (QUALITY_SAMPLE) return;
   if (suppressNextClick) { suppressNextClick = false; return; }
   if (selectionMode || selectionStart) return;
   if (navigation.handleClick(event)) return;
-  const feature = featureAt(event.point);
-  if (feature) inspectFeature(feature); else clearInspectorSelection();
+  pickObjectAt(event.point);
 });
 map.on('mousemove', event => {
   if (selectionMode || preview3d.dragging || navigation.selectingPoint) return;
@@ -2270,7 +2623,16 @@ map.getCanvas().addEventListener('mouseleave', () => {
   if (!selectionMode && !preview3d.dragging && !navigation.selectingPoint) map.getCanvas().style.cursor = '';
 });
 window.addEventListener('keydown', event => {
-  if (event.key === 'Escape' && !selectionStart) clearInspectorSelection();
+  if (event.key !== 'Escape' || event.defaultPrevented || selectionStart) return;
+  if (artworkView.active) {
+    event.preventDefault();
+    if (!event.repeat) artworkView.requestLeave();
+    return;
+  }
+  if (inspectorSelectionId) { clearInspectorSelection(); event.preventDefault(); }
+  else if (immersive) {
+    if (!event.repeat) { event.preventDefault(); postEvent('exitImmersive'); }
+  } else clearInspectorSelection();
 });
 async function loadEmbeddedScene(payload: EmbeddedPayload): Promise<void> {
   const revision = payload.manifest.revision;

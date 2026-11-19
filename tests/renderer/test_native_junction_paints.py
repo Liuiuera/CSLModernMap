@@ -14,7 +14,8 @@ from csmodernmap.preview_road_order import build_road_order, _path, _polygons, _
 from csmodernmap.preview_scene import _ordered_road_features
 from csmodernmap.renderer import Renderer
 from csmodernmap.road_geometry import build_road_scene
-from csmodernmap.style import Style
+from csmodernmap.pixel_sizes import footprint_factors
+from style_fixtures import pixel_style
 
 
 def junction_document(game='cs1', angle=0, mode=SegmentMode.GROUND, height=0,
@@ -62,7 +63,7 @@ def test_mixed_native_junction_recolors_tip_and_preserves_every_surface(game, an
                 assert perimeter.contains(QPointF((a[0]+b[0])*.5,(a[1]+b[1])*.5))
     assert not _rings(original.subtracted(combined))
     assert not _rings(combined.subtracted(original))
-    features,_ = _ordered_road_features(scene,order)
+    features,_ = _ordered_road_features(scene,order,footprint_factors=footprint_factors(pixel_style({}).data['roads']))
     branch = [f for f in features if f['properties']['roadId'] == 12
               and f['properties']['geometryRole'] == 'road-surface']
     assert {f['properties']['styleKey'] for f in branch} == {'main:ground','branch:ground'}
@@ -122,7 +123,7 @@ def test_native_roundabout_hole_survives_core_clipping_in_png_and_vectors():
 
 def render_junction(document, tiled=False):
     session = DocumentSession(document)
-    renderer = Renderer(Style({'canvas': {'background':'#eeeeee'},'roads': {
+    renderer = Renderer(pixel_style({'canvas': {'background':'#eeeeee'},'roads': {
         'main': {'fill':'#368cd1','border':'#111111','border_width':1},
         'branch': {'fill':'#d84a4a','border':'#111111','border_width':1}}}),512,512)
     if tiled:

@@ -173,23 +173,20 @@ public sealed partial class MainWindow
 
     private async Task SetLayerVisibleAsync(string layer, bool enabled)
     {
+        var showSatelliteGuidance = layer == "satellite" && enabled && !LayerVisible(layer);
         if (layer == "satellite")
             BeginMapTask(MapTaskPhase.Loading, UiLanguage.Text("Satellite_Composing"), canCancel: false, waitForScene: false);
         try
         {
             int? maxTextureSize = null;
             if (layer == "satellite" && enabled)
-            {
-                var limit = await MapView.ExecuteScriptAsync("(() => { const gl = document.querySelector('.maplibregl-canvas').getContext('webgl2'); return gl.getParameter(gl.MAX_TEXTURE_SIZE); })()");
-                maxTextureSize = JsonSerializer.Deserialize<int>(limit);
-            }
+                maxTextureSize = await SatelliteTextureLimitAsync();
             var result = await _engine.RequestAsync("setLayerVisibility", new { key = layer, enabled, maxTextureSize });
             if (layer == "satellite")
             {
                 foreach (var item in result.GetProperty("mapLayers").EnumerateObject())
                     SendViewer(LayerVisibilityCommand.Create(item.Name, item.Value.GetBoolean(), _sceneId, _revision));
                 await RefreshLivePreviewAsync();
-                return;
             }
         }
         finally
@@ -202,12 +199,18 @@ public sealed partial class MainWindow
                 ApplyMapTaskState();
             }
         }
+        if (layer == "satellite")
+        {
+            await RefreshSnapshotAsync();
+            if (showSatelliteGuidance) await ShowSatelliteGuidanceAsync();
+            return;
+        }
         SendViewer(LayerVisibilityCommand.Create(layer, enabled, _sceneId, _revision));
         if (layer == "label")
             SendViewer(LayerVisibilityCommand.Create("poi", enabled &&
                 _snapshot.GetProperty("poiVisibility").GetProperty("icons").EnumerateObject().Any(item => item.Value.GetBoolean()),
                 _sceneId, _revision));
-        if (layer is "label" or "poi") await RefreshLivePreviewAsync();
+        if (_cityArtwork || _compatibilityPreview || layer is "label" or "poi") await RefreshLivePreviewAsync();
     }
 
     private void AddLayerVisibility(StackPanel panel, StackPanel scope, string layer)
@@ -225,7 +228,8 @@ public sealed partial class MainWindow
     private void AddRibbonLabelChildren(RibbonGroup group)
     {
         group.ItemsLayout = RibbonGroupItemsLayout.Columns;
-        group.RowCount = 2;
+        group.RowCount = 3;
+        group.CanCollapse = false;
         foreach (var child in LabelChildren)
         {
             var iconKey = child.Key switch
@@ -235,7 +239,6 @@ public sealed partial class MainWindow
                 _ => child.Key,
             };
             var button = new RibbonToggleButton { Label = child.Title, Icon = RibbonIcons.Create("label." + iconKey),
-                // 中号始终是图标加文字。
                 Size = RibbonItemSize.Medium };
             AddRibbonLabelCommand(button, async (_, _) =>
             {
@@ -265,6 +268,25 @@ public sealed partial class MainWindow
         group.Items.Add(details);
         _mapLayerSettingsButtons.Add(details);
         RegisterRibbonColors(details, details.Icon, "PRIMARY");
+        // 按列填充三行，让同类图标与名称在同一行相邻。
+        var controls = new FrameworkElement[]
+        {
+            _layerButtons["label"],
+            _labelChildButtons["road_text"], _labelChildButtons["transit_icon"], _labelChildButtons["facility_icon"],
+            _labelChildButtons["district_text"], _labelChildButtons["transit_icon_text"], _labelChildButtons["facility_icon_text"],
+            _labelChildButtons["ordinary_icon"], _labelChildButtons["area_icon"], _gameNamesButtons["road.game_names"],
+            _labelChildButtons["ordinary_icon_text"], _labelChildButtons["area_icon_text"], _gameNamesButtons["poi.game_names"],
+            _decorativePoiButton!, details,
+        };
+        group.Items.Clear();
+        foreach (var control in controls)
+        {
+            var item = (IRibbonItemEditable)control;
+            // 总开关保留整列，其余按钮在各压缩级别均保留文字。
+            item.SizeDefinition = ReferenceEquals(control, _layerButtons["label"])
+                ? "Large, Large, Large" : "Medium, Medium, Medium";
+            group.Items.Add(control);
+        }
         ToolTipService.SetToolTip(_layerButtons["label"], UiLanguage.Text("MainWindow_Layers_AddRibbonLabelChildren_86AD8E73C0"));
     }
 
@@ -336,10 +358,10 @@ public sealed partial class MainWindow
         };
     }
 
-    private static StackPanel LayerSection(StackPanel panel, string title)
+    private static StackPanel LayerSection(StackPanel panel, string title, bool expanded = true)
     {
         var body = new StackPanel { Spacing = 10, HorizontalAlignment = HorizontalAlignment.Stretch };
-        panel.Children.Add(WorkspaceSection.Create(title, body));
+        panel.Children.Add(WorkspaceSection.Create(title, body, expanded));
         return body;
     }
 
@@ -362,18 +384,19 @@ public sealed partial class MainWindow
         else if (layer == "road")
         {
             var overall = LayerSection(panel, UiLanguage.Text("MainWindow_Layers_ShowLayerSettings_0155C1B620"));
-            foreach (var key in new[] { "road.width", "road.tunnel", "road.bridge", "road.names" }) AddStyleLayerField(overall, scope, key);
+            foreach (var key in new[] { "road.tunnel", "road.bridge", "road.names" }) AddStyleLayerField(overall, scope, key);
             AddStyleLayerField(overall, scope, "road.accurate_intersections");
             overall.Children.Add(new TextBlock
             {
                 Text = UiLanguage.Text("MainWindow_Layers_ShowLayerSettings_7B451F077B"),
                 TextWrapping = TextWrapping.Wrap,
             });
+            overall.Children.Add(new TextBlock { Text = UiLanguage.Text("Sidebar_RoadCommit"), TextWrapping = TextWrapping.Wrap });
             foreach (var (level, name) in new[] { ("highway", UiLanguage.Text("MainWindow_Layers_ShowLayerSettings_534C553126")), ("main", UiLanguage.Text("MainWindow_Layers_ShowLayerSettings_85F71EC8DA")), ("branch", UiLanguage.Text("MainWindow_Layers_ShowLayerSettings_109688E695")),
-                         ("special", UiLanguage.Text("MainWindow_Layers_ShowLayerSettings_EDE0519A4C")), ("beautification", UiLanguage.Text("MainWindow_Layers_ShowLayerSettings_35CDE54CEB")) })
+                         ("special", UiLanguage.Text("MainWindow_Layers_ShowLayerSettings_EDE0519A4C")), ("quay", UiLanguage.Text("RoadCategoryQuay")), ("beautification", UiLanguage.Text("MainWindow_Layers_ShowLayerSettings_35CDE54CEB")) })
             {
-                var body = LayerSection(panel, name);
-                foreach (var attr in new[] { "fill", "border", "width" }) AddStyleLayerField(body, scope, $"road.level.{level}.{attr}");
+                var body = LayerSection(panel, name, expanded: false);
+                foreach (var attr in new[] { "fill", "border", "line_width", "footprint_scale", "border_width" }) AddStyleLayerField(body, scope, $"road.level.{level}.{attr}");
             }
         }
         else
@@ -402,6 +425,11 @@ public sealed partial class MainWindow
 
     private void ShowLayerStylePage(string layer)
     {
+        if (_artworkEditor is { } editor)
+        {
+            editor.FocusStyle(layer switch { "road" => "roads", "building" => "buildings", "label" => "labels", "poi" => "poi_icons", "metro" => "transports", _ => layer });
+            ShowArtworkProperties(); return;
+        }
         _settingsOpen = true;
         UpdateScaleAndLayout();
         ShowLayerSettings(layer);
@@ -419,7 +447,7 @@ public sealed partial class MainWindow
             foreach (var attr in new[] { "font", "size", "color", "outline" }) AddStyleLayerField(body, scope, $"label.{attr}.{kind}");
         }
         var icons = LayerSection(panel, UiLanguage.Text("MainWindow_Layers_BuildLabelSettings_72C2901572"));
-        foreach (var key in new[] { "poi.set", "poi.size", "poi.font", "poi.name_size", "poi.name_stroke", "poi.name_stroke_ratio" })
+        foreach (var key in new[] { "poi.set", "poi.size", "poi.font", "poi.name_size", "poi.name_stroke", "poi.name_stroke_width" })
             AddStyleLayerField(icons, scope, key);
         var places = new Button { Content = UiLanguage.Text("MainWindow_Layers_BuildLabelSettings_6E51C695FB") };
         places.Click += async (_, _) => await RunAsync(ShowMapPoiSettingsAsync);
@@ -518,6 +546,7 @@ public sealed partial class MainWindow
                 await CommitLayerBindingAsync(binding, async () =>
                 {
                     await _engine.RequestAsync("setTransitType", new { key, enabled });
+                    if (_compatibilityPreview) QueueCompatibilityPreview();
                     await ApplyContextAsync();
                 });
             };
@@ -530,10 +559,15 @@ public sealed partial class MainWindow
         var label = field.GetProperty("label").GetString() ?? key;
         var kind = field.GetProperty("kind").GetString();
         JsonElement Value() => _snapshot.GetProperty("fields").GetProperty(key);
-        async Task Write(object value)
+        Task Commit(LayerBinding binding, object value)
+        {
+            var started = _cityArtwork ? System.Diagnostics.Stopwatch.GetTimestamp() : (long?)null;
+            return CommitLayerBindingAsync(binding, () => Write(value, started));
+        }
+        async Task Write(object value, long? started)
         {
             await _engine.RequestAsync("setField", new { key, value });
-            await RefreshLivePreviewAsync(backgroundRoadUpdate: key == "road.accurate_intersections");
+            await RefreshLivePreviewAsync(backgroundRoadUpdate: key == "road.accurate_intersections", artworkStarted: started);
         }
         if (kind == "toggle")
         {
@@ -542,19 +576,18 @@ public sealed partial class MainWindow
             toggle.Toggled += async (_, _) =>
             {
                 var enabled = toggle.IsOn;
-                await CommitLayerBindingAsync(binding, () => Write(enabled));
+                await Commit(binding, enabled);
             };
         }
         else if (kind == "number" && Value().ValueKind is JsonValueKind.Number or JsonValueKind.Object)
         {
-            double Baseline(JsonElement value) => value.ValueKind == JsonValueKind.Object
-                ? (value.TryGetProperty("fixed", out var fixedPart) ? fixedPart.GetDouble() : 0)
-                    + (value.TryGetProperty("scaled", out var scaledPart) ? scaledPart.GetDouble() : 0)
-                : value.GetDouble();
+            double Baseline(JsonElement value) => value.GetDouble();
             var number = new NumberBox { Header = label, Minimum = field.GetProperty("low").GetDouble(),
                 Maximum = field.GetProperty("high").GetDouble(), SmallChange = .1,
                 SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact };
             panel.Children.Add(number);
+            if (key.EndsWith(".footprint_scale", StringComparison.Ordinal))
+                panel.Children.Add(new TextBlock { Text = field.GetProperty("description").GetString(), TextWrapping = TextWrapping.Wrap, FontSize = 12 });
             var saved = double.NaN;
             var binding = BindLayerControl(key, number, scope, () =>
             {
@@ -566,8 +599,7 @@ public sealed partial class MainWindow
                 if (number.Value == saved || !IsCurrent(binding)) return;
                 if (!double.IsFinite(number.Value)) { SetError(label + UiLanguage.Text("MainWindow_Layers_AddLayerField_6A2DEA0DF7")); return; }
                 var value = number.Value;
-                await CommitLayerBindingAsync(binding, () => Write(Value().ValueKind == JsonValueKind.Object
-                    ? new { @fixed = 0, scaled = value } : (object)value));
+                await Commit(binding, value);
             };
         }
         else if (kind == "color")
@@ -588,7 +620,7 @@ public sealed partial class MainWindow
                 if (!color.Equals(saved))
                 {
                     var value = $"#{color.R:X2}{color.G:X2}{color.B:X2}" + (color.A == 255 ? "" : $"{color.A:X2}");
-                    await CommitLayerBindingAsync(binding, () => Write(value));
+                    await Commit(binding, value);
                 }
                 RefreshLayerBindings();
             };
@@ -612,7 +644,7 @@ public sealed partial class MainWindow
             }, () => FieldEnabled(key));
             combo.SelectionChanged += async (_, _) =>
             {
-                if (combo.SelectedItem is ComboBoxItem item) await CommitLayerBindingAsync(binding, () => Write((JsonElement)item.Tag));
+                if (combo.SelectedItem is ComboBoxItem item) await Commit(binding, (JsonElement)item.Tag);
             };
         }
         else
@@ -629,8 +661,11 @@ public sealed partial class MainWindow
                     try { using var parsed = JsonDocument.Parse(box.Text); value = parsed.RootElement.Clone(); }
                     catch (JsonException) { SetError(label + UiLanguage.Text("MainWindow_Layers_AddLayerField_06A7DF7914")); return; }
                 }
-                await CommitLayerBindingAsync(binding, () => Write(value));
+                await Commit(binding, value);
             };
         }
+        if (key == "satellite.quality")
+            panel.Children.Add(new TextBlock { Text = field.GetProperty("description").GetString(),
+                FontSize = 12, Opacity = .7, TextWrapping = TextWrapping.Wrap });
     }
 }

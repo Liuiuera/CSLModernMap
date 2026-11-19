@@ -40,6 +40,9 @@
   <ItemGroup>
     <Content Include="..\resources\app.ico" Link="app.ico" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\resources\fonts\tabler-icons.ttf" Link="Assets\Fonts\tabler-icons.ttf" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\resources\app-icon-windows-1024.png" Link="Assets\app-icon.png" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Assets\WindowIcons\*.ico" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Assets\TransitLabels\*.png" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Assets\Themes\*.png" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Assets\ribbon-icons.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Assets\Ribbon\**\*.png" CopyToOutputDirectory="PreserveNewest" />

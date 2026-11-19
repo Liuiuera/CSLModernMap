@@ -24,9 +24,10 @@ internal sealed class EditorWindow : Window
         get => _actionsRightAligned;
         set { _actionsRightAligned = value; LayoutActions(); }
     }
-    public EditorWindow(string title, double width, double height, bool translucent = false, Window? owner = null, bool modal = false)
+    public EditorWindow(string title, string icon, double width, double height, bool translucent = false, Window? owner = null, bool modal = false)
     {
         Title = title;
+        AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets", "WindowIcons", icon + ".ico"));
         var effects = new Windows.UI.ViewManagement.UISettings().AdvancedEffectsEnabled;
         var highContrast = new Windows.UI.ViewManagement.AccessibilitySettings().HighContrast;
         var useMaterial = translucent && effects && !highContrast && DesktopAcrylicController.IsSupported();

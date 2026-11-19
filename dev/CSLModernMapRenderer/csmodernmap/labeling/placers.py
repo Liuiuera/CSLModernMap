@@ -88,10 +88,8 @@ class PlaceSpace:
         }
 
 
-def _resolve_size(value: Any, render_scale: float) -> float:
-    if isinstance(value, dict):
-        return float(value.get("fixed", 0.0)) + float(value.get("scaled", 0.0)) * render_scale
-    return float(value)
+def _resolve_size(value, raster_scale: float) -> float:
+    return float(value) * raster_scale
 
 
 def _segment(mapdata: Any, segment_id: int) -> Any | None:
@@ -148,7 +146,20 @@ class LegacyBaseTextPlacer:
             self.dropped_by_reason["out_of_canvas"] += 1
             return None
         space.add_point("base_text", *point)
-        return PlacedLabel(item.label, point[0], point[1], style=self._style(item))
+        bbox = None
+        metrics = getattr(self.ctx, 'shared', {}).get('base_text_metrics')
+        if metrics is not None:
+            cfg = item.style
+            size = _resolve_size(cfg.get('size', 20), self.ctx.zoom / self.ctx.final_zoom)
+            stroke = _resolve_size(cfg.get('stroke_width', 2), self.ctx.zoom / self.ctx.final_zoom)
+            width, height = metrics(item.label.text, size, cfg, stroke)
+            scale = self.ctx.style.get('labels.padding', 4) / 4
+            pad = (round(stroke*4) + math.ceil(16*scale)
+                   + math.ceil(12*float(cfg.get('stroke_blur', 0))))/4
+            bbox = (point[0]-width/2-pad, point[1]-height/2-pad,
+                    point[0]+width/2+pad, point[1]+height/2+pad)
+            space.report_occupancy('base_text', bbox)
+        return PlacedLabel(item.label, point[0], point[1], bbox=bbox, style=self._style(item))
 
     def _place_park(self, item: FilteredLabel, space: PlaceSpace) -> PlacedLabel | None:
         point = self._point(item.label)
@@ -186,24 +197,20 @@ class LegacyBaseTextPlacer:
             return []
 
         cfg = item.style
-        base_size = _resolve_size(cfg.get("size", 16), self.ctx.zoom)
-        base_stroke = _resolve_size(cfg.get("stroke_width", 2), self.ctx.zoom)
-        size_z = dict(cfg.get("size_z", {}) or {})
-        size_z.setdefault("highway", 1.6)
-        size_z.setdefault("main", size_z.get("road_wide", 1.25))
-        size_z.setdefault("branch", size_z.get("road", 1.0))
-        size_z.setdefault("special", size_z.get("walk", 0.75))
-        size_z.setdefault("beautification", size_z.get("walk", 0.75))
-        size_z.setdefault("quay", size_z["beautification"])
-        # road_repeat 和 road_min_gap 在 YAML 中与 labels.road 同级。
-        labels_cfg = getattr(self.ctx.style, "get", lambda *_: {})
-        spacing_base = float(labels_cfg("labels.road_repeat", 400.0))
-        repeat_ratio = float(labels_cfg("labels.road_repeat_ratio", 3.0))
-        scale_step = spacing_base * self.ctx.zoom
-        mult = float(size_z.get(level, 1.0))
-        size = max(base_size * mult, 4.0)
-        stroke = max(base_stroke * mult, 0.5)
+        sizes = cfg.get('by_level', {}).get(level, cfg)
+        aa = self.ctx.zoom / self.ctx.final_zoom
+        size = float(sizes['size']) * aa
+        stroke = float(sizes['stroke_width']) * aa
+        labels_cfg = self.ctx.style.get
+        scale_step = float(labels_cfg('labels.road_repeat', 400)) * aa
+        repeat_ratio = float(labels_cfg('labels.road_repeat_ratio', 3))
+        padding_px = labels_cfg('labels.padding', 4) * aa
         text_width = self.measure_text(label.text, size, cfg.get("font")) + 2 * round(stroke)
+        height, padding = size*1.5, 4
+        metrics = getattr(self.ctx, 'shared', {}).get('base_text_metrics')
+        if metrics is not None:
+            text_width, height = metrics(label.text, size, cfg, stroke)
+            padding = padding_px + math.ceil(12*float(cfg.get('stroke_blur', 0)))/4
         spacing = max(scale_step, text_width * repeat_ratio)
         from .road_paths import street_chains, text_path
         if not hasattr(self, "_street_chains"):
@@ -211,7 +218,7 @@ class LegacyBaseTextPlacer:
         chain = self._street_chains[label.ref_id]
         pixel_points = [self.ctx.transform(point.x, point.z) for point in chain.points]
         result: list[PlacedLabel] = []
-        for middle, strips, box in text_path(pixel_points, text_width, spacing, stroke, max(size, 6) * 1.5):
+        for middle, strips, box in text_path(pixel_points, text_width, spacing, stroke, height, padding=padding):
             x, y, angle = middle
             if box[0] < 0 or box[1] < 0 or box[2] > self.ctx.image.width or box[3] > self.ctx.image.height:
                 continue

@@ -1,4 +1,4 @@
-"""管理 PNG 输出配置及旧版全局选项迁移。"""
+"""管理地图输出配置及旧版全局选项迁移。"""
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -15,6 +15,7 @@ OUTPUT_PROFILE_SCHEMA_VERSION = 1
 OUTPUT_PROFILE_TARGETS = ("normal_png", "transit_png")
 OUTPUT_SIZE_MIN = 512
 OUTPUT_SIZE_MAX = 32768
+HTML_QUALITY_PRESETS = ("smooth", "standard", "fine")
 _MISSING = object()
 
 
@@ -22,10 +23,25 @@ class OutputProfileValidationError(ValueError):
     """表示某个 PNG 输出配置中的无效显式修改。"""
 
 
+def update_output_profile(current, changes, target):
+    """画布和元素倍率作为同一次设置变更接受。"""
+    merged = {**current, **changes}
+    if 'size' in changes and 'elementScale' not in changes:
+        checked = validate_output_profile(merged, target)
+        merged['elementScale'] = current['elementScale'] * checked['size'] / current['size']
+    return validate_output_profile(merged, target)
+
+
 def default_output_profile(target: str) -> dict[str, Any]:
     if target not in OUTPUT_PROFILE_TARGETS:
         raise ValueError(f"unknown output profile target: {target!r}")
-    return {"size": 4096, "rotation": 0, "aa": automatic_antialias()}
+    return {"size": 4096, "elementScale": 1.0, "rotation": 0, "aa": automatic_antialias(), "htmlQuality": "standard"}
+
+
+def validate_html_quality(value: Any) -> str:
+    if value not in HTML_QUALITY_PRESETS:
+        raise OutputProfileValidationError("HTML quality must be smooth, standard or fine")
+    return value
 
 
 def _number(value: Any, *, integer: bool = False) -> int | float | None:
@@ -75,9 +91,14 @@ def normalize_output_profile(raw: Mapping[str, Any] | None,
     size = _number(raw.get("size", _MISSING), integer=True)
     if size is not None and OUTPUT_SIZE_MIN <= size <= OUTPUT_SIZE_MAX:
         result["size"] = size
+    from .pixel_sizes import number
+    result['elementScale'] = number(raw.get('elementScale', result['size'] / 4096),
+                                   'elementScale', positive=True)
     rotation = _number(raw.get("rotation", _MISSING), integer=True)
     if rotation is not None and rotation % 360 in OUTPUT_ROTATIONS:
         result["rotation"] = output_rotation(rotation)
+    if raw.get("htmlQuality") in HTML_QUALITY_PRESETS:
+        result["htmlQuality"] = raw["htmlQuality"]
     return result
 
 
@@ -135,4 +156,6 @@ def validate_output_profile(profile: Mapping[str, Any],
         if rotation is None or rotation % 360 not in OUTPUT_ROTATIONS:
             raise OutputProfileValidationError("旋转角度必须为 0、90、180 或 270 度")
         result["rotation"] = output_rotation(rotation)
+    if "htmlQuality" in profile:
+        result["htmlQuality"] = validate_html_quality(profile["htmlQuality"])
     return result

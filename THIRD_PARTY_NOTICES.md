@@ -57,7 +57,8 @@ The shared POI library under `assets/cn_icons/` includes 150 outlined glyphs fro
 
 ## Web preview and labels
 
-- MapLibre GL JS 6.4.1: BSD-3-Clause; https://github.com/maplibre/maplibre-gl-js . The preview build collects installed production dependency notices into `THIRD_PARTY_LICENSES.txt`, also embedded into exported HTML.
+- MapLibre GL JS 5.24.0: BSD-3-Clause; https://github.com/maplibre/maplibre-gl-js . The preview build collects installed production dependency notices into `THIRD_PARTY_LICENSES.txt`, also embedded into exported HTML.
+- The generated transit-label layout includes PScript 0.8.1 runtime helpers (BSD-2-Clause). See [the bundled license](dev/CSLModernMapRenderer/viewer/PScript-LICENSE.txt).
 - i18next: MIT; notice: `dev/CSLModernMapRenderer/viewer/public/I18NEXT_LICENSE.txt`.
 - Vellum label implementation: copyright 2026 Sebastian Enrique Vargas Pizango; MIT; notice: `dev/CSLModernMapRenderer/viewer/public/VELLUM_LICENSE.txt`.
 - Runtime dependency versions are pinned by the viewer's `package-lock.json`.

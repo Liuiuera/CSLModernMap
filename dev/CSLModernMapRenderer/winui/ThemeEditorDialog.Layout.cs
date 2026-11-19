@@ -12,11 +12,14 @@ internal sealed partial class ThemeEditorDialog
 {
     private readonly Grid _workspace = new(), _navigationArea = new(), _compactNavigation = new() { ColumnSpacing = 8, Padding = new Thickness(12, 8, 12, 8) };
     private readonly Grid _previewLayout = new() { RowSpacing = 8 }, _footer = new() { ColumnSpacing = 12, RowSpacing = 6, Padding = new Thickness(18, 10, 18, 10) };
-    private readonly Grid _header = new() { RowSpacing = 8, ColumnSpacing = 12, Padding = new Thickness(18, 14, 18, 14) };
+    private readonly Grid _historyCommands = new() { ColumnSpacing = 6 };
+    private readonly Grid _pageHeader = new() { ColumnSpacing = 12 };
+    private readonly TextBlock _sectionTitle = new() { FontSize = 20, FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
+        TextWrapping = TextWrapping.Wrap, VerticalAlignment = VerticalAlignment.Center };
     private readonly NavigationView _navigation = new()
     {
         PaneDisplayMode = NavigationViewPaneDisplayMode.Left, IsPaneOpen = true,
-        OpenPaneLength = 164, CompactPaneLength = 0, IsPaneToggleButtonVisible = false,
+        OpenPaneLength = 164, CompactPaneLength = 40, IsPaneToggleButtonVisible = false,
         IsBackButtonVisible = NavigationViewBackButtonVisible.Collapsed,
         IsSettingsVisible = false, IsTitleBarAutoPaddingEnabled = false,
     };
@@ -28,8 +31,14 @@ internal sealed partial class ThemeEditorDialog
     private FrameworkElement _editingSurface = null!, _previewSurface = null!;
     private Border _sampleSurface = null!;
     private ScrollViewer _fieldsScroll = null!;
-    private StackPanel _commands = null!;
+    private Grid _commands = null!;
     private int _layoutMode = -1;
+
+    private static Viewbox CommandIcon(Symbol symbol) => new()
+    {
+        Width = 16, Height = 16, Stretch = Stretch.Uniform,
+        Child = new SymbolIcon(symbol) { Width = 20, Height = 20 },
+    };
 
     private static Border Surface(UIElement child, string brush, Thickness? padding = null)
     {
@@ -39,45 +48,61 @@ internal sealed partial class ThemeEditorDialog
     }
     private void BuildWorkbench()
     {
-        _window.Root.Padding = new Thickness(0); _window.Root.RowSpacing = 0;
+        // 沿用 SDK 的层级缩进和控件模板，仅收紧原生行距与文字边距。
+        _navigation.Resources["NavigationViewItemOnLeftMinHeight"] = 32d;
+        _navigation.Resources["NavigationViewItemButtonMargin"] = new Thickness(4, 1, 4, 1);
+        _navigation.Resources["NavigationViewItemContentPresenterMargin"] = new Thickness(4, -1, 4, -1);
+        if (IsEmbedded) { BuildEmbeddedWorkbench(); return; }
+        _window!.Root.Padding = new Thickness(0); _window.Root.RowSpacing = 0;
         var body = new Grid();
         body.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-        body.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
         body.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
-        var heading = new Grid();
-        heading.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-        heading.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-        heading.Children.Add(_themeChoice); Grid.SetColumn(_dirtyMark, 1); heading.Children.Add(_dirtyMark);
         Name(_themeChoice, UiLanguage.Text("ThemeEditor_Select"), "theme.choice");
         Name(_dirtyMark, UiLanguage.Text("ThemeEditor_Unsaved"));
         _themeChoice.SelectionChanged += async (_, _) => await SelectThemeAsync();
-        _header.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-        _header.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-        _header.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-        _header.Children.Add(heading);
-        _commands = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, VerticalAlignment = VerticalAlignment.Center };
-        foreach (var (button, title) in new[] { (_undo, UiLanguage.Text("ThemeEditorDialog_Layout_BuildWorkbench_926A50B98E")), (_redo, UiLanguage.Text("ThemeEditorDialog_Layout_BuildWorkbench_03717B6F10")), (_restore, UiLanguage.Text("ThemeEditorDialog_Layout_BuildWorkbench_AC9EA45E9D")) })
-        { Name(button, title); ToolTipService.SetToolTip(button, title); _commands.Children.Add(button); }
+        _commands = new Grid { ColumnSpacing = 8, RowSpacing = 8 };
+        void Action(string label, Symbol icon, string id, Func<Task> run)
+        {
+            var title = UiLanguage.Text(label);
+            var content = new Grid { ColumnSpacing = 8 };
+            content.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            content.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            content.Children.Add(CommandIcon(icon));
+            var text = new TextBlock { Text = title, TextWrapping = TextWrapping.NoWrap, TextTrimming = TextTrimming.CharacterEllipsis,
+                VerticalAlignment = VerticalAlignment.Center };
+            Grid.SetColumn(text, 1); content.Children.Add(text);
+            var button = new Button { Content = content, Height = 32, Padding = new Thickness(8, 4, 8, 4),
+                HorizontalAlignment = HorizontalAlignment.Stretch, HorizontalContentAlignment = HorizontalAlignment.Stretch };
+            Name(button, title, id); ToolTipService.SetToolTip(button, id == "theme.json"
+                ? UiLanguage.Text("ThemeEditorDialog_Layout_EditJsonAsync_2142FD3F0D") : title);
+            button.Click += async (_, _) => await run(); _commands.Children.Add(button);
+        }
+        Action("ThemeEditor_New", Symbol.Add, "theme.new", NewThemeAsync);
+        Action("ThemeEditor_Copy", Symbol.Copy, "theme.copy", CopyThemeAsync);
+        Action("ThemeEditor_Rename", Symbol.Rename, "theme.rename", RenameThemeAsync);
+        Action("ThemeEditorDialog_Layout_BuildWorkbench_BA1125B2AC", Symbol.Edit, "theme.json", EditJsonAsync);
+        Action("ThemeEditor_Import", Symbol.OpenFile, "theme.import", ImportThemeAsync);
+        Action("ThemeEditor_Export", Symbol.SaveLocal, "theme.export", ExportThemeAsync);
+        Action("ThemeUpdate_Review", Symbol.Refresh, "theme.presetUpdate", ReviewPresetUpdateAsync);
+        Action("ThemeEditor_Delete", Symbol.Delete, "theme.delete", DeleteAsync);
+        foreach (var (button, title) in new[] { (_undo, UiLanguage.Text("ThemeEditorDialog_Layout_BuildWorkbench_926A50B98E")), (_redo, UiLanguage.Text("ThemeEditorDialog_Layout_BuildWorkbench_03717B6F10")) })
+        {
+            Name(button, title); ToolTipService.SetToolTip(button, title);
+            Grid.SetColumn(button, _historyCommands.Children.Count);
+            _historyCommands.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            _historyCommands.Children.Add(button);
+        }
+        _historyCommands.Margin = new Thickness(0, 8, 0, 0);
+        Name(_restore, UiLanguage.Text("ThemeEditorDialog_Layout_BuildWorkbench_AC9EA45E9D"), "theme.restore");
+        _restore.Height = 32;
+        _pageHeader.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        _pageHeader.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        _pageHeader.Children.Add(_sectionTitle);
+        Grid.SetColumn(_restore, 1); _pageHeader.Children.Add(_restore);
         _undo.Click += (_, _) => RestoreHistory(_undoStack, _redoStack);
         _redo.Click += (_, _) => RestoreHistory(_redoStack, _undoStack);
         _restore.Click += (_, _) => RestoreSection();
-        var more = new Button { Content = UiLanguage.Text("ThemeEditorDialog_Layout_BuildWorkbench_38844B135C") }; Name(more, UiLanguage.Text("ThemeEditorDialog_Layout_BuildWorkbench_9DF1CDC60C"));
-        var menu = new MenuFlyout();
-        void Action(string label, Func<Task> run)
-        {
-            var item = new MenuFlyoutItem { Text = UiLanguage.Text(label) };
-            item.Click += async (_, _) => await run(); menu.Items.Add(item);
-        }
-        Action("ThemeEditor_New", NewThemeAsync);
-        Action("ThemeEditor_Copy", CopyThemeAsync);
-        Action("ThemeEditor_Rename", RenameThemeAsync);
-        menu.Items.Add(new MenuFlyoutSeparator());
-        Action("ThemeEditor_Import", ImportThemeAsync);
-        Action("ThemeEditor_Export", ExportThemeAsync);
-        menu.Items.Add(new MenuFlyoutSeparator());
-        Action("ThemeEditorDialog_Layout_BuildWorkbench_BA1125B2AC", EditJsonAsync);
-        more.Flyout = menu; _commands.Children.Add(more);
-        Grid.SetColumn(_commands, 1); _header.Children.Add(_commands); body.Children.Add(_header);
+        _commands.SizeChanged += (_, _) => ArrangeCommands();
         _compactNavigation.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
         _compactNavigation.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
         Grid.SetRow(_pageChoice, 1); _compactNavigation.Children.Add(_pageChoice);
@@ -85,7 +110,7 @@ internal sealed partial class ThemeEditorDialog
         {
             if (_pageChoice.SelectedItem is ComboBoxItem item && item.Tag is string key) SelectSection(key);
         };
-        Grid.SetRow(_compactNavigation, 1); body.Children.Add(_compactNavigation);
+        body.Children.Add(_compactNavigation);
         _navigationArea.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
         _navigationArea.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
         _search.Margin = new Thickness(12, 14, 12, 4); _navigationArea.Children.Add(_search);
@@ -105,8 +130,11 @@ internal sealed partial class ThemeEditorDialog
             HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled, HorizontalContentAlignment = HorizontalAlignment.Stretch };
         _editingSurface = Surface(fieldsScroll, "LayerFillColorDefaultBrush");
         BuildPreviewLayout();
-        _previewSurface = Surface(_previewLayout, "ApplicationPageBackgroundThemeBrush", new Thickness(12, 16, 12, 12));
-        Grid.SetRow(_workspace, 2); body.Children.Add(_workspace);
+        _preview.MaxHeight = 300;
+        _previewSurface = Surface(new ScrollViewer { Content = _previewLayout,
+            HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled, VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+            HorizontalContentAlignment = HorizontalAlignment.Stretch }, "ApplicationPageBackgroundThemeBrush", new Thickness(12, 16, 12, 12));
+        Grid.SetRow(_workspace, 1); body.Children.Add(_workspace);
         _window.SetBody(body);
         _saveButton = new Button { Content = UiLanguage.Text("ThemeEditor_Save"), Style = (Style)Application.Current.Resources["AccentButtonStyle"] };
         Name(_saveButton, UiLanguage.Text("ThemeEditor_Save"), "theme.save");
@@ -127,13 +155,47 @@ internal sealed partial class ThemeEditorDialog
     }
     private void BuildPreviewLayout()
     {
-        for (var i = 0; i < 4; i++) _previewLayout.RowDefinitions.Add(new RowDefinition { Height = i == 2 ? new GridLength(1, GridUnitType.Star) : GridLength.Auto });
-        _previewLayout.Children.Add(new TextBlock { Text = UiLanguage.Text("ThemeEditorDialog_Layout_BuildPreviewLayout_07C73EBABF"), FontSize = 14, FontWeight = Microsoft.UI.Text.FontWeights.SemiBold });
-        Grid.SetRow(_previewStatus, 1); _previewLayout.Children.Add(_previewStatus);
-        Grid.SetRow(_preview, 2); _previewLayout.Children.Add(_preview);
+        _previewLayout.VerticalAlignment = VerticalAlignment.Top;
+        for (var i = 0; i < 7; i++) _previewLayout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+        var picker = new Grid();
+        picker.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        picker.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        _themeChoice.Header = UiLanguage.Text("ThemeEditor_Select");
+        picker.Children.Add(_themeChoice); Grid.SetColumn(_dirtyMark, 1); picker.Children.Add(_dirtyMark);
+        _previewLayout.Children.Add(picker);
+        Grid.SetRow(_commands, 1); _previewLayout.Children.Add(_commands);
+        Grid.SetRow(_historyCommands, 2); _previewLayout.Children.Add(_historyCommands);
+        var title = new TextBlock { Text = UiLanguage.Text("ThemeEditorDialog_Layout_BuildPreviewLayout_07C73EBABF"), FontSize = 14, FontWeight = Microsoft.UI.Text.FontWeights.SemiBold };
+        title.Margin = new Thickness(0, 8, 0, 0);
+        Grid.SetRow(title, 3); _previewLayout.Children.Add(title);
+        _previewStatus.MinHeight = 16;
+        Grid.SetRow(_previewStatus, 5); _previewLayout.Children.Add(_previewStatus);
+        _preview.VerticalAlignment = VerticalAlignment.Top;
+        Grid.SetRow(_preview, 4); _previewLayout.Children.Add(_preview);
         var sampleBorder = _sampleSurface = Surface(_samplePanel, "LayerFillColorDefaultBrush", new Thickness(12));
         sampleBorder.BorderThickness = new Thickness(1); sampleBorder.CornerRadius = new CornerRadius(5);
-        Grid.SetRow(sampleBorder, 3); _previewLayout.Children.Add(sampleBorder);
+        Grid.SetRow(sampleBorder, 6); _previewLayout.Children.Add(sampleBorder);
+    }
+    private void ArrangeCommands()
+    {
+        var width = _commands.ActualWidth;
+        var labelWidth = 0d;
+        foreach (var button in _commands.Children.OfType<Button>())
+        {
+            var text = ((Grid)button.Content).Children.OfType<TextBlock>().Single();
+            text.Measure(new Windows.Foundation.Size(double.PositiveInfinity, double.PositiveInfinity));
+            labelWidth = Math.Max(labelWidth, text.DesiredSize.Width);
+        }
+        var columns = width >= 260 && labelWidth + 40 <= (width - _commands.ColumnSpacing) / 2 ? 2 : 1;
+        if (_commands.ColumnDefinitions.Count == columns) return;
+        _commands.ColumnDefinitions.Clear(); _commands.RowDefinitions.Clear();
+        for (var i = 0; i < columns; i++) _commands.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        for (var i = 0; i < _commands.Children.Count; i++)
+        {
+            if (i % columns == 0) _commands.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            Grid.SetRow((FrameworkElement)_commands.Children[i], i / columns);
+            Grid.SetColumn((FrameworkElement)_commands.Children[i], i % columns);
+        }
     }
     private void ArrangeWorkbench()
     {
@@ -145,9 +207,7 @@ internal sealed partial class ThemeEditorDialog
         _navigation.OpenPaneLength = mode == 2 ? 164 : 150;
         _workspace.Children.Clear(); _workspace.ColumnDefinitions.Clear(); _workspace.RowDefinitions.Clear();
         _previewLayout.ColumnDefinitions.Clear();
-        _header.RowDefinitions.Clear(); _header.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
         _footer.RowDefinitions.Clear(); _footer.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-        Grid.SetRow(_commands, 0); Grid.SetColumn(_commands, 1); Grid.SetColumnSpan(_commands, 1);
         var actions = (FrameworkElement)_footer.Children[1];
         Grid.SetRow(actions, 0); Grid.SetColumn(actions, 1); Grid.SetColumnSpan(actions, 1);
         _compactNavigation.Visibility = mode == 0 ? Visibility.Visible : Visibility.Collapsed;
@@ -155,8 +215,6 @@ internal sealed partial class ThemeEditorDialog
         if (mode == 0)
         {
             _search.Margin = new Thickness(0, 0, 0, 6); _compactNavigation.Children.Add(_search);
-            _header.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            Grid.SetRow(_commands, 1); Grid.SetColumn(_commands, 0); Grid.SetColumnSpan(_commands, 2);
             _footer.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             Grid.SetRow(actions, 1); Grid.SetColumn(actions, 0); Grid.SetColumnSpan(actions, 2);
         }
@@ -176,16 +234,16 @@ internal sealed partial class ThemeEditorDialog
             if (mode == 1) { Place(_navigationArea, 0, 0); Grid.SetRowSpan(_navigationArea, 2); }
             Place(_editingSurface, 0, mode == 1 ? 1 : 0); Place(_previewSurface, 1, mode == 1 ? 1 : 0);
         }
-        var sample = (FrameworkElement)_previewLayout.Children[3];
-        Grid.SetRow(sample, 3); Grid.SetColumn(sample, 0);
+        var sample = _sampleSurface;
+        Grid.SetRow(sample, 6); Grid.SetColumn(sample, 0);
         if (mode == 1)
         {
             _previewLayout.ColumnSpacing = 10;
             _previewLayout.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
             _previewLayout.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            Grid.SetRow(sample, 2); Grid.SetColumn(sample, 1);
+            Grid.SetRow(sample, 4); Grid.SetColumn(sample, 1);
         }
-        foreach (var child in _previewLayout.Children.Take(2).OfType<FrameworkElement>()) Grid.SetColumnSpan(child, mode == 1 ? 2 : 1);
+        foreach (var child in _previewLayout.Children.Take(5).OfType<FrameworkElement>()) Grid.SetColumnSpan(child, mode == 1 ? 2 : 1);
         foreach (var update in _responsiveUpdates) update();
         void Place(FrameworkElement element, int row, int column)
         { Grid.SetRow(element, row); Grid.SetColumn(element, column); Grid.SetRowSpan(element, 1); _workspace.Children.Add(element); }
@@ -215,7 +273,8 @@ internal sealed partial class ThemeEditorDialog
             {
                 var available = keys.Where(sections.Contains).ToArray(); if (available.Length == 0) continue;
                 var open = _search.Text.Trim().Length > 0 || available.Contains(_section) || _expanded.GetValueOrDefault("nav." + title, true);
-                var group = new NavigationViewItem { Content = title, SelectsOnInvoked = false, IsExpanded = open };
+                var group = new NavigationViewItem { Content = title, SelectsOnInvoked = false, IsExpanded = open,
+                    FontSize = 14, FontWeight = Microsoft.UI.Text.FontWeights.SemiBold, Margin = new Thickness(0, 10, 0, 2) };
                 Name(group, title, "theme.navigation.group." + title);
                 group.RegisterPropertyChangedCallback(NavigationViewItem.IsExpandedProperty, (_, _) =>
                 { if (!_building) _expanded["nav." + title] = group.IsExpanded; });
@@ -224,35 +283,78 @@ internal sealed partial class ThemeEditorDialog
             }
             if (sections.Count == 0) _navigation.MenuItems.Add(new NavigationViewItem { Content = UiLanguage.Text("ThemeEditorDialog_Layout_RebuildNavigation_9CB6C68C5F"), IsEnabled = false });
             UpdateNavigationSelection();
+            if (IsEmbedded) UpdateNavigationDirtyMarks();
         }
         finally { _building = false; }
     }
     private NavigationViewItem NavItem(string key)
     {
-        var item = new NavigationViewItem { Content = SectionLabel(key), Tag = key };
+        var item = new NavigationViewItem { Content = SectionLabel(key), Tag = key, Icon = SectionIcon(key) };
         Name(item, SectionLabel(key), "theme.nav." + key);
+        if (IsEmbedded && key == "roads" && _working["roads"] is JsonObject roads)
+        {
+            item.FontWeight = Microsoft.UI.Text.FontWeights.SemiBold;
+            var searching = _search.Text.Trim().Length > 0;
+            item.IsExpanded = _section == "roads" || searching;
+            foreach (var (level, title) in RoadLevels)
+            {
+                if (roads[level] is not JsonObject road || (searching && !Matches(road, ["roads", level]))) continue;
+                var child = new NavigationViewItem { Content = title, Tag = new StyleFocus("roads", level), Icon = RibbonIcons.Create("layer.road"), FontSize = 13 };
+                Name(child, title, "theme.nav.roads." + level);
+                item.MenuItems.Add(child); _navItems["roads." + level] = child;
+            }
+            var all = new NavigationViewItem { Content = UiLanguage.Text("ThemeEditor_AllRoads"), Tag = new StyleFocus("roads"), Icon = RibbonIcons.Create("view.context.advanced"), FontSize = 13 };
+            Name(all, UiLanguage.Text("ThemeEditor_AllRoads"), "theme.nav.roads.all");
+            if (!searching || roads.Any(pair => !RoadLevels.Any(level => level.Key == pair.Key) &&
+                pair.Value is { } value && Matches(value, ["roads", pair.Key])))
+            {
+                item.MenuItems.Add(all); _navItems["roads.all"] = all;
+            }
+            if (_section == "roads" && !_navItems.ContainsKey("roads." + (_roadLevel ?? "all")) &&
+                item.MenuItems.OfType<NavigationViewItem>().FirstOrDefault()?.Tag is StyleFocus match)
+            {
+                _roadLevel = match.RoadLevel;
+                if (_roadLevel is not null) _selectedRoad = _roadLevel;
+            }
+        }
         _navItems[key] = item; return item;
     }
+    private static IconElement SectionIcon(string key) => key switch
+    {
+        "__basic__" => RibbonIcons.Create("style.edit_theme"),
+        "canvas" => RibbonIcons.Create("context.scale"),
+        "forest" => RibbonIcons.Named("trees"),
+        "roads" => RibbonIcons.Create("layer.road"),
+        "buildings" => RibbonIcons.Create("layer.building"),
+        "transports" => RibbonIcons.Create("layer.metro"),
+        "labels" => RibbonIcons.Create("layer.label"),
+        "poi_icons" => RibbonIcons.Create("layer.poi"),
+        "terrain" or "water" or "built_area" or "zone" or "land_use" or "district" or "procedural_objects"
+            or "railway" or "traffic" or "watermark" => RibbonIcons.Create("layer." + key),
+        _ => RibbonIcons.Create("view.context.advanced"),
+    };
     private void UpdateNavigationSelection()
     {
         var building = _building;
         _building = true;
         if (_navSections.TryGetValue(_section, out var group)) group.IsExpanded = true;
-        _navigation.SelectedItem = _navItems.GetValueOrDefault(_section);
+        var key = IsEmbedded && _section == "roads" ? "roads." + (_roadLevel ?? "all") : _section;
+        if (IsEmbedded && _section == "roads" && _navItems.TryGetValue("roads", out var roads)) roads.IsExpanded = true;
+        _navigation.SelectedItem = _navItems.GetValueOrDefault(key) ?? _navItems.GetValueOrDefault(_section);
         _pageChoice.SelectedItem = _pageChoice.Items.OfType<ComboBoxItem>().FirstOrDefault(item => (string)item.Tag == _section);
         _building = building;
     }
     private static Brush ResourceBrush(string key) => ((Border)XamlReader.Load($"<Border xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" Background=\"{{ThemeResource {key}}}\" />")).Background;
-    private async Task EditJsonAsync()
+    public async Task EditJsonAsync()
     {
         if (!FlushInputs()) return;
         var raw = new TextBox { Text = _working.ToJsonString(new System.Text.Json.JsonSerializerOptions { WriteIndented = true }),
-            AcceptsReturn = true, TextWrapping = TextWrapping.Wrap, Height = Math.Min(390, Math.Max(160, _window.Root.ActualHeight - 180)),
-            Width = Math.Min(480, Math.Max(180, _window.Root.ActualWidth - 96)) };
+            AcceptsReturn = true, TextWrapping = TextWrapping.Wrap, Height = Math.Min(390, Math.Max(160, DialogRoot.Size.Height - 180)),
+            Width = Math.Min(480, Math.Max(180, DialogRoot.Size.Width - 96)) };
         var errorText = new TextBlock { TextWrapping = TextWrapping.Wrap };
         var panel = new StackPanel { Spacing = 8 }; panel.Children.Add(raw); panel.Children.Add(errorText);
         var dialog = new ContentDialog { Title = UiLanguage.Text("ThemeEditorDialog_Layout_EditJsonAsync_2142FD3F0D"), Content = panel,
-            PrimaryButtonText = UiLanguage.Text("ThemeEditorDialog_Layout_EditJsonAsync_9212C5565A"), CloseButtonText = UiLanguage.Text("ThemeEditorDialog_Layout_EditJsonAsync_2CD0F3BE87"), XamlRoot = _window.Root.XamlRoot };
+            PrimaryButtonText = UiLanguage.Text("ThemeEditorDialog_Layout_EditJsonAsync_9212C5565A"), CloseButtonText = UiLanguage.Text("ThemeEditorDialog_Layout_EditJsonAsync_2CD0F3BE87"), XamlRoot = DialogRoot };
         dialog.PrimaryButtonClick += async (_, args) =>
         {
             var deferral = args.GetDeferral();

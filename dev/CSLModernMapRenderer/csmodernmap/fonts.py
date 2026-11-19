@@ -15,6 +15,8 @@ from __future__ import annotations
 import os
 import re
 import sys
+from contextlib import contextmanager
+from contextvars import ContextVar
 from pathlib import Path
 
 from PIL import ImageFont
@@ -353,7 +355,31 @@ def available_font_options(current: str | None = None) -> list[tuple[str, str]]:
     return options
 
 
+_RENDER_CANDIDATES = ContextVar('render_font_candidates', default=None)
+
+
+@contextmanager
+def font_resolution_scope():
+    """一次绘制内复用候选路径；下次绘制重新检查用户安装的字体。"""
+    token = _RENDER_CANDIDATES.set({})
+    try:
+        yield
+    finally:
+        _RENDER_CANDIDATES.reset(token)
+
+
 def _candidate_paths(font_name: str, bold: bool = False) -> list[Path]:
+    cache = _RENDER_CANDIDATES.get()
+    key = (font_name, bold)
+    if cache is not None and key in cache:
+        return cache[key]
+    result = _find_candidate_paths(font_name, bold)
+    if cache is not None:
+        cache[key] = result
+    return result
+
+
+def _find_candidate_paths(font_name: str, bold: bool = False) -> list[Path]:
     name = str(font_name or "").strip()
     if not name:
         return []
@@ -450,7 +476,7 @@ def resolve_font_path(font_name: str | None, fallback_names=()) -> Path | None:
 
 def load_pillow_font(size: float, font_name: str | None = None,
                      bold: bool = False,
-                     text: str | None = None) -> ImageFont.FreeTypeFont:
+                     text: str | None = None, *, minimum_size: int = 6) -> ImageFont.FreeTypeFont:
     """Load a Pillow font with a CJK-capable system fallback chain.
 
     Preview and export code must not silently use Pillow's tiny bitmap default
@@ -460,7 +486,7 @@ def load_pillow_font(size: float, font_name: str | None = None,
     text: 目标文本。给定后逐字体检查字符覆盖（如指定字体不含文本中的
     字符时自动回退到 CJK 字体链），避免缺字空白。
     """
-    size_px = max(int(round(float(size))), 6)
+    size_px = max(int(round(float(size))), minimum_size)
     path = resolve_text_font(font_name, (), bold=bold, text=text)
     if path is not None:
         try:

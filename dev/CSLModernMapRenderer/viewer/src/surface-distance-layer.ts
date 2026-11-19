@@ -1,7 +1,6 @@
 // 使用距离场绘制预览地图的表面图层。
 import { i18n } from './i18n';
-import * as maplibregl from 'maplibre-gl';
-import {
+import maplibregl, {
   type CustomLayerInterface,
   type CustomRenderMethodInput,
   type Map as MapLibreMap,
@@ -34,7 +33,7 @@ function shader(gl: WebGLRenderingContext | WebGL2RenderingContext,
   return result;
 }
 
-function program(gl: WebGLRenderingContext | WebGL2RenderingContext,
+export function program(gl: WebGLRenderingContext | WebGL2RenderingContext,
                  vertex: string, fragment: string): WebGLProgram {
   const result = gl.createProgram();
   if (!result) throw new Error(i18n.t("surface-distance-layer_program_efe4a34f88"));
@@ -49,7 +48,7 @@ function program(gl: WebGLRenderingContext | WebGL2RenderingContext,
   return result;
 }
 
-function rgb(value: string): [number, number, number] {
+export function rgb(value: string): [number, number, number] {
   const text = String(value || '#F1F0EB').replace('#', '');
   const full = text.length === 3 ? [...text].map(ch => ch + ch).join('') : text;
   return [

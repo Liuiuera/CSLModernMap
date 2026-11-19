@@ -35,20 +35,8 @@ _KINDS = ("train", "tram", "metro", "monorail", "cablecar")
 # 绘制顺序（自底向上，同 CSLMapView）
 _DRAW_ORDER = ("metro", "tram", "cablecar", "monorail", "train")
 
-# 抽象级别对应的最小轨道像素（最终输出像素），防止小图下发丝化
-_ABS_MIN_PIX = (0.5, 0.6, 0.8, 1.0)  # 按 abstract_level 索引
-
 # 链合并端点匹配容差（像素，round(x*2)/2 = 0.5 精度）
 _CHAIN_TOL = 0.5
-
-
-def _size_parts(value, default_fixed: float, default_scaled: float) -> dict:
-    if value is None:
-        return {"fixed": default_fixed, "scaled": default_scaled}
-    if isinstance(value, dict):
-        return {"fixed": float(value.get("fixed", default_fixed)),
-                "scaled": float(value.get("scaled", default_scaled))}
-    return {"fixed": float(value), "scaled": 0.0}
 
 
 def _color_parts(value, default: str, inherited_alpha=None) -> tuple[str, float]:
@@ -86,13 +74,13 @@ def resolve_railway_style(raw) -> dict:
         result[kind] = {
             "baseColor": base_color,
             "baseOpacity": base_opacity,
-            "width": _size_parts(cfg.get("width"), 2.0, 1.2),
-            "stationWidth": _size_parts(
-                cfg.get("station_width") or cfg.get("width"), 4.5, 2.7),
+            "width": float(cfg.get("width")),
+            "stationWidth": float(
+                cfg.get("station_width") or cfg.get("width")),
             "dashEnabled": bool(cfg.get("dash")),
             "dashColor": dash_color,
             "dashOpacity": dash_opacity,
-            "dashWidth": _size_parts(cfg.get("dash_width"), 0.8, 1.2),
+            "dashWidth": float(cfg.get("dash_width")),
             "dashPattern": [float(value) for value in
                             (cfg.get("pattern") or [2, 4])],
         }
@@ -131,12 +119,10 @@ class RailwayLayer(Layer):
         if not document.networks:
             return
         self.ctx = ctx
-        # 放大倍数（相对 4096 全图基准），线宽随特写等比放大
-        self.render_scale = ctx.zoom
+        # 主题已解析 E；这里只应用抗锯齿栅格倍率。
+        self._aa_k = ctx.zoom / ctx.final_zoom
         # 抽象分级按最终输出尺寸
         self._lvl = ctx.detail_policy.abstract_level
-        # 线宽下限换算到渲染分辨率（AA 渲染线宽/2=最终线宽）
-        self._min_pix = _ABS_MIN_PIX[self._lvl] * (ctx.zoom / ctx.final_zoom)
         self.rail_cfg = ctx.style.get("railway", {})
         if self.rail_cfg.get("enabled", True) is False:
             return
@@ -276,17 +262,8 @@ class RailwayLayer(Layer):
     def _cfg(self, kind: str) -> dict:
         return railway_kind_config(self.rail_cfg, kind)
 
-    def _size(self, val, def_fixed: float, def_scaled: float) -> float:
-        """取尺寸：数值 或 {fixed, scaled}，按 render_scale 线性放大。"""
-        if val is None:
-            v = def_fixed + def_scaled * self.render_scale
-        elif isinstance(val, dict):
-            v = float(val.get("fixed", def_fixed)) + float(
-                val.get("scaled", def_scaled)
-            ) * self.render_scale
-        else:
-            v = float(val)
-        return max(v, self._min_pix)
+    def _size(self, val) -> float:
+        return float(val) * self._aa_k
 
     def _color(self, cfg: dict, key: str, default: str):
         val = cfg.get(key, default)
@@ -307,16 +284,16 @@ class RailwayLayer(Layer):
         coords = tuple(v for xy in pts for v in xy)
         # 主线（实线；站台用加宽粗线）
         if station:
-            w = self._size(cfg.get("station_width") or cfg.get("width"), 4.5, 2.7)
+            w = self._size(cfg.get("station_width") or cfg.get("width"))
         else:
-            w = self._size(cfg.get("width"), 2.0, 1.2)
+            w = self._size(cfg.get("width"))
         self._agg.line(coords, aggdraw.Pen(self._color(cfg, "line", "#C36E69"), w))
 
         if station:
             return
         # 白色虚线 overlay（火车/电车/地铁）
         if cfg.get("dash"):
-            dw = max(self._size(cfg.get("dash_width"), 0.8, 1.2), 0.5)
+            dw = self._size(cfg["dash_width"])
             pattern = cfg.get("pattern") or [2, 4]
             self._draw_dashed_chain(
                 pts, self._color(cfg, "dash", "#FFFFFF"), dw,
@@ -332,8 +309,8 @@ class RailwayLayer(Layer):
         间隔 = dash 值 × 笔宽（WPF DashStyle 语义：dash 数组元素为笔宽倍数，
         与 CSLMapView RailDashPen.DashStyle[2,4] 一致），随缩放等比变化。
         """
-        dash_len = max(dash[0] * width, 0.5)
-        gap_len = max(dash[1] * width, 0.5)
+        dash_len = dash[0] * width
+        gap_len = dash[1] * width
         pen = aggdraw.Pen(color, width)
         on = True
         remain = dash_len
@@ -373,9 +350,9 @@ class RailwayLayer(Layer):
         （高德风格单轨/缆车卡死 30 分钟+）。改为在段内循环推进 offset，
         直到超过段长再扣减并前进到下一段。
         """
-        span = self._size(cfg.get("decoration_span"), 2.0, 25.0)
-        length = self._size(cfg.get("decoration_length"), 1.0, 1.0)
-        w = max(self._size(cfg.get("decoration_width"), 0.6, 0.6), 0.3)
+        span = self._size(cfg.get("decoration_span"))
+        length = self._size(cfg.get("decoration_length"))
+        w = self._size(cfg["decoration_width"])
         pen = aggdraw.Pen(self._color(cfg, "line", "#C36E69"), w)
         if len(pts) < 2:
             return

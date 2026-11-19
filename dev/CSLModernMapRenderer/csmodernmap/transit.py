@@ -41,7 +41,7 @@ _TRACK_FLAGS = {
 }
 
 # 类型别名归一化：Mod 导出的 TransportType 经此表映射到注册表键
-_TYPE_ALIASES = {key.casefold(): value for key, value in {
+_TYPE_ALIASES = {
     "Bus": "Bus",
     "Trolleybus": "Trolleybus",
     "Tram": "Tram",
@@ -55,7 +55,7 @@ _TYPE_ALIASES = {key.casefold(): value for key, value in {
     "Plane": "Airplane",
     "Blimp": "Airplane",
     "Helicopter": "Helicopter",
-}.items()}
+}
 
 # 站点合并用的 Node.SubService 关键词（按类型）
 _STATION_SUBSRV = {
@@ -200,7 +200,7 @@ TYPE_REGISTRY: Dict[str, TransitLineType] = {
 
 def normalize_type(raw: str) -> Optional[str]:
     """Mod 导出的 TransportType → 注册表键；未知类型返回 None。"""
-    return _TYPE_ALIASES.get((raw or "").casefold())
+    return _TYPE_ALIASES.get(raw or "")
 
 
 def type_def(key: str) -> Optional[TransitLineType]:

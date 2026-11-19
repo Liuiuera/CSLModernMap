@@ -58,5 +58,15 @@ internal static class ExportDesign
         return body;
     }
 
-
+    internal static Grid InlineField(FrameworkElement input, TextBlock detail)
+    {
+        var row = new Grid { ColumnSpacing = 12 };
+        row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        detail.VerticalAlignment = VerticalAlignment.Center;
+        Grid.SetColumn(detail, 1);
+        row.Children.Add(input);
+        row.Children.Add(detail);
+        return row;
+    }
 }
