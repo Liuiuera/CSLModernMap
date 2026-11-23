@@ -4730,4 +4730,13 @@ Shaotang Shaoxiancao Codex</value>
   <data name="TransitLabelStyle_SolidSign" xml:space="preserve"><value>Etiqueta compacta de cor sólida</value></data>
   <data name="TransitLabelStyle_FrameSign" xml:space="preserve"><value>Placa com contorno fino</value></data>
   <data name="TransitLabelStyle_UnderlineSign" xml:space="preserve"><value>Faixa de cor inferior</value></data>
+  <data name="PreviewQuality_Far" xml:space="preserve"><value>Longe</value></data>
+  <data name="PreviewQuality_Middle" xml:space="preserve"><value>Médio</value></data>
+  <data name="PreviewQuality_Near" xml:space="preserve"><value>Perto</value></data>
+  <data name="PreviewQuality_TextPercent" xml:space="preserve"><value>Texto (%)</value></data>
+  <data name="PreviewQuality_LinePercent" xml:space="preserve"><value>Linhas (%)</value></data>
+  <data name="PreviewQuality_Distance" xml:space="preserve"><value>Tamanho por nível de zoom</value></data>
+  <data name="PreviewQuality_DistanceGuide" xml:space="preserve"><value>Ajuste a distância média. Os valores de longe e de perto são calculados automaticamente. 100% usa o tamanho do tema ou da vista.</value></data>
+  <data name="PreviewQuality_IconPercent" xml:space="preserve"><value>Ícones (%)</value></data>
+  <data name="PreviewQuality_DistanceHelp" xml:space="preserve"><value>As estações acompanham a largura das linhas. De longe, os limites são 10 px para texto, 6 px para o diâmetro das estações e 12 px para ícones.</value></data>
 </root>

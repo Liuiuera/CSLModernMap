@@ -4730,4 +4730,13 @@ Codex di Shao Tang, dessert d'erba</value>
   <data name="TransitLabelStyle_SolidSign" xml:space="preserve"><value>Targa compatta a tinta unita</value></data>
   <data name="TransitLabelStyle_FrameSign" xml:space="preserve"><value>Targa con bordo sottile</value></data>
   <data name="TransitLabelStyle_UnderlineSign" xml:space="preserve"><value>Fascia colorata in basso</value></data>
+  <data name="PreviewQuality_Far" xml:space="preserve"><value>Lontano</value></data>
+  <data name="PreviewQuality_Middle" xml:space="preserve"><value>Medio</value></data>
+  <data name="PreviewQuality_Near" xml:space="preserve"><value>Vicino</value></data>
+  <data name="PreviewQuality_TextPercent" xml:space="preserve"><value>Testo (%)</value></data>
+  <data name="PreviewQuality_LinePercent" xml:space="preserve"><value>Linee (%)</value></data>
+  <data name="PreviewQuality_Distance" xml:space="preserve"><value>Dimensioni in base allo zoom</value></data>
+  <data name="PreviewQuality_DistanceGuide" xml:space="preserve"><value>Regola la distanza media. Le dimensioni da lontano e da vicino sono calcolate automaticamente. Il 100% usa le dimensioni del tema o della vista.</value></data>
+  <data name="PreviewQuality_IconPercent" xml:space="preserve"><value>Icone (%)</value></data>
+  <data name="PreviewQuality_DistanceHelp" xml:space="preserve"><value>Le stazioni seguono lo spessore delle linee. Da lontano il limite è 10 px per il testo, 6 px per il diametro delle stazioni e 12 px per le icone.</value></data>
 </root>

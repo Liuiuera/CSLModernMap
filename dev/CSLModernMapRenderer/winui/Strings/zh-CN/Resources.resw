@@ -4805,4 +4805,13 @@ Esc  取消当前任务</value>
   <data name="Workflow_Reset" xml:space="preserve"><value>重置主题编辑和导出方式</value></data>
   <data name="Export_DraftSettingsHelp" xml:space="preserve"><value>如需调整范围、方向、元素大小或图标密度，请前往草稿页确认效果。</value></data>
   <data name="Export_GoToDraft" xml:space="preserve"><value>前往草稿</value></data>
+  <data name="PreviewQuality_Far" xml:space="preserve"><value>远</value></data>
+  <data name="PreviewQuality_Middle" xml:space="preserve"><value>中</value></data>
+  <data name="PreviewQuality_Near" xml:space="preserve"><value>近</value></data>
+  <data name="PreviewQuality_TextPercent" xml:space="preserve"><value>字号 (%)</value></data>
+  <data name="PreviewQuality_LinePercent" xml:space="preserve"><value>线宽 (%)</value></data>
+  <data name="PreviewQuality_Distance" xml:space="preserve"><value>视距缩放</value></data>
+  <data name="PreviewQuality_DistanceGuide" xml:space="preserve"><value>调整中档，远、近两档自动计算。100% 使用主题或视图设定的大小。</value></data>
+  <data name="PreviewQuality_IconPercent" xml:space="preserve"><value>图标 (%)</value></data>
+  <data name="PreviewQuality_DistanceHelp" xml:space="preserve"><value>站点随线宽缩放。远档上限为字号 10 px、站点直径 6 px、图标 12 px。</value></data>
 </root>

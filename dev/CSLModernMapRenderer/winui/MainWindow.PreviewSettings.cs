@@ -29,7 +29,7 @@ public sealed partial class MainWindow
         _previewQualityPreset.SelectionChanged += async (_, _) =>
         {
             if (_syncingPreviewQuality || _previewQualityPreset.SelectedItem is not ComboBoxItem { Tag: string preset } || preset == "Custom") return;
-            try { await ApplyPreviewQualityAsync(PreviewQualitySettings.FromPreset(preset)); }
+            try { await ApplyPreviewQualityAsync(_previewQuality.WithPreset(preset)); }
             catch (Exception error) { SetError(error); }
             finally { RefreshPreviewQualitySection(); }
         };
@@ -67,7 +67,7 @@ public sealed partial class MainWindow
                 _previewQualityRequestId = Guid.NewGuid().ToString("N");
                 _previewQualityCompletion = new(TaskCreationOptions.RunContinuationsAsynchronously);
                 SendViewer(new { type = "setPreviewQuality", requestId = _previewQualityRequestId,
-                    quality = new { pixelScale = next.PixelScale, lineDetail = next.LineDetail, polygonDetail = next.PolygonDetail } });
+                    quality = JsonSerializer.SerializeToElement(next, PreviewQualitySettings.JsonOptions) });
                 var result = await _previewQualityCompletion.Task.WaitAsync(TimeSpan.FromSeconds(30));
                 if (result.GetProperty("outcome").GetString() != "applied")
                     throw new InvalidOperationException(result.GetProperty("message").GetString());
@@ -132,8 +132,61 @@ public sealed partial class MainWindow
                     FontSize = 12, Opacity = 0.75 });
                 fields.Children.Add(field);
             }
-            body.Children.Add(new Expander { Header = QualityText("Details"), Content = fields, IsExpanded = true,
+            body.Children.Add(new Expander { Header = QualityText("Details"), Content = fields,
                 HorizontalAlignment = HorizontalAlignment.Stretch, HorizontalContentAlignment = HorizontalAlignment.Stretch });
+            var section = ExportDesign.Group(QualityText("Distance"));
+            var guidance = ExportDesign.Text(QualityText("DistanceGuide"));
+            ExportDesign.Secondary(guidance);
+            section.Children.Add(guidance);
+            var distance = new Grid { ColumnSpacing = 6, RowSpacing = 6 };
+            foreach (var weight in new[] { 1.2, 1, 1.2, 1 })
+                distance.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(weight, GridUnitType.Star) });
+            for (int row = 0; row < 4; row++) distance.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            void Cell(FrameworkElement element, int row, int column)
+            {
+                Grid.SetRow(element, row); Grid.SetColumn(element, column);
+                element.VerticalAlignment = VerticalAlignment.Center;
+                if (column > 0 && element is TextBlock) element.HorizontalAlignment = HorizontalAlignment.Center;
+                distance.Children.Add(element);
+            }
+            foreach (var (name, column) in new[] { ("Far", 1), ("Middle", 2), ("Near", 3) })
+                Cell(new TextBlock { Text = QualityText(name), FontWeight = Microsoft.UI.Text.FontWeights.SemiBold }, 0, column);
+            Action? refreshScale = null;
+            void ScaleRow(string name, int row, double farFactor, Func<int> read, Action<int> write)
+            {
+                var title = QualityText(name);
+                Cell(ExportDesign.Text(title), row, 0);
+                var far = new TextBlock(); var near = new TextBlock();
+                var input = new NumberBox { Name = "PreviewQuality" + name, Minimum = 50, Maximum = 200,
+                    SmallChange = 5, LargeChange = 10, MinWidth = 0, MaxWidth = 88,
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact };
+                Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(input, QualityText("Middle") + " · " + title);
+                Cell(far, row, 1); Cell(input, row, 2); Cell(near, row, 3);
+                void ShowValues()
+                {
+                    var value = read();
+                    input.Value = value;
+                    far.Text = $"≤ {value * farFactor:0.##}%"; near.Text = $"{value * 1.25:0.##}%";
+                }
+                input.ValueChanged += (_, args) =>
+                {
+                    if (syncing) return;
+                    if (double.IsFinite(args.NewValue)) write((int)Math.Round(args.NewValue));
+                    Sync();
+                };
+                refreshScale += ShowValues;
+            }
+            ScaleRow("TextPercent", 1, .5, () => draft.TextPercent, value => draft = draft with { TextPercent = value });
+            ScaleRow("LinePercent", 2, .75, () => draft.LinePercent, value => draft = draft with { LinePercent = value });
+            ScaleRow("IconPercent", 3, .5, () => draft.IconPercent, value => draft = draft with { IconPercent = value });
+            section.Children.Add(distance);
+            var caps = ExportDesign.Text(QualityText("DistanceHelp"));
+            ExportDesign.Secondary(caps);
+            section.Children.Add(caps);
+            var distanceCard = ExportDesign.Card(section);
+            distanceCard.Name = "PreviewQualityDistance";
+            body.Children.Add(distanceCard);
             void Select(ComboBox combo, object value) => combo.SelectedItem = combo.Items.Cast<ComboBoxItem>().Single(item => item.Tag.Equals(value));
             void Sync()
             {
@@ -141,6 +194,7 @@ public sealed partial class MainWindow
                 try
                 {
                     Select(clarity, draft.PixelScale); Select(lines, draft.LineDetail); Select(polygons, draft.PolygonDetail);
+                    refreshScale?.Invoke();
                     foreach (var (key, button) in presetButtons) button.IsChecked = key == draft.Preset;
                     refreshSamples?.Invoke();
                 }
@@ -149,13 +203,13 @@ public sealed partial class MainWindow
             void Changed(object sender, SelectionChangedEventArgs args)
             {
                 if (syncing) return;
-                draft = new((double)((ComboBoxItem)clarity.SelectedItem).Tag,
-                    (string)((ComboBoxItem)lines.SelectedItem).Tag, (string)((ComboBoxItem)polygons.SelectedItem).Tag);
+                draft = draft with { PixelScale = (double)((ComboBoxItem)clarity.SelectedItem).Tag,
+                    LineDetail = (string)((ComboBoxItem)lines.SelectedItem).Tag, PolygonDetail = (string)((ComboBoxItem)polygons.SelectedItem).Tag };
                 Sync();
             }
             clarity.SelectionChanged += Changed; lines.SelectionChanged += Changed; polygons.SelectionChanged += Changed;
             foreach (var (key, button) in presetButtons)
-                button.Click += (_, _) => { draft = PreviewQualitySettings.FromPreset(key); Sync(); };
+                button.Click += (_, _) => { draft = draft.WithPreset(key); Sync(); };
             Sync();
 
             var samples = new StackPanel { Spacing = 10 };

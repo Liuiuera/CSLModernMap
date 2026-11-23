@@ -4730,4 +4730,13 @@ Stadtkarten, ÖPNV-Karten und Metropläne.
   <data name="TransitLabelStyle_SolidSign" xml:space="preserve"><value>Kompakte Farbfläche</value></data>
   <data name="TransitLabelStyle_FrameSign" xml:space="preserve"><value>Schild mit feinem Rahmen</value></data>
   <data name="TransitLabelStyle_UnderlineSign" xml:space="preserve"><value>Farbstreifen unten</value></data>
+  <data name="PreviewQuality_Far" xml:space="preserve"><value>Fern</value></data>
+  <data name="PreviewQuality_Middle" xml:space="preserve"><value>Mittel</value></data>
+  <data name="PreviewQuality_Near" xml:space="preserve"><value>Nah</value></data>
+  <data name="PreviewQuality_TextPercent" xml:space="preserve"><value>Schrift (%)</value></data>
+  <data name="PreviewQuality_LinePercent" xml:space="preserve"><value>Linien (%)</value></data>
+  <data name="PreviewQuality_Distance" xml:space="preserve"><value>Größe nach Zoomstufe</value></data>
+  <data name="PreviewQuality_DistanceGuide" xml:space="preserve"><value>Die mittlere Stufe ist einstellbar. Fern und nah werden automatisch berechnet. 100 % entspricht der Größe des Designs oder der Ansicht.</value></data>
+  <data name="PreviewQuality_IconPercent" xml:space="preserve"><value>Symbole (%)</value></data>
+  <data name="PreviewQuality_DistanceHelp" xml:space="preserve"><value>Stationen skalieren mit der Linienbreite. In der Fernansicht gelten maximal 10 px für Text, 6 px für den Stationsdurchmesser und 12 px für Symbole.</value></data>
 </root>

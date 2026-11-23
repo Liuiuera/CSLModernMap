@@ -4805,4 +4805,13 @@ Do you want to save your current changes?</value></data>
   <data name="Workflow_Reset" xml:space="preserve"><value>Reset theme editor and export choices</value></data>
   <data name="Export_DraftSettingsHelp" xml:space="preserve"><value>To adjust the extent, rotation, element size or icon density, open the Draft tab and check the result.</value></data>
   <data name="Export_GoToDraft" xml:space="preserve"><value>Go to draft</value></data>
+  <data name="PreviewQuality_Far" xml:space="preserve"><value>Far</value></data>
+  <data name="PreviewQuality_Middle" xml:space="preserve"><value>Mid</value></data>
+  <data name="PreviewQuality_Near" xml:space="preserve"><value>Near</value></data>
+  <data name="PreviewQuality_TextPercent" xml:space="preserve"><value>Text (%)</value></data>
+  <data name="PreviewQuality_LinePercent" xml:space="preserve"><value>Lines (%)</value></data>
+  <data name="PreviewQuality_Distance" xml:space="preserve"><value>Zoom scaling</value></data>
+  <data name="PreviewQuality_DistanceGuide" xml:space="preserve"><value>Adjust the middle range. Far and near are calculated automatically. 100% uses the theme or view size.</value></data>
+  <data name="PreviewQuality_IconPercent" xml:space="preserve"><value>Icons (%)</value></data>
+  <data name="PreviewQuality_DistanceHelp" xml:space="preserve"><value>Stations scale with line width. Far limits are 10 px for text, 6 px for station diameter and 12 px for icons.</value></data>
 </root>

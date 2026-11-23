@@ -1129,8 +1129,8 @@ public sealed partial class MainWindow : Window
                     }
                 }
                 SendViewer(new { type = "setLanguage", language = UiLanguage.Language });
-                SendViewer(new { type = "setPreviewQuality", quality = new { pixelScale = _previewQuality.PixelScale,
-                    lineDetail = _previewQuality.LineDetail, polygonDetail = _previewQuality.PolygonDetail } });
+                SendViewer(new { type = "setPreviewQuality",
+                    quality = JsonSerializer.SerializeToElement(_previewQuality, PreviewQualitySettings.JsonOptions) });
                 var readyInstance = _previewInstance;
                 _ = RunAsync(async () =>
                 {

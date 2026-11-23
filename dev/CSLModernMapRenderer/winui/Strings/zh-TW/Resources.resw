@@ -4748,4 +4748,13 @@ Esc  取消目前工作</value>
   <data name="PreviewQuality_ExportHint" xml:space="preserve"><value>請在匯出設定中選擇 HTML 畫質。</value></data>
   <data name="PreviewQuality_Current" xml:space="preserve"><value>目前選取項目</value></data>
   <data name="Export_HtmlQuality" xml:space="preserve"><value>HTML 畫質</value></data>
+  <data name="PreviewQuality_Far" xml:space="preserve"><value>遠</value></data>
+  <data name="PreviewQuality_Middle" xml:space="preserve"><value>中</value></data>
+  <data name="PreviewQuality_Near" xml:space="preserve"><value>近</value></data>
+  <data name="PreviewQuality_TextPercent" xml:space="preserve"><value>字級 (%)</value></data>
+  <data name="PreviewQuality_LinePercent" xml:space="preserve"><value>線寬 (%)</value></data>
+  <data name="PreviewQuality_Distance" xml:space="preserve"><value>視距縮放</value></data>
+  <data name="PreviewQuality_DistanceGuide" xml:space="preserve"><value>調整中距，遠、近兩檔會自動計算。100% 使用主題或檢視設定的大小。</value></data>
+  <data name="PreviewQuality_IconPercent" xml:space="preserve"><value>圖示 (%)</value></data>
+  <data name="PreviewQuality_DistanceHelp" xml:space="preserve"><value>站點隨線寬縮放。遠距上限為字級 10 px、站點直徑 6 px、圖示 12 px。</value></data>
 </root>
