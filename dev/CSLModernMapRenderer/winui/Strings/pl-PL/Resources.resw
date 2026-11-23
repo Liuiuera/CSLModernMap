@@ -4411,6 +4411,7 @@ Mapy miast, mapy transportu publicznego i schematy metra.
   <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>Pokaż ikony i nazwy dekoracji z listy. Budynki i obiekty mapy pozostają widoczne.</value></data>
   <data name="MetroSettings_Reset" xml:space="preserve"><value>Przywróć domyślne</value></data>
   <data name="Preview_Failed" xml:space="preserve"><value>Nie udało się wczytać podglądu</value></data>
+  <data name="Preview_Recovering" xml:space="preserve"><value>Przywracanie podglądu mapy…</value></data>
   <data name="Preview_Slow" xml:space="preserve"><value>Wczytywanie podglądu trwa dłużej</value></data>
   <data name="Preview_Stopped" xml:space="preserve"><value>Podgląd nie jest uruchomiony</value></data>
   <data name="Preview_DataAvailable" xml:space="preserve"><value>Dane mapy są wczytane. Możesz wybrać motyw i wyeksportować mapę.</value></data>

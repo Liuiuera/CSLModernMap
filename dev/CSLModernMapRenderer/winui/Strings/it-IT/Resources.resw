@@ -4411,6 +4411,7 @@ Codex di Shao Tang, dessert d'erba</value>
   <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>Mostra icone e nomi delle decorazioni elencate. Gli edifici e gli elementi della mappa restano visibili.</value></data>
   <data name="MetroSettings_Reset" xml:space="preserve"><value>Ripristina predefiniti</value></data>
   <data name="Preview_Failed" xml:space="preserve"><value>Impossibile caricare l’anteprima</value></data>
+  <data name="Preview_Recovering" xml:space="preserve"><value>Ripristino dell’anteprima della mappa…</value></data>
   <data name="Preview_Slow" xml:space="preserve"><value>L’anteprima richiede più tempo</value></data>
   <data name="Preview_Stopped" xml:space="preserve"><value>Il visualizzatore non è in esecuzione</value></data>
   <data name="Preview_DataAvailable" xml:space="preserve"><value>I dati sono caricati. Puoi scegliere un tema ed esportare.</value></data>

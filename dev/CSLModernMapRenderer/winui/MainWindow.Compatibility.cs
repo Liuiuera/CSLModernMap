@@ -14,7 +14,7 @@ public sealed partial class MainWindow
     private async Task EnableCompatibilityPreviewAsync()
     {
         _compatibilityPreview = true;
-        await StopPreviewAsync();
+        if (!await StopPreviewAsync()) return;
         _previewFailure = null;
         OperationError.IsOpen = false;
         _selectedBounds = null;
