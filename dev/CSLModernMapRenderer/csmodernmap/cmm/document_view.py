@@ -366,6 +366,9 @@ class MapDocumentView:
     def segment(self, seg_id: int):
         return self._segment_by_id.get(int(seg_id))
 
+    def bounds_2d(self) -> tuple[float, float, float, float]:
+        return MapData.bounds_2d(self)
+
     def _chain_to_points(self, chain, start_pos):
         """将有序线段链转为世界坐标点，与 MapData 共用同一实现。"""
         from ..data import MapData
