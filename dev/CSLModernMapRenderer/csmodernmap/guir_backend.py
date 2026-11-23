@@ -679,6 +679,7 @@ class GuirBackend:
         # 文档 / 会话
         self.document = None
         self.session = None
+        self.preview_outside_terrain = False
         self.source_file = None
         self.city_info = {}
 
@@ -1502,8 +1503,11 @@ class GuirBackend:
         grid = self.range_tile_grid()
         if grid is None or grid.game != "cs2":
             return False
-        x0, z0, x1, z1 = self.world_rect()
-        return min(x1 - x0, z1 - z0) > grid.tile_m * grid.grid * 1.01
+        terrain = self.document.terrain
+        return min(terrain.cols, terrain.rows) * terrain.cell > grid.tile_m * grid.grid * 1.01
+
+    def can_preview_outside_terrain(self) -> bool:
+        return self.has_outside_terrain() and self.document.terrain.height.values is not None
 
     def tile_range_selection(self) -> dict | None:
         """返回 None 可在用户确认新对话框前保持旧版除数范围不变。"""
@@ -1691,6 +1695,7 @@ class GuirBackend:
                 self._output_dir = str(Path(path).resolve().parent)
                 self.document = document
                 self.session = session
+                self.preview_outside_terrain = False
                 self.layer_visibility["satellite"] = False
                 self._transit_line_catalog_cache = transit_catalog
                 # 公共交通视图的线路勾选不落盘（会话级），地铁白名单则要跟
@@ -2286,7 +2291,7 @@ class GuirBackend:
             else:
                 transit_options = self.transit_options()
         return {
-            "bounds": document_city_bounds(self.document),
+            "bounds": self.world_rect() if self.preview_outside_terrain else document_city_bounds(self.document),
             "satelliteReady": bool(self.layer_visibility.get("satellite")
                                    or (getattr(self, "_preview_bundle_session", None) is self.session
                                        and getattr(self, "_preview_bundle", None)

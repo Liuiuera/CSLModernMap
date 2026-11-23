@@ -4692,6 +4692,10 @@ Stadtkarten, ÖPNV-Karten und Metropläne.
   <data name="BuildingCategory_Help" xml:space="preserve"><value>Wählen Sie Kategoriefarben, um diese Einstellungen anzuwenden. Aktivieren Sie Farbe überschreiben für alle Gebäude einer Kategorie; deaktivieren Sie es, um automatische POI-Farben wiederherzustellen. Unbekannte Nutzungen bleiben nicht klassifiziert.</value></data>
   <data name="Satellite_LayerTitle" xml:space="preserve"><value>Satellitenbild</value></data>
   <data name="Satellite_Composing" xml:space="preserve"><value>Satellitenbild wird zusammengesetzt…</value></data>
+  <data name="PreviewQuality_OutsideLabel" xml:space="preserve"><value>Umgebungsgelände anzeigen (erweiterte Karten)</value></data>
+  <data name="PreviewQuality_OutsideHint" xml:space="preserve"><value>Diese Karte enthält Umgebungsgelände. Aktiviere es, um über die Stadtgrenzen hinauszusehen oder wenn du eine Mod zur Kartenerweiterung verwendest.</value></data>
+  <data name="PreviewQuality_OutsideMemory" xml:space="preserve"><value>Das Anzeigen des Umgebungsgeländes benötigt mehr Arbeitsspeicher.</value></data>
+  <data name="PreviewQuality_OutsideEnable" xml:space="preserve"><value>Umgebungsgelände aktivieren</value></data>
   <data name="PreviewQuality_Title" xml:space="preserve"><value>Vorschauqualität</value></data>
   <data name="PreviewQuality_Preset" xml:space="preserve"><value>Vorschauqualität</value></data>
   <data name="PreviewQuality_Smooth" xml:space="preserve"><value>Flüssig</value></data>

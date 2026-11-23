@@ -89,6 +89,10 @@ public sealed partial class MainWindow : Window
         BuildWorkspaceCommands();
         ShowMapOverview();
         ShowInspectorHome();
+        OutsideTerrainNotice.Message = QualityText("OutsideHint") + " " + QualityText("OutsideMemory");
+        OutsideTerrainNotice.CloseButtonClick += (_, _) => _outsideNoticeDismissed = true;
+        EnableOutsideTerrain.Content = QualityText("OutsideEnable");
+        EnableOutsideTerrain.Click += async (_, _) => await RunAsync(() => ApplyOutsideTerrainAsync(true));
         MapOverlayCancel.Click += async (_, _) => await RunAsync(CancelCurrentTaskAsync);
         PreviewRetry.Click += async (_, _) => await RunAsync(RetryPreviewAsync);
         PreviewCancel.Click += (_, _) => DismissPreviewNotice();
@@ -419,6 +423,7 @@ public sealed partial class MainWindow : Window
     private async Task RefreshSnapshotAsync()
     {
         _snapshot = await _engine.RequestAsync("getSnapshot");
+        RefreshOutsideTerrainControls();
         ApplySharedRotation();
         SetDocumentEnabled(_snapshot.GetProperty("hasDocument").GetBoolean() &&
             !_engineBusy);
@@ -512,6 +517,7 @@ public sealed partial class MainWindow : Window
     private async Task OpenPathAsync(string path)
     {
         if (_cityArtwork && !await TryLeaveArtworkEditorAsync()) return;
+        if (_previewSettingsWindow is { } quality && !await quality.RequestCloseAsync()) return;
         if (_exportWindow is { } export && !await export.RequestCloseAsync()) return;
         if (_themeEditor is { } theme && !await theme.RequestCloseAsync()) return;
         if (_poiEditor is { } poi && !await poi.RequestCloseAsync()) return;
@@ -519,6 +525,7 @@ public sealed partial class MainWindow : Window
         CloseBuildingList();
         await FlushContextWritesAsync();
         _documentGeneration++;
+        _outsideNoticeDismissed = false;
         ResetCompatibilityImage();
         _previewNoticeDismissed = false;
         _loadingDocument = true;

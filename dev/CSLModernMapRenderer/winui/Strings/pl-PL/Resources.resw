@@ -4692,6 +4692,10 @@ Mapy miast, mapy transportu publicznego i schematy metra.
   <data name="BuildingCategory_Help" xml:space="preserve"><value>Wybierz Kolory kategorii, aby zastosować te ustawienia. Włącz Zastąp kolor dla wszystkich budynków kategorii; wyłącz, aby przywrócić automatyczne kolory POI. Nieznane zastosowania pozostają niesklasyfikowane.</value></data>
   <data name="Satellite_LayerTitle" xml:space="preserve"><value>Zdjęcia satelitarne</value></data>
   <data name="Satellite_Composing" xml:space="preserve"><value>Łączenie zdjęć satelitarnych…</value></data>
+  <data name="PreviewQuality_OutsideLabel" xml:space="preserve"><value>Pokaż teren wokół miasta (rozszerzone mapy)</value></data>
+  <data name="PreviewQuality_OutsideHint" xml:space="preserve"><value>Ta mapa zawiera teren wokół miasta. Włącz go, aby zobaczyć obszar poza granicami miasta lub jeśli używasz moda rozszerzającego mapę.</value></data>
+  <data name="PreviewQuality_OutsideMemory" xml:space="preserve"><value>Wyświetlanie terenu wokół miasta zwiększa zużycie pamięci.</value></data>
+  <data name="PreviewQuality_OutsideEnable" xml:space="preserve"><value>Włącz teren wokół miasta</value></data>
   <data name="PreviewQuality_Title" xml:space="preserve"><value>Jakość podglądu</value></data>
   <data name="PreviewQuality_Preset" xml:space="preserve"><value>Jakość podglądu</value></data>
   <data name="PreviewQuality_Smooth" xml:space="preserve"><value>Płynny</value></data>

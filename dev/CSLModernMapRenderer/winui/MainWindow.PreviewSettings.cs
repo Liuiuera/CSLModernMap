@@ -14,6 +14,49 @@ public sealed partial class MainWindow
     private bool _syncingPreviewQuality, _applyingPreviewQuality;
     private string? _previewQualityRequestId;
     private TaskCompletionSource<JsonElement>? _previewQualityCompletion;
+    private bool _outsideNoticeDismissed, _changingOutsideTerrain;
+    private CheckBox? _outsideTerrainChoice;
+    private bool _outsideChoiceBaseline;
+
+    private bool OutsideTerrainAvailable => !_loadingDocument && !_engineUnavailable &&
+        _snapshot.ValueKind == JsonValueKind.Object &&
+        _snapshot.TryGetProperty("outsideTerrainAvailable", out var available) && available.GetBoolean() &&
+        _snapshot.GetProperty("documentEpoch").GetInt32() == _engineDocumentEpoch;
+    private bool OutsideTerrainEnabled => OutsideTerrainAvailable && _snapshot.GetProperty("previewOutsideTerrain").GetBoolean();
+
+    private void RefreshOutsideTerrainControls()
+    {
+        var available = OutsideTerrainAvailable && _context != "metro" && !_cityArtwork;
+        var enabled = OutsideTerrainEnabled;
+        var canChange = !_engineBusy && !_mapTask.Active && !_previewStarting && !_changingOutsideTerrain && !_applyingPreviewQuality;
+        OutsideTerrainNotice.IsOpen = available && !enabled && !_outsideNoticeDismissed;
+        EnableOutsideTerrain.IsEnabled = canChange;
+        if (_outsideTerrainChoice is { } choice)
+        {
+            choice.Visibility = available ? Visibility.Visible : Visibility.Collapsed;
+            choice.IsEnabled = canChange;
+            if (_outsideChoiceBaseline != enabled)
+                choice.IsChecked = _outsideChoiceBaseline = enabled;
+        }
+    }
+
+    private async Task ApplyOutsideTerrainAsync(bool enabled)
+    {
+        if (!OutsideTerrainAvailable || enabled == OutsideTerrainEnabled) return;
+        if (_engineBusy || _mapTask.Active || _previewStarting || _changingOutsideTerrain)
+            throw new InvalidOperationException(QualityText("Busy"));
+        var generation = _documentGeneration;
+        _changingOutsideTerrain = true;
+        RefreshOutsideTerrainControls();
+        try
+        {
+            await _engine.RequestAsync("setPreviewOutsideTerrain", new { documentEpoch = _engineDocumentEpoch, enabled });
+            if (generation != _documentGeneration) return;
+            await RefreshSnapshotAsync();
+            if (generation == _documentGeneration) await RefreshLivePreviewAsync();
+        }
+        finally { _changingOutsideTerrain = false; RefreshOutsideTerrainControls(); }
+    }
 
     private static string QualityText(string key) => UiLanguage.Text("PreviewQuality_" + key);
     private StackPanel CreatePreviewQualitySection()
@@ -42,6 +85,7 @@ public sealed partial class MainWindow
 
     private void RefreshPreviewQualitySection()
     {
+        RefreshOutsideTerrainControls();
         if (_previewQualityPreset is null) return;
         _syncingPreviewQuality = true;
         try
@@ -158,6 +202,15 @@ public sealed partial class MainWindow
                 button.Click += (_, _) => { draft = PreviewQualitySettings.FromPreset(key); Sync(); };
             Sync();
 
+            var outsideLabel = new StackPanel { Spacing = 4 };
+            outsideLabel.Children.Add(new TextBlock { Text = QualityText("OutsideLabel"), TextWrapping = TextWrapping.Wrap });
+            outsideLabel.Children.Add(new TextBlock { Text = QualityText("OutsideMemory"), FontSize = 12,
+                Opacity = 0.75, TextWrapping = TextWrapping.Wrap });
+            var outside = _outsideTerrainChoice = new CheckBox { Name = "PreviewQualityOutsideTerrain",
+                Content = outsideLabel, IsChecked = _outsideChoiceBaseline = OutsideTerrainEnabled };
+            fields.Children.Add(outside);
+            RefreshOutsideTerrainControls();
+
             var samples = new StackPanel { Spacing = 10 };
             samples.Children.Add(new TextBlock { Text = QualityText("Samples"), FontWeight = Microsoft.UI.Text.FontWeights.SemiBold });
             using var demo = new PreviewQualityDemo(new Uri(sampleServer.GetProperty("viewerUrl").GetString()!),
@@ -176,7 +229,7 @@ public sealed partial class MainWindow
             window.SetBody(scroll);
             window.ActionsRightAligned = true;
             window.AddAction(UiLanguage.Text("MainWindow_PreviewSettings_ShowPreviewSettingsAsync_BA2E93E730"), () =>
-            { draft = new(); Sync(); return Task.CompletedTask; });
+            { draft = new(); outside.IsChecked = false; Sync(); return Task.CompletedTask; });
             window.AddAction(UiLanguage.Text("MainWindow_PreviewSettings_ShowPreviewSettingsAsync_2CD0F3BE87"), () => window.RequestCloseAsync());
             var applying = false;
             window.CanCloseAsync = () => Task.FromResult(!applying);
@@ -188,6 +241,8 @@ public sealed partial class MainWindow
                 try
                 {
                     await ApplyPreviewQualityAsync(draft);
+                    if (generation == _documentGeneration && outside.Visibility == Visibility.Visible)
+                        await ApplyOutsideTerrainAsync(outside.IsChecked == true);
                     status.Text = QualityText(_viewerReady ? "Applied" : "Saved");
                 }
                 catch (Exception error) { status.Text = error.Message; SetError(error); }
@@ -200,7 +255,7 @@ public sealed partial class MainWindow
             apply.Name = "PreviewQualityApply";
             apply.Style = (Style)Application.Current.Resources["AccentButtonStyle"];
             try { await window.ShowAsync(); }
-            finally { if (_previewSettingsWindow == window) _previewSettingsWindow = null; }
+            finally { _outsideTerrainChoice = null; if (_previewSettingsWindow == window) _previewSettingsWindow = null; }
         }
         finally { _openingEditors.Remove("preview-settings"); }
     }

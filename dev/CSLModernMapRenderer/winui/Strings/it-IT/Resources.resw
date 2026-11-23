@@ -4692,6 +4692,10 @@ Codex di Shao Tang, dessert d'erba</value>
   <data name="BuildingCategory_Help" xml:space="preserve"><value>Seleziona Colori per categoria per applicare queste impostazioni. Attiva Sovrascrivi colore per tutti gli edifici di una categoria; disattivalo per ripristinare i colori POI automatici. Gli usi sconosciuti restano non classificati.</value></data>
   <data name="Satellite_LayerTitle" xml:space="preserve"><value>Immagine satellitare</value></data>
   <data name="Satellite_Composing" xml:space="preserve"><value>Composizione dell’immagine satellitare…</value></data>
+  <data name="PreviewQuality_OutsideLabel" xml:space="preserve"><value>Mostra il terreno circostante (mappe estese)</value></data>
+  <data name="PreviewQuality_OutsideHint" xml:space="preserve"><value>Questa mappa include il terreno circostante. Attivalo per vedere oltre i lotti della città o se usi una mod che estende la mappa.</value></data>
+  <data name="PreviewQuality_OutsideMemory" xml:space="preserve"><value>Visualizzare il terreno circostante richiede più memoria.</value></data>
+  <data name="PreviewQuality_OutsideEnable" xml:space="preserve"><value>Attiva il terreno circostante</value></data>
   <data name="PreviewQuality_Title" xml:space="preserve"><value>Qualità dell'anteprima</value></data>
   <data name="PreviewQuality_Preset" xml:space="preserve"><value>Qualità dell'anteprima</value></data>
   <data name="PreviewQuality_Smooth" xml:space="preserve"><value>Fluida</value></data>
