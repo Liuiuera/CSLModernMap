@@ -57,6 +57,11 @@ jobs:
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: windows-package-${{ github.sha }}
-          path: artifacts/
+          path: |
+            artifacts/*.zip
+            artifacts/SHA256SUMS.txt
+            artifacts/packaged-self-check.json
+            artifacts/python-dependencies.txt
+            artifacts/tests.txt
           if-no-files-found: error
           retention-days: 30
