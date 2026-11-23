@@ -4730,4 +4730,8 @@ Mapa de la ciudad, mapa de transporte público y esquema de metro.
   <data name="TransitLabelStyle_SolidSign" xml:space="preserve"><value>Rótulo compacto de color</value></data>
   <data name="TransitLabelStyle_FrameSign" xml:space="preserve"><value>Señal con borde fino</value></data>
   <data name="TransitLabelStyle_UnderlineSign" xml:space="preserve"><value>Franja de color inferior</value></data>
+  <data name="OpenRecentExport.Content" xml:space="preserve"><value>Abrir la última exportación</value></data>
+  <data name="OpenRecentExport_NoMaps" xml:space="preserve"><value>No se encontraron exportaciones CMM.</value></data>
+  <data name="OpenRecentExportHelp.Text" xml:space="preserve"><value>¿El mapa no se abrió automáticamente? Vuelve al juego y selecciona Exportar y abrir otra vez, o selecciona aquí el archivo exportado.</value></data>
+  <data name="OpenRecentExportFile.Content" xml:space="preserve"><value>Seleccionar archivo exportado</value></data>
 </root>

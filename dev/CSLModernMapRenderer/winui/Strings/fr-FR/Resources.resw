@@ -4730,4 +4730,8 @@ Shaotang Shaoxiancao Codex</value>
   <data name="TransitLabelStyle_SolidSign" xml:space="preserve"><value>Aplat compact</value></data>
   <data name="TransitLabelStyle_FrameSign" xml:space="preserve"><value>Panneau à contour fin</value></data>
   <data name="TransitLabelStyle_UnderlineSign" xml:space="preserve"><value>Bande de couleur en bas</value></data>
+  <data name="OpenRecentExport.Content" xml:space="preserve"><value>Ouvrir le dernier export</value></data>
+  <data name="OpenRecentExport_NoMaps" xml:space="preserve"><value>Aucun export CMM trouvé.</value></data>
+  <data name="OpenRecentExportHelp.Text" xml:space="preserve"><value>La carte ne s’est pas ouverte automatiquement ? Retournez dans le jeu et choisissez de nouveau Exporter et ouvrir, ou sélectionnez le fichier exporté ici.</value></data>
+  <data name="OpenRecentExportFile.Content" xml:space="preserve"><value>Sélectionner le fichier exporté</value></data>
 </root>

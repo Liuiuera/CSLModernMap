@@ -1,4 +1,6 @@
 // 处理主窗口中的文件打开与保存流程。
+using System.Text.Json;
+using CSLModernMap;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -88,6 +90,46 @@ public sealed partial class MainWindow
         if (_openCityMenu is not null) _openCityMenu.Visibility = _context == "metro" ? Visibility.Visible : Visibility.Collapsed;
         if (_workspaceOpenMenu is not null) _workspaceOpenMenu.Text = _context == "metro" ? RmpText("Open") : UiLanguage.Text("MainWindow_File_BuildFileMenu_CF2A3F856E");
         if (_workspaceSaveMenu is not null) _workspaceSaveMenu.Text = _context == "metro" ? RmpText("Save") : UiLanguage.Text("MainWindow_File_BuildFileMenu_D5962F4266");
+    }
+
+    private RecentCmmExport? _recentExport;
+    private bool _refreshingRecentExport;
+
+    private bool CanOpenRecentExport => _context == "map" && !_cityArtwork && _mapTask.Phase == MapTaskPhase.Empty;
+
+    private async Task RefreshRecentExportAsync()
+    {
+        if (_closing || !CanOpenRecentExport || _refreshingRecentExport || _snapshot.ValueKind != JsonValueKind.Object) return;
+        var generation = _mapTask.Generation;
+        _refreshingRecentExport = true;
+        OpenRecentExport.IsEnabled = false;
+        try
+        {
+            var file = await Task.Run(() => RecentCmmExport.FindLatest(
+                GameExportDirectories.RegistryDirectory, StartupTrace.Write));
+            if (_closing || generation != _mapTask.Generation || !CanOpenRecentExport) return;
+            _recentExport = file;
+            RecentExportDetails.Text = file is null
+                ? UiLanguage.Text("OpenRecentExport_NoMaps")
+                : $"{file.MapFile.Name} · {file.Version}";
+            OpenRecentExport.Visibility = file is null ? Visibility.Collapsed : Visibility.Visible;
+        }
+        finally
+        {
+            _refreshingRecentExport = false;
+            OpenRecentExport.IsEnabled = _recentExport is not null;
+        }
+    }
+
+    private async Task OpenRecentExportAsync()
+    {
+        if (_recentExport is not { } export || !CanOpenRecentExport) return;
+        if (!File.Exists(export.MapFile.FullName))
+        {
+            await RefreshRecentExportAsync();
+            return;
+        }
+        await OpenPathAsync(export.MapFile.FullName);
     }
 
     private void RefreshFileRecent()

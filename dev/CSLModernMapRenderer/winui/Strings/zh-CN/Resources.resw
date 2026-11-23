@@ -4805,4 +4805,8 @@ Esc  取消当前任务</value>
   <data name="Workflow_Reset" xml:space="preserve"><value>重置主题编辑和导出方式</value></data>
   <data name="Export_DraftSettingsHelp" xml:space="preserve"><value>如需调整范围、方向、元素大小或图标密度，请前往草稿页确认效果。</value></data>
   <data name="Export_GoToDraft" xml:space="preserve"><value>前往草稿</value></data>
+  <data name="OpenRecentExport.Content" xml:space="preserve"><value>打开最近导出</value></data>
+  <data name="OpenRecentExport_NoMaps" xml:space="preserve"><value>没有找到导出的 CMM 地图。</value></data>
+  <data name="OpenRecentExportHelp.Text" xml:space="preserve"><value>没有自动打开地图？请重新回到游戏点击导出并打开，或者在这里选择导出的文件。</value></data>
+  <data name="OpenRecentExportFile.Content" xml:space="preserve"><value>选择导出的文件</value></data>
 </root>
