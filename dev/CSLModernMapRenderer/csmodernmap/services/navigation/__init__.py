@@ -6,6 +6,8 @@ import json
 from collections import Counter
 from math import dist, isfinite
 
+from ...cmm import RoadLevel
+
 SCHEMA_VERSION = 1
 DURATION_MODEL = "car-speed-traffic-v2"
 LEGACY_DURATION_MODEL = "car-speed-limit-v1"
@@ -110,9 +112,10 @@ def compile_navigation(document) -> dict:
         if length <= 0:
             excluded["zero_length"] += 1
             continue
-        walking_roads.append({"id": str(road.id), "fromNode": start, "toNode": end,
-                              "points": points, "name": road.display_name or road.game_name,
-                              "mode": str(road.mode)})
+        if road.level != RoadLevel.HIGHWAY:
+            walking_roads.append({"id": str(road.id), "fromNode": start, "toNode": end,
+                                  "points": points, "name": road.display_name or road.game_name,
+                                  "mode": str(road.mode)})
         access = road.car_access
         if not isinstance(access, dict) or not isinstance(access.get("source"), str) or not access["source"]:
             excluded["car_access_unknown"] += 1

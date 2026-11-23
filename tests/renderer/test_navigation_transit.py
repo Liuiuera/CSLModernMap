@@ -5,7 +5,7 @@ from dataclasses import replace
 
 import pytest
 
-from csmodernmap.cmm import MapDocument
+from csmodernmap.cmm import MapDocument, RoadLevel
 from csmodernmap.services.navigation import clip_navigation, compile_navigation
 from csmodernmap.services.navigation.route import validate_route
 from test_navigation import document, node_router
@@ -109,6 +109,25 @@ def test_transit_walks_without_car_access_and_preserves_stop_order(node_router):
     assert result["boardings"] == 1
     assert [leg["stops"] for leg in result["legs"] if leg["mode"] == "ride"] == [2]
     validate_route(package, result)
+
+
+@pytest.mark.parametrize("has_street", [True, False])
+def test_highway_is_driveable_but_excluded_from_walking_and_station_access(has_street):
+    source = transit_document()
+    overpass = document([(13, 4, 5, True)], {4: [0, 12, 10], 5: [6000, 12, 10]})
+    overpass.networks[0].level = RoadLevel.HIGHWAY
+    source.nodes.extend(overpass.nodes)
+    source.networks = (source.networks if has_street else []) + overpass.networks
+
+    package = compile_navigation(source)
+    assert {edge["id"] for edge in package["edges"] if edge["sourceSegmentId"] == "13"} == {
+        "road:13:f", "road:13:b"}
+    geometries = package["transit"]["geometries"]
+    assert not any(ref.startswith("walk:13:") for ref in geometries)
+    if has_street:
+        assert geometries["access:21"] == [[100, 0, 0], [100, 0, 10]]
+    else:
+        assert not any(ref.startswith("access:") for ref in geometries)
 
 
 def test_clipped_transit_route_and_outside_network(node_router):
