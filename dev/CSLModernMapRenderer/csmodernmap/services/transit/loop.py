@@ -1,10 +1,16 @@
 """识别环线证据并生成有效站序。"""
 from __future__ import annotations
 
-from ...cmm import Route, TransitKind, normalize_transit_kind
+import re
+
+from ...cmm import Route, TransitKind
 from ...data import MapData, Transport
 from ...line_topology import normalize_station_sequence
-from ...transit import type_def
+from ...transit import TYPE_REGISTRY, type_def
+
+
+_LINE_NAME = re.compile("|".join(re.escape(t.line_network) for t in TYPE_REGISTRY.values()),
+                        re.IGNORECASE)
 
 
 def effective_sequence(route_or_ids: Route | list[int] | tuple[int, ...]) -> tuple[int, ...]:
@@ -15,39 +21,28 @@ def effective_sequence(route_or_ids: Route | list[int] | tuple[int, ...]) -> tup
     return tuple(topology.sequence)
 
 
-def _stop_line_graph(mapdata: MapData, keyword: str) -> dict[int, set[int]]:
-    graph: dict[int, set[int]] = {}
-    wanted = (keyword or "").lower()
-    for segment in mapdata.segments:
-        if wanted not in (segment.name or "").lower():
-            continue
-        if segment.start_node_id == segment.end_node_id:
-            continue
-        graph.setdefault(segment.start_node_id, set()).add(segment.end_node_id)
-        graph.setdefault(segment.end_node_id, set()).add(segment.start_node_id)
-    return graph
-
-
 def has_stop_line_closure(mapdata: MapData, stop_node_ids, kind: TransitKind | str) -> bool:
-    definition = type_def(normalize_transit_kind(kind).value)
-    if definition is None or not definition.line_network:
+    if len(stop_node_ids) < 2:
         return False
-    stops = [int(item) for item in stop_node_ids if mapdata.node(int(item)) is not None]
-    if len(stops) < 3:
+    first, last = stop_node_ids[0], stop_node_ids[-1]
+    if first is None or last is None:
         return False
-    if stops[0] == stops[-1]:
-        return True
-    graph = _stop_line_graph(mapdata, definition.line_network)
-    return stops[-1] in graph.get(stops[0], set())
+    if first == last:
+        return len(stop_node_ids) > 2
+    definition = type_def(kind)
+    if definition is None or mapdata.node(first) is None or mapdata.node(last) is None:
+        return False
+    for segment in mapdata.segments:
+        if segment.start_node_id == last and segment.end_node_id == first:
+            match = _LINE_NAME.search(segment.name or "")
+            if match and match.group().casefold() == definition.line_network:
+                return True
+    return False
 
 
 def is_loop_route(mapdata: MapData, transport: Transport,
                   kind: TransitKind | str | None = None) -> bool:
     stops = [item.node_id for item in transport.stops]
-    if len(stops) < 3:
-        return False
-    if stops[0] == stops[-1]:
-        return True
     return has_stop_line_closure(mapdata, stops, kind or transport.type)
 
 

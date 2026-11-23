@@ -162,6 +162,43 @@ def test_loop_wrap_keeps_one_boarding(node_router):
     validate_route(package, result)
 
 
+@pytest.mark.parametrize("kind,stop_ids,return_name,can_return", [
+    ("METRO", [21, 22, 23], "Workshop METRO Line Elevated", True),
+    ("MONORAIL", [21, 22, 23], "Monorail Line", True),
+    ("METRO", [21, 22], "Metro Line", True),
+    ("METRO", [21, 22], None, False),
+    ("METRO", [21, 22], "Train Line", False),
+    ("BUS", [21, 22], "Trolleybus Line", False),
+    ("METRO", [21, 22, 21], None, True),
+])
+def test_cs1_transit_uses_directed_return_segment(node_router, kind, stop_ids, return_name, can_return):
+    data = transit_document().to_dict()
+    for node_id, stop in enumerate(data["stops"], start=1):
+        stop.update(network_node_id=node_id, kind=kind)
+    data["transit_lines"] = [dict(data["transit_lines"][0], kind=kind)]
+    data["routes"] = [dict(data["routes"][0], stop_ids=stop_ids)]
+    node_for = {stop["id"]: stop["network_node_id"] for stop in data["stops"]}
+    pairs = list(zip(stop_ids, stop_ids[1:]))
+    segments = [(a, b, kind.title() + " Line") for a, b in pairs]
+    if return_name:
+        segments.append((stop_ids[-1], stop_ids[0], return_name))
+    for ident, (a, b, name) in enumerate(segments, start=31):
+        data["networks"].append(dict(id=ident, name=name, kind="STOP_LINE", mode="GROUND",
+                                     start_id=node_for[a], end_id=node_for[b], width=0,
+                                     geometry={"points": []}))
+
+    package = compile_navigation(MapDocument.from_dict(data))
+    rides = [edge for edge in package["transit"]["edges"] if edge["mode"] == "RIDE"]
+    if can_return and stop_ids[0] != stop_ids[-1]:
+        pairs.append((stop_ids[-1], stop_ids[0]))
+    assert [(edge["fromNode"], edge["toNode"]) for edge in rides] == [
+        (f"stop:{a}", f"stop:{b}") for a, b in pairs]
+    last_x = 5980 if 23 in stop_ids else 2980
+    result = plan(node_router, package, (last_x, 0, 0), (20, 0, 0))
+    assert result["boardings"] == int(can_return)
+    validate_route(package, result)
+
+
 def test_unconnected_road_crossing_is_not_a_transfer(node_router):
     source = document([(11, 1, 2, True), (12, 3, 4, True)],
                       {1: [-1000, 0, 0], 2: [1000, 0, 0], 3: [0, 0, -1000], 4: [0, 0, 1000]})
