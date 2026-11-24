@@ -34,6 +34,15 @@ python3 dev/CSLModernMapRenderer.macOS/scripts/generate-native-localization.py -
 
 `build-dev.sh --with-checks` 生成可执行 `--smoke <城市文件> <结果目录>` 的测试应用。测试时用 `CSLMM_NATIVE_DATA_DIR` 指定独立配置目录。
 
+3D 原生专项检查需要先构建带只读相机调试接口的 Viewer：
+
+```sh
+(cd dev/CSLModernMapRenderer/viewer && CSLMM_MACOS_BUILD=1 VITE_CSLMM_NATIVE_CHECKS=1 npm run build)
+bash dev/CSLModernMapRenderer.macOS/scripts/build-dev.sh --with-checks
+```
+
+测试 App 使用 `--smoke <城市文件> <结果目录> --camera-probe`，通过实际 WKWebView 控件切换 2D/3D，并写出 `camera.json`。正式打包前须用不含 `VITE_CSLMM_NATIVE_CHECKS` 的常规命令重新构建 Viewer。
+
 使用同架构、可重定位的 Python 3.13 运行时打包。以下命令在仓库根目录执行，`runtime` 和 `packages` 分别为该运行时和装有锁定依赖的 site-packages 路径。
 
 ```sh

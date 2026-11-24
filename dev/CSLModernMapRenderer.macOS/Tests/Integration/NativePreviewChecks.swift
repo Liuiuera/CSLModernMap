@@ -1,6 +1,51 @@
 import AppKit
+import WebKit
 
 @MainActor extension NativeSmoke {
+    func inspectCamera() async throws {
+        let result = try await owner.viewer.view.callAsyncJavaScript("""
+        const camera = window.__CSL_NATIVE_CAMERA__;
+        const button = document.querySelector('.preview-3d-toggle');
+        if (typeof camera !== 'function' || !button || button.disabled)
+            throw new Error('Camera probe requires the debug viewer and an available 3D button');
+        const pause = () => new Promise(resolve => {
+            const timer = setTimeout(resolve, 50);
+            requestAnimationFrame(() => { clearTimeout(timer); resolve(); });
+        });
+        const settle = async (target) => {
+            const deadline = performance.now() + 5000;
+            let state = camera(), intermediate = false;
+            while (performance.now() < deadline) {
+                state = camera();
+                if (state.pitch > 0.001 && state.pitch < 51.999) intermediate = true;
+                if (!state.moving && Math.abs(state.pitch - target) < 0.001) return {state, intermediate};
+                await pause();
+            }
+            throw new Error('Camera failed to settle: ' + JSON.stringify(state));
+        };
+        await window.cslPreview.dispatch({type: 'fitBounds'});
+        const before = (await settle(0)).state;
+        button.click();
+        const raised = await settle(52);
+        const pressed = button.getAttribute('aria-pressed');
+        button.click();
+        const lowered = await settle(0);
+        return {before, raised, lowered, pressed, finalPressed: button.getAttribute('aria-pressed'),
+                reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches};
+        """, arguments: [:], in: nil, contentWorld: .page)
+        let model = object(result)
+        try JSONSerialization.data(withJSONObject: model, options: [.prettyPrinted, .sortedKeys]).write(to: output.appendingPathComponent("camera.json"))
+        let raised = object(object(model["raised"])["state"])
+        let lowered = object(object(model["lowered"])["state"])
+        let before = object(model["before"])
+        try requireLayout(raised["enabled"] as? Bool == true && model["pressed"] as? String == "true", "3D camera enabled")
+        try requireLayout(lowered["enabled"] as? Bool == false && model["finalPressed"] as? String == "false", "2D camera restored")
+        try requireLayout(abs((raised["pitch"] as? Double ?? -1) - 52) < 0.001 && abs(lowered["pitch"] as? Double ?? -1) < 0.001, "actual camera pitch is 52° then 0°")
+        try requireLayout(abs((before["bearing"] as? Double ?? -1000) - (lowered["bearing"] as? Double ?? 1000)) < 0.001, "2D camera bearing restored")
+        try requireLayout(lowered["extrusion"] as? Bool == false, "3D extrusion removed in 2D")
+        checks.append("webkit-actual-camera-2d-3d-roundtrip")
+    }
+
     func inspectMapToolbar() async throws {
         let window = owner.window!
         let size = window.contentRect(forFrameRect: window.frame).size

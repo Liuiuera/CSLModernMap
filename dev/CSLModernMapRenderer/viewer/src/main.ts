@@ -106,7 +106,8 @@ declare global { interface Window { cslPreview: { dispatch: (command: PreviewCom
     addEventListener: (name: string, listener: (event: MessageEvent) => void) => void } };
   webkit?: { messageHandlers?: { cslPreview?: { postMessage: (message: unknown) => void } } };
   __CSL_SCENE__?: EmbeddedPayload; __CSL_SCENE_WORKER_SRC__?: string;
-  __CSL_PREVIEW_QUALITY__?: PreviewQuality } }
+  __CSL_PREVIEW_QUALITY__?: PreviewQuality;
+  __CSL_NATIVE_CAMERA__?: () => {enabled: boolean; pitch: number; bearing: number; moving: boolean; extrusion: boolean} } }
 
 const MPP0 = 156543.03392804097;
 const LOCAL_METERS_PER_DEGREE = 111195;
@@ -2642,6 +2643,9 @@ window.cslPreview = { dispatch, artworkState: () => artworkView.snapshot(), expo
     outline: String(map.getPaintProperty('tv-station', 'circle-stroke-color')),
     badge_size: baseBadgeSize(transitLabelStyle())};
 } };
+if (import.meta.env.VITE_CSLMM_NATIVE_CHECKS === '1') {
+  window.__CSL_NATIVE_CAMERA__ = () => ({...preview3d.snapshot(), moving: map.isMoving(), extrusion: !!map.getLayer(BUILDINGS_3D)});
+}
 window.chrome?.webview?.addEventListener('message', event => { const command = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
   void dispatch(command as PreviewCommand); });
 function clearWorldSelection(report = true): void {

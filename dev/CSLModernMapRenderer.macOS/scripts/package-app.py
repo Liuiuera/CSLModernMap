@@ -18,6 +18,9 @@ parser.add_argument('--site-packages', type=Path, required=True)
 parser.add_argument('--skip-native-build', action='store_true')
 parser.add_argument('--app-dir', type=Path, help='Output bundle; defaults to the integration candidate')
 args = parser.parse_args()
+viewer_assets = repo / 'dev/CSLModernMapRenderer/viewer/dist/assets'
+if any(b'__CSL_NATIVE_CAMERA__' in path.read_bytes() for path in viewer_assets.glob('*.js')):
+    parser.error('Rebuild the viewer without VITE_CSLMM_NATIVE_CHECKS before packaging.')
 app = (args.app_dir or workspace / 'outputs/native-integration/CSLModernMap Renderer.app').resolve()
 app.parent.mkdir(parents=True, exist_ok=True)
 if args.skip_native_build:

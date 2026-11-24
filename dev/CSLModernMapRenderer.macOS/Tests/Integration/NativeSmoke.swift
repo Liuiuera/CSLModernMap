@@ -39,6 +39,11 @@ import AppKit
     }
     func sceneLoaded(_ frame:JSON){guard !testing,frame["completion"] as? String=="complete" else{return};testing=true;owner.run{[self] in
         checks.append("engine-open-and-webkit-scene")
+        if CommandLine.arguments.contains("--camera-probe") {
+            try await inspectCamera()
+            finish(true, nil)
+            return
+        }
         if CommandLine.arguments.contains("--draft-probe") {
             try await inspectCityDrafts()
             finish(true, nil)

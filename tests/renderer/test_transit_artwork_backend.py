@@ -118,12 +118,12 @@ def test_all_candidates_collide_name_survives_and_registers_occupancy(avoid):
     assert len({id(box) for boxes in layer._occupancy.cells.values() for box in boxes}) == 2
 
 
-def pump(engine, predicate):
-    deadline = time.monotonic()+10
+def pump(engine, predicate, *, timeout=10):
+    deadline = time.monotonic()+timeout
     while not predicate():
         engine.scheduler.pump()
         if time.monotonic() >= deadline:
-            raise AssertionError('Artwork task did not finish')
+            raise AssertionError(f'Artwork task did not finish within {timeout}s')
         time.sleep(.01)
 
 
