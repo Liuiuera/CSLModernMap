@@ -119,7 +119,7 @@ def compile_transit(document, roads):
         if line is None:
             continue
         source_nodes = [stops[str(s)].network_node_id for s in route.stop_ids if str(s) in stops]
-        definition = type_def(str(line.kind).title())
+        definition = type_def(line.kind)
         cs1 = document.metadata.origin.game.casefold() == "cs1"
         index_by_node = (track_path_index(view, definition.line_network, path_cache)
                          if cs1 and definition else {})
