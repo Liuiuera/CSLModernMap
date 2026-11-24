@@ -1,0 +1,84 @@
+name: macOS native acceptance (one-off)
+on:
+  push:
+    branches: [acceptance/macos-native-20261124]
+permissions:
+  contents: read
+jobs:
+  acceptance:
+    runs-on: macos-15-intel
+    timeout-minutes: 30
+    env:
+      PYTHONUTF8: '1'
+      QT_QPA_PLATFORM: offscreen
+      CSLMM_MACOS_BUILD: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: dev/CSLModernMapRenderer.macOS/requirements-macos13.lock
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: |
+            dev/CSLModernMapRenderer/viewer/package-lock.json
+            dev/third_party/rmp/package-lock.json
+      - name: Install dependencies and build debug viewer
+        run: |
+          python -m pip install -r dev/CSLModernMapRenderer.macOS/requirements-macos13.lock
+          (cd dev/CSLModernMapRenderer/viewer && npm ci && npm run typecheck && VITE_CSLMM_NATIVE_CHECKS=1 npm run build)
+          (cd dev/third_party/rmp && npm ci && npm run build:embed)
+          python dev/CSLModernMapRenderer.macOS/scripts/generate-winui-strings.py
+          python dev/CSLModernMapRenderer.macOS/scripts/generate-native-localization.py
+      - name: Build AppKit debug application
+        run: |
+          export CSLMM_ENGINE_PYTHON="$(command -v python)"
+          export CSLMM_WORKSPACE_DIR="$RUNNER_TEMP"
+          bash dev/CSLModernMapRenderer.macOS/scripts/build-dev.sh --with-checks
+      - name: Execute compiled native App against repository map
+        run: |
+          python - <<'PY'
+          import json, os, pathlib, shutil, subprocess, sys
+          root = pathlib.Path(os.environ['RUNNER_TEMP']) / 'native-acceptance'
+          root.mkdir()
+          app = pathlib.Path(os.environ['RUNNER_TEMP']) / 'outputs/native-checks/CSLModernMap Renderer.app/Contents/MacOS/CSLModernMap'
+          source = pathlib.Path('tests/renderer/fixtures/basan_rings.mmap').resolve()
+          probes = [('camera', ['--camera-probe']), ('draft', ['--draft-probe']), ('rmp', ['--settings-probe', '--fgh-probe'])]
+          results = {}
+          for name, flags in probes:
+              out = root / name
+              out.mkdir()
+              city = out / source.name
+              shutil.copy2(source, city)
+              data = out / 'profile'
+              data.mkdir()
+              env = dict(os.environ, CSLMM_NATIVE_DATA_DIR=str(data), CSLMM_USER_DATA_DIR=str(data))
+              print(f'Starting {name}', flush=True)
+              with (out / 'app.log').open('w', encoding='utf-8') as log:
+                  try:
+                      completed = subprocess.run([str(app), '--smoke', str(city), str(out), *flags], env=env, stdout=log, stderr=subprocess.STDOUT, timeout=300)
+                      state = f'exit {completed.returncode}'
+                  except subprocess.TimeoutExpired:
+                      state = 'timeout'
+              report = out / 'native-smoke.json'
+              parsed = json.loads(report.read_text()) if report.is_file() else {}
+              results[name] = {'success': bool(parsed.get('success')), 'state': state, 'checks': parsed.get('checks', []), 'error': parsed.get('error', 'No native report')}
+              print(json.dumps(results[name], ensure_ascii=False), flush=True)
+              if not results[name]['success']:
+                  print((out / 'app.log').read_text(errors='replace')[-4000:], flush=True)
+          (root / 'summary.json').write_text(json.dumps(results, ensure_ascii=False, indent=2))
+          sys.exit(0 if all(r['success'] for r in results.values()) else 1)
+          PY
+      - name: Upload real application logs and outputs
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: native-acceptance
+          path: ${{ runner.temp }}/native-acceptance/
+          if-no-files-found: warn
+          retention-days: 7
