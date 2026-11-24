@@ -236,6 +236,7 @@ import CryptoKit
             case "save": _ = try await save(asNew: false)
             case "saveAs": _ = try await save(asNew: true)
             case "export": owner.showExport()
+            case "pickFacility": owner.runRmpTool(.facilities)
             case "beginInsert", "setMode":
                 guard hasProject else { return }
                 owner.window.makeFirstResponder(host.view)
@@ -354,31 +355,15 @@ import CryptoKit
 
 extension InterfaceController {
     func rebuildRmpBand() {
-        let actions: [(String, String, () -> Void)] = [
-            ("返回地图", "arrow.left", { [weak self] in self?.returnToMap() }),
-            ("打开项目…", "folder", { [weak self] in self?.execute("打开项目…") }),
-            ("打开城市…", "map", { [weak self] in self?.execute("打开城市…") }),
-            ("保存", "square.and.arrow.down", { [weak self] in self?.rmp.command("save") }),
-            ("另存为…", "doc.on.doc", { [weak self] in self?.rmp.command("saveAs") }),
-            ("生成设置", "slider.horizontal.3", { [weak self] in self?.showTransitSettings() }),
-            ("导出…", "square.and.arrow.up", { [weak self] in self?.showExport() })
+        let actions = [
+            ("返回地图", "arrow.left"), ("保存项目", "square.and.arrow.down"), ("导出…", "square.and.arrow.up")
         ]
-        var buttons: [NSView] = actions.map { title, icon, action in
-            let button = ActionButton(title, action)
+        let buttons = actions.map { title, icon in
+            let button = ActionButton(title) { [weak self] in self?.execute(title) }
             button.image = symbol(icon, size: 14); button.imagePosition = .imageLeading
             button.font = .systemFont(ofSize: 13); button.toolTip = button.title
             return button
         }
-        let history: [(RmpNativeCommand, String, String)] = [(.undo, "撤销", "arrow.uturn.backward"), (.redo, "重做", "arrow.uturn.forward")]
-        for (tool, title, icon) in history {
-            let button = ActionButton(title) { [weak self] in self?.runRmpTool(tool) }
-            button.identifier = NSUserInterfaceItemIdentifier(tool.rawValue)
-            button.image = symbol(icon, size: 14); button.imagePosition = .imageOnly
-            button.toolTip = localized(title); button.setAccessibilityLabel(localized(title))
-            buttons.append(button)
-        }
-        buttons.append(menuButton(localized("元素"), entries: RmpNativeCommand.elements.map { ($0.rawValue, nil) }))
-        buttons.append(menuButton(localized("视图"), entries: RmpNativeCommand.view.map { ($0.rawValue, nil) }))
         bandContent(buttons)
     }
 }

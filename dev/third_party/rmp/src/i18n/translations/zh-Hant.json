@@ -1204,6 +1204,8 @@
     "Color": "顏色",
     "Confirm": "確認",
     "editor": {
+        "drawLine": "繪製路線",
+        "facilityPicker": "設施圖示…",
         "tools": "編輯工具",
         "view": "檢視",
         "move": "移動與選取",

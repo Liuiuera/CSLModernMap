@@ -16,7 +16,8 @@ import AppKit
         let left = root.convert(owner.left.bounds, from: owner.left)
         let right = root.convert(owner.right.bounds, from: owner.right)
         let band = root.convert(owner.band.bounds, from: owner.band)
-        let tabs = owner.tabs.convert(owner.tabs.bounds, to: nil)
+        let toolbarView: NSView = owner.context == "metro" ? owner.metroToolbarTitle : owner.tabs
+        let toolbarBounds = toolbarView.convert(toolbarView.bounds, to: nil)
         let rootFrame = root.convert(root.bounds, to: nil)
         if owner.leftItem.isCollapsed {
             try requireLayout(abs(band.minX - root.bounds.minX) < 3, "band expands to the window edge when the sidebar is hidden")
@@ -25,11 +26,12 @@ import AppKit
             try requireLayout(abs(left.minX - root.bounds.minX) < 2, "left sidebar must reach the window edge")
             try requireLayout(abs(band.minX - left.maxX) < 3, "band starts after the left sidebar")
         }
-        try requireLayout(abs(tabs.midX - rootFrame.midX) < 3, "tabs must be centered in the whole window (delta \(tabs.midX-rootFrame.midX))")
-        try requireLayout(!owner.tabs.isHiddenOrHasHiddenAncestor && tabs.width >= owner.tabs.fittingSize.width - 1, "all three tabs remain visible without compression")
+        try requireLayout(abs(toolbarBounds.midX - rootFrame.midX) < 3, "workspace title or tabs stay centered in the whole window")
+        try requireLayout(toolbarView.window === owner.window && toolbarBounds.width >= toolbarView.fittingSize.width - 1,
+                          "workspace title or tabs remain visible without compression")
         let collapse = owner.collapse.convert(owner.collapse.bounds, to: nil)
-        try requireLayout(!tabs.intersects(collapse), "tabs must not overlap the band toggle")
-        try requireLayout(tabs.minX >= rootFrame.minX && tabs.maxX <= rootFrame.maxX, "tabs stay inside the window")
+        try requireLayout(!toolbarBounds.intersects(collapse), "workspace title or tabs must not overlap the band toggle")
+        try requireLayout(toolbarBounds.minX >= rootFrame.minX && toolbarBounds.maxX <= rootFrame.maxX, "workspace title or tabs stay inside the window")
         if !owner.rightItem.isCollapsed {
             try requireLayout(abs(right.maxY - band.minY) < 2, "inspector starts below the band")
         }
@@ -72,9 +74,10 @@ import AppKit
                 try requireLayout(owner.sectionState.collapsed == collapsedSections, "sidebar toggles retain section state")
                 let currentSettings = try settingsSnapshot()
                 try requireLayout(currentSettings == settings, "sidebar toggles retain settings")
-                let tabs = owner.tabs.convert(owner.tabs.bounds, to: nil)
+                let toolbarView: NSView = owner.context == "metro" ? owner.metroToolbarTitle : owner.tabs
+                let toolbarBounds = toolbarView.convert(toolbarView.bounds, to: nil)
                 let root = owner.root.convert(owner.root.bounds, to: nil)
-                measurements.append(["windowWidth": root.width, "leftHidden": leftHidden, "rightHidden": rightHidden, "tabCenterDelta": tabs.midX - root.midX, "canvasWidth": owner.center.bounds.width])
+                measurements.append(["windowWidth": root.width, "leftHidden": leftHidden, "rightHidden": rightHidden, "tabCenterDelta": toolbarBounds.midX - root.midX, "canvasWidth": owner.center.bounds.width])
                 if leftHidden && rightHidden { try await capture("sidebars-\(owner.context)-\(width)-both-hidden") }
             }
             owner.split.splitView.setPosition(width == 1100 ? 280 : 240, ofDividerAt: 0)

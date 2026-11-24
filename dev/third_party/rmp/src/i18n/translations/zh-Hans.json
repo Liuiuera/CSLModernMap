@@ -1204,6 +1204,8 @@
     "Color": "颜色",
     "Confirm": "确认",
     "editor": {
+        "drawLine": "绘制线路",
+        "facilityPicker": "设施图标…",
         "tools": "编辑工具",
         "view": "视图",
         "move": "移动与选择",

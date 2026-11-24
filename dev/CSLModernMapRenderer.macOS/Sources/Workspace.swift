@@ -176,6 +176,8 @@ let layerGroups: [(String, [(String, String)])] = [
     let band = material(.headerView, blending: .behindWindow)
     var bandHeight: NSLayoutConstraint!
     let tabs = NSSegmentedControl(labels: ["开始", "样式", "创建与工具"], trackingMode: .selectOne, target: nil, action: nil)
+    let metroToolbarTitle = label("地铁示意图", 13, .semibold)
+    private weak var workspaceToolbarItem: NSToolbarItem?
     let table = NSOutlineView()
     let collapse = NSButton()
     var leftItem: NSSplitViewItem!
@@ -352,6 +354,7 @@ let layerGroups: [(String, [(String, String)])] = [
         case "tabs":
             item.label = localized("功能区"); item.view = tabs
             item.visibilityPriority = .user
+            if flag { workspaceToolbarItem = item }
         case "collapse":
             collapse.image = symbol("chevron.up", size: 14); collapse.title = ""; collapse.bezelStyle = .texturedRounded
             collapse.target = self; collapse.action = #selector(toggleBand); collapse.toolTip = localized("收起功能区")
@@ -376,6 +379,13 @@ let layerGroups: [(String, [(String, String)])] = [
         return row([thumbnail, b], gap: 8)
     }
     func rebuildBand() {
+        if let item = workspaceToolbarItem {
+            let metro = context == "metro"
+            let workspaceView: NSView = metro ? metroToolbarTitle : tabs
+            item.label = localized(metro ? "地铁示意图" : "功能区")
+            if metro { metroToolbarTitle.stringValue = item.label }
+            if item.view !== workspaceView { item.view = workspaceView }
+        }
         commandButtons.removeAll()
         band.subviews.forEach { $0.removeFromSuperview() }
         if let draft = cityDraft { bandContent(draft.toolbar()); return }

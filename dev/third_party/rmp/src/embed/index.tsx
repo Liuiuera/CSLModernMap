@@ -135,7 +135,8 @@ function App() {
     const canvasSize = embeddedWorkspaceSize(size.width, size.height, detailsVisible);
     return <RmgThemeProvider><HostTheme/>
         <Flex className="cmm-editor" height="100vh" direction="column">
-            {window.webkit?.messageHandlers?.cslRmp && <EditorToolbar enabled={enabled && !loading && !placing} state={editorState()} execute={executeEditorCommand}/>}
+            {window.webkit?.messageHandlers?.cslRmp && <EditorToolbar enabled={enabled && !loading && !placing}
+                state={editorState()} execute={executeEditorCommand} onPickFacility={() => post('commandRequested', { command: 'pickFacility' })}/>}
             <Flex ref={workspace} minHeight={0} flex={1} overflow="hidden" position="relative"
                 inert={!enabled} className={waterControls ? undefined : 'cmm-hide-water-controls'}>
                 <CanvasSizeContext.Provider value={canvasSize}>

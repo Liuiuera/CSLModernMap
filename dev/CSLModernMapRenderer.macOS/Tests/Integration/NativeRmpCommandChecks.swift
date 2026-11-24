@@ -57,6 +57,11 @@ import WebKit
         owner.window.makeKeyAndOrderFront(nil)
         let rmp = owner.rmp
         let web = rmp.host.view
+        try await settleLayout()
+        let band = (owner.band.subviews.first as? NSScrollView)?.documentView as? NSStackView
+        let bandActions = band?.arrangedSubviews.compactMap { $0.identifier?.rawValue }
+        try requireLayout(bandActions == ["返回地图", "保存项目", "导出…"], "metro band contains only project actions")
+        try requireLayout(owner.metroToolbarTitle.window === owner.window && owner.tabs.window == nil, "metro replaces inactive map tabs with its title")
         let cityMenu = owner.openCityMenuItem, projectMenu = owner.openProjectMenuItem
         try requireLayout(cityMenu?.keyEquivalent.isEmpty == true && projectMenu?.keyEquivalent == "o",
                           "project and city menus have independent commands in metro")
@@ -74,7 +79,22 @@ import WebKit
         try requireLayout(!owner.rmpToolEnabled(.defaultNames), "default names depend on overall name visibility")
         checks.append("rmp-native-menus-view-state-and-file-shortcuts")
 
-        owner.runRmpTool(.facilities)
+        let toolbar = "document.querySelector('[data-testid=editor-toolbar]')"
+        let selects = "\(toolbar).querySelectorAll('select').length"
+        try await waitForRmp("Only the station picker is visible before drawing") { try await web.evaluateJavaScript(selects) as? Int == 1 }
+        _ = try await web.evaluateJavaScript("\(toolbar).querySelector('[data-testid=draw-line]').click(); null")
+        try await waitForRmp("Drawing expands path and style settings") {
+            guard textValue(rmp.state["mode"]).hasPrefix("line-") else { return false }
+            return try await web.evaluateJavaScript(selects) as? Int == 3
+        }
+        owner.runRmpTool(.cancel)
+        try await waitForRmp("Stopping drawing collapses line settings") { try await web.evaluateJavaScript(selects) as? Int == 1 }
+        _ = try await web.evaluateJavaScript("\(toolbar).querySelector('[data-testid=insert-elements]').click(); null")
+        try await waitForRmp("The unified menu contains all six insertion commands") {
+            try await web.evaluateJavaScript("document.querySelector('[data-testid=insert-facility]')?.closest('[role=menu]')?.querySelectorAll('[role=menuitem]').length") as? Int == 6
+        }
+        _ = try await web.evaluateJavaScript("document.querySelector('[data-testid=insert-facility]').click(); null")
+        try await waitForRmp("Web toolbar opens the native facility picker") { owner.rmpFacilitiesPopover?.isShown == true }
         guard let picker = owner.rmpFacilitiesPopover?.contentViewController as? RmpFacilityPicker else {
             throw AppFailure(message: "Missing native facility picker")
         }
@@ -88,6 +108,7 @@ import WebKit
         try await waitForRmp("Facility must be armed in RMP") { object(rmp.state["insertion"])["kind"] as? String == "facility" }
         owner.runRmpTool(.cancel)
         try await waitForRmp("Native Cancel Placement must clear a facility") { !rmp.placementPending }
+        checks.append("rmp-macos-compact-toolbar-and-native-facility-picker")
 
         let beforeRotation = try await rmpGraph()
         owner.runRmpTool(.rotateRight)
@@ -193,5 +214,6 @@ import WebKit
         try await owner.switchMapContext("map")
         try requireLayout(owner.rmpMenuItem?.isHidden == true && cityMenu?.keyEquivalent == "o",
                           "leaving metro restores the ordinary city shortcut and hides the metro menu")
+        try requireLayout(owner.tabs.window === owner.window && owner.metroToolbarTitle.window == nil, "leaving metro restores map tabs")
     }
 }
