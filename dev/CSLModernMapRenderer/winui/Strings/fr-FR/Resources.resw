@@ -4693,6 +4693,10 @@ Shaotang Shaoxiancao Codex</value>
   <data name="BuildingCategory_Help" xml:space="preserve"><value>Sélectionnez Couleurs par catégorie pour appliquer ces réglages. Activez Remplacer la couleur pour tous les bâtiments d’une catégorie ; désactivez-le pour rétablir les couleurs automatiques des POI. Les usages inconnus restent non classés.</value></data>
   <data name="Satellite_LayerTitle" xml:space="preserve"><value>Imagerie satellite</value></data>
   <data name="Satellite_Composing" xml:space="preserve"><value>Composition de l’image satellite…</value></data>
+  <data name="PreviewQuality_OutsideLabel" xml:space="preserve"><value>Afficher le terrain environnant (cartes étendues)</value></data>
+  <data name="PreviewQuality_OutsideHint" xml:space="preserve"><value>Cette carte inclut le terrain environnant. Activez-le pour voir au-delà des parcelles de la ville ou si vous utilisez un mod qui étend la carte.</value></data>
+  <data name="PreviewQuality_OutsideMemory" xml:space="preserve"><value>L’affichage du terrain environnant utilise davantage de mémoire.</value></data>
+  <data name="PreviewQuality_OutsideEnable" xml:space="preserve"><value>Activer le terrain environnant</value></data>
   <data name="PreviewQuality_Title" xml:space="preserve"><value>Qualité de l’aperçu</value></data>
   <data name="PreviewQuality_Preset" xml:space="preserve"><value>Qualité de l’aperçu</value></data>
   <data name="PreviewQuality_Smooth" xml:space="preserve"><value>Fluide</value></data>

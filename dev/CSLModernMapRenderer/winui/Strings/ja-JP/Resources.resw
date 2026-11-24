@@ -4693,6 +4693,10 @@ Esc  現在のタスクをキャンセル</value>
   <data name="BuildingCategory_Help" xml:space="preserve"><value>「分類別の色」を選択すると適用されます。「色を指定」を有効にすると分類内のすべての建物に適用され、無効にすると POI の自動色に戻ります。用途不明の建物は未分類のままです。</value></data>
   <data name="Satellite_LayerTitle" xml:space="preserve"><value>衛星画像</value></data>
   <data name="Satellite_Composing" xml:space="preserve"><value>衛星画像を合成しています…</value></data>
+  <data name="PreviewQuality_OutsideLabel" xml:space="preserve"><value>外周地形を表示（拡張マップ）</value></data>
+  <data name="PreviewQuality_OutsideHint" xml:space="preserve"><value>このマップには外周の地形が含まれています。タイルの外側を表示したい場合や、タイル拡張 MOD を使用している場合は有効にできます。</value></data>
+  <data name="PreviewQuality_OutsideMemory" xml:space="preserve"><value>外周地形を表示するとメモリ使用量が増えます。</value></data>
+  <data name="PreviewQuality_OutsideEnable" xml:space="preserve"><value>外周地形を有効にする</value></data>
   <data name="PreviewQuality_Title" xml:space="preserve"><value>プレビュー画質</value></data>
   <data name="PreviewQuality_Preset" xml:space="preserve"><value>プレビュー画質</value></data>
   <data name="PreviewQuality_Smooth" xml:space="preserve"><value>軽量</value></data>

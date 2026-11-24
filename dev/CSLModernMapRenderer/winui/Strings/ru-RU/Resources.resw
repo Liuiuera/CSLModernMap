@@ -4693,6 +4693,10 @@ Shaotang Shaoxiancao Codex</value>
   <data name="BuildingCategory_Help" xml:space="preserve"><value>Выберите «Цвета категорий», чтобы применить настройки. Включите «Задать цвет» для всех зданий категории; выключите, чтобы восстановить автоматические цвета POI. Неизвестные назначения остаются без категории.</value></data>
   <data name="Satellite_LayerTitle" xml:space="preserve"><value>Спутниковый снимок</value></data>
   <data name="Satellite_Composing" xml:space="preserve"><value>Создание спутникового снимка…</value></data>
+  <data name="PreviewQuality_OutsideLabel" xml:space="preserve"><value>Показывать рельеф за пределами города (расширенные карты)</value></data>
+  <data name="PreviewQuality_OutsideHint" xml:space="preserve"><value>Карта содержит рельеф за пределами города. Включите его, если хотите видеть местность за границами участков или используете мод для расширения карты.</value></data>
+  <data name="PreviewQuality_OutsideMemory" xml:space="preserve"><value>Отображение этой местности увеличивает расход оперативной памяти.</value></data>
+  <data name="PreviewQuality_OutsideEnable" xml:space="preserve"><value>Показать рельеф за городом</value></data>
   <data name="PreviewQuality_Title" xml:space="preserve"><value>Качество предпросмотра</value></data>
   <data name="PreviewQuality_Preset" xml:space="preserve"><value>Качество предпросмотра</value></data>
   <data name="PreviewQuality_Smooth" xml:space="preserve"><value>Плавно</value></data>

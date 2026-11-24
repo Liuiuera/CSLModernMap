@@ -335,8 +335,10 @@ class EngineServer:
             raise ValueError("Image preview supports normal and transit maps")
         if backend.busy or backend.local_render_active or self._saving_export:
             return {"started": False}
-        job, _, _ = self._capture_output_snapshot(context, "PNG", {
-            "output": {"size": 2048}, "quickPng": True})
+        output = {"output": {"size": 2048}, "quickPng": True}
+        if backend.preview_outside_terrain:
+            output["region"] = {"bounds": backend.world_rect(), "source": "custom"}
+        job, _, _ = self._capture_output_snapshot(context, "PNG", output)
         # 图片预览沿用预览的 POI 配置，正式 PNG 的独立配置保持不变。
         backend._attach_poi_render_config(job, "preview")
         if context == ContextMode.NORMAL and not job["ui"]["text_enabled"]:
@@ -577,6 +579,8 @@ class EngineServer:
         return {
             "fonts": [{"value": value, "label": label} for value, label in available_font_options()],
             "hasDocument": backend.has_document,
+            "outsideTerrainAvailable": backend.can_preview_outside_terrain(),
+            "previewOutsideTerrain": backend.preview_outside_terrain,
             "satelliteAvailable": getattr(backend.document, "_satellite_info", None) is not None,
             "sourceGame": document_game(backend.document),
             "sourceFile": backend.source_file,
@@ -1941,7 +1945,7 @@ class EngineServer:
             "commitThemeDraft", "setMergeOverride", "setFacilitySelection",
             "savePoiMapping", "renderInterchanges", "setRegionSelection",
             "setOutputOption", "setTextIconSettings", "setPoiDensity", "setPoiVisibility", "setDecorativePoiVisibility", "resetFields",
-            "resetProfileFields", "setRangeSelection", "compilePreview", "refreshPreview",
+            "resetProfileFields", "setRangeSelection", "compilePreview", "refreshPreview", "setPreviewOutsideTerrain",
             "export", "openBrowserPreview", "clearCache", "setInspectorField", "resetInspectorGroup", "undoInspector", "redoInspector",
         }:
             raise RuntimeError(i18n.tr('ui.winui_engine.dispatch.dfeec4838c'))
@@ -1971,6 +1975,13 @@ class EngineServer:
             if not enabled:
                 backend.invalidate_preview_compile()
                 backend._pending_preview = None
+            return {"enabled": enabled}
+        if method == "setPreviewOutsideTerrain":
+            self._require_document_epoch(params)
+            enabled = params["enabled"]
+            if type(enabled) is not bool or not backend.can_preview_outside_terrain():
+                raise ValueError("Changing outside terrain requires a CS2 map with outer terrain and a boolean value")
+            backend.preview_outside_terrain = enabled
             return {"enabled": enabled}
         if method in WORKFLOW_METHODS:
             if method == "setRegionSelection" and "documentEpoch" in params:

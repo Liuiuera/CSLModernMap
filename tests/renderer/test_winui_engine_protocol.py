@@ -69,6 +69,47 @@ def _guir_backend(settings_dir):
     return GuirBackend(scheduler, settings_dir=settings_dir)
 
 
+@pytest.mark.parametrize("game,span,heights,available", [
+    ("cs2", 57344, True, True), ("cs2", 14336, True, False),
+    ("cs2", 57344, False, False), ("cs1", 57344, True, False),
+])
+def test_outside_terrain_preview(tmp_path, game, span, heights, available):
+    import numpy as np
+
+    from csmodernmap.cmm.model import Grid, Terrain, Vec2
+    from csmodernmap.map_extent import document_city_bounds
+    backend = _guir_backend(tmp_path)
+    server = EngineServer(io.StringIO(), io.StringIO(), backend)
+    backend.document = SimpleNamespace(metadata=SimpleNamespace(origin=SimpleNamespace(game=game)),
+                                       buildings=(), networks=())
+    try:
+        origin = Vec2(-span / 2, -span / 2)
+        grid = Grid(16, 16, origin, span / 16)
+        if heights:
+            grid.values = np.zeros((16, 16), dtype=np.float32)
+        backend.document.terrain = Terrain(height=grid, origin=origin, cell=grid.cell, rows=16, cols=16)
+        city = document_city_bounds(backend.document)
+        assert backend.can_preview_outside_terrain() == available
+        assert backend._preview_source_options()["bounds"] == city
+        params = {"documentEpoch": server._document_epoch, "enabled": True}
+        if not available:
+            with pytest.raises(ValueError):
+                server.dispatch("setPreviewOutsideTerrain", params)
+            return
+        with pytest.raises(RuntimeError):
+            server.dispatch("setPreviewOutsideTerrain", {**params, "documentEpoch": -1})
+        with pytest.raises(ValueError):
+            server.dispatch("setPreviewOutsideTerrain", {**params, "enabled": "false"})
+        server.dispatch("setPreviewOutsideTerrain", params)
+        assert backend._preview_source_options()["bounds"] == backend.world_rect()
+        assert backend._resolve_range()[0] == city
+        server.dispatch("setPreviewOutsideTerrain", {**params, "enabled": False})
+        assert backend._preview_source_options()["bounds"] == city
+    finally:
+        backend.close()
+        server._preview_files.cleanup()
+
+
 @pytest.mark.parametrize("game", ["cs1", "cs2"])
 def test_snapshot_identifies_loaded_game_for_facility_selection(tmp_path, game):
     from cmm_test_factory import document_from_mapdata

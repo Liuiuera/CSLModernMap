@@ -17,14 +17,19 @@ def raster_session_for_bounds(session, bounds):
     from .cmm.model import Vec2
     from .cmm.session import DocumentSession
     from .export_region import document_bounds
+    from .map_extent import document_city_bounds
 
     terrain = session.document.terrain
-    if bounds is None or tuple(bounds) == document_bounds(session.document):
+    if bounds is None or terrain.cell <= 0 or min(terrain.rows, terrain.cols) < 2:
         return session
-    if terrain.cell <= 0 or min(terrain.rows, terrain.cols) < 2:
+    full = tuple(bounds) == document_bounds(session.document)
+    if full and tuple(bounds) == document_city_bounds(session.document):
         return session
 
     def crop():
+        if full:
+            # 外围全图的水域和地形缓存随范围一起替换，不挂在主文档上。
+            return DocumentSession(session.document)
         x0, z0, x1, z1 = bounds
         col0 = max(0, min(terrain.cols - 2, floor((x0 - terrain.origin.x) / terrain.cell - .5) - 1))
         row0 = max(0, min(terrain.rows - 2, floor((z0 - terrain.origin.z) / terrain.cell - .5) - 1))

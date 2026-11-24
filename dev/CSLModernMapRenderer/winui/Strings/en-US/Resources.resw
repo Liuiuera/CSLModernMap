@@ -4561,6 +4561,10 @@ Do you want to save your current changes?</value></data>
   <data name="Preview_ImageFailed" xml:space="preserve"><value>Image preview failed:</value></data>
   <data name="Preview_BrowserOpenFailed" xml:space="preserve"><value>Could not open the browser. The HTML file is available below.</value></data>
   <data name="Preview_OpenFolder" xml:space="preserve"><value>Open folder</value></data>
+  <data name="PreviewQuality_OutsideLabel" xml:space="preserve"><value>Show surrounding terrain (expanded maps)</value></data>
+  <data name="PreviewQuality_OutsideHint" xml:space="preserve"><value>This map includes surrounding terrain. Enable it to see beyond the city tiles or if you use a tile expansion mod.</value></data>
+  <data name="PreviewQuality_OutsideMemory" xml:space="preserve"><value>Showing surrounding terrain uses more memory.</value></data>
+  <data name="PreviewQuality_OutsideEnable" xml:space="preserve"><value>Enable surrounding terrain</value></data>
   <data name="PreviewQuality_Title" xml:space="preserve">
     <value>Preview quality</value>
   </data>

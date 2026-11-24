@@ -65,6 +65,11 @@
                 <StackPanel>
                     <InfoBar x:Name="OperationError" IsOpen="False" Severity="Error" IsClosable="True" />
                     <InfoBar x:Name="PreviewLoadingNotice" IsOpen="False" Severity="Warning" IsClosable="False" />
+                    <InfoBar x:Name="OutsideTerrainNotice" IsOpen="False" Severity="Informational" IsClosable="True">
+                        <InfoBar.ActionButton>
+                            <Button x:Name="EnableOutsideTerrain" />
+                        </InfoBar.ActionButton>
+                    </InfoBar>
                 </StackPanel>
                 <Grid x:Name="MapToolbarHeader" Grid.Row="1" Padding="8,4" ColumnSpacing="6">
                     <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
