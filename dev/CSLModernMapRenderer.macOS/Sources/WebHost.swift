@@ -51,6 +51,36 @@ final class WebHost: NSObject, WKScriptMessageHandler, WKNavigationDelegate {
                 self.view.load(URLRequest(url: url))
             }
         } catch { failed?(error) }
+        #if CMM_INTEGRATION_CHECKS
+        if channel == "cslPreview" {
+            for delay in [8.0, 25.0, 40.0] {
+                DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+                    guard let self = self, self.origin == url, !self.ready else { return }
+                    FileHandle.standardError.write(Data(("BOOT native wait \(delay)s frame=\(self.view.frame) hidden=\(self.view.isHidden) window=\(self.view.window != nil) visible=\(self.view.window?.isVisible ?? false) loading=\(self.view.isLoading) progress=\(self.view.estimatedProgress)\n").utf8))
+                    self.view.evaluateJavaScript("""
+                    (()=>{try{
+                      const canvas=document.querySelector('.maplibregl-canvas');
+                      let probe=null;
+                      if (!window.__CMMBootGLTested) {
+                        window.__CMMBootGLTested=true;
+                        try {const gl=document.createElement('canvas').getContext('webgl2'); probe=!!gl; gl?.getExtension('WEBGL_lose_context')?.loseContext();} catch(e){probe=String(e);}
+                      }
+                      return JSON.stringify({ready:document.readyState,title:document.title,
+                        bridge:typeof window.cslPreview,hasCamera:typeof window.__CSL_NATIVE_CAMERA__,
+                        canvas:canvas ? [canvas.clientWidth,canvas.clientHeight,canvas.width,canvas.height]:null,
+                        body:[document.body?.clientWidth,document.body?.clientHeight],
+                        status:document.querySelector('#status')?.textContent,
+                        scripts:[...document.scripts].map(s=>({type:s.type,src:s.src.split('/').pop()})),
+                        resources:performance.getEntriesByType('resource').map(r=>({name:r.name.split('/').pop(),size:r.transferSize,duration:r.duration})),
+                        visibility:document.visibilityState,webgl2:probe,boot:window.__CSL_NATIVE_BOOT__?.()});
+                    }catch(e){return String(e)}})()
+                    """) { value, error in
+                        FileHandle.standardError.write(Data(("BOOT page \(String(describing:value)) error=\(String(describing:error))\n").utf8))
+                    }
+                }
+            }
+        }
+        #endif
         DispatchQueue.main.asyncAfter(deadline: .now() + 45) { [weak self] in
             guard let self = self, self.origin == url, !self.ready else { return }
             self.failed?(AppFailure(message: "本地网页未能完成初始化"))
@@ -61,6 +91,11 @@ final class WebHost: NSObject, WKScriptMessageHandler, WKNavigationDelegate {
         let frame: JSON
         if let string = message.body as? String, let data = string.data(using: .utf8), let parsed = try? JSONSerialization.jsonObject(with: data) { frame = object(parsed) }
         else { frame = object(message.body) }
+        #if CMM_INTEGRATION_CHECKS
+        if channel == "cslPreview", ["ready", "renderError", "nativeScriptError", "nativeInitProbe", "previewContextLost", "previewContextRestored"].contains(textValue(frame["type"])) {
+            FileHandle.standardError.write(Data(("BOOT bridge " + ((try? jsonString(frame)) ?? "") + "\n").utf8))
+        }
+        #endif
         if frame["type"] as? String == "nativeScriptError" {
             failed?(AppFailure(message: textValue(frame["message"]))); return
         }
@@ -101,6 +136,11 @@ final class WebHost: NSObject, WKScriptMessageHandler, WKNavigationDelegate {
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         decisionHandler(trusted(navigationAction.request.url) ? .allow : .cancel)
     }
+    #if CMM_INTEGRATION_CHECKS
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        FileHandle.standardError.write(Data(("BOOT navigation finished channel=\(channel) path=\(webView.url?.lastPathComponent ?? "")\n").utf8))
+    }
+    #endif
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) { failed?(error) }
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) { ready = false; failed?(AppFailure(message: "地图网页进程已退出，请重新打开应用。")) }
     func dispose() { view.stopLoading(); view.configuration.userContentController.removeScriptMessageHandler(forName: channel); queued.removeAll() }

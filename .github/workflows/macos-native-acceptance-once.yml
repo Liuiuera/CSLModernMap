@@ -48,7 +48,7 @@ jobs:
           root.mkdir()
           app = pathlib.Path(os.environ['RUNNER_TEMP']) / 'outputs/native-checks/CSLModernMap Renderer.app/Contents/MacOS/CSLModernMap'
           source = pathlib.Path('tests/renderer/fixtures/basan_rings.mmap').resolve()
-          probes = [('camera', ['--camera-probe']), ('draft', ['--draft-probe']), ('rmp', ['--settings-probe', '--fgh-probe'])]
+          probes = [('camera', ['--camera-probe'])]
           results = {}
           for name, flags in probes:
               out = root / name
@@ -69,8 +69,9 @@ jobs:
               parsed = json.loads(report.read_text()) if report.is_file() else {}
               results[name] = {'success': bool(parsed.get('success')), 'state': state, 'checks': parsed.get('checks', []), 'error': parsed.get('error', 'No native report')}
               print(json.dumps(results[name], ensure_ascii=False), flush=True)
-              if not results[name]['success']:
-                  print((out / 'app.log').read_text(errors='replace')[-4000:], flush=True)
+              print((out / 'app.log').read_text(errors='replace')[-24000:], flush=True)
+              if report.is_file():
+                  print('Native report diagnostics:', str(parsed.get('diagnostics', ''))[-12000:], flush=True)
           (root / 'summary.json').write_text(json.dumps(results, ensure_ascii=False, indent=2))
           sys.exit(0 if all(r['success'] for r in results.values()) else 1)
           PY

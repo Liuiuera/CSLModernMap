@@ -107,7 +107,8 @@ declare global { interface Window { cslPreview: { dispatch: (command: PreviewCom
   webkit?: { messageHandlers?: { cslPreview?: { postMessage: (message: unknown) => void } } };
   __CSL_SCENE__?: EmbeddedPayload; __CSL_SCENE_WORKER_SRC__?: string;
   __CSL_PREVIEW_QUALITY__?: PreviewQuality;
-  __CSL_NATIVE_CAMERA__?: () => {enabled: boolean; pitch: number; bearing: number; moving: boolean; extrusion: boolean} } }
+  __CSL_NATIVE_CAMERA__?: () => {enabled: boolean; pitch: number; bearing: number; moving: boolean; extrusion: boolean};
+  __CSL_NATIVE_BOOT__?: () => unknown } }
 
 const MPP0 = 156543.03392804097;
 const LOCAL_METERS_PER_DEGREE = 111195;
@@ -271,6 +272,12 @@ window.addEventListener('resize', () => {
   const ratio = window.devicePixelRatio * previewQuality.pixelScale;
   if (map.getPixelRatio() !== ratio) map.setPixelRatio(ratio);
 });
+if (import.meta.env.VITE_CSLMM_NATIVE_CHECKS === '1') {
+  const boot = () => ({loaded: map.loaded(), styleLoaded: map.isStyleLoaded(), size: [map.getCanvas().clientWidth, map.getCanvas().clientHeight], moving: map.isMoving()});
+  window.__CSL_NATIVE_BOOT__ = boot;
+  postEvent('nativeInitProbe', {stage: 'map-constructed', ...boot()});
+  for (const event of ['styledata', 'load', 'idle'] as const) map.once(event, () => postEvent('nativeInitProbe', {stage: event, ...boot()}));
+}
 map.on('error', event => reportError(event.error, undefined, false));
 map.on('webglcontextlost', () => postEvent('previewContextLost'));
 map.on('webglcontextrestored', () => postEvent('previewContextRestored'));
