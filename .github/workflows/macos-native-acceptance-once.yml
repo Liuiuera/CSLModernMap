@@ -20,7 +20,9 @@ jobs:
         with:
           python-version: '3.13'
           cache: pip
-          cache-dependency-path: dev/CSLModernMapRenderer.macOS/requirements-macos13.lock
+          cache-dependency-path: |
+            dev/CSLModernMapRenderer.macOS/requirements-macos13.lock
+            dev/CSLModernMapRenderer.macOS/requirements-dmg.lock
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
         with:
           node-version: '24'
@@ -28,34 +30,59 @@ jobs:
           cache-dependency-path: |
             dev/CSLModernMapRenderer/viewer/package-lock.json
             dev/third_party/rmp/package-lock.json
-      - name: Install locked relocatable Intel runtime and dependencies
+      - name: Install macOS 13 Intel release dependencies
         run: |
-          python -m pip install uv==0.12.16
+          native=dev/CSLModernMapRenderer.macOS
+          python -m pip install uv==0.12.16 -r "$native/requirements-dmg.lock"
           uv python install --no-bin --install-dir "$RUNNER_TEMP/cmm-runtime" 3.13.15
           runtime="$RUNNER_TEMP/cmm-runtime/cpython-3.13.15-macos-x86_64-none"
           test -x "$runtime/bin/python3.13"
           cat "$runtime/BUILD"
-          "$runtime/bin/python3.13" -m venv "$RUNNER_TEMP/cmm-env"
-          "$RUNNER_TEMP/cmm-env/bin/python" -m pip install -r dev/CSLModernMapRenderer.macOS/requirements-macos13.lock
+          "$runtime/bin/python3.13" "$native/scripts/install-release-deps.py" --target "$RUNNER_TEMP/release-deps"
       - name: Build normal viewer and RMP
         run: |
           (cd dev/CSLModernMapRenderer/viewer && npm ci && npm run typecheck && npm run build)
           (cd dev/third_party/rmp && npm ci && npm run build:embed)
-          "$RUNNER_TEMP/cmm-env/bin/python" dev/CSLModernMapRenderer.macOS/scripts/generate-winui-strings.py
-          "$RUNNER_TEMP/cmm-env/bin/python" dev/CSLModernMapRenderer.macOS/scripts/generate-native-localization.py
-      - name: Build native test application
+          python dev/CSLModernMapRenderer.macOS/scripts/generate-winui-strings.py
+          python dev/CSLModernMapRenderer.macOS/scripts/generate-native-localization.py
+      - name: Package and audit slim production app
         run: |
-          export CSLMM_ENGINE_PYTHON="$RUNNER_TEMP/cmm-env/bin/python"
+          native=dev/CSLModernMapRenderer.macOS
           export CSLMM_WORKSPACE_DIR="$RUNNER_TEMP"
-          bash dev/CSLModernMapRenderer.macOS/scripts/build-dev.sh --with-checks
-      - name: Run actual native RMP acceptance
+          out="$RUNNER_TEMP/cmm-candidate"
+          mkdir -p "$out"
+          export CSLMM_NATIVE_APP_DIR="$out/CSLModernMap Renderer.app"
+          runtime="$RUNNER_TEMP/cmm-runtime/cpython-3.13.15-macos-x86_64-none"
+          python "$native/scripts/package-app.py" --app-dir "$CSLMM_NATIVE_APP_DIR" --runtime "$runtime" --site-packages "$RUNNER_TEMP/release-deps"
+          python "$native/scripts/audit-bundle.py" "$CSLMM_NATIVE_APP_DIR" --output "$out/audit.json"
+          engine="$CSLMM_NATIVE_APP_DIR/Contents/Resources/engine"
+          export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1
+          export CSLMM_NATIVE_DATA_DIR="$RUNNER_TEMP/cmm-package-data"
+          unset PYTHONPATH PYTHONHOME
+          "$engine/python/bin/python3.13" -c 'from PySide6.QtCore import QPointF; from PySide6.QtGui import QPainterPath, QPainterPathStroker; p=QPainterPath(QPointF(0,0)); p.lineTo(QPointF(3,4)); print(QPainterPathStroker().createStroke(p).boundingRect())'
+          "$engine/python/bin/python3.13" "$engine/project/dev/CSLModernMapRenderer/main.py" self-check --report "$out/self-check.json"
+          codesign --verify --deep --strict "$CSLMM_NATIVE_APP_DIR"
+      - name: Build isolated probe using the slim production engine
         run: |
-          echo "The hosted Intel runner loses the map's WebGL context. Map camera and draft runtime acceptance is reserved for a physical Mac, not declared passed here."
+          native=dev/CSLModernMapRenderer.macOS
+          export CSLMM_WORKSPACE_DIR="$RUNNER_TEMP"
+          bash "$native/scripts/build-dev.sh" --with-checks
+          probe="$RUNNER_TEMP/outputs/native-checks/CSLModernMap Renderer.app"
+          app="$RUNNER_TEMP/cmm-candidate/CSLModernMap Renderer.app"
+          check="$RUNNER_TEMP/probe/CSLModernMap Renderer.app"
+          mkdir -p "$(dirname "$check")"
+          ditto "$app" "$check"
+          cp "$probe/Contents/MacOS/CSLModernMap" "$check/Contents/MacOS/CSLModernMap"
+          /usr/libexec/PlistBuddy -c 'Set :CMMIntegrationChecks true' "$check/Contents/Info.plist"
+          codesign --force --sign - "$check"
+      - name: Run RMP acceptance with slim production runtime
+        run: |
+          echo "The hosted Intel runner loses the map's WebGL context. Physical Mac acceptance is still required for map camera and drafts."
           python - <<'PY'
           import json, os, pathlib, shutil, subprocess, sys
           out = pathlib.Path(os.environ['RUNNER_TEMP']) / 'native-rmp-acceptance'
           out.mkdir()
-          app = pathlib.Path(os.environ['RUNNER_TEMP']) / 'outputs/native-checks/CSLModernMap Renderer.app/Contents/MacOS/CSLModernMap'
+          app = pathlib.Path(os.environ['RUNNER_TEMP']) / 'probe/CSLModernMap Renderer.app/Contents/MacOS/CSLModernMap'
           city = out / 'basan_rings.mmap'
           shutil.copy2('tests/renderer/fixtures/basan_rings.mmap', city)
           data = out / 'profile'
@@ -69,26 +96,15 @@ jobs:
               print((out / 'app.log').read_text(errors='replace')[-12000:])
               sys.exit(1)
           PY
-      - name: Package macOS 13 Intel candidate (production app)
+      - name: Produce signed installer with original Finder layout
         run: |
           native=dev/CSLModernMapRenderer.macOS
-          export CSLMM_ENGINE_PYTHON="$RUNNER_TEMP/cmm-env/bin/python"
           export CSLMM_WORKSPACE_DIR="$RUNNER_TEMP"
           out="$RUNNER_TEMP/cmm-candidate"
-          mkdir -p "$out"
           export CSLMM_NATIVE_APP_DIR="$out/CSLModernMap Renderer.app"
-          runtime="$RUNNER_TEMP/cmm-runtime/cpython-3.13.15-macos-x86_64-none"
-          packages="$RUNNER_TEMP/cmm-env/lib/python3.13/site-packages"
-          "$CSLMM_ENGINE_PYTHON" "$native/scripts/package-app.py" --app-dir "$CSLMM_NATIVE_APP_DIR" --runtime "$runtime" --site-packages "$packages"
-          "$CSLMM_ENGINE_PYTHON" "$native/scripts/audit-bundle.py" "$CSLMM_NATIVE_APP_DIR" --output "$out/audit.json"
-          engine="$CSLMM_NATIVE_APP_DIR/Contents/Resources/engine"
-          export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1
-          export CSLMM_NATIVE_DATA_DIR="$RUNNER_TEMP/cmm-package-data"
-          unset PYTHONPATH PYTHONHOME
-          "$engine/python/bin/python3.13" "$engine/project/dev/CSLModernMapRenderer/main.py" self-check --report "$out/self-check.json"
-          codesign --verify --deep --strict "$CSLMM_NATIVE_APP_DIR"
+          export CSLMM_DMG_PYTHON="$(command -v python)"
           bash "$native/scripts/make-dmg.sh"
-          printf 'Product source: c12025ea99ad2064826d83aaa99752926db8a442\nAcceptance workflow commit: %s\nIntel x86_64, macOS 13+, ad-hoc signature, not notarized\nPhysical Mac WebGL acceptance still required\n' "$GITHUB_SHA" > "$out/build-info.txt"
+          printf 'Product source: 037c9fea5e89a27905ee635df8762c438de8edfa\nAcceptance workflow commit: %s\nIntel x86_64, macOS 13+, ad-hoc signature, not notarized\nPhysical Mac WebGL acceptance still required\n' "$GITHUB_SHA" > "$out/build-info.txt"
       - name: Upload native acceptance logs
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
@@ -101,7 +117,7 @@ jobs:
         if: success()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
-          name: CSLModernMap-6.7.4m-c12025e-macOS13-x86_64-candidate
+          name: CSLModernMap-6.7.4m-037c9fe-macOS13-x86_64-candidate
           path: |
             ${{ runner.temp }}/cmm-candidate/*.dmg
             ${{ runner.temp }}/cmm-candidate/*.dmg.sha256

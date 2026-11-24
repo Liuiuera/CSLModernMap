@@ -39,22 +39,45 @@ def copy_tree(src, dest):
     shutil.copytree(src, dest, symlinks=True,
                     ignore=shutil.ignore_patterns('__pycache__', '*.pyc', '.DS_Store'))
 
+def copy_pyside_runtime(src, dest):
+    # The shared engine needs geometry only. Keep the complete linked
+    # frameworks and platform plugins, not Qt's GUI development toolchain.
+    paths = [
+        '__init__.py', '_config.py', '_git_pyside_version.py', 'support',
+        'QtCore.abi3.so', 'QtGui.abi3.so', 'QtCore.pyi', 'QtGui.pyi',
+        '__feature__.pyi', 'py.typed', 'PySide6_Essentials.json',
+        'Qt/lib/QtCore.framework', 'Qt/lib/QtGui.framework',
+        'Qt/lib/QtDBus.framework', 'Qt/plugins/platforms',
+    ]
+    libraries = list(src.glob('libpyside6.abi3.*.dylib'))
+    if len(libraries) != 1:
+        raise RuntimeError('Expected exactly one PySide6 runtime library.')
+    paths.append(libraries[0].name)
+    for name in paths:
+        item = src / name
+        target = dest / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if item.is_dir():
+            copy_tree(item, target)
+        else:
+            shutil.copy2(item, target)
+
 copy_tree(args.runtime.resolve(), engine / 'python')
 packages = engine / 'python/lib/python3.13/site-packages'
 packages.mkdir(parents=True, exist_ok=True)
 # Include distribution license/metadata alongside every dependency.
-excluded = {'nuitka', '_pytest', 'pytest', 'pygments', 'iniconfig', 'pluggy', 'ordered_set', 'zstandard', 'playwright', 'greenlet', 'pyee'}
+excluded = {'nuitka', '_pytest', 'pytest', 'pygments', 'iniconfig', 'pluggy', 'ordered_set', 'zstandard', 'playwright', 'greenlet', 'pyee', 'ds_store', 'mac_alias'}
 for item in args.site_packages.resolve().iterdir():
     key = item.name.lower().split('-')[0].split('.')[0]
     if key in excluded or item.name == '__pycache__':
         continue
     dest = packages / item.name
-    if item.is_dir():
+    if item.name == 'PySide6':
+        copy_pyside_runtime(item, dest)
+    elif item.is_dir():
         copy_tree(item, dest)
     else:
         shutil.copy2(item, dest)
-# The engine uses only QtCore/QtGui geometry, never database drivers.
-shutil.rmtree(packages / 'PySide6/Qt/plugins/sqldrivers', ignore_errors=True)
 renderer = engine / 'project/dev/CSLModernMapRenderer' 
 renderer.mkdir(parents=True, exist_ok=True)
 for name in ('csmodernmap', 'styles', 'resources'):
