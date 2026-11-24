@@ -8,7 +8,7 @@ namespace CSLModernMapWinUI;
 
 public sealed partial class MainWindow
 {
-    private bool _loadingDocument, _previewStarting, _previewClosed, _previewSlow;
+    private bool _loadingDocument, _previewStarting, _previewRecovering, _previewClosed, _previewSlow;
     private int _previewInstance;
     private string? _previewFailure;
     private CancellationTokenSource? _previewWait;
@@ -16,19 +16,34 @@ public sealed partial class MainWindow
     private bool PreviewInteractive => _viewerReady && _mapTask.HasMap && !_loadingDocument &&
         (!_mapTask.Active || _mapTask.Background);
 
-    private async Task InitializePreviewAsync()
+    private bool IsCurrentPreview(int instance) => !_closing && instance == _previewInstance;
+
+    private async Task InitializePreviewAsync(bool recovering = false)
     {
         if (_closing || _engineUnavailable || _previewStarting) return;
+        var instance = recovering ? ResetPreview() : ++_previewInstance;
         _previewNoticeDismissed = false;
-        var instance = ++_previewInstance;
         _viewerReady = false; _previewStarting = true; _previewFailure = null; _previewSlow = false;
+        _previewRecovering = recovering;
         _presentedGuideScene = _appliedGuideScene = null;
-        if (!_loadingDocument) _mapTask.Reset(false);
+        if (recovering)
+        {
+            OperationError.IsOpen = false;
+            if (!_loadingDocument)
+                _mapTask.Begin(MapTaskPhase.Loading, UiLanguage.Text("Preview_Recovering"), canCancel: false);
+        }
+        else if (!_loadingDocument) _mapTask.Reset(false);
         ApplyMapTaskState();
         try
         {
+            if (recovering)
+            {
+                // 先让引擎作废旧编译，再启用本次预览。
+                await _engine.RequestAsync("setPreviewEnabled", new { enabled = false });
+                if (!IsCurrentPreview(instance)) return;
+            }
             var preview = await _engine.RequestAsync("startPreview");
-            if (_closing || instance != _previewInstance) return;
+            if (!IsCurrentPreview(instance)) return;
             if (_previewClosed)
             {
                 MapSurface.Children.Remove(MapView);
@@ -40,32 +55,32 @@ public sealed partial class MainWindow
             Directory.CreateDirectory(profile);
             var environment = await CoreWebView2Environment.CreateWithOptionsAsync(
                 null, profile, new CoreWebView2EnvironmentOptions());
-            if (_closing || instance != _previewInstance) return;
+            if (!IsCurrentPreview(instance)) return;
             await MapView.EnsureCoreWebView2Async(environment);
-            if (_closing || instance != _previewInstance) return;
+            if (!IsCurrentPreview(instance)) return;
             var core = MapView.CoreWebView2 ?? throw new InvalidOperationException("WebView2 initialization returned no browser.");
             StartupTrace.Write($"Preview initialized: runtime={environment.BrowserVersionString}, instance={instance}");
             core.Settings.AreDefaultContextMenusEnabled = false;
             core.Settings.AreDevToolsEnabled = false;
             await core.AddScriptToExecuteOnDocumentCreatedAsync("window.__CSL_PREVIEW_QUALITY__ = " +
                 JsonSerializer.Serialize(_previewQuality, PreviewQualitySettings.JsonOptions) + ";");
-            if (_closing || instance != _previewInstance) return;
+            if (!IsCurrentPreview(instance)) return;
             core.WebMessageReceived += (sender, args) => Root.DispatcherQueue.TryEnqueue(() =>
             {
-                if (_closing || instance != _previewInstance) return;
+                if (!IsCurrentPreview(instance)) return;
                 try { HandleViewerEvent(args.TryGetWebMessageAsString()); }
                 catch (Exception error) { _ = FailPreviewAsync(error, "viewerMessage"); }
             });
             core.NavigationCompleted += (sender, args) =>
             {
-                if (_closing || instance != _previewInstance) return;
+                if (!IsCurrentPreview(instance)) return;
                 StartupTrace.Write($"Preview navigation: success={args.IsSuccess}, status={args.WebErrorStatus}, instance={instance}");
                 if (!args.IsSuccess && args.WebErrorStatus != CoreWebView2WebErrorStatus.OperationCanceled)
                     _ = FailPreviewAsync(new IOException(args.WebErrorStatus.ToString()), "navigation");
             };
             core.ProcessFailed += (sender, args) =>
             {
-                if (_closing || instance != _previewInstance) return;
+                if (!IsCurrentPreview(instance)) return;
                 var details = $"Kind: {args.ProcessFailedKind}\nReason: {args.Reason}\nExitCode: {args.ExitCode}";
                 StartupTrace.Write("Preview process failure: " + details);
                 if (args.ProcessFailedKind == CoreWebView2ProcessFailedKind.RenderProcessUnresponsive)
@@ -79,24 +94,39 @@ public sealed partial class MainWindow
         }
         catch (Exception error)
         {
-            if (!_closing && instance == _previewInstance) await FailPreviewAsync(error, "initialization");
+            if (IsCurrentPreview(instance)) await FailPreviewAsync(error, "initialization");
         }
     }
 
-    private async Task StopPreviewAsync()
+    private int ResetPreview()
     {
+        var instance = ++_previewInstance;
         _previewQualityCompletion?.TrySetException(new InvalidOperationException(UiLanguage.Text("PreviewQuality_Restarted")));
-        ++_previewInstance;
-        _viewerReady = _previewStarting = _previewSlow = false;
+        _viewerReady = _previewStarting = _previewRecovering = _previewSlow = false;
         _previewWait?.Cancel();
         _fullSceneCompiled = false;
         _awaitingScene = _waitingSceneReady = false;
         _discardSceneResults = true;
+        _previewLayerWrites.Clear();
         if (!_previewClosed) { MapView.Close(); _previewClosed = true; }
         if (!_loadingDocument) _mapTask.Reset(false);
+        return instance;
+    }
+
+    private async Task<bool> StopPreviewAsync()
+    {
+        var instance = ResetPreview();
         ApplyMapTaskState();
-        await _engine.RequestAsync("setPreviewEnabled", new { enabled = false });
-        await RefreshSnapshotAsync();
+        try
+        {
+            await _engine.RequestAsync("setPreviewEnabled", new { enabled = false });
+            if (IsCurrentPreview(instance)) await RefreshSnapshotCoreAsync(instance);
+        }
+        catch (Exception error) when (!IsCurrentPreview(instance))
+        {
+            StartupTrace.Write($"Superseded preview cleanup failed: instance={instance}\n{error}");
+        }
+        return IsCurrentPreview(instance);
     }
 
     private async Task FailPreviewAsync(Exception error, string stage)
@@ -104,31 +134,73 @@ public sealed partial class MainWindow
         if (_closing || _previewFailure is not null) return;
         _previewFailure = UiLanguage.Text("Preview_Failed");
         var failure = TaskError.FromException(error, UiLanguage.Text("Preview_Failed"), stage);
-        StartupTrace.Write($"Preview failed: scene={_sceneId}, revision={_revision}, documentEpoch={_engineDocumentEpoch}\n{failure.Details}");
-        try { await StopPreviewAsync(); }
-        catch (Exception stopError) { if (!_engineUnavailable) SetError(stopError); }
-        if (_closing) return;
+        StartupTrace.Write($"Preview failed: instance={_previewInstance}, scene={_sceneId}, revision={_revision}, documentEpoch={_engineDocumentEpoch}\n{failure.Details}");
+        var instance = ResetPreview();
         OperationError.Severity = InfoBarSeverity.Error;
         OperationError.Message = _previewFailure;
         OperationError.Content = ErrorFeedback.Actions(failure, Root);
         OperationError.IsOpen = true;
+        SetDocumentEnabled(_snapshot.ValueKind == JsonValueKind.Object &&
+            _snapshot.GetProperty("hasDocument").GetBoolean() && !_engineBusy);
         ApplyMapTaskState();
+        try { await _engine.RequestAsync("setPreviewEnabled", new { enabled = false }); }
+        catch (Exception stopError) { StartupTrace.Write($"Preview cleanup failed: instance={instance}\n{stopError}"); }
     }
 
     private async Task RetryPreviewAsync()
     {
+        if (_closing || _engineUnavailable || _previewStarting || _previewRecovering) return;
         _compatibilityPreview = false;
         ResetCompatibilityImage();
-        await StopPreviewAsync();
-        OperationError.IsOpen = false;
-        await InitializePreviewAsync();
+        await InitializePreviewAsync(recovering: true);
+    }
+
+    private async Task FinishPreviewStartupAsync(int instance)
+    {
+        try
+        {
+            await _engine.RequestAsync("setPreviewEnabled", new { enabled = true });
+            if (!IsCurrentPreview(instance)) return;
+            await RefreshSnapshotCoreAsync(instance);
+            if (!IsCurrentPreview(instance)) return;
+            if (_loadingDocument)
+            {
+                _discardSceneResults = false;
+                return;
+            }
+            if (!_snapshot.GetProperty("hasDocument").GetBoolean())
+            {
+                if (_mapTask.Phase == MapTaskPhase.Loading && !_awaitingScene) _mapTask.Reset(false);
+                _previewRecovering = false;
+                return;
+            }
+            if (_cityArtwork && _restoreCityArtworkPreview)
+            {
+                BeginMapTask(MapTaskPhase.Generating, EditorText("ResetCanvas"), canCancel: false);
+                await _engine.RequestAsync("restoreCityArtworkPreview", new { documentEpoch = _engineDocumentEpoch });
+                if (IsCurrentPreview(instance)) _restoreCityArtworkPreview = false;
+            }
+            else await CompilePreviewCoreAsync();
+        }
+        catch (Exception error)
+        {
+            if (IsCurrentPreview(instance)) await FailPreviewAsync(error, "startup");
+        }
+        finally
+        {
+            if (IsCurrentPreview(instance))
+            {
+                _previewStarting = false;
+                ApplyMapTaskState();
+            }
+        }
     }
 
     private async Task OpenExternalPreviewAsync()
     {
         _compatibilityPending = false;
         _compatibilityDelay?.Cancel();
-        await StopPreviewAsync();
+        if (!await StopPreviewAsync()) return;
         await OpenBrowserPreviewAsync();
     }
 
@@ -160,7 +232,7 @@ public sealed partial class MainWindow
         var show = _context != "metro" && !_compatibilityPreview && !_previewNoticeDismissed && (stopped || _previewSlow);
         PreviewActions.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
         PreviewCompatibility.IsEnabled = available && !_engineBusy;
-        PreviewRetry.IsEnabled = !_previewStarting && !_engineUnavailable && !_engineBusy;
+        PreviewRetry.IsEnabled = !_previewStarting && !_previewRecovering && !_engineUnavailable && !_engineBusy;
         PreviewHtml.IsEnabled = available && !_engineBusy;
         if (show && !_loadingDocument)
         {
@@ -174,7 +246,7 @@ public sealed partial class MainWindow
         CompatibilitySurface.Visibility = CompatibilityNotice.Visibility = imageMode ? Visibility.Visible : Visibility.Collapsed;
         CompatibilityUpdating.Visibility = imageMode && (_compatibilityPending || _compatibilityRendering)
             ? Visibility.Visible : Visibility.Collapsed;
-        CompatibilityRetry.IsEnabled = !_engineBusy && !_engineUnavailable;
+        CompatibilityRetry.IsEnabled = PreviewRetry.IsEnabled;
         MapView.Visibility = _context == "metro" || _compatibilityPreview || _previewClosed ? Visibility.Collapsed : Visibility.Visible;
         if (imageMode && !_loadingDocument) MapOverlay.Visibility = Visibility.Collapsed;
         MapView.IsHitTestVisible = PreviewInteractive && !_artworkEntryPreparing && !(_cityArtworkUpdating && _cityArtworkOperation?.Kind == "initial");

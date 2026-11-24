@@ -24,6 +24,7 @@ public sealed partial class MainWindow
 
     private async Task RequestPreviewLayerAsync(JsonElement frame)
     {
+        var instance = _previewInstance;
         var scene = frame.GetProperty("sceneId").GetString();
         var revision = frame.GetProperty("revision").GetInt32();
         if (scene != _sceneId || revision != _revision) return;
@@ -36,19 +37,23 @@ public sealed partial class MainWindow
         _previewLayerWrites[layer] = identity;
         SendPreviewUiState();
         var generation = _documentGeneration;
-        bool Current() => !_closing && generation == _documentGeneration && scene == _sceneId && revision == _revision;
-        try { await QueueLayerActionAsync(() => SetLayerVisibleAsync(layer, visible), Current); }
+        bool Current() => IsCurrentPreview(instance) && generation == _documentGeneration && scene == _sceneId && revision == _revision;
+        try { await QueueLayerActionAsync(() => SetLayerVisibleAsync(layer, visible, instance), Current, instance); }
         finally
         {
-            if (_previewLayerWrites.TryGetValue(layer, out pending) && pending == identity) _previewLayerWrites.Remove(layer);
-            if (!_closing) SendPreviewUiState();
+            if (IsCurrentPreview(instance))
+            {
+                if (_previewLayerWrites.TryGetValue(layer, out pending) && pending == identity) _previewLayerWrites.Remove(layer);
+                SendPreviewUiState();
+            }
         }
     }
 
     private async Task ApplyPresentedSceneStateAsync(string scene, int revision)
     {
+        var instance = _previewInstance;
         await ApplySceneStateAsync();
-        if (scene != _sceneId || revision != _revision) return;
+        if (!IsCurrentPreview(instance) || scene != _sceneId || revision != _revision) return;
         _appliedGuideScene = (scene, revision);
         SendPreviewUiState();
         TryShowMapInteractionGuide();

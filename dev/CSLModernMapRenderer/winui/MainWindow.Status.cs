@@ -72,6 +72,7 @@ public sealed partial class MainWindow
     private void CompleteMapTask(int generation)
     {
         if (!_mapTask.Complete(generation)) return;
+        _previewRecovering = false;
         _previewWait?.Cancel();
         _previewSlow = false;
         _fullSceneCompiled = false;
@@ -89,20 +90,37 @@ public sealed partial class MainWindow
 
     private void UpdateMapProgress(JsonElement payload)
     {
-        if (_exportWindow?.IsBusy == true || _externalExporting) return;
+        if (_exportWindow?.IsBusy == true || _externalExporting ||
+            _previewRecovering && _discardSceneResults && !_loadingDocument) return;
         var requestId = payload.TryGetProperty("requestId", out var id) && id.ValueKind == JsonValueKind.String ? id.GetString() : null;
         double? percent = payload.TryGetProperty("percent", out var raw) && raw.TryGetDouble(out var value) ? value : null;
         if (_mapTask.Progress(percent, payload.GetProperty("message").GetString() ?? "", requestId)) ApplyMapTaskState();
     }
 
-    private async Task CompilePreviewAsync()
+    private Task CompilePreviewAsync() =>
+        _previewStarting || _previewRecovering ? Task.CompletedTask : CompilePreviewCoreAsync();
+
+    private async Task CompilePreviewCoreAsync()
     {
         if (_compatibilityPreview) { QueueCompatibilityPreview(); return; }
         if (!_viewerReady) { await RetryPreviewAsync(); return; }
-        if (_engineBusy) { ShowNotice(UiLanguage.Text("MainWindow_Status_CompilePreviewAsync_2A55669135")); return; }
+        if (_engineBusy)
+        {
+            var message = UiLanguage.Text("MainWindow_Status_CompilePreviewAsync_2A55669135");
+            if (_previewRecovering) await FailPreviewAsync(new InvalidOperationException(message), "sceneCompile");
+            else ShowNotice(message);
+            return;
+        }
         var generation = BeginMapTask(MapTaskPhase.Generating, _context == "transit" ? UiLanguage.Text("MainWindow_Status_CompilePreviewAsync_058E698B71") : UiLanguage.Text("MainWindow_Status_CompilePreviewAsync_A8A3F1C48A"));
-        var result = await _engine.RequestAsync("compilePreview", new { force = true });
-        if (generation != _mapTask.Generation) return;
-        if (!result.GetProperty("started").GetBoolean()) SetError(UiLanguage.Text("MainWindow_Status_CompilePreviewAsync_BA6C957739"));
+        var instance = _previewInstance;
+        try
+        {
+            var result = await _engine.RequestAsync("compilePreview", new { force = true });
+            if (generation != _mapTask.Generation || result.GetProperty("started").GetBoolean()) return;
+            var message = UiLanguage.Text("MainWindow_Status_CompilePreviewAsync_BA6C957739");
+            if (_previewRecovering) await FailPreviewAsync(new InvalidOperationException(message), "sceneCompile");
+            else SetError(message);
+        }
+        catch (Exception) when (!IsCurrentPreview(instance)) { }
     }
 }

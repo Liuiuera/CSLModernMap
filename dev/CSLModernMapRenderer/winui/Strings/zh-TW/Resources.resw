@@ -4418,6 +4418,7 @@ Esc  取消目前工作</value>
   <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>控制已收錄裝飾物的圖示與名稱，保留建築和地物。</value></data>
   <data name="MetroSettings_Reset" xml:space="preserve"><value>還原預設值</value></data>
   <data name="Preview_Failed" xml:space="preserve"><value>地圖預覽無法載入</value></data>
+  <data name="Preview_Recovering" xml:space="preserve"><value>正在復原地圖預覽…</value></data>
   <data name="Preview_Slow" xml:space="preserve"><value>地圖預覽耗時較長</value></data>
   <data name="Preview_Stopped" xml:space="preserve"><value>預覽器未執行</value></data>
   <data name="Preview_DataAvailable" xml:space="preserve"><value>地圖資料已讀取，可以選擇主題並繼續匯出。</value></data>

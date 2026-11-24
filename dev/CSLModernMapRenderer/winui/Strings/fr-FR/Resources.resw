@@ -4411,6 +4411,7 @@ Shaotang Shaoxiancao Codex</value>
   <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>Afficher les icônes et noms des décorations répertoriées. Les bâtiments et éléments de la carte restent visibles.</value></data>
   <data name="MetroSettings_Reset" xml:space="preserve"><value>Rétablir les valeurs par défaut</value></data>
   <data name="Preview_Failed" xml:space="preserve"><value>Impossible de charger l’aperçu</value></data>
+  <data name="Preview_Recovering" xml:space="preserve"><value>Rétablissement de l’aperçu de la carte…</value></data>
   <data name="Preview_Slow" xml:space="preserve"><value>L’aperçu prend plus de temps</value></data>
   <data name="Preview_Stopped" xml:space="preserve"><value>L’aperçu ne fonctionne pas</value></data>
   <data name="Preview_DataAvailable" xml:space="preserve"><value>Les données sont chargées. Vous pouvez choisir un thème et exporter.</value></data>
