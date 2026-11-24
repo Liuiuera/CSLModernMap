@@ -46,6 +46,7 @@ extension InterfaceController {
     func updateCommands() {
         refreshStatusVisibility()
         mapPlaceholder.enableOpen(commandEnabled("打开城市…"))
+        mapPlaceholder.enableRetry(commandEnabled("重新启动交互预览"))
         for button in commandButtons { button.isEnabled = commandEnabled(button.identifier?.rawValue ?? button.title) }
         refreshBandActions()
         for panel in [sidebarForm, inspectorForm, transitForm] {
@@ -92,7 +93,12 @@ extension InterfaceController {
             buildingList = catalog; panels.append(catalog.window)
             catalog.window.center(); catalog.window.makeKeyAndOrderFront(nil); catalog.reload()
         case "预览质量…": previewSettings()
-        case "重新启动交互预览": run { try await self.startInteractivePreview() }
+        case "重新启动交互预览":
+            run {
+                do { try await self.startInteractivePreview() }
+                catch is CancellationError { return }
+                catch { self.showPreviewError(error, forceUnavailable: true) }
+            }
         case "在浏览器预览": openBrowserPreview()
         case "兼容图像预览": run { try await self.renderStaticPreview() }
         case "创建地图草稿": beginDraft()

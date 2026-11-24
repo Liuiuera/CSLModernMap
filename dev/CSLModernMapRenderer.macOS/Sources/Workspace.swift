@@ -167,7 +167,8 @@ let layerGroups: [(String, [(String, String)])] = [
         LayerNode(id: id, title: group.0, children: group.1.map { LayerNode(id: layerKeys[$0.0]!, title: $0.0, icon: $0.1) })
     }
     lazy var mapPlaceholder = PreviewPlaceholder(open: { [weak self] in self?.execute("打开城市…") },
-        cancel: { [weak self] in self?.cancelTask() })
+        cancel: { [weak self] in self?.cancelTask() },
+        retry: { [weak self] in self?.execute("重新启动交互预览") })
     private weak var canvasTools: NSView?
     let left = material(.sidebar, blending: .behindWindow)
     let right = material(.sidebar, blending: .behindWindow)

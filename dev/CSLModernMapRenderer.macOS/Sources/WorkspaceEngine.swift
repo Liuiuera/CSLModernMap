@@ -27,8 +27,8 @@ extension InterfaceController {
         viewer.failed = { [weak self] error in
             guard let self = self else { return }
             self.cityDraft?.previewFailed()
-            if !self.staticMode { self.showMapState(.unavailable("地图预览不可用")) }
-            self.showError(error)
+            if self.staticMode { self.showError(error) }
+            else { self.showPreviewError(error, forceUnavailable: true) }
         }
         let args = CommandLine.arguments
         #if CMM_INTEGRATION_CHECKS
@@ -42,7 +42,7 @@ extension InterfaceController {
             engineReady = true; try await refreshSnapshot(); applyLanguage()
             diagnosticsPanel?.refreshPerformance()
             do { try await startInteractivePreview(); showStatus(localized("请打开城市")) }
-            catch { showError(error) }
+            catch { showPreviewError(error, forceUnavailable: true) }
             #if CMM_INTEGRATION_CHECKS
             if let smoke { smoke.start(); return }
             #endif
@@ -56,7 +56,23 @@ extension InterfaceController {
     func run(_ action: @escaping @MainActor () async throws -> Void) {
         Task { @MainActor in do { try await action() } catch is CancellationError {} catch { showError(error) } }
     }
-    func showError(_ error: Error) {
+    func showPreviewError(_ error: Error, forceUnavailable: Bool = false) {
+        let command = "重新启动交互预览"
+        let wasLoading: Bool
+        if case .loading = mapPlaceholder.state { wasLoading = true } else { wasLoading = false }
+        let canvasUnavailable = !staticMode && (forceUnavailable || wasLoading)
+        if canvasUnavailable { pendingQuality = nil }
+        let canRetry = commandEnabled(command)
+        if canvasUnavailable {
+            let message = "地图预览不可用"
+            showMapState(engineReady && context != "metro" && cityDraft == nil
+                         ? .previewFailed(message) : .unavailable(message))
+            mapPlaceholder.enableRetry(canRetry)
+        }
+        let retry: (() -> Void)? = canRetry ? { [weak self] in self?.execute(command) } : nil
+        showError(error, retry: retry)
+    }
+    func showError(_ error: Error, retry: (() -> Void)? = nil) {
         let details = (error as? AppFailure)?.details ?? error.localizedDescription
         FileHandle.standardError.write(Data((details + "\n").utf8))
         lastFailureDetails = details
@@ -70,10 +86,12 @@ extension InterfaceController {
         let alert = NSAlert()
         alert.messageText = localized("操作未完成")
         alert.alertStyle = .warning
-        alert.addButton(withTitle: localized("关闭"))
+        alert.addButton(withTitle: localized(retry == nil ? "关闭" : "重试"))
         alert.addButton(withTitle: localized("查看报错"))
+        if retry != nil { alert.addButton(withTitle: localized("关闭")).keyEquivalent = "\u{1b}" }
         alert.beginSheetModal(for: parent) { [weak self] response in
-            if response == .alertSecondButtonReturn { self?.showTextWindow("报错详情", details) }
+            if response == .alertFirstButtonReturn { retry?() }
+            else if response == .alertSecondButtonReturn { self?.showTextWindow("报错详情", details) }
         }
     }
     func refreshSnapshot() async throws {
@@ -166,6 +184,8 @@ extension InterfaceController {
             #if CMM_INTEGRATION_CHECKS
             if smoke != nil, CommandLine.arguments.contains("--settings-probe") { smoke?.settingsSceneReady(payload) }
             #endif
+        case "sceneError" where textValue(payload["requestId"]).isEmpty && !staticMode:
+            showPreviewError(AppFailure(payload: payload))
         case "error", "sceneError", "protocolError":
             if textValue(payload["requestId"]).isEmpty {
                 if case .loading = mapPlaceholder.state { showMapState(.unavailable("地图预览不可用")) }
@@ -235,8 +255,9 @@ extension InterfaceController {
         case "requestMapRotation": requestMapRotation(frame)
         case "renderError":
             guard textValue(frame["sceneId"]) == sceneID, frame["revision"] as? Int == revision else { return }
-            if !staticMode, case .loading = mapPlaceholder.state { showMapState(.unavailable("地图预览不可用")) }
-            showError(AppFailure(payload: frame))
+            let error = AppFailure(payload: frame)
+            if staticMode { showError(error) }
+            else { showPreviewError(error) }
         default: break
         }
     }

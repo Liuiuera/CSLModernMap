@@ -3,7 +3,7 @@ import AppKit
 /// Display canvas status while WebKit loads.
 @MainActor final class PreviewPlaceholder: NSView {
     enum State: Equatable {
-        case empty(String), loading(String), unavailable(String), ready
+        case empty(String), loading(String), unavailable(String), previewFailed(String), ready
     }
 
     private(set) var state: State = .ready
@@ -13,13 +13,15 @@ import AppKit
     private let progressBar = NSProgressIndicator()
     private let progressStage = NSTextField(labelWithString: "")
     private let actionButton: ActionButton?
-
+    private let retryButton: ActionButton?
     private let cancelButton: ActionButton?
 
-    init(open: (() -> Void)? = nil, cancel: (() -> Void)? = nil) {
+    init(open: (() -> Void)? = nil, cancel: (() -> Void)? = nil, retry: (() -> Void)? = nil) {
         cancelButton = cancel.map { ActionButton("取消任务", $0) }
         actionButton = open.map { ActionButton("打开城市…", $0) }
+        retryButton = retry.map { ActionButton("重试", $0) }
         super.init(frame: .zero)
+        retryButton?.bezelColor = .controlAccentColor
         icon.contentTintColor = .secondaryLabelColor
         icon.imageScaling = .scaleProportionallyUpOrDown
         icon.setAccessibilityElement(false)
@@ -33,7 +35,7 @@ import AppKit
         message.font = .systemFont(ofSize: open == nil ? 13 : 16, weight: .medium)
         message.textColor = .labelColor
         message.alignment = .center
-        let stack = column([icon, spinner, message] + [actionButton, cancelButton].compactMap { $0 }, gap: 12)
+        let stack = column([icon, spinner, message] + [retryButton, actionButton, cancelButton].compactMap { $0 }, gap: 12)
         if open != nil {
             progressBar.style = .bar
             progressBar.isIndeterminate = false
@@ -62,12 +64,14 @@ import AppKit
         if state != newState { clearProgress() }
         state = newState
         var working = false
+        var retrying = false
         var symbolName = "map"
         let title: String
         switch newState {
         case .empty(let text): title = text
         case .loading(let text): title = text; working = true; symbolName = "hourglass"
         case .unavailable(let text): title = text; symbolName = "exclamationmark.circle"
+        case .previewFailed(let text): title = text; symbolName = "exclamationmark.circle"; retrying = retryButton != nil
         case .ready:
             isHidden = true
             spinner.stopAnimation(nil)
@@ -89,6 +93,8 @@ import AppKit
         cancelButton?.title = localized("取消任务")
         actionButton?.isHidden = working
         actionButton?.title = localized("打开城市…")
+        retryButton?.isHidden = !retrying
+        retryButton?.title = localized("重试")
     }
 
     func clearProgress() {
@@ -111,4 +117,5 @@ import AppKit
     }
 
     func enableOpen(_ enabled: Bool) { actionButton?.isEnabled = enabled }
+    func enableRetry(_ enabled: Bool) { retryButton?.isEnabled = enabled }
 }

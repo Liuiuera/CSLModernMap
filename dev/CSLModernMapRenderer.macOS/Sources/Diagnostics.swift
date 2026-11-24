@@ -78,7 +78,7 @@ import AppKit
             else { preview = localized(owner.rmp.hasProject ? "就绪" : "尚未打开项目") }
         } else {
             switch owner.mapPlaceholder.state {
-            case .empty(let title), .loading(let title), .unavailable(let title):
+            case .empty(let title), .loading(let title), .unavailable(let title), .previewFailed(let title):
                 preview = localized(title)
             case .ready:
                 preview = localized(owner.staticMode ? "兼容图像预览" : "交互预览") + " · " + localized("就绪")
