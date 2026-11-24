@@ -374,6 +374,30 @@ function roadToken(field: keyof RoadPaint, fallback: string | number): Expressio
   for (const [key, paint] of Object.entries(currentTheme?.road.levels ?? {})) value.push(key, paint[field]);
   value.push(fallback); return value as ExpressionSpecification;
 }
+// 草稿按画布比例绘制，单文件地图沿用导出样式。
+function usesDistanceSizing(): boolean { return (!EMBEDDED || QUALITY_SAMPLE) && artworkBrowseTheme === null; }
+const distanceZooms = [11, 13, 15, 17] as const;
+function distanceSize(middle: number, zoom: number, farSize = middle * .75): number {
+  const [far, start, end, near] = distanceZooms;
+  if (zoom < start) {
+    return farSize + (middle - farSize) * Math.max(0, (zoom - far) / (start - far));
+  }
+  return middle * (1 + .25 * Math.min(1, Math.max(0, (zoom - end) / (near - end))));
+}
+type NumericStyle = number | ExpressionSpecification;
+function distanceExpression(at: (zoom: number) => NumericStyle): ExpressionSpecification {
+  return ['interpolate', ['linear'], ['zoom'], ...distanceZooms.flatMap(z => [z, at(z)])] as ExpressionSpecification;
+}
+function lineScaleAt(zoom: number): number {
+  return usesDistanceSizing() ? distanceSize(previewQuality.linePercent / 100, zoom) : 1;
+}
+function scaledLine(width: NumericStyle): NumericStyle {
+  return usesDistanceSizing() ? distanceExpression(z => ['*', lineScaleAt(z), width]) : width;
+}
+function previewFontSize(base: number, zoom: number): number {
+  const middle = base * previewQuality.textPercent / 100;
+  return usesDistanceSizing() ? distanceSize(middle, zoom, Math.min(middle * .5, 10)) : base;
+}
 function widthAt(_z: number, casing = false): ExpressionSpecification {
   const fill = roadToken('lineWidth', 0);
   return casing ? ['+', fill, roadToken('borderPx', 0)] : fill;
@@ -413,8 +437,8 @@ const role = (name: string): ExpressionSpecification => ['all', enabledFilter(),
 
 type RoadLayer = {id: string; role: string; rank: number; type: 'line' | 'fill';
   paint: 'border' | 'fill'; width?: 'border' | 'casing' | 'fill'; flatOrder?: number};
-function roadLineWidth(width: RoadLayer['width']): ExpressionSpecification {
-  return width === 'border' ? borderWidth() : width === 'casing' ? casingWidth() : fillWidth();
+function roadLineWidth(width: RoadLayer['width']): NumericStyle {
+  return scaledLine(width === 'border' ? borderWidth() : width === 'casing' ? casingWidth() : fillWidth());
 }
 let roadLayers: RoadLayer[] = [];
 function contextFade(): number {
@@ -617,18 +641,53 @@ function updateTransitViewLayout(): void {
   labelLayoutKey = '';
 }
 // 直径包含描边；小圆圈的描边随外径缩小，不再额外撑大符号。
-function transitStationMetrics(): {outer: number; radius: number; stroke: number} {
+function baseStationMetrics(): {outer: number; radius: number; stroke: number} {
   const outer = Number(contextOptions.station_diameter ?? token('transit').stationSize) / 2;
   const stroke = Math.min(Number(token('transit').stationBorder), outer);
   return {outer, radius: outer - stroke, stroke};
 }
-function mapStationMetrics(): {radius: number; stroke: number} { return transitStationMetrics(); }
-function poiDimensions(transit: boolean): [number, number] {
-  return [Number((transit ? contextOptions.facility_icon_size : undefined) ?? token('poi').size), transitStationMetrics().outer * 2];
+function stationScale(outer: number, zoom: number): number {
+  if (!usesDistanceSizing() || outer === 0) return 1;
+  const middle = outer * previewQuality.linePercent / 100;
+  return distanceSize(middle, zoom, Math.min(middle * .75, 3)) / outer;
 }
-function updatePoiOffsets(): void {
-  for (const id of ['pois', 'transit-pois', 'tv-poi']) if (map.getLayer(id))
-    map.setLayoutProperty(id, 'icon-offset', stationIconOffset(...poiDimensions(id === 'tv-poi')));
+function stationRadius(): number {
+  const {outer} = baseStationMetrics();
+  return outer * stationScale(outer, map.getZoom());
+}
+function symbolStyle(at: (zoom: number) => number): NumericStyle {
+  return zoomingSymbols && usesDistanceSizing() ? distanceExpression(at) : at(map.getZoom());
+}
+function stationStyle(metric: 'radius' | 'stroke' | 'iconSize'): NumericStyle {
+  const base = baseStationMetrics();
+  const size = metric === 'iconSize' ? base.outer / 8 : base[metric];
+  return symbolStyle(zoom => size * stationScale(base.outer, zoom));
+}
+function updateStationSizes(): void {
+  for (const id of ['stations', 'tv-station']) if (map.getLayer(id)) {
+    map.setPaintProperty(id, 'circle-radius', stationStyle('radius'));
+    map.setPaintProperty(id, 'circle-stroke-width', stationStyle('stroke'));
+  }
+  if (map.getLayer('tv-station-interchange'))
+    map.setLayoutProperty('tv-station-interchange', 'icon-size', stationStyle('iconSize'));
+}
+function poiSize(transit: boolean, zoom: number): number {
+  const base = transit ? Number(contextOptions.facility_icon_size ?? 24) : Number(token('poi').size ?? 18);
+  const middle = base * previewQuality.iconPercent / 100;
+  return usesDistanceSizing() ? distanceSize(middle, zoom, Math.min(middle * .5, 12)) : base;
+}
+function poiStyle(transit: boolean): NumericStyle {
+  return symbolStyle(zoom => poiSize(transit, zoom) / 24);
+}
+function poiDimensions(transit: boolean): [number, number] {
+  return [poiSize(transit, map.getZoom()), stationRadius() * 2];
+}
+function updatePoiSizes(): void {
+  for (const id of ['pois', 'transit-pois', 'tv-poi']) if (map.getLayer(id)) {
+    const transit = id === 'tv-poi';
+    map.setLayoutProperty(id, 'icon-size', poiStyle(transit));
+    if (!zoomingSymbols) map.setLayoutProperty(id, 'icon-offset', stationIconOffset(...poiDimensions(transit)));
+  }
 }
 function poiScreenOffset(feature: any): [number, number] {
   return feature.properties?.stationAnchor
@@ -638,14 +697,14 @@ function poiScreenPoint(feature: any) {
   const point = map.project(feature.geometry.coordinates as [number, number]), offset = poiScreenOffset(feature);
   return {x: point.x + offset[0], y: point.y + offset[1]};
 }
-function transportLineWidth(): ExpressionSpecification | number {
+function transportLineWidth(overlay = true): NumericStyle {
   const width = Number(token('transit').width ?? 3);
-  const selected = Number(contextOptions.line_width ?? width);
+  const selected = overlay ? Number(contextOptions.line_width ?? width) : width;
   const entries = Object.entries(token('transit').typeWidths ?? {});
-  if (!entries.length) return selected;
-  return ['match', ['downcase', ['to-string', ['get', 'kind']]],
-    ...entries.flatMap(([kind, value]) => [kind, width ? Number(value) * selected / width : selected]),
-    selected] as ExpressionSpecification;
+  if (!entries.length) return scaledLine(selected);
+  return scaledLine(['match', ['downcase', ['to-string', ['get', 'kind']]],
+    ...entries.flatMap(([kind, value]) => [kind, !overlay ? Number(value) : width ? Number(value) * selected / width : selected]),
+    selected] as ExpressionSpecification);
 }
 /** 公共交通视图线路标签的视觉规范。
  *
@@ -693,11 +752,14 @@ function hexToRgb(hex: string): [number, number, number] {
     parseInt(normalized.slice(2, 4), 16), parseInt(normalized.slice(4, 6), 16)];
 }
 
+function baseBadgeSize(style: TransitLabelStyle): number {
+  return Math.max(1, Number(contextOptions.line_label_size ?? style.fontSizeBase));
+}
 /** 线路标签几何（已解析字号、内边距和轮廓宽度）。 */
 function transitBadgeMetrics() {
   const style = transitLabelStyle();
   // 小字号也按设置缩小，避免预览另设下限使 1～6 的输入失效。
-  const size = Math.max(1, Number(contextOptions.line_label_size ?? style.fontSizeBase));
+  const size = previewFontSize(baseBadgeSize(style), map.getZoom());
   const preset = style.presets[style.preset];
   const outline = preset.border * size;
   const padX = preset.padding * size;
@@ -751,6 +813,20 @@ function paintTransitBadge(el: HTMLElement, color: string,
   el.style.setProperty('--badge-surface', style.palette.surface);
   el.style.setProperty('--badge-text', preset.accent === 'fill' ? transitContrastText(color) : style.palette.text);
   el.style.setProperty('--badge-border', preset.accent === 'frame' ? color : style.palette.border);
+  sizeTransitBadge(el, metrics);
+  if (preset.icon) {
+    const icon = el.querySelector('.transit-badge-icon') as HTMLElement;
+    icon.style.maskImage = `url("${style.icons[el.dataset.routeKind ?? '']}")`;
+    const tile = el.querySelector('.transit-badge-mode') as HTMLElement;
+    tile.style.color = preset.accent === 'split' ? transitContrastText(color) : style.palette.text;
+  }
+  el.style.fontWeight = String(style.fontWeight);
+  el.style.fontFamily = `"${style.font}", "Microsoft YaHei", sans-serif`;
+  el.style.background = preset.accent === 'fill' ? color : style.palette.surface;
+  el.style.color = preset.accent === 'fill' ? transitContrastText(color) : style.palette.text;
+  el.style.borderColor = preset.accent === 'frame' ? color : style.palette.border;
+}
+function sizeTransitBadge(el: HTMLElement, metrics: ReturnType<typeof transitBadgeMetrics>): void {
   el.style.setProperty('--badge-pad', `${metrics.padX}px`);
   el.style.setProperty('--badge-outline', `${metrics.outline}px`);
   el.style.setProperty('--badge-radius', `${metrics.radius}px`);
@@ -762,18 +838,7 @@ function paintTransitBadge(el: HTMLElement, color: string,
   el.style.height = `${metrics.height}px`;
   el.style.maxWidth = `${180 + metrics.extraWidth}px`;
   el.style.overflow = 'hidden';
-  if (preset.icon) {
-    const icon = el.querySelector('.transit-badge-icon') as HTMLElement;
-    icon.style.maskImage = `url("${style.icons[el.dataset.routeKind ?? '']}")`;
-    const tile = el.querySelector('.transit-badge-mode') as HTMLElement;
-    tile.style.color = preset.accent === 'split' ? transitContrastText(color) : style.palette.text;
-  }
   el.style.fontSize = `${metrics.size}px`;
-  el.style.fontWeight = String(style.fontWeight);
-  el.style.fontFamily = `"${style.font}", "Microsoft YaHei", sans-serif`;
-  el.style.background = preset.accent === 'fill' ? color : style.palette.surface;
-  el.style.color = preset.accent === 'fill' ? transitContrastText(color) : style.palette.text;
-  el.style.borderColor = preset.accent === 'frame' ? color : style.palette.border;
   el.style.borderWidth = `${metrics.outline}px`;
   el.style.borderRadius = `${metrics.radius}px`;
 }
@@ -795,20 +860,21 @@ function trafficRoadWidthAt(z: number): ExpressionSpecification {
   // 原生路面按米投影，普通线道路沿用现有制图宽度。MapLibre 的世界瓦片为 512 px。
   const width: ExpressionSpecification = ['case', ['==', ['get', 'surface'], true],
     ['*', ['get', 'physicalWidth'], 2 ** z / MPP0 * 2
-      * WEB_MERCATOR_METERS_PER_DEGREE / LOCAL_METERS_PER_DEGREE], widthAt(z)];
-  return currentManifest?.layers.road === false ? ['min', 14, width] : width;
+      * WEB_MERCATOR_METERS_PER_DEGREE / LOCAL_METERS_PER_DEGREE], ['*', lineScaleAt(z), widthAt(z)]];
+  return currentManifest?.layers.road === false ? ['min', 14 * lineScaleAt(z), width] : width;
 }
 function trafficBandWidthAt(z: number): ExpressionSpecification {
   const road = trafficRoadWidthAt(z);
+  const scale = lineScaleAt(z);
   return ['case', ['==', ['get', 'splitDirections'], true],
-    ['min', 6, ['max', .5, ['*', .34, road]]],
-    ['min', 10, ['max', .8, ['*', .8, road]]]];
+    ['min', 6 * scale, ['max', .5 * scale, ['*', .34, road]]],
+    ['min', 10 * scale, ['max', .8 * scale, ['*', .8, road]]]];
 }
 function trafficMetric(direction?: TrafficDirection, casing = false, offset = false): ExpressionSpecification {
   return ['interpolate', ['exponential', 2], ['zoom'],
     ...Array.from({length: 25}, (_, z) => {
       const road = trafficRoadWidthAt(z), band = trafficBandWidthAt(z);
-      const outline: ExpressionSpecification = ['min', TRAFFIC_OUTLINE, ['*', .2, band]];
+      const outline: ExpressionSpecification = ['min', TRAFFIC_OUTLINE * lineScaleAt(z), ['*', .2, band]];
       const outer: ExpressionSpecification = ['+', band, ['*', 2, outline]];
       const side: ExpressionSpecification = ['*', direction === 'forward' ? -1 : 1,
         ['coalesce', ['get', 'forwardSide'], 1]];
@@ -888,7 +954,7 @@ function railTypePaint(field: string, fallback: string | number): ExpressionSpec
   value.push(fallback);
   return value as ExpressionSpecification;
 }
-function railWidth(field: 'width' | 'stationWidth' | 'dashWidth'): ExpressionSpecification { return railTypePaint(field, 0); }
+function railWidth(field: 'width' | 'stationWidth' | 'dashWidth'): NumericStyle { return scaledLine(railTypePaint(field, 0)); }
 function railFilter(station: boolean): ExpressionSpecification {
   return ['all', ['==', ['get', 'geometryRole'], 'track'],
     ['==', ['get', 'station'], station]];
@@ -990,36 +1056,36 @@ function addDomains(): void {
   add({ id: 'transit', type: 'line', source: 'transit', layout: { 'line-cap': 'round', 'line-join': 'round' },
     paint: { 'line-color': ['get', 'color'], 'line-width': transit.width ?? 3 } });
   add({ id: 'stations', type: 'circle', source: 'stations', paint: {
-    'circle-radius': mapStationMetrics().radius, 'circle-color': transit.stationFill ?? '#fff',
-    'circle-stroke-color': transit.stationOutline ?? '#39424C', 'circle-stroke-width': mapStationMetrics().stroke } });
+    'circle-radius': stationStyle('radius'), 'circle-color': transit.stationFill ?? '#fff',
+    'circle-stroke-color': transit.stationOutline ?? '#39424C', 'circle-stroke-width': stationStyle('stroke') } });
   add({ id: 'tv-line', type: 'line', source: 'transit', filter: alwaysFalseFilter(),
     layout: { 'visibility': 'none', 'line-cap': 'round', 'line-join': 'round' },
     paint: { 'line-color': ['get', 'color'], 'line-width': transit.width ?? 3 } });
   add({ id: 'tv-station', type: 'circle', source: 'transit-view-stations',
     filter: ['!=', ['get', 'isInterchange'], true],
     layout: { 'visibility': 'none' }, paint: {
-      'circle-radius': transitStationMetrics().radius, 'circle-color': transit.stationFill ?? '#fff',
-      'circle-stroke-color': transit.stationOutline ?? '#39424C', 'circle-stroke-width': transitStationMetrics().stroke } });
+      'circle-radius': stationStyle('radius'), 'circle-color': transit.stationFill ?? '#fff',
+      'circle-stroke-color': transit.stationOutline ?? '#39424C', 'circle-stroke-width': stationStyle('stroke') } });
   add({ id: 'tv-station-interchange', type: 'symbol', source: 'transit-view-stations',
     filter: ['==', ['get', 'isInterchange'], true], layout: {
       'visibility': 'none', 'icon-image': 'cmm-station-interchange',
-      'icon-size': transitStationMetrics().outer / 8,
+      'icon-size': stationStyle('iconSize'),
       'icon-allow-overlap': true, 'icon-ignore-placement': true, 'icon-padding': 0,
       'icon-pitch-alignment': 'viewport', 'icon-rotation-alignment': 'viewport' } });
   add({ id: 'pois', type: 'symbol', source: 'map-pois-displaced',
     filter: poiFilter(),
-    layout: { 'icon-image': ['get', 'iconKey'], 'icon-size': Number(token('poi').size ?? 18) / 24,
+    layout: { 'icon-image': ['get', 'iconKey'], 'icon-size': poiStyle(false),
       'symbol-sort-key': ['*', -1, ['get', 'priority']], 'symbol-z-order': 'source',
       'icon-allow-overlap': false, 'icon-ignore-placement': false, 'icon-padding': 4, 'icon-offset': stationIconOffset(...poiDimensions(false)), 'icon-rotation-alignment': 'viewport', 'icon-pitch-alignment': 'viewport' } });
   // 普通地图使用此图层；交通视图通过 tv-poi 管理图标。
   add({ id: 'transit-pois', type: 'symbol', source: 'map-pois-displaced',
     filter: transitPoiFilter(),
-    layout: { 'icon-image': ['get', 'iconKey'], 'icon-size': Number(token('poi').size ?? 18) / 24,
+    layout: { 'icon-image': ['get', 'iconKey'], 'icon-size': poiStyle(false),
       'symbol-sort-key': ['*', -1, ['get', 'priority']], 'symbol-z-order': 'source',
       'icon-allow-overlap': true, 'icon-ignore-placement': true, 'icon-padding': 0, 'icon-offset': stationIconOffset(...poiDimensions(false)), 'icon-rotation-alignment': 'viewport', 'icon-pitch-alignment': 'viewport' } });
   add({ id: 'tv-poi', type: 'symbol', source: 'transit-view-pois-displaced', filter: transitViewPoiFilter(),
     layout: { 'visibility': 'none', 'icon-image': ['get', 'iconKey'],
-      'icon-size': Number(contextOptions.facility_icon_size ?? 24) / 24,
+      'icon-size': poiStyle(true),
       'symbol-sort-key': ['*', -1, ['get', 'transitPriority']], 'symbol-z-order': 'source',
       'icon-allow-overlap': true, 'icon-ignore-placement': true, 'icon-padding': 0, 'icon-offset': stationIconOffset(...poiDimensions(true)), 'icon-rotation-alignment': 'viewport', 'icon-pitch-alignment': 'viewport' } });
   addBaseTextLayers();
@@ -1125,9 +1191,9 @@ function applyBaseColors(previous?: FullTheme): void {
   }
 }
 
-function applyArtworkTheme(theme: FullTheme): boolean {
+function applyArtworkTheme(theme: FullTheme, entering = false): boolean {
   const previous = currentTheme;
-  if (previous && JSON.stringify(basePaintOptions(previous)) === JSON.stringify(basePaintOptions(theme))) {
+  if (!entering && previous && JSON.stringify(basePaintOptions(previous)) === JSON.stringify(basePaintOptions(theme))) {
     currentTheme = theme;
     applyBaseColors(previous);
     return false;
@@ -1141,7 +1207,6 @@ function applyTheme(theme: FullTheme): void {
   currentTheme = theme; applyBaseColors();
   const set = (id: string, prop: string, value: any) => { if (map.getLayer(id) && value !== undefined) map.setPaintProperty(id, prop, value); };
   const filter = (id: string, value: any) => { if (map.getLayer(id)) map.setFilter(id, value); };
-  const layout = (id: string, prop: string, value: any) => { if (map.getLayer(id)) map.setLayoutProperty(id, prop, value); };
   for (const layer of roadLayers) {
     filter(layer.id, roadFilter(layer));
     if (layer.type === 'line') set(layer.id, 'line-width',
@@ -1161,24 +1226,13 @@ function applyTheme(theme: FullTheme): void {
   set('district-border', 'line-width', Number(token('district').width ?? 1));
   set('zone-border', 'line-width', Number(token('zone').width ?? 1));
   updateTrafficPaint();
-  const modeWidths = Object.entries(token('transit').typeWidths ?? {});
-  set('transit', 'line-width', modeWidths.length ? ['match', ['downcase', ['to-string', ['get', 'kind']]],
-    ...modeWidths.flatMap(([kind, width]) => [kind, Number(width)]),
-    Number(token('transit').width ?? 3)] : Number(token('transit').width ?? 3));
-  set('stations', 'circle-radius', mapStationMetrics().radius);
-  set('stations', 'circle-stroke-width', mapStationMetrics().stroke);
+  set('transit', 'line-width', transportLineWidth(false));
   for (const id of ['stations', 'tv-station']) {
     set(id, 'circle-color', token('transit').stationFill ?? '#fff');
     set(id, 'circle-stroke-color', token('transit').stationOutline ?? '#39424C');
   }
   set('tv-line', 'line-width', transportLineWidth());
-  set('tv-station', 'circle-radius', transitStationMetrics().radius);
-  set('tv-station', 'circle-stroke-width', transitStationMetrics().stroke);
-  layout('tv-station-interchange', 'icon-size', transitStationMetrics().outer / 8);
-  layout('pois', 'icon-size', Number(token('poi').size ?? 18) / 24);
-  layout('transit-pois', 'icon-size', Number(token('poi').size ?? 18) / 24);
   if (map.getLayer('pois')) map.setFilter('pois', poiFilter());
-  layout('tv-poi', 'icon-size', Number(contextOptions.facility_icon_size ?? 24) / 24);
   set('built-area', 'fill-opacity', token('built_area').opacity ?? 1);
   labelLayoutKey = '';
   const wm = token('watermark'); watermark.textContent = String(wm.text ?? 'CSLModernMap');
@@ -1192,9 +1246,11 @@ function applyTheme(theme: FullTheme): void {
       }
     } else {
       el.style.color = labelColor(item.labelType, item.featureColor);
-      el.style.fontSize = `${labelFontSize(item.labelType, item.transitStationName)}px`;
+      const base = baseFontSize(item.labelType, item.transitStationName);
+      const size = previewFontSize(base, map.getZoom());
+      el.style.fontSize = `${size}px`;
       el.style.fontFamily = labelFontFamily(item.labelType);
-      applyLabelHalo(el, item.labelType);
+      applyLabelHalo(el, item.labelType, base > 0 ? size / base : 0);
     } }
   applyContextStyling();
   navigation.refreshStyle();
@@ -1288,12 +1344,7 @@ function applyContextStyling(): void {
   set('tv-line', 'line-width', transportLineWidth());
   set('tv-line', 'line-color', ['get', 'color']);
   set('tv-station', 'circle-opacity', overlay ? 1 : 0);
-  set('tv-station', 'circle-radius', transitStationMetrics().radius);
-  set('tv-station', 'circle-stroke-width', transitStationMetrics().stroke);
-  if (map.getLayer('tv-station-interchange')) map.setLayoutProperty('tv-station-interchange', 'icon-size',
-    transitStationMetrics().outer / 8);
-  if (map.getLayer('tv-poi')) map.setLayoutProperty(
-    'tv-poi', 'icon-size', Number(contextOptions.facility_icon_size ?? 24) / 24);
+  updateStationSizes();
   for (const id of ['pois', 'transit-pois']) if (map.getLayer(id)) {
     const allowOverlap = token('poi').overlapAvoidance === false;
     map.setLayoutProperty(id, 'icon-allow-overlap', allowOverlap);
@@ -1308,7 +1359,7 @@ function applyContextStyling(): void {
   }
   if (map.getLayer('tv-line')) map.setFilter('tv-line', transitViewLineFilter());
   updateTransitViewLayout();
-  updatePoiOffsets(); updatePoiFilters();
+  updatePoiSizes(); updatePoiFilters();
   if (overlay) {
     map.setLayoutProperty('transit', 'visibility', 'none');
     map.setLayoutProperty('stations', 'visibility', 'none');
@@ -1622,19 +1673,12 @@ function resolvedLabelType(feature: any, group: string): string {
   if (group === 'poi') return 'poi';
   return String(feature.properties?.labelType ?? 'default').toLowerCase();
 }
-function labelFontSize(labelType: string, _transitStationName = false): number {
+function baseFontSize(labelType: string, transitStationName = false): number {
   const label = token('label');
-  if (_transitStationName && contextOptions.station_name_size != null) return Number(contextOptions.station_name_size);
-  const metrics = label.metrics;
-  if (metrics) {
-    if (labelType === 'stop') return resolveTextSize(metrics.station?.size ?? 11);
-    let size = resolveTextSize(metrics.sizes?.[labelType] ?? label.sizes?.[labelType] ?? 12);
-    return size;
-  }
-  const configured = Number(label.sizes?.[labelType] ?? label.size ?? 12);
-  return configured;
+  if (transitStationName && contextOptions.station_name_size != null) return Number(contextOptions.station_name_size);
+  if (label.metrics && labelType === 'stop') return Number(label.metrics.station?.size ?? 11);
+  return Number(label.metrics?.sizes?.[labelType] ?? label.sizes?.[labelType] ?? label.size ?? 12);
 }
-function resolveTextSize(value: number): number { return Number(value); }
 function labelColor(labelType: string, featureColor?: string): string {
   const label = token('label');
   if (labelType === 'poi' && label.colors?.poi) return String(label.colors.poi);
@@ -1667,7 +1711,7 @@ function labelStroke(labelType: string): {color: string; width: number} {
     if (labelType === 'stop') return {color: String(label.metrics.station?.stroke_fill ?? '#FFFFFF'),
       width: Number(label.metrics.station?.stroke_width ?? (label.metrics.station?.halo === false ? 0 : 1))};
     return {color: String(label.strokes?.[labelType]?.color ?? '#FFFFFF'),
-      width: resolveTextSize(label.metrics.strokeWidths?.[labelType] ?? 0)};
+      width: Number(label.metrics.strokeWidths?.[labelType] ?? 0)};
   }
   const strokes = (label.strokes ?? {}) as Record<string, any>;
   const entry = (strokes[labelType] ?? {}) as Record<string, any>;
@@ -1678,20 +1722,20 @@ function labelStroke(labelType: string): {color: string; width: number} {
   };
 }
 /** 把主题描边应用到元素；先描边后填字面，双倍线宽对应相同的外扩宽度。 */
-function applyLabelHalo(el: HTMLElement, labelType: string): void {
+function applyLabelHalo(el: HTMLElement, labelType: string, scale: number): void {
   const stroke = labelStroke(labelType);
   const width = labelHalo(labelType) ? stroke.width : 0;
   const label = token('label');
   const blur = Math.max(0, label.metrics && labelType !== 'poi'
-    ? resolveTextSize(label.metrics.strokeBlurs?.[labelType] ?? 0)
+    ? Number(label.metrics.strokeBlurs?.[labelType] ?? 0)
     : Number(label.strokes?.[labelType]?.blur ?? 0));
   el.classList.toggle('map-label-no-halo', width <= 0);
   el.classList.toggle('map-label-blurred-halo', width > 0 && blur > 0);
   el.dataset.haloText = el.textContent ?? '';
   if (width <= 0) return;
-  el.style.setProperty('--label-stroke-width', `${width * 2}px`);
+  el.style.setProperty('--label-stroke-width', `${width * scale * 2}px`);
   el.style.setProperty('--label-stroke-c', stroke.color);
-  el.style.setProperty('--label-stroke-blur', `${blur}px`);
+  el.style.setProperty('--label-stroke-blur', `${blur * scale}px`);
 }
 const baseTextLayers = [
   {id: 'district-labels', scope: 'district', labelType: 'district'},
@@ -1706,21 +1750,36 @@ function nativeTextFont(labelType: string): string[] {
   return asset ? [asset.family, 'Microsoft YaHei']
     : [...(bold ? [`${family} Bold`] : []), family, 'Microsoft YaHei'];
 }
-function nativeTextSize(labelType: string, stroke: 'width' | 'blur' | null = null): ExpressionSpecification {
+let zoomingSymbols = false;
+function nativeTextSize(labelType: string, stroke: 'width' | 'blur' | null = null): NumericStyle {
   const label = token('label');
-  const value = stroke ? label.metrics?.[stroke === 'width' ? 'strokeWidths' : 'strokeBlurs']?.[labelType]
-      ?? label.strokes?.[labelType]?.[stroke] ?? 0
-    : label.metrics?.sizes?.[labelType] ?? label.sizes?.[labelType] ?? label.size ?? 12;
-  const sizes = token('baseText').road?.by_level;
-  if (labelType === 'road' && sizes && stroke !== 'blur') {
-    const expression: unknown[] = ['match', ['get', 'roadLevel']];
-    for (const [level, config] of Object.entries(sizes)) expression.push(level,
-      Number((config as any)[stroke ? 'stroke_width' : 'size']));
-    expression.push(Number(value));
-    return expression as ExpressionSpecification;
+  const base = Number(label.metrics?.sizes?.[labelType] ?? label.sizes?.[labelType] ?? label.size ?? 12);
+  const halo = Number(label.metrics?.[stroke === 'width' ? 'strokeWidths' : 'strokeBlurs']?.[labelType]
+    ?? label.strokes?.[labelType]?.[stroke ?? 'width'] ?? 0);
+  const levels = labelType === 'road' ? token('baseText').road?.by_level : undefined;
+  function at(zoom: number): NumericStyle {
+    const metric = (size: number, outline: number) => stroke
+      ? (size > 0 ? outline * previewFontSize(size, zoom) / size : 0) : previewFontSize(size, zoom);
+    const fallback = metric(base, halo);
+    if (!levels || !Object.keys(levels).length) return fallback;
+    const expr: unknown[] = ['match', ['get', 'roadLevel']];
+    for (const [level, config] of Object.entries(levels as Record<string, {size: number; stroke_width: number}>))
+      expr.push(level, metric(config.size, stroke === 'width' ? config.stroke_width : halo));
+    return [...expr, fallback] as ExpressionSpecification;
   }
-  return ['literal', Number(value)];
+  return usesDistanceSizing() && (zoomingSymbols || stroke) ? distanceExpression(at) : at(map.getZoom());
 }
+// 跨级缩放可能复用另一层级的符号瓦片。手势时插值，结束后按实际视距重新放置。
+function updateZoomSymbols(moving: boolean): void {
+  zoomingSymbols = moving;
+  if (!usesDistanceSizing()) return;
+  updateStationSizes();
+  updatePoiSizes();
+  for (const {id, labelType} of baseTextLayers)
+    if (map.getLayer(id)) map.setLayoutProperty(id, 'text-size', nativeTextSize(labelType));
+}
+map.on('zoomstart', () => updateZoomSymbols(true));
+map.on('zoomend', () => updateZoomSymbols(false));
 function baseTextFilter(scope: string): ExpressionSpecification {
   const visibility = token('label').visibility ?? {};
   const filter: ExpressionSpecification = ['all', ['==', ['get', 'labelScope'], scope]];
@@ -1865,17 +1924,16 @@ function layoutLabels(): void {
   const overlapArea = (b: Box): number => [...new Set(keys(b).flatMap(k => cells.get(k) ?? []))]
     .reduce((sum, a) => sum + Math.max(0, Math.min(b[2], a[2])-Math.max(b[0], a[0]))
       * Math.max(0, Math.min(b[3], a[3])-Math.max(b[1], a[1])), 0);
-  const radius = Number(token('poi').size ?? 18)/2;
   for (const f of icons) { if (f.geometry.type !== 'Point') continue;
     const p = poiScreenPoint(f), r = poiDimensions(f.layer.id === 'tv-poi')[0] / 2;
     reserve([p.x-r, p.y-r, p.x+r, p.y+r]); }
-  const stationRadius = transitStationMetrics().outer;
+  const stationRadiusPx = stationRadius();
   const stationPoints: Point[] = [];
   if (overlay && contextOptions.stations !== false) {
     for (const feature of transitStationDisplayFeatures) {
       const p = map.project(feature.geometry.coordinates as [number, number]);
       stationPoints.push([p.x, p.y]);
-      reserve([p.x-stationRadius, p.y-stationRadius, p.x+stationRadius, p.y+stationRadius]);
+      reserve([p.x-stationRadiusPx, p.y-stationRadiusPx, p.x+stationRadiusPx, p.y+stationRadiusPx]);
     }
   }
   // 附属名称只跟随已显示图标；显式空图标保留纯文字。
@@ -1928,13 +1986,13 @@ function layoutLabels(): void {
     const labelType = stationSymbol ? 'stop' : resolvedLabelType(f, group);
     const transitStationName = overlay
       && (stationSymbol || f.properties?.owner === 'transit');
-    const fontSize = labelFontSize(labelType, transitStationName);
-    if (fontSize < (transitStationName ? 1 : 6)) continue;
+    const baseSize = baseFontSize(labelType, transitStationName);
+    const fontSize = previewFontSize(baseSize, map.getZoom());
+    if (baseSize < (transitStationName ? 1 : 6)) continue;
     const font = `${fontSize}px ${labelFontFamily(labelType)}`;
     const text = String(f.properties[field]);
     const width = measuredLabelWidth(text, font)+10, height = fontSize+8;
-    const gap = (stationSymbol ? stationRadius : overlay && f.properties?.owner === 'transit'
-      ? Number(contextOptions.facility_icon_size ?? 24) / 2 : radius) + 5;
+    const gap = (stationSymbol ? stationRadiusPx : poiSize(overlay && f.properties?.owner === 'transit', map.getZoom()) / 2) + 5;
     const offsets: [number, number][] = [
       [gap + width/2, 0], [-gap - width/2, 0],
       [0, -gap - height/2], [0, gap + height/2],
@@ -1947,6 +2005,7 @@ function layoutLabels(): void {
     const [offsetX, offsetY] = position;
     const box: Box = [p.x+offsetX-width/2, p.y+offsetY-height/2,
       p.x+offsetX+width/2, p.y+offsetY+height/2];
+    if (transitStationName && avoid && usesDistanceSizing() && map.getZoom() < distanceZooms[1] && overlaps(box)) continue;
     const featureColor = group === 'poi' ? String(f.properties?.labelColor ?? '') : undefined;
     reserve(box);
     const id = `poi:${f.properties.featureId ?? f.properties.poiId ?? f.id}`, iconOffset = poiScreenOffset(f);
@@ -1957,7 +2016,7 @@ function layoutLabels(): void {
     if (el.textContent !== text) el.textContent = text;
     el.style.color = labelColor(labelType, featureColor);
     el.style.fontSize = `${fontSize}px`; el.style.fontFamily = labelFontFamily(labelType);
-    applyLabelHalo(el, labelType);
+    applyLabelHalo(el, labelType, fontSize / baseSize);
   }
   const badge = token('transit').label ?? {};
   if (overlay && (contextOptions.line_label_enabled ?? badge.enabled) !== false
@@ -2029,6 +2088,27 @@ function layoutLabels(): void {
   }
   for (const [id, item] of markers) if (!kept.has(id)) { item.marker.remove(); markers.delete(id); }
 }
+// 手势期间只更新已有标注的尺寸，停止后再做测量和避让。
+map.on('zoom', () => {
+  if (!usesDistanceSizing() || !markers.size || artworkView.active) return;
+  let badge: ReturnType<typeof transitBadgeMetrics> | undefined;
+  for (const item of markers.values()) {
+    const el = item.marker.getElement();
+    if (item.group === 'transit-line') {
+      badge ??= transitBadgeMetrics();
+      if (el.classList.contains('map-transit-badge')) sizeTransitBadge(el, badge);
+      else {
+        el.style.gap = `${Math.max(1, Math.round(badge.size * .4)) / 2}px`;
+        for (const child of el.children) sizeTransitBadge(child as HTMLElement, badge);
+      }
+    } else {
+      const base = baseFontSize(item.labelType, item.transitStationName);
+      const size = previewFontSize(base, map.getZoom());
+      el.style.fontSize = `${size}px`;
+      applyLabelHalo(el, item.labelType, base > 0 ? size / base : 0);
+    }
+  }
+});
 map.on('move', scheduleLabels);
 map.on('moveend', scheduleLabels);
 if (QUALITY_SAMPLE) map.on('moveend', event => {
@@ -2104,8 +2184,10 @@ function embeddedProvider(): ResourceProvider {
     async image(url: string) {
       const dataUri = embeddedImage(url);
       if (dataUri === undefined) throw new Error(i18n.t("main_embeddedProvider_9985ab4875", { p0: url }));
-      const response = await fetch(dataUri);
-      return createImageBitmap(await response.blob());
+      const image = new Image();
+      image.src = dataUri;
+      await image.decode();
+      return createImageBitmap(image);
     },
     imageUrlFor(url: string) {
       const dataUri = embeddedImage(url);
@@ -2167,7 +2249,7 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number,
   };
   if (trace.enabled) map.on('sourcedata', sourceReady);
   try {
-    if (!QUALITY_SAMPLE && (needs('pois') || needs('transitViewPois'))) { [atlas, atlasIndex] = await Promise.all([provider.image(manifest.poiAtlas.image), provider.json(new URL(manifest.poiAtlas.index, manifestUrl))]); }
+    if (needs('pois') || needs('transitViewPois')) { [atlas, atlasIndex] = await Promise.all([provider.image(manifest.poiAtlas.image), provider.json(new URL(manifest.poiAtlas.index, manifestUrl))]); }
     if (needs('terrain') && manifest.sources.terrain) {
       terrainUrl = provider.imageUrlFor(manifest.sources.terrain);
     }
@@ -2380,9 +2462,10 @@ async function dispatch(command: PreviewCommand): Promise<void> {
         const missing = base.requiredSources.filter(source => !currentManifest?.sources[source] &&
           !(source === 'builtArea' && currentManifest?.surfaceFields?.builtArea));
         if (missing.length) throw new Error(`Artwork base sources are not ready: ${missing.join(', ')}`);
-        if (!artworkBrowseTheme && currentTheme) artworkBrowseTheme = structuredClone(currentTheme);
+        const entering = artworkBrowseTheme === null;
+        if (entering && currentTheme) artworkBrowseTheme = structuredClone(currentTheme);
         if (!artworkBrowseLayers && currentManifest) artworkBrowseLayers = {...currentManifest.layers};
-        const changed = applyArtworkTheme(base.theme as FullTheme);
+        const changed = applyArtworkTheme(base.theme as FullTheme, entering);
         for (const layer of Object.keys(groups)) {
           if (!artworkView.matches(artwork.documentEpoch, artwork.revision)) return false;
           if (!['transit', 'metro', 'poi', 'label', 'watermark'].includes(layer) &&
@@ -2437,8 +2520,11 @@ async function dispatch(command: PreviewCommand): Promise<void> {
     case 'setPreviewQuality': {
       try {
         const next = readPreviewQuality(command.quality);
+        const sizesChanged = next.textPercent !== previewQuality.textPercent || next.linePercent !== previewQuality.linePercent ||
+          next.iconPercent !== previewQuality.iconPercent;
         applyPreviewQuality(map, previewQuality, next);
         previewQuality = next;
+        if (sizesChanged && usesDistanceSizing() && currentTheme) applyTheme(currentTheme);
         postEvent('previewQualityApplied', {requestId: command.requestId, outcome: 'applied'});
       } catch (error) {
         postEvent('previewQualityApplied', {requestId: command.requestId, outcome: 'error',
@@ -2524,13 +2610,12 @@ window.cslPreview = { dispatch, artworkState: () => artworkView.snapshot(), expo
   if (!currentManifest || contextMode !== 'transit') return null;
   map.resize();
   const canvas = map.getCanvas();
-  const badge = document.querySelector<HTMLElement>('.map-transit-badge');
   return {viewport: [canvas.clientWidth, canvas.clientHeight],
-    radius: transitStationMetrics().outer,
-    stroke: Number(map.getPaintProperty('tv-station', 'circle-stroke-width')),
+    radius: baseStationMetrics().outer,
+    stroke: baseStationMetrics().stroke,
     fill: String(map.getPaintProperty('tv-station', 'circle-color')),
     outline: String(map.getPaintProperty('tv-station', 'circle-stroke-color')),
-    badge_size: badge ? parseFloat(getComputedStyle(badge).fontSize) : transitBadgeMetrics().size};
+    badge_size: baseBadgeSize(transitLabelStyle())};
 } };
 window.chrome?.webview?.addEventListener('message', event => { const command = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
   void dispatch(command as PreviewCommand); });

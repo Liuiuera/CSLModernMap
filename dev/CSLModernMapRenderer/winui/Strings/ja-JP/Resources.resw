@@ -4731,6 +4731,15 @@ Esc  現在のタスクをキャンセル</value>
   <data name="TransitLabelStyle_SolidSign" xml:space="preserve"><value>コンパクトな単色標識</value></data>
   <data name="TransitLabelStyle_FrameSign" xml:space="preserve"><value>細枠の標識</value></data>
   <data name="TransitLabelStyle_UnderlineSign" xml:space="preserve"><value>下部カラーバンド</value></data>
+  <data name="PreviewQuality_Far" xml:space="preserve"><value>遠</value></data>
+  <data name="PreviewQuality_Middle" xml:space="preserve"><value>中</value></data>
+  <data name="PreviewQuality_Near" xml:space="preserve"><value>近</value></data>
+  <data name="PreviewQuality_TextPercent" xml:space="preserve"><value>文字 (%)</value></data>
+  <data name="PreviewQuality_LinePercent" xml:space="preserve"><value>線幅 (%)</value></data>
+  <data name="PreviewQuality_Distance" xml:space="preserve"><value>表示距離ごとのサイズ</value></data>
+  <data name="PreviewQuality_DistanceGuide" xml:space="preserve"><value>中距離の値を調整すると、遠距離と近距離の値が自動で決まります。100% はテーマまたはビューの設定値です。</value></data>
+  <data name="PreviewQuality_IconPercent" xml:space="preserve"><value>アイコン (%)</value></data>
+  <data name="PreviewQuality_DistanceHelp" xml:space="preserve"><value>駅の大きさは線幅に連動します。遠距離の上限は文字 10 px、駅の直径 6 px、アイコン 12 px です。</value></data>
   <data name="OpenRecentExport.Content" xml:space="preserve"><value>最新のエクスポートを開く</value></data>
   <data name="OpenRecentExport_NoMaps" xml:space="preserve"><value>CMM のエクスポートが見つかりません。</value></data>
   <data name="OpenRecentExportHelp.Text" xml:space="preserve"><value>マップが自動で開かない場合は、ゲームに戻って「エクスポートして開く」をもう一度選ぶか、ここでエクスポートしたファイルを選んでください。</value></data>

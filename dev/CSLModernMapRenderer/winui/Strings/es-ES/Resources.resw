@@ -4731,6 +4731,15 @@ Mapa de la ciudad, mapa de transporte público y esquema de metro.
   <data name="TransitLabelStyle_SolidSign" xml:space="preserve"><value>Rótulo compacto de color</value></data>
   <data name="TransitLabelStyle_FrameSign" xml:space="preserve"><value>Señal con borde fino</value></data>
   <data name="TransitLabelStyle_UnderlineSign" xml:space="preserve"><value>Franja de color inferior</value></data>
+  <data name="PreviewQuality_Far" xml:space="preserve"><value>Lejos</value></data>
+  <data name="PreviewQuality_Middle" xml:space="preserve"><value>Medio</value></data>
+  <data name="PreviewQuality_Near" xml:space="preserve"><value>Cerca</value></data>
+  <data name="PreviewQuality_TextPercent" xml:space="preserve"><value>Texto (%)</value></data>
+  <data name="PreviewQuality_LinePercent" xml:space="preserve"><value>Líneas (%)</value></data>
+  <data name="PreviewQuality_Distance" xml:space="preserve"><value>Tamaño según el zoom</value></data>
+  <data name="PreviewQuality_DistanceGuide" xml:space="preserve"><value>Ajusta la distancia media. Las distancias lejana y cercana se calculan automáticamente. El 100 % usa el tamaño del tema o de la vista.</value></data>
+  <data name="PreviewQuality_IconPercent" xml:space="preserve"><value>Iconos (%)</value></data>
+  <data name="PreviewQuality_DistanceHelp" xml:space="preserve"><value>Las estaciones se ajustan al ancho de línea. En la vista lejana, el texto se limita a 10 px, el diámetro de estación a 6 px y los iconos a 12 px.</value></data>
   <data name="OpenRecentExport.Content" xml:space="preserve"><value>Abrir la última exportación</value></data>
   <data name="OpenRecentExport_NoMaps" xml:space="preserve"><value>No se encontraron exportaciones CMM.</value></data>
   <data name="OpenRecentExportHelp.Text" xml:space="preserve"><value>¿El mapa no se abrió automáticamente? Vuelve al juego y selecciona Exportar y abrir otra vez, o selecciona aquí el archivo exportado.</value></data>

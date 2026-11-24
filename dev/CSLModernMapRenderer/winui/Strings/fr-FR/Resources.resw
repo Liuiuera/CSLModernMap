@@ -4731,6 +4731,15 @@ Shaotang Shaoxiancao Codex</value>
   <data name="TransitLabelStyle_SolidSign" xml:space="preserve"><value>Aplat compact</value></data>
   <data name="TransitLabelStyle_FrameSign" xml:space="preserve"><value>Panneau à contour fin</value></data>
   <data name="TransitLabelStyle_UnderlineSign" xml:space="preserve"><value>Bande de couleur en bas</value></data>
+  <data name="PreviewQuality_Far" xml:space="preserve"><value>Loin</value></data>
+  <data name="PreviewQuality_Middle" xml:space="preserve"><value>Moyen</value></data>
+  <data name="PreviewQuality_Near" xml:space="preserve"><value>Près</value></data>
+  <data name="PreviewQuality_TextPercent" xml:space="preserve"><value>Texte (%)</value></data>
+  <data name="PreviewQuality_LinePercent" xml:space="preserve"><value>Traits (%)</value></data>
+  <data name="PreviewQuality_Distance" xml:space="preserve"><value>Taille selon le zoom</value></data>
+  <data name="PreviewQuality_DistanceGuide" xml:space="preserve"><value>Réglez la distance moyenne. Les valeurs de loin et de près sont calculées automatiquement. À 100 %, la taille suit le thème ou la vue.</value></data>
+  <data name="PreviewQuality_IconPercent" xml:space="preserve"><value>Icônes (%)</value></data>
+  <data name="PreviewQuality_DistanceHelp" xml:space="preserve"><value>Les stations suivent la largeur des lignes. De loin, le texte est limité à 10 px, le diamètre des stations à 6 px et les icônes à 12 px.</value></data>
   <data name="OpenRecentExport.Content" xml:space="preserve"><value>Ouvrir le dernier export</value></data>
   <data name="OpenRecentExport_NoMaps" xml:space="preserve"><value>Aucun export CMM trouvé.</value></data>
   <data name="OpenRecentExportHelp.Text" xml:space="preserve"><value>La carte ne s’est pas ouverte automatiquement ? Retournez dans le jeu et choisissez de nouveau Exporter et ouvrir, ou sélectionnez le fichier exporté ici.</value></data>

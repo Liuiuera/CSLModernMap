@@ -4731,6 +4731,15 @@ Mapy miast, mapy transportu publicznego i schematy metra.
   <data name="TransitLabelStyle_SolidSign" xml:space="preserve"><value>Zwarta etykieta z pełnym tłem</value></data>
   <data name="TransitLabelStyle_FrameSign" xml:space="preserve"><value>Tabliczka z cienką ramką</value></data>
   <data name="TransitLabelStyle_UnderlineSign" xml:space="preserve"><value>Dolny pasek koloru</value></data>
+  <data name="PreviewQuality_Far" xml:space="preserve"><value>Daleko</value></data>
+  <data name="PreviewQuality_Middle" xml:space="preserve"><value>Średnio</value></data>
+  <data name="PreviewQuality_Near" xml:space="preserve"><value>Blisko</value></data>
+  <data name="PreviewQuality_TextPercent" xml:space="preserve"><value>Tekst (%)</value></data>
+  <data name="PreviewQuality_LinePercent" xml:space="preserve"><value>Linie (%)</value></data>
+  <data name="PreviewQuality_Distance" xml:space="preserve"><value>Rozmiar według przybliżenia</value></data>
+  <data name="PreviewQuality_DistanceGuide" xml:space="preserve"><value>Ustaw wartości dla średniej odległości. Pozostałe są obliczane automatycznie. 100% odpowiada rozmiarowi z motywu lub widoku.</value></data>
+  <data name="PreviewQuality_IconPercent" xml:space="preserve"><value>Ikony (%)</value></data>
+  <data name="PreviewQuality_DistanceHelp" xml:space="preserve"><value>Stacje skalują się z szerokością linii. Z daleka tekst ma do 10 px, średnica stacji do 6 px, a ikony do 12 px.</value></data>
   <data name="OpenRecentExport.Content" xml:space="preserve"><value>Otwórz ostatni eksport</value></data>
   <data name="OpenRecentExport_NoMaps" xml:space="preserve"><value>Nie znaleziono eksportów CMM.</value></data>
   <data name="OpenRecentExportHelp.Text" xml:space="preserve"><value>Mapa nie otworzyła się automatycznie? Wróć do gry i wybierz ponownie Eksportuj i otwórz lub wybierz tutaj wyeksportowany plik.</value></data>

@@ -4,28 +4,32 @@ export type PreviewQuality = {
   pixelScale: number;
   lineDetail: 'standard' | 'fine';
   polygonDetail: 'standard' | 'fine';
+  textPercent: number;
+  linePercent: number;
+  iconPercent: number;
 };
 
 export const DEFAULT_PREVIEW_QUALITY: PreviewQuality = {
-  pixelScale: 1, lineDetail: 'standard', polygonDetail: 'standard',
+  pixelScale: 1, lineDetail: 'standard', polygonDetail: 'standard', textPercent: 100, linePercent: 100, iconPercent: 100,
 };
 
 export function htmlPreviewQuality(preset: string): PreviewQuality {
   switch (preset) {
     case 'smooth': return {...DEFAULT_PREVIEW_QUALITY, pixelScale: .75};
     case 'standard': return {...DEFAULT_PREVIEW_QUALITY};
-    case 'fine': return {pixelScale: 1.25, lineDetail: 'fine', polygonDetail: 'fine'};
+    case 'fine': return {...DEFAULT_PREVIEW_QUALITY, pixelScale: 1.25, lineDetail: 'fine', polygonDetail: 'fine'};
     default: throw new Error('Invalid HTML quality');
   }
 }
 
 export function readPreviewQuality(value: unknown): PreviewQuality {
   if (!value || typeof value !== 'object') throw new Error('Invalid preview quality settings');
-  const {pixelScale, lineDetail, polygonDetail} = value as PreviewQuality;
+  const {pixelScale, lineDetail, polygonDetail, textPercent = 100, linePercent = 100, iconPercent = 100} = value as PreviewQuality;
   if (![.75, 1, 1.25].includes(pixelScale) ||
-      !['standard', 'fine'].includes(lineDetail) || !['standard', 'fine'].includes(polygonDetail))
+      !['standard', 'fine'].includes(lineDetail) || !['standard', 'fine'].includes(polygonDetail) ||
+      ![textPercent, linePercent, iconPercent].every(n => Number.isInteger(n) && n >= 50 && n <= 200))
     throw new Error('Invalid preview quality settings');
-  return {pixelScale, lineDetail, polygonDetail};
+  return {pixelScale, lineDetail, polygonDetail, textPercent, linePercent, iconPercent};
 }
 
 export function previewTolerance(key: string, quality: PreviewQuality): number {
