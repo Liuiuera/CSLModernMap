@@ -233,7 +233,11 @@ class EngineServer:
                 self._output_failed = True
                 self.running = False
                 self.scheduler.wakeup.set()
-                print(f"WinUI protocol output disconnected: {error}", file=sys.stderr)
+                try:
+                    print(f"WinUI protocol output disconnected: {error}", file=sys.stderr)
+                except OSError as diagnostic_error:
+                    if diagnostic_error.errno not in (errno.EPIPE, errno.EINVAL):
+                        raise
 
     def event(self, name: str, payload: dict) -> None:
         self.send({"event": name, "payload": payload})

@@ -4411,6 +4411,7 @@ Esc  現在のタスクをキャンセル</value>
   <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>登録済み装飾物のアイコンと名前を表示します。建物や地物は引き続き表示されます。</value></data>
   <data name="MetroSettings_Reset" xml:space="preserve"><value>既定値に戻す</value></data>
   <data name="Preview_Failed" xml:space="preserve"><value>地図プレビューを読み込めませんでした</value></data>
+  <data name="Preview_Recovering" xml:space="preserve"><value>マッププレビューを復旧しています…</value></data>
   <data name="Preview_Slow" xml:space="preserve"><value>地図プレビューに時間がかかっています</value></data>
   <data name="Preview_Stopped" xml:space="preserve"><value>プレビューが動作していません</value></data>
   <data name="Preview_DataAvailable" xml:space="preserve"><value>地図データは読み込み済みです。テーマの選択と書き出しができます。</value></data>
@@ -4739,4 +4740,8 @@ Esc  現在のタスクをキャンセル</value>
   <data name="PreviewQuality_DistanceGuide" xml:space="preserve"><value>中距離の値を調整すると、遠距離と近距離の値が自動で決まります。100% はテーマまたはビューの設定値です。</value></data>
   <data name="PreviewQuality_IconPercent" xml:space="preserve"><value>アイコン (%)</value></data>
   <data name="PreviewQuality_DistanceHelp" xml:space="preserve"><value>駅の大きさは線幅に連動します。遠距離の上限は文字 10 px、駅の直径 6 px、アイコン 12 px です。</value></data>
+  <data name="OpenRecentExport.Content" xml:space="preserve"><value>最新のエクスポートを開く</value></data>
+  <data name="OpenRecentExport_NoMaps" xml:space="preserve"><value>CMM のエクスポートが見つかりません。</value></data>
+  <data name="OpenRecentExportHelp.Text" xml:space="preserve"><value>マップが自動で開かない場合は、ゲームに戻って「エクスポートして開く」をもう一度選ぶか、ここでエクスポートしたファイルを選んでください。</value></data>
+  <data name="OpenRecentExportFile.Content" xml:space="preserve"><value>エクスポートしたファイルを選択</value></data>
 </root>

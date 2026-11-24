@@ -40,23 +40,6 @@ _TRACK_FLAGS = {
     "CableCar": "cablecar",
 }
 
-# 类型别名归一化：Mod 导出的 TransportType 经此表映射到注册表键
-_TYPE_ALIASES = {
-    "Bus": "Bus",
-    "Trolleybus": "Trolleybus",
-    "Tram": "Tram",
-    "Metro": "Metro",
-    "Train": "Train",
-    "Monorail": "Monorail",
-    "CableCar": "CableCar",
-    "Ship": "Ship",          # 游戏内渡船（Mass Transit）
-    "Ferry": "Ferry",        # Mod 补充渡船类型
-    "Airplane": "Airplane",  # 飞艇（参考项目 Airplane → Blimp 线）
-    "Plane": "Airplane",
-    "Blimp": "Airplane",
-    "Helicopter": "Helicopter",
-}
-
 # 站点合并用的 Node.SubService 关键词（按类型）
 _STATION_SUBSRV = {
     "Bus": ("PublicTransportBus", "PublicTransportTrolleybus"),
@@ -198,9 +181,13 @@ TYPE_REGISTRY: Dict[str, TransitLineType] = {
 }
 
 
+_TYPE_ALIASES = {key.casefold(): key for key in TYPE_REGISTRY}
+_TYPE_ALIASES.update({"plane": "Airplane", "blimp": "Airplane", "cable car": "CableCar"})
+
+
 def normalize_type(raw: str) -> Optional[str]:
     """Mod 导出的 TransportType → 注册表键；未知类型返回 None。"""
-    return _TYPE_ALIASES.get(raw or "")
+    return _TYPE_ALIASES.get((raw or "").casefold())
 
 
 def type_def(key: str) -> Optional[TransitLineType]:

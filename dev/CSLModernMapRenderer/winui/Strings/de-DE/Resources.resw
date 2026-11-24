@@ -4411,6 +4411,7 @@ Stadtkarten, ÖPNV-Karten und Metropläne.
   <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>Symbole und Namen erfasster Dekorationen anzeigen. Gebäude und Kartenobjekte bleiben sichtbar.</value></data>
   <data name="MetroSettings_Reset" xml:space="preserve"><value>Standardwerte wiederherstellen</value></data>
   <data name="Preview_Failed" xml:space="preserve"><value>Kartenvorschau konnte nicht geladen werden</value></data>
+  <data name="Preview_Recovering" xml:space="preserve"><value>Kartenvorschau wird wiederhergestellt…</value></data>
   <data name="Preview_Slow" xml:space="preserve"><value>Kartenvorschau dauert länger</value></data>
   <data name="Preview_Stopped" xml:space="preserve"><value>Vorschau läuft nicht</value></data>
   <data name="Preview_DataAvailable" xml:space="preserve"><value>Kartendaten sind geladen. Sie können ein Thema wählen und exportieren.</value></data>
@@ -4739,4 +4740,8 @@ Stadtkarten, ÖPNV-Karten und Metropläne.
   <data name="PreviewQuality_DistanceGuide" xml:space="preserve"><value>Die mittlere Stufe ist einstellbar. Fern und nah werden automatisch berechnet. 100 % entspricht der Größe des Designs oder der Ansicht.</value></data>
   <data name="PreviewQuality_IconPercent" xml:space="preserve"><value>Symbole (%)</value></data>
   <data name="PreviewQuality_DistanceHelp" xml:space="preserve"><value>Stationen skalieren mit der Linienbreite. In der Fernansicht gelten maximal 10 px für Text, 6 px für den Stationsdurchmesser und 12 px für Symbole.</value></data>
+  <data name="OpenRecentExport.Content" xml:space="preserve"><value>Letzten Export öffnen</value></data>
+  <data name="OpenRecentExport_NoMaps" xml:space="preserve"><value>Keine CMM-Exporte gefunden.</value></data>
+  <data name="OpenRecentExportHelp.Text" xml:space="preserve"><value>Die Karte wurde nicht automatisch geöffnet? Wählen Sie im Spiel erneut „Exportieren und öffnen“ oder wählen Sie hier die exportierte Datei aus.</value></data>
+  <data name="OpenRecentExportFile.Content" xml:space="preserve"><value>Exportierte Datei auswählen</value></data>
 </root>

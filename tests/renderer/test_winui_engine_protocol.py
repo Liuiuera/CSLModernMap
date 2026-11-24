@@ -967,3 +967,60 @@ def test_rmp_generation_failure_resolves_request_and_releases_backend(monkeypatc
     finally:
         server._preview_files.cleanup()
         backend.close()
+
+
+def test_interchange_completion_uses_current_document_for_winui_request(tmp_path):
+    from cmm_test_factory import document_from_mapdata
+    from csmodernmap.data import MapData
+
+    backend = _guir_backend(tmp_path)
+    backend.document = document_from_mapdata(MapData())
+    server = EngineServer(io.StringIO(), io.StringIO(), backend)
+    try:
+        server._document_epoch = 4
+        server.backend.render_interchanges = lambda *_args, **_kwargs: True
+        events = []
+        server.event = lambda name, payload: events.append((name, payload))
+
+        def save(path, on_done):
+            on_done(path)
+            return True
+
+        server.backend.save_png_async = save
+        target = "城市 立交.png"
+        assert server.dispatch("renderInterchanges", {"target": target, "request": {}}) == {"started": True}
+        request_id = server._export.request_id
+        assert request_id
+
+        server._render_done(object(), 786, {}, 1.0, True, None, {})
+
+        assert not any(name == "error" for name, _ in events)
+        payload = next(payload for name, payload in events if name == "exportDone")
+        assert payload["requestId"] == request_id
+        assert payload["documentEpoch"] == 4
+        assert payload["format"] == "PNG"
+        assert payload["target"] == payload["path"] == target
+        assert server._export.request_id is None
+    finally:
+        backend.close()
+        server._preview_files.cleanup()
+
+
+def test_random_region_without_terrain_uses_entity_bounds():
+    from csmodernmap.cmm import DocumentSession, MapDocument, Metadata, NetworkNode, Origin, Terrain, Vec3
+    from csmodernmap.guir_backend import GuirBackend
+
+    document = MapDocument(
+        metadata=Metadata(Origin("cs1", "test", "Terrain-free")), sea_level=0,
+        nodes=[NetworkNode(1, Vec3(2100, 0, 3200)), NetworkNode(2, Vec3(2900, 0, 4100))],
+        networks=[], buildings=[], districts=[], stops=[], transit_lines=[], routes=[],
+        terrain=Terrain(),
+    )
+    backend = SimpleNamespace(session=DocumentSession(document))
+
+    bounds = GuirBackend.pick_random_preview_region(backend, scene="overall", seed="674")
+
+    assert bounds == GuirBackend.pick_random_preview_region(backend, scene="overall", seed="674")
+    x0, z0, x1, z1 = bounds
+    assert 2000 <= x0 < x1 <= 3000
+    assert 3100 <= z0 < z1 <= 4200

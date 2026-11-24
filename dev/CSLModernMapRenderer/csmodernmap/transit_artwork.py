@@ -60,10 +60,19 @@ def build_transit_artwork(job, document, *, document_epoch, revision,
                                   element_scale=artwork_job.derive_params['elementScale'])
     prepared = time.perf_counter()
 
+    def report(fraction, message, stage):
+        percent = fraction * 100
+        if getattr(progress, 'supports_stage_progress', False):
+            progress(percent, message, stage=stage)
+        else:
+            progress(percent, message)
+
     def base_tiles():
         capture = ArtworkCapture()
+        # 底图渲染器的图层进度与草稿阶段使用不同契约。
+        base_progress = None if progress is None else lambda fraction, message: report(fraction, message, 'layout')
         base, _base_renderer = _render_transit_base(request, document, session, size,
-                                                   bounds, progress=progress)
+                                                   bounds, progress=base_progress)
         # 底图按作品坐标冻结为独立资源；交通几何、站点、标签保持独立对象。
         # 分片带 8px 相邻内容，防止网页分数缩放及 PNG 下采样在片边露出白缝。
         for y in range(0, size[1], 512):
@@ -77,12 +86,13 @@ def build_transit_artwork(job, document, *, document_epoch, revision,
     def transport_objects():
         capture = ArtworkCapture()
         image = Image.new("RGBA", size)
+        transport_progress = None if progress is None else lambda fraction, message: report(fraction, message, 'transport')
         context = RenderContext(image, ImageDraw.Draw(image), transform, overlay.style,
             world_x0=bounds[0], world_z0=bounds[1], world_x1=bounds[2], world_z1=bounds[3],
             zoom=transform.zoom, final_zoom=transform.zoom, detail_mode=artwork_job.detail_mode,
             rotation=artwork_job.derive_params["rotation"], canvas_width=size[0], canvas_height=size[1],
             shared={"artwork_capture": capture}, session=session, render_job=artwork_job,
-            progress=progress)
+            progress=transport_progress)
         for layer in overlay._layers:
             layer.render(context, document)
         # 没有设施子图层候选时也必须交付已准备的徽章和站名。

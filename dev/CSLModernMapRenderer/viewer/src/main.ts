@@ -209,6 +209,8 @@ let transitStationDisplayFeatures: any[] = [];
 const registeredIcons = new Set<string>();
 let labelLayoutKey = '';
 let labelLayoutTime = -Infinity, labelTimer = 0, labelDirty = false;
+let retryingSymbolQuery = false;
+const symbolFadeDuration = 300;
 let poiAnchorInputs: unknown[] = [];
 const labelMeasure = document.createElement('canvas').getContext('2d')!;
 const labelWidths = new Map<string, {font: string; width: number}>();
@@ -260,7 +262,7 @@ function reportError(error: unknown, identity?: {sceneId?: string; revision?: nu
 const map: MapLibreMap = new maplibregl.Map({ container: 'map', style: { version: 8, sources: {},
   layers: [{ id: 'background', type: 'background', paint: { 'background-color': '#eef1f4' } }] },
   center: [0, 0], zoom: 12, minZoom: 8, maxZoom: 24, attributionControl: false,
-  renderWorldCopies: false, pitchWithRotate: false, dragRotate: false, maxPitch: 60,
+  renderWorldCopies: false, pitchWithRotate: false, dragRotate: false, maxPitch: 60, fadeDuration: symbolFadeDuration,
   localIdeographFontFamily: false, canvasContextAttributes: {antialias: true},
   pixelRatio: window.devicePixelRatio * previewQuality.pixelScale });
 window.addEventListener('resize', () => {
@@ -1842,15 +1844,16 @@ async function loadSceneFonts(manifest: SceneManifest, base: string): Promise<vo
 }
 function cancelLabelLayout(): void {
   window.clearTimeout(labelTimer); labelTimer = 0; labelDirty = false; labelLayoutTime = -Infinity;
+  retryingSymbolQuery = false;
 }
 function scheduleLabels(): void {
-  if (artworkView.active) return;
+  if (artworkView.active || !currentManifest || labelDirty) return;
   labelDirty = true;
-  if (labelTimer || !currentManifest) return;
-  const delay = Math.max(0, 250 - (performance.now() - labelLayoutTime));
+  const interval = retryingSymbolQuery ? symbolFadeDuration : 250;
+  const delay = Math.max(0, interval - (performance.now() - labelLayoutTime));
   labelTimer = window.setTimeout(() => {
     labelTimer = 0;
-    if (labelDirty) { labelDirty = false; layoutLabels(); }
+    map.triggerRepaint();
   }, delay);
 }
 function measuredLabelWidth(text: string, font: string): number {
@@ -1887,9 +1890,19 @@ function layoutLabels(): void {
        ordinary ? 'pois' : '']
     : currentManifest.layers.poi === false ? [] : ['pois', 'transit-pois'];
   const layers = renderedLayers.filter(id => id && map.getLayer(id));
-  // GeoJSON 更新及瓦片切换期间，符号放置结果可能仍引用上一版要素索引。
-  if (layers.some(id => !map.isSourceLoaded((map.getLayer(id) as {source: string}).source))) return;
-  const rendered = layers.length ? map.queryRenderedFeatures({layers}) : [];
+  let rendered: maplibregl.MapGeoJSONFeature[];
+  try {
+    rendered = layers.length ? map.queryRenderedFeatures({layers}) : [];
+  } catch (error) {
+    // 放置结果保留独立的要素索引；即使瓦片已加载，也可能在切换时读到失配的字典。
+    if (retryingSymbolQuery || !(error instanceof Error)
+      || !/^Out of bounds\. Index requested n=\d+ can't be >= this\._numberToString\.length \d+$/.test(error.message)
+      || !error.stack?.includes('lookupSymbolFeatures')) throw error;
+    retryingSymbolQuery = true;
+    scheduleLabels();
+    return;
+  }
+  retryingSymbolQuery = false;
   const seen = new Set<string>();
   const icons = rendered.filter(f => { const id = String(f.properties?.featureId ?? f.id); if (seen.has(id)) return false; seen.add(id); return true; });
   const labelVisibility = (token('label').visibility ?? {}) as Record<string, boolean>;
@@ -2103,7 +2116,12 @@ if (QUALITY_SAMPLE) map.on('moveend', event => {
     center: map.getCenter().toArray(), zoom: map.getZoom(), bearing: map.getBearing(), pitch: map.getPitch(),
   });
 });
-map.on('idle', scheduleLabels);
+map.on('idle', () => {
+  // idle 在瓦片加载和符号放置后触发。
+  if (!labelDirty || labelTimer) return;
+  labelDirty = false;
+  layoutLabels();
+});
 map.on('sourcedata', event => {
   if (event.isSourceLoaded && ['map-pois-displaced', 'transit-view-pois-displaced'].includes(event.sourceId)) scheduleLabels();
 });
