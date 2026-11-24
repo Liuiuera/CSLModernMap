@@ -4411,6 +4411,7 @@ Shaotang Shaoxiancao Codex</value>
   <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>Показывать значки и названия декораций из списка. Здания и объекты карты остаются видимыми.</value></data>
   <data name="MetroSettings_Reset" xml:space="preserve"><value>Восстановить по умолчанию</value></data>
   <data name="Preview_Failed" xml:space="preserve"><value>Не удалось загрузить предпросмотр</value></data>
+  <data name="Preview_Recovering" xml:space="preserve"><value>Восстановление предпросмотра карты…</value></data>
   <data name="Preview_Slow" xml:space="preserve"><value>Предпросмотр загружается дольше обычного</value></data>
   <data name="Preview_Stopped" xml:space="preserve"><value>Просмотрщик не запущен</value></data>
   <data name="Preview_DataAvailable" xml:space="preserve"><value>Данные карты загружены. Можно выбрать тему и экспортировать карту.</value></data>
@@ -4734,4 +4735,17 @@ Shaotang Shaoxiancao Codex</value>
   <data name="TransitLabelStyle_SolidSign" xml:space="preserve"><value>Компактная цветная плашка</value></data>
   <data name="TransitLabelStyle_FrameSign" xml:space="preserve"><value>Табличка с тонкой рамкой</value></data>
   <data name="TransitLabelStyle_UnderlineSign" xml:space="preserve"><value>Цветная полоса снизу</value></data>
+  <data name="PreviewQuality_Far" xml:space="preserve"><value>Далеко</value></data>
+  <data name="PreviewQuality_Middle" xml:space="preserve"><value>Средне</value></data>
+  <data name="PreviewQuality_Near" xml:space="preserve"><value>Близко</value></data>
+  <data name="PreviewQuality_TextPercent" xml:space="preserve"><value>Текст (%)</value></data>
+  <data name="PreviewQuality_LinePercent" xml:space="preserve"><value>Линии (%)</value></data>
+  <data name="PreviewQuality_Distance" xml:space="preserve"><value>Размеры по масштабу</value></data>
+  <data name="PreviewQuality_DistanceGuide" xml:space="preserve"><value>Настройте среднюю дистанцию. Размеры для дальней и ближней дистанций рассчитываются автоматически. 100% соответствует размеру темы или вида.</value></data>
+  <data name="PreviewQuality_IconPercent" xml:space="preserve"><value>Значки (%)</value></data>
+  <data name="PreviewQuality_DistanceHelp" xml:space="preserve"><value>Размер станций зависит от толщины линий. Вдали текст ограничен 10 px, диаметр станций — 6 px, значки — 12 px.</value></data>
+  <data name="OpenRecentExport.Content" xml:space="preserve"><value>Открыть последний экспорт</value></data>
+  <data name="OpenRecentExport_NoMaps" xml:space="preserve"><value>Экспортированные файлы CMM не найдены.</value></data>
+  <data name="OpenRecentExportHelp.Text" xml:space="preserve"><value>Карта не открылась автоматически? Вернитесь в игру и снова выберите «Экспортировать и открыть» или выберите экспортированный файл здесь.</value></data>
+  <data name="OpenRecentExportFile.Content" xml:space="preserve"><value>Выбрать экспортированный файл</value></data>
 </root>

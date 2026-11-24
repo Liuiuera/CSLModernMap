@@ -36,8 +36,15 @@ class WinuiWorkflows:
             request = dict(params.get("request") or {})
             if not 1 <= int(request.get("top_count", 3)) <= 24 or not 256 <= int(request.get("tile_size", 1024)) <= 4096:
                 raise ValueError(i18n.tr('ui.winui_workflows.dispatch.155590bba2'))
-            self.server._export.request_id = str(params.get("requestId") or uuid.uuid4().hex)
-            self.server._export.target = str(params["target"])
+            if "documentEpoch" in params:
+                self.server._require_document_epoch(params)
+            target = str(params["target"])
+            export = self.server._export
+            export.request_id = str(params.get("requestId") or uuid.uuid4().hex)
+            export.document_epoch = self.server._document_epoch
+            export.context = "normal"
+            export.format = "PNG"
+            export.requested_target = export.target = target
             try:
                 started = backend.render_interchanges(self.server.callbacks, request=request)
             except Exception:

@@ -136,7 +136,7 @@ public sealed partial class MainWindow
         ApplyRibbonColors();
     }
 
-    private Task QueueLayerActionAsync(Func<Task> write, Func<bool> current)
+    private Task QueueLayerActionAsync(Func<Task> write, Func<bool> current, int? previewInstance = null)
     {
         var previous = _layerWriteTail;
         async Task Execute()
@@ -146,8 +146,8 @@ public sealed partial class MainWindow
             await RunAsync(async () =>
             {
                 try { await write(); }
-                finally { if (current()) await RefreshSnapshotAsync(); }
-            });
+                finally { if (current()) await RefreshSnapshotCoreAsync(previewInstance); }
+            }, previewInstance);
         }
         return _layerWriteTail = Execute();
     }
@@ -171,8 +171,9 @@ public sealed partial class MainWindow
         return parents.EnumerateArray().All(parent => LayerVisible(parent.GetString()!));
     }
 
-    private async Task SetLayerVisibleAsync(string layer, bool enabled)
+    private async Task SetLayerVisibleAsync(string layer, bool enabled, int? previewInstance = null)
     {
+        bool Current() => previewInstance is null || IsCurrentPreview(previewInstance.Value);
         var showSatelliteGuidance = layer == "satellite" && enabled && !LayerVisible(layer);
         if (layer == "satellite")
             BeginMapTask(MapTaskPhase.Loading, UiLanguage.Text("Satellite_Composing"), canCancel: false, waitForScene: false);
@@ -181,7 +182,9 @@ public sealed partial class MainWindow
             int? maxTextureSize = null;
             if (layer == "satellite" && enabled)
                 maxTextureSize = await SatelliteTextureLimitAsync();
+            if (!Current()) return;
             var result = await _engine.RequestAsync("setLayerVisibility", new { key = layer, enabled, maxTextureSize });
+            if (!Current()) return;
             if (layer == "satellite")
             {
                 foreach (var item in result.GetProperty("mapLayers").EnumerateObject())
@@ -191,7 +194,7 @@ public sealed partial class MainWindow
         }
         finally
         {
-            if (layer == "satellite")
+            if (layer == "satellite" && Current())
             {
                 _mapTask.Reset(!string.IsNullOrEmpty(_sceneId));
                 SetDocumentEnabled(_snapshot.ValueKind == JsonValueKind.Object &&
@@ -201,8 +204,9 @@ public sealed partial class MainWindow
         }
         if (layer == "satellite")
         {
-            await RefreshSnapshotAsync();
-            if (showSatelliteGuidance) await ShowSatelliteGuidanceAsync();
+            if (!Current()) return;
+            await RefreshSnapshotCoreAsync(previewInstance);
+            if (showSatelliteGuidance && Current()) await ShowSatelliteGuidanceAsync();
             return;
         }
         SendViewer(LayerVisibilityCommand.Create(layer, enabled, _sceneId, _revision));

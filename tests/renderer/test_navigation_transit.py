@@ -5,7 +5,7 @@ from dataclasses import replace
 
 import pytest
 
-from csmodernmap.cmm import MapDocument
+from csmodernmap.cmm import MapDocument, RoadLevel
 from csmodernmap.services.navigation import clip_navigation, compile_navigation
 from csmodernmap.services.navigation.route import validate_route
 from test_navigation import document, node_router
@@ -111,6 +111,25 @@ def test_transit_walks_without_car_access_and_preserves_stop_order(node_router):
     validate_route(package, result)
 
 
+@pytest.mark.parametrize("has_street", [True, False])
+def test_highway_is_driveable_but_excluded_from_walking_and_station_access(has_street):
+    source = transit_document()
+    overpass = document([(13, 4, 5, True)], {4: [0, 12, 10], 5: [6000, 12, 10]})
+    overpass.networks[0].level = RoadLevel.HIGHWAY
+    source.nodes.extend(overpass.nodes)
+    source.networks = (source.networks if has_street else []) + overpass.networks
+
+    package = compile_navigation(source)
+    assert {edge["id"] for edge in package["edges"] if edge["sourceSegmentId"] == "13"} == {
+        "road:13:f", "road:13:b"}
+    geometries = package["transit"]["geometries"]
+    assert not any(ref.startswith("walk:13:") for ref in geometries)
+    if has_street:
+        assert geometries["access:21"] == [[100, 0, 0], [100, 0, 10]]
+    else:
+        assert not any(ref.startswith("access:") for ref in geometries)
+
+
 def test_clipped_transit_route_and_outside_network(node_router):
     package = compile_navigation(transit_document())
     route = plan(node_router, package)
@@ -140,6 +159,43 @@ def test_loop_wrap_keeps_one_boarding(node_router):
     assert is_boarding(rides[-1], rides[0]) is False
     result = plan(node_router, package, (5980, 0, 0), (20, 0, 0))
     assert result["boardings"] == 1
+    validate_route(package, result)
+
+
+@pytest.mark.parametrize("kind,stop_ids,return_name,can_return", [
+    ("METRO", [21, 22, 23], "Workshop METRO Line Elevated", True),
+    ("MONORAIL", [21, 22, 23], "Monorail Line", True),
+    ("METRO", [21, 22], "Metro Line", True),
+    ("METRO", [21, 22], None, False),
+    ("METRO", [21, 22], "Train Line", False),
+    ("BUS", [21, 22], "Trolleybus Line", False),
+    ("METRO", [21, 22, 21], None, True),
+])
+def test_cs1_transit_uses_directed_return_segment(node_router, kind, stop_ids, return_name, can_return):
+    data = transit_document().to_dict()
+    for node_id, stop in enumerate(data["stops"], start=1):
+        stop.update(network_node_id=node_id, kind=kind)
+    data["transit_lines"] = [dict(data["transit_lines"][0], kind=kind)]
+    data["routes"] = [dict(data["routes"][0], stop_ids=stop_ids)]
+    node_for = {stop["id"]: stop["network_node_id"] for stop in data["stops"]}
+    pairs = list(zip(stop_ids, stop_ids[1:]))
+    segments = [(a, b, kind.title() + " Line") for a, b in pairs]
+    if return_name:
+        segments.append((stop_ids[-1], stop_ids[0], return_name))
+    for ident, (a, b, name) in enumerate(segments, start=31):
+        data["networks"].append(dict(id=ident, name=name, kind="STOP_LINE", mode="GROUND",
+                                     start_id=node_for[a], end_id=node_for[b], width=0,
+                                     geometry={"points": []}))
+
+    package = compile_navigation(MapDocument.from_dict(data))
+    rides = [edge for edge in package["transit"]["edges"] if edge["mode"] == "RIDE"]
+    if can_return and stop_ids[0] != stop_ids[-1]:
+        pairs.append((stop_ids[-1], stop_ids[0]))
+    assert [(edge["fromNode"], edge["toNode"]) for edge in rides] == [
+        (f"stop:{a}", f"stop:{b}") for a, b in pairs]
+    last_x = 5980 if 23 in stop_ids else 2980
+    result = plan(node_router, package, (last_x, 0, 0), (20, 0, 0))
+    assert result["boardings"] == int(can_return)
     validate_route(package, result)
 
 
