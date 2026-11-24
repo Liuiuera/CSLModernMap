@@ -4749,4 +4749,8 @@ Esc  取消目前工作</value>
   <data name="PreviewQuality_ExportHint" xml:space="preserve"><value>請在匯出設定中選擇 HTML 畫質。</value></data>
   <data name="PreviewQuality_Current" xml:space="preserve"><value>目前選取項目</value></data>
   <data name="Export_HtmlQuality" xml:space="preserve"><value>HTML 畫質</value></data>
+  <data name="OpenRecentExport.Content" xml:space="preserve"><value>開啟最近匯出</value></data>
+  <data name="OpenRecentExport_NoMaps" xml:space="preserve"><value>找不到匯出的 CMM 地圖。</value></data>
+  <data name="OpenRecentExportHelp.Text" xml:space="preserve"><value>地圖沒有自動開啟？請回到遊戲再次點選「匯出並開啟」，或在此選擇匯出的檔案。</value></data>
+  <data name="OpenRecentExportFile.Content" xml:space="preserve"><value>選擇匯出的檔案</value></data>
 </root>

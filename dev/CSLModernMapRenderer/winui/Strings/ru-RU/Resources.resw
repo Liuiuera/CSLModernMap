@@ -4731,4 +4731,8 @@ Shaotang Shaoxiancao Codex</value>
   <data name="TransitLabelStyle_SolidSign" xml:space="preserve"><value>Компактная цветная плашка</value></data>
   <data name="TransitLabelStyle_FrameSign" xml:space="preserve"><value>Табличка с тонкой рамкой</value></data>
   <data name="TransitLabelStyle_UnderlineSign" xml:space="preserve"><value>Цветная полоса снизу</value></data>
+  <data name="OpenRecentExport.Content" xml:space="preserve"><value>Открыть последний экспорт</value></data>
+  <data name="OpenRecentExport_NoMaps" xml:space="preserve"><value>Экспортированные файлы CMM не найдены.</value></data>
+  <data name="OpenRecentExportHelp.Text" xml:space="preserve"><value>Карта не открылась автоматически? Вернитесь в игру и снова выберите «Экспортировать и открыть» или выберите экспортированный файл здесь.</value></data>
+  <data name="OpenRecentExportFile.Content" xml:space="preserve"><value>Выбрать экспортированный файл</value></data>
 </root>

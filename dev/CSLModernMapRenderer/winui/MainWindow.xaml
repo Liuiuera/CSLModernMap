@@ -89,6 +89,12 @@
                                    TextAlignment="Center" TextWrapping="Wrap" MaxWidth="520" />
                         <TextBlock x:Name="MapOverlayDetail" TextAlignment="Center" TextWrapping="Wrap" Visibility="Collapsed" />
                         <ProgressBar x:Name="Progress" Minimum="0" Maximum="100" Visibility="Collapsed" />
+                        <StackPanel x:Name="EmptyMapActions" Visibility="Collapsed" Spacing="12">
+                            <TextBlock x:Name="RecentExportDetails" TextAlignment="Center" TextWrapping="Wrap" />
+                            <Button x:Name="OpenRecentExport" x:Uid="OpenRecentExport" Visibility="Collapsed" HorizontalAlignment="Center" />
+                            <TextBlock x:Uid="OpenRecentExportHelp" TextAlignment="Center" TextWrapping="Wrap" />
+                            <Button x:Name="OpenRecentExportFile" x:Uid="OpenRecentExportFile" HorizontalAlignment="Center" />
+                        </StackPanel>
                         <Button x:Name="MapOverlayCancel" Visibility="Collapsed" HorizontalAlignment="Center">
                             <StackPanel Orientation="Horizontal" Spacing="6">
                                 <SymbolIcon Symbol="Cancel" />

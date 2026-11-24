@@ -4731,4 +4731,8 @@ Codex di Shao Tang, dessert d'erba</value>
   <data name="TransitLabelStyle_SolidSign" xml:space="preserve"><value>Targa compatta a tinta unita</value></data>
   <data name="TransitLabelStyle_FrameSign" xml:space="preserve"><value>Targa con bordo sottile</value></data>
   <data name="TransitLabelStyle_UnderlineSign" xml:space="preserve"><value>Fascia colorata in basso</value></data>
+  <data name="OpenRecentExport.Content" xml:space="preserve"><value>Apri l’ultima esportazione</value></data>
+  <data name="OpenRecentExport_NoMaps" xml:space="preserve"><value>Nessuna esportazione CMM trovata.</value></data>
+  <data name="OpenRecentExportHelp.Text" xml:space="preserve"><value>La mappa non si è aperta automaticamente? Torna al gioco e scegli di nuovo Esporta e apri, oppure seleziona qui il file esportato.</value></data>
+  <data name="OpenRecentExportFile.Content" xml:space="preserve"><value>Seleziona il file esportato</value></data>
 </root>

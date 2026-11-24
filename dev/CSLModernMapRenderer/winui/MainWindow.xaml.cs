@@ -89,6 +89,13 @@ public sealed partial class MainWindow : Window
         BuildWorkspaceCommands();
         ShowMapOverview();
         ShowInspectorHome();
+        OpenRecentExport.Click += async (_, _) => await RunAsync(OpenRecentExportAsync);
+        OpenRecentExportFile.Click += async (_, _) => await RunAsync(OpenCityAsync);
+        Activated += (_, args) =>
+        {
+            if (args.WindowActivationState != WindowActivationState.Deactivated)
+                _ = RunAsync(RefreshRecentExportAsync);
+        };
         MapOverlayCancel.Click += async (_, _) => await RunAsync(CancelCurrentTaskAsync);
         PreviewRetry.Click += async (_, _) => await RunAsync(RetryPreviewAsync);
         PreviewCancel.Click += (_, _) => DismissPreviewNotice();
@@ -407,6 +414,8 @@ public sealed partial class MainWindow : Window
             var file = _arguments.FirstOrDefault(arg => !arg.Equals("gui", StringComparison.OrdinalIgnoreCase));
             if (!string.IsNullOrWhiteSpace(file) && File.Exists(file))
                 await OpenPathAsync(file);
+            else
+                await RefreshRecentExportAsync();
             PrepareSimplifiedRibbonIntro(typeof(MainWindow).Assembly.GetName().Version!);
         }
         catch (Exception error)

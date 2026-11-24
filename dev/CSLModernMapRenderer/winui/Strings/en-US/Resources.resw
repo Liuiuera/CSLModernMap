@@ -4806,4 +4806,8 @@ Do you want to save your current changes?</value></data>
   <data name="Workflow_Reset" xml:space="preserve"><value>Reset theme editor and export choices</value></data>
   <data name="Export_DraftSettingsHelp" xml:space="preserve"><value>To adjust the extent, rotation, element size or icon density, open the Draft tab and check the result.</value></data>
   <data name="Export_GoToDraft" xml:space="preserve"><value>Go to draft</value></data>
+  <data name="OpenRecentExport.Content" xml:space="preserve"><value>Open latest export</value></data>
+  <data name="OpenRecentExport_NoMaps" xml:space="preserve"><value>No CMM exports found.</value></data>
+  <data name="OpenRecentExportHelp.Text" xml:space="preserve"><value>Did the map not open automatically? Return to the game and choose Export and Open again, or select the exported file here.</value></data>
+  <data name="OpenRecentExportFile.Content" xml:space="preserve"><value>Select exported file</value></data>
 </root>

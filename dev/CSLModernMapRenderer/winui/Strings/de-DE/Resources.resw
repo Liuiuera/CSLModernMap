@@ -4731,4 +4731,8 @@ Stadtkarten, ÖPNV-Karten und Metropläne.
   <data name="TransitLabelStyle_SolidSign" xml:space="preserve"><value>Kompakte Farbfläche</value></data>
   <data name="TransitLabelStyle_FrameSign" xml:space="preserve"><value>Schild mit feinem Rahmen</value></data>
   <data name="TransitLabelStyle_UnderlineSign" xml:space="preserve"><value>Farbstreifen unten</value></data>
+  <data name="OpenRecentExport.Content" xml:space="preserve"><value>Letzten Export öffnen</value></data>
+  <data name="OpenRecentExport_NoMaps" xml:space="preserve"><value>Keine CMM-Exporte gefunden.</value></data>
+  <data name="OpenRecentExportHelp.Text" xml:space="preserve"><value>Die Karte wurde nicht automatisch geöffnet? Wählen Sie im Spiel erneut „Exportieren und öffnen“ oder wählen Sie hier die exportierte Datei aus.</value></data>
+  <data name="OpenRecentExportFile.Content" xml:space="preserve"><value>Exportierte Datei auswählen</value></data>
 </root>

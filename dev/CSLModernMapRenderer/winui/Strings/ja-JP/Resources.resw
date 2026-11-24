@@ -4731,4 +4731,8 @@ Esc  現在のタスクをキャンセル</value>
   <data name="TransitLabelStyle_SolidSign" xml:space="preserve"><value>コンパクトな単色標識</value></data>
   <data name="TransitLabelStyle_FrameSign" xml:space="preserve"><value>細枠の標識</value></data>
   <data name="TransitLabelStyle_UnderlineSign" xml:space="preserve"><value>下部カラーバンド</value></data>
+  <data name="OpenRecentExport.Content" xml:space="preserve"><value>最新のエクスポートを開く</value></data>
+  <data name="OpenRecentExport_NoMaps" xml:space="preserve"><value>CMM のエクスポートが見つかりません。</value></data>
+  <data name="OpenRecentExportHelp.Text" xml:space="preserve"><value>マップが自動で開かない場合は、ゲームに戻って「エクスポートして開く」をもう一度選ぶか、ここでエクスポートしたファイルを選んでください。</value></data>
+  <data name="OpenRecentExportFile.Content" xml:space="preserve"><value>エクスポートしたファイルを選択</value></data>
 </root>
