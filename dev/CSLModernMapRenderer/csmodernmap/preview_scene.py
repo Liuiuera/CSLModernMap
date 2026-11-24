@@ -211,7 +211,7 @@ def _transit_label_style(data: dict) -> dict:
     size = _preview_pixel_size(view.get("label_size"), 15.0)
     from .transit_label_styles import PRESETS, badge_layout_options, palette, preview_icons
 
-    layout = badge_layout_options(label, view)
+    layout = badge_layout_options(view)
 
     return {
         "preset": str(view.get("label_preset", "split-sign")),

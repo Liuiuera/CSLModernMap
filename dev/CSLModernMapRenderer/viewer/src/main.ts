@@ -2026,7 +2026,7 @@ function layoutLabels(): void {
     const options = token('transit').labelStyle?.layout ?? {};
     const interval = Number(contextOptions.line_label_interval ?? options.repeat_interval ?? badge.repeatInterval ?? 600);
     const maximum = Math.max(1, Number(options.max_per_line ?? badge.maxPerLine ?? 4));
-    const step = Math.min(interval > 0 ? interval : Infinity, options.candidate_interval ?? 110);
+    const step = options.candidate_interval ?? 110;
     const limit = Math.max(maximum, options.candidate_limit ?? 72);
     const padding = Number(options.clearance_padding ?? 14);
     const font = `${badgeStyle.fontWeight} ${badgeSize}px "${badgeStyle.font}", "Microsoft YaHei", sans-serif`;
@@ -2066,7 +2066,8 @@ function layoutLabels(): void {
     const placed: Placed[] = [], counts: Record<string, number> = {};
     for (const [, , , , {index, box}] of ranked) {
       const [x, y, keys, members] = groups[index];
-      if (placement_reason(x, y, box, keys, options.min_gap ?? 350, maximum, placed, counts, overlaps) !== 'placed') continue;
+      if (placement_reason(x, y, box, keys, options.min_gap ?? 350, interval,
+        maximum, placed, counts, overlaps) !== 'placed') continue;
       reserve(box);
       const id = `badge:${index}:${JSON.stringify(keys)}`;
       kept.add(id);

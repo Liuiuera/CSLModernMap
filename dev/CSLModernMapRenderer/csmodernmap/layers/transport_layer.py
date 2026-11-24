@@ -1258,10 +1258,10 @@ class TransportLayer(Layer):
             elif self.transit_view:
                 if self._artwork is not None:
                     self._artwork.labels.append(lambda: self._draw_line_labels_view(
-                        mapdata, enabled, label_cfg, abstract, samples))
+                        mapdata, enabled, abstract, samples))
                 else:
                     self._draw_line_labels_view(
-                        mapdata, enabled, label_cfg, abstract, samples)
+                        mapdata, enabled, abstract, samples)
             else:
                 placed = []
                 for tr in self._render_lines:
@@ -2826,17 +2826,18 @@ class TransportLayer(Layer):
 
     # ---- 公共交通图：重合线路拼接标签（参考逆向 MergedLineNumbering） ----
 
-    def _draw_line_labels_view(self, mapdata, enabled: list, label_cfg: dict,
+    def _draw_line_labels_view(self, mapdata, enabled: list,
                                abstract: bool, samples: int) -> None:
         """按共享预设放置沿线标签，并横向拼接相近的线路标签。"""
         tv = self._tv
         layout_scale = self._pixel_aa
-        lv = badge_layout_options(label_cfg, tv)
+        lv = badge_layout_options(tv)
         lv['size'] = float(lv['size']) * self._pixel_aa
         min_gap = float(lv["min_gap"]) * layout_scale
+        repeat_interval = float(lv["repeat_interval"]) * layout_scale
         merge_dist = float(lv["merge_dist"]) * layout_scale
 
-        step = min(float(lv['repeat_interval']), float(lv['candidate_interval'])) * layout_scale
+        step = float(lv['candidate_interval']) * layout_scale
         candidate_limit = max(int(lv['candidate_limit']), int(lv['max_per_line']))
         # 收集所有启用线路的沿线候选点
         cands: list = []
@@ -2926,7 +2927,8 @@ class TransportLayer(Layer):
              gx, gy, bb, badge, uniq, kinds) in prepared:
             keys = [(name, rgb) for name, rgb in uniq]
             reason = transit_badge_layout.placement_reason(
-                gx, gy, bb, keys, min_gap, max_per_line, placed, label_counts, blocked)
+                gx, gy, bb, keys, min_gap, repeat_interval, max_per_line,
+                placed, label_counts, blocked)
             if reason != 'placed':
                 if self._artwork:
                     self._artwork.diagnostics['badges'].append({'box': bb, 'reason': reason})
