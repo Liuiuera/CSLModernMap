@@ -22,11 +22,18 @@ struct FieldUpdate {
     let refresh: Bool
     let epoch: Int
     let previewScene: PreviewSceneIdentity?
+    let context: String
 }
 
 extension InterfaceController {
     var previewIdentity: PreviewSceneIdentity { PreviewSceneIdentity(epoch: epoch, scene: sceneID, revision: revision) }
-    var previewControlsEnabled: Bool { cityDraft == nil && engineReady && !terminating && !busy && context == "map" && !sceneID.isEmpty && snapshot["hasDocument"] as? Bool == true }
+    private var previewControlsAvailable: Bool {
+        cityDraft == nil && engineReady && !terminating && !busy && !sceneID.isEmpty && snapshot["hasDocument"] as? Bool == true
+    }
+    var previewControlsEnabled: Bool { context == "map" && previewControlsAvailable }
+    var previewRotationEnabled: Bool {
+        (context == "map" || context == "transit") && previewControlsAvailable && !staticMode && mapPlaceholder.state == .ready
+    }
 
     func sendPreviewUiState() {
         guard viewer.ready else { return }
@@ -34,7 +41,7 @@ extension InterfaceController {
             ($0.rawValue, defaultVisibility($0.title))
         })
         viewer.send(["type": "setPreviewUiState", "layers": viewerLayers(), "symbolLayers": symbols,
-                     "enabled": previewControlsEnabled, "guideAvailable": !sceneID.isEmpty,
+                     "enabled": previewControlsEnabled, "rotationEnabled": previewRotationEnabled, "guideAvailable": !sceneID.isEmpty,
                      "pendingLayers": previewLayerWrites.filter { $0.value == previewIdentity }.map { $0.key }.sorted(),
                      "sceneId": sceneID, "revision": revision])
     }
@@ -53,7 +60,7 @@ extension InterfaceController {
     }
 
     func requestMapRotation(_ frame: JSON) {
-        guard previewControlsEnabled, !staticMode, mapPlaceholder.state == .ready,
+        guard previewRotationEnabled,
               textValue(frame["sceneId"]) == sceneID, frame["revision"] as? Int == revision,
               let delta = frame["delta"] as? Int, delta == -90 || delta == 90 else { return }
         update("setOutputOption", ["key": "rotation", "rotationDelta": delta], refresh: false, previewScene: previewIdentity)

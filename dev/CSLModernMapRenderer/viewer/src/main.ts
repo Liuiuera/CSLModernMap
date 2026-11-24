@@ -86,7 +86,7 @@ type PreviewCommand = { type: string; sceneId?: string; revision?: number; manif
   text?: string; language?: string; rotation?: number; worldBounds?: [number, number, number, number];
   featureId?: string; selection?: any; locate?: boolean; data?: GeoJSON.FeatureCollection;
   layers?: Record<string, boolean>; symbolLayers?: Record<string, boolean>;
-  enabled?: boolean; guideAvailable?: boolean; pendingLayers?: string[];
+  enabled?: boolean; rotationEnabled?: boolean; guideAvailable?: boolean; pendingLayers?: string[];
   immersive?: boolean };
 // 单文件导出：整份场景内联数据的结构（与 web_export_v2.py 的 payload 对应）
 type EmbeddedPayload = {
@@ -2599,10 +2599,9 @@ async function dispatch(command: PreviewCommand): Promise<void> {
       }
       if (currentManifest && command.layers) Object.assign(currentManifest.layers, command.layers);
       quickSymbolLayers = command.symbolLayers;
-      if (typeof command.enabled === 'boolean') {
-        quickLayersEnabled = command.enabled;
-        previewControls.setRotationAvailability(command.enabled);
-      }
+      if (typeof command.enabled === 'boolean') quickLayersEnabled = command.enabled;
+      const rotationEnabled = command.rotationEnabled ?? command.enabled;
+      if (typeof rotationEnabled === 'boolean') previewControls.setRotationAvailability(rotationEnabled);
       updateQuickLayers(true, command.pendingLayers);
       previewControls.setGuideAvailable(command.guideAvailable !== false); break;
     case 'showMapInteractionGuide': previewControls.showGuide(true); break;

@@ -386,8 +386,8 @@ let layerGroups: [(String, [(String, String)])] = [
         if page == 0 {
             groups = [
                 group("城市", [largeButton("打开城市…", "folder"), menuButton(localized("城市"), entries: [("最近打开", nil), ("城市概览与建筑列表", nil)])]),
+                group("快速创建", createButtons()),
                 group("地图主题", [currentThemeButton(), largeButton("编辑主题", "paintpalette"), largeButton("创建地图草稿", "pencil.and.outline")]),
-                group("快速创建", [menuButton(localized("创建"), entries: [("公共交通图", nil), ("地铁示意图", nil), ("随机特写", nil)])]),
                 group("输出", [largeButton("导出…", "square.and.arrow.up"), largeButton("导出网页…", "globe", #selector(showWebExport))])]
         } else if page == 1 {
             groups = [group("地图主题", [currentThemeButton()]), group("主题设置", [largeButton("编辑主题", "paintpalette")]),
@@ -607,7 +607,8 @@ let layerGroups: [(String, [(String, String)])] = [
     }
 
     func showMapState(_ state: PreviewPlaceholder.State) {
-        let reveal = state == .ready && mapPlaceholder.state != .ready && !staticMode && context != "metro"
+        let readinessChanged = (state == .ready) != (mapPlaceholder.state == .ready)
+        let reveal = state == .ready && readinessChanged && !staticMode && context != "metro"
         mapPlaceholder.show(state)
         // Keep WebGL visible until its first frame.
         viewer.view.layer?.opacity = state == .ready ? 1 : 0
@@ -622,6 +623,7 @@ let layerGroups: [(String, [(String, String)])] = [
         }
         mapPlaceholder.isHidden = context == "metro" || state == .ready
         refreshStatusVisibility()
+        if readinessChanged { sendPreviewUiState() }
     }
 
     @objc func showThemes(_ sender: NSButton) {

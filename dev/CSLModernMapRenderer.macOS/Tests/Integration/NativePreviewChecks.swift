@@ -52,6 +52,16 @@ import WebKit
         window.setContentSize(NSSize(width: 1100, height: 700))
         defer { window.setContentSize(size) }
         try await settleLayout()
+        for title in ["公共交通图", "地铁示意图"] {
+            let button = owner.commandButtons.first { $0.identifier?.rawValue == title }
+            guard let button, let scroll = owner.band.subviews.first as? NSScrollView else {
+                throw AppFailure(message: "Home band is missing the \(title) button")
+            }
+            try requireLayout(button.isEnabled && !button.isHiddenOrHasHiddenAncestor
+                              && scroll.contentView.bounds.contains(scroll.contentView.convert(button.bounds, from: button)),
+                              "\(title) is directly accessible in the narrow Home band")
+        }
+        checks.append("native-home-transit-and-metro-buttons-visible")
 
         let controlsWork = try await owner.viewer.view.evaluateJavaScript("""
         (() => {
@@ -81,16 +91,36 @@ import WebKit
         try requireLayout(controlsWork && owner.mapPlaceholder.state == .ready, "map toolbar collapse preserves the preview and restores focus")
         checks.append("webkit-narrow-toolbar-collapse-focus-and-zoom-buttons")
 
-        let original = object(owner.snapshot["output"])["rotation"] as? Int ?? 0
-        for (index, expected) in [(1, (original + 180) % 360), (0, original)] {
-            _ = try await owner.viewer.view.evaluateJavaScript("""
-            (() => { const button = document.querySelectorAll('.preview-rotation button')[\(index)]; button.click(); button.click(); return true; })()
-            """)
-            try await Task.sleep(nanoseconds: 100_000_000)
-            try await settleSettingsWrites()
-            try requireLayout(object(owner.snapshot["output"])["rotation"] as? Int == expected, "map rotation applies both clicks in order")
+        func checkRotation(_ mode: String) async throws {
+            let original = object(owner.snapshot["output"])["rotation"] as? Int ?? 0
+            for (index, expected) in [(1, (original + 180) % 360), (0, original)] {
+                let clicked = try await owner.viewer.view.evaluateJavaScript("""
+                (() => {
+                    const button = document.querySelectorAll('.preview-rotation button')[\(index)];
+                    if (!button || button.disabled) return false;
+                    button.click(); button.click();
+                    return true;
+                })()
+                """) as? Bool ?? false
+                try requireLayout(clicked, "\(mode) rotation buttons are enabled")
+                try await Task.sleep(nanoseconds: 100_000_000)
+                try await settleSettingsWrites()
+                try requireLayout(object(owner.snapshot["output"])["rotation"] as? Int == expected, "\(mode) rotation applies both clicks in order")
+                if let bearing = try await owner.viewer.view.evaluateJavaScript("window.__CSL_NATIVE_CAMERA__?.().bearing ?? null") as? Double {
+                    try requireLayout((Int(bearing.rounded()) + expected + 360) % 360 == 0, "\(mode) rotation updates the WebKit camera")
+                }
+            }
         }
+        try await checkRotation("map")
         checks.append("webkit-map-toolbar-rotation-roundtrip")
+
+        owner.context = "transit"
+        try await owner.applySceneState(waitForPaint: true)
+        try requireLayout(!owner.previewControlsEnabled, "transit rotation keeps map layer shortcuts disabled")
+        try await checkRotation("transit")
+        owner.context = "map"
+        try await owner.applySceneState(waitForPaint: true)
+        checks.append("webkit-transit-toolbar-rotation-roundtrip")
     }
 
     func inspectPreviewIntegration() async throws {

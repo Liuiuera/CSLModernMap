@@ -301,7 +301,7 @@ extension InterfaceController {
     }
     func update(_ method: String, _ params: JSON, refresh: Bool = true, previewScene: PreviewSceneIdentity? = nil) {
         guard engineReady else { return }
-        fieldQueue.append(FieldUpdate(method: method, params: params, refresh: refresh, epoch: epoch, previewScene: previewScene))
+        fieldQueue.append(FieldUpdate(method: method, params: params, refresh: refresh, epoch: epoch, previewScene: previewScene, context: context))
         drainFieldQueue()
     }
     func drainFieldQueue() {
@@ -327,13 +327,13 @@ extension InterfaceController {
                     completedPreviewWrites.append((textValue(write.params["key"]), identity))
                 }
                 guard write.epoch == epoch else { continue }
-                if let identity = write.previewScene, identity != previewIdentity || context != "map" { continue }
+                if let identity = write.previewScene, identity != previewIdentity || write.context != context { continue }
                 var request = write.params; request["documentEpoch"] = write.epoch
                 do {
                     let rotationDelta = request.removeValue(forKey: "rotationDelta") as? Int
                     if let rotationDelta {
                         let state = try await engine.request("getSnapshot")
-                        guard write.previewScene == previewIdentity, context == "map", !staticMode else { continue }
+                        guard write.previewScene == previewIdentity, write.context == context, previewRotationEnabled else { continue }
                         let angle = object(state["output"])["rotation"] as? Int ?? 0
                         request["value"] = (angle + rotationDelta + 360) % 360
                     }
