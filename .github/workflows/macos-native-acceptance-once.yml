@@ -1,4 +1,4 @@
-name: macOS native acceptance (one-off)
+name: macOS candidate acceptance (one-off)
 on:
   push:
     branches: [acceptance/macos-native-20261124]
@@ -28,58 +28,87 @@ jobs:
           cache-dependency-path: |
             dev/CSLModernMapRenderer/viewer/package-lock.json
             dev/third_party/rmp/package-lock.json
-      - name: Install dependencies and build debug viewer
+      - name: Install locked relocatable Intel runtime and dependencies
         run: |
-          python -m pip install -r dev/CSLModernMapRenderer.macOS/requirements-macos13.lock
-          (cd dev/CSLModernMapRenderer/viewer && npm ci && npm run typecheck && VITE_CSLMM_NATIVE_CHECKS=1 npm run build)
+          python -m pip install uv==0.12.16
+          uv python install --no-bin --install-dir "$RUNNER_TEMP/cmm-runtime" 3.13.15
+          runtime="$RUNNER_TEMP/cmm-runtime/cpython-3.13.15-macos-x86_64-none"
+          test -x "$runtime/bin/python3.13"
+          cat "$runtime/BUILD"
+          "$runtime/bin/python3.13" -m venv "$RUNNER_TEMP/cmm-env"
+          "$RUNNER_TEMP/cmm-env/bin/python" -m pip install -r dev/CSLModernMapRenderer.macOS/requirements-macos13.lock
+      - name: Build normal viewer and RMP
+        run: |
+          (cd dev/CSLModernMapRenderer/viewer && npm ci && npm run typecheck && npm run build)
           (cd dev/third_party/rmp && npm ci && npm run build:embed)
-          python dev/CSLModernMapRenderer.macOS/scripts/generate-winui-strings.py
-          python dev/CSLModernMapRenderer.macOS/scripts/generate-native-localization.py
-      - name: Build AppKit debug application
+          "$RUNNER_TEMP/cmm-env/bin/python" dev/CSLModernMapRenderer.macOS/scripts/generate-winui-strings.py
+          "$RUNNER_TEMP/cmm-env/bin/python" dev/CSLModernMapRenderer.macOS/scripts/generate-native-localization.py
+      - name: Build native test application
         run: |
-          export CSLMM_ENGINE_PYTHON="$(command -v python)"
+          export CSLMM_ENGINE_PYTHON="$RUNNER_TEMP/cmm-env/bin/python"
           export CSLMM_WORKSPACE_DIR="$RUNNER_TEMP"
           bash dev/CSLModernMapRenderer.macOS/scripts/build-dev.sh --with-checks
-      - name: Execute compiled native App against repository map
+      - name: Run actual native RMP acceptance
         run: |
+          echo "The hosted Intel runner loses the map's WebGL context. Map camera and draft runtime acceptance is reserved for a physical Mac, not declared passed here."
           python - <<'PY'
           import json, os, pathlib, shutil, subprocess, sys
-          root = pathlib.Path(os.environ['RUNNER_TEMP']) / 'native-acceptance'
-          root.mkdir()
+          out = pathlib.Path(os.environ['RUNNER_TEMP']) / 'native-rmp-acceptance'
+          out.mkdir()
           app = pathlib.Path(os.environ['RUNNER_TEMP']) / 'outputs/native-checks/CSLModernMap Renderer.app/Contents/MacOS/CSLModernMap'
-          source = pathlib.Path('tests/renderer/fixtures/basan_rings.mmap').resolve()
-          probes = [('camera', ['--camera-probe'])]
-          results = {}
-          for name, flags in probes:
-              out = root / name
-              out.mkdir()
-              city = out / source.name
-              shutil.copy2(source, city)
-              data = out / 'profile'
-              data.mkdir()
-              env = dict(os.environ, CSLMM_NATIVE_DATA_DIR=str(data), CSLMM_USER_DATA_DIR=str(data))
-              print(f'Starting {name}', flush=True)
-              with (out / 'app.log').open('w', encoding='utf-8') as log:
-                  try:
-                      completed = subprocess.run([str(app), '--smoke', str(city), str(out), *flags], env=env, stdout=log, stderr=subprocess.STDOUT, timeout=300)
-                      state = f'exit {completed.returncode}'
-                  except subprocess.TimeoutExpired:
-                      state = 'timeout'
-              report = out / 'native-smoke.json'
-              parsed = json.loads(report.read_text()) if report.is_file() else {}
-              results[name] = {'success': bool(parsed.get('success')), 'state': state, 'checks': parsed.get('checks', []), 'error': parsed.get('error', 'No native report')}
-              print(json.dumps(results[name], ensure_ascii=False), flush=True)
-              print((out / 'app.log').read_text(errors='replace')[-24000:], flush=True)
-              if report.is_file():
-                  print('Native report diagnostics:', str(parsed.get('diagnostics', ''))[-12000:], flush=True)
-          (root / 'summary.json').write_text(json.dumps(results, ensure_ascii=False, indent=2))
-          sys.exit(0 if all(r['success'] for r in results.values()) else 1)
+          city = out / 'basan_rings.mmap'
+          shutil.copy2('tests/renderer/fixtures/basan_rings.mmap', city)
+          data = out / 'profile'
+          data.mkdir()
+          env = dict(os.environ, CSLMM_NATIVE_DATA_DIR=str(data), CSLMM_USER_DATA_DIR=str(data))
+          with (out / 'app.log').open('w', encoding='utf-8') as log:
+              subprocess.run([str(app), '--smoke', str(city), str(out), '--settings-probe', '--fgh-probe'], env=env, stdout=log, stderr=subprocess.STDOUT, timeout=300, check=True)
+          report = json.loads((out / 'native-smoke.json').read_text())
+          print(json.dumps({k: report.get(k) for k in ('success','checks','error')}, ensure_ascii=False), flush=True)
+          if not report.get('success'):
+              print((out / 'app.log').read_text(errors='replace')[-12000:])
+              sys.exit(1)
           PY
-      - name: Upload real application logs and outputs
+      - name: Package macOS 13 Intel candidate (production app)
+        run: |
+          native=dev/CSLModernMapRenderer.macOS
+          export CSLMM_ENGINE_PYTHON="$RUNNER_TEMP/cmm-env/bin/python"
+          export CSLMM_WORKSPACE_DIR="$RUNNER_TEMP"
+          out="$RUNNER_TEMP/cmm-candidate"
+          mkdir -p "$out"
+          export CSLMM_NATIVE_APP_DIR="$out/CSLModernMap Renderer.app"
+          runtime="$RUNNER_TEMP/cmm-runtime/cpython-3.13.15-macos-x86_64-none"
+          packages="$RUNNER_TEMP/cmm-env/lib/python3.13/site-packages"
+          "$CSLMM_ENGINE_PYTHON" "$native/scripts/package-app.py" --app-dir "$CSLMM_NATIVE_APP_DIR" --runtime "$runtime" --site-packages "$packages"
+          "$CSLMM_ENGINE_PYTHON" "$native/scripts/audit-bundle.py" "$CSLMM_NATIVE_APP_DIR" --output "$out/audit.json"
+          engine="$CSLMM_NATIVE_APP_DIR/Contents/Resources/engine"
+          export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1
+          export CSLMM_NATIVE_DATA_DIR="$RUNNER_TEMP/cmm-package-data"
+          unset PYTHONPATH PYTHONHOME
+          "$engine/python/bin/python3.13" "$engine/project/dev/CSLModernMapRenderer/main.py" self-check --report "$out/self-check.json"
+          codesign --verify --deep --strict "$CSLMM_NATIVE_APP_DIR"
+          bash "$native/scripts/make-dmg.sh"
+          printf 'Product source: c12025ea99ad2064826d83aaa99752926db8a442\nAcceptance workflow commit: %s\nIntel x86_64, macOS 13+, ad-hoc signature, not notarized\nPhysical Mac WebGL acceptance still required\n' "$GITHUB_SHA" > "$out/build-info.txt"
+      - name: Upload native acceptance logs
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
-          name: native-acceptance
-          path: ${{ runner.temp }}/native-acceptance/
+          name: native-rmp-acceptance
+          path: ${{ runner.temp }}/native-rmp-acceptance/
           if-no-files-found: warn
+          retention-days: 7
+      - name: Upload candidate DMG and verification evidence
+        if: success()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: CSLModernMap-6.7.4m-c12025e-macOS13-x86_64-candidate
+          path: |
+            ${{ runner.temp }}/cmm-candidate/*.dmg
+            ${{ runner.temp }}/cmm-candidate/*.dmg.sha256
+            ${{ runner.temp }}/cmm-candidate/audit.json
+            ${{ runner.temp }}/cmm-candidate/self-check.json
+            ${{ runner.temp }}/cmm-candidate/app-build-manifest.json
+            ${{ runner.temp }}/cmm-candidate/build-info.txt
+          if-no-files-found: error
+          compression-level: 0
           retention-days: 7
