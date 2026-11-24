@@ -53,7 +53,8 @@ import WebKit
         let projectURL = URL(fileURLWithPath: source)
         let project = object(try JSONSerialization.jsonObject(with: Data(contentsOf: projectURL)))
         try await owner.openMetro()
-        try await owner.rmp.load(project, path: projectURL, provenance: ["cityName": "蒙德莱因"])
+        let generationInputs = owner.metroInputFingerprint()
+        try await owner.rmp.load(project, path: projectURL, provenance: ["cityName": "蒙德莱因"], settingsFingerprint: generationInputs)
         owner.window.makeKeyAndOrderFront(nil)
         let rmp = owner.rmp
         let web = rmp.host.view
@@ -110,9 +111,44 @@ import WebKit
         try await waitForRmp("Native Cancel Placement must clear a facility") { !rmp.placementPending }
         checks.append("rmp-macos-compact-toolbar-and-native-facility-picker")
 
+        try requireLayout(owner.metroGenerateButton?.isDescendant(of: owner.leftContent) == true,
+                          "regeneration stays in the generation sidebar")
+        owner.dismissStatus()
+        let beforeLegend = try await rmpGraph()
+        let revisionBeforeLegend = rmp.revision
+        owner.runRmpTool(.legend)
+        try await waitForRmp("Legend enters placement") { rmp.placementPending }
+        _ = try await web.evaluateJavaScript("""
+            (() => {
+                const canvas = document.getElementById('canvas');
+                const bounds = canvas.getBoundingClientRect();
+                canvas.dispatchEvent(new PointerEvent('pointerdown', {bubbles:true, button:0,
+                    clientX:bounds.x + bounds.width / 2, clientY:bounds.y + bounds.height / 2}));
+                return true;
+            })()
+            """)
+        try await waitForRmp("Placing the legend publishes a graph change") { rmp.revision > revisionBeforeLegend && !rmp.placing }
+        try requireLayout(rmp.dirty && owner.window.isDocumentEdited && owner.status.isHiddenOrHasHiddenAncestor,
+                          "placing a legend marks the project unsaved without a canvas status")
+        _ = try await rmp.request("undo")
+        try await waitForRmp("Undo restores the graph before the legend") { try await rmpGraph() == beforeLegend }
+
         let beforeRotation = try await rmpGraph()
         owner.runRmpTool(.rotateRight)
         try await waitForRmp("Rotation must change the graph") { try await rmpGraph() != beforeRotation }
+        try requireLayout(owner.status.isHiddenOrHasHiddenAncestor && owner.metroInputFingerprint() == generationInputs
+                          && owner.metroGenerateButton?.title == localized("重新生成示意图"),
+                          "canvas edits leave the regeneration status alone")
+        let originalOptions = owner.snapshot["metroOptions"]
+        var changedOptions = object(originalOptions)
+        changedOptions["spacing"] = -1
+        owner.snapshot["metroOptions"] = changedOptions
+        owner.refreshMetroSettingsStatus()
+        try requireLayout(owner.metroGenerateButton?.title == localized("应用设置并重新生成"),
+                          "changing a generation input prompts regeneration in the sidebar")
+        owner.snapshot["metroOptions"] = originalOptions
+        owner.refreshMetroSettingsStatus()
+        checks.append("rmp-graph-edits-and-generation-notices-stay-separate")
         let rotated = try await rmpGraph()
         owner.window.makeFirstResponder(web); try await rmp.focusEditor()
         try requireLayout(rmp.webHasFocus, "WebKit has the native first responder for the canvas")

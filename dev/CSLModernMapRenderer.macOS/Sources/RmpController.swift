@@ -116,7 +116,6 @@ import CryptoKit
         if incoming == projectID {
             if type == "changed" {
                 revision = frame["revision"] as? Int ?? revision; dirty = true
-                owner.showStatus(localized("地铁项目有未保存修改"))
                 owner.window.isDocumentEdited = true
             }
             if type == "editorState" { state = object(frame["state"]); owner.updateCommands() }
@@ -155,6 +154,7 @@ import CryptoKit
         try await initialize(); show()
         let taskID = UUID().uuidString
         generationID = taskID; generationEpoch = documentEpoch
+        owner.refreshMetroSettingsStatus()
         owner.showStatus(localized("正在生成地铁项目…"), kind: .progress)
         do {
             let draft: JSON = try await withCheckedThrowingContinuation { continuation in
@@ -186,7 +186,7 @@ import CryptoKit
             provenance["nativeSettingsFingerprint"] = settingsFingerprint
             provenance["diagnostics"] = object(draft["diagnostics"])
             try await load(object(draft["project"]), path: nil, provenance: provenance, settingsFingerprint: settingsFingerprint)
-            owner.showStatus(localized("地铁项目已生成，请保存项目"))
+            owner.showStatus(localized("地铁项目已生成，请保存项目"), kind: .ready)
         } catch is CancellationError {
             owner.showStatus(localized(hasProject ? "生成已取消，原工程已保留" : "任务已取消"), kind: .ready)
             throw CancellationError()
@@ -289,7 +289,7 @@ import CryptoKit
         try await initialize()
         try await load(project, path: url, provenance: provenance,
                        settingsFingerprint: provenance["nativeSettingsFingerprint"] as? String ?? owner.metroInputFingerprint())
-        owner.showStatus(localized("已打开：") + url.lastPathComponent)
+        owner.showStatus(localized("已打开：") + url.lastPathComponent, kind: .ready)
     }
     static func hash(_ data: Data) -> String { SHA256.hash(data: data).map { String(format: "%02X", $0) }.joined() }
     func save(asNew: Bool) async throws -> Bool {
@@ -330,7 +330,7 @@ import CryptoKit
         }
         path = destination; metadata = provenance; dirty = revision != savedRevision
         owner.window.isDocumentEdited = dirty
-        owner.showStatus(localized("已保存：") + destination.lastPathComponent)
+        owner.showStatus(localized("已保存：") + destination.lastPathComponent, kind: .ready)
         return !dirty
     }
     var exportCityName: String {

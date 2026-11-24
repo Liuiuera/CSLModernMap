@@ -77,9 +77,14 @@ extension InterfaceController {
         prepareSidebar(pageKey); selectedLayer = nil
         let form = FormView(); form.sectionState = sectionState; transitForm = form
         panelHeader(leftHeader, title: metro ? "地铁生成设置" : "公共交通设置")
-        let navigation = metro ? nil : settingsNavigation(SidebarLayout.transitPages, selected: sidebarNavigation.transitPage) { [weak self] page in
-            guard let self = self, self.context == "transit" else { return }
-            self.sidebarNavigation.transitPage = page; self.renderTransitSettings()
+        let navigation: NSView
+        if metro {
+            navigation = metroGenerationControls()
+        } else {
+            navigation = settingsNavigation(SidebarLayout.transitPages, selected: sidebarNavigation.transitPage) { [weak self] page in
+                guard let self = self, self.context == "transit" else { return }
+                self.sidebarNavigation.transitPage = page; self.renderTransitSettings()
+            }
         }
         installSidebarForm(form, navigation: navigation)
         transitSelectionSummary = nil
@@ -214,8 +219,20 @@ extension InterfaceController {
             form.section("线路与交通类型", key: "transit.lines.selection"); addLineSelection(form)
         }
     }
+    private func metroGenerationControls() -> NSView {
+        let status = settingsHelp("")
+        let generate = ActionButton("生成示意图") { [weak self] in
+            guard let self, self.context == "metro", self.canGenerateMetro() else { return }
+            self.run { try await self.rmp.generate() }
+        }
+        metroSettingsStatus = status
+        metroGenerateButton = generate
+        let controls = column([status, generate], gap: 6)
+        status.widthAnchor.constraint(equalTo: controls.widthAnchor).isActive = true
+        generate.widthAnchor.constraint(lessThanOrEqualTo: controls.widthAnchor).isActive = true
+        return controls
+    }
     func buildMetroSettings(_ form: FormView) {
-        form.add(settingsHelp("生成设置只影响重新生成；外观可在地图编辑器中调整。"))
         form.section("交通类型与线路", key: "metro.generation.selection"); addLineSelection(form)
         form.section("站点合并", key: "metro.generation.merge")
         addTransitField(form, key: "merge_enabled", title: "合并相邻站点")

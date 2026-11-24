@@ -197,14 +197,15 @@ extension InterfaceController {
     }
     func refreshMetroSettingsStatus() {
         guard context == "metro" else { return }
+        let settingsChanged = metroAppliedFingerprint.map { $0 != metroInputFingerprint() } ?? false
         let text: String
-        if rmp.busy { text = "正在生成地铁项目…" }
+        if !rmp.generationID.isEmpty { text = "正在生成地铁项目…" }
         else if (object(object(snapshot["lineSelection"])["metro"])["selected"] as? Int ?? 0) == 0 { text = "请选择至少一种交通类型和一条可用线路。" }
-        else if let fingerprint = metroAppliedFingerprint, fingerprint != metroInputFingerprint() { text = "设置已修改，当前工程尚未重新生成。" }
+        else if settingsChanged { text = "设置已修改，当前工程尚未重新生成。" }
         else if rmp.hasProject { text = "生成设置只影响重新生成；外观可在地图编辑器中调整。" }
         else { text = "调整生成输入后，应用到示意图。" }
         metroSettingsStatus?.stringValue = localized(text)
-        metroGenerateButton?.title = localized(metroAppliedFingerprint != nil && metroAppliedFingerprint != metroInputFingerprint() ? "应用设置并重新生成" : rmp.hasProject ? "重新生成示意图" : "生成示意图")
+        metroGenerateButton?.title = localized(settingsChanged ? "应用设置并重新生成" : rmp.hasProject ? "重新生成示意图" : "生成示意图")
         metroGenerateButton?.isEnabled = canGenerateMetro()
     }
 }

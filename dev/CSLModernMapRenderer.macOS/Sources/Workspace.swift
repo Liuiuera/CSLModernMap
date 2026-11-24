@@ -541,19 +541,12 @@ let layerGroups: [(String, [(String, String)])] = [
             statusSpinner.heightAnchor.constraint(equalToConstant: 18)
         ])
         let message = row([statusSpinner, statusIcon, status, statusDetails, statusCancel], gap: 9)
-        let generate = ActionButton("生成示意图") { [weak self] in
-            guard let self, self.canGenerateMetro() else { return }
-            self.run { try await self.rmp.generate() }
-        }
-        metroGenerateButton = generate
-        metroSettingsStatus = settingsHelp("")
-        let metro = row([metroSettingsStatus!, generate])
         let cancelPlacement = ActionButton(RmpNativeCommand.cancel.rawValue) { [weak self] in self?.runRmpTool(.cancel) }
         rmpPlacementLabel.font = .systemFont(ofSize: 12)
         rmpPlacementLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         let placement = row([rmpPlacementLabel, cancelPlacement])
         placement.isHidden = true
-        let contents = column([message, metro, placement], gap: 5)
+        let contents = column([message, placement], gap: 5)
         contents.edgeInsets = NSEdgeInsets(top: 10, left: 20, bottom: 10, right: 20)
         pin(contents, in: tools)
         tools.translatesAutoresizingMaskIntoConstraints = false
@@ -593,13 +586,12 @@ let layerGroups: [(String, [(String, String)])] = [
         statusDetails.isHidden = lastFailureDetails == nil || status.stringValue != localized("操作未完成")
         statusCancel.isHidden = rmp.busy && context == "metro"
             ? !rmp.canCancelGeneration : !busy || statusKind == .ready
-        metroGenerateButton?.superview?.isHidden = context != "metro"
         let placementActive = rmpToolEnabled(.cancel)
         rmpPlacementLabel.superview?.isHidden = !placementActive
         if placementActive { rmpPlacementLabel.stringValue = rmp.placementHint }
         status.superview?.isHidden = statusDismissed
-        let canvasHidden = context != "metro" && (statusDismissed
-            || (mapPlaceholder.state != .ready && statusDetails.isHidden && pendingCityEditors == nil && cityDraft?.working != true))
+        let canvasHidden = context == "metro" ? statusDismissed && !placementActive : statusDismissed
+            || (mapPlaceholder.state != .ready && statusDetails.isHidden && pendingCityEditors == nil && cityDraft?.working != true)
         canvasTools?.isHidden = canvasHidden
         let showSpinner = statusKind == .progress && !statusDismissed && !canvasHidden
         if statusSpinner.isHidden == showSpinner {
