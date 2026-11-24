@@ -10,14 +10,15 @@ internal static class ExportDesign
 {
     internal static Border Card(UIElement content) => Surface(content, "CardBackgroundFillColorDefaultBrush");
 
-    internal static Border Divider(UIElement content)
+    internal static Border Divider(UIElement content, double topPadding = 12)
     {
         var border = (Border)XamlReader.Load("""
             <Border xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                BorderThickness="0,1,0,0" Padding="0,12,0,0" />
+                BorderThickness="0,1,0,0" />
             """);
         border.Child = content;
+        border.Padding = new Thickness(0, topPadding, 0, 0);
         return border;
     }
 

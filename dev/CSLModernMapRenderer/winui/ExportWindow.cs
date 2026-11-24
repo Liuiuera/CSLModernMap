@@ -11,6 +11,7 @@ namespace CSLModernMapWinUI;
 
 internal sealed partial class ExportWindow
 {
+    private const double OutputFieldColumnBreakpoint = 500;
     private readonly EditorWindow _window;
     private readonly EngineClient _engine;
     private readonly Func<Task>? _editMapSettings;
@@ -30,7 +31,8 @@ internal sealed partial class ExportWindow
     private readonly ComboBox _format = new() { Header = UiLanguage.Text("ExportWindow__format_7A1260E05E"), HorizontalAlignment = HorizontalAlignment.Right, Width = 180 };
     private readonly NumberBox _size = new() { Header = UiLanguage.Text("ExportWindow__size_0FE38504DD"), Minimum = 512, Maximum = 32768, SmallChange = 256 };
     private ElementScaleInput? _elementScale;
-    private readonly ComboBox _rotation = new() { Header = UiLanguage.Text("ExportWindow__rotation_144514527B"), ItemsSource = new[] { 0, 90, 180, 270 } };
+    private readonly ComboBox _rotation = new() { Header = UiLanguage.Text("ExportWindow__rotation_144514527B"),
+        ItemsSource = new[] { 0, 90, 180, 270 }, HorizontalAlignment = HorizontalAlignment.Stretch };
     private readonly ComboBox _htmlQuality = new() { Header = UiLanguage.Text("Export_HtmlQuality"),
         Name = "ExportHtmlQuality", HorizontalAlignment = HorizontalAlignment.Stretch };
     private readonly CheckBox _pngInternalBuildings = new() { Content = UiLanguage.Text("Poi_PngInternalBuildings") };
@@ -85,6 +87,8 @@ internal sealed partial class ExportWindow
         JsonElement? draftState = null)
     {
         _window = new(UiLanguage.Text("ExportWindow_View_456F962F93"), "file-export", 1000, 760, translucent: true, owner: owner, modal: owner is not null) { ActionsRightAligned = true };
+        _window.Root.Padding = new Thickness(16, 12, 16, 12);
+        _window.Root.RowSpacing = 8;
         _engine = engine;
         _exportRmp = exportRmp;
         _quickPng = quickPng;
@@ -161,15 +165,15 @@ internal sealed partial class ExportWindow
         _copyResult.Click += async (_, _) => await CopyResultAsync();
         _openResultFolder.Click += async (_, _) => await OpenResultFolderAsync();
 
-        var title = new StackPanel { Spacing = 4 };
+        var title = new StackPanel { Spacing = 2 };
         title.Children.Add(_contextTitle);
         title.Children.Add(_contextDesc);
         ExportDesign.Secondary(_contextDesc);
-        var header = new StackPanel { Spacing = 12 };
+        var header = new StackPanel { Spacing = 8 };
         header.Children.Add(title);
         header.Children.Add(_gameRunningNotice);
         header.Children.Add(BuildFormatChoices());
-        var settings = new StackPanel { Spacing = 12 };
+        var settings = new StackPanel { Spacing = 6 };
 
         var extent = Section(settings, UiLanguage.Text("ExportWindow_View_000E18C870"));
         _extentSection = (Control)settings.Children.Last();
@@ -179,12 +183,15 @@ internal sealed partial class ExportWindow
         _imageSection = (Control)settings.Children.Last();
         if (_exportRmp is null) BuildSizePresets(image, metro);
         else BuildRmpExportControls(image);
-        if (!metro && !draftState.HasValue) {
+        if (!metro && !draftState.HasValue)
+        {
             _elementScale = new ElementScaleInput(_size, _output["elementScale"]?.GetValue<double>() ?? _size.Value / 4096);
             _elementScale.Input.Header = UiLanguage.Text("CityEditor_ElementSize") + " (%)";
             _editable.Add(_elementScale.Input);
-            image.Children.Insert(image.Children.IndexOf(_dimensions) + 1, _elementScale);
-            _elementScale.Input.LostFocus += async (_, _) => {
+            image.Children.Add(new ResponsiveFieldGrid(OutputFieldColumnBreakpoint,
+                _elementScale, BuildDensityControls(profile.GetProperty("poiProfile"))));
+            _elementScale.Input.LostFocus += async (_, _) =>
+            {
                 if (_elementScale.IsValid) await CommitOutputOptionAsync("elementScale", _elementScale.ElementScale);
             };
         }
@@ -195,11 +202,11 @@ internal sealed partial class ExportWindow
         var imageHeader = new Grid { ColumnSpacing = 12 };
         imageHeader.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
         imageHeader.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-        var imageTitle = image.Children[0]; image.Children.RemoveAt(0);
+        var imageTitle = (FrameworkElement)image.Children[0]; image.Children.RemoveAt(0);
+        imageTitle.VerticalAlignment = VerticalAlignment.Center;
         imageHeader.Children.Add(imageTitle);
         Grid.SetColumn(_resetOutputButton, 1); imageHeader.Children.Add(_resetOutputButton);
         image.Children.Insert(0, imageHeader);
-        if (!metro && !draftState.HasValue) BuildDensityControls(image, profile.GetProperty("poiProfile"));
 
         var poiContent = new StackPanel { Spacing = 8 };
         _pngSection = new ContentControl { Content = ExportDesign.Divider(poiContent),
@@ -226,27 +233,11 @@ internal sealed partial class ExportWindow
         RefreshSnapshotSummary(profile, layers);
         var resultPane = BuildStatePane(profile);
 
-        _resultActions.Children.Add(_viewResult);
-        _resultActions.Children.Add(_copyResult);
-        _resultActions.Children.Add(_openResultFolder);
-        _resultActions.SizeChanged += (_, _) =>
-            _resultActions.Orientation = _resultActions.ActualWidth >= 480 ? Orientation.Horizontal : Orientation.Vertical;
-
-        var footer = new StackPanel { Spacing = 8 };
-        footer.Children.Add(_beforeExportNotice);
-        footer.Children.Add(_progress);
-        footer.Children.Add(_feedback);
-        footer.Children.Add(_resultActions);
-        var body = new Grid { RowSpacing = 12 };
-        body.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-        body.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
-        body.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-        body.Children.Add(header);
-        var workspace = BuildWorkspace(settings, resultPane);
-        Grid.SetRow(workspace, 1); body.Children.Add(workspace);
-        var footerBorder = ExportDesign.Divider(footer);
-        Grid.SetRow(footerBorder, 2); body.Children.Add(footerBorder);
-        _window.SetBody(body);
+        var content = new StackPanel { Spacing = 8 };
+        content.Children.Add(header);
+        content.Children.Add(BuildWorkspace(settings, resultPane));
+        _window.SetBody(new ScrollViewer { Content = content, HorizontalContentAlignment = HorizontalAlignment.Stretch,
+            HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled, VerticalScrollBarVisibility = ScrollBarVisibility.Auto });
         _editable.AddRange([_format, _size, _rotation, _htmlQuality, _autoOpen,
             _useActionRegion, _chooseRange, _resetOutputButton]);
         if (metro)
@@ -261,19 +252,7 @@ internal sealed partial class ExportWindow
         }, manageEnabled: false);
         _start = _window.AddAction(UiLanguage.Text("ExportWindow_View_76420433F2"), StartAsync, manageEnabled: false);
         _start.Style = (Style)Application.Current.Resources["AccentButtonStyle"];
-        _autoOpen.VerticalAlignment = VerticalAlignment.Center;
-        _autoOpen.HorizontalAlignment = HorizontalAlignment.Left;
-        void ArrangeAutoOpen()
-        {
-            var compact = _window.Root.ActualWidth < 480;
-            if (compact && _window.Root.Children.Contains(_autoOpen)) _window.Root.Children.Remove(_autoOpen);
-            if (!compact && footer.Children.Contains(_autoOpen)) footer.Children.Remove(_autoOpen);
-            if (compact && !footer.Children.Contains(_autoOpen)) footer.Children.Insert(0, _autoOpen);
-            if (!compact && !_window.Root.Children.Contains(_autoOpen))
-            { Grid.SetRow(_autoOpen, 1); _window.Root.Children.Add(_autoOpen); }
-        }
-        _window.Root.SizeChanged += (_, _) => ArrangeAutoOpen();
-        ArrangeAutoOpen();
+        BuildFooter();
         _window.CanCloseAsync = () =>
         {
             if (_busy) _status.Text = TargetIsDirectory
@@ -286,6 +265,45 @@ internal sealed partial class ExportWindow
         UpdateContextCopy();
         InitializeResults();
         _status.Text = "";
+    }
+
+    private void BuildFooter()
+    {
+        _resultActions.Children.Add(_viewResult);
+        _resultActions.Children.Add(_copyResult);
+        _resultActions.Children.Add(_openResultFolder);
+        _resultActions.SizeChanged += (_, args) =>
+            _resultActions.Orientation = args.NewSize.Width >= 480 ? Orientation.Horizontal : Orientation.Vertical;
+
+        var commands = new Grid { ColumnSpacing = 8 };
+        commands.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        commands.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        commands.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+        commands.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+        _autoOpen.VerticalAlignment = _window.Actions.VerticalAlignment = VerticalAlignment.Center;
+        _autoOpen.HorizontalAlignment = HorizontalAlignment.Left;
+        _window.Root.Children.Remove(_window.Actions);
+        Grid.SetRow(_window.Actions, 0);
+        Grid.SetColumn(_window.Actions, 1);
+        commands.Children.Add(_autoOpen);
+        commands.Children.Add(_window.Actions);
+        commands.SizeChanged += (_, args) =>
+        {
+            var compact = args.NewSize.Width < 480;
+            commands.RowSpacing = compact ? 6 : 0;
+            commands.ColumnSpacing = compact ? 0 : 8;
+            Grid.SetRow(_window.Actions, compact ? 1 : 0);
+            Grid.SetColumn(_window.Actions, compact ? 0 : 1);
+        };
+
+        var footer = new StackPanel { Spacing = 6 };
+        footer.Children.Add(_progress);
+        footer.Children.Add(_feedback);
+        footer.Children.Add(_resultActions);
+        footer.Children.Add(commands);
+        var footerBorder = ExportDesign.Divider(footer, 6);
+        Grid.SetRow(footerBorder, 1);
+        _window.Root.Children.Add(footerBorder);
     }
 
     private static JsonElement DraftExportProfile(JsonElement source, JsonElement config)
@@ -366,9 +384,9 @@ internal sealed partial class ExportWindow
 
     private static StackPanel Section(StackPanel parent, string title)
     {
-        var content = new StackPanel { Spacing = 8 };
+        var content = new StackPanel { Spacing = 6 };
         content.Children.Add(ExportDesign.Text(title, true));
-        parent.Children.Add(new ContentControl { Content = ExportDesign.Divider(content),
+        parent.Children.Add(new ContentControl { Content = ExportDesign.Divider(content, 6),
             HorizontalContentAlignment = HorizontalAlignment.Stretch, IsTabStop = false });
         return content;
     }

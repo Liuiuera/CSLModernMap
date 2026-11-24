@@ -4366,9 +4366,6 @@ Mapa de la ciudad, mapa de transporte público y esquema de metro.
   <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
     <value>El juego sigue abierto y puede consumir mucha memoria. Se recomienda guardar la ciudad y salir del juego antes de exportar. También puede continuar.</value>
   </data>
-  <data name="ExportWindow_BeforeExportNotice" xml:space="preserve">
-    <value>Antes de exportar, considera guardar la ciudad, salir del juego y cerrar otros programas que consuman mucha memoria. Las exportaciones más grandes usan más memoria.</value>
-  </data>
   <data name="Poi_AreaMerge" xml:space="preserve">
     <value>Etiquetas de áreas cercanas (CS2)</value>
   </data>

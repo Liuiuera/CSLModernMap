@@ -4366,9 +4366,6 @@ Stadtkarten, ÖPNV-Karten und Metropläne.
   <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
     <value>Das Spiel läuft noch und kann viel Arbeitsspeicher belegen. Speichern Sie Ihre Stadt und beenden Sie möglichst das Spiel vor dem Export. Sie können auch fortfahren.</value>
   </data>
-  <data name="ExportWindow_BeforeExportNotice" xml:space="preserve">
-    <value>Speichere vor dem Exportieren deine Stadt, beende das Spiel und schließe andere speicherintensive Programme. Größere Exporte benötigen mehr Arbeitsspeicher.</value>
-  </data>
   <data name="Poi_AreaMerge" xml:space="preserve">
     <value>Benachbarte Gebietsmarkierungen (CS2)</value>
   </data>
