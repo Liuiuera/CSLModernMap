@@ -1,9 +1,45 @@
 import json
 import io
+import plistlib
+import subprocess
 from types import SimpleNamespace
+
+import pytest
 
 from csmodernmap import _paths, guir_backend, i18n
 from csmodernmap.guir_backend import GuirBackend
+
+
+@pytest.mark.parametrize("languages, expected", [
+    (["en-US"], "en"),
+    (["zh-Hans-CN"], "zh-CN"),
+    (["zh-Hant-HK"], "zh-TW"),
+    (["ja-JP"], "ja"),
+    (["nl-NL", "de-DE", "en-US"], "de"),
+    (["pt-BR"], "pt-BR"),
+])
+def test_macos_first_launch_prefers_apple_languages(tmp_path, monkeypatch, languages, expected):
+    monkeypatch.setattr(_paths.sys, "platform", "darwin")
+    monkeypatch.setenv("CSLMM_NATIVE_DATA_DIR", str(tmp_path))
+    monkeypatch.delenv("CSLMM_LANG", raising=False)
+    monkeypatch.setattr(i18n.locale, "getlocale", lambda: (None, None))
+    monkeypatch.setattr(subprocess, "check_output", lambda *args, **kwargs:
+                        plistlib.dumps({"AppleLanguages": languages, "AppleLocale": "zh_CN"}))
+    assert i18n.detect_lang() == expected
+    (tmp_path / "settings.json").write_text(json.dumps({"version": 3, "values": {"language": "fr"}}))
+    assert i18n.detect_lang() == "fr"
+
+
+def test_macos_system_language_fallback(monkeypatch):
+    monkeypatch.setattr(_paths.sys, "platform", "darwin")
+    monkeypatch.delenv("LANGUAGE", raising=False)
+    monkeypatch.setattr(i18n.locale, "getlocale", lambda: ("en_US", "UTF-8"))
+
+    def unavailable(*args, **kwargs):
+        raise subprocess.TimeoutExpired("defaults", 3)
+
+    monkeypatch.setattr(subprocess, "check_output", unavailable)
+    assert i18n._system_locale_lang() == "en"
 
 
 def test_macos_shared_directory_keeps_legacy_settings(tmp_path, monkeypatch):
