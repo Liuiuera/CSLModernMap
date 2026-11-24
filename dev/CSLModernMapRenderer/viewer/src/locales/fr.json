@@ -223,5 +223,10 @@
   "controls_actions": "Vue",
   "preview3d_title": "Aperçu 3D",
   "preview3d_help": "Maintenez le bouton du milieu : glissez latéralement pour tourner, verticalement pour incliner.",
-  "preview3d_missing": "Aucune hauteur de bâtiment détectée. Réexportez la carte avec la dernière version du module d’exportation."
+  "preview3d_missing": "Aucune hauteur de bâtiment détectée. Réexportez la carte avec la dernière version du module d’exportation.",
+  "controls_poi_text": "Libellés des icônes",
+  "controls_road_text": "Noms des voies",
+  "controls_district_text": "Noms des quartiers",
+  "controls_rotateCounterclockwise": "90° antihoraire",
+  "controls_rotateClockwise": "90° horaire"
 }

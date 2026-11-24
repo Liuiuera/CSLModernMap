@@ -35,7 +35,7 @@ from pathlib import Path
 
 from PIL import Image
 
-from ._paths import application_settings_dir, bundle_root, poi_mapping_override_path, resource_dir, user_data_dir, writable_dir
+from ._paths import app_support_dir, application_settings_dir, bundle_root, poi_mapping_override_path, resource_dir, user_data_dir, writable_dir
 from .cmm import load_document
 from .cmm.session import DocumentSession
 from .export import export_png
@@ -657,13 +657,20 @@ class GuirBackend:
         self.scale = scale
 
         # 设置与最近文件
-        self._settings_dir_explicit = settings_dir is not None or sys.platform == "win32"
+        self._settings_dir_explicit = (settings_dir is not None or sys.platform == "win32"
+            or (sys.platform == "darwin" and bool(os.environ.get("CSLMM_NATIVE_DATA_DIR"))))
         self._settings_dir = (Path(settings_dir).resolve()
                               if settings_dir is not None else user_data_dir())
+        self._macos_shared_settings = (
+            settings_dir is None and sys.platform == "darwin"
+            and bool(os.environ.get("CSLMM_NATIVE_DATA_DIR"))
+            and self._settings_dir.resolve() == app_support_dir().resolve()
+        )
         self.poi_mapping_override = poi_mapping_override_path(self._settings_dir)
         from .theme_migration import recover
         recover(self._settings_dir)
         self._settings = load_settings(self._settings_dir)
+        self.split_map_symbols = os.environ.get("CSLMM_SPLIT_MAP_SYMBOLS") == "1"
         # 交通和地铁视图设置单独持久化，切换视图不能覆盖普通地图图层快照。
         # 迁移使用上方已加载的设置，避免二次读取及过早生成 views.json。
         if views_path(self._settings_dir).is_file():
@@ -806,9 +813,7 @@ class GuirBackend:
         # GUIR 与旧界面共用 settings.json，在创建控件前只加载一次。
         self._load_persisted_state()
 
-    # ------------------------------------------------------------------
     # 通用
-    # ------------------------------------------------------------------
 
     @property
     def busy(self) -> bool:
@@ -977,6 +982,12 @@ class GuirBackend:
         self.layer_visibility["satellite"] = False
         self.layer_visibility["procedural_objects"] = bool(self._setting(
             "layer_procedural_objects", False))
+        if self.split_map_symbols and not self.layer_visibility["label"]:
+            # The old switch hid all map labels and POI icons. Preserve what was
+            # visible while moving that state to the individual controls.
+            self.layer_visibility["label"] = True
+            self.road_names = self.district_names = False
+            self._settings["values"]["map_symbol_visibility"] = {"poi_text": False, "poi": False}
         self.transit_types = [
             key for key in TYPE_REGISTRY
             if bool(self._setting("transit_normal_" + key, key in self.transit_types))
@@ -1168,7 +1179,7 @@ class GuirBackend:
 
     def _attach_poi_render_config(self, job: dict, target: str,
                                   profile=None,
-                                  visibility_snapshot=None) -> dict:
+                                  visibility_snapshot=None, *, map_symbols=False) -> dict:
         ui = job.setdefault("ui", {})
         normalized = (self.get_poi_profile(target) if profile is None
                       else validate_poi_profile(profile, target))
@@ -1180,7 +1191,25 @@ class GuirBackend:
             "normal": "normal_png", "transit": "transit_png", "metro": "metro"}[view]
         ui["poi_profile"] = {**copy.deepcopy(normalized), "target": render_target, "view": view}
         ui["poi_visibility_snapshot"] = copy.deepcopy(visibility)
+        if map_symbols or target in {"normal", "normal_png"}:
+            self.apply_map_symbol_visibility(ui["poi_visibility_snapshot"])
         return job
+
+    def map_symbol_visibility(self) -> dict[str, bool]:
+        saved = self._setting("map_symbol_visibility", {}) if self.split_map_symbols else {}
+        if not isinstance(saved, dict):
+            saved = {}
+        return {key: saved.get(key) is not False for key in ("poi_text", "poi")}
+
+    def set_map_symbol_visibility(self, changes: dict[str, bool]) -> None:
+        self._settings["values"]["map_symbol_visibility"] = {**self.map_symbol_visibility(), **changes}
+        self._schedule_settings_save()
+
+    def apply_map_symbol_visibility(self, visibility: dict) -> None:
+        switches = self.map_symbol_visibility()
+        for key, channel in (("poi_text", "names"), ("poi", "icons")):
+            if not switches[key]:
+                visibility[channel] = dict.fromkeys(visibility[channel], False)
 
     @property
     def output_dir(self) -> str:
@@ -1232,11 +1261,13 @@ class GuirBackend:
         visibility = self.poi_visibility_snapshot()
         visibility["icons"] = {group: True for group in visibility["icons"]}
         self.set_poi_visibility_snapshot(visibility)
+        if self.split_map_symbols:
+            self.set_map_symbol_visibility({"poi": True, "poi_text": True})
 
     def map_layer_visibility(self) -> dict:
         visibility = dict(self.layer_visibility)
         # 总开关隐藏 POI 时不覆盖类别选择。
-        visibility["poi"] = bool(visibility["label"]) and any(
+        visibility["poi"] = visibility["label"] and self.map_symbol_visibility()["poi"] and any(
             self.poi_visibility_snapshot()["icons"].values())
         return visibility
 
@@ -1391,9 +1422,7 @@ class GuirBackend:
         setattr(self, attr, {int(item_id) for item_id in ids if int(item_id) in valid})
         return True
 
-    # ------------------------------------------------------------------
     # 设置 / 状态
-    # ------------------------------------------------------------------
 
     @property
     def terrain(self) -> dict:
@@ -1591,20 +1620,20 @@ class GuirBackend:
                 pass
         self._schedule_settings_save()
 
-    # ------------------------------------------------------------------
     # 文档 / 打开
-    # ------------------------------------------------------------------
 
-    def open_file(self, path, callbacks: dict | None = None) -> bool:
+    def open_file(self, path, callbacks: dict | None = None, *,
+                  before_replace=None, on_read_error=None) -> bool:
         """打开存档：后台解析 → DocumentSession → 编译道路 Preview Scene。
 
         callbacks 还支持 scene_ready(bundle, manifest_url) / scene_error(exc)。
+        before_replace 仅在新城市准备成功后执行；读取失败可单独通知调用方。
         """
         path = str(path)
-        if self._local_png_active:
-            self._local_render_stop.set()
         if self._open_thread is not None and self._open_thread.is_alive():
             return False
+        if before_replace is None and self._local_png_active:
+            self._local_render_stop.set()
         if callbacks is not None:
             self._callbacks = callbacks
         open_diagnostics = None
@@ -1616,11 +1645,14 @@ class GuirBackend:
             )
             open_diagnostics = (
                 recorder, default_log_path("gui-webgl-preview-open"))
-        self.invalidate_preview_compile()
+        if before_replace is None:
+            self.invalidate_preview_compile()
         self._open_revision += 1
         open_revision = self._open_revision
         callback_map = dict(self._callbacks or {})
-        if not self._settings_dir_explicit and self.source_file is None:
+        if on_read_error is not None:
+            callback_map["read_error"] = on_read_error
+        if before_replace is None and not self._settings_dir_explicit and self.source_file is None:
             # 单独运行时，地图选定后将用户数据写在地图旁，而非渲染器版本目录。
             self._settings_dir = Path(path).resolve().parent
             self.poi_mapping_override = poi_mapping_override_path(self._settings_dir)
@@ -1636,6 +1668,8 @@ class GuirBackend:
         def emit_current(name, *args):
             def deliver():
                 if open_revision == self._open_revision:
+                    if name == "read_error":
+                        self._open_thread = None
                     fn = callback_map.get(name)
                     if fn is not None:
                         fn(*args)
@@ -1667,6 +1701,7 @@ class GuirBackend:
                                "preview.load.transit_catalog"):
                     transit_catalog = _build_transit_line_catalog(
                         session, progress=p_prepare, check_cancel=check_cancel)
+                city_info = _extract_city_info(document)
             except OpenCancelled:
                 return
             except Exception as exc:  # noqa: BLE001
@@ -1684,12 +1719,18 @@ class GuirBackend:
                 diagnostic.setdefault("operation", "open")
                 failure = TaskFailure(diagnostic)
 
-                emit_current("error", failure)
+                emit_current("read_error" if on_read_error is not None else "error", failure)
                 return
 
             def on_parsed() -> None:
                 if open_revision != self._open_revision:
                     return
+                if before_replace is not None:
+                    self._open_thread = None
+                    if self._local_png_active:
+                        self._local_render_stop.set()
+                    self.invalidate_preview_compile()
+                    before_replace()
                 self._switch_settings_dir_for_city(path)
                 self.source_file = path
                 self._output_dir = str(Path(path).resolve().parent)
@@ -1710,7 +1751,7 @@ class GuirBackend:
                 self._sel_game = None
                 self._sel_scale = None
                 self._style_editor_regions = {}
-                self.city_info = _extract_city_info(document)
+                self.city_info = city_info
                 self.reset_region_selection()
                 self._record_recent(path)
                 self._emit("meta", dict(self.city_info), "open")
@@ -1723,11 +1764,20 @@ class GuirBackend:
         self._open_thread.start()
         return True
 
+    def cancel_document_open(self) -> None:
+        # 读取线程可能仍在解压；通过版本号隔离其结果，允许立即重试。
+        self._open_revision += 1
+        self._open_thread = None
+
     def _switch_settings_dir_for_city(self, path: str) -> None:
         """打开新城市时重新加载旁边的设置，避免跨城市串用。"""
-        if self._settings_dir_explicit:
+        if self._settings_dir_explicit and not self._macos_shared_settings:
             return
         target = Path(path).resolve().parent
+        if self._macos_shared_settings and not any(
+            (target / name).is_file() for name in ("settings.json", "views.json")
+        ):
+            target = app_support_dir()
         if target == self._settings_dir:
             return
         if self._settings_save_job is not None:
@@ -1756,9 +1806,7 @@ class GuirBackend:
                 if (item.settings_key == "poi"
                     or self.layer_visibility.get(item.settings_key, False))]
 
-    # ------------------------------------------------------------------
-    # 渲染子进程（移植 gui.py 三段式）
-    # ------------------------------------------------------------------
+    # 渲染子进程
 
     def _ensure_worker(self) -> bool:
         if self._proc is not None and self._proc.is_alive():
@@ -2044,9 +2092,7 @@ class GuirBackend:
         """在下一个进度边界协作停止 SVG 或 HTML 导出。"""
         self._export_cancelled.set()
 
-    # ------------------------------------------------------------------
     # 作业装配
-    # ------------------------------------------------------------------
 
     @staticmethod
     def _transport_sizes(data, city=False):
@@ -2062,7 +2108,7 @@ class GuirBackend:
                     facility_icon_size=data.get("poi_icons", {}).get("transit", {}).get("icon_size",
                         data.get("poi_icons", {}).get("icon_size", 24)))
 
-    def map_transit_options(self) -> dict:
+    def map_transit_options(self, *, render=False) -> dict:
         from .view_settings import default_view_settings, view_options
         options = view_options(default_view_settings()["transit"], False)
         for key in ("transit_mask", "base_water", "base_road", "base_district", "ordinary_pois"):
@@ -2084,6 +2130,12 @@ class GuirBackend:
         options.update(copy.deepcopy(saved.get("options", {})))
         options.update(saved.get("themes", {}).get(self.theme_stem, {}))
         options.update(types=list(self.transit_types), line_ids=copy.deepcopy(self._map_line_ids))
+        if render:
+            switches = self.map_symbol_visibility()
+            if not switches["poi_text"]:
+                options["station_name_placement"] = "hidden"
+            if not switches["poi"]:
+                options["facilities_enabled"] = False
         return options
 
     def set_map_transit_option(self, key, value):
@@ -2126,7 +2178,7 @@ class GuirBackend:
             "block_gap_m": float(self.block_gap_m),
             "hub_core_m": float(self.hub_core_m),
             "transit_types": list(self.transit_types),
-            "map_transport": self.map_transit_options(),
+            "map_transport": self.map_transit_options(render=True),
             "transit_line_ids": copy.deepcopy(self._map_line_ids),
             "district_ids": (None if self.district_ids is None
                              else sorted(self.district_ids)),
@@ -2136,6 +2188,7 @@ class GuirBackend:
             "road_player_names": bool(self.road_player_names),
             "road_asset_names": False,
             "district_names": bool(self.district_names),
+            **({"park_names": self.map_symbol_visibility()["poi_text"]} if self.split_map_symbols else {}),
             "watermark_text": (self.watermark_text or "").strip() or None,
             "poi_mapping_override": str(self.poi_mapping_override),
         }
@@ -2229,7 +2282,7 @@ class GuirBackend:
         }
         if auto_size:
             job["auto_size"] = True
-        self._attach_poi_render_config(job, "preview" if preview else "normal_png")
+        self._attach_poi_render_config(job, "preview" if preview else "normal_png", map_symbols=True)
         return job
 
     def quick_preview(self, callbacks: dict | None = None) -> bool:
@@ -2241,9 +2294,15 @@ class GuirBackend:
         return self._preview_server.start()
 
 
-    def preview_theme(self, style_data: dict | None = None) -> dict:
+    def preview_theme(self, style_data: dict | None = None, *, map_symbols=None) -> dict:
         result = preview_theme(
             self._preview_style(style_data), self._preview_source_options(style_data))
+        if map_symbols is None:
+            map_symbols = self._preview_map_transport
+        if map_symbols:
+            self.apply_map_symbol_visibility(result["poiVisibility"])
+            if not self.map_symbol_visibility()["poi_text"]:
+                result["label"]["visibility"]["zone"] = False
         if self.watermark_text.strip():
             result["watermark"]["text"] = self.watermark_text.strip()
         return result
@@ -2692,6 +2751,10 @@ class GuirBackend:
     def local_render_active(self) -> bool:
         return self._local_render_thread is not None and self._local_render_thread.is_alive()
 
+    def cancel_rmp_generation(self) -> None:
+        # Keep the engine busy until the generation worker has stopped.
+        self._local_render_stop.set()
+
     def generate_rmp_in_engine(self, job: dict,
                                     callbacks: dict | None = None) -> bool:
         if not self.source_file or self.document is None or self._busy or self.local_render_active:
@@ -2723,7 +2786,8 @@ class GuirBackend:
                     input_error=isinstance(exc, ValueError)))
 
             def finish() -> None:
-                self._local_render_thread = None
+                if self._local_render_stop is stop:
+                    self._local_render_thread = None
                 if serial == self._serial and not stop.is_set():
                     if error is None:
                         self.last_rmp_snapshot = result
@@ -2735,7 +2799,9 @@ class GuirBackend:
                     else:
                         self._on_worker_error(error)
                 else:
-                    self._emit("busy", False)
+                    if serial == self._serial:
+                        self._busy = False
+                    self._emit("busy", self._busy)
 
             self._post(finish)
 
@@ -2756,17 +2822,17 @@ class GuirBackend:
             "types": list(options.get("types") or []),
             "opts": options,
             "layers": self._enabled_layers(),
-            "size": 0 if metro else self.size,
-            "sel_size": 0 if metro else self.size,
+            "size": self.size,
+            "sel_size": self.size,
             "aa": 2 if automatic_antialias() else 1,
             "region": region,
             "region_policy": policy,
             "ui": self._capture_ui_state(),
             "watermark_text": (self.watermark_text or "").strip() or None,
         }
-        if png_poi_options and not metro:
+        if png_poi_options:
             job["ui"]["png_poi_options"] = copy.deepcopy(png_poi_options)
-        self._attach_poi_render_config(job, "metro" if metro else "transit_png")
+        self._attach_poi_render_config(job, "transit_png")
         return job
 
     def capture_png_export_job(self, context, region=None, *, transit_options=None,
@@ -2828,7 +2894,7 @@ class GuirBackend:
         render_profile_target = profile_target if poi_profile_target is None else poi_profile_target
         self._attach_poi_render_config(
             job, render_profile_target, profile=poi_profile,
-            visibility_snapshot=poi_visibility_snapshot)
+            visibility_snapshot=poi_visibility_snapshot, map_symbols=context != "transit")
         if context != "transit" and not job["ui"]["text_enabled"]:
             job["ui"]["poi_visibility_snapshot"]["icons"] = {
                 group: False for group in job["ui"]["poi_visibility_snapshot"]["icons"]}
@@ -3088,9 +3154,7 @@ class GuirBackend:
         return self.submit(job, callbacks)
 
 
-    # ------------------------------------------------------------------
     # 输出闭环
-    # ------------------------------------------------------------------
 
     def save_png(self, path: str):
         """保存当前渲染结果为 PNG；无结果返回 None。"""
@@ -3165,7 +3229,11 @@ class GuirBackend:
         target_dir = out_dir or self._output_dir
         # 这几项都可能在场景编译完成后被实时修改，必须与屏幕当前状态对齐
         # （旋转角度只在「导出成什么方向」上生效，所以跟着导出走，不重编译场景）。
-        theme = (self.preview_theme(request.theme_snapshot.get("data")) if request else self.preview_theme())
+        if self.split_map_symbols:
+            theme = self.preview_theme(request.theme_snapshot.get("data") if request else None,
+                                       map_symbols=not request or request.context.value != "transit")
+        else:
+            theme = self.preview_theme(request.theme_snapshot.get("data")) if request else self.preview_theme()
         visibility = dict(request.layer_snapshot) if request and request.layer_snapshot else self.map_layer_visibility()
         rotation = int(request.render_snapshot.get("ui", {}).get("rotation", self.rotation) if request else getattr(self, "rotation", 0) or 0)
         html_quality = request.render_snapshot["output_profile"]["htmlQuality"] if request else "standard"
@@ -3272,9 +3340,7 @@ class GuirBackend:
         self._web_export_thread.start()
         return True
 
-    # ------------------------------------------------------------------
     # 样式覆盖 / 样式编辑器
-    # ------------------------------------------------------------------
 
     def _load_theme_library(self) -> None:
         from .theme_migration import migrate as migrate_themes
@@ -3631,9 +3697,9 @@ class GuirBackend:
             identity = record.get('legacyBase') or record.get('base') or identity
         return self.theme_defaults(identity)
 
-    def theme_default_field_value(self, field_key: str, default=None):
+    def theme_default_field_value(self, field_key: str, default=None, *, style_data=None):
         """返回来源预设的默认值；独立主题使用其已保存内容。"""
-        node = self.theme_reset_defaults()
+        node = self.theme_reset_defaults() if style_data is None else style_data
         if field_key in {"terrain.color", "terrain.mode", "terrain.shade", "terrain.sun"}:
             return self.field_value(field_key, default, style_data=node)
         outline = _outline_field_value(node, field_key)
@@ -3763,9 +3829,7 @@ class GuirBackend:
             self.style_overrides[self.theme_stem] = data
         return True
 
-    # ------------------------------------------------------------------
     # 缓存 / 诊断
-    # ------------------------------------------------------------------
 
     def set_performance_diagnostics(self, enabled: bool) -> None:
         """为后续界面预览启用结构化诊断。"""
@@ -3813,9 +3877,7 @@ class GuirBackend:
             self._local_png_active = False
         self._stop_worker()
 
-    # ------------------------------------------------------------------
     # 字段 → UI 状态的特殊处理器（不写入 style.data 的字段）
-    # ------------------------------------------------------------------
 
     def _handler_terrain_mode(self, value) -> None:
         data = self._style_data_mut()

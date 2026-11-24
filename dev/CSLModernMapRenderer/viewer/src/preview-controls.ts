@@ -9,9 +9,9 @@ import './preview-controls.css';
 type TextKey = 'search' | 'searchHelp' | 'empty' | 'building' | 'road' | 'area' | 'layers' | 'fit' | 'help'
   | 'title' | 'move' | 'moveHelp' | 'view' | 'viewHelp' | 'find' | 'findHelp' | 'navigate' | 'navigateHelp'
   | 'gotIt' | 'satellite' | 'terrain' | 'built_area' | 'land_use' | 'water' | 'railway' | 'traffic' | 'metro' | 'transit'
-  | 'poi' | 'label' | 'district' | 'zone' | 'watermark' | 'poi_area' | 'procedural_objects' | 'baseMap'
+  | 'poi' | 'label' | 'poi_text' | 'road_text' | 'district_text' | 'district' | 'zone' | 'watermark' | 'poi_area' | 'procedural_objects' | 'baseMap'
   | 'transportFacilities' | 'labelsOther' | 'close' | 'zoomIn' | 'zoomOut' | 'collapse' | 'expand'
-  | 'searchRoutes' | 'actions';
+  | 'searchRoutes' | 'actions' | 'rotateCounterclockwise' | 'rotateClockwise';
 type EdgeGroup = 'search' | 'layers' | 'view';
 function text(key: TextKey): string {
   if (['search', 'searchHelp', 'empty', 'findHelp'].includes(key)) return i18n.t(`search_${key}`);
@@ -24,7 +24,8 @@ const layerGroups: Array<{title: TextKey; items: Array<[TextKey, ControlIcon]>}>
     ['water', 'droplet'], ['road', 'road'], ['building', 'building'], ['railway', 'track']]},
   {title: 'transportFacilities', items: [['traffic', 'traffic-lights'], ['metro', 'train'], ['transit', 'train'],
     ['poi_area', 'border-outer'], ['poi', 'map-pin']]},
-  {title: 'labelsOther', items: [['label', 'typography'], ['district', 'border-outer'], ['zone', 'border-all'],
+  {title: 'labelsOther', items: [['label', 'typography'], ['poi_text', 'typography'], ['road_text', 'road'], ['district_text', 'border-outer'],
+    ['district', 'border-outer'], ['zone', 'border-all'],
     ['procedural_objects', 'cube'], ['watermark', 'copyright']]},
 ];
 
@@ -54,6 +55,7 @@ export class PreviewControls {
   private readonly fit = document.createElement('button');
   private readonly zoomIn = document.createElement('button');
   private readonly zoomOut = document.createElement('button');
+  private readonly rotationButtons: Array<{button: HTMLButtonElement; caption: HTMLSpanElement; key: TextKey}> = [];
   private readonly dialog = document.createElement('dialog');
   private readonly confirm = document.createElement('button');
   private readonly title = document.createElement('h2');
@@ -78,7 +80,8 @@ export class PreviewControls {
     zoomMap: (delta: number) => void,
     private readonly guideEvent: (type: string) => void,
     private readonly focusMap: () => void,
-    private readonly showLayers: boolean) {
+    private readonly showLayers: boolean,
+    rotateMap?: (delta: number) => void) {
     this.root.className = 'preview-controls'; this.root.hidden = true;
     this.top.className = 'preview-search-row';
     const search = document.createElement('div'); search.className = 'preview-search';
@@ -96,6 +99,20 @@ export class PreviewControls {
       this.closeSearch();
       if (this.controlsCollapsed && this.openGroup !== 'search') this.setOpenGroup('search', false);
     });
+    if (rotateMap) {
+      const rotation = document.createElement('div'); rotation.className = 'preview-rotation';
+      rotation.id = 'preview-rotation';
+      for (const [key, glyph, delta] of [['rotateCounterclockwise', '↺', -90], ['rotateClockwise', '↻', 90]] as const) {
+        const button = document.createElement('button'), caption = document.createElement('span');
+        const icon = document.createElement('span'); icon.className = 'preview-rotation-icon';
+        icon.textContent = glyph; icon.setAttribute('aria-hidden', 'true');
+        button.type = 'button'; button.disabled = true;
+        button.onclick = () => rotateMap(delta);
+        button.append(icon, caption); rotation.append(button);
+        this.rotationButtons.push({button, caption, key});
+      }
+      this.root.append(rotation);
+    }
     this.input.addEventListener('input', () => { navigation.hidePanel(); this.search(); });
     this.input.addEventListener('focus', () => { navigation.hidePanel(); this.search(); });
     this.results.onmousedown = event => event.preventDefault();
@@ -168,13 +185,16 @@ export class PreviewControls {
     this.fit.type = this.help.type = this.zoomIn.type = this.zoomOut.type = 'button';
     this.fit.onclick = fitMap; this.help.onclick = () => this.showGuide(false);
     this.zoomIn.onclick = () => zoomMap(1); this.zoomOut.onclick = () => zoomMap(-1);
-    this.right.append(this.fit, this.zoomIn, this.zoomOut, this.help);
+    this.right.append(this.fit);
+    if (new URLSearchParams(location.search).get('zoomButtons') !== '0') this.right.append(this.zoomIn, this.zoomOut);
+    this.right.append(this.help);
     this.top.id = 'preview-search-row'; this.layers.id = 'preview-layers'; this.right.id = 'preview-view-actions';
     for (const [group, target] of [['search', this.top], ['layers', this.layers], ['view', this.right]] as const) {
       const tab = document.createElement('button'); tab.type = 'button';
       tab.hidden = group === 'layers' && !showLayers;
       tab.className = `preview-edge-tab preview-edge-${group}`;
-      tab.setAttribute('aria-controls', target.id); tab.setAttribute('aria-expanded', 'false');
+      tab.setAttribute('aria-controls', group === 'view' && rotateMap ? target.id + ' preview-rotation' : target.id);
+      tab.setAttribute('aria-expanded', 'false');
       tab.onclick = () => this.setOpenGroup(this.openGroup === group ? null : group);
       this.edgeTabs.set(group, tab);
       (group === 'view' ? this.right : this.root).append(tab);
@@ -264,6 +284,9 @@ export class PreviewControls {
   setZoomAvailability(zoomIn: boolean, zoomOut: boolean): void {
     this.zoomIn.disabled = !zoomIn; this.zoomOut.disabled = !zoomOut;
   }
+  setRotationAvailability(available: boolean): void {
+    for (const {button} of this.rotationButtons) button.disabled = !available;
+  }
 
   showGuide(automatic: boolean): void {
     if (this.dialog.open || this.root.hidden || this.help.disabled) return;
@@ -272,6 +295,7 @@ export class PreviewControls {
   }
 
   private setOpenGroup(group: EdgeGroup | null, closeNavigation = true): void {
+    const active = document.activeElement;
     this.closeSearch(); this.closeLayers();
     if (closeNavigation) this.navigation.hidePanel();
     this.openGroup = group;
@@ -280,8 +304,8 @@ export class PreviewControls {
     if (group === 'layers') {
       this.layerPanel.hidden = false; this.layerToggle.setAttribute('aria-expanded', 'true');
     }
-    const active = document.activeElement as HTMLElement | null;
-    if (active && !active.checkVisibility()) (group ? this.edgeTabs.get(group)! : this.collapseToggle).focus();
+    // 折叠使用 display:none，旧版 WKWebView 没有 checkVisibility()。
+    if (active && !active.getClientRects().length) (group ? this.edgeTabs.get(group)! : this.collapseToggle).focus();
   }
 
   private translateCollapse(): void {
@@ -297,6 +321,7 @@ export class PreviewControls {
     setButtonContent(this.layerClose, text('close'), 'x');
     setButtonContent(this.fit, text('fit'), 'zoom-scan'); setButtonContent(this.help, text('help'), 'help');
     setButtonContent(this.zoomIn, text('zoomIn'), 'zoom-in'); setButtonContent(this.zoomOut, text('zoomOut'), 'zoom-out');
+    for (const {caption, key} of this.rotationButtons) caption.textContent = text(key);
     this.translateCollapse();
     for (const [group, tab] of this.edgeTabs) setButtonContent(tab,
       text(group === 'search' ? 'searchRoutes' : group === 'layers' ? 'layers' : 'actions'),

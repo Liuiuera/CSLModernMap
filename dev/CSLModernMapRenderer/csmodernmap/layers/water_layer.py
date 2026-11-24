@@ -104,39 +104,6 @@ def _poly_centroid(poly):
     return float(center[0]), float(center[1])
 
 
-def _rdp(points, epsilon):
-    """Douglas-Peucker 折线简化（忽略小于容差的细节）。"""
-    pts = np.asarray(points, dtype=np.float64)
-    if len(pts) < 3:
-        return pts
-    keep = np.zeros(len(pts), dtype=bool)
-    keep[0] = keep[-1] = True
-    stack = [(0, len(pts) - 1)]
-    epsilon = float(epsilon)
-    while stack:
-        start, end = stack.pop()
-        if end - start <= 1:
-            continue
-        segment = pts[start + 1:end]
-        a, b = pts[start], pts[end]
-        dx, dy = b[0] - a[0], b[1] - a[1]
-        if abs(dx) < 1e-12 and abs(dy) < 1e-12:
-            distances = np.hypot(
-                segment[:, 0] - a[0], segment[:, 1] - a[1])
-        else:
-            distances = np.abs(
-                dy * segment[:, 0] - dx * segment[:, 1]
-                + b[0] * a[1] - b[1] * a[0]
-            ) / math.hypot(dx, dy)
-        relative = int(np.argmax(distances))
-        if float(distances[relative]) > epsilon:
-            index = start + 1 + relative
-            keep[index] = True
-            stack.append((start, index))
-            stack.append((index, end))
-    return pts[keep]
-
-
 def _chaikin(points, iterations=SMOOTH_ITERS):
     """Chaikin 角点切割平滑（闭合多边形）。"""
     pts = np.asarray(points, dtype=np.float64)

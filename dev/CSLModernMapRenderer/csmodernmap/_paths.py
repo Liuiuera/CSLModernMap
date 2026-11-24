@@ -75,14 +75,7 @@ def resource_dir(name: str) -> Path:
 
 
 def cn_icons_dir() -> Path:
-    """定位内置 POI 图标工具目录。
-
-    此目录包含 ``poi_icon_utils.py``，只用于导入工具代码，不应指向
-    用户可写副本。图标数据请通过 :func:`icons_library_dir` 解析。
-
-    - 打包运行：bundle 内的 cn_icons/（Nuitka --include-data-dir 收集）
-    - 源码运行：项目 assets\\cn_icons
-    """
+    """定位内置 POI 工具代码。"""
     if _is_bundled():
         return bundle_root() / "cn_icons"
     return bundle_root().parent.parent / "assets" / "cn_icons"
@@ -115,10 +108,6 @@ def user_icons_library_dir(name: str) -> Path:
     return user_icons_root() / name
 
 
-def _is_complete_icon_library(path: Path) -> bool:
-    return (path / "icons_map.json").is_file()
-
-
 def icons_library_dir(name: str) -> Path:
     """所有地图都使用内置 CSLModernMap 图稿，包括旧版主题。"""
     return built_in_icons_library_dir("cn_icons")
@@ -130,14 +119,7 @@ def icon_library_names() -> tuple[str, ...]:
 
 
 def _outer_program_dir() -> Path:
-    """外层程序（引导器/真实二进制）所在目录。
-
-    Nuitka onefile 模式下 ``sys.executable`` 指向临时解包目录（每次运行
-    不同、退出即删），不能作为可写位置；``__compiled__.containing_dir``
-    是 Nuitka 官方提供的“程序真实位置”：onefile 时为外层二进制目录，
-    standalone 时为二进制目录本身。老版本 Nuitka 没有该属性时回退
-    ``NUITKA_ONEFILE_DIRECTORY`` 环境变量（onefile 引导器设置）。
-    """
+    """定位 Nuitka 外层可执行文件目录。"""
     compiled = globals().get("__compiled__")
     containing = getattr(compiled, "containing_dir", None)
     if containing:
@@ -153,17 +135,17 @@ def _is_macos() -> bool:
 
 
 def app_support_dir() -> Path:
-    """macOS 标准的可写应用数据目录（~/Library/Application Support/CSLModernMap）。
-
-    .app 的父目录可能是 /Applications 这类系统目录，往那里写
-    settings.json / cache/ 会污染应用目录；.app 内部受签名保护且每次
-    更新整体替换，都不能作为数据落点，因此 macOS 统一走系统标准位置。
-    """
+    """返回 macOS 应用数据目录。"""
     return Path.home() / "Library" / "Application Support" / "CSLModernMap"
 
 
 def application_settings_dir() -> Path:
     """定位跨城市和安装版本共享的应用设置。"""
+    explicit = os.environ.get("CSLMM_NATIVE_DATA_DIR") if _is_macos() else None
+    if explicit:
+        if _is_macos() and Path(explicit).resolve() == app_support_dir().resolve():
+            return app_support_dir() / "preferences"
+        return Path(explicit)
     if sys.platform == "win32":
         explicit = os.environ.get("CSLMM_USER_DATA_DIR")
         if explicit:
@@ -238,16 +220,10 @@ def _migrate_macos_writable_files(target: Path) -> None:
 
 
 def writable_dir() -> Path:
-    """用户可写的默认输出与缓存目录；Windows 配置另用 user_data_dir()。
-
-    - macOS 打包运行：``~/Library/Application Support/CSLModernMap``。
-      旧版本写 .app 的父目录，应用装进 /Applications 时会把 settings.json、
-      cache/ 撒进系统目录；.app 内部受签名与更新限制不能写。首次调用时
-      会把旧落点的用户数据一次性搬过来（见 ``_migrate_macos_writable_files``）。
-      打开存档后，设置/输出目录仍会跟随存档所在目录（GuirBackend 现有行为）。
-    - Windows 打包运行：可执行文件所在目录（便携式，沿用现状）。
-    - 源码运行：渲染器根目录（与原 Path(__file__).parent 行为一致）
-    """
+    """返回可写输出与缓存目录，首次使用时迁移旧版 macOS 数据。"""
+    explicit = os.environ.get("CSLMM_NATIVE_DATA_DIR") if _is_macos() else None
+    if explicit:
+        return Path(explicit)
     if not _is_bundled():
         return Path(__file__).resolve().parent.parent
     if _is_macos():

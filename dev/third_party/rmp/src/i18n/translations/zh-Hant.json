@@ -62,7 +62,6 @@
     "close": "關閉",
     "noShowAgain": "不要再顯示",
     "rmtPromotion": "絕對不想錯過的多功能工具包！",
-
     "panel": {
         "tools": {
             "showLess": "顯示更少",
@@ -806,7 +805,6 @@
             }
         }
     },
-
     "header": {
         "popoverHeader": "你正在瀏覽<1>{{environment}}</1>環境！",
         "popoverBody": "我們正在測試最新的RMP。如果妳有任何建議，歡迎在 https://github.com/railmapgen/rmp/issues 上提出。",
@@ -1067,7 +1065,6 @@
             "zulipContent": "加入我們的 Zulip 社群！"
         }
     },
-
     "contextMenu": {
         "refresh": "重新整理",
         "cut": "剪下",
@@ -1086,7 +1083,6 @@
         "flipDiagonal135": "沿135°線翻轉",
         "reconcile": "合併線段"
     },
-
     "clipboard": {
         "errors": {
             "readText": "無法讀取剪貼簿。請檢查瀏覽器權限後再試一次。",
@@ -1094,23 +1090,22 @@
             "cannotPasteSpecificAttrs": "無法貼上獨特屬性。請確認已選取相容的物件，且剪貼簿中包含有效的獨特屬性資料。"
         }
     },
-
     "localStorageQuotaExceeded": "本機儲存空間已達上限。無法儲存新的變更。",
     "cmm": {
-    "transfer": "轉乘",
-    "properties": "屬性",
-    "otherProperties": "其他屬性",
-    "moreActions": "更多操作",
-    "station": "站點",
-    "lineSegment": "線段",
-    "textObject": "文字",
-    "facilityObject": "設施",
-    "objectProperties": "物件屬性",
-    "selectedObjects": "已選 {{count}} 個物件",
-    "stationStyle": "站點樣式",
-    "appearanceAndTransfer": "外觀與轉乘",
-    "duplicateObject": "複製副本",
-    "openDetails": "開啟詳情",
+        "transfer": "轉乘",
+        "properties": "屬性",
+        "otherProperties": "其他屬性",
+        "moreActions": "更多操作",
+        "station": "站點",
+        "lineSegment": "線段",
+        "textObject": "文字",
+        "facilityObject": "設施",
+        "objectProperties": "物件屬性",
+        "selectedObjects": "已選 {{count}} 個物件",
+        "stationStyle": "站點樣式",
+        "appearanceAndTransfer": "外觀與轉乘",
+        "duplicateObject": "複製副本",
+        "openDetails": "開啟詳情",
         "style": "樣式 {{number}}",
         "chooseStyle": "站點樣式",
         "stationNames": "站名標註",
@@ -1207,5 +1202,32 @@
     },
     "confirm": "確認",
     "Color": "顏色",
-    "Confirm": "確認"
+    "Confirm": "確認",
+    "editor": {
+        "tools": "編輯工具",
+        "view": "檢視",
+        "move": "移動與選取",
+        "select": "框選",
+        "stations": "新增車站",
+        "elements": "新增元素",
+        "paths": "路線路徑",
+        "styles": "路線樣式",
+        "insert": "插入",
+        "title": "標題",
+        "undo": "復原",
+        "redo": "重做",
+        "fit": "適應畫布",
+        "rotateLeft": "向左旋轉90°",
+        "rotateRight": "向右旋轉90°",
+        "details": "物件詳情",
+        "gridLines": "格線",
+        "snapLines": "吸附",
+        "detailsVisible": "物件詳情",
+        "showWaterControls": "水域控制點",
+        "cancel": "取消放置",
+        "placeHint": "點擊放置 · Esc 取消",
+        "lineHint": "在節點之間拖動繪製路線 · Esc 取消",
+        "nodeHint": "點擊放置 · Esc 取消",
+        "selection": "已選取：{{count}}"
+    }
 }

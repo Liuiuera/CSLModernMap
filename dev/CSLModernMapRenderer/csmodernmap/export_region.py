@@ -28,11 +28,16 @@ def normalize_bounds(bounds, world=None):
     return x0, z0, x1, z1
 
 
-def output_dimensions(bounds, long_edge, rotation=0):
+def output_spans(bounds, rotation=0):
     x0, z0, x1, z1 = normalize_bounds(bounds or DEFAULT_WORLD)
     width, height = z1-z0, x1-x0
     if output_rotation(rotation) in (90, 270):
         width, height = height, width
+    return width, height
+
+
+def output_dimensions(bounds, long_edge, rotation=0):
+    width, height = output_spans(bounds, rotation)
     edge = int(long_edge)
     if edge < 1:
         raise ValueError("Output long edge must be positive")

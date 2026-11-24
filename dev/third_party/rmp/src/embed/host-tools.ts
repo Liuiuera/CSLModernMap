@@ -22,6 +22,7 @@ export const toolCatalog = () => ({
 export function validateMode(value: unknown): RuntimeMode {
     const catalog = toolCatalog();
     if (
+        value === 'free' ||
         value === 'select' ||
         catalog.stations.some(item => item.id === value) ||
         catalog.elements.some(item => item.id === value)

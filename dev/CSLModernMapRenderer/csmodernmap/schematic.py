@@ -693,20 +693,6 @@ def _astar(start: Tuple[int, int], goals: Set[Tuple[int, int]],
     raise SchematicLayoutError("A* failed: goal unreachable on grid")
 
 
-def _candidates(cell: Tuple[int, int], blocked: Set[Tuple[int, int]],
-                radius: int = 1) -> List[Tuple[int, int]]:
-    """cell 邻域内未被占用的候选格（按距离排序）。"""
-    out = []
-    for dx in range(-radius, radius + 1):
-        for dy in range(-radius, radius + 1):
-            c = (cell[0] + dx, cell[1] + dy)
-            if c not in blocked:
-                out.append(c)
-    out.sort(key=lambda c: (abs(c[0] - cell[0]) + abs(c[1] - cell[1]),
-                            c[0], c[1]))
-    return out
-
-
 def _snap(pos: Tuple[float, float], spacing: float) -> Tuple[int, int]:
     return (int(round(pos[0] / spacing)), int(round(pos[1] / spacing)))
 

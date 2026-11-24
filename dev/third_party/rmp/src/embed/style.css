@@ -130,3 +130,10 @@ html[data-cmm-high-contrast="true"] .cmm-editor .chakra-tabs__tab[aria-selected=
 .cmm-editor .rmp-color-swatch { forced-color-adjust: none; border: 1px solid var(--cmm-border); }
 .cmm-editor #canvas:focus { outline: none; }
 .cmm-editor #canvas:focus-visible { outline: 2px solid #0067c0; outline-offset: -2px; }
+
+.cmm-toolbar { padding: 6px 8px; gap: 4px; border-bottom: 1px solid var(--cmm-border); background: var(--cmm-secondary); z-index: 2; }
+.cmm-toolbar .chakra-button[aria-pressed="true"] { color: var(--cmm-accent); border-color: var(--cmm-accent); background: var(--cmm-hover); }
+.cmm-toolbar select { background: var(--cmm-input); color: var(--cmm-ink); border-color: var(--cmm-border); font-size: 12px; }
+.cmm-toolbar .cmm-tool-status { color: var(--cmm-muted); padding: 0 4px; }
+.cmm-editor:has(.cmm-toolbar) [data-testid="side-panel-root"] { position: absolute; top: 0; height: 100%; }
+@media (max-width: 850px) { .cmm-toolbar select { max-width: 132px; } .cmm-toolbar .cmm-tool-status { width: 100%; margin-left: 0; } }

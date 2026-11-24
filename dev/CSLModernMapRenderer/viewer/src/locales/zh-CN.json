@@ -223,5 +223,10 @@
   "controls_actions": "操作",
   "preview3d_title": "3D 预览",
   "preview3d_help": "按住鼠标中键：左右旋转，上下调整倾斜。",
-  "preview3d_missing": "未检测到建筑高度，请尝试使用最新版本的导出器重新导出。"
+  "preview3d_missing": "未检测到建筑高度，请尝试使用最新版本的导出器重新导出。",
+  "controls_poi_text": "图标文字",
+  "controls_road_text": "道路文字",
+  "controls_district_text": "区划文字",
+  "controls_rotateCounterclockwise": "逆时针 90°",
+  "controls_rotateClockwise": "顺时针 90°"
 }

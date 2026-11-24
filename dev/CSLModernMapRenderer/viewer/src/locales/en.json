@@ -223,5 +223,10 @@
   "controls_actions": "View",
   "preview3d_title": "3D preview",
   "preview3d_help": "Hold the middle mouse button: drag sideways to rotate, up/down to tilt.",
-  "preview3d_missing": "No building heights detected. Try exporting again with the latest exporter."
+  "preview3d_missing": "No building heights detected. Try exporting again with the latest exporter.",
+  "controls_poi_text": "Icon Labels",
+  "controls_road_text": "Road Labels",
+  "controls_district_text": "District Labels",
+  "controls_rotateCounterclockwise": "Counterclockwise 90°",
+  "controls_rotateClockwise": "Clockwise 90°"
 }

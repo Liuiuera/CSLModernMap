@@ -17,6 +17,11 @@ class ExternalExportRequest:
     visibility: Mapping[str, bool] = field(default_factory=dict)
     line_ids: tuple[int, ...] | None = None
 
+    render_ui: Mapping[str, Any] | None = None
+    render_layers: tuple[str, ...] = ()
+    render_job: Mapping[str, Any] | None = None
+    rmp_scene: Mapping[str, Any] | None = None
+
     def __post_init__(self) -> None:
         object.__setattr__(self, "output_root", Path(self.output_root))
         if self.bounds is not None:
@@ -33,6 +38,7 @@ class ExternalExportResult:
     directory: Path
     files: tuple[Path, ...]
     warnings: tuple[str, ...] = ()
+    skipped_line_count: int = 0
 
 
 @dataclass(frozen=True)

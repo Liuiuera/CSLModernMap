@@ -171,21 +171,6 @@ def _rmp_icon_bitmap(name: str, size: int, color: str | None = None) -> Image.Im
     return icon.copy()
 
 
-def _paste_centered_icon(draw, icon: Image.Image, px: float, py: float) -> None:
-    """把带 alpha 的 SVG 位图贴到局部 ImageDraw 画布中心。"""
-    image = getattr(draw, "_image", None)
-    if image is None:
-        raise RuntimeError("ImageDraw 画布不支持 SVG 图标合成")
-    image.paste(
-        icon,
-        (int(round(px - icon.width / 2)),
-         int(round(py - icon.height / 2))),
-        icon,
-    )
-
-
-
-
 def _color_close(c1: str, c2: str) -> bool:
     """两 hex 颜色是否接近（RGB 欧氏距离 < 阈值）。"""
     a, b = hex_to_rgb(c1), hex_to_rgb(c2)
@@ -218,16 +203,6 @@ def _visual_corridor_slots(line_ids, tr_by_id: dict, group_of: dict,
 
 def _luminance(rgb) -> float:
     return 0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]
-
-
-def _luminance709(rgb) -> float:
-    """Rec.709 加权亮度（sRGB 通道权重）。
-
-    线路标签的「深字/白字」判定专用，必须与预览侧
-    ``viewer/src/main.ts::perceivedLuminance`` 同式同阈值，否则中间亮度的
-    线路色会在两端判出相反的字色（详见 01-线路标签视觉统一-20260914.md）。
-    """
-    return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2]
 
 
 def _clip_segment_to_box(p0, p1, box: tuple[float, float, float, float]):
@@ -2630,118 +2605,6 @@ class TransportLayer(Layer):
                 self.ctx.image.alpha_composite(local, (x0, y0))
             else:
                 self.ctx.image.paste(local, (x0, y0), local)
-
-    def _draw_station_marker(self, d, px, py, r, fill, outline, border,
-                             line_colors, design, has_track, halo) -> None:
-        """在给定分辨率的局部画布上绘制普通站点图标。"""
-        if design == "rmg":
-            # 直接使用仓库中的 ChongqingRTBasicStation 几何；仅替换
-            # currentColor 为主线路色，保持原始 SVG 形状不变。
-            marker_color = line_colors[0] if line_colors else outline
-            icon = _rmp_icon_bitmap(
-                "chongqingrt-basic", max(int(round(2 * r)), 1),
-                color=marker_color,
-            )
-            if _is_light_color(marker_color,
-                               self._light_outline_threshold):
-                icon = _outlined_icon(
-                    icon, self._light_outline_color,
-                    width=max(int(round(r * 0.12)), 1))
-            _paste_centered_icon(d, icon, px, py)
-            return
-        elif has_track:
-            # Metro/Train：标准圆形
-            d.ellipse((px - r - halo, py - r - halo,
-                       px + r + halo, py + r + halo),
-                      fill="#FFFFFF", outline=None)
-            d.ellipse((px - r, py - r, px + r, py + r),
-                      fill=fill, outline=outline, width=border)
-            if line_colors:
-                dot_r = max(int(r * 0.35), max(int(halo * 0.5), 1))
-                dot_outline = (
-                    self._light_outline_color
-                    if _is_light_color(line_colors[0],
-                                       self._light_outline_threshold)
-                    else None)
-                d.ellipse((px - dot_r, py - dot_r,
-                           px + dot_r, py + dot_r),
-                          fill=line_colors[0], outline=dot_outline,
-                          width=1)
-        else:
-            # Tram/Monorail/Bus：圆角方形外框
-            sr = r * 0.75
-            d.rounded_rectangle(
-                (px - sr - halo, py - sr - halo,
-                 px + sr + halo, py + sr + halo),
-                radius=max(int(halo), int(sr * 0.4)),
-                fill="#FFFFFF", outline=None)
-            d.rounded_rectangle(
-                (px - sr, py - sr, px + sr, py + sr),
-                radius=max(int(halo * 0.5), int(sr * 0.4)),
-                fill=fill, outline=outline, width=border)
-            if line_colors:
-                dot_r = max(int(sr * 0.35), max(int(halo * 0.35), 1))
-                dot_outline = (
-                    self._light_outline_color
-                    if _is_light_color(line_colors[0],
-                                       self._light_outline_threshold)
-                    else None)
-                d.ellipse((px - dot_r, py - dot_r,
-                           px + dot_r, py + dot_r),
-                          fill=line_colors[0], outline=dot_outline,
-                          width=1)
-
-    @staticmethod
-    def _draw_chongqing_interchange(d, px, py, r, fill, outline,
-                                    halo, border, arrow_color) -> None:
-        """贴入仓库中的 ChongqingRTIntStation 原始 SVG 图标。"""
-        del fill, outline, halo, border, arrow_color
-        icon = _rmp_icon_bitmap("chongqingrt-int", max(int(round(r * 2)), 1))
-        _paste_centered_icon(d, icon, px, py)
-
-    def _draw_interchange_ticks(self, d, px, py, r, sx, angle_deg,
-                                 line_colors, tick_height, border) -> None:
-        """换乘站分色tick标记：沿胶囊全长均匀分布，每线一色。
-
-        参考 railmapgen interchange-tick 设计，将 N 条线路的刻度
-        沿胶囊长轴均匀分布，每个刻度用对应线路颜色，方向垂直于胶囊。
-        """
-        n = len(line_colors)
-        if n == 0:
-            return
-        a = math.radians(angle_deg)
-        # 垂直于线路方向的单位向量（tick 绘制方向）
-        nx, ny = -math.sin(a), math.cos(a)
-        # 沿线路方向的单位向量（tick 分布方向）
-        tx, ty = math.cos(a), math.sin(a)
-        half_len = r * sx  # 胶囊半长
-        # 将 N 个 tick 均匀分布在胶囊全长上
-        capsule_len = half_len * 2  # 胶囊全长
-        if n == 1:
-            positions = [0.0]  # 单线居中
-        else:
-            # 均匀分布：首尾距边缘半个间距
-            step = capsule_len / n
-            positions = [-half_len + step * (i + 0.5) for i in range(n)]
-        for i, color in enumerate(line_colors[:n]):
-            # tick 中心在胶囊长轴上的位置
-            offset_along = positions[i]
-            cx = px + tx * offset_along
-            cy = py + ty * offset_along
-            # tick 两端沿法向延伸
-            x1 = cx + nx * tick_height * 0.5
-            y1 = cy + ny * tick_height * 0.5
-            x2 = cx - nx * tick_height * 0.5
-            y2 = cy - ny * tick_height * 0.5
-            tick_rgb = hex_to_rgb(color)
-            tick_width = max(2, border)
-            if _is_light_color(color, self._light_outline_threshold):
-                d.line([(x1, y1), (x2, y2)],
-                       fill=hex_to_rgb(self._light_outline_color) + (255,),
-                       width=tick_width + 2)
-            d.line([(x1, y1), (x2, y2)],
-                   fill=tick_rgb + (255,),
-                   width=tick_width)
 
     def _draw_line_labels(self, tr, smooth: list, cfg: dict, placed: list) -> None:
         if len(smooth) < 2:

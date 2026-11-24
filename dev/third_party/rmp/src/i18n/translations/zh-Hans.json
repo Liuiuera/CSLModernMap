@@ -62,7 +62,6 @@
     "close": "关闭",
     "noShowAgain": "不再显示",
     "rmtPromotion": "您绝对不想错过的全能工具包！",
-
     "panel": {
         "tools": {
             "showLess": "显示更少",
@@ -806,7 +805,6 @@
             }
         }
     },
-
     "header": {
         "popoverHeader": "你正在浏览<1>{{environment}}</1>环境！",
         "popoverBody": "我们正在测试最新的RMP。如果你有任何建议，欢迎在 https://github.com/railmapgen/rmp/issues 上提出。",
@@ -1067,7 +1065,6 @@
             "zulipContent": "加入我们的 Zulip 社区！"
         }
     },
-
     "contextMenu": {
         "refresh": "刷新",
         "cut": "剪切",
@@ -1086,7 +1083,6 @@
         "flipDiagonal135": "沿135°线翻转",
         "reconcile": "合并线段"
     },
-
     "clipboard": {
         "errors": {
             "readText": "无法读取剪贴板。请检查浏览器权限后重试。",
@@ -1094,23 +1090,22 @@
             "cannotPasteSpecificAttrs": "无法粘贴独特属性。请确认已选中兼容的对象，且剪贴板中包含有效的独特属性数据。"
         }
     },
-
     "localStorageQuotaExceeded": "本地存储空间已达上限。无法保存新更改。",
     "cmm": {
-    "transfer": "换乘",
-    "properties": "属性",
-    "otherProperties": "其他属性",
-    "moreActions": "更多操作",
-    "station": "站点",
-    "lineSegment": "线段",
-    "textObject": "文字",
-    "facilityObject": "设施",
-    "objectProperties": "对象属性",
-    "selectedObjects": "已选 {{count}} 个对象",
-    "stationStyle": "站点样式",
-    "appearanceAndTransfer": "外观与换乘",
-    "duplicateObject": "复制副本",
-    "openDetails": "打开详情",
+        "transfer": "换乘",
+        "properties": "属性",
+        "otherProperties": "其他属性",
+        "moreActions": "更多操作",
+        "station": "站点",
+        "lineSegment": "线段",
+        "textObject": "文字",
+        "facilityObject": "设施",
+        "objectProperties": "对象属性",
+        "selectedObjects": "已选 {{count}} 个对象",
+        "stationStyle": "站点样式",
+        "appearanceAndTransfer": "外观与换乘",
+        "duplicateObject": "复制副本",
+        "openDetails": "打开详情",
         "style": "样式 {{number}}",
         "chooseStyle": "站点样式",
         "stationNames": "站名标注",
@@ -1207,5 +1202,32 @@
     },
     "confirm": "确认",
     "Color": "颜色",
-    "Confirm": "确认"
+    "Confirm": "确认",
+    "editor": {
+        "tools": "编辑工具",
+        "view": "视图",
+        "move": "移动与选择",
+        "select": "框选",
+        "stations": "添加站点",
+        "elements": "添加元素",
+        "paths": "线路路径",
+        "styles": "线路样式",
+        "insert": "插入",
+        "title": "标题",
+        "undo": "撤销",
+        "redo": "重做",
+        "fit": "适应画布",
+        "rotateLeft": "向左旋转90°",
+        "rotateRight": "向右旋转90°",
+        "details": "对象详情",
+        "gridLines": "网格",
+        "snapLines": "吸附",
+        "detailsVisible": "对象详情",
+        "showWaterControls": "水域控制点",
+        "cancel": "取消放置",
+        "placeHint": "点击放置 · Esc 取消",
+        "lineHint": "在节点之间拖动绘制线路 · Esc 取消",
+        "nodeHint": "点击放置 · Esc 取消",
+        "selection": "已选择：{{count}}"
+    }
 }

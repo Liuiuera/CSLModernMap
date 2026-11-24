@@ -1,0 +1,592 @@
+# zh-CN	de	en	es	fr	it	ja	ko	pl	pt-BR	ru	zh-TW
+视距缩放	Größe nach Zoomstufe	Zoom scaling	Tamaño según el zoom	Taille selon le zoom	Dimensioni in base allo zoom	表示距離ごとのサイズ	거리에 따른 크기	Rozmiar według przybliżenia	Tamanho por nível de zoom	Размеры по масштабу	視距縮放
+字号 (%)	Schrift (%)	Text (%)	Texto (%)	Texte (%)	Testo (%)	文字 (%)	글자 (%)	Tekst (%)	Texto (%)	Текст (%)	字級 (%)
+线宽 (%)	Linien (%)	Lines (%)	Líneas (%)	Traits (%)	Linee (%)	線幅 (%)	선 너비 (%)	Linie (%)	Linhas (%)	Линии (%)	線寬 (%)
+图标 (%)	Symbole (%)	Icons (%)	Iconos (%)	Icônes (%)	Icone (%)	アイコン (%)	아이콘 (%)	Ikony (%)	Ícones (%)	Значки (%)	圖示 (%)
+调整中档，远、近两档自动计算。100% 使用主题或视图设定的大小。	Die mittlere Stufe ist einstellbar. Fern und nah werden automatisch berechnet. 100 % entspricht der Größe des Designs oder der Ansicht.	Adjust the middle range. Far and near are calculated automatically. 100% uses the theme or view size.	Ajusta la distancia media. Las distancias lejana y cercana se calculan automáticamente. El 100 % usa el tamaño del tema o de la vista.	Réglez la distance moyenne. Les valeurs de loin et de près sont calculées automatiquement. À 100 %, la taille suit le thème ou la vue.	Regola la distanza media. Le dimensioni da lontano e da vicino sono calcolate automaticamente. Il 100% usa le dimensioni del tema o della vista.	中距離の値を調整すると、遠距離と近距離の値が自動で決まります。100% はテーマまたはビューの設定値です。	중간 거리의 값을 조절하면 원거리와 근거리 값이 자동으로 계산됩니다. 100%는 테마 또는 보기에서 지정한 크기입니다.	Ustaw wartości dla średniej odległości. Pozostałe są obliczane automatycznie. 100% odpowiada rozmiarowi z motywu lub widoku.	Ajuste a distância média. Os valores de longe e de perto são calculados automaticamente. 100% usa o tamanho do tema ou da vista.	Настройте среднюю дистанцию. Размеры для дальней и ближней дистанций рассчитываются автоматически. 100% соответствует размеру темы или вида.	調整中距，遠、近兩檔會自動計算。100% 使用主題或檢視設定的大小。
+站点随线宽缩放。远档上限为字号 10 px、站点直径 6 px、图标 12 px。	Stationen skalieren mit der Linienbreite. In der Fernansicht gelten maximal 10 px für Text, 6 px für den Stationsdurchmesser und 12 px für Symbole.	Stations scale with line width. Far limits are 10 px for text, 6 px for station diameter and 12 px for icons.	Las estaciones se ajustan al ancho de línea. En la vista lejana, el texto se limita a 10 px, el diámetro de estación a 6 px y los iconos a 12 px.	Les stations suivent la largeur des lignes. De loin, le texte est limité à 10 px, le diamètre des stations à 6 px et les icônes à 12 px.	Le stazioni seguono lo spessore delle linee. Da lontano il limite è 10 px per il testo, 6 px per il diametro delle stazioni e 12 px per le icone.	駅の大きさは線幅に連動します。遠距離の上限は文字 10 px、駅の直径 6 px、アイコン 12 px です。	역 크기는 선 너비에 따라 달라집니다. 원거리에서는 글자 10 px, 역 지름 6 px, 아이콘 12 px가 상한입니다.	Stacje skalują się z szerokością linii. Z daleka tekst ma do 10 px, średnica stacji do 6 px, a ikony do 12 px.	As estações acompanham a largura das linhas. De longe, os limites são 10 px para texto, 6 px para o diâmetro das estações e 12 px para ícones.	Размер станций зависит от толщины линий. Вдали текст ограничен 10 px, диаметр станций — 6 px, значки — 12 px.	站點隨線寬縮放。遠距上限為字級 10 px、站點直徑 6 px、圖示 12 px。
+PNG 显示内部建筑	Show Internal Buildings in PNG
+RMG 导出详情	RMG-Exportdetails	RMG export details	Detalles de exportación RMG	Détails d’export RMG	Dettagli esportazione RMG	RMGエクスポート詳細	RMG 내보내기 상세 정보	Szczegóły eksportu RMG	Detalhes de exportação RMG	Сведения об экспорте RMG	RMG 匯出詳細資訊
+· 固定	 · Fixed
+· 缩放	 · Scaled
+…	
+不可用	Unavailable
+不同站名合并需要开启交通地点合并；内部设施显示阈值独立于 PNG 内部建筑开关。	Das Zusammenführen verschiedener Stationsnamen erfordert die Zusammenführung von Verkehrsorten. Die Anzeigeschwelle interner Einrichtungen ist unabhängig vom PNG-Schalter für interne Gebäude.	Merging different station names requires transit place merging. The internal facility zoom threshold is independent of the PNG internal buildings switch.	Combinar estaciones con nombres distintos requiere combinar lugares de transporte. El umbral de instalaciones internas es independiente de la opción de edificios internos de PNG.	La fusion de stations aux noms différents nécessite la fusion des lieux de transport. Le seuil des installations internes est indépendant de l’option des bâtiments internes PNG.	L’unione di stazioni con nomi diversi richiede l’unione dei luoghi di trasporto. La soglia delle strutture interne è indipendente dall’opzione PNG degli edifici interni.	異なる駅名を統合するには交通地点の統合が必要です。内部施設の表示しきい値はPNG内部建物の設定とは独立しています。	서로 다른 역 이름을 병합하려면 교통 장소 병합을 활성화해야 합니다. 내부 시설 표시 임계값은 PNG 내부 건물 설정과 별개입니다.	Łączenie stacji o różnych nazwach wymaga łączenia miejsc transportu. Próg obiektów wewnętrznych jest niezależny od ustawienia budynków wewnętrznych PNG.	Unir estações com nomes diferentes exige unir locais de transporte. O limiar de instalações internas independe da opção de edifícios internos do PNG.	Для объединения станций с разными названиями включите объединение транспортных объектов. Порог внутренних объектов не зависит от настройки зданий PNG.	不同站名合併需要啟用運輸地點合併；內部設施顯示閾值獨立於 PNG 內部建築開關。
+不能覆盖内置主题文件，请选择其他位置。	Integrierte Designs können nicht überschrieben werden. Anderen Speicherort wählen.	Built-in theme files cannot be overwritten. Choose another location.	No se pueden sobrescribir los temas integrados. Elige otra ubicación.	Les thèmes intégrés ne peuvent pas être écrasés. Choisissez un autre emplacement.	I temi integrati non possono essere sovrascritti. Scegli un’altra posizione.	組み込みテーマは上書きできません。別の場所を選択してください。	기본 테마를 덮어쓸 수 없습니다. 다른 위치를 선택하세요.	Nie można nadpisać wbudowanych motywów. Wybierz inną lokalizację.	Não é possível sobrescrever temas integrados. Escolha outro local.	Встроенные темы нельзя перезаписать. Выберите другое место.	無法覆寫內建主題檔案，請選擇其他位置。
+个人主题	Eigene Designs	Personal Themes	Temas personales	Thèmes personnels	Temi personali	個人テーマ	개인 테마	Motywy osobiste	Temas pessoais	Личные темы	個人主題
+主干道路	Main Roads
+主题导出失败：	Designexport fehlgeschlagen: 	Theme export failed: 	Error al exportar el tema: 	Échec de l’export du thème : 	Esportazione tema non riuscita: 	テーマのエクスポートに失敗：	테마 내보내기 실패: 	Błąd eksportu motywu: 	Falha ao exportar tema: 	Ошибка экспорта темы: 	主題匯出失敗：
+主题已保存并应用。	Design gespeichert und angewendet.	Theme saved and applied.	Tema guardado y aplicado.	Thème enregistré et appliqué.	Tema salvato e applicato.	テーマを保存して適用しました。	테마를 저장하고 적용했습니다.	Motyw zapisany i zastosowany.	Tema salvo e aplicado.	Тема сохранена и применена.	主題已儲存並套用。
+主题操作失败：	Designvorgang fehlgeschlagen: 	Theme operation failed: 	Error de operación del tema: 	Échec de l’opération du thème : 	Operazione tema non riuscita: 	テーマ操作に失敗：	테마 작업 실패: 	Błąd operacji motywu: 	Falha na operação do tema: 	Ошибка операции с темой: 	主題操作失敗：
+主题操作期间暂停预览。	Vorschau während Designvorgängen pausiert.	Preview is paused while applying or saving the theme.	La vista previa se pausa durante las operaciones del tema.	L’aperçu est suspendu pendant les opérations du thème.	L’anteprima è sospesa durante le operazioni del tema.	テーマ操作中はプレビューを一時停止します。	테마 작업 중 미리보기가 일시 중지됩니다.	Podgląd jest wstrzymany podczas operacji motywu.	A prévia é pausada durante operações do tema.	Предпросмотр приостановлен при операциях с темой.	主題操作期間暫停預覽。
+主题文件已导出；当前地图与保存设置未改变。	Design exportiert. Karte und gespeicherte Einstellungen bleiben unverändert.	Theme exported. The map and saved settings are unchanged.	Tema exportado. El mapa y los ajustes guardados no han cambiado.	Thème exporté. La carte et les paramètres enregistrés restent inchangés.	Tema esportato. Mappa e impostazioni salvate invariate.	テーマをエクスポートしました。地図と保存済み設定は変更されていません。	테마 내보내기 완료. 지도와 저장된 설정은 변경되지 않았습니다.	Motyw wyeksportowany. Mapa i zapisane ustawienia bez zmian.	Tema exportado. O mapa e as configurações salvas permanecem inalterados.	Тема экспортирована. Карта и сохранённые настройки не изменились.	主題檔案已匯出；目前地圖與儲存設定未變更。
+主题未能保存，请重试。	Design konnte nicht gespeichert werden. Erneut versuchen.	The theme could not be saved. Please retry.	No se pudo guardar el tema. Inténtalo de nuevo.	Impossible d’enregistrer le thème. Réessayez.	Impossibile salvare il tema. Riprova.	テーマを保存できませんでした。再試行してください。	테마를 저장하지 못했습니다. 다시 시도하세요.	Nie udało się zapisać motywu. Spróbuj ponownie.	Não foi possível salvar o tema. Tente novamente.	Не удалось сохранить тему. Повторите попытку.	無法儲存主題，請重試。
+主题未能导出，请重试。	Design konnte nicht exportiert werden. Erneut versuchen.	The theme could not be exported. Please retry.	No se pudo exportar el tema. Inténtalo de nuevo.	Impossible d’exporter le thème. Réessayez.	Impossibile esportare il tema. Riprova.	テーマをエクスポートできませんでした。再試行してください。	테마를 내보내지 못했습니다. 다시 시도하세요.	Nie udało się wyeksportować motywu. Spróbuj ponownie.	Não foi possível exportar o tema. Tente novamente.	Не удалось экспортировать тему. Повторите попытку.	無法匯出主題，請重試。
+主题未能应用，请重试。	Design konnte nicht angewendet werden. Erneut versuchen.	The theme could not be applied. Please retry.	No se pudo aplicar el tema. Inténtalo de nuevo.	Impossible d’appliquer le thème. Réessayez.	Impossibile applicare il tema. Riprova.	テーマを適用できませんでした。再試行してください。	테마를 적용하지 못했습니다. 다시 시도하세요.	Nie udało się zastosować motywu. Spróbuj ponownie.	Não foi possível aplicar o tema. Tente novamente.	Не удалось применить тему. Повторите попытку.	無法套用主題，請重試。
+主题编辑	Theme Editing
+主题预览	Designvorschau	Theme Preview	Vista previa del tema	Aperçu du thème	Anteprima tema	テーマプレビュー	테마 미리보기	Podgląd motywu	Prévia do tema	Предпросмотр темы	主題預覽
+交互式主题编辑器	Interactive Theme Editor
+交互预览	Interaktive Vorschau	Interactive Preview	Vista previa interactiva	Aperçu interactif	Anteprima interattiva	インタラクティブプレビュー	대화형 미리보기	Podgląd interaktywny	Prévia interativa	Интерактивный предпросмотр	互動預覽
+交互预览启动失败	Interaktive Vorschau konnte nicht starten	Interactive preview failed to start	No se pudo iniciar la vista previa interactiva	Échec du démarrage de l’aperçu interactif	Impossibile avviare l’anteprima interattiva	インタラクティブプレビューを開始できません	대화형 미리보기를 시작하지 못함	Nie udało się uruchomić podglądu interaktywnego	Falha ao iniciar a prévia interativa	Не удалось запустить интерактивный предпросмотр	互動預覽啟動失敗
+交通	Transit
+交通地点名称	Verkehrsortnamen	Transit Place Names	Nombres de lugares de transporte	Noms des lieux de transport	Nomi luoghi di trasporto	交通施設名	교통 장소 이름	Nazwy miejsc transportu	Nomes de locais de transporte	Названия транспортных объектов	運輸地點名稱
+交通方式与线路	Verkehrsmittel und Linien	Transport & Lines	Transporte y líneas	Transport et lignes	Trasporti e linee	交通手段と路線	교통수단 및 노선	Transport i linie	Transporte e linhas	Транспорт и маршруты	運輸方式與路線
+交通类型与线路	Verkehrsarten und Linien	Transport Types & Lines	Tipos de transporte y líneas	Types de transport et lignes	Tipi di trasporto e linee	交通手段と路線	교통 유형 및 노선	Rodzaje transportu i linie	Tipos de transporte e linhas	Виды транспорта и маршруты	運輸類型與路線
+交通设置	Transit Settings
+交通设置读取	Verkehrseinstellungen laden	loading transport settings	cargando ajustes de transporte	chargement des paramètres de transport	caricamento impostazioni trasporto	交通設定を読み込み中	교통 설정 불러오는 중	wczytywanie ustawień transportu	carregando configurações de transporte	загрузка настроек транспорта	讀取交通設定
+仅应用到当前地图，不保存主题设置。	Nur auf die aktuelle Karte anwenden, ohne Einstellungen zu speichern.	Apply to the current map without saving theme settings.	Aplicar al mapa actual sin guardar los ajustes del tema.	Appliquer à la carte actuelle sans enregistrer les paramètres du thème.	Applica alla mappa corrente senza salvare le impostazioni.	テーマ設定を保存せず、現在の地図にのみ適用します。	테마 설정을 저장하지 않고 현재 지도에만 적용합니다.	Zastosuj tylko do bieżącej mapy bez zapisywania ustawień motywu.	Aplicar apenas ao mapa atual sem salvar as configurações do tema.	Применить только к текущей карте без сохранения настроек темы.	僅套用至目前地圖，不儲存主題設定。
+仅自定义名称	Custom Names Only
+优先级	priority
+传统主题编辑器	Traditional Theme Editor
+使用新版	Update verwenden	Use Update	Usar actualización	Utiliser la mise à jour	Usa aggiornamento	新版を使用	새 버전 사용	Użyj aktualizacji	Usar atualização	Использовать обновление	使用新版
+使用游戏内名称	Spielinterne Namen verwenden	Use in-game names	Usar nombres del juego	Utiliser les noms du jeu	Usa nomi del gioco	ゲーム内の名前を使用	게임 내 이름 사용	Użyj nazw z gry	Usar nomes do jogo	Использовать игровые названия	使用遊戲內名稱
+保存主题	Save Theme
+保存主题修改？	Designänderungen speichern?	Save theme changes?	¿Guardar cambios del tema?	Enregistrer les modifications du thème ?	Salvare le modifiche al tema?	テーマの変更を保存しますか？	테마 변경 사항을 저장하시겠습니까?	Zapisać zmiany motywu?	Salvar alterações do tema?	Сохранить изменения темы?	儲存主題修改？
+保存主题设置并应用到当前地图。	Designeinstellungen speichern und auf die aktuelle Karte anwenden.	Save theme settings and apply them to the current map.	Guardar los ajustes del tema y aplicarlos al mapa actual.	Enregistrer les paramètres du thème et les appliquer à la carte.	Salva le impostazioni del tema e applicale alla mappa corrente.	テーマ設定を保存し、現在の地図に適用します。	테마 설정을 저장하고 현재 지도에 적용합니다.	Zapisz ustawienia motywu i zastosuj je do bieżącej mapy.	Salvar configurações do tema e aplicá-las ao mapa atual.	Сохранить настройки темы и применить их к текущей карте.	儲存主題設定並套用至目前地圖。
+保存公交设置	ÖPNV-Einstellungen speichern	Save Transit Settings	Guardar ajustes de transporte	Enregistrer les paramètres de transport	Salva impostazioni trasporto	公共交通設定を保存	대중교통 설정 저장	Zapisz ustawienia transportu	Salvar configurações de transporte	Сохранить настройки транспорта	儲存大眾運輸設定
+保存地铁项目的修改？	Metroprojektänderungen speichern?	Save metro project changes?	¿Guardar cambios del proyecto de metro?	Enregistrer les modifications du projet de métro ?	Salvare le modifiche al progetto metro?	地下鉄プロジェクトの変更を保存しますか？	지하철 프로젝트 변경 사항을 저장하시겠습니까?	Zapisać zmiany projektu metra?	Salvar alterações do projeto de metrô?	Сохранить изменения проекта метро?	儲存地鐵專案的修改？
+保存并应用	Speichern und anwenden	Save & Apply	Guardar y aplicar	Enregistrer et appliquer	Salva e applica	保存して適用	저장 및 적용	Zapisz i zastosuj	Salvar e aplicar	Сохранить и применить	儲存並套用
+保存并重新生成	Speichern und neu erstellen	Save and Regenerate	Guardar y regenerar	Enregistrer et régénérer	Salva e rigenera	保存して再生成	저장 및 재생성	Zapisz i wygeneruj ponownie	Salvar e regenerar	Сохранить и создать заново	儲存並重新產生
+保存草稿修改？	Entwurfsänderungen speichern?	Save draft changes?	¿Guardar cambios del borrador?	Enregistrer les modifications du brouillon ?	Salvare le modifiche alla bozza?	下書きの変更を保存しますか？	초안 변경 사항을 저장하시겠습니까?	Zapisać zmiany szkicu?	Salvar alterações do rascunho?	Сохранить изменения черновика?	儲存草稿修改？
+保存项目	Save Project
+保持当前设置	Keep current settings
+保留当前设置	Aktuelle Einstellungen beibehalten	Keep Current Settings	Mantener los ajustes actuales	Conserver les paramètres actuels	Mantieni le impostazioni attuali	現在の設定を維持	현재 설정 유지	Zachowaj bieżące ustawienia	Manter configurações atuais	Сохранить текущие настройки	保留目前設定
+保留水域	Gewässer beibehalten	Include Water	Incluir agua	Inclure l’eau	Includi acqua	水域を保持	수역 유지	Uwzględnij wodę	Incluir água	Сохранить водоёмы	保留水域
+像素倍率	Pixelskalierung	Pixel Scale	Escala de píxeles	Échelle des pixels	Scala pixel	ピクセル倍率	픽셀 배율	Skala pikseli	Escala de pixels	Масштаб пикселей	像素倍率
+允许不同站名合并	Zusammenführen unterschiedlicher Stationsnamen erlauben	Allow Merging Different Station Names	Permitir combinar estaciones de nombres distintos	Autoriser la fusion de stations aux noms différents	Consenti unione di stazioni con nomi diversi	異なる駅名の統合を許可	다른 역 이름 병합 허용	Zezwól na łączenie stacji o różnych nazwach	Permitir unir estações com nomes diferentes	Разрешить объединение станций с разными названиями	允許不同站名合併
+元素	Elements
+元素尺寸倍率	Elementskalierung	Element Scale	Escala de elementos	Échelle des éléments	Scala elementi	要素の倍率	요소 배율	Skala elementów	Escala dos elementos	Масштаб элементов	元素尺寸倍率
+元素尺寸倍率（%）	Element Scale (%)
+全城	Entire City
+全选	Alles auswählen	Select All	Seleccionar todo	Tout sélectionner	Seleziona tutto	すべて選択	모두 선택	Zaznacz wszystko	Selecionar tudo	Выбрать всё	全選
+全部不选	Alles abwählen	Select None	Deseleccionar todo	Tout désélectionner	Deseleziona tutto	すべて選択解除	모두 선택 해제	Odznacz wszystko	Desmarcar tudo	Снять весь выбор	全部取消選取
+全部交通类型	Alle Verkehrsmittel	All Transport Types	Todos los medios de transporte	Tous les modes de transport	Tutti i mezzi di trasporto	すべての交通手段	모든 교통수단	Wszystkie rodzaje transportu	Todos os tipos de transporte	Все виды транспорта	所有運輸類型
+全部类别	All Categories
+全部线路	Alle Linien	All Lines	Todas las líneas	Toutes les lignes	Tutte le linee	すべての路線	모든 노선	Wszystkie linie	Todas as linhas	Все маршруты	所有路線
+公交设置	Transit Settings
+公共交通图	Transit Map
+公共交通线路筛选	ÖPNV-Linien filtern	Filter Transit Lines	Filtrar líneas de transporte	Filtrer les lignes de transport	Filtra linee di trasporto	公共交通路線を絞り込む	대중교통 노선 필터링	Filtruj linie transportu	Filtrar linhas de transporte	Фильтр маршрутов транспорта	大眾運輸路線篩選
+关闭合并时，分类合并和距离不可用，原设置保留。	Bei deaktivierter Zusammenführung sind Kategorien und Abstände nicht verfügbar; die Einstellungen bleiben erhalten.	Turning off merging disables category merging and distances while keeping their settings.	Al desactivar la combinación, las categorías y distancias quedan inactivas; se conservan los ajustes.	Désactiver la fusion désactive les catégories et distances tout en conservant leurs paramètres.	Disattivare l’unione disabilita categorie e distanze, mantenendo le impostazioni.	統合を無効にするとカテゴリ別統合と距離設定は使用できませんが、設定値は保持されます。	병합을 끄면 범주 병합과 거리 설정이 비활성화되며 기존 설정은 유지됩니다.	Wyłączenie łączenia blokuje kategorie i odległości, zachowując ustawienia.	Desativar a união desabilita categorias e distâncias, mantendo as configurações.	Отключение объединения делает категории и расстояния недоступными, сохраняя настройки.	關閉合併時，分類合併及距離無法使用，原設定保留。
+关闭密度控制时，密度档位不可用，原设置保留。	Bei deaktivierter Dichtesteuerung ist die Dichtestufe nicht verfügbar; der Wert bleibt erhalten.	Turning off density control disables the density tier and keeps its value.	Al desactivar el control de densidad, el nivel queda inactivo y se conserva su valor.	Désactiver le contrôle de densité désactive le niveau tout en conservant sa valeur.	Disattivare il controllo densità disabilita il livello e mantiene il valore.	密度制御を無効にすると密度レベルは使用できませんが、値は保持されます。	밀도 제어를 끄면 밀도 단계가 비활성화되며 값은 유지됩니다.	Wyłączenie kontroli gęstości blokuje poziom, zachowując jego wartość.	Desativar o controle de densidade desabilita o nível e mantém seu valor.	Отключение контроля плотности делает уровень недоступным, сохраняя его значение.	關閉密度控制時，密度等級無法使用，原設定保留。
+关闭文字与图标时，道路、行政区和站点名称及名称来源不可用，原设置保留；地点图标可单独设置。	Bei deaktivierten Texten und Symbolen sind Straßen-, Bezirks- und Stationsnamen sowie Namensquellen nicht verfügbar; Einstellungen bleiben erhalten. Ortssymbole sind separat einstellbar.	Turning off Text & Icons disables road, district and station names and name sources while keeping their settings. Place icons remain independently editable.	Al desactivar texto e iconos, los nombres de vías, distritos y estaciones y sus fuentes quedan inactivos; se conservan los ajustes. Los iconos de lugares se configuran por separado.	Désactiver texte et icônes rend les noms de routes, quartiers, stations et leurs sources indisponibles en conservant les paramètres. Les icônes de lieux restent modifiables séparément.	Disattivando testo e icone, nomi e fonti di strade, distretti e stazioni non sono disponibili; le impostazioni restano. Le icone dei luoghi sono configurabili separatamente.	文字とアイコンを無効にすると道路名、地区名、駅名と名称ソースは使用できませんが設定は保持されます。地点アイコンは個別に設定できます。	텍스트 및 아이콘을 끄면 도로·구역·역 이름과 이름 출처가 비활성화되며 설정은 유지됩니다. 장소 아이콘은 독립적으로 설정할 수 있습니다.	Wyłączenie tekstu i ikon blokuje nazwy dróg, dzielnic i stacji oraz ich źródła, zachowując ustawienia. Ikony miejsc można ustawiać osobno.	Desativar texto e ícones desabilita nomes e fontes de vias, distritos e estações, mantendo as configurações. Ícones de locais podem ser ajustados separadamente.	Отключение текста и значков делает названия дорог, районов, станций и их источники недоступными, сохраняя настройки. Значки мест можно настраивать отдельно.	關閉文字與圖示時，道路、行政區和站點名稱及名稱來源無法使用，原設定保留；地點圖示可單獨設定。
+其他设置	Weitere Einstellungen	Other Settings	Otros ajustes	Autres paramètres	Altre impostazioni	その他の設定	기타 설정	Inne ustawienia	Outras configurações	Другие настройки	其他設定
+兼容图像预览	Static Image Preview
+内容密度	Inhaltsdichte	Content Density	Densidad de contenido	Densité du contenu	Densità contenuti	コンテンツ密度	콘텐츠 밀도	Gęstość treści	Densidade de conteúdo	Плотность содержимого	內容密度
+内部设施	Interne Einrichtungen	Internal Facilities	Instalaciones internas	Installations internes	Strutture interne	内部施設	내부 시설	Obiekty wewnętrzne	Instalações internas	Внутренние объекты	內部設施
+内部设施显示阈值	Zoomschwelle interner Einrichtungen	Internal Facility Zoom Threshold	Umbral de zoom de instalaciones internas	Seuil de zoom des installations internes	Soglia zoom strutture interne	内部施設表示のズームしきい値	내부 시설 표시 확대 임계값	Próg powiększenia obiektów wewnętrznych	Limiar de zoom das instalações internas	Порог масштаба внутренних объектов	內部設施顯示閾值
+分类特写	Stil lokalisieren	Locate Style	Localizar estilo	Localiser le style	Individua stile	カテゴリのクローズアップ	분류별 클로즈업	Zlokalizuj styl	Localizar estilo	Найти стиль	分類特寫
+创建与工具	Create & Tools
+创建地图草稿	Create Map Draft
+创建工具	Create & Tools
+刷新草稿	Refresh Draft
+剪切	Ausschneiden	Cut	Cortar	Couper	Taglia	カット	잘라내기	Wytnij	Recortar	Вырезать	剪下
+功能区	Tools
+区划文字	District Labels
+区划文字设置	Bezirksbeschriftung	District Label Settings	Ajustes de etiquetas de distrito	Paramètres des libellés de quartier	Impostazioni etichette distretti	地区ラベル設定	구역 라벨 설정	Ustawienia etykiet dzielnic	Configurações de rótulos de distritos	Настройки подписей районов	區劃文字設定
+区域外观	Gebietsdarstellung	Area Appearance	Apariencia de zonas	Aspect des zones	Aspetto aree	範囲の外観	영역 모양	Wygląd obszarów	Aparência das regiões	Вид областей	區域外觀
+医院、学校、商店等建筑。	Hospitals, schools, shops and other buildings.
+单张尺寸（px）	Kachelgröße (px)	Tile Size (px)	Tamaño de mosaico (px)	Taille de tuile (px)	Dimensione riquadro (px)	タイルサイズ（px）	타일 크기(px)	Rozmiar kafelka (px)	Tamanho do bloco (px)	Размер плитки (px)	單張尺寸（px）
+卫星地图显示建议	Satellite map suggestions
+参考像素	Referenzpixel	Reference px	Píxeles de referencia	Pixels de référence	Pixel di riferimento	参照ピクセル	기준 픽셀	Piksele odniesienia	Pixels de referência	Эталонные пиксели	參考像素
+取消任务	Cancel Task
+取消所有线路，包括筛选中隐藏的线路。	Alle Linien abwählen, auch ausgefilterte.	Deselect all lines, including those hidden by filters.	Deseleccionar todas las líneas, incluidas las ocultas por filtros.	Désélectionner toutes les lignes, y compris celles masquées par les filtres.	Deseleziona tutte le linee, incluse quelle nascoste dai filtri.	フィルターで非表示の路線も含め、すべての選択を解除します。	필터로 숨겨진 노선을 포함해 모든 노선 선택을 해제합니다.	Odznacz wszystkie linie, także ukryte przez filtry.	Desmarcar todas as linhas, incluindo as ocultas pelos filtros.	Снять выбор всех маршрутов, включая скрытые фильтрами.	取消所有路線，包括篩選中隱藏的路線。
+取消插入	Einfügen abbrechen	Cancel Insertion	Cancelar inserción	Annuler l’insertion	Annulla inserimento	挿入をキャンセル	삽입 취소	Anuluj wstawianie	Cancelar inserção	Отменить вставку	取消插入
+取消选择筛选结果	Deselect Results
+另存项目	Save Project As
+只修改当前筛选结果，隐藏线路保持不变。	Nur gefilterte Ergebnisse ändern; ausgeblendete Linien bleiben unverändert.	Only change filtered results; hidden lines remain unchanged.	Modificar solo los resultados filtrados; las líneas ocultas no cambian.	Modifier uniquement les résultats filtrés ; les lignes masquées restent inchangées.	Modifica solo i risultati filtrati; le linee nascoste restano invariate.	絞り込み結果のみ変更し、非表示の路線は変更しません。	필터링된 결과만 변경하며 숨겨진 노선은 유지합니다.	Zmień tylko wyniki filtrowania; ukryte linie pozostają bez zmian.	Alterar apenas resultados filtrados; linhas ocultas permanecem inalteradas.	Изменить только результаты фильтрации; скрытые маршруты не меняются.	僅修改目前篩選結果，隱藏路線保持不變。
+只取消选择筛选结果中的可用区域。	Nur verfügbare Gebiete in den Filterergebnissen abwählen.	Deselect available regions in the filtered results only.	Deseleccionar solo las zonas disponibles en los resultados filtrados.	Désélectionner uniquement les zones disponibles dans les résultats filtrés.	Deseleziona solo le aree disponibili nei risultati filtrati.	絞り込み結果内の利用可能な範囲のみ選択解除します。	필터 결과의 사용 가능한 영역만 선택 해제합니다.	Odznacz tylko dostępne obszary w wynikach filtrowania.	Desmarcar apenas regiões disponíveis nos resultados filtrados.	Снять выбор только доступных областей в результатах фильтрации.	僅取消選取篩選結果中的可用區域。
+只合并站点圆圈，不改变线路站点数据。	Merges station circles without changing line or stop data.
+只选择筛选结果中的可用区域。	Nur verfügbare Gebiete in den Filterergebnissen auswählen.	Select available regions in the filtered results only.	Seleccionar solo las zonas disponibles en los resultados filtrados.	Sélectionner uniquement les zones disponibles dans les résultats filtrés.	Seleziona solo le aree disponibili nei risultati filtrati.	絞り込み結果内の利用可能な範囲のみ選択します。	필터 결과의 사용 가능한 영역만 선택합니다.	Wybierz tylko dostępne obszary w wynikach filtrowania.	Selecionar apenas regiões disponíveis nos resultados filtrados.	Выбрать только доступные области в результатах фильтрации.	僅選取篩選結果中的可用區域。
+合并与避让	Merge & Avoidance
+合并兴趣点	Orte zusammenführen	Merge Places	Combinar lugares	Fusionner les lieux	Unisci luoghi	地点を統合	장소 병합	Połącz miejsca	Unir locais	Объединить места	合併興趣點
+合并相邻站点	Merge Adjacent Stations
+合并距离（米）	Merge Distance (m)
+合并邻近地点	Merge Nearby Places
+名称位置	Namensposition	Name Placement	Posición del nombre	Position du nom	Posizione nomi	名称の位置	이름 위치	Położenie nazwy	Posição do nome	Положение названия	名稱位置
+名称升序	Name Ascending
+名称可见性	Namenssichtbarkeit	Name Visibility	Visibilidad de nombres	Visibilité des noms	Visibilità nomi	名称の表示	이름 표시	Widoczność nazw	Visibilidade dos nomes	Видимость названий	名稱可見性
+名称描边宽度（字号百分比）	Namenskonturbreite (% der Schriftgröße)	Name Outline Width (% of Font Size)	Contorno del nombre (% del tamaño de fuente)	Largeur du contour du nom (% de la police)	Spessore contorno nome (% dimensione carattere)	名称の縁取り幅（文字サイズの%）	이름 윤곽선 너비(글꼴 크기 %)	Szerokość obrysu nazwy (% rozmiaru czcionki)	Largura do contorno do nome (% da fonte)	Ширина обводки названия (% размера шрифта)	名稱描邊寬度（字級百分比）
+名称来源	Name Sources
+名称降序	Name Descending
+启用图标密度控制	Symboldichtesteuerung aktivieren	Enable icon density control	Activar control de densidad de iconos	Activer le contrôle de densité d’icônes	Attiva controllo densità icone	アイコン密度制御を有効にする	아이콘 밀도 제어 활성화	Włącz kontrolę gęstości ikon	Ativar controle de densidade de ícones	Включить управление плотностью значков	啟用圖示密度控制
+固定	Fixed
+固定与缩放组合	Fest + skaliert	Fixed + Scaled	Fijo + escalado	Fixe + à l’échelle	Fisso + scalato	固定＋拡大縮小	고정 + 배율	Stałe + skalowane	Fixo + escalonado	Фиксированный + масштабируемый	固定與縮放組合
+固定大小	Feste Größe	Fixed Size	Tamaño fijo	Taille fixe	Dimensione fissa	固定サイズ	고정 크기	Stały rozmiar	Tamanho fixo	Фиксированный размер	固定大小
+图例位置	Legend Position
+图像尺寸	Image Size
+图层设置	Layer Settings
+图标可见性	Symbolsichtbarkeit	Icon Visibility	Visibilidad de iconos	Visibilité des icônes	Visibilità icone	アイコンの表示	아이콘 표시	Widoczność ikon	Visibilidade dos ícones	Видимость значков	圖示可見性
+图标外观	Symboldarstellung	Icon appearance	Apariencia de iconos	Aspect des icônes	Aspetto icone	アイコンの外観	아이콘 모양	Wygląd ikon	Aparência dos ícones	Вид значков	圖示外觀
+图标大小（参考像素）	Icon Size (Reference px)
+图标文字	Icon Labels
+图标文字设置	Symbolbeschriftung	Icon Label Settings	Ajustes de etiquetas de iconos	Paramètres des libellés d’icônes	Impostazioni etichette icone	アイコンラベル設定	아이콘 라벨 설정	Ustawienia etykiet ikon	Configurações de rótulos de ícones	Настройки подписей значков	圖示文字設定
+图标旁名称的文字样式	Text Style Beside Icons
+图标映射	Icon Mapping
+图标映射有 %d 个问题，请检查后保存。	Symbolzuordnungen haben %d Probleme. Vor dem Speichern prüfen.	Icon mappings have %d issues. Check them before saving.	Hay %d problemas con las asignaciones de iconos. Revísalos antes de guardar.	Les mappages d’icônes présentent %d problèmes. Vérifiez-les avant d’enregistrer.	Le associazioni icone presentano %d problemi. Controlla prima di salvare.	アイコンマッピングに%d件の問題があります。確認してから保存してください。	아이콘 매핑에 %d개의 문제가 있습니다. 저장 전에 확인하세요.	Mapowania ikon zawierają %d problemów. Sprawdź przed zapisem.	Há %d problemas nos mapeamentos de ícones. Verifique antes de salvar.	В соответствиях значков %d проблем. Проверьте перед сохранением.	圖示對應有 %d 個問題，請檢查後儲存。
+图标映射校验通过。	Symbolzuordnungen geprüft.	Icon mappings validated.	Asignaciones de iconos validadas.	Mappages d’icônes validés.	Associazioni icone convalidate.	アイコンマッピングを検証しました。	아이콘 매핑 검증 완료.	Mapowania ikon zweryfikowane.	Mapeamentos de ícones validados.	Соответствия значков проверены.	圖示對應驗證通過。
+图标映射设置	Icon Mapping Settings
+图标设置	Symboleinstellungen	Icon settings	Ajustes de iconos	Paramètres des icônes	Impostazioni icone	アイコン設定	아이콘 설정	Ustawienia ikon	Configurações de ícones	Настройки значков	圖示設定
+图标设置…	Symboleinstellungen…	Icon settings…	Ajustes de iconos…	Paramètres des icônes…	Impostazioni icone…	アイコン設定…	아이콘 설정…	Ustawienia ikon…	Configurações de ícones…	Настройки значков…	圖示設定…
+圆圈直径（参考像素）	Circle Diameter (Reference px)
+在浏览器预览	Preview in Browser
+在画布上继续绘制，按 Esc 取消。	Auf der Zeichenfläche weiterzeichnen oder mit Esc abbrechen.	Continue drawing on the canvas or press Esc to cancel.	Sigue dibujando en el lienzo o pulsa Esc para cancelar.	Continuez à dessiner sur le canevas ou appuyez sur Esc pour annuler.	Continua a disegnare o premi Esc per annullare.	キャンバス上で描画を続けるか、Escでキャンセルします。	캔버스에서 계속 그리거나 Esc로 취소하세요.	Kontynuuj rysowanie na płótnie lub naciśnij Esc, aby anulować.	Continue desenhando na tela ou pressione Esc para cancelar.	Продолжите рисование на холсте или нажмите Esc для отмены.	在畫布上繼續繪製，按 Esc 取消。
+地图刷新失败：	Kartenaktualisierung fehlgeschlagen: 	Map refresh failed: 	Error al actualizar mapa: 	Échec de l’actualisation : 	Aggiornamento mappa non riuscito: 	地図の更新に失敗：	지도 새로 고침 실패: 	Błąd odświeżenia mapy: 	Falha ao atualizar o mapa: 	Ошибка обновления карты: 	地圖重新整理失敗：
+地图处理	Kartenverarbeitung	map processing	procesamiento del mapa	traitement de la carte	elaborazione mappa	地図処理	지도 처리	przetwarzanie mapy	processamento do mapa	обработка карты	地圖處理
+地图已显示，正在补充细节…	Karte angezeigt; Details werden geladen…	Map displayed; loading details…	Mapa visible; cargando detalles…	Carte affichée ; chargement des détails…	Mappa visualizzata; caricamento dettagli…	地図を表示しました。詳細を読み込み中…	지도 표시 완료, 세부 정보 로드 중…	Mapa wyświetlona; ładowanie szczegółów…	Mapa exibido; carregando detalhes…	Карта отображена; загрузка деталей…	地圖已顯示，正在補充細節…
+地图旋转	Kartendrehung	Map Rotation	Rotación del mapa	Rotation de la carte	Rotazione mappa	地図の回転	지도 회전	Obrót mapy	Rotação do mapa	Поворот карты	地圖旋轉
+地图服务未就绪	Kartendienst nicht bereit	Map service not ready	Servicio de mapas no preparado	Service cartographique non prêt	Servizio mappe non pronto	マップサービスの準備ができていません	지도 서비스 준비 안 됨	Usługa map nie jest gotowa	Serviço de mapas não está pronto	Сервис карт не готов	地圖服務尚未就緒
+地图未确认预览质量设置。	Karte hat die Vorschauqualität nicht bestätigt.	The map has not confirmed the preview quality settings.	El mapa no ha confirmado los ajustes de calidad de vista previa.	La carte n’a pas confirmé les paramètres de qualité d’aperçu.	La mappa non ha confermato la qualità dell’anteprima.	地図がプレビュー品質設定を確認していません。	지도가 미리보기 품질 설정을 확인하지 않았습니다.	Mapa nie potwierdziła ustawień jakości podglądu.	O mapa não confirmou as configurações de qualidade da prévia.	Карта не подтвердила настройки качества предпросмотра.	地圖尚未確認預覽品質設定。
+地图样式已改变，请关闭并重新打开导出窗口	Kartenstil geändert. Exportfenster schließen und erneut öffnen.	Map style changed. Close and reopen the export window.	El estilo del mapa cambió. Cierra y vuelve a abrir la ventana de exportación.	Le style de carte a changé. Fermez et rouvrez la fenêtre d’exportation.	Lo stile mappa è cambiato. Chiudi e riapri la finestra di esportazione.	地図スタイルが変更されました。エクスポートウインドウを開き直してください。	지도 스타일이 변경되었습니다. 내보내기 창을 다시 여세요.	Zmieniono styl mapy. Zamknij i otwórz ponownie okno eksportu.	O estilo do mapa mudou. Feche e reabra a janela de exportação.	Стиль карты изменился. Закройте и откройте окно экспорта снова.	地圖樣式已變更，請關閉並重新開啟匯出視窗
+地图状态	Kartenstatus	Map Status	Estado del mapa	État de la carte	Stato mappa	地図の状態	지도 상태	Stan mapy	Estado do mapa	Состояние карты	地圖狀態
+地图网页进程已退出，请重新打开应用。	Karten-Webprozess beendet. App neu öffnen.	The map web process exited. Reopen the app.	El proceso web del mapa terminó. Vuelve a abrir la aplicación.	Le processus web de la carte s’est arrêté. Rouvrez l’application.	Il processo web della mappa è terminato. Riapri l’app.	地図Webプロセスが終了しました。アプリを開き直してください。	지도 웹 프로세스가 종료되었습니다. 앱을 다시 여세요.	Proces sieciowy mapy zakończył działanie. Otwórz aplikację ponownie.	O processo web do mapa encerrou. Reabra o aplicativo.	Веб-процесс карты завершился. Откройте приложение снова.	地圖網頁程序已結束，請重新開啟應用程式。
+地图背景	Map Background
+地图草稿设置	Kartenentwurfseinstellungen	Map Draft Settings	Ajustes del borrador del mapa	Paramètres du brouillon de carte	Impostazioni bozza mappa	地図下書き設定	지도 초안 설정	Ustawienia szkicu mapy	Configurações do rascunho do mapa	Настройки черновика карты	地圖草稿設定
+地图预览	Kartenvorschau	map preview	vista previa del mapa	aperçu de la carte	anteprima mappa	地図プレビュー	지도 미리보기	podgląd mapy	prévia do mapa	предпросмотр карты	地圖預覽
+地图预览不可用	Kartenvorschau nicht verfügbar	Map preview unavailable	Vista previa del mapa no disponible	Aperçu de la carte indisponible	Anteprima mappa non disponibile	地図プレビューを利用できません	지도 미리보기 사용 불가	Podgląd mapy niedostępny	Prévia do mapa indisponível	Предпросмотр карты недоступен	地圖預覽無法使用
+地形表现	Terrain Appearance
+地点	Orte	Places	Lugares	Lieux	Luoghi	地点	장소	Miejsca	Locais	Места	地點
+地点合并与避让按当前视图保存。	Ortszusammenführung und Überlappungsvermeidung werden je Ansicht gespeichert.	Place merging and avoidance are saved for the current view.	La combinación y separación de lugares se guardan para la vista actual.	La fusion et l’évitement des lieux sont enregistrés pour la vue actuelle.	Unione e separazione dei luoghi sono salvate per la vista corrente.	地点の統合と重なり回避は現在のビューごとに保存されます。	장소 병합 및 겹침 방지는 현재 보기별로 저장됩니다.	Łączenie i unikanie nakładania miejsc są zapisywane dla bieżącego widoku.	União e prevenção de sobreposição são salvas para a vista atual.	Объединение и устранение перекрытий мест сохраняются для текущего вида.	地點合併與避讓依目前檢視儲存。
+地点名称	Place Names
+地点名称跟随对应图标显示；隐藏图标时保留名称设置。	Place names follow their icons. Hiding an icon retains its name setting.
+地点图标	Place Icons
+地点图标与名称	Place Icons & Names
+地铁 PNG 返回数据无效	Ungültige Metro-PNG-Daten	Invalid metro PNG data	Datos PNG de metro no válidos	Données PNG du métro invalides	Dati PNG metro non validi	地下鉄PNGデータが無効です	잘못된 지하철 PNG 데이터	Nieprawidłowe dane PNG metra	Dados PNG de metrô inválidos	Недопустимые данные PNG метро	地鐵 PNG 傳回資料無效
+地铁生成设置	Metro-Erstellungseinstellungen	Metro Generation Settings	Ajustes de generación de metro	Paramètres de génération du métro	Impostazioni generazione metro	地下鉄路線図の生成設定	지하철 생성 설정	Ustawienia generowania metra	Configurações de geração de metrô	Настройки генерации метро	地鐵產生設定
+地铁示意图	Metro Diagram
+地铁线路筛选	Metrolinien filtern	Filter Metro Lines	Filtrar líneas de metro	Filtrer les lignes de métro	Filtra linee metro	地下鉄路線を絞り込む	지하철 노선 필터링	Filtruj linie metra	Filtrar linhas de metrô	Фильтр линий метро	地鐵路線篩選
+地铁编辑器	metro editor
+地铁编辑器响应超时，请重试。	Zeitüberschreitung des Metroeditors. Erneut versuchen.	Metro editor timed out. Try again.	El editor de metro agotó el tiempo de espera. Inténtalo de nuevo.	Délai de l’éditeur de métro dépassé. Réessayez.	Timeout dell’editor metro. Riprova.	地下鉄エディターの応答がタイムアウトしました。再試行してください。	지하철 편집기 응답 시간 초과. 다시 시도하세요.	Przekroczono czas odpowiedzi edytora metra. Spróbuj ponownie.	Tempo esgotado no editor de metrô. Tente novamente.	Время ответа редактора метро истекло. Повторите попытку.	地鐵編輯器回應逾時，請重試。
+地铁项目尚未就绪	Metroprojekt noch nicht bereit	Metro project not ready	Proyecto de metro no preparado	Projet de métro non prêt	Progetto metro non pronto	地下鉄プロジェクトの準備ができていません	지하철 프로젝트 준비 안 됨	Projekt metra nie jest gotowy	Projeto de metrô não está pronto	Проект метро не готов	地鐵專案尚未就緒
+地铁项目已生成，请保存项目	Metroprojekt erstellt. Projekt speichern.	Metro project generated. Save the project.	Proyecto de metro generado. Guarda el proyecto.	Projet de métro créé. Enregistrez-le.	Progetto metro generato. Salva il progetto.	地下鉄プロジェクトを生成しました。保存してください。	지하철 프로젝트가 생성되었습니다. 저장하세요.	Projekt metra utworzony. Zapisz projekt.	Projeto de metrô gerado. Salve o projeto.	Проект метро создан. Сохраните проект.	地鐵專案已產生，請儲存專案
+地铁项目有未保存修改	Metroprojekt hat ungespeicherte Änderungen	The metro project has unsaved changes.	El proyecto de metro tiene cambios sin guardar.	Le projet de métro comporte des modifications non enregistrées.	Il progetto metro contiene modifiche non salvate.	地下鉄プロジェクトに未保存の変更があります。	지하철 프로젝트에 저장되지 않은 변경 사항이 있습니다.	Projekt metra zawiera niezapisane zmiany.	O projeto de metrô tem alterações não salvas.	В проекте метро есть несохранённые изменения.	地鐵專案有未儲存修改
+地铁项目生成超时	Zeitüberschreitung beim Erstellen des Metroprojekts	Metro project generation timed out	Se agotó el tiempo de generación del proyecto de metro	Délai de création du projet de métro dépassé	Timeout di generazione del progetto metro	地下鉄プロジェクトの生成がタイムアウトしました	지하철 프로젝트 생성 시간 초과	Przekroczono czas tworzenia projektu metra	Tempo esgotado ao gerar projeto de metrô	Время создания проекта метро истекло	地鐵專案產生逾時
+城市地图	Stadtkarte	City Map	Mapa de la ciudad	Carte de la ville	Mappa della città	都市マップ	도시 지도	Mapa miasta	Mapa da cidade	Карта города	城市地圖
+城市已切换，请重新打开区域选择。	Stadt gewechselt. Gebietsauswahl erneut öffnen.	The city has changed. Reopen the region selector.	La ciudad ha cambiado. Vuelve a abrir la selección de zonas.	La ville a changé. Rouvrez le sélecteur de zones.	La città è cambiata. Riapri la selezione aree.	都市が変更されました。範囲選択を開き直してください。	도시가 변경되었습니다. 영역 선택을 다시 여세요.	Zmieniono miasto. Otwórz ponownie wybór obszarów.	A cidade mudou. Reabra a seleção de regiões.	Город изменился. Откройте выбор областей снова.	城市已切換，請重新開啟區域選擇。
+城市已切换，请重新打开线路选择。	Stadt gewechselt. Linienauswahl erneut öffnen.	The city changed. Reopen line selection.	La ciudad ha cambiado. Vuelve a abrir la selección de líneas.	La ville a changé. Rouvrez la sélection de lignes.	La città è cambiata. Riapri la selezione linee.	都市が変更されました。路線選択を開き直してください。	도시가 변경되었습니다. 노선 선택을 다시 여세요.	Zmieniono miasto. Otwórz ponownie wybór linii.	A cidade mudou. Reabra a seleção de linhas.	Город изменился. Откройте выбор маршрутов снова.	城市已切換，請重新開啟路線選擇。
+城市已经改变，请重新打开导出窗口	Stadt gewechselt. Exportfenster erneut öffnen.	The city changed. Reopen the export window.	La ciudad cambió. Vuelve a abrir la ventana de exportación.	La ville a changé. Rouvrez la fenêtre d’exportation.	La città è cambiata. Riapri la finestra di esportazione.	都市が変更されました。エクスポートウインドウを開き直してください。	도시가 변경되었습니다. 내보내기 창을 다시 여세요.	Zmieniono miasto. Otwórz ponownie okno eksportu.	A cidade mudou. Reabra a janela de exportação.	Город изменился. Откройте окно экспорта снова.	城市已變更，請重新開啟匯出視窗
+城市或主题已切换，请重新打开主题编辑器。	Stadt oder Design gewechselt. Designeditor erneut öffnen.	The city or theme has changed. Reopen the theme editor.	La ciudad o el tema cambió. Vuelve a abrir el editor de temas.	La ville ou le thème a changé. Rouvrez l’éditeur de thèmes.	La città o il tema è cambiato. Riapri l’editor temi.	都市またはテーマが変更されました。テーマエディターを開き直してください。	도시 또는 테마가 변경되었습니다. 테마 편집기를 다시 여세요.	Zmieniono miasto lub motyw. Otwórz edytor motywów ponownie.	A cidade ou tema mudou. Reabra o editor de temas.	Город или тема изменились. Откройте редактор тем снова.	城市或主題已切換，請重新開啟主題編輯器。
+城市概览	City Overview
+城市概览与建筑列表	Stadtübersicht und Gebäudeliste	City Overview and Buildings	Vista general y edificios	Vue d’ensemble et bâtiments	Panoramica città ed edifici	都市概要と建物一覧	도시 개요 및 건물 목록	Przegląd miasta i budynki	Visão geral e edifícios	Обзор города и здания	城市概覽與建築清單
+处理中	Wird verarbeitet	Working	Procesando	Traitement	Elaborazione	処理中	처리 중	Przetwarzanie	Processando	Обработка	處理中
+处理中…	Wird verarbeitet…	Working…	Procesando…	Traitement…	Elaborazione…	処理中…	처리 중…	Przetwarzanie…	Processando…	Обработка…	處理中…
+复制	Kopieren	Copy	Copiar	Copier	Copia	コピー	복사	Kopiuj	Copiar	Копировать	複製
+复制主题	Duplicate Theme
+复制报错	Copy error
+外观	Appearance
+大小随缩放的变化	Größe nach Zoomstufe	Size Across Zoom Levels	Tamaño según el zoom	Taille selon le zoom	Dimensione secondo zoom	ズームに応じたサイズ	확대 수준별 크기	Rozmiar zależnie od powiększenia	Tamanho por nível de zoom	Размер по уровням масштаба	大小隨縮放的變化
+完成后打开输出文件夹	Reveal Output When Finished
+定位	Locate
+宽度（px）	Width (px)
+密度与避让	Dichte und Überlappung	Density & Overlap	Densidad y solapamiento	Densité et chevauchement	Densità e sovrapposizione	密度と重なり	밀도 및 겹침	Gęstość i nakładanie	Densidade e sobreposição	Плотность и перекрытие	密度與避讓
+密度控制	Dichtesteuerung	Density Control	Control de densidad	Contrôle de densité	Controllo densità	密度制御	밀도 제어	Kontrola gęstości	Controle de densidade	Управление плотностью	密度控制
+对照预览暂不可用	Vergleichsvorschau nicht verfügbar	Comparison unavailable	Comparación no disponible	Comparaison indisponible	Confronto non disponibile	比較プレビューを利用できません	비교 미리보기 사용 불가	Porównanie niedostępne	Comparação indisponível	Сравнение недоступно	對照預覽暫時無法使用
+对象外观	Objektdarstellung	Object Appearance	Apariencia de objetos	Aspect des objets	Aspetto oggetti	オブジェクトの外観	객체 모양	Wygląd obiektów	Aparência dos objetos	Вид объектов	物件外觀
+对象属性	Object Properties
+对象轮廓宽度	Object Outline Width
+对象轮廓颜色	Object Outline Color
+导入主题	Import Theme
+导出	Export
+导出 YAML 文件，不改变当前地图或已保存设置。	YAML-Datei exportieren, ohne Karte oder gespeicherte Einstellungen zu ändern.	Export YAML without changing the map or saved settings.	Exportar YAML sin cambiar el mapa ni los ajustes guardados.	Exporter le fichier YAML sans modifier la carte ni les paramètres enregistrés.	Esporta YAML senza modificare mappa o impostazioni salvate.	地図や保存済み設定を変更せず、YAMLをエクスポートします。	지도나 저장된 설정을 변경하지 않고 YAML을 내보냅니다.	Eksportuj YAML bez zmiany mapy lub zapisanych ustawień.	Exportar YAML sem alterar o mapa ou configurações salvas.	Экспортировать YAML без изменения карты или сохранённых настроек.	匯出 YAML 檔案，不變更目前地圖或已儲存設定。
+导出主题	Design exportieren	Export Theme	Exportar tema	Exporter le thème	Esporta tema	テーマをエクスポート	테마 내보내기	Eksportuj motyw	Exportar tema	Экспорт темы	匯出主題
+导出主题…	Design exportieren…	Export Theme…	Exportar tema…	Exporter le thème…	Esporta tema…	テーマをエクスポート…	테마 내보내기…	Eksportuj motyw…	Exportar tema…	Экспорт темы…	匯出主題…
+导出当前选区	Export Selection
+导出比例（%）	Exportmaßstab (%)	Export Scale (%)	Escala de exportación (%)	Échelle d’exportation (%)	Scala esportazione (%)	出力倍率（%）	내보내기 배율(%)	Skala eksportu (%)	Escala de exportação (%)	Масштаб экспорта (%)	匯出比例（%）
+导出网页	Export HTML
+导出设置	Exporteinstellungen	Export Settings	Ajustes de exportación	Paramètres d’exportation	Impostazioni esportazione	エクスポート設定	내보내기 설정	Ustawienia eksportu	Configurações de exportação	Настройки экспорта	匯出設定
+导出选区	Export Selection
+尚未打开城市	No City Open
+尚未打开项目	Kein Projekt geöffnet	No Project Open	No hay proyecto abierto	Aucun projet ouvert	Nessun progetto aperto	プロジェクトが開かれていません	열린 프로젝트 없음	Brak otwartego projektu	Nenhum projeto aberto	Проект не открыт	尚未開啟專案
+尚未选择保存位置	Kein Speicherort gewählt	No Destination Selected	No hay destino seleccionado	Aucune destination sélectionnée	Nessuna destinazione selezionata	保存先が未選択です	저장 위치 미선택	Nie wybrano miejsca zapisu	Nenhum destino selecionado	Место сохранения не выбрано	尚未選取儲存位置
+展开功能区	Werkzeugleiste anzeigen	Show Tools	Mostrar herramientas	Afficher les outils	Mostra strumenti	ツールを表示	도구 표시	Pokaż narzędzia	Mostrar ferramentas	Показать инструменты	展開功能區
+展开右栏	Show Inspector
+展开左栏	Show Sidebar
+展开或收起功能区	Werkzeugleiste umschalten	Toggle Toolbar	Alternar barra de herramientas	Afficher/masquer la barre d’outils	Mostra/nascondi barra strumenti	ツールバーを切り替える	도구 모음 전환	Przełącz pasek narzędzi	Alternar barra de ferramentas	Переключить панель инструментов	展開或收合功能區
+山体光影细节	Schummerungsdetails	Hillshade Details	Detalles de sombreado	Détails de l’ombrage	Dettagli ombreggiatura	陰影の詳細	지형 음영 세부 정보	Szczegóły cieniowania	Detalhes de sombreamento	Детали рельефной тени	山體光影細節
+山体阴影	Hillshade
+岸线平滑强度	Shoreline Smoothing
+工作区	Arbeitsbereich	Workspace	Espacio de trabajo	Espace de travail	Area di lavoro	ワークスペース	작업 공간	Obszar roboczy	Área de trabalho	Рабочая область	工作區
+已保存：	Gespeichert: 	Saved: 	Guardado: 	Enregistré : 	Salvato: 	保存済み：	저장됨: 	Zapisano: 	Salvo: 	Сохранено: 	已儲存：
+已完成：%@	Fertig: %@	Completed: %@	Completado: %@	Terminé : %@	Completato: %@	完了：%@	완료: %@	Ukończono: %@	Concluído: %@	Готово: %@	已完成：%@
+已应用到当前地图，尚未保存。	Applied to the current map; theme settings have not been saved.
+已打开：	Geöffnet: 	Opened: 	Abierto: 	Ouvert : 	Aperto: 	開きました：	열림: 	Otwarto: 	Aberto: 	Открыто: 	已開啟：
+已更新	Aktualisiert	Updated	Actualizado	Mis à jour	Aggiornato	更新しました	업데이트됨	Zaktualizowano	Atualizado	Обновлено	已更新
+已生成 %d 条，跳过 %d 条	%d Linien erstellt, %d übersprungen	Exported %d lines, skipped %d	%d líneas generadas, %d omitidas	%d lignes générées, %d ignorées	%d linee generate, %d ignorate	%d路線を生成、%d路線をスキップ	%d개 노선 생성, %d개 건너뜀	Utworzono %d linii, pominięto %d	%d linhas geradas, %d ignoradas	Создано %d маршрутов, пропущено %d	已產生 %d 條，略過 %d 條
+已选	Selected
+已选 %d 条 / 可用 %d 条	%d gewählt / %d verfügbar	%d Selected / %d Available	%d seleccionadas / %d disponibles	%d sélectionnées / %d disponibles	%d selezionate / %d disponibili	%d選択済み / %d利用可能	%d개 선택 / %d개 사용 가능	%d wybranych / %d dostępnych	%d selecionadas / %d disponíveis	Выбрано %d / доступно %d	已選 %d 條 / 可用 %d 條
+已选择地图范围	Map area selected
+已重置主题编辑和导出方式	Designeditor- und Exportauswahl zurückgesetzt	Theme editor and export choices reset	Se restablecieron las opciones de edición y exportación	Choix de l’éditeur de thème et d’exportation réinitialisés	Scelte editor tema ed esportazione ripristinate	テーマエディターとエクスポート方法をリセットしました	테마 편집 및 내보내기 선택을 초기화했습니다	Zresetowano wybór edytora motywów i eksportu	Opções de edição de tema e exportação redefinidas	Выбор редактора темы и экспорта сброшен	已重設主題編輯與匯出方式
+布局详细设置	Layout Details
+布局调整强度（%）	Layout Adjustment (%)
+常用设置	Häufige Einstellungen	Common Settings	Ajustes comunes	Paramètres courants	Impostazioni comuni	よく使う設定	일반 설정	Ustawienia ogólne	Configurações comuns	Общие настройки	常用設定
+平行线路间距	Parallel Line Spacing
+应用卫星推荐显示	Satellitenansicht-Empfehlungen anwenden	Apply Satellite View Suggestions	Aplicar sugerencias de vista satelital	Appliquer les suggestions de vue satellite	Applica suggerimenti vista satellitare	衛星画像表示の推奨設定を適用	위성 지도 권장 설정 적용	Zastosuj zalecenia widoku satelitarnego	Aplicar sugestões de vista de satélite	Применить рекомендации спутникового вида	套用衛星推薦顯示
+应用推荐设置	Apply suggestions
+应用设置并重新生成	Anwenden und neu erstellen	Apply & Regenerate	Aplicar y regenerar	Appliquer et régénérer	Applica e rigenera	設定を適用して再生成	설정 적용 및 재생성	Zastosuj i wygeneruj ponownie	Aplicar e regenerar	Применить и создать заново	套用設定並重新產生
+底图	Base Map
+底图遮罩	Basiskartenmaske	Base Map Mask	Máscara del mapa base	Masque du fond de carte	Maschera mappa base	ベースマップマスク	기본 지도 마스크	Maska mapy bazowej	Máscara do mapa base	Маска базовой карты	底圖遮罩
+度	degrees
+建成区外观	Bebauungsdarstellung	Built-up Area Appearance	Apariencia de zonas construidas	Aspect des zones bâties	Aspetto aree edificate	市街地の外観	시가지 모양	Wygląd obszarów zabudowanych	Aparência das áreas construídas	Вид застроенных территорий	建成區外觀
+建筑	Buildings
+建筑 %@ 栋　道路 %.1f km　公交线路 %.1f km　建成区 %.2f km²	%@ Gebäude   Straßen %.1f km   ÖPNV %.1f km   Bebaut %.2f km²	%@ buildings   Roads %.1f km   Transit %.1f km   Built-up area %.2f km²	%@ edificios   Carreteras %.1f km   Transporte %.1f km   Área construida %.2f km²	%@ bâtiments   Routes %.1f km   Transport %.1f km   Zone bâtie %.2f km²	%@ edifici   Strade %.1f km   Trasporto %.1f km   Area edificata %.2f km²	建物%@棟　道路%.1f km　公共交通%.1f km　市街地%.2f km²	건물 %@개　도로 %.1f km　대중교통 %.1f km　시가지 %.2f km²	%@ budynków   Drogi %.1f km   Transport %.1f km   Zabudowa %.2f km²	%@ edifícios   Vias %.1f km   Transporte %.1f km   Área construída %.2f km²	%@ зданий   Дороги %.1f км   Транспорт %.1f км   Застройка %.2f км²	建築 %@ 棟　道路 %.1f km　大眾運輸 %.1f km　建成區 %.2f km²
+建筑名称	Building Names
+建筑着色	Building Colors
+建议关闭：建筑、地形、水域、建成区、用地类型、POI 足迹和 PO 对象。	Gebäude, Gelände, Gewässer, bebaute Gebiete, Landnutzung, POI-Grundrisse und PO-Objekte ausblenden.	Hide buildings, terrain, water, built-up areas, land use, POI footprints and procedural objects.	Ocultar edificios, terreno, agua, zonas construidas, usos del suelo, huellas de POI y objetos PO.	Masquer bâtiments, terrain, eau, zones bâties, occupation du sol, empreintes POI et objets PO.	Nascondi edifici, terreno, acqua, aree edificate, uso del suolo, impronte POI e oggetti PO.	建物、地形、水域、市街地、土地利用、POIフットプリント、POオブジェクトを非表示にします。	건물, 지형, 수역, 시가지, 토지 이용, POI 영역 및 PO 객체를 숨깁니다.	Ukryj budynki, teren, wodę, zabudowę, użytkowanie terenu, obrysy POI i obiekty PO.	Ocultar edifícios, terreno, água, áreas construídas, uso do solo, áreas POI e objetos PO.	Скрыть здания, рельеф, воду, застройку, землепользование, контуры POI и объекты PO.	建議關閉：建築、地形、水域、建成區、土地使用類型、POI 足跡及 PO 物件。
+建议开启：道路、图标、文字。	Straßen, Symbole und Beschriftungen aktivieren.	Enable roads, icons and labels.	Activar vías, iconos y etiquetas.	Activer routes, icônes et libellés.	Attiva strade, icone ed etichette.	道路、アイコン、ラベルを有効にします。	도로, 아이콘 및 라벨을 활성화합니다.	Włącz drogi, ikony i etykiety.	Ativar vias, ícones e rótulos.	Включить дороги, значки и подписи.	建議啟用：道路、圖示、文字。
+开始	Home
+引擎协议不兼容	Inkompatibles Engine-Protokoll	Incompatible engine protocol	Protocolo del motor incompatible	Protocole du moteur incompatible	Protocollo del motore incompatibile	エンジンのプロトコルに互換性がありません	호환되지 않는 엔진 프로토콜	Niezgodny protokół silnika	Protocolo do motor incompatível	Несовместимый протокол движка	引擎通訊協定不相容
+引擎已退出（%d）。	Die Engine wurde beendet (%d).	The engine exited (%d).	El motor se cerró (%d).	Le moteur s’est arrêté (%d).	Il motore è terminato (%d).	エンジンが終了しました（%d）。	엔진이 종료되었습니다(%d).	Silnik zakończył działanie (%d).	O motor foi encerrado (%d).	Движок завершился (%d).	引擎已結束（%d）。
+引擎未就绪	Engine nicht bereit	Engine Not Ready	Motor no preparado	Moteur non prêt	Motore non pronto	エンジン準備未完了	엔진 준비 안 됨	Silnik nie jest gotowy	Motor não está pronto	Движок не готов	引擎尚未就緒
+引擎未就绪，请稍后重试。	Engine nicht bereit. Später erneut versuchen.	The engine is not ready. Please try again shortly.	El motor no está preparado. Inténtalo de nuevo en breve.	Le moteur n’est pas prêt. Réessayez dans un instant.	Il motore non è pronto. Riprova tra poco.	エンジンの準備ができていません。少し待って再試行してください。	엔진이 준비되지 않았습니다. 잠시 후 다시 시도하세요.	Silnik nie jest gotowy. Spróbuj za chwilę.	O motor não está pronto. Tente novamente em instantes.	Движок не готов. Повторите попытку позже.	引擎尚未就緒，請稍後重試。
+引擎输出	Engine-Ausgabe	Engine Output	Salida del motor	Sortie du moteur	Output motore	エンジン出力	엔진 출력	Wyjście silnika	Saída do motor	Вывод движка	引擎輸出
+引擎返回无效协议帧	Ungültiger Protokollrahmen von der Engine	Invalid protocol frame from engine	Trama de protocolo no válida del motor	Trame de protocole invalide du moteur	Frame di protocollo non valido dal motore	エンジンから無効なプロトコルフレームを受信	엔진의 잘못된 프로토콜 프레임	Nieprawidłowa ramka protokołu z silnika	Quadro de protocolo inválido do motor	Недопустимый кадр протокола движка	引擎傳回無效通訊框架
+引擎返回无效预览地址	Ungültige Vorschauadresse von der Engine	Invalid preview address from engine	Dirección de vista previa del motor no válida	Adresse d’aperçu invalide du moteur	Indirizzo anteprima del motore non valido	エンジンから無効なプレビューアドレスを受信	엔진의 잘못된 미리보기 주소	Nieprawidłowy adres podglądu z silnika	Endereço de prévia do motor inválido	Недопустимый адрес предпросмотра движка	引擎傳回無效預覽位址
+当前不能开始导出，请等待其他任务完成	Andere Aufgaben abwarten, bevor der Export beginnt.	Wait for other tasks to finish before exporting.	Espera a que terminen las demás tareas antes de exportar.	Attendez la fin des autres tâches avant d’exporter.	Attendi il completamento delle altre attività prima di esportare.	他のタスクが完了してからエクスポートしてください。	다른 작업이 끝난 후 내보내세요.	Poczekaj na zakończenie innych zadań przed eksportem.	Aguarde outras tarefas terminarem antes de exportar.	Дождитесь завершения других задач перед экспортом.	目前無法開始匯出，請等待其他工作完成
+当前地图没有卫星影像	This map has no satellite imagery.
+当前地图范围参考	Current Map Reference
+当前城市未包含卫星影像，请使用带影像的城市文件。	Diese Stadt enthält keine Satellitenbilder. Stadtdatei mit Bildern öffnen.	This city has no satellite imagery. Open a city file containing imagery.	Esta ciudad no contiene imágenes de satélite. Abre un archivo que las incluya.	Cette ville ne contient pas d’imagerie satellite. Ouvrez un fichier de ville avec des images.	Questa città non contiene immagini satellitari. Apri un file che le includa.	この都市には衛星画像がありません。画像を含む都市ファイルを開いてください。	이 도시에는 위성 영상이 없습니다. 영상이 포함된 도시 파일을 여세요.	To miasto nie zawiera zdjęć satelitarnych. Otwórz plik miasta ze zdjęciami.	Esta cidade não contém imagens de satélite. Abra um arquivo de cidade com imagens.	В городе нет спутниковых снимков. Откройте файл города со снимками.	目前城市不包含衛星影像，請使用包含影像的城市檔案。
+当前城市没有可用的随机特写范围	Keine verfügbare Nahaufnahme in dieser Stadt	No closeup area is available for this city	No hay zonas de detalle disponibles en esta ciudad	Aucune zone de gros plan disponible dans cette ville	Nessuna area di dettaglio disponibile in questa città	この都市に利用可能なクローズアップ範囲がありません	이 도시에는 사용할 수 있는 클로즈업 영역이 없습니다	Brak dostępnych obszarów zbliżenia w tym mieście	Nenhuma área de detalhe disponível nesta cidade	В этом городе нет подходящей области для крупного плана	目前城市沒有可用的隨機特寫範圍
+当前城市没有可用线路。	Keine verfügbaren Linien in dieser Stadt.	This city has no available lines.	No hay líneas disponibles en esta ciudad.	Aucune ligne disponible dans cette ville.	Nessuna linea disponibile in questa città.	この都市に利用可能な路線がありません。	이 도시에 사용 가능한 노선이 없습니다.	Brak dostępnych linii w tym mieście.	Não há linhas disponíveis nesta cidade.	В этом городе нет доступных маршрутов.	目前城市沒有可用路線。
+当前城市没有此类区域。	Keine Gebiete dieses Typs in dieser Stadt.	This city has no regions of this kind.	Esta ciudad no tiene zonas de este tipo.	Cette ville ne contient aucune zone de ce type.	Questa città non ha aree di questo tipo.	この都市にこの種類の範囲がありません。	이 도시에 해당 유형의 영역이 없습니다.	Brak obszarów tego rodzaju w tym mieście.	Esta cidade não possui regiões desse tipo.	В этом городе нет областей этого типа.	目前城市沒有此類區域。
+当前城市没有该分类的特写	Keine passende Nahaufnahme in dieser Stadt	No matching feature in this city	No hay detalles de esta categoría en la ciudad	Aucun gros plan de cette catégorie dans cette ville	Nessun dettaglio di questa categoria nella città	この都市に該当カテゴリのクローズアップがありません	이 도시에는 해당 분류의 클로즈업이 없습니다	Brak zbliżeń tej kategorii w tym mieście	Nenhum detalhe dessa categoria nesta cidade	В этом городе нет объектов этой категории	目前城市沒有該分類的特寫
+当前工程有未保存的编辑。取消或生成失败时保留原工程。	Das Projekt hat ungespeicherte Änderungen. Abbruch oder Fehler lässt das Originalprojekt bestehen.	The current project has unsaved edits. Canceling or a generation failure preserves the original project.	El proyecto tiene cambios sin guardar. Si se cancela o falla la generación, se conserva el original.	Le projet comporte des modifications non enregistrées. L’annulation ou l’échec préserve le projet d’origine.	Il progetto contiene modifiche non salvate. Annullamento o errore preservano l’originale.	プロジェクトに未保存の変更があります。キャンセルや生成失敗時は元のプロジェクトを保持します。	프로젝트에 저장되지 않은 변경 사항이 있습니다. 취소 또는 생성 실패 시 원본 프로젝트가 유지됩니다.	Projekt ma niezapisane zmiany. Anulowanie lub błąd zachowuje projekt oryginalny.	O projeto tem alterações não salvas. Cancelamento ou falha mantém o projeto original.	В проекте есть несохранённые изменения. При отмене или сбое сохраняется исходный проект.	目前專案有未儲存的編輯。取消或產生失敗時保留原專案。
+当前无法启动浏览器预览	Browservorschau kann nicht gestartet werden	Cannot start browser preview.	No se puede iniciar la vista previa del navegador	Impossible de lancer l’aperçu dans le navigateur	Impossibile avviare l’anteprima nel browser	ブラウザープレビューを開始できません	브라우저 미리보기를 시작할 수 없음	Nie można uruchomić podglądu w przeglądarce	Não é possível iniciar a prévia no navegador	Не удалось запустить предпросмотр в браузере	目前無法啟動瀏覽器預覽
+当前范围	Aktueller Ausschnitt	Current Extent	Extensión actual	Étendue actuelle	Estensione corrente	現在の範囲	현재 범위	Bieżący zasięg	Extensão atual	Текущая область	目前範圍
+当前设置	Aktuelle Einstellungen	Current Settings	Ajustes actuales	Paramètres actuels	Impostazioni attuali	現在の設定	현재 설정	Bieżące ustawienia	Configurações atuais	Текущие настройки	目前設定
+当前选择没有可用线路；应用后无法生成示意图。	Keine verfügbaren Linien ausgewählt; nach dem Anwenden kann kein Diagramm erstellt werden.	No available lines in the current selection; applying it prevents diagram generation.	No hay líneas disponibles en la selección; al aplicarla no se podrá generar el diagrama.	Aucune ligne disponible dans la sélection ; son application empêche la génération du schéma.	Nessuna linea disponibile nella selezione; applicandola non sarà possibile generare il diagramma.	選択に利用可能な路線がありません。適用すると路線図を生成できません。	현재 선택에 사용 가능한 노선이 없습니다. 적용하면 노선도를 생성할 수 없습니다.	Brak dostępnych linii w wyborze; zastosowanie uniemożliwi generowanie schematu.	Nenhuma linha disponível na seleção; aplicar impede gerar o diagrama.	В выборе нет доступных маршрутов; применение не позволит создать схему.	目前選擇沒有可用路線；套用後無法產生示意圖。
+影像设置	Bildeinstellungen	Imagery Settings	Ajustes de imagen	Paramètres d’imagerie	Impostazioni immagini	画像設定	영상 설정	Ustawienia obrazu	Configurações de imagem	Настройки снимков	影像設定
+很密集	Very Dense
+很稀疏	Very Sparse
+性能诊断	Performance Diagnostics
+恢复全部默认设置	Alle Kategorien zurücksetzen	Reset All Categories	Restablecer todas las categorías	Réinitialiser toutes les catégories	Ripristina tutte le categorie	すべてのカテゴリをリセット	모든 범주 초기화	Zresetuj wszystkie kategorie	Redefinir todas as categorias	Сбросить все категории	恢復全部預設設定
+恢复本分类默认设置	Kategorie zurücksetzen	Reset Category	Restablecer categoría	Réinitialiser la catégorie	Ripristina categoria	カテゴリをリセット	범주 초기화	Zresetuj kategorię	Redefinir categoria	Сбросить категорию	恢復此分類預設設定
+恢复本图层默认设置	Reset Layer Defaults
+恢复此项默认映射	Zuordnung zurücksetzen	Reset This Mapping	Restablecer asignación	Réinitialiser ce mappage	Ripristina associazione	このマッピングをリセット	이 매핑 초기화	Zresetuj mapowanie	Redefinir mapeamento	Сбросить соответствие	恢復此項預設對應
+恢复生成默认设置	Erstellungseinstellungen zurücksetzen	Reset Generation Defaults	Restablecer ajustes de generación	Réinitialiser les paramètres de génération	Ripristina impostazioni generazione	生成設定をリセット	생성 설정 초기화	Zresetuj ustawienia generowania	Redefinir configurações de geração	Сбросить настройки генерации	恢復產生預設設定
+恢复筛选参数默认值	Gefilterte Felder zurücksetzen	Reset Filtered Fields	Restablecer campos filtrados	Réinitialiser les champs filtrés	Ripristina campi filtrati	絞り込み項目をリセット	필터링된 항목 초기화	Zresetuj filtrowane pola	Redefinir campos filtrados	Сбросить отфильтрованные поля	恢復篩選參數預設值
+打开图层设置	Ebeneneinstellungen öffnen	Open Layer Settings	Abrir ajustes de capas	Ouvrir les paramètres des couches	Apri impostazioni livelli	レイヤー設定を開く	레이어 설정 열기	Otwórz ustawienia warstw	Abrir configurações de camadas	Открыть настройки слоёв	開啟圖層設定
+打开城市	Open City
+打开性能日志目录	Open Performance Log Folder
+打开日志目录	Open Log Folder
+打开项目	Open Project
+批量操作只影响筛选结果。交通类型开关在设置页中独立保留。	Stapelaktionen betreffen nur Filterergebnisse. Verkehrstyp-Schalter bleiben separat in den Einstellungen erhalten.	Bulk actions affect filtered results only. Transport type switches are preserved separately in settings.	Las acciones masivas afectan solo a los resultados filtrados. Los tipos de transporte se conservan por separado en ajustes.	Les actions groupées ne concernent que les résultats filtrés. Les types de transport sont conservés séparément dans les paramètres.	Le operazioni in blocco interessano solo i risultati filtrati. I tipi di trasporto restano separati nelle impostazioni.	一括操作は絞り込み結果のみに作用します。交通手段の設定は設定ページで独立して保持されます。	일괄 작업은 필터 결과에만 적용됩니다. 교통 유형 설정은 별도로 유지됩니다.	Operacje zbiorcze dotyczą tylko wyników filtrowania. Przełączniki rodzajów transportu są zachowywane osobno.	Ações em lote afetam apenas resultados filtrados. Os tipos de transporte são mantidos separadamente nas configurações.	Массовые операции действуют только на результаты фильтрации. Виды транспорта сохраняются отдельно в настройках.	批次操作僅影響篩選結果。運輸類型開關在設定頁中獨立保留。
+批量操作只影响筛选结果中的可用区域，隐藏条目保持不变。	Stapelaktionen betreffen nur verfügbare Filterergebnisse; ausgeblendete Einträge bleiben unverändert.	Bulk actions affect available results only; hidden selections are preserved.	Las acciones masivas afectan solo a zonas disponibles filtradas; los elementos ocultos no cambian.	Les actions groupées ne concernent que les zones disponibles filtrées ; les éléments masqués sont conservés.	Le operazioni in blocco interessano solo le aree disponibili filtrate; elementi nascosti invariati.	一括操作は絞り込み結果の利用可能な範囲のみに作用し、非表示項目は変更しません。	일괄 작업은 필터 결과의 사용 가능한 영역에만 적용되며 숨겨진 항목은 유지됩니다.	Operacje zbiorcze dotyczą tylko dostępnych wyników filtrowania; ukryte pozycje bez zmian.	Ações em lote afetam apenas regiões disponíveis filtradas; itens ocultos permanecem inalterados.	Массовые операции затрагивают только доступные результаты фильтрации; скрытые элементы сохраняются.	批次操作僅影響篩選結果中的可用區域，隱藏項目保持不變。
+找不到最近打开的城市文件	Zuletzt geöffnete Stadtdatei nicht gefunden	Recent City File Not Found	No se encontró el archivo de ciudad reciente	Fichier de ville récent introuvable	File città recente non trovato	最近開いた都市ファイルが見つかりません	최근 도시 파일을 찾을 수 없음	Nie znaleziono ostatniego pliku miasta	Arquivo de cidade recente não encontrado	Недавний файл города не найден	找不到最近開啟的城市檔案
+报错详情	Fehlerdetails	Error details	Detalles del error	Détails de l’erreur	Dettagli errore	エラー詳細	오류 상세 정보	Szczegóły błędu	Detalhes do erro	Сведения об ошибке	錯誤詳細資訊
+抽取	Auswählen	Pick	Elegir	Choisir	Scegli	抽出	선택	Pobierz	Escolher	Выбрать	擷取
+拾取样式	Pick Style
+按设置重新生成	Regenerate
+按需开启：铁路、公共交通、路况，保留当前选择。	Bahn, ÖPNV und Verkehr nach Bedarf aktivieren; aktuelle Auswahl bleibt erhalten.	Keep your current railway, public transit and traffic choices.	Conservar la selección actual de ferrocarril, transporte y tráfico.	Conserver les choix actuels de rail, transports et trafic.	Mantieni la selezione corrente di ferrovie, trasporti e traffico.	鉄道、公共交通、交通状況は必要に応じて有効にし、現在の選択を保持します。	철도, 대중교통 및 교통 상황은 필요에 따라 활성화하고 현재 선택을 유지합니다.	Zachowaj bieżący wybór kolei, transportu i ruchu.	Manter as escolhas atuais de ferrovias, transporte e trânsito.	Сохранить текущий выбор железных дорог, транспорта и трафика.	依需求啟用：鐵路、大眾運輸、路況，保留目前選擇。
+推荐搭配卫星暖色主题，突出道路、图标和文字。	Use the warm satellite theme to highlight roads, icons and labels.
+插入	Einfügen	Insert	Insertar	Insérer	Inserisci	挿入	삽입	Wstaw	Inserir	Вставить	插入
+插入图例	Legende einfügen	Insert Legend	Insertar leyenda	Insérer une légende	Inserisci legenda	凡例を挿入	범례 삽입	Wstaw legendę	Inserir legenda	Вставить легенду	插入圖例
+插入标题	Titel einfügen	Insert Title	Insertar título	Insérer un titre	Inserisci titolo	タイトルを挿入	제목 삽입	Wstaw tytuł	Inserir título	Вставить заголовок	插入標題
+搜索名称或编号	Name oder ID suchen	Search name or ID	Buscar nombre o ID	Rechercher un nom ou un ID	Cerca nome o ID	名前またはIDを検索	이름 또는 ID 검색	Szukaj nazwy lub ID	Buscar nome ou ID	Поиск по имени или ID	搜尋名稱或編號
+搜索建筑名称	Search buildings
+搜索当前分类参数	Diese Kategorie durchsuchen	Search this category	Buscar en esta categoría	Rechercher dans cette catégorie	Cerca in questa categoria	このカテゴリを検索	현재 범주 검색	Szukaj w tej kategorii	Buscar nesta categoria	Поиск в этой категории	搜尋目前分類參數
+搜索线路	Linien suchen	Search Lines	Buscar líneas	Rechercher des lignes	Cerca linee	路線を検索	노선 검색	Szukaj linii	Buscar linhas	Поиск маршрутов	搜尋路線
+撤销工程	Projekt rückgängig machen	Undo Project	Deshacer proyecto	Annuler le projet	Annulla progetto	プロジェクトを元に戻す	프로젝트 실행 취소	Cofnij projekt	Desfazer projeto	Отменить действие проекта	復原專案
+操作	Actions
+操作未完成	Vorgang nicht abgeschlossen	Action Incomplete	Operación incompleta	Opération inachevée	Operazione non completata	操作が完了しませんでした	작업 미완료	Operacja nieukończona	Operação incompleta	Операция не завершена	操作未完成
+支路	Local Roads
+收起功能区	Werkzeugleiste ausblenden	Hide Tools	Ocultar herramientas	Masquer les outils	Nascondi strumenti	ツールを隠す	도구 숨기기	Ukryj narzędzia	Ocultar ferramentas	Скрыть инструменты	收合功能區
+收起右栏	Hide Inspector
+收起左栏	Hide Sidebar
+放大	Vergrößern	Zoom In	Acercar	Zoom avant	Ingrandisci	拡大	확대	Powiększ	Ampliar	Увеличить	放大
+放弃修改并重新生成	Änderungen verwerfen und neu erstellen	Discard Changes and Regenerate	Descartar cambios y regenerar	Ignorer les modifications et régénérer	Scarta modifiche e rigenera	変更を破棄して再生成	변경 사항 버리고 재생성	Odrzuć zmiany i wygeneruj ponownie	Descartar alterações e regenerar	Отменить изменения и создать заново	捨棄修改並重新產生
+放弃未保存的修改？	Ungespeicherte Änderungen verwerfen?	Discard unsaved changes?	¿Descartar los cambios sin guardar?	Ignorer les modifications non enregistrées ?	Scartare le modifiche non salvate?	未保存の変更を破棄しますか？	저장하지 않은 변경 사항을 버리시겠습니까?	Odrzucić niezapisane zmiany?	Descartar alterações não salvas?	Отменить несохранённые изменения?	捨棄未儲存的變更？
+放弃未保存的草稿修改？	Ungespeicherte Entwurfsänderungen verwerfen?	Discard unsaved draft changes?	¿Descartar los cambios del borrador sin guardar?	Ignorer les modifications du brouillon non enregistrées ?	Scartare le modifiche alla bozza non salvate?	未保存の下書き変更を破棄しますか？	저장되지 않은 초안 변경 사항을 버리시겠습니까?	Odrzucić niezapisane zmiany szkicu?	Descartar alterações não salvas do rascunho?	Отменить несохранённые изменения черновика?	捨棄未儲存的草稿修改？
+数量	count
+整体外观	Gesamtdarstellung	Overall Appearance	Apariencia general	Aspect général	Aspetto generale	全体の外観	전체 모양	Wygląd ogólny	Aparência geral	Общий вид	整體外觀
+整体设置	General
+文件读取提示	Dateihinweis	City File Notice	Aviso del archivo de ciudad	Avis de fichier de ville	Avviso file città	都市ファイルのお知らせ	도시 파일 알림	Informacja o pliku miasta	Aviso de arquivo de cidade	Уведомление о файле города	檔案讀取提示
+文字	Text
+文字与图标	Text & Icons
+文字与图标设置	Text & Icon Settings
+文字标注	Text Labels
+文字设置	Texteinstellungen	Text settings	Ajustes de texto	Paramètres du texte	Impostazioni testo	テキスト設定	텍스트 설정	Ustawienia tekstu	Configurações de texto	Настройки текста	文字設定
+文字设置…	Texteinstellungen…	Text settings…	Ajustes de texto…	Paramètres du texte…	Impostazioni testo…	テキスト設定…	텍스트 설정…	Ustawienia tekstu…	Configurações de texto…	Настройки текста…	文字設定…
+新建个人主题	New Personal Theme
+旋转 90°	Rotate 90°
+无法打开日志目录	Protokollordner konnte nicht geöffnet werden	Could not open the log folder	No se pudo abrir la carpeta de registros	Impossible d’ouvrir le dossier de journaux	Impossibile aprire la cartella log	ログフォルダーを開けませんでした	로그 폴더를 열 수 없음	Nie udało się otworzyć folderu dzienników	Não foi possível abrir a pasta de logs	Не удалось открыть папку журналов	無法開啟記錄資料夾
+无法打开配置文件夹	Konfigurationsordner konnte nicht geöffnet werden	Could not open configuration folder	No se pudo abrir la carpeta de configuración	Impossible d’ouvrir le dossier de configuration	Impossibile aprire la cartella di configurazione	設定フォルダーを開けませんでした	설정 폴더를 열 수 없음	Nie udało się otworzyć folderu konfiguracji	Não foi possível abrir a pasta de configuração	Не удалось открыть папку конфигурации	無法開啟設定資料夾
+显示	Visibility
+显示内容	Display
+显示图层	Show Layer
+显示图标文字	Symbolbeschriftung anzeigen	Show Icon Labels	Mostrar etiquetas de iconos	Afficher les libellés d’icônes	Mostra etichette icone	アイコンラベルを表示	아이콘 라벨 표시	Pokaż etykiety ikon	Mostrar rótulos de ícones	Показывать подписи значков	顯示圖示文字
+显示地点图标	Show Place Icons
+显示或隐藏对象属性	Objekteigenschaften umschalten	Toggle Object Properties	Alternar propiedades de objetos	Afficher/masquer les propriétés	Mostra/nascondi proprietà oggetto	オブジェクト属性を切り替える	객체 속성 전환	Przełącz właściwości obiektów	Alternar propriedades do objeto	Переключить свойства объекта	顯示或隱藏物件屬性
+显示接驳设施	Show Connecting Facilities
+显示标注	Beschriftungen anzeigen	Show labels	Mostrar etiquetas	Afficher les libellés	Mostra etichette	ラベルを表示	라벨 표시	Pokaż etykiety	Mostrar rótulos	Показывать подписи	顯示標註
+显示标题	Show Title
+显示线路	Show Lines
+显示行政区划名称	Bezirksnamen anzeigen	Show District Names	Mostrar nombres de distritos	Afficher les noms de quartiers	Mostra nomi distretti	地区名を表示	구역 이름 표시	Pokaż nazwy dzielnic	Mostrar nomes de distritos	Показывать названия районов	顯示行政區劃名稱
+显示道路	Straßen anzeigen	Show Roads	Mostrar carreteras	Afficher les routes	Mostra strade	道路を表示	도로 표시	Pokaż drogi	Mostrar vias	Показывать дороги	顯示道路
+显示道路名称	Show Road Names
+普通地图（预览与 PNG）	Karte (Vorschau und PNG)	Map (Preview & PNG)	Mapa (vista previa y PNG)	Carte (aperçu et PNG)	Mappa (anteprima e PNG)	地図（プレビューとPNG）	지도(미리보기 및 PNG)	Mapa (podgląd i PNG)	Mapa (prévia e PNG)	Карта (предпросмотр и PNG)	一般地圖（預覽與 PNG）
+普通建筑	Gewöhnliche Gebäude	Ordinary Buildings	Edificios comunes	Bâtiments ordinaires	Edifici comuni	一般建物	일반 건물	Zwykłe budynki	Edifícios comuns	Обычные здания	一般建築
+景观道路	Scenic Roads
+暂无性能记录	Keine Leistungsprotokolle	No performance records	Sin registros de rendimiento	Aucun relevé de performances	Nessun registro prestazioni	パフォーマンス記録なし	성능 기록 없음	Brak zapisów wydajności	Sem registros de desempenho	Нет записей производительности	尚無效能紀錄
+暂无最近打开的城市	Keine zuletzt geöffneten Städte	No recent cities	No hay ciudades recientes	Aucune ville récente	Nessuna città recente	最近開いた都市はありません	최근 도시 없음	Brak ostatnich miast	Nenhuma cidade recente	Нет недавних городов	沒有最近開啟的城市
+替换	Ersetzen	Replace	Reemplazar	Remplacer	Sostituisci	置き換える	바꾸기	Zastąp	Substituir	Заменить	取代
+替换未保存的主题修改？	Ungespeicherte Designänderungen ersetzen?	Replace unsaved theme changes?	¿Reemplazar los cambios del tema sin guardar?	Remplacer les modifications du thème non enregistrées ?	Sostituire le modifiche al tema non salvate?	未保存のテーマ変更を置き換えますか？	저장되지 않은 테마 변경 사항을 바꾸시겠습니까?	Zastąpić niezapisane zmiany motywu?	Substituir alterações não salvas do tema?	Заменить несохранённые изменения темы?	取代未儲存的主題修改？
+最小化	Minimieren	Minimize	Minimizar	Réduire	Minimizza	しまう	최소화	Minimalizuj	Minimizar	Свернуть	最小化
+最近打开	Recent Cities
+最近错误	Letzte Fehler	Recent Errors	Errores recientes	Erreurs récentes	Errori recenti	最近のエラー	최근 오류	Ostatnie błędy	Erros recentes	Недавние ошибки	最近錯誤
+有可用的主题更新	Designaktualisierung verfügbar	A theme update is available	Hay una actualización del tema disponible	Une mise à jour du thème est disponible	Aggiornamento del tema disponibile	テーマの更新が利用可能です	테마 업데이트 사용 가능	Dostępna aktualizacja motywu	Atualização de tema disponível	Доступно обновление темы	有可用的主題更新
+未能开始加载城市	Stadt konnte nicht geladen werden	Could not start loading the city	No se pudo iniciar la carga de la ciudad	Impossible de lancer le chargement de la ville	Impossibile avviare il caricamento città	都市の読み込みを開始できませんでした	도시 로딩을 시작할 수 없음	Nie udało się rozpocząć wczytywania miasta	Não foi possível iniciar o carregamento da cidade	Не удалось начать загрузку города	無法開始載入城市
+未能开始导出	Export konnte nicht gestartet werden	Could not start export	No se pudo iniciar la exportación	Impossible de lancer l’exportation	Impossibile avviare l'esportazione	エクスポートを開始できませんでした	내보내기를 시작할 수 없음	Nie można rozpocząć eksportu	Não foi possível iniciar a exportação	Не удалось начать экспорт	無法開始匯出
+未能开始生成地铁项目	Metroprojekt konnte nicht gestartet werden	Could not start metro project generation	No se pudo iniciar el proyecto de metro	Impossible de lancer le projet de métro	Impossibile avviare il progetto metro	地下鉄プロジェクトの生成を開始できませんでした	지하철 프로젝트 생성을 시작할 수 없음	Nie udało się rozpocząć tworzenia projektu metra	Não foi possível iniciar o projeto de metrô	Не удалось начать создание проекта метро	無法開始產生地鐵專案
+未能开始生成立交合集	Kreuzungssammlung konnte nicht erstellt werden	Could not start generating interchange collection	No se pudo iniciar la colección de enlaces	Impossible de lancer la collection d’échangeurs	Impossibile avviare la raccolta svincoli	インターチェンジ集の生成を開始できませんでした	나들목 모음 생성을 시작할 수 없음	Nie udało się rozpocząć tworzenia kolekcji węzłów	Não foi possível iniciar a coleção de entroncamentos	Не удалось начать создание подборки развязок	無法開始產生交流道合集
+未选	Unselected
+未选择对象	Kein Objekt ausgewählt	No Object Selected	Ningún objeto seleccionado	Aucun objet sélectionné	Nessun oggetto selezionato	オブジェクト未選択	선택한 객체 없음	Nie wybrano obiektu	Nenhum objeto selecionado	Объект не выбран	未選取物件
+本地网页未能完成初始化	Lokale Webseite konnte nicht initialisiert werden	Local web page could not initialize	No se pudo inicializar la página local	Impossible d’initialiser la page locale	Impossibile inizializzare la pagina locale	ローカルWebページを初期化できませんでした	로컬 웹 페이지를 초기화할 수 없음	Nie udało się zainicjować lokalnej strony	Não foi possível inicializar a página local	Не удалось инициализировать локальную страницу	本機網頁無法完成初始化
+本次运行没有出现错误	No errors in this session
+极密集	Extremely Dense
+极稀疏	Extremely Sparse
+查看 RMG 导出详情	View RMG export details
+查看报错	Fehler anzeigen	Show error	Ver error	Afficher l’erreur	Mostra errore	エラーを表示	오류 보기	Pokaż błąd	Ver erro	Показать ошибку	檢視錯誤
+标签字号（参考像素）	Beschriftungsgröße (Referenzpx)	Label Size (Reference px)	Tamaño de etiqueta (px de referencia)	Taille des libellés (px de référence)	Dimensione etichetta (px di riferimento)	ラベル文字サイズ（参照px）	라벨 크기(기준 px)	Rozmiar etykiet (px odniesienia)	Tamanho do rótulo (px de referência)	Размер подписи (эталонные px)	標籤字級（參考像素）
+标题与图例	Title & Legend
+标题模板	Title Template
+样式	Style
+样式参数	Appearance
+格式	Format	Format	Formato	Format	Formato	形式	형식	Format	Formato	Формат	格式
+正在准备导出预览…	Exportvorschau wird vorbereitet…	Preparing export preview…	Preparando vista previa de exportación…	Préparation de l’aperçu d’export…	Preparazione anteprima esportazione…	エクスポートプレビューを準備中…	내보내기 미리보기 준비 중…	Przygotowanie podglądu eksportu…	Preparando prévia de exportação…	Подготовка предпросмотра экспорта…	正在準備匯出預覽…
+正在准备底图	Preparing Base Map
+正在创建草稿	Entwurf wird erstellt	Creating Draft	Creando borrador	Création du brouillon	Creazione bozza	下書きを作成中	초안 생성 중	Tworzenie szkicu	Criando rascunho	Создание черновика	正在建立草稿
+正在刷新草稿	Refreshing Draft
+正在启动渲染引擎…	Render-Engine wird gestartet…	Starting rendering engine…	Iniciando el motor de renderizado…	Démarrage du moteur de rendu…	Avvio del motore di rendering…	描画エンジンを起動中…	렌더링 엔진 시작 중…	Uruchamianie silnika renderowania…	Iniciando o motor de renderização…	Запуск движка рендеринга…	正在啟動算圖引擎…
+正在导出…	Exportieren…	Exporting…	Exportando…	Exportation…	Esportazione…	エクスポート中…	내보내는 중…	Eksportowanie…	Exportando…	Экспорт…	正在匯出…
+正在布置图标	Symbole werden platziert	Placing Icons	Colocando iconos	Placement des icônes	Posizionamento icone	アイコンを配置中	아이콘 배치 중	Rozmieszczanie ikon	Posicionando ícones	Размещение значков	正在配置圖示
+正在应用区域选择	Gebietsauswahl wird angewendet	Applying region selection	Aplicando selección de zonas	Application de la sélection de zones	Applicazione selezione aree	範囲選択を適用中	영역 선택 적용 중	Stosowanie wyboru obszaru	Aplicando seleção de regiões	Применение выбора областей	正在套用區域選擇
+正在应用区域选择…	Gebietsauswahl wird angewendet…	Applying region selection…	Aplicando selección de zonas…	Application de la sélection de zones…	Applicazione selezione aree…	範囲選択を適用中…	영역 선택 적용 중…	Stosowanie wyboru obszaru…	Aplicando seleção de regiões…	Применение выбора областей…	正在套用區域選擇…
+正在应用线路选择…	Linienauswahl wird angewendet…	Applying line selection…	Aplicando selección de líneas…	Application de la sélection de lignes…	Applicazione selezione linee…	路線選択を適用中…	노선 선택 적용 중…	Stosowanie wyboru linii…	Aplicando seleção de linhas…	Применение выбора линий…	正在套用路線選擇…
+正在抽取范围…	Gebiet wird ausgewählt…	Picking an area…	Seleccionando zona…	Sélection d’une zone…	Selezione area…	範囲を選択中…	영역 선택 중…	Wybieranie obszaru…	Selecionando região…	Выбор области…	正在擷取範圍…
+正在排版文字	Placing Labels
+正在排版草稿	Entwurf wird angeordnet	Laying Out Draft	Componiendo borrador	Mise en page du brouillon	Impaginazione bozza	下書きを配置中	초안 배치 중	Układanie szkicu	Organizando rascunho	Компоновка черновика	正在排版草稿
+正在显示	Wird angezeigt	Showing	Mostrando	Affichage	Visualizzazione	表示中	표시 중	Wyświetlanie	Exibindo	Отображение	正在顯示
+正在显示草稿	Entwurf wird angezeigt	Displaying Draft	Mostrando borrador	Affichage du brouillon	Visualizzazione bozza	下書きを表示中	초안 표시 중	Wyświetlanie szkicu	Exibindo rascunho	Отображение черновика	正在顯示草稿
+正在更新	Wird aktualisiert	Updating	Actualizando	Mise à jour	Aggiornamento	更新中	업데이트 중	Aktualizowanie	Atualizando	Обновление	正在更新
+正在渲染预览	Rendering preview
+正在生成地铁项目	Generating Metro Project
+正在生成地铁项目…	Metroprojekt wird erstellt…	Generating metro project…	Generando proyecto de metro…	Création du projet de métro…	Generazione progetto metro…	地下鉄プロジェクトを生成中…	지하철 프로젝트 생성 중…	Tworzenie projektu metra…	Gerando projeto de metrô…	Создание проекта метро…	正在產生地鐵專案…
+正在生成立交合集…	Kreuzungssammlung wird erstellt…	Generating interchange collection…	Generando colección de enlaces…	Création de la collection d’échangeurs…	Generazione raccolta svincoli…	インターチェンジ集を生成中…	나들목 모음 생성 중…	Tworzenie kolekcji węzłów…	Gerando coleção de entroncamentos…	Создание подборки развязок…	正在產生交流道合集…
+正在绘制公共交通	Drawing Transit
+正在绘制地图…	Drawing map…
+正在读取城市…	Stadt wird gelesen…	Reading city…	Leyendo ciudad…	Lecture de la ville…	Lettura città…	都市を読み込み中…	도시 읽는 중…	Odczytywanie miasta…	Lendo cidade…	Чтение города…	正在讀取城市…
+正在载入对照预览…	Vergleichsvorschau wird geladen…	Loading comparison…	Cargando comparación…	Chargement de la comparaison…	Caricamento confronto…	比較プレビューを読み込み中…	비교 미리보기 로드 중…	Ładowanie porównania…	Carregando comparação…	Загрузка сравнения…	正在載入對照預覽…
+正在载入预览	Loading preview
+正在隐藏	Wird ausgeblendet	Hiding	Ocultando	Masquage	Nascondendo	非表示処理中	숨기는 중	Ukrywanie	Ocultando	Скрытие	正在隱藏
+正常显示	Show Normally
+此交通类型未启用	Dieses Verkehrsmittel ist deaktiviert	This transport type is disabled	Este medio de transporte está desactivado	Ce mode de transport est désactivé	Questo mezzo di trasporto è disattivato	この交通手段は無効です	이 교통수단은 비활성화됨	Ten rodzaj transportu jest wyłączony	Este tipo de transporte está desativado	Этот вид транспорта отключён	此運輸類型未啟用
+此操作暂不可用。	Diese Aktion ist derzeit nicht verfügbar.	This action is currently unavailable.	Esta acción no está disponible actualmente.	Cette action est actuellement indisponible.	Questa azione non è disponibile al momento.	現在この操作は利用できません。	현재 이 작업을 사용할 수 없습니다.	Ta operacja jest obecnie niedostępna.	Esta ação não está disponível no momento.	Это действие сейчас недоступно.	此操作目前無法使用。
+比例	ratio
+水印内容与位置	Wasserzeichen und Position	Watermark Content & Position	Contenido y posición de marca de agua	Contenu et position du filigrane	Contenuto e posizione filigrana	透かしの内容と位置	워터마크 내용 및 위치	Treść i położenie znaku wodnego	Conteúdo e posição da marca d’água	Содержание и положение водяного знака	浮水印內容與位置
+水域	Water
+水域外观	Water Appearance
+水域详细设置	Gewässerdetails	Water Details	Detalles del agua	Détails de l’eau	Dettagli acqua	水域の詳細設定	수역 세부 설정	Szczegóły wód	Detalhes da água	Детали водоёмов	水域詳細設定
+没有匹配的区域，请调整搜索或筛选。	No matching regions. Adjust the search or filters.
+没有匹配的参数。	No matching settings.
+没有匹配的设施图标。	Keine passenden Einrichtungssymbole.	No matching facility icons.	No hay iconos de instalaciones coincidentes.	Aucune icône d’équipement correspondante.	Nessuna icona di struttura corrispondente.	一致する施設アイコンがありません。	일치하는 시설 아이콘이 없습니다.	Brak pasujących ikon obiektów.	Nenhum ícone de instalação correspondente.	Нет подходящих значков объектов.	沒有符合的設施圖示。
+没有可显示的地图预览	Keine Kartenvorschau verfügbar	No map preview available	No hay vista previa del mapa	Aucun aperçu de carte disponible	Nessuna anteprima mappa disponibile	表示できる地図プレビューがありません	표시할 지도 미리보기 없음	Brak podglądu mapy	Nenhuma prévia de mapa disponível	Нет доступного предпросмотра карты	沒有可顯示的地圖預覽
+流畅	Smooth
+浅色线路描边	Helle Linienkontur	Light Line Outline	Contorno de líneas claras	Contour des lignes claires	Contorno linee chiare	淡色路線の縁取り	밝은 노선 윤곽선	Obrys jasnych linii	Contorno de linhas claras	Обводка светлых линий	淺色路線描邊
+海拔（米）	Elevation (m)
+海拔（米） · 颜色	Höhe (m) · Farbe	Elevation (m) · Color	Elevación (m) · Color	Altitude (m) · Couleur	Altitudine (m) · Colore	標高（m）・色	고도(m) · 색상	Wysokość (m) · Kolor	Elevação (m) · Cor	Высота (м) · Цвет	海拔（公尺） · 顏色
+添加色阶	Farbstufe hinzufügen	Add Color Stop	Añadir punto de color	Ajouter un point de couleur	Aggiungi tappa colore	カラーストップを追加	색상 단계 추가	Dodaj punkt koloru	Adicionar parada de cor	Добавить цветовую точку	新增色階
+清理缓存	Clear Cache
+清空最近错误	Letzte Fehler löschen	Clear Recent Errors	Borrar errores recientes	Effacer les erreurs récentes	Cancella errori recenti	最近のエラーを消去	최근 오류 지우기	Wyczyść ostatnie błędy	Limpar erros recentes	Очистить недавние ошибки	清空最近錯誤
+渲染引擎不可用	Render-Engine nicht verfügbar	Rendering engine unavailable	Motor de renderizado no disponible	Moteur de rendu indisponible	Motore di rendering non disponibile	描画エンジンを利用できません	렌더링 엔진을 사용할 수 없음	Silnik renderowania niedostępny	Motor de renderização indisponível	Движок рендеринга недоступен	算圖引擎無法使用
+源文件	Quelldatei	Source File	Archivo de origen	Fichier source	File sorgente	ソースファイル	원본 파일	Plik źródłowy	Arquivo de origem	Исходный файл	來源檔案
+点选地图上的对象以查看属性。	Objekt auf der Karte auswählen, um Eigenschaften anzuzeigen.	Select a map object to inspect its properties.	Selecciona un objeto del mapa para ver sus propiedades.	Sélectionnez un objet sur la carte pour afficher ses propriétés.	Seleziona un oggetto sulla mappa per vederne le proprietà.	地図上のオブジェクトを選択すると属性を確認できます。	지도에서 객체를 선택해 속성을 확인하세요.	Wybierz obiekt na mapie, aby wyświetlić jego właściwości.	Selecione um objeto no mapa para ver suas propriedades.	Выберите объект на карте для просмотра свойств.	點選地圖上的物件以檢視屬性。
+特写场景	Nahaufnahmeszene	Closeup scene	Escena de detalle	Scène de gros plan	Scena dettaglio	クローズアップシーン	클로즈업 장면	Scena zbliżenia	Cena de detalhe	Сцена крупного плана	特寫場景
+特殊道路	Special Roads
+现代地图图标库	Moderne Kartensymbole	Modern Map Icon Library	Biblioteca de iconos de mapa moderno	Bibliothèque d’icônes cartographiques modernes	Libreria icone mappa moderna	現代地図アイコンライブラリ	현대 지도 아이콘 라이브러리	Biblioteka nowoczesnych ikon map	Biblioteca de ícones de mapa moderno	Библиотека значков современной карты	現代地圖圖示庫
+生成与输出	Erstellung und Ausgabe	Generation & Output	Generación y salida	Génération et sortie	Generazione e output	生成と出力	생성 및 출력	Generowanie i wyjście	Geração e saída	Генерация и вывод	產生與輸出
+生成已取消，原工程已保留	Erstellung abgebrochen. Ursprüngliches Projekt bleibt geöffnet.	Generation cancelled. The previous project is still open.	Generación cancelada. Se conserva el proyecto anterior.	Génération annulée. Le projet précédent est conservé.	Generazione annullata. Il progetto precedente resta aperto.	生成をキャンセルしました。元のプロジェクトを保持しました。	생성이 취소되었습니다. 이전 프로젝트가 유지됩니다.	Generowanie anulowane. Poprzedni projekt zachowany.	Geração cancelada. O projeto anterior foi mantido.	Генерация отменена. Предыдущий проект сохранён.	產生已取消，原專案已保留
+生成示意图	Diagramm erstellen	Generate Diagram	Generar diagrama	Générer le schéma	Genera diagramma	路線図を生成	노선도 생성	Generuj schemat	Gerar diagrama	Создать схему	產生示意圖
+生成设置	Generation Settings
+生成设置只影响重新生成；外观可在地图编辑器中调整。	Erstellungseinstellungen gelten nur für Neuerstellung. Darstellung im Karteneditor anpassen.	These settings apply on regeneration. Edit appearance in the map editor.	Estos ajustes se aplican al regenerar. Ajusta la apariencia en el editor del mapa.	Ces paramètres s’appliquent à la régénération. Modifiez l’aspect dans l’éditeur de carte.	Queste impostazioni valgono per la rigenerazione. Modifica l’aspetto nell’editor mappa.	生成設定は再生成時のみ有効です。外観は地図エディターで調整できます。	생성 설정은 재생성에만 적용됩니다. 모양은 지도 편집기에서 조정할 수 있습니다.	Ustawienia dotyczą regeneracji. Wygląd można zmienić w edytorze mapy.	Essas configurações valem para regeneração. Ajuste a aparência no editor de mapa.	Эти настройки действуют при повторной генерации. Вид меняется в редакторе карты.	產生設定僅影響重新產生；外觀可在地圖編輯器中調整。
+界面语言	Language
+直接导出	Direct Export
+码头道路	Kaistraßen	Quay Roads	Vías de muelle	Voies de quai	Strade di banchina	岸壁道路	부두 도로	Drogi nabrzeża	Vias de cais	Дороги набережной	碼頭道路
+确定	OK	OK	Aceptar	OK	OK	OK	확인	OK	OK	ОК	確定
+示意布局	Schematic Layout
+移除	Entfernen	Remove	Eliminar	Supprimer	Rimuovi	削除	제거	Usuń	Remover	Удалить	移除
+移除此色阶	Farbstufe entfernen	Remove this color stop	Eliminar esta parada de color	Supprimer ce point de couleur	Rimuovi questa tappa colore	このカラーストップを削除	이 색상 단계 제거	Usuń ten punkt koloru	Remover esta parada de cor	Удалить эту цветовую точку	移除此色階
+窗口	Fenster	Window	Ventana	Fenêtre	Finestra	ウインドウ	윈도우	Okno	Janela	Окно	視窗
+站名位置	Stationsnamensposition	Name Placement	Posición del nombre de estación	Position du nom de station	Posizione nome stazione	駅名の位置	역 이름 위치	Położenie nazwy stacji	Posição do nome da estação	Положение названия станции	站名位置
+站名字号（参考像素）	Stationsnamengröße (Referenzpx)	Station Name Size (Reference px)	Tamaño de nombre de estación (px de referencia)	Taille du nom de station (px de référence)	Dimensione nome stazione (px di riferimento)	駅名文字サイズ（参照px）	역 이름 크기(기준 px)	Rozmiar nazwy stacji (px odniesienia)	Tamanho do nome da estação (px de referência)	Размер названия станции (эталонные px)	站名字級（參考像素）
+站名显示	Station Names
+站名显示范围	Station Name Scope
+站名标注	Station Labels
+站点	Stations
+站点与名称	Stations & Names
+站点合并	Station Merging
+站点合并距离	Stationszusammenführungsabstand	Station Merge Distance	Distancia de fusión de estaciones	Distance de fusion des stations	Distanza unione stazioni	駅の統合距離	역 병합 거리	Odległość łączenia stacji	Distância de união de estações	Расстояние объединения станций	站點合併距離
+站点名称	Stationsnamen	Station Names	Nombres de estaciones	Noms des stations	Nomi delle stazioni	駅名	역 이름	Nazwy stacji	Nomes das estações	Названия станций	站點名稱
+站点大小	Station Size
+站点数	Haltestellenanzahl	Station Count	Número de estaciones	Nombre de stations	Numero di stazioni	駅数	정류장 수	Liczba przystanków	Número de estações	Количество станций	站點數
+站点数升序	Stationsanzahl aufsteigend	Station Count Ascending	Número de estaciones ascendente	Nombre de stations croissant	Numero stazioni crescente	駅数の昇順	역 수 오름차순	Liczba stacji rosnąco	Número de estações crescente	Число станций по возрастанию	站點數遞增
+站点数降序	Stationsanzahl absteigend	Station Count Descending	Número de estaciones descendente	Nombre de stations décroissant	Numero stazioni decrescente	駅数の降順	역 수 내림차순	Liczba stacji malejąco	Número de estações decrescente	Число станций по убыванию	站點數遞減
+站点旁	Beside Stations
+站点样式	Station Style
+站点符号	Station Symbols
+站点间距	Station Spacing
+站间距	Station Spacing
+第 %d 项	Element %d	Item %d	Elemento %d	Élément %d	Elemento %d	項目 %d	항목 %d	Element %d	Item %d	Элемент %d	第 %d 項
+等待%@超时，请重试。	Zeitüberschreitung beim Warten auf %@. Erneut versuchen.	Timed out waiting for %@. Try again.	Se agotó el tiempo de espera de %@. Inténtalo de nuevo.	Délai d’attente de %@ dépassé. Réessayez.	Timeout in attesa di %@. Riprova.	%@の待機がタイムアウトしました。再試行してください。	%@ 대기 시간 초과. 다시 시도하세요.	Przekroczono czas oczekiwania na %@. Spróbuj ponownie.	Tempo esgotado aguardando %@. Tente novamente.	Время ожидания %@ истекло. Повторите попытку.	等待%@逾時，請重試。
+等待预览	Waiting to preview
+米	m
+米→像素	m to px
+类别标识	Kategorie-ID	Category ID	ID de categoría	ID de catégorie	ID categoria	カテゴリID	범주 ID	Identyfikator kategorii	ID da categoria	ID категории	類別識別碼
+粘贴	Einfügen	Paste	Pegar	Coller	Incolla	ペースト	붙여넣기	Wklej	Colar	Вставить	貼上
+线条细节	Liniendetails	Line Detail	Detalle de líneas	Détail des lignes	Dettaglio linee	線の詳細	선 세부 정보	Szczegóły linii	Detalhe das linhas	Детализация линий	線條細節
+线路	Lines
+线路与交通类型	Linien und Verkehrsarten	Lines & Transport Types	Líneas y tipos de transporte	Lignes et types de transport	Linee e tipi di trasporto	路線と交通手段	노선 및 교통 유형	Linie i rodzaje transportu	Linhas e tipos de transporte	Маршруты и виды транспорта	路線與運輸類型
+线路与站点	Lines & Stations
+线路外观	Line Appearance
+线路宽度	Line Width
+线路排序	Liniensortierung	Line Sorting	Orden de líneas	Tri des lignes	Ordinamento linee	路線の並べ替え	노선 정렬	Sortowanie linii	Ordenação de linhas	Сортировка маршрутов	路線排序
+线路显示	Line Display
+线路标签间距	Linienbeschriftungsabstand	Line Label Spacing	Espaciado de etiquetas de línea	Espacement des libellés de ligne	Spaziatura etichette linee	路線ラベルの間隔	노선 라벨 간격	Odstęp etykiet linii	Espaçamento dos rótulos de linha	Интервал подписей маршрутов	路線標籤間距
+线路注记	Linienbeschriftungen	Line Annotations	Anotaciones de líneas	Annotations de lignes	Annotazioni linee	路線注記	노선 주석	Adnotacje linii	Anotações de linhas	Аннотации маршрутов	路線註記
+线路筛选	Select Lines
+线路粗细（参考像素）	Linienbreite (Referenzpx)	Line Width (Reference px)	Ancho de línea (px de referencia)	Largeur de ligne (px de référence)	Spessore linee (px di riferimento)	路線幅（参照px）	노선 너비(기준 px)	Szerokość linii (px odniesienia)	Largura da linha (px de referência)	Ширина линии (эталонные px)	路線粗細（參考像素）
+线路配色	Line Palette
+结果	Ergebnisse	Results	Resultados	Résultats	Risultati	結果	결과	Wyniki	Resultados	Результаты	結果
+综合	Overall
+缓存已清理	Cache geleert	Cache cleared	Caché borrada	Cache vidé	Cache svuotata	キャッシュを消去しました	캐시 삭제 완료	Pamięć podręczna wyczyszczona	Cache limpo	Кэш очищен	快取已清除
+缓存清理未完成	Cache wurde nicht vollständig geleert	Cache could not be cleared	No se pudo borrar la caché	Le cache n’a pas pu être vidé	Impossibile svuotare la cache	キャッシュを消去できませんでした	캐시를 삭제하지 못했습니다	Nie udało się wyczyścić pamięci podręcznej	Não foi possível limpar o cache	Не удалось очистить кэш	快取清除未完成
+编号	ID
+编号升序	ID aufsteigend	ID Ascending	ID ascendente	ID croissant	ID crescente	IDの昇順	ID 오름차순	ID rosnąco	ID crescente	ID по возрастанию	編號遞增
+编号降序	ID absteigend	ID Descending	ID descendente	ID décroissant	ID decrescente	IDの降順	ID 내림차순	ID malejąco	ID decrescente	ID по убыванию	編號遞減
+编辑	Bearbeiten	Edit	Editar	Édition	Modifica	編集	편집	Edycja	Editar	Правка	編輯
+编辑主题	Edit Theme
+编辑合并与避让	Edit Merge & Avoidance
+编辑后导出	Edit Before Export
+编辑工具	Bearbeitungswerkzeuge	Editing Tools	Herramientas de edición	Outils d’édition	Strumenti di modifica	編集ツール	편집 도구	Narzędzia edycji	Ferramentas de edição	Инструменты редактирования	編輯工具
+缩小	Verkleinern	Zoom Out	Alejar	Zoom arrière	Riduci	縮小	축소	Pomniejsz	Reduzir	Уменьшить	縮小
+缩放	Scaled
+缺少渲染引擎：%@	Render-Engine fehlt: %@	Rendering engine missing: %@	Falta el motor de renderizado: %@	Moteur de rendu manquant : %@	Motore di rendering mancante: %@	描画エンジンがありません：%@	렌더링 엔진 없음: %@	Brak silnika renderowania: %@	Motor de renderização ausente: %@	Отсутствует движок рендеринга: %@	缺少算圖引擎：%@
+网格外观	Rasterdarstellung	Grid Appearance	Apariencia de cuadrícula	Aspect de la grille	Aspetto griglia	グリッドの外観	격자 모양	Wygląd siatki	Aparência da grade	Вид сетки	網格外觀
+网页地图质量	Webkartenqualität	Web Map Quality	Calidad del mapa web	Qualité de la carte web	Qualità mappa web	Webマップ品質	웹 지도 품질	Jakość mapy internetowej	Qualidade do mapa web	Качество веб-карты	網頁地圖品質
+背景	Background
+背景与设施	Hintergrund und Einrichtungen	Background & Facilities	Fondo e instalaciones	Arrière-plan et installations	Sfondo e strutture	背景と施設	배경 및 시설	Tło i obiekty	Fundo e instalações	Фон и объекты	背景與設施
+自动配色	Automatic Colors
+自动预览	Automatic Preview
+自动预览已暂停，可点击预览。	Automatic preview is paused. Click Preview to update.
+自定义尺寸	Benutzerdefinierte Größe	Custom Size	Tamaño personalizado	Taille personnalisée	Dimensione personalizzata	カスタムサイズ	사용자 정의 크기	Rozmiar niestandardowy	Tamanho personalizado	Произвольный размер	自訂尺寸
+自定义范围	Custom Extent
+自定义边长（px）	Custom Size (px)
+自适应布局	Adaptive Layout
+范围	Extent
+草稿已保留，可修改后重试。	Entwurf bleibt erhalten. Bearbeiten und erneut versuchen.	The draft is preserved. Edit it and retry.	Se conserva el borrador. Modifícalo y vuelve a intentarlo.	Le brouillon est conservé. Modifiez-le et réessayez.	La bozza è preservata. Modificala e riprova.	下書きを保持しました。変更して再試行してください。	초안이 유지되었습니다. 수정 후 다시 시도하세요.	Szkic zachowany. Edytuj i spróbuj ponownie.	O rascunho foi mantido. Edite e tente novamente.	Черновик сохранён. Измените его и повторите попытку.	草稿已保留，可修改後重試。
+草稿已创建	Entwurf erstellt	Draft Created	Borrador creado	Brouillon créé	Bozza creata	下書きを作成しました	초안 생성됨	Szkic utworzony	Rascunho criado	Черновик создан	草稿已建立
+草稿已改变，点击预览以更新。	Entwurf geändert. Vorschau zum Aktualisieren anklicken.	The draft has changed. Click Preview to update.	El borrador cambió. Pulsa Vista previa para actualizar.	Le brouillon a changé. Cliquez sur Aperçu pour actualiser.	La bozza è cambiata. Fai clic su Anteprima per aggiornare.	下書きが変更されました。プレビューをクリックして更新してください。	초안이 변경되었습니다. 미리보기를 클릭해 업데이트하세요.	Szkic zmieniony. Kliknij Podgląd, aby zaktualizować.	O rascunho mudou. Clique em Prévia para atualizar.	Черновик изменился. Нажмите «Предпросмотр» для обновления.	草稿已變更，點選預覽以更新。
+草稿已更新	Draft Updated
+草稿样式	Entwurfsstil	Draft Style	Estilo del borrador	Style du brouillon	Stile bozza	下書きスタイル	초안 스타일	Styl szkicu	Estilo do rascunho	Стиль черновика	草稿樣式
+草稿设置	Entwurfseinstellungen	Draft Settings	Ajustes del borrador	Paramètres du brouillon	Impostazioni bozza	下書き設定	초안 설정	Ustawienia szkicu	Configurações do rascunho	Настройки черновика	草稿設定
+行政区划名称	District Names
+行政区名称	Bezirksnamen	District Names	Nombres de distritos	Noms des quartiers	Nomi dei distretti	地区名	구역 이름	Nazwy dzielnic	Nomes dos distritos	Названия районов	行政區名稱
+视图	View
+视图已切换，请重新打开线路选择。	Ansicht gewechselt. Linienauswahl erneut öffnen.	The view changed. Reopen line selection.	La vista ha cambiado. Vuelve a abrir la selección de líneas.	La vue a changé. Rouvrez la sélection de lignes.	La vista è cambiata. Riapri la selezione linee.	ビューが変更されました。路線選択を開き直してください。	보기가 변경되었습니다. 노선 선택을 다시 여세요.	Zmieniono widok. Otwórz ponownie wybór linii.	A visualização mudou. Reabra a seleção de linhas.	Вид изменился. Откройте выбор маршрутов снова.	檢視已切換，請重新開啟路線選擇。
+记住我的选择	Remember My Choice
+记录性能日志	Record Performance Logs
+设施	Facilities
+设施图标大小	Einrichtungssymbolgröße	Facility Icon Size	Tamaño de iconos de instalaciones	Taille des icônes d’installations	Dimensione icone strutture	施設アイコンサイズ	시설 아이콘 크기	Rozmiar ikon obiektów	Tamanho dos ícones de instalações	Размер значков объектов	設施圖示大小
+设施图标比例	Einrichtungssymbolskalierung	Facility Icon Scale	Escala de iconos de instalaciones	Échelle des icônes d’installations	Scala icone strutture	施設アイコン倍率	시설 아이콘 배율	Skala ikon obiektów	Escala dos ícones de instalações	Масштаб значков объектов	設施圖示比例
+设施密度	Einrichtungsdichte	Facility Density	Densidad de instalaciones	Densité des installations	Densità strutture	施設密度	시설 밀도	Gęstość obiektów	Densidade de instalações	Плотность объектов	設施密度
+设施层级	Facility Hierarchy
+设施筛选	Einrichtungen filtern	Filter Facilities	Filtrar instalaciones	Filtrer les installations	Filtra strutture	施設を絞り込む	시설 필터링	Filtruj obiekty	Filtrar instalações	Фильтр объектов	設施篩選
+设置已修改，当前工程尚未重新生成。	Einstellungen geändert; Projekt noch nicht neu erstellt.	Settings changed. The current project has not been regenerated.	Los ajustes cambiaron. El proyecto actual aún no se ha regenerado.	Paramètres modifiés. Le projet actuel n’a pas été régénéré.	Impostazioni modificate. Il progetto corrente non è stato rigenerato.	設定が変更されました。現在のプロジェクトはまだ再生成されていません。	설정이 변경되었습니다. 현재 프로젝트가 아직 재생성되지 않았습니다.	Zmieniono ustawienia. Bieżący projekt nie został wygenerowany ponownie.	Configurações alteradas. O projeto atual ainda não foi regenerado.	Настройки изменены. Текущий проект ещё не создан заново.	設定已修改，目前專案尚未重新產生。
+诊断信息	Diagnostics
+详细信息	Details	Details	Detalles	Détails	Dettagli	詳細	세부 정보	Szczegóły	Detalhes	Подробности	詳細資訊
+请修正参数后重试预览。	Parameter korrigieren und Vorschau erneut starten.	Correct the inputs, then retry the preview.	Corrige los parámetros y vuelve a intentar la vista previa.	Corrigez les paramètres, puis relancez l’aperçu.	Correggi i parametri e riprova l’anteprima.	パラメーターを修正してプレビューを再試行してください。	매개변수를 수정한 후 미리보기를 다시 시도하세요.	Popraw parametry i ponów podgląd.	Corrija os parâmetros e tente a prévia novamente.	Исправьте параметры и повторите предпросмотр.	請修正參數後重試預覽。
+请先关闭当前导出窗口	Zuerst aktuelles Exportfenster schließen	Close the current export window first	Cierra primero la ventana de exportación actual	Fermez d’abord la fenêtre d’exportation actuelle	Chiudi prima la finestra di esportazione corrente	現在のエクスポートウインドウを閉じてください	현재 내보내기 창을 먼저 닫으세요	Najpierw zamknij bieżące okno eksportu	Feche primeiro a janela de exportação atual	Сначала закройте текущее окно экспорта	請先關閉目前匯出視窗
+请先在地图上选择范围	Select an area on the map first
+请先打开城市地图或公共交通地图，等待交互预览就绪。	Open a city map or public transit map and wait for the interactive preview.
+请先抽取范围	Pick an area first
+请先选择导出范围	Zuerst Exportbereich auswählen	Select an export area first	Selecciona primero una zona de exportación	Sélectionnez d’abord une zone d’exportation	Seleziona prima un’area di esportazione	先にエクスポート範囲を選択してください	먼저 내보낼 영역을 선택하세요	Najpierw wybierz obszar eksportu	Selecione primeiro uma região de exportação	Сначала выберите область экспорта	請先選取匯出範圍
+请在地图上选择范围	Auf der Karte einen Bereich auswählen	Select an area on the map	Selecciona una zona en el mapa	Sélectionnez une zone sur la carte	Seleziona un’area sulla mappa	地図上で範囲を選択してください	지도에서 영역을 선택하세요	Wybierz obszar na mapie	Selecione uma região no mapa	Выберите область на карте	請在地圖上選取範圍
+请打开城市	Stadt öffnen	Open a city	Abre una ciudad	Ouvrez une ville	Apri una città	都市を開いてください	도시를 여세요	Otwórz miasto	Abra uma cidade	Откройте город	請開啟城市
+请查看预设的改动，再选择是否应用到当前主题。	Änderungen der Vorgabe prüfen, bevor sie auf das Design angewendet werden.	Review the preset changes before applying them to the current theme.	Revisa los cambios del preajuste antes de aplicarlos al tema actual.	Examinez les modifications du préréglage avant de les appliquer au thème.	Controlla le modifiche del preset prima di applicarle al tema corrente.	プリセットの変更を確認してから現在のテーマに適用してください。	현재 테마에 적용하기 전에 사전 설정 변경 사항을 확인하세요.	Sprawdź zmiany ustawienia wstępnego przed zastosowaniem do motywu.	Revise as alterações da predefinição antes de aplicá-las ao tema atual.	Просмотрите изменения пресета перед применением к текущей теме.	請檢視預設的變更，再選擇是否套用至目前主題。
+请等待当前任务完成后重试兼容预览。	Aktuelle Aufgabe abwarten und statische Vorschau erneut versuchen.	Wait for the current task to finish, then retry static preview.	Espera a que termine la tarea actual y vuelve a intentar la vista estática.	Attendez la fin de la tâche actuelle, puis réessayez l’aperçu statique.	Attendi la fine dell’attività corrente e riprova l’anteprima statica.	現在のタスクが完了してから静的プレビューを再試行してください。	현재 작업이 끝나면 정적 미리보기를 다시 시도하세요.	Poczekaj na zakończenie zadania i ponów podgląd statyczny.	Aguarde a tarefa atual terminar e tente a prévia estática novamente.	Дождитесь завершения текущей задачи и повторите статический предпросмотр.	請等待目前工作完成後重試相容預覽。
+请等待当前操作完成后再修改区域选择。	Aktuellen Vorgang abwarten, bevor die Gebietsauswahl geändert wird.	Wait for the current operation to finish before changing region selections.	Espera a que termine la operación antes de cambiar la selección de zonas.	Attendez la fin de l’opération avant de modifier la sélection de zones.	Attendi la fine dell’operazione prima di modificare la selezione aree.	現在の操作が完了してから範囲選択を変更してください。	현재 작업이 끝난 후 영역 선택을 변경하세요.	Poczekaj na zakończenie operacji przed zmianą wyboru obszarów.	Aguarde a operação atual terminar antes de alterar a seleção de regiões.	Дождитесь завершения операции перед изменением выбора областей.	請等待目前操作完成後再修改區域選擇。
+请等待当前操作完成后再修改线路选择。	Aktuellen Vorgang abwarten, bevor die Linienauswahl geändert wird.	Wait for the current operation to finish before changing line selection.	Espera a que termine la operación antes de cambiar la selección de líneas.	Attendez la fin de l’opération avant de modifier la sélection de lignes.	Attendi la fine dell’operazione prima di modificare la selezione linee.	現在の操作が完了してから路線選択を変更してください。	현재 작업이 끝난 후 노선 선택을 변경하세요.	Poczekaj na zakończenie operacji przed zmianą wyboru linii.	Aguarde a operação atual terminar antes de alterar a seleção de linhas.	Дождитесь завершения операции перед изменением выбора маршрутов.	請等待目前操作完成後再修改路線選擇。
+请等待当前操作完成后再预览。	Aktuellen Vorgang abwarten, bevor die Vorschau gestartet wird.	Wait for the current operation to finish before previewing.	Espera a que termine la operación antes de obtener una vista previa.	Attendez la fin de l’opération avant l’aperçu.	Attendi la fine dell’operazione prima dell’anteprima.	現在の操作が完了してからプレビューしてください。	현재 작업이 끝난 후 미리보기를 실행하세요.	Poczekaj na zakończenie operacji przed podglądem.	Aguarde a operação atual terminar antes da prévia.	Дождитесь завершения операции перед предпросмотром.	請等待目前操作完成後再預覽。
+请输入有效的列表。	Gültige Liste eingeben.	Enter a valid list.	Introduce una lista válida.	Saisissez une liste valide.	Inserisci un elenco valido.	有効なリストを入力してください。	유효한 목록을 입력하세요.	Wprowadź prawidłową listę.	Insira uma lista válida.	Введите допустимый список.	請輸入有效的清單。
+请输入有效的尺寸倍率。	Gültige Skalierung eingeben.	Enter a valid element scale.	Introduce una escala válida.	Saisissez une échelle valide.	Inserisci una scala valida.	有効な倍率を入力してください。	유효한 배율을 입력하세요.	Wprowadź prawidłową skalę.	Insira uma escala válida.	Введите допустимый масштаб.	請輸入有效的尺寸倍率。
+请输入有效的长边和尺寸倍率。	Gültige Seitenlänge und Skalierung eingeben.	Enter a valid canvas size and element scale.	Introduce un tamaño y una escala válidos.	Saisissez une taille et une échelle valides.	Inserisci dimensione e scala valide.	有効な長辺サイズと倍率を入力してください。	유효한 긴 변 크기와 배율을 입력하세요.	Wprowadź prawidłowy rozmiar i skalę.	Insira tamanho e escala válidos.	Введите допустимый размер и масштаб.	請輸入有效的長邊及尺寸倍率。
+请输入有效范围内的数值。	Enter a number within the allowed range.
+请返回普通地图后应用区域选择。	Zur Karte zurückkehren, um die Gebietsauswahl anzuwenden.	Return to the map to apply the region selection.	Vuelve al mapa para aplicar la selección de zonas.	Revenez à la carte pour appliquer la sélection de zones.	Torna alla mappa per applicare la selezione aree.	地図に戻って範囲選択を適用してください。	지도로 돌아가 영역 선택을 적용하세요.	Wróć do mapy, aby zastosować wybór obszarów.	Volte ao mapa para aplicar a seleção de regiões.	Вернитесь к карте, чтобы применить выбор областей.	請返回一般地圖後套用區域選擇。
+请选择至少一种交通类型和一条可用线路。	Mindestens ein Verkehrsmittel und eine verfügbare Linie auswählen.	Select a transport type and at least one available line.	Selecciona al menos un medio de transporte y una línea disponible.	Sélectionnez au moins un mode de transport et une ligne disponible.	Seleziona almeno un mezzo di trasporto e una linea disponibile.	交通手段を1種類以上、利用可能な路線を1本以上選択してください。	교통수단 하나 이상과 사용 가능한 노선 하나 이상을 선택하세요.	Wybierz co najmniej jeden rodzaj transportu i dostępną linię.	Selecione pelo menos um tipo de transporte e uma linha disponível.	Выберите хотя бы один вид транспорта и доступный маршрут.	請選擇至少一種運輸類型及一條可用路線。
+请重新打开草稿导出窗口。	Entwurf-Exportfenster erneut öffnen.	Reopen the draft export window.	Vuelve a abrir la ventana de exportación del borrador.	Rouvrez la fenêtre d’exportation du brouillon.	Riapri la finestra di esportazione della bozza.	下書きエクスポートウインドウを開き直してください。	초안 내보내기 창을 다시 여세요.	Otwórz ponownie okno eksportu szkicu.	Reabra a janela de exportação do rascunho.	Откройте окно экспорта черновика снова.	請重新開啟草稿匯出視窗。
+调整生成输入后，应用到示意图。	Erstellungseingaben anpassen und auf das Diagramm anwenden.	Adjust generation inputs, then apply them to the diagram.	Ajusta los parámetros de generación y aplícalos al diagrama.	Ajustez les paramètres de génération, puis appliquez-les au schéma.	Modifica i parametri di generazione e applicali al diagramma.	生成条件を調整して路線図に適用してください。	생성 입력을 조정한 후 노선도에 적용하세요.	Dostosuj parametry generowania i zastosuj je do schematu.	Ajuste os parâmetros de geração e aplique ao diagrama.	Настройте параметры генерации и примените их к схеме.	調整產生輸入後，套用至示意圖。
+跟随图标	With Icons
+跟随图标时，隐藏图标也会隐藏名称。	When names follow icons, hiding icons also hides names.
+路况颜色	Verkehrsfarben	Traffic Colors	Colores de tráfico	Couleurs du trafic	Colori traffico	交通状況の色	교통 상황 색상	Kolory ruchu	Cores do trânsito	Цвета трафика	路況顏色
+边界与填色	Boundaries & Fill
+返回图层列表	Zurück zu Ebenen	Back to Layers	Volver a capas	Retour aux couches	Torna ai livelli	レイヤー一覧に戻る	레이어 목록으로 돌아가기	Wróć do warstw	Voltar às camadas	Вернуться к слоям	返回圖層清單
+返回地图	Back to Map
+退出 CSLModernMap	CSLModernMap beenden	Quit CSLModernMap	Salir de CSLModernMap	Quitter CSLModernMap	Esci da CSLModernMap	CSLModernMapを終了	CSLModernMap 종료	Zakończ CSLModernMap	Encerrar CSLModernMap	Завершить CSLModernMap	結束 CSLModernMap
+退出草稿	Entwurf verlassen	Leave Draft	Salir del borrador	Quitter le brouillon	Esci dalla bozza	下書きを終了	초안 나가기	Opuść szkic	Sair do rascunho	Выйти из черновика	退出草稿
+适应画布	Fit Canvas
+选择	Auswählen	Select	Seleccionar	Sélectionner	Seleziona	選択	선택	Wybierz	Selecionar	Выбрать	選取
+选择主题编辑器	Choose a Theme Editor
+选择保存位置	Choose Destination
+选择区域…	Gebiet auswählen…	Select Region…	Seleccionar zona…	Sélectionner une zone…	Seleziona area…	範囲を選択…	영역 선택…	Wybierz obszar…	Selecionar região…	Выбрать область…	選取區域…
+选择对象	Select Objects
+选择导出方式	Choose an Export Workflow
+选择所有线路，包括筛选中隐藏的线路。	Alle Linien auswählen, auch ausgefilterte.	Select all lines, including those hidden by filters.	Seleccionar todas las líneas, incluidas las ocultas por filtros.	Sélectionner toutes les lignes, y compris celles masquées par les filtres.	Seleziona tutte le linee, incluse quelle nascoste dai filtri.	フィルターで非表示の路線も含め、すべての路線を選択します。	필터로 숨겨진 노선을 포함한 모든 노선을 선택합니다.	Wybierz wszystkie linie, także ukryte przez filtry.	Selecionar todas as linhas, incluindo as ocultas pelos filtros.	Выбрать все маршруты, включая скрытые фильтрами.	選取所有路線，包括篩選中隱藏的路線。
+选择状态筛选	Auswahlstatus filtern	Filter Selection Status	Filtrar estado de selección	Filtrer l’état de sélection	Filtra stato selezione	選択状態で絞り込む	선택 상태 필터링	Filtruj stan wyboru	Filtrar estado de seleção	Фильтровать состояние выбора	選取狀態篩選
+选择筛选结果	Select Results
+选择线路	Select Lines
+选择范围	Select Region
+道路	Roads
+道路文字	Road Labels
+道路文字设置	Straßenbeschriftung	Road Label Settings	Ajustes de etiquetas de vías	Paramètres des libellés de routes	Impostazioni etichette strade	道路ラベル設定	도로 라벨 설정	Ustawienia etykiet dróg	Configurações de rótulos de vias	Настройки подписей дорог	道路文字設定
+避免重叠	Avoid Overlap
+邻近站点圆圈	Nearby Station Circles
+配色方案	Color Palette
+采样点	samples
+重做工程	Projekt wiederholen	Redo Project	Rehacer proyecto	Rétablir le projet	Ripeti progetto	プロジェクトをやり直す	프로젝트 다시 실행	Ponów projekt	Refazer projeto	Повторить действие проекта	重做專案
+重命名	Rename
+重复间隔（米）	Repeat Interval (m)
+重新启动交互预览	Interaktive Vorschau neu starten	Restart Interactive Preview	Reiniciar vista previa interactiva	Redémarrer l’aperçu interactif	Riavvia anteprima interattiva	インタラクティブプレビューを再起動	대화형 미리보기 다시 시작	Uruchom ponownie podgląd interaktywny	Reiniciar prévia interativa	Перезапустить интерактивный предпросмотр	重新啟動互動預覽
+重新生成会在编辑器中打开新草稿。已保存的工程文件仍可重新打开。	Neuerstellung öffnet einen neuen Entwurf im Editor. Gespeicherte Projektdateien bleiben verfügbar.	Regeneration will open a new draft in the editor. You can still reopen the saved project.	La regeneración abrirá un nuevo borrador en el editor. Podrás volver a abrir el proyecto guardado.	La régénération ouvre un nouveau brouillon dans l’éditeur. Le projet enregistré peut être rouvert.	La rigenerazione apre una nuova bozza nell’editor. Puoi riaprire il progetto salvato.	再生成するとエディターに新しい下書きが開きます。保存済みプロジェクトは再度開けます。	재생성하면 편집기에 새 초안이 열립니다. 저장된 프로젝트는 다시 열 수 있습니다.	Regeneracja otworzy nowy szkic w edytorze. Zapisany projekt nadal można otworzyć.	A regeneração abrirá um novo rascunho no editor. O projeto salvo ainda pode ser reaberto.	Повторная генерация откроет новый черновик в редакторе. Сохранённый проект можно открыть снова.	重新產生會在編輯器中開啟新草稿。已儲存的專案檔案仍可重新開啟。
+重新生成将替换当前地铁工程	Neuerstellung ersetzt das aktuelle Metroprojekt	Regeneration will replace the current metro project.	La regeneración reemplazará el proyecto de metro actual	La régénération remplacera le projet de métro actuel	La rigenerazione sostituirà il progetto metro corrente	再生成すると現在の地下鉄プロジェクトが置き換わります	재생성하면 현재 지하철 프로젝트가 교체됩니다	Regeneracja zastąpi bieżący projekt metra	A regeneração substituirá o projeto de metrô atual	Повторная генерация заменит текущий проект метро	重新產生將取代目前地鐵專案
+重新生成示意图	Regenerate Diagram
+重置主题编辑和导出方式	Reset Theme Editor and Export Choices
+重试	Retry
+铁路外观	Bahndarstellung	Railway Appearance	Apariencia del ferrocarril	Aspect ferroviaire	Aspetto ferrovie	鉄道の外観	철도 모양	Wygląd kolei	Aparência ferroviária	Вид железной дороги	鐵路外觀
+长度升序	Länge aufsteigend	Length Ascending	Longitud ascendente	Longueur croissante	Lunghezza crescente	長さの昇順	길이 오름차순	Długość rosnąco	Comprimento crescente	Длина по возрастанию	長度遞增
+长度降序	Länge absteigend	Length Descending	Longitud descendente	Longueur décroissante	Lunghezza decrescente	長さの降順	길이 내림차순	Długość malejąco	Comprimento decrescente	Длина по убыванию	長度遞減
+长边（px）	Lange Seite (px)	Long Edge (px)	Lado largo (px)	Côté long (px)	Lato lungo (px)	長辺（px）	긴 변(px)	Dłuższy bok (px)	Lado maior (px)	Длинная сторона (px)	長邊（px）
+随地图缩放	Mit Karte skalieren	Scale with Map	Escalar con mapa	À l’échelle de la carte	Scala con mappa	地図に合わせて拡大縮小	지도에 맞춰 크기 조정	Skaluj z mapą	Escalar com mapa	Масштабировать с картой	隨地圖縮放
+随底图淡化	Fade with Base Map
+随机特写	Random Closeup
+随机种子（可选）	Random seed (optional)
+隐藏 CSLModernMap	CSLModernMap ausblenden	Hide CSLModernMap	Ocultar CSLModernMap	Masquer CSLModernMap	Nascondi CSLModernMap	CSLModernMapを隠す	CSLModernMap 가리기	Ukryj CSLModernMap	Ocultar CSLModernMap	Скрыть CSLModernMap	隱藏 CSLModernMap
+隐藏已选	Ausgeblendet und ausgewählt	Hidden Selected	Selección oculta	Sélection masquée	Selezionati nascosti	非表示の選択済み	숨겨진 선택 항목	Ukryte zaznaczone	Selecionados ocultos	Скрытые выбранные	隱藏的已選項目
+隐藏站名时，字号不可用并保留原值；站名位置独立于站点圆圈。	Bei ausgeblendeten Stationsnamen ist die Schriftgröße nicht verfügbar und bleibt erhalten. Die Namensposition ist unabhängig von Stationskreisen.	Hiding station names disables font size and keeps its value. Name placement is independent of station circles.	Ocultar los nombres de estaciones desactiva el tamaño de fuente y conserva su valor. La posición del nombre es independiente de los círculos.	Masquer les noms de stations désactive la taille de police en conservant sa valeur. La position du nom est indépendante des cercles de station.	Nascondere i nomi delle stazioni disabilita la dimensione del carattere mantenendone il valore. La posizione è indipendente dai cerchi delle stazioni.	駅名を非表示にすると文字サイズは使用できませんが値は保持されます。駅名の位置は駅の円と独立しています。	역 이름을 숨기면 글꼴 크기가 비활성화되며 값은 유지됩니다. 이름 위치는 역 원과 별개입니다.	Ukrycie nazw stacji blokuje rozmiar czcionki, zachowując jego wartość. Położenie nazwy jest niezależne od okręgów stacji.	Ocultar nomes de estações desabilita o tamanho da fonte e mantém seu valor. A posição do nome é independente dos círculos.	Скрытие названий станций отключает размер шрифта, сохраняя значение. Положение названия не зависит от кружков станций.	隱藏站名時，字級無法使用並保留原值；站名位置獨立於站點圓圈。
+隧道	Tunnel
+非交通地点	Other Places
+面细节	Flächendetails	Polygon Detail	Detalle de polígonos	Détail des polygones	Dettaglio poligoni	ポリゴンの詳細	폴리곤 세부 정보	Szczegóły wielokątów	Detalhe dos polígonos	Детализация полигонов	面細節
+预览不会保存。已应用但未保存的修改只影响当前会话。	Die Vorschau speichert nichts. Angewendete, ungespeicherte Änderungen gelten nur für diese Sitzung.	Preview does not save changes. Applied changes remain in the current session until saved.	La vista previa no guarda cambios. Los cambios aplicados sin guardar solo afectan a esta sesión.	L’aperçu n’enregistre rien. Les modifications appliquées non enregistrées ne concernent que la session actuelle.	L’anteprima non salva. Le modifiche applicate non salvate valgono solo per la sessione corrente.	プレビューは保存しません。適用済みの未保存変更は現在のセッションにのみ反映されます。	미리보기는 저장하지 않습니다. 적용 후 저장하지 않은 변경은 현재 세션에만 영향을 줍니다.	Podgląd nie zapisuje zmian. Zastosowane niezapisane zmiany dotyczą tylko bieżącej sesji.	A prévia não salva alterações. Mudanças aplicadas e não salvas afetam apenas a sessão atual.	Предпросмотр не сохраняет изменения. Применённые несохранённые изменения действуют только в текущем сеансе.	預覽不會儲存。已套用但未儲存的修改僅影響目前工作階段。
+预览只显示草稿效果，不会应用或保存。失败时保留上次可用预览。	Vorschau zeigt nur den Entwurf, ohne anzuwenden oder zu speichern. Bei Fehler bleibt die letzte Vorschau erhalten.	Preview shows the draft without applying or saving it. The last usable image is kept if rendering fails.	La vista previa muestra solo el borrador sin aplicar ni guardar. Si falla, se conserva la última vista válida.	L’aperçu montre uniquement le brouillon sans appliquer ni enregistrer. En cas d’échec, le dernier aperçu valide est conservé.	L’anteprima mostra solo la bozza senza applicare o salvare. In caso di errore resta l’ultima anteprima valida.	プレビューは下書きのみ表示し、適用も保存もしません。失敗時は前回の有効なプレビューを保持します。	미리보기는 초안만 표시하며 적용하거나 저장하지 않습니다. 실패 시 마지막 유효한 미리보기를 유지합니다.	Podgląd pokazuje szkic bez stosowania ani zapisywania. W razie błędu zachowuje ostatni poprawny podgląd.	A prévia mostra apenas o rascunho, sem aplicar ou salvar. Em caso de falha, mantém a última prévia válida.	Предпросмотр показывает черновик без применения и сохранения. При сбое сохраняется последний доступный предпросмотр.	預覽僅顯示草稿效果，不會套用或儲存。失敗時保留上次可用預覽。
+预览图片地址无效。	Ungültige Vorschaubildadresse.	The preview image address is invalid.	La dirección de la imagen de vista previa no es válida.	L’adresse de l’image d’aperçu est invalide.	L’indirizzo dell’immagine di anteprima non è valido.	プレビュー画像のアドレスが無効です。	미리보기 이미지 주소가 잘못되었습니다.	Adres obrazu podglądu jest nieprawidłowy.	O endereço da imagem de prévia é inválido.	Адрес изображения предпросмотра недействителен.	預覽圖片位址無效。
+预览图片无法读取，请重试。	Vorschaubild konnte nicht gelesen werden. Erneut versuchen.	The preview image could not be read. Please retry.	No se pudo leer la imagen de vista previa. Inténtalo de nuevo.	Impossible de lire l’image d’aperçu. Réessayez.	Impossibile leggere l’immagine di anteprima. Riprova.	プレビュー画像を読み込めませんでした。再試行してください。	미리보기 이미지를 읽을 수 없습니다. 다시 시도하세요.	Nie udało się odczytać obrazu podglądu. Spróbuj ponownie.	Não foi possível ler a imagem de prévia. Tente novamente.	Не удалось прочитать изображение предпросмотра. Повторите попытку.	無法讀取預覽圖片，請重試。
+预览失败：	Preview failed: 
+预览已取消	Preview cancelled
+预览已完成	Preview complete
+预览未能开始：	Vorschau konnte nicht starten: 	Preview could not start: 	No se pudo iniciar vista previa: 	Impossible de lancer l’aperçu : 	Impossibile avviare l’anteprima: 	プレビューを開始できません：	미리보기를 시작하지 못함: 	Nie udało się uruchomić podglądu: 	Não foi possível iniciar a prévia: 	Не удалось запустить предпросмотр: 	預覽無法開始：
+预览状态	Preview Status
+预览质量	Preview Quality
+预览载入失败：	Preview image failed to load: 
+高度（px）	Height (px)
+高架	Elevated
+高级外观	Erweiterte Darstellung	Advanced Appearance	Apariencia avanzada	Aspect avancé	Aspetto avanzato	高度な外観設定	고급 모양 설정	Zaawansowany wygląd	Aparência avançada	Расширенный вид	進階外觀
+高级设置	Advanced Settings
+高速公路	Highways
+高阶设置	Erweiterte Einstellungen	Advanced Settings	Ajustes avanzados	Paramètres avancés	Impostazioni avanzate	詳細設定	고급 설정	Ustawienia zaawansowane	Configurações avançadas	Расширенные настройки	進階設定

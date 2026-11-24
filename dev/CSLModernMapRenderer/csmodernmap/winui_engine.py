@@ -46,7 +46,7 @@ from .transit_ui_schema import option_schema, validate_option, STYLE_FIELDS, LAY
 from .winui_workflows import WinuiWorkflows, METHODS as WORKFLOW_METHODS
 from csmodernmap.ui_contracts import (ExportRequest, ContextMode, RenderRegion,
                             export_capabilities)
-from .ribbon_schema import FIELDS, FIELD_DEPENDENCIES, LAYER_FIELDS, TRANSIT_TYPES
+from .ribbon_schema import FIELDS, FIELD_DEPENDENCIES, LABEL_KINDS, LAYER_FIELDS, TRANSIT_TYPES
 from .theme_contract import normalize_theme, sanitize_theme_data, validate_theme_values
 
 PROTOCOL_VERSION = 1
@@ -55,6 +55,9 @@ TEXT_ICON_FIELDS = ("label.roads", "label.districts", "road.game_names", "poi.ga
     "poi.name_size", "poi.name_stroke", "poi.name_stroke_width") + tuple(
         f"label.{attr}.{kind}" for kind in ("road", "district")
         for attr in ("font", "size", "color", "stroke_width", "stroke_color"))
+EXTENDED_TEXT_ICON_FIELDS = tuple(dict.fromkeys((*TEXT_ICON_FIELDS, *(
+    f"label.{attr}.{kind}" for kind in LABEL_KINDS
+    for attr in ("font", "size", "color", "outline", "stroke_width", "stroke_color")))))
 TEXT_ICON_OPTIONS = {
     "normal": ("stations", "facilities_enabled", "station_name_placement", "station_name_size"),
     "transit": ("stations", "facilities_enabled", "station_name_placement", "station_name_size"),
@@ -173,6 +176,7 @@ class EngineServer:
         self._saving_export = False
         self.workflows = WinuiWorkflows(self)
         self._document_epoch = 0
+        self._document_open_pending = False
         from .artwork import ArtworkState
         self.artwork_state = ArtworkState(self._document_epoch)
         self._artwork_jobs = []
@@ -246,6 +250,35 @@ class EngineServer:
         epoch = params.get("documentEpoch")
         if type(epoch) is not int or epoch != self._document_epoch:
             raise RuntimeError(i18n.tr('ui.winui_engine._require_document_epoch.8e11490207'))
+
+    def _begin_document_replacement(self) -> None:
+        self._document_open_pending = False
+        self._city_draft = None
+        self._city_waiting_drafts.clear()
+        self._artwork_scene = None
+        self.cancel_artwork()
+        pending = getattr(self, "_rmp_pending", None)
+        if self._render_mode == "rmp" and pending:
+            self.event("rmpProjectError", {"requestId": pending[2], "message": "源地图已改变，请重新打开编辑器"})
+            self._rmp_pending = None
+            self._render_mode = None
+        self._document_epoch += 1
+        self.artwork_state.set_document(self._document_epoch)
+        self.event("documentOpening", {"documentEpoch": self._document_epoch})
+        self._stats_cache = None
+        self._building_catalog = None
+        self.backend._map_line_ids = self.backend._transit_line_ids = None
+        self.backend._preview_map_transport = True
+        self._poi_editor_token = None
+        self._poi_editor_mtime = None
+        with self._theme_preview_lock:
+            self._theme_preview_request_id = None
+            self._theme_preview_pending = None
+
+    def _document_read_failed(self, error) -> None:
+        self._document_open_pending = False
+        self.event("documentOpenFailed", error_payload(
+            error, operation="open", stage="openDocument", documentEpoch=self._document_epoch))
 
     def _check_satellite_texture(self, style, limit) -> None:
         from .satellite_filter import satellite_image
@@ -340,7 +373,7 @@ class EngineServer:
             output["region"] = {"bounds": backend.world_rect(), "source": "custom"}
         job, _, _ = self._capture_output_snapshot(context, "PNG", output)
         # 图片预览沿用预览的 POI 配置，正式 PNG 的独立配置保持不变。
-        backend._attach_poi_render_config(job, "preview")
+        backend._attach_poi_render_config(job, "preview", map_symbols=context == ContextMode.NORMAL)
         if context == ContextMode.NORMAL and not job["ui"]["text_enabled"]:
             job["ui"]["poi_visibility_snapshot"]["icons"] = {
                 group: False for group in job["ui"]["poi_visibility_snapshot"]["icons"]}
@@ -440,11 +473,13 @@ class EngineServer:
         self._render_mode = None
         if pending and pending[3] == self._document_epoch:
             try:
-                self.event("rmpProjectReady", {"requestId": pending[2], "draft": self._rmp_draft(pending[0], pending[1])})
+                self.event("rmpProjectReady", {"requestId": pending[2], "documentEpoch": pending[3],
+                           "draft": self._rmp_draft(pending[0], pending[1])})
             except Exception as error:
                 self.event("rmpProjectError", error_payload(error, operation="metro", stage="rmpDraft", requestId=pending[2], documentEpoch=pending[3]))
-        else:
-            self.event("rmpProjectError", {"requestId": pending[2] if pending else None, "message": "源地图已改变，请重新打开编辑器"})
+        elif pending:
+            self.event("rmpProjectError", {"requestId": pending[2], "documentEpoch": pending[3],
+                       "category": "stale", "message": "源地图已改变，请重新打开编辑器"})
 
     def _render_done(self, _image, _size, _stats, _elapsed, _region, _thumbnail, _context) -> None:
         if (self._export.request_id and self._export.document_epoch is not None
@@ -559,7 +594,7 @@ class EngineServer:
         transit_draft = self._city_draft is not None and self._city_draft.get('job', {}).get('kind') == 'transit'
         if transit_draft:
             transit_options = self._draft_transit_options()
-        map_options = backend.map_transit_options()
+        map_options = backend.map_transit_options(render=True)
         metro_options = self.metro_options()
         if getattr(backend, "has_document", False):
             poi_visibility = backend.poi_visibility_snapshot()
@@ -611,6 +646,7 @@ class EngineServer:
             "mapTransitTypes": list(backend.transit_types),
             "mapTransitLineIds": map_options.get("line_ids"),
             "mapTransitOptions": map_options,
+            **({"mapSymbolVisibility": backend.map_symbol_visibility()} if backend.split_map_symbols else {}),
             "transitDraftChanged": bool(transit_draft and self._city_draft["params"].get("transitChanges")),
             "mapStations": bool(fields["transport.stations"]),
             "mapStationNames": bool(fields["transport.station_names"]),
@@ -1296,6 +1332,8 @@ class EngineServer:
                 self.event("externalExportDone", {
                     **metadata, "directory": str(result.directory),
                     "warnings": list(result.warnings), "kind": kind,
+                    "exportedLineCount": sum(path.name.endswith(".rmg.json") for path in result.files),
+                    "skippedLineCount": result.skipped_line_count,
                 })
                 self._clear_export()
             except Exception as exc:  # noqa: BLE001 - 工程导出器会报告可恢复失败
@@ -1804,6 +1842,49 @@ class EngineServer:
     def dispatch(self, method: str, params: dict) -> Any:
         """校验并分派 WinUI 协议命令，统一返回结果或边界错误。"""
         backend = self.backend
+        if method == 'getCityArtworkGeometry':
+            self._require_document_epoch(params)
+            from .artwork import MAX_EDGE
+            from .export_region import OUTPUT_ROTATIONS, output_dimensions, output_spans
+            from .pixel_sizes import number
+            rotation = params['rotation']
+            pixels, previous = params['pixels'], params['previousEdge']
+            axis = params['axis']
+            if (type(rotation) is not int or rotation not in OUTPUT_ROTATIONS or
+                    axis not in ('width', 'height', 'longEdge') or
+                    any(type(value) is not int or not 1 <= value <= MAX_EDGE for value in (pixels, previous))):
+                raise ValueError('Invalid artwork canvas dimensions')
+            region = self._normalize_output_region(params.get('region'))
+            bounds = region.bounds if region else document_city_bounds(backend.document)
+            edge = pixels
+            if axis != 'longEdge':
+                width, height = output_spans(bounds, rotation)
+                span = width if axis == 'width' else height
+                edge = round(pixels / (span / max(width, height)))
+                if edge > MAX_EDGE:
+                    raise ValueError('Invalid artwork base long edge')
+            scale = number(params['elementScale'], 'elementScale', positive=True) * (edge / previous)
+            return {'longEdge': edge, 'elementScale': number(scale, 'elementScale', positive=True),
+                    'size': output_dimensions(bounds, edge, rotation),
+                    'presets': [{'edge': value, 'size': output_dimensions(bounds, value, rotation)}
+                                for value in (2048, 4096, 8192)]}
+        if method == 'commitCityArtwork':
+            self._require_document_epoch(params)
+            if self._city_draft is None:
+                raise RuntimeError('No city draft is active')
+            theme = params.get('themeDraft')
+            result = {'saved': False}
+            if theme is not None:
+                fields = ('theme', 'data', 'new', 'baseTheme', 'settingsRevision', 'importToken', 'name')
+                values = {key: theme[key] for key in fields if key in theme}
+                result = self.dispatch('commitThemeDraft', {**values, 'artwork': True, 'documentEpoch': self._document_epoch})
+                if not result['saved']:
+                    return result
+            if self._city_draft['job']['kind'] == 'transit':
+                transit = self.dispatch('saveDraftTransitOptions', params)
+                if theme is None:
+                    result = transit
+            return result
         if method == 'restoreCityArtworkPreview':
             self._require_document_epoch(params)
             if self._city_draft is None:
@@ -2189,6 +2270,11 @@ class EngineServer:
                 export_file(str(params["savePath"]), data)
                 return {"applied": False, "saved": False, "exported": True,
                         "theme": backend.theme_stem, "settingsRevision": self.theme_revision()}
+            if params.get("persist") is False and not embedded:
+                backend.on_style_applied(data)
+                backend.invalidate_preview_compile()
+                return {"applied": True, "saved": False, "theme": selected_theme,
+                        "settingsRevision": self.theme_revision(), "draft": self.theme_draft()}
             record = backend.user_themes.get(selected_theme)
             creating = params.get("new", False)
             if not isinstance(creating, bool):
@@ -2245,33 +2331,27 @@ class EngineServer:
                 self._city_draft.pop('themeId', None)
             return {'deleted': identity, 'draft': self.theme_draft()}
         if method == "getPreviewTheme":
-            return backend.preview_theme()
+            return backend.preview_theme(map_symbols=params.get("map"))
         if method == "clearCache":
             backend.clear_cache()
             return {"cleared": True}
         if method == "openDocument":
-            self._city_draft = None
-            self._city_waiting_drafts.clear()
-            self._artwork_scene = None
-            self.cancel_artwork()
-            pending = getattr(self, "_rmp_pending", None)
-            if self._render_mode == "rmp" and pending:
-                self.event("rmpProjectError", {"requestId": pending[2], "message": "源地图已改变，请重新打开编辑器"})
-                self._rmp_pending = None
-                self._render_mode = None
-            self._document_epoch += 1
-            self.artwork_state.set_document(self._document_epoch)
-            self.event("documentOpening", {"documentEpoch": self._document_epoch})
-            self._stats_cache = None
-            self._building_catalog = None
-            backend._map_line_ids = backend._transit_line_ids = None
-            backend._preview_map_transport = True
-            self._poi_editor_token = None
-            self._poi_editor_mtime = None
-            with self._theme_preview_lock:
-                self._theme_preview_request_id = None
-                self._theme_preview_pending = None
-            return {"started": backend.open_file(str(params["path"]), self.callbacks)}
+            if self._document_open_pending:
+                return {"started": False}
+            path = str(params["path"])
+            if params.get("deferReplacement") is True:
+                self._document_open_pending = backend.open_file(
+                    path, self.callbacks, before_replace=self._begin_document_replacement,
+                    on_read_error=self._document_read_failed)
+                return {"started": self._document_open_pending}
+            self._begin_document_replacement()
+            return {"started": backend.open_file(path, self.callbacks)}
+        if method == "cancelDocumentOpen":
+            if not self._document_open_pending:
+                return {"cancelled": False}
+            backend.cancel_document_open()
+            self._document_open_pending = False
+            return {"cancelled": True}
         if method == "saveDraftTransitOptions":
             self._require_document_epoch(params)
             self._draft_transit_options()
@@ -2344,16 +2424,24 @@ class EngineServer:
             from .view_settings import default_view_settings, view_options
             defaults = default_view_settings()["metro" if target == "metro" else "transit"]
             projected = view_options(defaults, target == "metro")
+            theme_defaults = backend.theme_reset_defaults()
+            current_style = backend.current_style_data()
+            options = self.metro_options() if target == "metro" else self.transit_options()
+            if target != "metro":
+                for key, value in backend._transport_sizes(theme_defaults).items():
+                    projected.setdefault(key, value)
             option_defaults = {key: projected[key] for key in TEXT_ICON_OPTIONS[target]}
+            text_fields = EXTENDED_TEXT_ICON_FIELDS if backend.split_map_symbols else TEXT_ICON_FIELDS
             return {"theme": backend.theme_stem, "enabled": bool(backend.layer_visibility["label"]),
-                "fields": {key: backend.field_value(key, FIELDS[key].default) for key in TEXT_ICON_FIELDS},
-                "defaults": {key: backend.theme_default_field_value(key, FIELDS[key].default) for key in TEXT_ICON_FIELDS},
+                **({"mapSymbolVisibility": backend.map_symbol_visibility()} if backend.split_map_symbols else {}),
+                "fields": {key: backend.field_value(key, FIELDS[key].default, style_data=current_style) for key in text_fields},
+                "defaults": {key: backend.theme_default_field_value(key, FIELDS[key].default, style_data=theme_defaults) for key in text_fields},
                 "profile": backend.get_poi_profile(target), "profileDefaults": default_poi_profile(target),
                 "visibility": backend.poi_visibility_snapshot(),
                 "visibilityDefaults": default_poi_visibility(),
                 "optionDefaults": option_defaults,
-                "optionSchema": option_schema(self.metro_options() if target == "metro" else self.transit_options()),
-                "options": (self.metro_options() if target == "metro" else self.transit_options())}
+                "optionSchema": option_schema(options),
+                "options": options}
         if method in {"setPoiDensity", "setPoiProfileField"}:
             self._require_document_epoch(params)
             if not backend.has_document:
@@ -2380,14 +2468,17 @@ class EngineServer:
             if target == "normal" and "enabled" in params and not isinstance(params["enabled"], bool):
                 raise ValueError(i18n.tr('ui.winui_engine.dispatch.96b57316e5'))
             fields = params["fields"]
-            if not isinstance(fields, dict) or not set(fields) <= set(TEXT_ICON_FIELDS):
+            text_fields = EXTENDED_TEXT_ICON_FIELDS if backend.split_map_symbols else TEXT_ICON_FIELDS
+            if not isinstance(fields, dict) or not set(fields) <= set(text_fields):
                 raise ValueError(i18n.tr('ui.winui_engine.dispatch.c9a482b2c3'))
             for key, value in fields.items():
                 field = FIELDS[key]
                 if field.kind == "toggle":
                     valid = isinstance(value, bool)
                 elif field.kind == "number":
-                    parts = [value]
+                    supports_scaling = backend.split_map_symbols and (key.startswith(("label.size.", "label.stroke_width.")) or key in {"poi.size", "poi.name_size"})
+                    parts = (list(value.values()) if supports_scaling and isinstance(value, dict)
+                             and set(value) <= {"fixed", "scaled"} else [value])
                     valid = bool(parts) and all(type(v) in (int, float) and math.isfinite(v) and v >= 0 for v in parts)
                     valid = valid and field.low <= sum(parts) <= field.high
                 elif field.kind == "color":
@@ -2404,6 +2495,13 @@ class EngineServer:
                 raise ValueError(i18n.tr('ui.winui_engine.dispatch.dd98f132f7'))
             current_options = self.metro_options() if target == "metro" else self.transit_options()
             checked_options = {key: validate_option(current_options, key, value) for key, value in options.items()}
+            map_symbols = params.get("mapSymbolVisibility", {})
+            if not isinstance(map_symbols, dict) or any(
+                target != "normal" or not backend.split_map_symbols
+                or key not in backend.map_symbol_visibility() or type(value) is not bool
+                for key, value in map_symbols.items()
+            ):
+                raise ValueError("Invalid map symbol visibility")
             # 发布前先校验完整草稿。
             for key, value in fields.items():
                 backend.apply_style_override(key, value)
@@ -2411,6 +2509,8 @@ class EngineServer:
             backend.set_poi_visibility_snapshot(visibility)
             if target == "normal" and "enabled" in params:
                 backend.set_layer_visibility("label", params["enabled"])
+            if map_symbols:
+                backend.set_map_symbol_visibility(map_symbols)
             if target != "normal":
                 current = self.metro_options() if target == "metro" else self.transit_options()
                 current.update(checked_options)
@@ -2494,7 +2594,8 @@ class EngineServer:
             keys = params.get("keys")
             if not isinstance(keys, list) or any(not isinstance(key, str) for key in keys):
                 raise ValueError("reset keys must be an array of visible field keys")
-            visible = {key for group in LAYER_FIELDS.values() for key in group}
+            text_fields = EXTENDED_TEXT_ICON_FIELDS if backend.split_map_symbols else TEXT_ICON_FIELDS
+            visible = {key for group in LAYER_FIELDS.values() for key in group} | set(text_fields)
             if not set(keys) <= visible:
                 raise ValueError("reset keys include fields outside the visible pages")
             for key in dict.fromkeys(keys):
@@ -2509,6 +2610,12 @@ class EngineServer:
             if "documentEpoch" in params:
                 self._require_document_epoch(params)
             key = str(params["key"])
+            if backend.split_map_symbols and key in backend.map_symbol_visibility():
+                enabled = params["enabled"]
+                if type(enabled) is not bool:
+                    raise ValueError("Map symbol visibility must be a boolean")
+                backend.set_map_symbol_visibility({key: enabled})
+                return {"enabled": enabled, "poiVisible": backend.map_layer_visibility()["poi"]}
             if key not in LABEL_CHILDREN:
                 raise ValueError(f"unknown label child: {key}")
             kind, target = LABEL_CHILDREN[key]
@@ -2655,11 +2762,20 @@ class EngineServer:
                 backend._preview_map_transport = bool(params["map"])
             if not backend.has_document:
                 return {"started": False}
-            if backend.preview_needs_rebuild():
-                return {"started": backend.compile_preview_scene(self.callbacks),
+            if params.get("force") or backend.preview_needs_rebuild():
+                return {"started": backend.compile_preview_scene(self.callbacks, force=bool(params.get("force"))),
                         "theme": backend.preview_theme()}
+            # The published scene can already match after reverting a setting or mode
+            # while a different source snapshot is still compiling.
+            bundle = getattr(backend, "_preview_bundle", None)
+            compiling = getattr(backend, "_preview_compile_signatures", None)
+            if bundle is not None and compiling is not None and bundle.manifest.get("sourceSignatures") != compiling:
+                backend.invalidate_preview_compile()
+                backend._preview_compile_signatures = None
             return {"started": False, "theme": backend.preview_theme()}
         if method == "prepareRmpProject":
+            if "documentEpoch" in params:
+                self._require_document_epoch(params)
             if not backend.has_document:
                 raise ValueError("请先打开地图")
             if backend.busy or backend.local_render_active or self._external_busy:
@@ -2773,6 +2889,10 @@ class EngineServer:
             return {"started": started}
 
         if method == "cancel":
+            pending = getattr(self, "_rmp_pending", None)
+            if "rmpRequestId" in params and (self._render_mode != "rmp" or not pending
+                    or pending[2] != params["rmpRequestId"] or pending[3] != self._document_epoch):
+                return {"cancelled": False}
             if self._artwork_active:
                 self.cancel_artwork()
                 return {'cancelled': False, 'cancelRequested': True}
@@ -2786,11 +2906,15 @@ class EngineServer:
                 return {"cancelled": False, "message": i18n.tr('ui.winui_engine.dispatch.e668d01e2c')}
             if self._external_busy:
                 return {"cancelled": False, "message": i18n.tr('ui.winui_engine.dispatch.19bb4eb8a9')}
+            if self._render_mode == "rmp" and pending:
+                backend.cancel_rmp_generation()
+                self._rmp_pending = None
+                self._render_mode = None
+                self.event("rmpProjectError", {"requestId": pending[2], "documentEpoch": pending[3],
+                           "cancelled": True, "category": "cancelled", "message": "已取消编辑工程生成"})
+                return {"cancelled": True}
             backend.cancel()
             backend.cancel_export()
-            pending = getattr(self, "_rmp_pending", None)
-            if self._render_mode == "rmp" and pending:
-                self.event("rmpProjectError", {"requestId": pending[2], "message": "已取消编辑工程生成"})
             self._rmp_pending = None
             self._clear_export()
             self._render_mode = None

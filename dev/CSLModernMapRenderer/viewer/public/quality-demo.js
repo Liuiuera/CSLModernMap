@@ -4,7 +4,8 @@ const loaded = [false, false];
 let state;
 const standard = {pixelScale: 1, lineDetail: 'standard', polygonDetail: 'standard'};
 function report(type, details = {}) {
-  window.chrome?.webview?.postMessage(JSON.stringify({type, ...details}));
+  if (window.chrome?.webview) window.chrome.webview.postMessage(JSON.stringify({type, ...details}));
+  else window.webkit?.messageHandlers?.cslQuality?.postMessage({type, ...details});
 }
 function command(index, value) {
   return frames[index].contentWindow.cslPreview.dispatch(value).catch(error => {
@@ -24,9 +25,11 @@ function update() {
     void command(index, {type: 'setPreviewQuality', requestId: `sample-${index}`, quality: index ? state.quality : standard});
   }
 }
-window.chrome?.webview?.addEventListener('message', event => {
-  if (event.data.type === 'setQualityDemo') { state = event.data; update(); }
-});
+function dispatch(message) {
+  if (message.type === 'setQualityDemo') { state = message; update(); }
+}
+window.cslQuality = {dispatch};
+window.chrome?.webview?.addEventListener('message', event => dispatch(event.data));
 window.addEventListener('message', event => {
   if (event.origin !== location.origin) return;
   const index = frames.findIndex(frame => frame.contentWindow === event.source);

@@ -187,6 +187,7 @@ def _build_normal_renderer(
                 rule_overrides=visibility_overrides(
                     road=ui["road_names"],
                     district=ui["district_names"],
+                    park=ui.get("park_names"),
                 ),
                 name_filters={
                     "road_player_names": ui.get("road_player_names", True),
@@ -636,7 +637,7 @@ def run_transit_task(
     progress: Callable[[float, str], None] | None = None,
     mapdata_cache: dict | None = None,
 ) -> dict:
-    """公共交通图 / 地铁示意图：底图 + 透明叠加两段式渲染（或纯图）。"""
+    """分两段渲染公共交通底图和线路。"""
     t0 = time.time()
     file = job["file"]
     ui = job["ui"]

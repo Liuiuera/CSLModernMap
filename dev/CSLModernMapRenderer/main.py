@@ -177,23 +177,14 @@ def _get_layer_registry():
 def _build_renderer(
     style, render_size: int, layers: str = None, tile: int = 0,
     memory_friendly: bool = False,
-    disk_backing: bool = False,       # 磁盘画布：大图合并落盘降内存
-    no_watermark: bool = False,       # 新增：禁用水印
-    watermark_text: str | None = None,  # 新增：自定义附加文字
-    rotate: int = 0,                  # 新增：输出旋转角度（0/90/180/270）
-    transit_colored: bool = False,    # 公共交通图：公共交通建筑按线路色上色
-    detail: str = "auto",            # 地图内容密度，与输出尺寸独立
+    disk_backing: bool = False,
+    no_watermark: bool = False,
+    watermark_text: str | None = None,
+    rotate: int = 0,
+    transit_colored: bool = False,
+    detail: str = "auto",
 ):
-    """按图层顺序构建渲染器。
-
-    layers: 逗号分隔的图层名（中/英文均可），None 表示全部启用。
-    名称前后空白会被忽略；不识别的名称会给出提示。
-    tile: 分块瓦片大小（像素），0=自动。
-    memory_friendly: 内存友好模式。True 时超大图自动分块，控制峰值内存。
-    no_watermark: True 时跳过水印图层。
-    watermark_text: 自定义附加文字（渲染到水印中）。
-    rotate: 输出顺时针旋转角度（0/90/180/270），文字/图标在旋转坐标系中重新渲染。
-    """
+    """按图层顺序和输出设置构建渲染器。"""
     registry = _get_layer_registry()
     name_to_cls = {}
     from csmodernmap.layers.registry import layer_aliases

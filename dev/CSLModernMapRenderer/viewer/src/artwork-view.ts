@@ -274,6 +274,14 @@ export class ArtworkView {
   matches(epoch: number | undefined, revision: number | undefined): boolean {
     return this.expected?.[0] === epoch && this.expected?.[1] === revision;
   }
+  matchesPresented(epoch: number | undefined, revision: number | undefined): boolean {
+    return this.payload !== null && this.payload.documentEpoch === epoch && this.payload.revision === revision;
+  }
+  prepareSceneChange(): void {
+    this.reception.abort();
+    this.reception = new AbortController();
+    ++this.generation;
+  }
   request(epoch: number, revision: number): boolean {
     if (!Number.isSafeInteger(epoch) || epoch < 0 || !Number.isSafeInteger(revision) || revision < 0)
       throw new Error('Invalid artwork request identity');

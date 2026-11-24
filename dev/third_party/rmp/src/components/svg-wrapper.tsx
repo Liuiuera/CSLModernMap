@@ -288,7 +288,8 @@ const SvgWrapper = () => {
     const handleKeyDown = useEvent(async (e: React.KeyboardEvent<SVGSVGElement>) => {
         // tabIndex need to be on the element to make onKeyDown worked
         // https://www.delftstack.com/howto/react/onkeydown-react/
-        if (isMacClient ? e.key === 'Backspace' : e.key === 'Delete') {
+        if (embedded ? e.key === 'Backspace' || e.key === 'Delete' : isMacClient ? e.key === 'Backspace' : e.key === 'Delete') {
+            e.preventDefault();
             // remove all the selected nodes and edges
             if (selected.size > 0) {
                 selected.forEach(s => {

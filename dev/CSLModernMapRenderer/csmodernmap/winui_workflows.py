@@ -4,12 +4,15 @@ from __future__ import annotations
 from . import i18n
 
 import copy
+import json
 import uuid
 
 
 
+WORKFLOW_FILES = {"theme": "theme-editor-choice.json", "export": "export-choice.json"}
 METHODS = {"getRegionCatalog", "setRegionSelection", "getDiagnostics", "setDiagnostics",
-           "renderInterchanges", "getUiMetadata", "setLanguage", "getThemePalettes"}
+           "renderInterchanges", "getUiMetadata", "setLanguage", "getThemePalettes",
+           "getMapWorkflowChoice", "rememberMapWorkflowChoice", "resetMapWorkflowChoices"}
 
 
 class WinuiWorkflows:
@@ -18,6 +21,30 @@ class WinuiWorkflows:
 
     def dispatch(self, method, params):
         backend = self.server.backend
+        if method == "resetMapWorkflowChoices":
+            for filename in WORKFLOW_FILES.values():
+                (backend._settings_dir / filename).unlink(missing_ok=True)
+            return {"reset": True}
+        if method in {"getMapWorkflowChoice", "rememberMapWorkflowChoice"}:
+            self.server._require_document_epoch(params)
+            path = backend._settings_dir / WORKFLOW_FILES[params["workflow"]]
+            if method == "getMapWorkflowChoice":
+                try:
+                    choice = json.loads(path.read_text(encoding="utf-8"))["useDraft"]
+                except FileNotFoundError:
+                    choice = None
+                return {"useDraft": choice if choice is False or choice is True and params["canUseDraft"] else None}
+            choice = params["useDraft"]
+            if type(choice) is not bool:
+                raise ValueError("Invalid map workflow choice")
+            path.parent.mkdir(parents=True, exist_ok=True)
+            temporary = path.parent / (path.name + "." + uuid.uuid4().hex + ".tmp")
+            try:
+                temporary.write_text(json.dumps({"useDraft": choice}), encoding="utf-8")
+                temporary.replace(path)
+            finally:
+                temporary.unlink(missing_ok=True)
+            return {"useDraft": choice}
         if method == "getRegionCatalog":
             return {**backend.region_catalog(), "district_ids": sorted(backend.district_ids or ()), "park_ids": sorted(backend.park_ids or ())}
         if method == "setRegionSelection":
@@ -26,7 +53,8 @@ class WinuiWorkflows:
             return {"updated": True}
         if method == "getDiagnostics":
             return {"details": copy.deepcopy(backend.last_diagnostics),
-                    "enabled": backend.performance_diagnostics_enabled}
+                    "enabled": backend.performance_diagnostics_enabled,
+                    "logDirectory": str(backend.performance_log_dir())}
         if method == "setDiagnostics":
             backend.set_performance_diagnostics(bool(params["enabled"]))
             return {"enabled": backend.performance_diagnostics_enabled}

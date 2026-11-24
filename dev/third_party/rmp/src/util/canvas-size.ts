@@ -14,7 +14,7 @@ export const useCanvasSize = (): { width: number; height: number; visibleWidth?:
 export const embeddedWorkspaceSize = (width: number, height: number, detailsVisible: boolean) => {
     const panelWidth = detailsVisible ? Math.min(320, Math.max(0, width - 48)) : 0;
     return {
-        width: Math.max(1, width - (width >= 900 ? panelWidth : 0)),
+        width: Math.max(1, width - (width >= (window.webkit?.messageHandlers?.cslRmp ? 640 : 900) ? panelWidth : 0)),
         height,
         visibleWidth: Math.max(1, width - panelWidth),
     };
