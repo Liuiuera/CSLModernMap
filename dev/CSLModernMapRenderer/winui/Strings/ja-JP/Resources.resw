@@ -4366,9 +4366,6 @@ Esc  現在のタスクをキャンセル</value>
   <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
     <value>ゲームが起動中のため、多くのメモリを使用している可能性があります。都市を保存してゲームを終了してからの出力をおすすめします。そのまま続行することもできます。</value>
   </data>
-  <data name="ExportWindow_BeforeExportNotice" xml:space="preserve">
-    <value>エクスポート前に都市を保存してゲームを終了し、メモリを多く使用する他のプログラムも閉じることをお勧めします。出力サイズが大きいほど多くのメモリを使用します。</value>
-  </data>
   <data name="Poi_AreaMerge" xml:space="preserve">
     <value>近接エリアのラベル統合（CS2）</value>
   </data>
