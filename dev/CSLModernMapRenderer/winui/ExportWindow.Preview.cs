@@ -12,26 +12,24 @@ namespace CSLModernMapWinUI;
 
 internal sealed partial class ExportWindow
 {
-    private readonly MapRangePreview _rangeCanvas = new(164);
-    private readonly StackPanel _rangePreview = new() { Spacing = 8, Visibility = Visibility.Collapsed };
+    private readonly MapRangePreview _rangeCanvas = new(128);
+    private readonly StackPanel _rangePreview = new() { Spacing = 4, Visibility = Visibility.Collapsed };
     private readonly TextBlock _contentSummary = ExportDesign.Text("");
     private readonly StackPanel _resultActions = new() { Orientation = Orientation.Horizontal, Spacing = 8,
         Visibility = Visibility.Collapsed };
     private readonly TextBlock _themeTitle = ExportDesign.Text("");
-    private readonly Image _themeImage = new() { Width = 56, Height = 44, Stretch = Stretch.UniformToFill };
+    private readonly Image _themeImage = new() { Width = 44, Height = 34, Stretch = Stretch.UniformToFill };
     private readonly InfoBar _feedback = new() { IsOpen = false, IsClosable = true, Visibility = Visibility.Collapsed };
-    private readonly InfoBar _beforeExportNotice = new() { IsOpen = true, IsClosable = false,
-        Severity = InfoBarSeverity.Informational,
-        Message = UiLanguage.Text("ExportWindow_BeforeExportNotice") };
     private readonly InfoBar _gameRunningNotice = new() { IsOpen = false, IsClosable = false,
         Severity = InfoBarSeverity.Warning, Visibility = Visibility.Collapsed,
         Message = UiLanguage.Text("ExportWindow_GameRunningNotice") };
-    private readonly MapRangeControls _rangeControls = new();
+    private readonly MapRangeControls _rangeControls = new() { Spacing = 4 };
     private RadioButton _rangeFull => _rangeControls.Full;
     private RadioButton _rangeEntry => _rangeControls.Entry;
     private RadioButton _rangeCustom => _rangeControls.Custom;
     private readonly ComboBox _sizePreset = new() { Header = UiLanguage.Text("ExportWindow_Preview__sizePreset_C08C3589C7"), HorizontalAlignment = HorizontalAlignment.Stretch };
-    private readonly StackPanel _sizeFields = new() { Spacing = 8 };
+    private readonly StackPanel _sizeFields = new() { Spacing = 4 };
+    private readonly StackPanel _rotationFields = new() { Spacing = 4 };
     private readonly Dictionary<string, RadioButton> _formatChoices = new();
     private string? _latestResultPath, _latestResultFormat;
     private string _sharedSignature = "";
@@ -51,7 +49,7 @@ internal sealed partial class ExportWindow
                 "PNG" => Symbol.Pictures, "HTML" => Symbol.World,
                 "RMG" => Symbol.Edit, _ => Symbol.Map,
             };
-            var tile = new StackPanel { Spacing = 4 };
+            var tile = new StackPanel { Spacing = 2 };
             var heading = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
             heading.Children.Add(new SymbolIcon(symbol));
             heading.Children.Add(ExportDesign.Text(format, true));
@@ -66,7 +64,9 @@ internal sealed partial class ExportWindow
             radio.Checked += (_, _) => { if (_format.SelectedItem as string != format) _format.SelectedItem = format; };
             _formatChoices.Add(format, radio);
             _editable.Add(radio);
-            cards.Children.Add(ExportDesign.Card(radio));
+            var card = ExportDesign.Card(radio);
+            card.Padding = new Thickness(10, 5, 10, 5);
+            cards.Children.Add(card);
         }
         void Arrange()
         {
@@ -188,7 +188,7 @@ internal sealed partial class ExportWindow
 
     private void DrawRangeOutline() => _rangeCanvas.Select(EffectiveBounds());
 
-    private void BuildDensityControls(StackPanel image, JsonElement profile)
+    private Control BuildDensityControls(JsonElement profile)
     {
         foreach (var (value, label) in PoiProfileEditorPanel.DensityChoices)
             _densityTier.Items.Add(new ComboBoxItem { Content = label, Tag = value });
@@ -200,18 +200,18 @@ internal sealed partial class ExportWindow
             if (_densityTier.SelectedItem is ComboBoxItem item)
                 await SavePoiProfileFieldAsync("density_tier", (string)item.Tag);
         };
-        var content = new StackPanel { Spacing = 8 };
-        content.Children.Add(_densityEnabled);
+        var content = new StackPanel { Spacing = 4 };
         content.Children.Add(_densityTier);
+        content.Children.Add(_densityEnabled);
         content.Children.Add(_pngInternalBuildings);
         _pngInternalBuildings.Checked += async (_, _) => await SavePoiProfileFieldAsync("png_internal_buildings", true);
         _pngInternalBuildings.Unchecked += async (_, _) => await SavePoiProfileFieldAsync("png_internal_buildings", false);
         var help = ExportDesign.Text(UiLanguage.Text("ExportWindow_DensityHelp"));
         ExportDesign.Secondary(help);
         content.Children.Add(help);
-        _densitySection = new ContentControl { Content = ExportDesign.Divider(content),
+        _densitySection = new ContentControl { Content = content,
             HorizontalContentAlignment = HorizontalAlignment.Stretch, IsTabStop = false };
-        image.Children.Add(_densitySection);
+        return _densitySection;
     }
 
     private void LoadDensityProfile(JsonElement profile)
@@ -281,10 +281,11 @@ internal sealed partial class ExportWindow
         ExportDesign.Secondary(_sizeHelp); ExportDesign.Secondary(_rotationHelp);
         _sizeFields.Children.Add(_sizePreset);
         _sizeFields.Children.Add(_size);
-        image.Children.Add(new ResponsiveFieldGrid(400, _sizeFields, _rotation));
-        image.Children.Add(_dimensions);
-        image.Children.Add(_sizeHelp);
-        image.Children.Add(_rotationHelp);
+        _sizeFields.Children.Add(_dimensions);
+        _sizeFields.Children.Add(_sizeHelp);
+        _rotationFields.Children.Add(_rotation);
+        _rotationFields.Children.Add(_rotationHelp);
+        image.Children.Add(new ResponsiveFieldGrid(OutputFieldColumnBreakpoint, _sizeFields, _rotationFields));
         SyncSizePreset();
     }
 
@@ -299,14 +300,12 @@ internal sealed partial class ExportWindow
         _sizeFields.Visibility = ShowsOutputField("size") ? Visibility.Visible : Visibility.Collapsed;
         _size.Visibility = ShowsOutputField("size") && _sizePreset.SelectedItem is ComboBoxItem { Tag: -1 }
             ? Visibility.Visible : Visibility.Collapsed;
-        _sizeHelp.Visibility = _sizeFields.Visibility;
-        _rotationHelp.Visibility = _rotation.Visibility;
-        _rotationHelp.Text = UiLanguage.Text("ExportWindow_Preview__rotationHelp_4787583E64");
+        _rotationFields.Visibility = _rotation.Visibility;
     }
 
     private StackPanel BuildStatePane(JsonElement profile)
     {
-        var pane = new StackPanel { Spacing = _draftState.HasValue ? 6 : 12 };
+        var pane = new StackPanel { Spacing = 6 };
         if (_draftState.HasValue)
         {
             pane.Children.Add(ExportDesign.Text(UiLanguage.Text("CityEditor_Draft"), true));
@@ -328,7 +327,8 @@ internal sealed partial class ExportWindow
         _rangePreview.Children.Add(ExportDesign.Text(UiLanguage.Text("ExportWindow_Preview_BuildStatePane_6FB4C5C8E4"), true));
         _rangePreview.Children.Add(_rangeCanvas);
         pane.Children.Add(_rangePreview);
-        var theme = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12 };
+        var theme = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+        _themeTitle.VerticalAlignment = VerticalAlignment.Center;
         theme.Children.Add(_themeImage);
         theme.Children.Add(_themeTitle);
         pane.Children.Add(theme);
@@ -355,34 +355,27 @@ internal sealed partial class ExportWindow
         _themeImage.Visibility = _themeImage.Source is null ? Visibility.Collapsed : Visibility.Visible;
     }
 
-    private FrameworkElement BuildWorkspace(StackPanel settings, StackPanel state)
+    private Grid BuildWorkspace(StackPanel settings, StackPanel state)
     {
-        var settingScroll = new ScrollViewer { Content = settings, HorizontalContentAlignment = HorizontalAlignment.Stretch,
-            HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled };
-        var stateScroll = new ScrollViewer { Content = state, HorizontalContentAlignment = HorizontalAlignment.Stretch,
-            HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled };
-        var grid = new Grid { ColumnSpacing = 16, RowSpacing = 12 };
+        var grid = new Grid { RowSpacing = 8 };
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(260) });
-        grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0) });
         grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-        grid.Children.Add(settingScroll); grid.Children.Add(stateScroll);
-        var outer = new ScrollViewer { Content = grid, HorizontalContentAlignment = HorizontalAlignment.Stretch,
-            HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled };
-        bool? previous = null;
-        outer.SizeChanged += (_, _) =>
+        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+        grid.Children.Add(settings);
+        grid.Children.Add(state);
+        Grid.SetRow(state, 1);
+        grid.SizeChanged += (_, args) =>
         {
-            var wide = outer.ActualWidth >= (_draftState.HasValue ? 560 : 760);
-            if (previous == wide) return;
-            previous = wide;
+            var wide = args.NewSize.Width >= (_draftState.HasValue ? 560 : 760);
+            if (wide == (Grid.GetColumn(state) == 1)) return;
             grid.ColumnDefinitions[1].Width = wide ? new GridLength(260) : new GridLength(0);
-            grid.RowDefinitions[0].Height = wide ? new GridLength(1, GridUnitType.Star) : GridLength.Auto;
-            Grid.SetColumn(stateScroll, wide ? 1 : 0); Grid.SetRow(stateScroll, wide ? 0 : 1);
-            Grid.SetRow(settingScroll, 0);
-            settingScroll.VerticalScrollBarVisibility = stateScroll.VerticalScrollBarVisibility = wide ? ScrollBarVisibility.Auto : ScrollBarVisibility.Disabled;
-            outer.VerticalScrollBarVisibility = wide ? ScrollBarVisibility.Disabled : ScrollBarVisibility.Auto;
+            grid.ColumnSpacing = wide ? 16 : 0;
+            grid.RowSpacing = wide ? 0 : 8;
+            Grid.SetColumn(state, wide ? 1 : 0);
+            Grid.SetRow(state, wide ? 0 : 1);
         };
-        return outer;
+        return grid;
     }
 
     private void InitializeResults()
