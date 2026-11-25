@@ -74,6 +74,19 @@ def test_preview_window_measurements_do_not_affect_artwork(transit_job):
         build(transit_job)
 
 
+def test_transit_draft_repeat_distance_changes_label_density(transit_job):
+    job, _, _ = transit_job
+    job['elementScale'] = 1
+    job['opts'].update(line_ids=[1], stations=False, facilities_enabled=False)
+
+    def badges(interval):
+        job['opts']['line_label_interval'] = interval
+        return [item for item in build(transit_job, draft=True).to_dict()['objects']
+                if item['id'].startswith('line-label:')]
+
+    assert len(badges(0)) >= len(badges(120)) > len(badges(1200)) == 1
+
+
 @pytest.mark.parametrize('rotation', [0, 90, 180, 270])
 def test_rectangular_drafts_use_shared_output_transform(transit_job, rotation):
     job, _document, _session = transit_job

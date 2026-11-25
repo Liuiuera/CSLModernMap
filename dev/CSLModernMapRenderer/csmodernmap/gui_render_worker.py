@@ -306,6 +306,8 @@ def _configure_transport(style, ui, types, opts, stations, abstract=False):
     transit_view_cfg["label_preset"] = opts.get("line_label_style", "split-sign")
     if "line_label_size" in opts:
         transit_view_cfg["label_size"] = opts["line_label_size"]
+    if "line_label_interval" in opts:
+        transit_view_cfg["label_repeat_interval"] = opts["line_label_interval"]
     cfg["transit_view"] = transit_view_cfg
 
 

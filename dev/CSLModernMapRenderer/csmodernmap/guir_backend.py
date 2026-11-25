@@ -2050,15 +2050,17 @@ class GuirBackend:
 
     @staticmethod
     def _transport_sizes(data, city=False):
+        from .transit_label_styles import badge_layout_options
+
         transport = data.get("transports", {})
         label = transport.get("label", {})
         station = transport.get("station", {})
+        badge = badge_layout_options(transport.get("transit_view", {}))
         return dict(line_width=transport.get("width", 3),
                     station_diameter=station.get("diameter", 8),
                     station_name_size=station.get("names", {}).get("size", 12),
-                    line_label_size=(label.get("size", 12) if city else
-                                     transport.get("transit_view", {}).get("label_size", 12)),
-                    line_label_interval=label.get("repeat_interval", 800),
+                    line_label_size=label.get("size", 12) if city else badge["size"],
+                    line_label_interval=label.get("repeat_interval", 800) if city else badge["repeat_interval"],
                     facility_icon_size=data.get("poi_icons", {}).get("transit", {}).get("icon_size",
                         data.get("poi_icons", {}).get("icon_size", 24)))
 

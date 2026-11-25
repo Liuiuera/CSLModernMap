@@ -81,11 +81,11 @@ public sealed partial class MainWindow
             return box;
         }
         FrameworkElement Number(string key, string label, Func<bool>? enabled = null,
-            bool slider = false, double multiplier = 1, double step = 1)
+            double? sliderMaximum = null, double step = 1)
         {
             var descriptor = schema.GetProperty(key);
-            var minimum = descriptor.GetProperty("low").GetDouble() * multiplier;
-            var maximum = descriptor.GetProperty("high").GetDouble() * multiplier;
+            var minimum = descriptor.GetProperty("low").GetDouble();
+            var maximum = descriptor.GetProperty("high").GetDouble();
             var validationMessage = string.Format(UiLanguage.Text("MainWindow_PublicTransitSettings_ShowPublicTransitSettings_0BB1EFDA65"),
                 label, minimum, maximum);
             var input = new NumberBox { Minimum = minimum, Maximum = maximum, SmallChange = step,
@@ -94,14 +94,14 @@ public sealed partial class MainWindow
                 SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact };
             AutomationProperties.SetName(input, label);
             AutomationProperties.SetAutomationId(input, "transit-" + key);
-            var saved = ContextOptions(false).GetProperty(key).GetDouble() * multiplier;
-            Slider? range = slider ? new Slider { Minimum = minimum, Maximum = maximum,
-                StepFrequency = step, VerticalAlignment = VerticalAlignment.Center } : null;
+            var saved = ContextOptions(false).GetProperty(key).GetDouble();
+            Slider? range = sliderMaximum is double limit ? new Slider { Minimum = minimum,
+                Maximum = Math.Min(limit, maximum), StepFrequency = step,
+                VerticalAlignment = VerticalAlignment.Center } : null;
             if (range is not null) AutomationProperties.SetName(range, label);
             Bind(input, () =>
             {
-                input.Value = saved = ContextOptions(false).GetProperty(key).GetDouble() * multiplier;
-                if (range is not null) range.Value = input.Value;
+                input.Value = saved = ContextOptions(false).GetProperty(key).GetDouble();
             }, enabled);
             async Task Commit(TextBox? editor = null)
             {
@@ -118,8 +118,7 @@ public sealed partial class MainWindow
                 if (OperationError.Message == validationMessage) OperationError.IsOpen = false;
                 if (amount == saved) return;
                 input.Value = saved = amount;
-                var value = amount / multiplier;
-                await QueueContextWriteAsync(false, () => Write(key, value), Current, debounceKey: key);
+                await QueueContextWriteAsync(false, () => Write(key, amount), Current, debounceKey: key);
             }
             input.LostFocus += async (_, args) => await Commit(args.OriginalSource as TextBox);
             // NumberBox 在按键抬起时确认回车并标记事件已处理。
@@ -135,12 +134,18 @@ public sealed partial class MainWindow
             }
             input.Width = 76;
             Bind(range, () => range.Value = input.Value, enabled);
-            range.ValueChanged += (_, args) => { if (!syncing) input.Value = args.NewValue; };
+            var updatingSlider = false;
+            range.ValueChanged += (_, args) =>
+            {
+                if (!syncing && !updatingSlider) input.Value = args.NewValue;
+            };
             input.ValueChanged += async (_, _) =>
             {
                 if (!syncing && double.IsFinite(input.Value) && input.Value >= minimum && input.Value <= maximum)
                 {
-                    range.Value = input.Value;
+                    updatingSlider = true;
+                    try { range.Value = input.Value; }
+                    finally { updatingSlider = false; }
                     await Commit();
                 }
             };
@@ -217,7 +222,7 @@ public sealed partial class MainWindow
         var lines = sections["lines"];
         var routes = Section(lines, UiLanguage.Text("MainWindow_PublicTransitSettings_ShowPublicTransitSettings_9B5EF0621D"));
         Pair(routes, Check("layers", UiLanguage.Text("MainWindow_PublicTransitSettings_ShowPublicTransitSettings_223B24B821"), "lines"), Check("line_label_enabled", UiLanguage.Text("MainWindow_PublicTransitSettings_ShowPublicTransitSettings_2035432E8A")));
-        routes.Children.Add(Number("line_width", UiLanguage.Text("MainWindow_PublicTransitSettings_ShowPublicTransitSettings_9127985776"), () => ReadContextToggle(false, "layers", "lines"), slider: true, step: .1));
+        routes.Children.Add(Number("line_width", UiLanguage.Text("MainWindow_PublicTransitSettings_ShowPublicTransitSettings_9127985776"), () => ReadContextToggle(false, "layers", "lines"), sliderMaximum: 128, step: .1));
         routes.Children.Add(Choice("line_color_mode", UiLanguage.Text("MainWindow_PublicTransitSettings_ShowPublicTransitSettings_8FB38E6289"), new[] { ("game", UiLanguage.Text("MainWindow_PublicTransitSettings_ShowPublicTransitSettings_F6FDD989E6")), ("classic", UiLanguage.Text("MainWindow_PublicTransitSettings_ShowPublicTransitSettings_AE7AD41B8A")), ("soft", UiLanguage.Text("MainWindow_PublicTransitSettings_ShowPublicTransitSettings_B26912E11B")) },
             () => ContextOptions(false).GetProperty("line_color_mode").GetString()!, value => Write("line_color_mode", value)));
         var lineNames = Section(lines, UiLanguage.Text("MainWindow_PublicTransitSettings_ShowPublicTransitSettings_2035432E8A"));

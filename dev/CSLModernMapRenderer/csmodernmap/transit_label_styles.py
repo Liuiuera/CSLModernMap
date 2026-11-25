@@ -79,22 +79,13 @@ def preview_icons() -> dict:
     return result
 
 
-def badge_layout_options(label_cfg, tv):
-    lv = {
-        "preset": tv.get("label_preset", "split-sign"),
-        "repeat_interval": float(label_cfg.get("repeat_interval", 300)),
-        "min_gap": float(label_cfg.get("min_gap", 180)),
-        "max_per_line": int(label_cfg.get("max_per_line", 12)),
-        "size": tv.get("label_size", 15),
-        "merge_dist": 40.0,
-        "candidate_interval": 110.0,
-        "candidate_limit": 72,
-        "clearance_padding": 14.0,
-    }
-    for k, v in tv.items():
-        if k.startswith("label_"):
-            lv[k[len("label_"):]] = v
-    return lv
+def badge_layout_options(tv):
+    from .theme_contract import field_default
+
+    defaults = field_default(("transports", "transit_view"))
+    return {key.removeprefix("label_"): value
+            for key, value in {"label_preset": DEFAULT_PRESET, "label_candidate_limit": 72,
+                               **defaults, **tv}.items() if key.startswith("label_")}
 
 
 def render_badges(items, kinds, preset: str, size: float, font, background: str) -> Image.Image:
