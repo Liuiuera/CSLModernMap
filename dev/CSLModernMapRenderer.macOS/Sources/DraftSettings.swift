@@ -5,7 +5,6 @@ import AppKit
     private let epoch: Int
     private var alert: NSAlert?
     private var fields: NSGridView!
-    private let range = NSPopUpButton()
     private let rangePreview = MapRangeCanvas()
     private let rangeSummary = label("")
     private var rangeProfile: MapRangeProfile?
@@ -18,7 +17,7 @@ import AppKit
     private let densityEnabled = NSButton(checkboxWithTitle: localized("启用图标密度控制"), target: nil, action: nil)
     private let levels = ["extremely_sparse", "very_sparse", "sparse", "standard", "dense", "very_dense", "extremely_dense"]
     private let presets = [2048, 4096, 8192]
-    private var regions: [Any] = [NSNull()]
+    private var region: JSON?
     private var longEdge: Int
     private var customEdge: Int?
     private var pendingDimension: (axis: String, pixels: Int?)?
@@ -31,19 +30,9 @@ import AppKit
         self.owner = owner
         epoch = owner.epoch
         longEdge = config["longEdge"] as? Int ?? 4096
+        let initialRegion = object(config["region"])
+        region = !initialRegion.isEmpty && textValue(initialRegion["source"]) != "city" ? initialRegion : nil
         super.init()
-        range.addItem(withTitle: localized("全城"))
-        if let selection = owner.selectedBounds {
-            appendRegion("当前选区", ["bounds": selection, "source": "selection"])
-        }
-        let region = object(config["region"])
-        if textValue(region["source"]) == "selection",
-           let bounds = region["bounds"] as? [Double], bounds == owner.selectedBounds {
-            range.selectItem(at: 1)
-        } else if !region.isEmpty, textValue(region["source"]) != "city" {
-            appendRegion("当前范围", region)
-            range.selectItem(at: regions.count - 1)
-        }
 
         size.addItems(withTitles: presets.map { "\($0) px" } + [localized("自定义尺寸")])
         let presetIndex = presets.firstIndex(of: longEdge)
@@ -59,7 +48,7 @@ import AppKit
         densityEnabled.target = self; densityEnabled.action = #selector(toggleDensity)
         toggleDensity()
 
-        for control in [range, size, rotation] {
+        for control in [size, rotation] {
             control.target = self
             control.action = #selector(changeGeometry(_:))
         }
@@ -75,18 +64,13 @@ import AppKit
         rangePreview.heightAnchor.constraint(equalToConstant: 124).isActive = true
         rangePreview.widthAnchor.constraint(equalToConstant: 220).isActive = true
         rangePreview.isHidden = true
-        let rangeDetails = column([range, rangePreview, rangeSummary], gap: 5)
+        let rangeDetails = column([rangePreview, rangeSummary], gap: 5)
         fields = settingsGrid([("范围", rangeDetails), ("图像尺寸", size), ("宽度（px）", width), ("高度（px）", height),
             ("元素尺寸倍率（%）", scale), ("旋转", rotation), ("图标密度", row([densityEnabled, density], gap: 6))])
         fields.setFrameSize(fields.fittingSize)
     }
 
     private var isCustom: Bool { size.indexOfSelectedItem == presets.count }
-
-    private func appendRegion(_ title: String, _ value: JSON) {
-        regions.append(value)
-        range.addItem(withTitle: localized(title))
-    }
 
     @objc private func toggleDensity() { density.isEnabled = densityEnabled.state == .on }
 
@@ -106,9 +90,12 @@ import AppKit
     }
 
     @objc private func changeGeometry(_ sender: NSPopUpButton) {
-        if sender === range { rangeError = "" }
-        refreshRange()
         if sender === size { pendingDimension = nil }
+        recalculateGeometry()
+    }
+
+    private func recalculateGeometry() {
+        refreshRange()
         if let pendingDimension {
             calculate(axis: pendingDimension.axis, pixels: pendingDimension.pixels)
         } else {
@@ -118,14 +105,20 @@ import AppKit
     }
 
     private var effectiveBounds: MapRangeBounds? {
-        MapRangeBounds(object(regions[range.indexOfSelectedItem])["bounds"]) ?? rangeProfile?.city
+        MapRangeBounds(region?["bounds"]) ?? rangeProfile?.city
     }
 
     private func refreshRange() {
         guard let profile = rangeProfile, let bounds = effectiveBounds else { return }
         rangePreview.isHidden = false
         rangePreview.show(profile, area: profile.world, selection: bounds)
-        rangeSummary.stringValue = bounds.summary
+        if bounds == profile.city {
+            rangeSummary.stringValue = localized("全城") + " · " + bounds.summary
+        } else if profile.hasOutside && bounds == profile.world {
+            rangeSummary.stringValue = localized("含外围地形") + " · " + bounds.summary
+        } else {
+            rangeSummary.stringValue = bounds.summary
+        }
     }
 
     func controlTextDidChange(_ notification: Notification) {
@@ -149,7 +142,7 @@ import AppKit
         let oldFactor = factor
         let request: JSON = ["documentEpoch": epoch, "axis": axis, "pixels": pixels, "previousEdge": longEdge,
             "elementScale": oldFactor ?? 1, "rotation": rotation.indexOfSelectedItem * 90,
-            "region": regions[range.indexOfSelectedItem]]
+            "region": region.map { $0 as Any } ?? NSNull()]
         updateValidation()
         geometryTask = Task { [self] in
             do {
@@ -218,23 +211,14 @@ import AppKit
                 rangeError = ""
                 let chooser = MapRangeChooser(engine: owner.engine, profile: rangeProfile, initial: effectiveBounds)
                 if let bounds = await chooser.choose(parent: owner.window), owner.epoch == epoch {
-                    let region: JSON = ["bounds": bounds.values, "source": "custom"]
-                    let title = localized("自定义范围")
-                    let index = range.indexOfItem(withTitle: title)
-                    if index < 0 {
-                        appendRegion("自定义范围", region)
-                        range.selectItem(at: regions.count - 1)
-                    } else {
-                        regions[index] = region
-                        range.selectItem(at: index)
-                    }
-                    changeGeometry(range)
+                    region = bounds == rangeProfile.city ? nil : ["bounds": bounds.values, "source": "custom"]
+                    recalculateGeometry()
                 }
                 continue
             }
             guard response == .alertFirstButtonReturn, geometryValid, let factor else { return nil }
             return ["longEdge": longEdge, "elementScale": factor, "rotation": rotation.indexOfSelectedItem * 90,
-                "region": regions[range.indexOfSelectedItem], "customResolution": isCustom,
+                "region": region.map { $0 as Any } ?? NSNull(), "customResolution": isCustom,
                 "poiDensity": ["density_enabled": densityEnabled.state == .on,
                                "density_tier": levels[density.indexOfSelectedItem]]]
         }

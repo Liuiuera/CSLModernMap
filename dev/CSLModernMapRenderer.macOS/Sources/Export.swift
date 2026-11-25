@@ -18,7 +18,7 @@ enum ExportNaming {
 
 @MainActor final class ExportController:NSObject {
     unowned let owner:InterfaceController
-    let window=EditorWindow("导出",width:520,height:580)
+    let window: EditorWindow
     let form=FormView()
     let draft: CityDraft?
     private var draftEdge: FieldControl?
@@ -73,9 +73,10 @@ enum ExportNaming {
          draft: CityDraft? = nil, draftState: JSON = [:], entryBounds: [Double]? = nil) {
         self.owner = owner
         self.profile = profile
-        self.format = format
+        self.format = draft == nil ? format : "PNG"
         self.rmpExport = rmp
-        self.isCityRMG = format == "RMG" && !rmp
+        self.isCityRMG = draft == nil && format == "RMG" && !rmp
+        self.window = EditorWindow("导出", width: 520, height: draft == nil ? 580 : 400)
         // Freeze the entry selection instead of following the main map.
         self.entryRegion = (entryBounds ?? owner.selectedBounds).map {
             ["bounds": $0, "source": entryBounds != nil ? "random_spot" : "selection"]
@@ -129,8 +130,8 @@ enum ExportNaming {
         if isCityRMG {
             form.add(label(localized("格式") + " · RMG"))
             if let result = rmgCompletion { showRMGResult(result) }
-        } else {
-            let formats = draft != nil ? ["PNG"] : rmpExport ? ["PNG", "SVG"] : profile["formats"] as? [String] ?? []
+        } else if draft == nil {
+            let formats = rmpExport ? ["PNG", "SVG"] : profile["formats"] as? [String] ?? []
             form.field("格式", ["kind": "choice", "choices": formats.map { ["value": $0, "label": $0] }], format) { [weak self] value in
                 guard let self else { return }
                 self.format = textValue(value)
@@ -246,8 +247,13 @@ enum ExportNaming {
         guard let rangeProfile else { throw AppFailure(message: "无法加载导出范围预览：") }
         let chooser = MapRangeChooser(engine: owner.engine, profile: rangeProfile, initial: effectiveBounds)
         guard let bounds = await chooser.choose(parent: window), rangeIsCurrent else { return }
-        customRegion = ["bounds": bounds.values, "source": "custom"]
-        rangeMode = "custom"
+        if bounds == rangeProfile.city {
+            customRegion = nil
+            rangeMode = "city"
+        } else {
+            customRegion = ["bounds": bounds.values, "source": "custom"]
+            rangeMode = "custom"
+        }
     }
     func chooseTarget(thenExport: Bool = false){
         func accept(_ url: URL?) {

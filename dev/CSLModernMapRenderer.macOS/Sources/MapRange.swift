@@ -125,7 +125,8 @@ struct MapRangeProfile {
         if profile.limit > 0 { modes.append("tiles") }
         modes.append("manual")
         mode.addItems(withTitles: modes.map { localized(["city":"全城", "world":"含外围地形", "tiles":"按地块选择", "manual":"手动绘制范围"][$0]!) })
-        mode.selectItem(at: modes.firstIndex(of: selection == profile.city ? "city" : "manual")!)
+        let initialMode = selection == profile.city ? "city" : (profile.hasOutside && selection == profile.world ? "world" : "manual")
+        mode.selectItem(at: modes.firstIndex(of: initialMode)!)
         mode.target = self; mode.action = #selector(modeChanged)
         if profile.limit > 0 {
             tiles.addItems(withTitles: (1...profile.limit).map { "\($0) × \($0)" })

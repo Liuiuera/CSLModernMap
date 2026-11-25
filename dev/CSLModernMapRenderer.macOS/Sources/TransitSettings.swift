@@ -104,6 +104,7 @@ extension InterfaceController {
         let displayed: Any = multiplier != 1 ? (value as? Double ?? 0) * multiplier : value
         if multiplier != 1 { spec["low"] = (spec["low"] as? Double ?? 0) * multiplier; spec["high"] = (spec["high"] as? Double ?? 1) * multiplier }
         if ["line_width", "facility_icon_size", "station_name_size", "spacing", "water_smoothing"].contains(key) || child == "adaptive_strength" { spec["slider"] = true }
+        if key == "line_width" { spec["sliderMaximum"] = 20 }
         let field = form.field(title, spec, displayed) { [weak self, weak form] changed in
             guard let self = self, let form = form, self.context == target, self.epoch == generation, self.transitForm === form,
                   self.engineReady, !self.busy, !metro || !self.rmp.busy else { return }
@@ -215,7 +216,7 @@ extension InterfaceController {
             addTransitField(form, key: "line_label_style", title: "标签样式", choices: TransitSettingsLayout.labelStyles,
                             enabled: { $0["line_label_enabled"] as? Bool == true })
             addTransitField(form, key: "line_label_size", title: "标签字号（参考像素）", enabled: { $0["line_label_enabled"] as? Bool == true })
-            addTransitField(form, key: "line_label_interval", title: "重复间隔（米）", enabled: { $0["line_label_enabled"] as? Bool == true })
+            addTransitField(form, key: "line_label_interval", title: "重复间隔（像素）", enabled: { $0["line_label_enabled"] as? Bool == true })
             form.section("线路与交通类型", key: "transit.lines.selection"); addLineSelection(form)
         }
     }

@@ -43,6 +43,8 @@ import WebKit
         owner.sidebarNavigation.transitPage = "stations"; owner.renderTransitSettings()
         _ = try setting(owner.transitForm!, "transit.station_diameter")
         owner.sidebarNavigation.transitPage = "lines"; owner.renderTransitSettings()
+        let lineWidth = try setting(owner.transitForm!, "transit.line_width")
+        try requireLayout(lineWidth.slider?.maxValue == 20 && (lineWidth.high ?? 0) > 20, "transit width slider is capped independently of the numeric field")
         let labelStyle = try setting(owner.transitForm!, "transit.line_label_style")
         try requireLayout(labelStyle.popup?.itemArray.count == 5 &&
             labelStyle.popup?.itemArray.allSatisfy { $0.image != nil } == true, "five transit label choices show thumbnails")

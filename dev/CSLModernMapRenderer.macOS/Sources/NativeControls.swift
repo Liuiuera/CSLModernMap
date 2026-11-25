@@ -159,9 +159,11 @@ func resizedAppearanceValue(_ value: Any, to total: Double) -> Any {
         }
         return text
     }
-    func makeSlider() -> NSSlider? {
+    func makeSlider(maximum: Double? = nil) -> NSSlider? {
         guard numeric, let low = low, let high = high else { return nil }
-        let slider = NSSlider(value: (view as? NSTextField)?.doubleValue ?? low, minValue: low, maxValue: high, target: self, action: #selector(sliderChanged))
+        let sliderHigh = max(low, min(high, maximum ?? high))
+        let value = (view as? NSTextField)?.doubleValue ?? low
+        let slider = NSSlider(value: min(sliderHigh, max(low, value)), minValue: low, maxValue: sliderHigh, target: self, action: #selector(sliderChanged))
         slider.isContinuous = false; slider.setAccessibilityLabel(view.toolTip ?? "")
         slider.setContentHuggingPriority(.defaultLow, for: .horizontal)
         self.slider = slider; return slider
@@ -179,7 +181,10 @@ func resizedAppearanceValue(_ value: Any, to total: Double) -> Any {
             if let index = values.firstIndex(where: { textValue($0) == textValue(value) }) { popup.selectItem(at: index) }
         } else if let button = view as? NSButton { button.state = value as? Bool == true ? .on : .off }
         else if let color = view as? NSColorWell { if !color.isActive { color.color = Self.color(textValue(value)) } }
-        else if let input = view as? NSTextField { input.stringValue = structured ? ((try? jsonString(value)) ?? "[]") : textValue(value); slider?.doubleValue = input.doubleValue }
+        else if let input = view as? NSTextField {
+            input.stringValue = structured ? ((try? jsonString(value)) ?? "[]") : textValue(value)
+            if let slider { slider.doubleValue = min(slider.maxValue, max(slider.minValue, input.doubleValue)) }
+        }
     }
 }
 final class LayerNode: NSObject {
@@ -284,7 +289,7 @@ final class LayerNode: NSObject {
         else {
             let heading = NSTextField(wrappingLabelWithString: localized(title)); heading.font = .systemFont(ofSize: 12)
             let control: NSView
-            if schema["slider"] as? Bool == true, let slider = field.makeSlider() {
+            if schema["slider"] as? Bool == true, let slider = field.makeSlider(maximum: (schema["sliderMaximum"] as? NSNumber)?.doubleValue) {
                 field.view.widthAnchor.constraint(equalToConstant: 62).isActive = true
                 control = row([slider, field.view], gap: 8)
             } else { control = field.view }
