@@ -1494,7 +1494,7 @@
     <comment>MainWindow.PreviewSettings.cs:22</comment>
   </data>
   <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_07C030A101" xml:space="preserve">
-    <value>重複間距（公尺）</value>
+    <value>重複間距（像素）</value>
     <comment>MainWindow.PublicTransitSettings.cs:197</comment>
   </data>
   <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_0A6C1B2384" xml:space="preserve">
@@ -4371,9 +4371,6 @@ Esc  取消目前工作</value>
   <data name="Poi_PngInternalBuildings" xml:space="preserve"><value>PNG 顯示功能區內部建築圖示</value></data>
   <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
     <value>偵測到遊戲仍在執行，會佔用較多記憶體。建議儲存城市並退出遊戲後再匯出；也可以繼續嘗試。</value>
-  </data>
-  <data name="ExportWindow_BeforeExportNotice" xml:space="preserve">
-    <value>匯出前建議儲存城市並退出遊戲，關閉其他佔用較多記憶體的程式。大尺寸匯出會佔用更多記憶體。</value>
   </data>
   <data name="Poi_AreaMerge" xml:space="preserve">
     <value>功能區近鄰合併（二代）</value>

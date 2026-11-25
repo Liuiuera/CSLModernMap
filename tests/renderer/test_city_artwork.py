@@ -202,7 +202,7 @@ def test_station_capture_ignores_legacy_aspect_and_uses_outer_diameter():
     layer._artwork = ArtworkCapture()
     cfg = {'diameter':12,'border_width':1}
     info = (100, 100, 6, 2, ['#204080', '#804020'], True, 0, 1.5,
-            'Metro', True, 'auto', SimpleNamespace(id='transfer'))
+            'auto', SimpleNamespace(id='transfer'))
     layer._paint_station_symbols([info], cfg)
     assert len(layer._artwork.objects) == 1
     assert layer._artwork.objects[0]['bbox'] == [94,94,106,106]

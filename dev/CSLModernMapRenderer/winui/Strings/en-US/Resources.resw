@@ -1494,7 +1494,7 @@ Could not open webpage: </value>
     <comment>MainWindow.PreviewSettings.cs:22</comment>
   </data>
   <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_07C030A101" xml:space="preserve">
-    <value>Repeat interval (m)</value>
+    <value>Repeat interval (px)</value>
     <comment>MainWindow.PublicTransitSettings.cs:197</comment>
   </data>
   <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_0A6C1B2384" xml:space="preserve">
@@ -4417,9 +4417,6 @@ Do you want to save your current changes?</value></data>
   <data name="Poi_PngInternalBuildings" xml:space="preserve"><value>Show internal area building icons in PNG</value></data>
   <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
     <value>The game is still running and may use a large amount of memory. Consider saving your city and exiting the game before exporting. You can also continue.</value>
-  </data>
-  <data name="ExportWindow_BeforeExportNotice" xml:space="preserve">
-    <value>Before exporting, consider saving your city, exiting the game, and closing other memory-intensive programs. Larger exports use more memory.</value>
   </data>
   <data name="Poi_AreaMerge" xml:space="preserve">
     <value>Nearby area labels (CS2)</value>

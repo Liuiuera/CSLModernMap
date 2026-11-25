@@ -1494,7 +1494,7 @@ Não foi possível abrir a página: </value>
     <comment>MainWindow.PreviewSettings.cs:22</comment>
   </data>
   <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_07C030A101" xml:space="preserve">
-    <value>Intervalo de repetição (m)</value>
+    <value>Intervalo de repetição (px)</value>
     <comment>MainWindow.PublicTransitSettings.cs:197</comment>
   </data>
   <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_0A6C1B2384" xml:space="preserve">
@@ -4365,9 +4365,6 @@ Shaotang Shaoxiancao Codex</value>
   <data name="Poi_PngInternalBuildings" xml:space="preserve"><value>Mostrar ícones dos edifícios internos das áreas no PNG</value></data>
   <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
     <value>O jogo ainda está aberto e pode consumir muita memória. Recomendamos salvar a cidade e sair do jogo antes de exportar. Você também pode continuar.</value>
-  </data>
-  <data name="ExportWindow_BeforeExportNotice" xml:space="preserve">
-    <value>Antes de exportar, considere salvar a cidade, sair do jogo e fechar outros programas que usem muita memória. Exportações maiores usam mais memória.</value>
   </data>
   <data name="Poi_AreaMerge" xml:space="preserve">
     <value>Rótulos de áreas próximas (CS2)</value>

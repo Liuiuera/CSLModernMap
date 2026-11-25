@@ -22,6 +22,28 @@ def context(stations=True, names=False):
 
 
 
+def test_png_bus_and_metro_stops_use_the_same_circle():
+    data = _fixture()
+    for node in data.nodes[4:6]:
+        node.pos.z = -60
+    for line in data.transports[:3]:
+        line.color = (255, 32, 64, 128)
+    ctx = context()
+    ctx.style.data['transports'].update(auto_color=False, lines_visible=False)
+    TransportLayer(transit_view=True).render(ctx, data)
+
+    def marker(line_ids):
+        item = next(item for item in ctx.shared['station_poi_items']
+                    if set(item.serving_line_ids) == line_ids)
+        x, y = round(item.px), round(item.py)
+        return ctx.image.crop((x - 6, y - 6, x + 6, y + 6))
+
+    bus, metro = marker({3}), marker({1, 2})
+    assert bus.tobytes() == metro.tobytes()
+    assert min(metro.getpixel((0, 0))) >= 250
+    assert metro.getpixel((6, 6)) == pytest.approx((32, 64, 128, 255), abs=5)
+
+
 @pytest.mark.parametrize("transit_view", [False, True])
 def test_station_identity_and_ordinary_map_pixels(transit_view):
     ctx = context()

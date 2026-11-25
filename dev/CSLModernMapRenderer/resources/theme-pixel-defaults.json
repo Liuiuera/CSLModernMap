@@ -254,6 +254,9 @@
     },
     "transit_view": {
       "label_size": 15.0,
+      "label_repeat_interval": 240.0,
+      "label_min_gap": 100.0,
+      "label_max_per_line": 12,
       "label_merge_dist": 40.0,
       "label_candidate_interval": 110.0,
       "label_clearance_padding": 14.0

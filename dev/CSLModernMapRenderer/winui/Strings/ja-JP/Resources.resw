@@ -1494,7 +1494,7 @@
     <comment>MainWindow.PreviewSettings.cs:22</comment>
   </data>
   <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_07C030A101" xml:space="preserve">
-    <value>繰り返し間隔（m）</value>
+    <value>繰り返し間隔（px）</value>
     <comment>MainWindow.PublicTransitSettings.cs:197</comment>
   </data>
   <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_0A6C1B2384" xml:space="preserve">
@@ -4365,9 +4365,6 @@ Esc  現在のタスクをキャンセル</value>
   <data name="Poi_PngInternalBuildings" xml:space="preserve"><value>PNG にエリア内部の建物アイコンを表示</value></data>
   <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
     <value>ゲームが起動中のため、多くのメモリを使用している可能性があります。都市を保存してゲームを終了してからの出力をおすすめします。そのまま続行することもできます。</value>
-  </data>
-  <data name="ExportWindow_BeforeExportNotice" xml:space="preserve">
-    <value>エクスポート前に都市を保存してゲームを終了し、メモリを多く使用する他のプログラムも閉じることをお勧めします。出力サイズが大きいほど多くのメモリを使用します。</value>
   </data>
   <data name="Poi_AreaMerge" xml:space="preserve">
     <value>近接エリアのラベル統合（CS2）</value>

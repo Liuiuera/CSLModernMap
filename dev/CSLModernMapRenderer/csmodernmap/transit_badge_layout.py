@@ -72,21 +72,25 @@ def obstacle_score(box, obstacles, canvas_size, clearance_padding=12.0):
     return [outside, cost, min(nearest, max(edge, 0))]
 
 
-def placement_reason(x, y, box, keys, min_gap, maximum, placed, counts, blocked):
+def placement_reason(x, y, box, keys, min_gap, repeat_interval, maximum, placed, counts, blocked):
     """按评分顺序调用，接受的位置立即占用间距和配额。"""
     if all([counts.get(key, 0) >= maximum for key in keys]):
         return 'quota'
-    for px, py, previous in placed:
+    for px, py, previous, previous_keys in placed:
         dx, dy = x - px, y - py
-        if min_gap > 0 and dx * dx + dy * dy < min_gap * min_gap:
+        distance_squared = dx * dx + dy * dy
+        if distance_squared < min_gap * min_gap:
             return 'repeat-gap'
-    for px, py, previous in placed:
+        if (distance_squared < repeat_interval * repeat_interval
+                and any([key in previous_keys for key in keys])):
+            return 'repeat-gap'
+    for px, py, previous, previous_keys in placed:
         if not (box[2] + 4 < previous[0] or previous[2] + 4 < box[0]
                 or box[3] + 4 < previous[1] or previous[3] + 4 < box[1]):
             return 'badge-overlap'
     if blocked(box):
         return 'symbol-or-label-overlap'
-    placed.append([x, y, box])
+    placed.append([x, y, box, keys])
     for key in keys:
         counts[key] = counts.get(key, 0) + 1
     return 'placed'

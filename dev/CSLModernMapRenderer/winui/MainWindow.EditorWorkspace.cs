@@ -234,15 +234,16 @@ public sealed partial class MainWindow
         void Action(string key, string id, Func<Task> action) {
             var button = new Button { Content = EditorText(key), HorizontalAlignment = HorizontalAlignment.Stretch };
             AutomationProperties.SetAutomationId(button, id);
-            button.Click += async (_, _) => await RunAsync(action); _artworkDraftPanel.Children.Add(button);
+            button.Click += async (_, _) =>
+            {
+                button.IsEnabled = false;
+                try { await RunAsync(action); }
+                finally { button.IsEnabled = true; }
+            };
+            _artworkDraftPanel.Children.Add(button);
         }
         Action("ApplyCanvas", "editor.applyCanvas", () => UpdateArtworkConfigurationAsync());
-        _artworkDraftPanel.Children.Add(new TextBlock { Text = EditorText("RangeHelp"), TextWrapping = TextWrapping.Wrap, FontSize = 12 });
-        Action("SelectRange", "editor.selectRange", () => { SendViewer(new { type = "beginSelection" }); return Task.CompletedTask; });
-        Action("UseSelection", "editor.useSelection", () => _selectedBounds is { } bounds
-            ? UpdateArtworkConfigurationAsync(new { bounds, source = "selection" }, true)
-            : Task.FromException(new InvalidOperationException(EditorText("NoSelection"))));
-        Action("UseWholeCity", "editor.wholeCity", () => UpdateArtworkConfigurationAsync(null, true));
+        Action("SelectRange", "editor.selectRange", ChooseArtworkRangeAsync);
         var scroll = _artworkDraftScroll;
         if (IsTransitDraft)
         {
@@ -266,6 +267,17 @@ public sealed partial class MainWindow
 
     private static double[] DraftBounds(JsonElement config) =>
         config.GetProperty("region").GetProperty("bounds").EnumerateArray().Select(point => point.GetDouble()).ToArray();
+
+    private async Task ChooseArtworkRangeAsync()
+    {
+        if (!_cityArtwork || _artworkConfig is not { } config) return;
+        var profile = await _engine.RequestAsync("getRangeProfile");
+        var window = new MapRangeWindow(_engine, profile, DraftBounds(config), owner: this);
+        if (!await window.ShowAsync() || window.AppliedRegion is not { } region) return;
+        var city = profile.GetProperty("cityBounds").EnumerateArray().Select(point => point.GetDouble());
+        var bounds = region.GetProperty("bounds").EnumerateArray().Select(point => point.GetDouble());
+        await UpdateArtworkConfigurationAsync(bounds.SequenceEqual(city) ? null : region, true);
+    }
 
     private void ShowArtworkProperties(ObjectInspectorPanel? facts = null)
     {

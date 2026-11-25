@@ -1494,7 +1494,7 @@
     <comment>MainWindow.PreviewSettings.cs:22</comment>
   </data>
   <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_07C030A101" xml:space="preserve">
-    <value>重复间隔（米）</value>
+    <value>重复间隔（像素）</value>
     <comment>MainWindow.PublicTransitSettings.cs:197</comment>
   </data>
   <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_0A6C1B2384" xml:space="preserve">
@@ -4417,9 +4417,6 @@ Esc  取消当前任务</value>
   <data name="Poi_PngInternalBuildings" xml:space="preserve"><value>PNG 显示功能区内部建筑图标</value></data>
   <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
     <value>检测到游戏仍在运行，会占用较多内存。建议保存城市并退出游戏后再导出；也可以继续尝试。</value>
-  </data>
-  <data name="ExportWindow_BeforeExportNotice" xml:space="preserve">
-    <value>导出前建议保存城市并退出游戏，关闭其他占用内存较多的程序。大尺寸导出会占用更多内存。</value>
   </data>
   <data name="Poi_AreaMerge" xml:space="preserve">
     <value>功能区近邻合并（二代）</value>

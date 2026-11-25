@@ -1494,7 +1494,7 @@ Impossibile aprire la pagina web:</value>
     <comment>MainWindow.PreviewSettings.cs:22</comment>
   </data>
   <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_07C030A101" xml:space="preserve">
-    <value>Intervallo di ripetizione (m)</value>
+    <value>Intervallo di ripetizione (px)</value>
     <comment>MainWindow.PublicTransitSettings.cs:197</comment>
   </data>
   <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_0A6C1B2384" xml:space="preserve">
@@ -4365,9 +4365,6 @@ Codex di Shao Tang, dessert d'erba</value>
   <data name="Poi_PngInternalBuildings" xml:space="preserve"><value>Mostra le icone degli edifici interni alle aree nel PNG</value></data>
   <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
     <value>Il gioco è ancora aperto e può usare molta memoria. È consigliabile salvare la città e uscire dal gioco prima di esportare. Puoi anche continuare.</value>
-  </data>
-  <data name="ExportWindow_BeforeExportNotice" xml:space="preserve">
-    <value>Prima di esportare, valuta di salvare la città, uscire dal gioco e chiudere altri programmi che usano molta memoria. Le esportazioni più grandi richiedono più memoria.</value>
   </data>
   <data name="Poi_AreaMerge" xml:space="preserve">
     <value>Etichette delle aree vicine (CS2)</value>

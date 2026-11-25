@@ -1494,7 +1494,7 @@ Nie można otworzyć strony:</value>
     <comment>MainWindow.PreviewSettings.cs:22</comment>
   </data>
   <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_07C030A101" xml:space="preserve">
-    <value>Odstęp powtarzania (m)</value>
+    <value>Odstęp powtarzania (px)</value>
     <comment>MainWindow.PublicTransitSettings.cs:197</comment>
   </data>
   <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_0A6C1B2384" xml:space="preserve">
@@ -4365,9 +4365,6 @@ Mapy miast, mapy transportu publicznego i schematy metra.
   <data name="Poi_PngInternalBuildings" xml:space="preserve"><value>Pokazuj ikony budynków wewnątrz obszarów w PNG</value></data>
   <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
     <value>Gra nadal działa i może zużywać dużo pamięci. Zalecamy zapisanie miasta i zamknięcie gry przed eksportem. Możesz też kontynuować.</value>
-  </data>
-  <data name="ExportWindow_BeforeExportNotice" xml:space="preserve">
-    <value>Przed eksportem warto zapisać miasto, zamknąć grę i inne programy zużywające dużo pamięci. Większe eksporty wymagają więcej pamięci.</value>
   </data>
   <data name="Poi_AreaMerge" xml:space="preserve">
     <value>Etykiety pobliskich obszarów (CS2)</value>

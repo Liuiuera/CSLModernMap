@@ -1233,10 +1233,10 @@ class TransportLayer(Layer):
             elif self.transit_view:
                 if self._artwork is not None:
                     self._artwork.labels.append(lambda: self._draw_line_labels_view(
-                        mapdata, enabled, label_cfg, abstract, samples))
+                        mapdata, enabled, abstract, samples))
                 else:
                     self._draw_line_labels_view(
-                        mapdata, enabled, label_cfg, abstract, samples)
+                        mapdata, enabled, abstract, samples)
             else:
                 placed = []
                 for tr in self._render_lines:
@@ -2496,17 +2496,8 @@ class TransportLayer(Layer):
                          if grid is not None else 0.0)
             elif station_type == "terminal" and grid is not None:
                 angle = self._station_angle(ms.id)
-            # 步骤3：站点形状差异化——取首条线路的类型 key 作为主类型
-            primary_type = ""
-            has_track = False
-            if lines_for_st:
-                first_td = transit.type_def(lines_for_st[0].type)
-                if first_td is not None:
-                    primary_type = first_td.key
-                    has_track = bool(first_td.track_flag)
             st_info.append((px, py, r, n_lines, line_colors,
-                            is_interchange, angle, sx,
-                            primary_type, has_track, station_type, ms))
+                            is_interchange, angle, sx, station_type, ms))
 
         from functools import partial
         from .poi_icon_layer import POIItem
@@ -2515,8 +2506,7 @@ class TransportLayer(Layer):
         size = (resolved_size * self._pixel_aa)
         items = []
         for info in st_info:
-            px, py, r, _, _, transfer, _, sx = info[:8]
-            station = info[11]
+            px, py, r, _, _, transfer, _, _, _, station = info
             extent = r
             font_size = (size)
             name_style = {
@@ -2550,7 +2540,7 @@ class TransportLayer(Layer):
         """所有角色共用外径框；素材、描边与端点标记均限制在框内。"""
         from ..transit_station_symbols import interchange_master
         for info in st_info:
-            px, py, radius, _, colors, transfer, angle = info[:7]
+            px, py, radius, _, colors, transfer, angle, _, station_type, station = info
             diameter = radius * 2
             bounds = (px-radius, py-radius, px+radius, py+radius)
             aa = 4
@@ -2566,18 +2556,10 @@ class TransportLayer(Layer):
             else:
                 # AGG 采用连续坐标，保留小数外径；描边通过内部填充实现。
                 draw = aggdraw.Draw(patch)
-                has_track = info[9] if len(info) > 9 else True
-                if has_track:
-                    draw.ellipse((0, 0, side, side), None, aggdraw.Brush(outline))
-                else:
-                    # 无轨类型仍用方形标记，长边与圆形使用同一个外径。
-                    draw.polygon((0, 0, side, 0, side, side, 0, side), None, aggdraw.Brush(outline))
+                draw.ellipse((0, 0, side, side), None, aggdraw.Brush(outline))
                 border = min(float(scfg['border_width']) * self._pixel_aa / diameter, .5) * side
                 if border < side/2:
-                    if has_track:
-                        draw.ellipse((border, border, side-border, side-border), None, aggdraw.Brush(fill))
-                    else:
-                        draw.rectangle((border, border, side-border, side-border), None, aggdraw.Brush(fill))
+                    draw.ellipse((border, border, side-border, side-border), None, aggdraw.Brush(fill))
                 draw.flush()
                 if colors:
                     draw = aggdraw.Draw(patch)
@@ -2585,14 +2567,14 @@ class TransportLayer(Layer):
                     draw.ellipse((side/2-inner, side/2-inner, side/2+inner, side/2+inner),
                                  None, aggdraw.Brush(colors[0]))
                     draw.flush()
-            if len(info) > 10 and info[10] == 'terminal':
+            if station_type == 'terminal':
                 d = ImageDraw.Draw(patch)
                 rad = math.radians(angle + 90)
                 dx, dy = math.cos(rad)*side*.3, math.sin(rad)*side*.3
                 d.line((side/2-dx, side/2-dy, side/2+dx, side/2+dy), fill=outline,
                        width=max(1, round(min(float(scfg['border_width'])*self._pixel_aa/diameter, .25)*side)))
             if self._artwork is not None:
-                self._artwork.image(f'station:{info[11].id}', patch, bounds)
+                self._artwork.image(f'station:{station.id}', patch, bounds)
             # 同一外径框放到像素网格，小数位置只在最后一次采样时量化。
             x0, y0 = math.floor(bounds[0]), math.floor(bounds[1])
             x1, y1 = math.ceil(bounds[2]), math.ceil(bounds[3])
@@ -2689,17 +2671,18 @@ class TransportLayer(Layer):
 
     # ---- 公共交通图：重合线路拼接标签（参考逆向 MergedLineNumbering） ----
 
-    def _draw_line_labels_view(self, mapdata, enabled: list, label_cfg: dict,
+    def _draw_line_labels_view(self, mapdata, enabled: list,
                                abstract: bool, samples: int) -> None:
         """按共享预设放置沿线标签，并横向拼接相近的线路标签。"""
         tv = self._tv
         layout_scale = self._pixel_aa
-        lv = badge_layout_options(label_cfg, tv)
+        lv = badge_layout_options(tv)
         lv['size'] = float(lv['size']) * self._pixel_aa
         min_gap = float(lv["min_gap"]) * layout_scale
+        repeat_interval = float(lv["repeat_interval"]) * layout_scale
         merge_dist = float(lv["merge_dist"]) * layout_scale
 
-        step = min(float(lv['repeat_interval']), float(lv['candidate_interval'])) * layout_scale
+        step = float(lv['candidate_interval']) * layout_scale
         candidate_limit = max(int(lv['candidate_limit']), int(lv['max_per_line']))
         # 收集所有启用线路的沿线候选点
         cands: list = []
@@ -2789,7 +2772,8 @@ class TransportLayer(Layer):
              gx, gy, bb, badge, uniq, kinds) in prepared:
             keys = [(name, rgb) for name, rgb in uniq]
             reason = transit_badge_layout.placement_reason(
-                gx, gy, bb, keys, min_gap, max_per_line, placed, label_counts, blocked)
+                gx, gy, bb, keys, min_gap, repeat_interval, max_per_line,
+                placed, label_counts, blocked)
             if reason != 'placed':
                 if self._artwork:
                     self._artwork.diagnostics['badges'].append({'box': bb, 'reason': reason})

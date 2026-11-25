@@ -1494,7 +1494,7 @@ No se puede abrir la página web:</value>
     <comment>MainWindow.PreviewSettings.cs:22</comment>
   </data>
   <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_07C030A101" xml:space="preserve">
-    <value>Intervalo de repetición (m)</value>
+    <value>Intervalo de repetición (px)</value>
     <comment>MainWindow.PublicTransitSettings.cs:197</comment>
   </data>
   <data name="MainWindow_PublicTransitSettings_ShowPublicTransitSettings_0A6C1B2384" xml:space="preserve">
@@ -4365,9 +4365,6 @@ Mapa de la ciudad, mapa de transporte público y esquema de metro.
   <data name="Poi_PngInternalBuildings" xml:space="preserve"><value>Mostrar iconos de edificios internos de las áreas en PNG</value></data>
   <data name="ExportWindow_GameRunningNotice" xml:space="preserve">
     <value>El juego sigue abierto y puede consumir mucha memoria. Se recomienda guardar la ciudad y salir del juego antes de exportar. También puede continuar.</value>
-  </data>
-  <data name="ExportWindow_BeforeExportNotice" xml:space="preserve">
-    <value>Antes de exportar, considera guardar la ciudad, salir del juego y cerrar otros programas que consuman mucha memoria. Las exportaciones más grandes usan más memoria.</value>
   </data>
   <data name="Poi_AreaMerge" xml:space="preserve">
     <value>Etiquetas de áreas cercanas (CS2)</value>
