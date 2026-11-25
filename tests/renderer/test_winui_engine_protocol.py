@@ -896,7 +896,7 @@ def test_format_capabilities_match_context_and_visible_controls():
     assert list(normal) == ["PNG", "HTML"]
     assert normal["PNG"]["outputFields"] == ["size", "rotation", "elementScale"]
     assert normal["PNG"]["outputProfileTarget"] == "normal_png"
-    assert normal["HTML"]["outputFields"] == ["rotation", "htmlQuality", "elementScale"]
+    assert normal["HTML"]["outputFields"] == ["rotation", "htmlQuality"]
     assert normal["HTML"]["outputProfileTarget"] == "normal_png"
     assert normal["HTML"]["poiProfileTarget"] is None
     for context in (ContextMode.SELECTION, ContextMode.RANDOM_SPOT):
@@ -907,6 +907,7 @@ def test_format_capabilities_match_context_and_visible_controls():
 
     transit = EngineServer._format_capabilities(ContextMode.TRANSIT)
     assert list(transit) == ["PNG", "HTML"]
+    assert transit["HTML"]["outputFields"] == ["rotation", "htmlQuality"]
     assert transit["HTML"]["outputProfileTarget"] == "transit_png"
     assert transit["PNG"]["outputProfileTarget"] == "transit_png"
     assert transit["PNG"]["poiProfileTarget"] == "transit_png"
