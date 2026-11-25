@@ -2292,7 +2292,6 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number,
     preview3d.setAvailable(EMBEDDED || !manifest.exportRegion);
     labelLayoutKey = '';
     map.setMaxBounds(manifest.exportRegion ? manifest.world.geoBounds : null);
-    updateExportMask();
     if (builtSurface && manifest.surfaceFields?.builtArea) {
       pendingBuiltSurface = {image: builtSurface, spec: manifest.surfaceFields.builtArea};
       if (!changed) {
@@ -2637,24 +2636,8 @@ function drawWorldSelection(): void {
   Object.assign(selection.style, {display: 'block', left: `${left}px`, top: `${top}px`,
     width: `${Math.max(...points.map(p => p.x))-left}px`, height: `${Math.max(...points.map(p => p.y))-top}px`});
 }
-let exportMask: SVGSVGElement | null = null;
-function updateExportMask(): void {
-  const bounds = currentManifest?.exportRegion;
-  if (!bounds) { exportMask?.remove(); exportMask = null; return; }
-  if (!exportMask) {
-    exportMask = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    exportMask.id = 'export-region-mask';
-    exportMask.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2';
-    document.getElementById('map')!.appendChild(exportMask);
-  }
-  const w = map.getCanvas().clientWidth, h = map.getCanvas().clientHeight;
-  const points = projectedRegion(bounds);
-  const polygon = points.map(p => `${p.x},${p.y}`).join(' L');
-  exportMask.setAttribute('viewBox', `0 0 ${w} ${h}`);
-  exportMask.innerHTML = `<path fill="#f3f4f6" fill-rule="evenodd" d="M0,0 H${w} V${h} H0 Z M${polygon} Z"/>`;
-}
-map.on('move', () => { drawWorldSelection(); updateExportMask(); });
-map.on('resize', () => { drawWorldSelection(); updateExportMask(); });
+map.on('move', drawWorldSelection);
+map.on('resize', drawWorldSelection);
 map.getCanvas().addEventListener('mousedown', event => {
   if (!selectionMode || event.button !== 0) return;
   event.preventDefault(); map.dragPan.disable(); selectedWorldBounds = null;
