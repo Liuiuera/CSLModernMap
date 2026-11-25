@@ -1,7 +1,6 @@
 // 初始化 MapLibre 预览器并处理地图交互命令。
 import { i18n, setLanguage } from './i18n';
 import maplibregl, { type ExpressionSpecification, type Map as MapLibreMap, type Marker } from 'maplibre-gl';
-import {clipLine} from 'maplibre-gl/src/symbol/clip_line';
 import './style.css';
 import {candidate_points, group_candidates, obstacle_score, placement_reason, rank_candidates,
   type Point, type Box, type Candidate, type Placed} from './transit-badge-layout.js';
@@ -208,6 +207,7 @@ let trafficSourceRevision: number | null = null;
 let transitStationDisplayFeatures: any[] = [];
 const registeredIcons = new Set<string>();
 let labelLayoutKey = '';
+let transitBadgeLayoutKey = '';
 let labelLayoutTime = -Infinity, labelTimer = 0, labelDirty = false;
 let retryingSymbolQuery = false;
 const symbolFadeDuration = 300;
@@ -1645,7 +1645,7 @@ function setZoomPreset(preset: string): void {
 function clearScene(): void {
   releaseTraffic(); navigation.clear(); preview3d.reset(); cancelLabelLayout(); satellitePreviousLayers = null;
   for (const item of markers.values()) item.marker.remove();
-  markers.clear(); poiAnchorInputs = []; labelWidths.clear();
+  markers.clear(); transitBadgeLayoutKey = ''; poiAnchorInputs = []; labelWidths.clear();
   for (const id of [...customLayers].reverse()) if (map.getLayer(id)) map.removeLayer(id); customLayers.length = 0;
   if (map.getSource('terrain-image')) map.removeSource('terrain-image');
   if (map.getSource('satellite-image')) map.removeSource('satellite-image');
@@ -1879,6 +1879,120 @@ function placeLabel(id: string, coordinates: [number, number], offset: [number, 
   const element = item.marker.getElement(); element.style.display = '';
   return element;
 }
+function placeTransitBadges(metrics: ReturnType<typeof transitBadgeMetrics>, badge: Record<string, any>,
+  selectedRoutes: Set<number>, stationPoints: Point[], width: number, height: number,
+  reserve: (box: Box) => void, overlaps: (box: Box) => boolean, overlapArea: (box: Box) => number,
+  kept: Set<string>): void {
+  const {style, size} = metrics;
+  const options = token('transit').labelStyle?.layout ?? {};
+  const interval = Number(contextOptions.line_label_interval ?? options.repeat_interval ?? badge.repeatInterval ?? 600);
+  const maximum = Math.max(1, Number(options.max_per_line ?? badge.maxPerLine ?? 4));
+  const step = options.candidate_interval ?? 110;
+  const limit = Math.max(maximum, options.candidate_limit ?? 72);
+  const padding = Number(options.clearance_padding ?? 14);
+  const font = `${style.fontWeight} ${size}px "${style.font}", "Microsoft YaHei", sans-serif`;
+  type Member = {id: string; name: string; color: string; kind: string; width: number};
+  const samples: Candidate<Member>[] = [];
+  for (const feature of sourceData.transit?.features ?? []) {
+    const props = feature.properties;
+    if (!selectedRoutes.has(Number(props.lineId))) continue;
+    const name = String(props.name ?? '').trim();
+    if (!name) continue;
+    const id = String(Number(props.lineId));
+    const member = {id, name, color: String(props.color), kind: String(props.kind ?? '').toLowerCase(),
+      width: Math.min(180, measuredLabelWidth(name, font)) + metrics.extraWidth};
+    const paths: Point[][] = feature.geometry.type === 'MultiLineString'
+      ? feature.geometry.coordinates : [feature.geometry.coordinates];
+    // 视野外也保留候选点，平移后已有经纬度锚点可随地图进入屏幕。
+    for (const path of paths) {
+      let left = Infinity, top = Infinity, right = -Infinity, bottom = -Infinity, length = 0;
+      const projected = path.map(coordinate => {
+        const {x, y} = map.project(coordinate);
+        left = Math.min(left, x); top = Math.min(top, y);
+        right = Math.max(right, x); bottom = Math.max(bottom, y);
+        return [x, y] as Point;
+      });
+      for (let i = 1; i < projected.length; i++)
+        length += Math.hypot(projected[i][0] - projected[i-1][0], projected[i][1] - projected[i-1][1]);
+      const points = projected.map(([x, y]): Point => [x - left, y - top]);
+      for (const [x, y] of candidate_points(points, Math.max(step, length / limit), limit, right - left, bottom - top))
+        samples.push([x + left, y + top, id, member]);
+    }
+  }
+  const seam = Math.max(1, Math.round(size * .4)) / 2;
+  const groups = group_candidates(samples, options.merge_dist ?? style.mergeDistance);
+  const badgeBox = (x: number, y: number, members: Member[]): Box => {
+    const w = members.reduce((sum, m) => sum + m.width, seam * (members.length - 1));
+    return [x - w/2, y - metrics.height/2, x + w/2, y + metrics.height/2];
+  };
+  const ranked: [number, number, number, number, {index: number; box: Box}][] = [];
+  const pad = Math.max(2, Math.round(padding));
+  groups.forEach(([x, y, , members], index) => {
+    const box = badgeBox(x, y, members);
+    const [outside, cost, clearance] = obstacle_score(box, stationPoints, [width, height], padding);
+    const area = overlapArea([box[0]-pad, box[1]-pad, box[2]+pad, box[3]+pad]);
+    const occupancy = area / ((box[2]-box[0] + 2*pad) * (metrics.height + 2*pad));
+    ranked.push([outside, cost, occupancy, -clearance, {index, box}]);
+  });
+  rank_candidates(ranked);
+  const placed: Placed[] = [], counts: Record<string, number> = {};
+  const used = new Set<number>();
+  const add = (index: number, x: number, y: number, box: Box, members: Member[]) => {
+    reserve(box);
+    const id = `badge:${index}:${JSON.stringify(members.map(member => member.id))}`;
+    kept.add(id);
+    const el = placeLabel(id, map.unproject([x, y]).toArray(), [0, 0], {group: 'transit-line', labelType: 'transit-line'});
+    if (members.length > 1) {
+      el.classList.add('map-transit-badge-group');
+      el.style.gap = `${seam}px`;
+      while (el.childElementCount < members.length) el.append(document.createElement('span'));
+    }
+    members.forEach((member, i) => {
+      const part = members.length === 1 ? el : el.children[i] as HTMLElement;
+      part.classList.add('map-transit-badge');
+      part.dataset.routeId = member.id;
+      part.dataset.routeName = member.name;
+      part.dataset.routeKind = member.kind;
+      part.dataset.color = member.color;
+      paintTransitBadge(part, member.color, metrics);
+    });
+  };
+
+  // 先保证线路覆盖；配置的间隔和配额用于后续重复标签。
+  for (const [, , , , {index}] of ranked) {
+    const [x, y, , candidates] = groups[index];
+    const members = candidates.filter(member => !counts[member.id]);
+    if (!members.length) continue;
+    const box = badgeBox(x, y, members);
+    if (placement_reason(x, y, box, members.map(member => member.id), 0, 0,
+      maximum, placed, counts, overlaps) !== 'placed') continue;
+    used.add(index);
+    add(index, x, y, box, members);
+  }
+  // 候选全部被遮挡时，首个标签可压住普通标注，但不能叠在已放置的线路标签上。
+  for (const [, , , , {index}] of ranked) {
+    const [x, y, , candidates] = groups[index];
+    const members = candidates.filter(member => !counts[member.id]);
+    if (!members.length) continue;
+    let labelY = y;
+    let box = badgeBox(x, labelY, members);
+    while (placement_reason(x, labelY, box, members.map(member => member.id), 0, 0,
+      maximum, placed, counts, () => false) !== 'placed') {
+      const step = metrics.height + 5;
+      labelY = labelY <= y ? y + (y - labelY) + step : y - (labelY - y);
+      box = badgeBox(x, labelY, members);
+    }
+    used.add(index);
+    add(index, x, labelY, box, members);
+  }
+  for (const [, , , , {index, box}] of ranked) {
+    if (used.has(index)) continue;
+    const [x, y, keys, members] = groups[index];
+    if (placement_reason(x, y, box, keys, options.min_gap ?? 350, interval,
+      maximum, placed, counts, overlaps) === 'placed') add(index, x, y, box, members);
+  }
+}
+
 function layoutLabels(): void {
   if (artworkView.active) return;
   if (!currentManifest || map.isMoving()) return;
@@ -2023,69 +2137,18 @@ function layoutLabels(): void {
       && (contextOptions.layers ?? {}).lines !== false) {
     const metrics = transitBadgeMetrics();
     const {style: badgeStyle, size: badgeSize} = metrics;
-    const options = token('transit').labelStyle?.layout ?? {};
-    const interval = Number(contextOptions.line_label_interval ?? options.repeat_interval ?? badge.repeatInterval ?? 600);
-    const maximum = Math.max(1, Number(options.max_per_line ?? badge.maxPerLine ?? 4));
-    const step = options.candidate_interval ?? 110;
-    const limit = Math.max(maximum, options.candidate_limit ?? 72);
-    const padding = Number(options.clearance_padding ?? 14);
-    const font = `${badgeStyle.fontWeight} ${badgeSize}px "${badgeStyle.font}", "Microsoft YaHei", sans-serif`;
-    type Member = {name: string; color: string; kind: string; width: number};
-    const samples: Candidate<Member>[] = [];
-    for (const feature of sourceData.transit?.features ?? []) {
-      const props = feature.properties;
-      if (!selectedRoutes.has(Number(props.lineId))) continue;
-      const name = String(props.name ?? '').trim();
-      if (!name) continue;
-      const color = String(props.color), kind = String(props.kind ?? '').toLowerCase();
-      const member = {name, color, kind, width: Math.min(180, measuredLabelWidth(name, font)) + metrics.extraWidth};
-      const key = JSON.stringify([name, color.toLowerCase()]);
-      const paths: Point[][] = feature.geometry.type === 'MultiLineString'
-        ? feature.geometry.coordinates : [feature.geometry.coordinates];
-      // 先裁到视野，避免长线路在屏幕外用尽 PNG 的候选点配额。
-      const projected = paths.map(path => path.map(coord => map.project(coord)));
-      for (const path of clipLine(projected, 0, 0, width, height)) {
-        const pixels = path.map((p): Point => [p.x, p.y]);
-        for (const [x, y] of candidate_points(pixels, step, limit, width, height)) samples.push([x, y, key, member]);
-      }
+    const key = JSON.stringify([currentSceneId, currentRevision, map.getZoom(), map.getBearing(),
+      map.getPitch(), width, height, contextMode, contextOptions, badge, badgeStyle, badgeSize,
+      stationRadiusPx, token('label'), token('baseText'), token('poi'), token('poiVisibility')]);
+    if (key !== transitBadgeLayoutKey) {
+      placeTransitBadges(metrics, badge, selectedRoutes, stationPoints, width, height,
+        reserve, overlaps, overlapArea, kept);
+      transitBadgeLayoutKey = key;
+    } else {
+      for (const [id, item] of markers) if (item.group === 'transit-line') kept.add(id);
     }
-    const seam = Math.max(1, Math.round(badgeSize * .4)) / 2;
-    const groups = group_candidates(samples, options.merge_dist ?? badgeStyle.mergeDistance);
-    const ranked: [number, number, number, number, {index: number; box: Box}][] = [];
-    groups.forEach(([x, y, , members], index) => {
-      const w = members.reduce((sum, m) => sum + m.width, seam * (members.length - 1));
-      const box: Box = [x - w/2, y - metrics.height/2, x + w/2, y + metrics.height/2];
-      const [outside, cost, clearance] = obstacle_score(box, stationPoints, [width, height], padding);
-      if (outside > 0) return;
-      const pad = Math.max(2, Math.round(padding));
-      const area = overlapArea([box[0]-pad, box[1]-pad, box[2]+pad, box[3]+pad]);
-      const occupancy = area / ((w + 2*pad) * (metrics.height + 2*pad));
-      ranked.push([outside, cost, occupancy, -clearance, {index, box}]);
-    });
-    rank_candidates(ranked);
-    const placed: Placed[] = [], counts: Record<string, number> = {};
-    for (const [, , , , {index, box}] of ranked) {
-      const [x, y, keys, members] = groups[index];
-      if (placement_reason(x, y, box, keys, options.min_gap ?? 350, interval,
-        maximum, placed, counts, overlaps) !== 'placed') continue;
-      reserve(box);
-      const id = `badge:${index}:${JSON.stringify(keys)}`;
-      kept.add(id);
-      const el = placeLabel(id, map.unproject([x, y]).toArray(), [0, 0], {group: 'transit-line', labelType: 'transit-line'});
-      if (members.length > 1) {
-        el.classList.add('map-transit-badge-group');
-        el.style.gap = `${seam}px`;
-        while (el.childElementCount < members.length) el.append(document.createElement('span'));
-      }
-      members.forEach((member, i) => {
-        const badge = members.length === 1 ? el : el.children[i] as HTMLElement;
-        badge.classList.add('map-transit-badge');
-        badge.dataset.routeName = member.name;
-        badge.dataset.routeKind = member.kind;
-        badge.dataset.color = member.color;
-        paintTransitBadge(badge, member.color, metrics);
-      });
-    }
+  } else {
+    transitBadgeLayoutKey = '';
   }
   for (const [id, item] of markers) if (!kept.has(id)) { item.marker.remove(); markers.delete(id); }
 }
