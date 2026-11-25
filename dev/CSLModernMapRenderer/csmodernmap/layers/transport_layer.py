@@ -2521,17 +2521,8 @@ class TransportLayer(Layer):
                          if grid is not None else 0.0)
             elif station_type == "terminal" and grid is not None:
                 angle = self._station_angle(ms.id)
-            # 步骤3：站点形状差异化——取首条线路的类型 key 作为主类型
-            primary_type = ""
-            has_track = False
-            if lines_for_st:
-                first_td = transit.type_def(lines_for_st[0].type)
-                if first_td is not None:
-                    primary_type = first_td.key
-                    has_track = bool(first_td.track_flag)
             st_info.append((px, py, r, n_lines, line_colors,
-                            is_interchange, angle, sx,
-                            primary_type, has_track, station_type, ms))
+                            is_interchange, angle, sx, station_type, ms))
 
         from functools import partial
         from .poi_icon_layer import POIItem
@@ -2540,8 +2531,7 @@ class TransportLayer(Layer):
         size = (resolved_size * self._pixel_aa)
         items = []
         for info in st_info:
-            px, py, r, _, _, transfer, _, sx = info[:8]
-            station = info[11]
+            px, py, r, _, _, transfer, _, _, _, station = info
             extent = r
             font_size = (size)
             name_style = {
@@ -2575,7 +2565,7 @@ class TransportLayer(Layer):
         """所有角色共用外径框；素材、描边与端点标记均限制在框内。"""
         from ..transit_station_symbols import interchange_master
         for info in st_info:
-            px, py, radius, _, colors, transfer, angle = info[:7]
+            px, py, radius, _, colors, transfer, angle, _, station_type, station = info
             diameter = radius * 2
             bounds = (px-radius, py-radius, px+radius, py+radius)
             aa = 4
@@ -2591,18 +2581,10 @@ class TransportLayer(Layer):
             else:
                 # AGG 采用连续坐标，保留小数外径；描边通过内部填充实现。
                 draw = aggdraw.Draw(patch)
-                has_track = info[9] if len(info) > 9 else True
-                if has_track:
-                    draw.ellipse((0, 0, side, side), None, aggdraw.Brush(outline))
-                else:
-                    # 无轨类型仍用方形标记，长边与圆形使用同一个外径。
-                    draw.polygon((0, 0, side, 0, side, side, 0, side), None, aggdraw.Brush(outline))
+                draw.ellipse((0, 0, side, side), None, aggdraw.Brush(outline))
                 border = min(float(scfg['border_width']) * self._pixel_aa / diameter, .5) * side
                 if border < side/2:
-                    if has_track:
-                        draw.ellipse((border, border, side-border, side-border), None, aggdraw.Brush(fill))
-                    else:
-                        draw.rectangle((border, border, side-border, side-border), None, aggdraw.Brush(fill))
+                    draw.ellipse((border, border, side-border, side-border), None, aggdraw.Brush(fill))
                 draw.flush()
                 if colors:
                     draw = aggdraw.Draw(patch)
@@ -2610,14 +2592,14 @@ class TransportLayer(Layer):
                     draw.ellipse((side/2-inner, side/2-inner, side/2+inner, side/2+inner),
                                  None, aggdraw.Brush(colors[0]))
                     draw.flush()
-            if len(info) > 10 and info[10] == 'terminal':
+            if station_type == 'terminal':
                 d = ImageDraw.Draw(patch)
                 rad = math.radians(angle + 90)
                 dx, dy = math.cos(rad)*side*.3, math.sin(rad)*side*.3
                 d.line((side/2-dx, side/2-dy, side/2+dx, side/2+dy), fill=outline,
                        width=max(1, round(min(float(scfg['border_width'])*self._pixel_aa/diameter, .25)*side)))
             if self._artwork is not None:
-                self._artwork.image(f'station:{info[11].id}', patch, bounds)
+                self._artwork.image(f'station:{station.id}', patch, bounds)
             # 同一外径框放到像素网格，小数位置只在最后一次采样时量化。
             x0, y0 = math.floor(bounds[0]), math.floor(bounds[1])
             x1, y1 = math.ceil(bounds[2]), math.ceil(bounds[3])
@@ -2630,66 +2612,6 @@ class TransportLayer(Layer):
                 self.ctx.image.alpha_composite(local, (x0, y0))
             else:
                 self.ctx.image.paste(local, (x0, y0), local)
-
-    def _draw_station_marker(self, d, px, py, r, fill, outline, border,
-                             line_colors, design, has_track, halo) -> None:
-        """在给定分辨率的局部画布上绘制普通站点图标。"""
-        if design == "rmg":
-            # 直接使用仓库中的 ChongqingRTBasicStation 几何；仅替换
-            # currentColor 为主线路色，保持原始 SVG 形状不变。
-            marker_color = line_colors[0] if line_colors else outline
-            icon = _rmp_icon_bitmap(
-                "chongqingrt-basic", max(int(round(2 * r)), 1),
-                color=marker_color,
-            )
-            if _is_light_color(marker_color,
-                               self._light_outline_threshold):
-                icon = _outlined_icon(
-                    icon, self._light_outline_color,
-                    width=max(int(round(r * 0.12)), 1))
-            _paste_centered_icon(d, icon, px, py)
-            return
-        elif has_track:
-            # Metro/Train：标准圆形
-            d.ellipse((px - r - halo, py - r - halo,
-                       px + r + halo, py + r + halo),
-                      fill="#FFFFFF", outline=None)
-            d.ellipse((px - r, py - r, px + r, py + r),
-                      fill=fill, outline=outline, width=border)
-            if line_colors:
-                dot_r = max(int(r * 0.35), max(int(halo * 0.5), 1))
-                dot_outline = (
-                    self._light_outline_color
-                    if _is_light_color(line_colors[0],
-                                       self._light_outline_threshold)
-                    else None)
-                d.ellipse((px - dot_r, py - dot_r,
-                           px + dot_r, py + dot_r),
-                          fill=line_colors[0], outline=dot_outline,
-                          width=1)
-        else:
-            # Tram/Monorail/Bus：圆角方形外框
-            sr = r * 0.75
-            d.rounded_rectangle(
-                (px - sr - halo, py - sr - halo,
-                 px + sr + halo, py + sr + halo),
-                radius=max(int(halo), int(sr * 0.4)),
-                fill="#FFFFFF", outline=None)
-            d.rounded_rectangle(
-                (px - sr, py - sr, px + sr, py + sr),
-                radius=max(int(halo * 0.5), int(sr * 0.4)),
-                fill=fill, outline=outline, width=border)
-            if line_colors:
-                dot_r = max(int(sr * 0.35), max(int(halo * 0.35), 1))
-                dot_outline = (
-                    self._light_outline_color
-                    if _is_light_color(line_colors[0],
-                                       self._light_outline_threshold)
-                    else None)
-                d.ellipse((px - dot_r, py - dot_r,
-                           px + dot_r, py + dot_r),
-                          fill=line_colors[0], outline=dot_outline,
-                          width=1)
 
     @staticmethod
     def _draw_chongqing_interchange(d, px, py, r, fill, outline,
