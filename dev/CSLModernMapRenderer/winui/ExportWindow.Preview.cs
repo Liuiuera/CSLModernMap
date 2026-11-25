@@ -355,7 +355,7 @@ internal sealed partial class ExportWindow
         _themeImage.Visibility = _themeImage.Source is null ? Visibility.Collapsed : Visibility.Visible;
     }
 
-    private static Grid BuildWorkspace(StackPanel settings, StackPanel state)
+    private Grid BuildWorkspace(StackPanel settings, StackPanel state)
     {
         var grid = new Grid { RowSpacing = 8 };
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
@@ -367,7 +367,7 @@ internal sealed partial class ExportWindow
         Grid.SetRow(state, 1);
         grid.SizeChanged += (_, args) =>
         {
-            var wide = args.NewSize.Width >= 760;
+            var wide = args.NewSize.Width >= (_draftState.HasValue ? 560 : 760);
             if (wide == (Grid.GetColumn(state) == 1)) return;
             grid.ColumnDefinitions[1].Width = wide ? new GridLength(260) : new GridLength(0);
             grid.ColumnSpacing = wide ? 16 : 0;

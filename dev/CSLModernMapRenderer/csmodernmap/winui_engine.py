@@ -1157,7 +1157,7 @@ class EngineServer:
                     "targetKind": "file", "context": context_name,
                     "outputProfileTarget": "transit_png" if context == ContextMode.TRANSIT else "normal_png",
                     "poiProfileTarget": None,
-                    "outputFields": ["rotation", "htmlQuality", "elementScale"],
+                    "outputFields": ["rotation", "htmlQuality"],
                     "showsOutputOptions": True, "showsRange": True,
                     "showsPoiProfile": False, "showsSharedLayers": True,
                     "showsTransitLines": False, "resultImage": False,

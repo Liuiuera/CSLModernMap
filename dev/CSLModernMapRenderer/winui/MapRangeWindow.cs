@@ -116,7 +116,13 @@ internal sealed class MapRangeWindow
         _manual.Checked += (_, _) => _ = UpdateSelectionAsync();
         _count.ValueChanged += (_, _) => { if (_tiles.IsChecked == true) _ = UpdateSelectionAsync(); };
 
-        if (initialBounds is not null || profile.GetProperty("legacy").GetBoolean()) _manual.IsChecked = true;
+        if (initialBounds is not null)
+        {
+            if (initialBounds.SequenceEqual(_city)) _full.IsChecked = true;
+            else if (_outside.Visibility == Visibility.Visible && initialBounds.SequenceEqual(_world)) _outside.IsChecked = true;
+            else _manual.IsChecked = true;
+        }
+        else if (profile.GetProperty("legacy").GetBoolean()) _manual.IsChecked = true;
         else if (profile.GetProperty("selection") is { ValueKind: JsonValueKind.Object } saved)
         {
             var n = saved.GetProperty("tiles").GetInt32();

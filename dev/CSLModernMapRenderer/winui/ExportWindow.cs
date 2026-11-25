@@ -86,7 +86,9 @@ internal sealed partial class ExportWindow
         Func<string, string, RmpExportOptions, Task>? exportRmp = null, Func<Task>? rotationChanged = null, bool quickPng = false,
         JsonElement? draftState = null)
     {
-        _window = new(UiLanguage.Text("ExportWindow_View_456F962F93"), "file-export", 1000, 760, translucent: true, owner: owner, modal: owner is not null) { ActionsRightAligned = true };
+        _window = new(UiLanguage.Text("ExportWindow_View_456F962F93"), "file-export",
+            draftState.HasValue ? 660 : 1000, draftState.HasValue ? 440 : 760,
+            translucent: true, owner: owner, modal: owner is not null) { ActionsRightAligned = true };
         _window.Root.Padding = new Thickness(16, 12, 16, 12);
         _window.Root.RowSpacing = 8;
         _engine = engine;
@@ -169,10 +171,10 @@ internal sealed partial class ExportWindow
         title.Children.Add(_contextTitle);
         title.Children.Add(_contextDesc);
         ExportDesign.Secondary(_contextDesc);
-        var header = new StackPanel { Spacing = 8 };
+        var header = new StackPanel { Spacing = draftState.HasValue ? 6 : 8 };
         header.Children.Add(title);
         header.Children.Add(_gameRunningNotice);
-        header.Children.Add(BuildFormatChoices());
+        if (!draftState.HasValue) header.Children.Add(BuildFormatChoices());
         var settings = new StackPanel { Spacing = 6 };
 
         var extent = Section(settings, UiLanguage.Text("ExportWindow_View_000E18C870"));
