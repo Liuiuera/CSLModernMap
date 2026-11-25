@@ -217,6 +217,28 @@ def test_navigation_and_offline_share_3d(navigation_page,navigation_bundle,navig
         Path(directory, 'camera-transition-offline.html').write_text(output.read_text(encoding='utf-8'), encoding='utf-8')
 
 
+def test_cropped_offline_3d_zoom(navigation_page, navigation_bundle, tmp_path):
+    page = navigation_page
+    buildings(navigation_bundle)
+    payload = payload_from_preview_bundle(navigation_bundle, region=[-30, -30, 350, 150])
+    output = tmp_path / 'cropped-3d.html'
+    output.write_text(instrument(render_export_html(payload, VIEWER)), encoding='utf-8')
+    page.context.set_offline(True)
+    page.goto(output.as_uri())
+    page.wait_for_function("()=>window.events.some(e=>e.type==='sceneLoaded')")
+    toggle = page.locator('.preview-3d-toggle')
+    expect(toggle).to_be_enabled()
+    toggle.click()
+    settle_camera(page, 52)
+    for zoom in (19, 20, 21):
+        page.evaluate('({center,zoom})=>__testMap.jumpTo({center,zoom,pitch:52})',
+                      {'center': world_to_geo(65, 0), 'zoom': zoom})
+        page.wait_for_function('()=>__testMap.loaded() && !__testMap.isMoving()')
+        assert camera(page)['pitch'] == pytest.approx(52)
+        assert page.locator('#export-region-mask').count() == 0
+        assert page.evaluate('''()=>__testMap.queryRenderedFeatures({layers:['buildings-3d']}).length>0''')
+
+
 @pytest.mark.parametrize('initial_region', [True, False])
 def test_camera_buttons_animate_without_snapping_and_allow_interrupts(navigation_page, navigation_bundle, navigation_server, initial_region):
     page = navigation_page
