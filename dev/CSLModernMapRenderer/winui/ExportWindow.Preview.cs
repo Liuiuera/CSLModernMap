@@ -306,7 +306,7 @@ internal sealed partial class ExportWindow
 
     private StackPanel BuildStatePane(JsonElement profile)
     {
-        var pane = new StackPanel { Spacing = 12 };
+        var pane = new StackPanel { Spacing = _draftState.HasValue ? 6 : 12 };
         if (_draftState.HasValue)
         {
             pane.Children.Add(ExportDesign.Text(UiLanguage.Text("CityEditor_Draft"), true));
@@ -372,7 +372,7 @@ internal sealed partial class ExportWindow
         bool? previous = null;
         outer.SizeChanged += (_, _) =>
         {
-            var wide = outer.ActualWidth >= 760;
+            var wide = outer.ActualWidth >= (_draftState.HasValue ? 560 : 760);
             if (previous == wide) return;
             previous = wide;
             grid.ColumnDefinitions[1].Width = wide ? new GridLength(260) : new GridLength(0);
