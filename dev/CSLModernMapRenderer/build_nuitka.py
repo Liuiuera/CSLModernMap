@@ -74,6 +74,8 @@ def _build_command(mode: str, console: bool = False,
         "--include-package=csmodernmap",
         "--include-package=shapely",
         "--nofollow-import-to=shapely.tests,shapely.conftest,shapely.testing,numpy.testing,numpy.f2py",
+        # 绘图模块会引入引擎不需要的 Matplotlib 及其依赖。
+        "--nofollow-import-to=shapely.plotting,matplotlib,mpl_toolkits",
         "--noinclude-pytest-mode=nofollow",
         "--include-distribution-metadata=shapely",
         "--nofollow-import-to=webview,pythonnet",
