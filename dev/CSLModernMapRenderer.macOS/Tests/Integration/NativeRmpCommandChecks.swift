@@ -37,6 +37,17 @@ import WebKit
         return try jsonString(object(save["project"])["graph"] ?? [:])
     }
 
+    private func clickReturnToMap() async throws {
+        let band = (owner.band.subviews.first as? NSScrollView)?.documentView as? NSStackView
+        guard let back = band?.arrangedSubviews.compactMap({ $0 as? ActionButton }).first(where: { $0.identifier?.rawValue == "返回地图" }), back.isEnabled else {
+            throw AppFailure(message: "Missing enabled Return to Map button")
+        }
+        back.performClick(nil)
+        try await waitForRmp("Return to Map button switches the visible workspace") {
+            owner.context == "map" && owner.rmp.host.view.isHidden && !owner.viewer.view.isHidden
+        }
+    }
+
     private func observeRmpFilePanel(key: String, code: UInt16, modifiers: NSEvent.ModifierFlags) async throws -> (isOpen: Bool, name: String) {
         let probe = RmpFilePanelProbe()
         let observer = Timer(timeInterval: 0.05, target: probe, selector: #selector(RmpFilePanelProbe.cancelPanel(_:)),
@@ -52,6 +63,13 @@ import WebKit
     func inspectRmpNativeCommands() async throws {
         let projectURL = URL(fileURLWithPath: source)
         let project = object(try JSONSerialization.jsonObject(with: Data(contentsOf: projectURL)))
+        let opening = Task { @MainActor in try await owner.openMetro() }
+        try await waitForRmp("Metro initialization enters the workspace") { owner.context == "metro" }
+        try await clickReturnToMap()
+        try await opening.value
+        try requireLayout(owner.context == "map" && owner.rmp.host.view.isHidden && !owner.viewer.view.isHidden,
+                          "late initialization cannot reopen the metro workspace")
+        checks.append("rmp-return-during-initialization")
         try await owner.openMetro()
         let generationInputs = owner.metroInputFingerprint()
         try await owner.rmp.load(project, path: projectURL, provenance: ["cityName": "蒙德莱因"], settingsFingerprint: generationInputs)
@@ -247,9 +265,26 @@ import WebKit
         let savedGraph = try await rmpGraph()
         try requireLayout(try jsonString(persisted["graph"] ?? [:]) == savedGraph, "Cmd+S persisted the current graph")
         checks.append("rmp-native-file-panels-and-save-shortcuts")
-        try await owner.switchMapContext("map")
+        owner.runRmpTool(.rotateLeft)
+        try await waitForRmp("An unsaved edit is retained on return") { rmp.dirty }
+        let projectID = rmp.projectID, unsavedGraph = try await rmpGraph()
+        let undoAvailable = rmp.state["canUndo"] as? Bool
+        _ = try await web.evaluateJavaScript("""
+            window.__cmmOriginalDispatch = window.cslRmp.dispatch;
+            window.cslRmp.dispatch = message => {
+                if (message.type !== 'focusEditor') return window.__cmmOriginalDispatch(message);
+            }; null
+            """)
+        try await clickReturnToMap()
         try requireLayout(owner.rmpMenuItem?.isHidden == true && cityMenu?.keyEquivalent == "o",
                           "leaving metro restores the ordinary city shortcut and hides the metro menu")
         try requireLayout(owner.tabs.window === owner.window && owner.metroToolbarTitle.window == nil, "leaving metro restores map tabs")
+        _ = try await web.evaluateJavaScript("window.cslRmp.dispatch = window.__cmmOriginalDispatch; delete window.__cmmOriginalDispatch; null")
+        try await owner.openMetro()
+        let restoredGraph = try await rmpGraph()
+        try requireLayout(rmp.projectID == projectID && rmp.dirty && rmp.state["canUndo"] as? Bool == undoAvailable && restoredGraph == unsavedGraph,
+                          "returning without an editor acknowledgement preserves the unsaved project and history")
+        try await clickReturnToMap()
+        checks.append("rmp-return-button-without-editor-acknowledgement")
     }
 }

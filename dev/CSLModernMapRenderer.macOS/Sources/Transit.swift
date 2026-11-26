@@ -5,10 +5,7 @@ extension InterfaceController {
     func returnToMap() { run { try await self.switchMapContext("map") } }
     func switchMapContext(_ target: String) async throws {
         guard context != target, !busy, !fieldWriting, !rmp.busy, !rmp.placing, closeEditors() else { return }
-        if context == "metro" {
-            try await rmp.focusEditor()
-            guard context == "metro", !busy, !rmp.busy, !rmp.placing else { return }
-        }
+        if context == "metro" { rmp.finishEditingBeforeHide() }
         rememberSidebarPosition()
         sidebarNavigation.requestID = UUID()
         context = target; selectedLayer = nil
@@ -27,12 +24,23 @@ extension InterfaceController {
     }
     func enterMetro(){run{try await self.openMetro()}}
     func openMetro() async throws {
-        guard !busy, !fieldWriting, !rmp.busy, !rmp.placing, closeEditors() else { return }
+        guard context != "metro", !rmp.opening, !busy, !fieldWriting, !rmp.busy, !rmp.placing, closeEditors() else { return }
+        rmp.opening = true
+        defer { rmp.opening = false }
+        let generation = epoch
         staticPreview.isHidden = true
-        rememberSidebarPosition();sidebarNavigation.requestID=UUID();context="metro";selectedLayer=nil;rebuildBand();try await loadTransitSettings()
-        try await rmp.initialize()
-        if !rmp.hasProject && canGenerateMetro() { try await rmp.generate() }
-        else { rmp.show() }
+        rememberSidebarPosition(); sidebarNavigation.requestID = UUID(); context = "metro"; selectedLayer = nil; rebuildBand()
+        do {
+            try await loadTransitSettings()
+            guard context == "metro", epoch == generation else { return }
+            try await rmp.initialize()
+            guard context == "metro", epoch == generation else { return }
+            if !rmp.hasProject && canGenerateMetro() { try await rmp.generate() }
+            else { rmp.show() }
+        } catch {
+            guard context == "metro", epoch == generation else { return }
+            throw error
+        }
     }
     func bandContent(_ views: [NSView]) {
         let scroll = NSScrollView(); scroll.drawsBackground = false; scroll.hasHorizontalScroller = true

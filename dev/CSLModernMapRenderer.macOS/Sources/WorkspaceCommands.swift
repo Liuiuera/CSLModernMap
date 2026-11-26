@@ -28,6 +28,7 @@ extension InterfaceController {
             return title == "撤销" ? editor.undoManager?.canUndo == true : editor.undoManager?.canRedo == true
         }
         guard engineReady, !busy, !fieldWriting else { return false }
+        if title == "地铁示意图" { return context != "metro" && !rmp.opening }
         if context == "metro", let tool = RmpNativeCommand(rawValue: title) { return rmpToolEnabled(tool) }
         if context == "metro", rmp.busy || rmp.placing { return false }
         if title == "打开项目…" { return context == "metro" }
@@ -40,7 +41,7 @@ extension InterfaceController {
             }
             if ["保存项目", "另存项目…", "保存", "另存为…", "导出…"].contains(title) { return rmp.hasProject && !rmp.busy }
         } else if ["保存项目", "另存项目…", "撤销", "重做"].contains(title) { return false }
-        if ["打开城市…","最近打开","清理缓存","界面语言…","地铁示意图","返回地图"].contains(title) { return true }
+        if ["打开城市…","最近打开","清理缓存","界面语言…","返回地图"].contains(title) { return true }
         return snapshot["hasDocument"] as? Bool == true
     }
     func updateCommands() {
@@ -133,6 +134,7 @@ extension InterfaceController {
         case "图标": showTextIconEditor(category: .icons)
         case "公共交通图": enterTransit()
         case "地铁示意图": enterMetro()
+        case "返回地图": returnToMap()
         case "随机特写": showRandomSpot()
         case "立交合集": showInterchanges()
         case "清理缓存":

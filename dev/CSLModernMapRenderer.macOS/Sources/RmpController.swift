@@ -14,6 +14,7 @@ import CryptoKit
     var path: URL?
     var hasProject = false
     var busy = false { didSet { syncHost(); owner.updateCommands() } }
+    var opening = false { didSet { owner.updateCommands() } }
     var initialized = false
     var generationID = ""
     var generationEpoch = 0
@@ -71,6 +72,7 @@ import CryptoKit
         if initialized { return }
         guard let url = owner.viewerURL else { throw AppFailure(message: "地图服务未就绪") }
         if host.view.superview == nil {
+            host.view.isHidden = true
             pin(host.view, in: owner.center)
             owner.center.addSubview(host.view, positioned: .below, relativeTo: owner.restoreSidebar)
         }
@@ -116,7 +118,7 @@ import CryptoKit
         if incoming == projectID {
             if type == "changed" {
                 revision = frame["revision"] as? Int ?? revision; dirty = true
-                owner.window.isDocumentEdited = true
+                if owner.context == "metro", !host.view.isHidden { owner.window.isDocumentEdited = true }
             }
             if type == "editorState" { state = object(frame["state"]); owner.updateCommands() }
             if type == "commandRequested" { command(textValue(frame["command"])) }
@@ -127,6 +129,7 @@ import CryptoKit
         }
     }
     func show() {
+        guard owner.context == "metro" else { return }
         host.view.isHidden = false; owner.viewer.view.isHidden = true
         owner.configureMetroWorkspace(true); syncHost(); owner.rebuildBand()
     }
@@ -138,6 +141,10 @@ import CryptoKit
     func focusEditor() async throws {
         guard initialized, hasProject, !busy, !host.view.isHidden else { return }
         _ = try await request("focusEditor")
+    }
+    func finishEditingBeforeHide() {
+        guard initialized, host.ready, hasProject, !busy, !host.view.isHidden else { return }
+        host.send(["type": "focusEditor", "protocolVersion": 1, "projectId": projectID, "requestId": UUID().uuidString])
     }
     func generate() async throws {
         guard owner.context == "metro", !busy, !placing else { return }
