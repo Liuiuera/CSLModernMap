@@ -118,12 +118,14 @@ internal sealed class RmpEditorView : Grid, IDisposable
                 protocolVersion = 1, type = "hostState", projectId = _projectId, enabled = _ready && !IsBusy
             }));
     }
+    private TaskCompletionSource? _activeAction;
     private async Task GuardAsync(Func<Task> action)
     {
         if (_busy || _closed) return;
         _busy = true; UpdateHostState();
+        var active = _activeAction = new(TaskCreationOptions.RunContinuationsAsynchronously);
         try { await action(); }
-        finally { _busy = false; if (!_closed) UpdateHostState(); }
+        finally { _busy = false; _activeAction = null; active.TrySetResult(); if (!_closed) UpdateHostState(); }
     }
     private bool Trusted(string source) => Uri.TryCreate(source, UriKind.Absolute, out var uri)
         && uri.Scheme == "https" && uri.Host == Host;
@@ -348,7 +350,8 @@ internal sealed class RmpEditorView : Grid, IDisposable
     }
     public async Task<bool> ConfirmUnsavedAsync()
     {
-        if (IsBusy) return false;
+        if (!_dirty) return true;
+        if (_activeAction is { } active) await active.Task;
         var confirmed = false;
         await GuardAsync(async () => { confirmed = await ConfirmReplaceAsync(); });
         return confirmed;

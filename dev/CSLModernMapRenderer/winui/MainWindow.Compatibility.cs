@@ -11,40 +11,49 @@ public sealed partial class MainWindow
     private CancellationTokenSource? _compatibilityDelay;
     private bool _compatibilityDelayReady;
 
-    private async Task EnableCompatibilityPreviewAsync()
+    private bool CurrentDocumentAvailable => _snapshot.ValueKind == JsonValueKind.Object &&
+        _snapshot.GetProperty("documentEpoch").GetInt32() == _engineDocumentEpoch &&
+        _snapshot.GetProperty("hasDocument").GetBoolean();
+
+    private Task EnableCompatibilityPreviewAsync()
     {
         _compatibilityPreview = true;
-        if (!await StopPreviewAsync()) return;
-        _previewFailure = null;
-        OperationError.IsOpen = false;
+        ResetPreview();
+        _ = SafeRequestAsync("setPreviewEnabled", new { enabled = false });
         _selectedBounds = null;
         _selectedRegionSource = null;
         ShowInspectorHome();
-        QueueCompatibilityPreview();
-        await RefreshSnapshotAsync();
+        QueueCompatibilityPreview(immediate: true);
+        return Task.CompletedTask;
     }
 
     private void ResetCompatibilityImage()
     {
         _compatibilityDelay?.Cancel();
         _compatibilityPending = false;
-        _compatibilityRequestId = null;
+        _compatibilityRequestId = _compatibilityActiveRequest = null;
+        _compatibilityRendering = false;
         _compatibilityContext = null;
         CompatibilityImage.Source = null;
         CompatibilitySurface.ChangeView(0, 0, 1);
     }
 
-    private void QueueCompatibilityPreview()
+    private void QueueCompatibilityPreview(bool immediate = false)
     {
         if (!_compatibilityPreview || _closing) return;
         _compatibilityContext = _context;
         _compatibilityRequestId = Guid.NewGuid().ToString("N");
-        _compatibilityDelayReady = false;
+        _compatibilityDelayReady = immediate;
         _compatibilityPending = _context != "metro";
         _compatibilityDelay?.Cancel();
         _compatibilityDelay?.Dispose();
-        _compatibilityDelay = new CancellationTokenSource();
-        _ = DebounceCompatibilityPreviewAsync(_compatibilityDelay.Token);
+        _compatibilityDelay = null;
+        if (immediate) _ = RunAsync(StartCompatibilityPreviewAsync);
+        else
+        {
+            _compatibilityDelay = new CancellationTokenSource();
+            _ = DebounceCompatibilityPreviewAsync(_compatibilityDelay.Token);
+        }
         ApplyPreviewStatus();
     }
 
@@ -61,9 +70,9 @@ public sealed partial class MainWindow
 
     private async Task StartCompatibilityPreviewAsync()
     {
-        if (!_compatibilityPreview || !_compatibilityPending || !_compatibilityDelayReady || _compatibilityRendering ||
-            _engineBusy || _engineUnavailable || _closing || _loadingDocument || _context == "metro") return;
-        if (_snapshot.ValueKind != JsonValueKind.Object || !_snapshot.GetProperty("hasDocument").GetBoolean()) return;
+        if (!_compatibilityPreview || !_compatibilityPending || !_compatibilityDelayReady ||
+            _engineUnavailable || _closing || _context == "metro") return;
+        if (!CurrentDocumentAvailable) return;
         var request = _compatibilityRequestId;
         _compatibilityActiveRequest = request;
         _compatibilityPending = false;
@@ -76,14 +85,15 @@ public sealed partial class MainWindow
                 requestId = request, documentEpoch = _engineDocumentEpoch,
                 context = _context == "transit" ? "transit" : "normal",
             });
-            if (!result.GetProperty("started").GetBoolean())
+            if (request == _compatibilityActiveRequest && !result.GetProperty("started").GetBoolean())
             {
                 _compatibilityRendering = false;
-                _compatibilityPending = true;
+                ShowCompatibilityError(UiLanguage.Text("Preview_ImageFailed"));
             }
         }
         catch (Exception error)
         {
+            if (request != _compatibilityActiveRequest) return;
             _compatibilityRendering = false;
             ShowCompatibilityError(error.Message);
         }

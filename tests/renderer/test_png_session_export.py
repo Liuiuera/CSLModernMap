@@ -30,16 +30,14 @@ def request(engine, target):
         "requestId": "png-test", "context": "normal", "format": "PNG", "target": str(target)})
 
 
-@pytest.mark.parametrize("stage", ["waiting", "rendering", "encoding", "city", "error"])
+@pytest.mark.parametrize("stage", ["rendering", "encoding", "city", "error"])
 def test_local_png_cancel_holds_busy_and_discards_output(tmp_path, monkeypatch, stage):
     engine, events = setup_engine(tmp_path)
     backend = engine.backend
     entered, release = threading.Event(), threading.Event()
-    if stage == "waiting":
-        backend._preview_compile_thread = threading.Thread(target=lambda: (entered.set(), release.wait(10)))
-        backend._preview_compile_thread.start()
+    original = backend.session
     def render(job, *, session, progress, check_cancel):
-        assert session is backend.session or stage == "city"
+        assert session is not original and session.document.nodes is original.document.nodes
         assert job["ui"]["accurate_intersections"] is True
         if stage != "encoding":
             entered.set()
@@ -61,9 +59,14 @@ def test_local_png_cancel_holds_busy_and_discards_output(tmp_path, monkeypatch, 
         assert request(engine, target)["started"]
         assert entered.wait(5)
         if stage == "city":
-            engine._document_epoch += 1
-            backend.session = DocumentSession(_document())
-        if stage != "error":
+            from pathlib import Path
+            city = Path(__file__).parents[1] / "fixtures" / "tiny-city.cmm"
+            assert engine.dispatch("openDocument", {"path": city})["started"]
+            backend._open_thread.join(5)
+            engine.scheduler.pump()
+            assert backend.source_file == str(city)
+            assert backend._local_render_thread.is_alive()
+        elif stage != "error":
             answer = engine.dispatch("cancel", {})
             assert answer["cancelRequested"] and not answer["cancelled"]
         assert backend.busy
@@ -84,39 +87,151 @@ def test_local_png_cancel_holds_busy_and_discards_output(tmp_path, monkeypatch, 
         engine._preview_files.cleanup()
 
 
-def test_session_success_and_latest_preview_request(tmp_path, monkeypatch):
+def test_png_runs_while_old_preview_thread_is_blocked(tmp_path, monkeypatch):
     engine, events = setup_engine(tmp_path)
     backend = engine.backend
-    backend._callbacks = engine.callbacks
-    backend.preview_enabled = True
-    entered, release = threading.Event(), threading.Event()
+    release = threading.Event()
+    backend._preview_compile_thread = threading.Thread(target=release.wait)
+    backend._preview_compile_thread.start()
+    original = backend.session
     def render(job, *, session, progress, check_cancel):
-        assert session is backend.session
-        entered.set()
-        assert release.wait(10)
-        return {"image": Image.new("RGB", (32, 24), "red"), "size": 32}
+        assert session is not original
+        assert session.document.nodes is original.document.nodes
+        return {"image": Image.new("RGB", (32, 24), "red")}
     monkeypatch.setattr(gui_render_worker, "run_render_task", render)
     try:
-        assert request(engine, tmp_path / "map.png")["started"]
-        assert entered.wait(5)
-        backend.compile_preview_scene(style_data={"first": True})
-        latest = {"latest": True}
-        backend.compile_preview_scene(style_data=latest, force=True)
-        latest["latest"] = False
-        delivered = []
-        monkeypatch.setattr(backend, "compile_preview_scene", lambda cb, style_data, *, force, **kwargs: delivered.append((style_data, force)))
-        release.set()
-        backend._local_render_thread.join(10)
+        target = tmp_path / "map.png"
+        assert request(engine, target)["started"]
+        backend._local_render_thread.join(5)
         engine.scheduler.pump()
-        assert (tmp_path / "map.png").exists()
         assert any(name == "exportDone" for name, _ in events)
-        assert delivered == [({"latest": True}, True)]
-        assert backend._callbacks == engine.callbacks
+        assert backend._preview_compile_thread.is_alive()
+        with Image.open(target) as image:
+            assert image.getpixel((0, 0)) == (255, 0, 0)
         assert not list(tmp_path.glob(".csl-png-*"))
-        assert request(engine, tmp_path / "again.png")["started"]
-        backend._local_render_thread.join(10)
+    finally:
+        release.set()
+        backend.close()
+        engine._preview_files.cleanup()
+
+
+@pytest.mark.parametrize("late_error", [False, True])
+def test_latest_city_opens_while_previous_read_is_still_running(tmp_path, monkeypatch, late_error):
+    engine, events = setup_engine(tmp_path)
+    backend = engine.backend
+    entered, release = threading.Event(), threading.Event()
+    def load(path, **kwargs):
+        if path.endswith("B.cmm"):
+            entered.set()
+            assert release.wait(10)
+            if late_error:
+                raise ValueError("late B error")
+        return _document()
+    monkeypatch.setattr("csmodernmap.guir_backend.load_document", load)
+    try:
+        assert engine.dispatch("openDocument", {"path": tmp_path/"B.cmm"})["started"]
+        old = backend._open_thread
+        assert entered.wait(5)
+        assert not backend.has_document
+        assert engine.dispatch("openDocument", {"path": tmp_path/"C.cmm"})["started"]
+        backend._open_thread.join(5)
         engine.scheduler.pump()
-        assert (tmp_path / "again.png").exists()
+        assert backend.source_file == str(tmp_path/"C.cmm") and old.is_alive()
+        release.set()
+        old.join(5)
+        engine.scheduler.pump()
+        assert [data["documentEpoch"] for name, data in events if name == "meta"] == [2]
+        assert not any(name == "documentOpenFailed" for name, _ in events)
+        assert backend.source_file == str(tmp_path/"C.cmm")
+    finally:
+        release.set()
+        backend.close()
+        engine._preview_files.cleanup()
+
+
+def test_compatibility_image_can_finish_before_old_export(tmp_path, monkeypatch):
+    engine, events = setup_engine(tmp_path)
+    backend = engine.backend
+    entered, release, preview_done = threading.Event(), threading.Event(), threading.Event()
+    def render(job, *, session, progress, check_cancel):
+        if not entered.is_set():
+            entered.set()
+            assert release.wait(10)
+        else:
+            preview_done.set()
+        return {"image": Image.new("RGB", (7, 5), "green")}
+    monkeypatch.setattr(gui_render_worker, "run_render_task", render)
+    try:
+        assert request(engine, tmp_path/"export.png")["started"]
+        assert entered.wait(5)
+        backend.preview_enabled = True
+        assert engine.dispatch("renderCompatibilityPreview", {
+            "documentEpoch": 0, "context": "normal", "requestId": "fallback"})["started"]
+        assert preview_done.wait(5)
+        import time
+        deadline = time.monotonic() + 5
+        while not any(name == "compatibilityPreviewReady" for name, _ in events):
+            assert time.monotonic() < deadline
+            engine.scheduler.wakeup.wait(0.05)
+            engine.scheduler.pump()
+        assert backend.busy
+        assert engine._compatibility_files["fallback"].is_file()
+        assert engine.dispatch("releaseCompatibilityPreview", {"requestId": "fallback"})["released"]
+    finally:
+        release.set()
+        if backend._local_render_thread:
+            backend._local_render_thread.join(5)
+        engine.scheduler.pump()
+        backend.close()
+        engine._preview_files.cleanup()
+
+
+@pytest.mark.parametrize("kind", ["HTML", "RMG"])
+def test_switch_cancels_unpublished_export_and_keeps_existing_file(tmp_path, monkeypatch, kind):
+    from pathlib import Path
+    from types import SimpleNamespace
+    engine, events = setup_engine(tmp_path)
+    backend = engine.backend
+    entered, release = threading.Event(), threading.Event()
+    target = tmp_path/"out" if kind == "RMG" else tmp_path/"city.html"
+    if kind == "HTML":
+        target.write_text("previous export")
+        def write(bundle, city, path, **kwargs):
+            Path(path).write_text("unpublished HTML")
+            entered.set()
+            assert release.wait(10)
+        monkeypatch.setattr("csmodernmap.web_export_v2.export_preview_bundle", write)
+    else:
+        def write(snapshot, request, **kwargs):
+            folder = request.output_root / "export"
+            folder.mkdir()
+            (folder/"manifest.json").write_text("{}")
+            entered.set()
+            assert release.wait(10)
+            return SimpleNamespace(directory=folder, files=(), warnings=(), skipped_line_count=0)
+        monkeypatch.setattr("csmodernmap.external_edit.export_rmg", write)
+    try:
+        assert engine.dispatch("export", {"documentEpoch": 0, "requestId": "old-export", "format": kind,
+            "context": "metro" if kind == "RMG" else "normal", "target": str(target)})["started"]
+        assert entered.wait(6)
+        city = Path(__file__).parents[1]/"fixtures"/"tiny-city.cmm"
+        assert engine.dispatch("openDocument", {"path": city})["started"]
+        backend._open_thread.join(5)
+        engine.scheduler.pump()
+        assert backend.source_file == str(city)
+        release.set()
+        import time
+        deadline = time.monotonic() + 5
+        while not any(name == "exportCancelled" for name, _ in events):
+            assert time.monotonic() < deadline
+            engine.scheduler.wakeup.wait(0.05)
+            engine.scheduler.pump()
+        assert not any(name in {"externalExportDone", "exportDone"} for name, _ in events)
+        if kind == "HTML":
+            assert target.read_text() == "previous export"
+            assert not list(tmp_path.glob(".csl-html-*"))
+        else:
+            assert not list(target.iterdir())
     finally:
         release.set()
         backend.close()

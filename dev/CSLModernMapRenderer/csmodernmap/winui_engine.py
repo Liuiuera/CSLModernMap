@@ -152,12 +152,12 @@ class LoopScheduler:
 
 @dataclass(slots=True)
 class ExportState:
-    target: str | None = None
     request_id: str | None = None
     document_epoch: int | None = None
     context: str | None = None
     format: str | None = None
     requested_target: str | None = None
+    document: Any = None
 
 
 class EngineServer:
@@ -166,14 +166,12 @@ class EngineServer:
         self.output = output_stream or sys.stdout
         self.scheduler = LoopScheduler()
         self.backend = backend or GuirBackend(self.scheduler)
-        self.backend.preview_waits_for_presentation = True
         self.backend.preview_enabled = False
         self.requests: queue.Queue[dict | None] = queue.Queue()
         self.write_lock = threading.Lock()
         self._output_failed = False
         self.running = True
         self._clear_export()
-        self._saving_export = False
         self.workflows = WinuiWorkflows(self)
         self._document_epoch = 0
         self._document_open_pending = False
@@ -190,6 +188,7 @@ class EngineServer:
         self._artwork_scene = None
         self._stats_cache: dict | None = None
         self._external_busy = False
+        self._external_stop = threading.Event()
         self._render_mode: str | None = None
         self._theme_preview_request_id: str | None = None
         self._theme_import: tuple[str, int, str, str] | None = None
@@ -203,10 +202,11 @@ class EngineServer:
         self._poi_editor_mtime: tuple[int, int | None] | None = None
         self._preview_files = tempfile.TemporaryDirectory(prefix="cslmm-winui-")
         self._compatibility_files: dict[str, Path] = {}
+        self._compatibility_stop = threading.Event()
         self.callbacks = {
             "progress": self._render_progress,
-            "busy": lambda value: self.event("busy", {"value": bool(value) or self._saving_export}),
-            "meta": lambda info, source: self.event("meta", {"info": info, "source": source}),
+            "busy": lambda value: self.event("busy", {"value": bool(value)}),
+            "meta": self._map_meta,
             "error": self._backend_error,
             "scene_error": lambda error: self.event("sceneError", error_payload(error, operation="preview", stage="preview", documentEpoch=self._document_epoch)),
             "scene_detail_error": lambda base, error: self.event("sceneDetailError", error_payload(
@@ -216,7 +216,6 @@ class EngineServer:
             "scene_compiled": lambda bundle: self.event("sceneCompiled", {
                 "sceneId": bundle.scene_id, "revision": bundle.revision,
                 "documentEpoch": self._document_epoch}),
-            "done": self._render_done,
             "rmp_done": self._rmp_done,
             "web_done": lambda path: self.event("exportDone", {"path": str(path)}),
             "web_result": lambda path, report: self.event("exportDone", {
@@ -251,8 +250,15 @@ class EngineServer:
         if type(epoch) is not int or epoch != self._document_epoch:
             raise RuntimeError(i18n.tr('ui.winui_engine._require_document_epoch.8e11490207'))
 
+    def _map_meta(self, info, source):
+        if source == "open":
+            self._document_open_pending = False
+        self.event("meta", {"info": info, "source": source, "documentEpoch": self._document_epoch})
+
     def _begin_document_replacement(self) -> None:
-        self._document_open_pending = False
+        self.backend.leave_document()
+        self._external_stop.set()
+        self._compatibility_stop.set()
         self._city_draft = None
         self._city_waiting_drafts.clear()
         self._artwork_scene = None
@@ -274,6 +280,7 @@ class EngineServer:
         with self._theme_preview_lock:
             self._theme_preview_request_id = None
             self._theme_preview_pending = None
+            self._theme_thumbnail_pending.clear()
 
     def _document_read_failed(self, error) -> None:
         self._document_open_pending = False
@@ -320,7 +327,7 @@ class EngineServer:
 
     def _scene_ready(self, bundle, manifest_url: str) -> None:
         self._artwork_scene = (self._document_epoch, bundle)
-        self.event("sceneReady", {"manifestUrl": manifest_url,
+        self.event("sceneReady", {"manifestUrl": manifest_url, "documentEpoch": self._document_epoch,
                                   "sceneId": bundle.scene_id, "revision": bundle.revision,
                                   "completion": bundle.manifest.get("completion", "complete"),
                                   "warnings": self._render_warnings(road_order=bundle.manifest.get("roadOrder", {}), include_read_info=False),
@@ -356,8 +363,6 @@ class EngineServer:
     def _render_compatibility_preview(self, params: dict) -> dict:
         self._require_document_epoch(params)
         backend = self.backend
-        if backend.preview_enabled:
-            raise RuntimeError("Stop the interactive preview before rendering an image")
         if not backend.has_document:
             raise RuntimeError("No map is loaded")
         request_id = params.get("requestId")
@@ -366,8 +371,6 @@ class EngineServer:
         context = ContextMode(params.get("context", "normal"))
         if context not in {ContextMode.NORMAL, ContextMode.TRANSIT}:
             raise ValueError("Image preview supports normal and transit maps")
-        if backend.busy or backend.local_render_active or self._saving_export:
-            return {"started": False}
         output = {"output": {"size": 2048}, "quickPng": True}
         if backend.preview_outside_terrain:
             output["region"] = {"bounds": backend.world_rect(), "source": "custom"}
@@ -385,19 +388,17 @@ class EngineServer:
             self.event("compatibilityPreviewFailed", error_payload(
                 error, operation="preview", stage="imagePreview", **metadata))
 
-        def done(*_args):
-            try:
-                Path(backend.result_png_path).replace(path)
-                backend.discard_png_result()
-                self._compatibility_files[request_id] = path
-                self.event("compatibilityPreviewReady", {**metadata, "url": path.as_uri()})
-            except Exception as error:
-                failed(error)
+        def done(saved, _stats):
+            self._compatibility_files[request_id] = Path(saved)
+            self.event("compatibilityPreviewReady", {**metadata, "url": path.as_uri()})
 
-        callbacks = {**self.callbacks, "done": done, "error": failed,
+        self._compatibility_stop.set()
+        self._compatibility_stop = threading.Event()
+        callbacks = {"file_done": done, "error": failed,
                      "cancelled": lambda: self.event("compatibilityPreviewCancelled", metadata)}
         request = ExportRequest(context=context, target=str(path), render_snapshot=job)
-        return {"started": backend.render_png_export(request, callbacks, file_result=True)}
+        return {"started": backend.render_png_export(request, callbacks, file_result=True,
+                                                     preview_stop=self._compatibility_stop)}
 
     def _backend_error(self, error) -> None:
         if self._render_mode == "rmp":
@@ -406,19 +407,8 @@ class EngineServer:
             self._render_mode = None
             self.event("rmpProjectError", error_payload(error, operation="metro", stage="rmp", requestId=pending[2] if pending else None, documentEpoch=pending[3] if pending else self._document_epoch))
             return
-        metadata = self._export_event_metadata()
-        if metadata:
-            self._export_failed(
-                error, metadata["requestId"], metadata["documentEpoch"],
-                metadata["context"], metadata["format"], metadata["target"])
-            return
-        operation = "preview"
-        export_id = self._export.request_id
-        self._saving_export = False
-        self._clear_export()
-        self._render_mode = None
-        self.event("error", error_payload(error, operation=operation, stage=operation, requestId=export_id, documentEpoch=self._document_epoch))
-        self.event("busy", {"value": bool(getattr(self.backend, "busy", False))})
+        self.event("error", error_payload(error, operation="preview", stage="preview",
+                                          documentEpoch=self._document_epoch))
 
     def _clear_export(self) -> None:
         self._export = ExportState()
@@ -437,8 +427,7 @@ class EngineServer:
     def _export_progress(self, percent, message, request_id: str,
                          document_epoch: int, context: str,
                          output_format: str, target: str | None) -> None:
-        if (request_id != self._export.request_id
-                or document_epoch != self._document_epoch):
+        if request_id != self._export.request_id:
             return
         self.event("progress", {
             "percent": percent, "message": str(message),
@@ -454,18 +443,14 @@ class EngineServer:
         metadata = {"requestId": request_id, "documentEpoch": document_epoch,
                     "context": context, "format": output_format,
                     "target": target}
-        self._saving_export = False
         self._clear_export()
         self._render_mode = None
         self.event("error", error_payload(error, operation="export", stage="export", **metadata))
         self.event("busy", {"value": bool(getattr(self.backend, "busy", False))})
 
     def _render_progress(self, percent, message) -> None:
-        metadata = self._export_event_metadata()
-        if metadata and metadata["documentEpoch"] != self._document_epoch:
-            return
         self.event("progress", {"percent": percent, "message": str(message),
-                                 **(metadata or {})})
+                                "documentEpoch": self._document_epoch})
 
     def _rmp_done(self) -> None:
         pending = getattr(self, "_rmp_pending", None)
@@ -481,57 +466,42 @@ class EngineServer:
             self.event("rmpProjectError", {"requestId": pending[2], "documentEpoch": pending[3],
                        "category": "stale", "message": "源地图已改变，请重新打开编辑器"})
 
-    def _render_done(self, _image, _size, _stats, _elapsed, _region, _thumbnail, _context) -> None:
-        if (self._export.request_id and self._export.document_epoch is not None
-                and self._export.document_epoch != self._document_epoch):
-            self.backend.discard_png_result()
-            metadata = self._export_event_metadata()
-            self._export_failed(
-                i18n.tr('ui.winui_engine._render_done.bcd13e5ccc'),
-                metadata["requestId"], metadata["documentEpoch"],
-                metadata["context"], metadata["format"], metadata["target"])
-            return
-        if self._export.target:
-            target = self._export.target
-            self._export.target = None
-            export_id = self._export.request_id
-            self._saving_export = True
-            self.event("busy", {"value": True})
-            try:
-                started = self.backend.save_png_async(target,
-                    on_done=lambda path: self._export_completed(path, export_id))
-            except Exception as error:
-                self._backend_error(error)
-                return
-            if not started:
-                self._backend_error("PNG result could not be saved")
+    def _file_export_callbacks(self):
+        request = self._export
+        identity = (request.request_id, request.document_epoch, request.context, request.format, request.requested_target)
+        metadata = self._export_event_metadata()
+        return {
+            "progress": lambda percent, message: self._export_progress(percent, message, *identity),
+            "error": lambda error: self._export_failed(error, *identity),
+            "cancelled": lambda: self._export_cancelled(metadata),
+            "web_done": lambda path: self._export_completed(path, request.request_id),
+            "web_result": lambda path, report: self._export_completed(path, request.request_id, road_order=report, stats={}),
+            "file_done": lambda path, stats: self._export_completed(path, request.request_id, stats=stats),
+        }
 
-    def _export_completed(self, path, request_id, *, road_order=None):
+    def _export_completed(self, path, request_id, *, road_order=None, stats=None):
         if request_id != self._export.request_id:
             return
         metadata = self._export_event_metadata()
-        self._saving_export = False
+        warnings = self._render_warnings(road_order=road_order, document=self._export.document, stats=stats)
         self._clear_export()
-        if metadata and metadata["documentEpoch"] != self._document_epoch:
-            self.event("error", {**metadata,
-                                  "message": i18n.tr('ui.winui_engine._export_completed.bcd13e5ccc')})
-            self.event("busy", {"value": bool(getattr(self.backend, "busy", False))})
-            return
-        self.event("exportDone", {"path": str(path), "warnings": self._render_warnings(road_order=road_order),
-                                   **(metadata or {"requestId": request_id})})
+        self.event("exportDone", {"path": str(path), "warnings": warnings, **metadata})
         self.event("busy", {"value": bool(getattr(self.backend, "busy", False))})
 
-    def _render_warnings(self, *, road_order=None, include_read_info=True):
+    def _render_warnings(self, *, road_order=None, include_read_info=True, document=None, stats=None):
         from .cmm.file_format import read_information
         from .services.poi.direct_mapping import document_warnings
         from .schematic_water import water_warning
         from .preview_road_order import road_warning
-        water = self.backend.last_diagnostics.get("stats", {}).get("transit_layout", {}).get("water", {})
+        if stats is None:
+            stats = self.backend.last_diagnostics.get("stats", {})
+        water = stats.get("transit_layout", {}).get("water", {})
         warning = water_warning(water)
         if road_order is None:
-            road_order = self.backend.last_diagnostics.get("stats", {}).get("road_order", {})
+            road_order = stats.get("road_order", {})
         road_message = road_warning(road_order)
-        document = getattr(self.backend, "document", None)
+        if document is None:
+            document = getattr(self.backend, "document", None)
         return (([warning] if warning else [])
                 + ([road_message] if road_message else [])
                 + document_warnings(document)
@@ -539,23 +509,42 @@ class EngineServer:
 
     def _export_cancelled(self, metadata):
         if metadata["requestId"] == self._export.request_id:
-            self._saving_export = False
             self._clear_export()
         self.event("exportCancelled", metadata)
 
-    def map_statistics(self) -> dict:
-        """地图概况页的六项统计。
+    def _request_statistics(self):
+        session = self.backend.session
+        if self._stats_cache is not None or session is None:
+            return
+        self._stats_cache = {"available": False}
+        info = dict(self.backend.city_info or {})
+        epoch = self._document_epoch
 
-        Qt 版把这些算在界面层（``guir/main_window.py::_map_statistics``）；
-        WinUI 侧不该碰游戏几何，所以由引擎算好并按下城市缓存一次。
-        """
-        if self._stats_cache is not None:
-            return self._stats_cache
-        backend = self.backend
-        document = backend.document
-        if document is None:
-            return {"available": False}
-        info = backend.city_info or {}
+        def check_current():
+            if session is not self.backend.session:
+                raise InterruptedError()
+
+        def calculate():
+            from .guir_backend import _build_transit_line_catalog
+            try:
+                catalog = _build_transit_line_catalog(session.for_background_render(), check_cancel=check_current)
+                check_current()
+                stats = self._map_statistics(session.document, info, catalog)
+            except InterruptedError:
+                return
+            except Exception:
+                traceback.print_exc(file=sys.stderr)
+                return
+            def publish():
+                if session is self.backend.session:
+                    self.backend._transit_line_catalog_cache = catalog
+                    self._stats_cache = stats
+                    self.event("mapStatistics", {"documentEpoch": epoch, "stats": stats})
+            self.scheduler.call_soon(publish)
+        threading.Thread(target=calculate, name="map-statistics", daemon=True).start()
+
+    @staticmethod
+    def _map_statistics(document, info, catalog):
         networks = list(getattr(document, "networks", ()) or ())
         buildings = list(getattr(document, "buildings", ()) or ())
         road = sum(_polyline_length(getattr(segment.geometry, "points", ()))
@@ -564,9 +553,9 @@ class EngineServer:
                     for building in buildings
                     if getattr(building, "parent_id", None) is None)
         transit = sum(float(row.get("length_m", 0.0) or 0.0)
-                      for row in backend.transit_line_catalog())
+                      for row in catalog)
         districts = getattr(document, "districts", ()) or ()
-        self._stats_cache = {
+        return {
             "available": True,
             "name": str(info.get("name") or ""),
             "buildings": int(info.get("buildings") or len(buildings)),
@@ -576,7 +565,6 @@ class EngineServer:
             "districts": int(info.get("districts") or len(districts)),
             "regions": int(info.get("parks") or 0),
         }
-        return self._stats_cache
 
     def snapshot(self) -> dict:
         """冻结当前文档和设置，形成可供命令处理的状态快照。"""
@@ -620,7 +608,7 @@ class EngineServer:
             "sourceGame": document_game(backend.document),
             "sourceFile": backend.source_file,
             "cityInfo": dict(backend.city_info),
-            "stats": self.map_statistics(),
+            "stats": self._stats_cache or {"available": False},
             "theme": backend.theme_stem,
             "themes": backend.theme_choices(),
             "themeMigrationIssues": list(backend.theme_migration_issues),
@@ -676,7 +664,7 @@ class EngineServer:
                        "rangeAnchor": backend.range_anchor},
             "recentFiles": list(backend._recent_files),
             "diagnostics": dict(backend.last_diagnostics),
-            "busy": backend.busy or self._external_busy or self._saving_export,
+            "busy": backend.busy or self._external_busy,
         }
 
     def transit_options(self) -> dict:
@@ -702,7 +690,7 @@ class EngineServer:
         return self.backend.transit_options(True)
 
     def line_selection_summary(self, options) -> dict:
-        catalog = self.backend.transit_line_catalog()
+        catalog = self.backend.transit_line_headers()
         types = set(options["types"])
         eligible = [line for line in catalog if line["type"] in types]
         ids = options.get("line_ids")
@@ -1314,35 +1302,50 @@ class EngineServer:
         output_format = metadata["format"]
         target = metadata["target"]
         self._external_busy = True
+        stop = self._external_stop = threading.Event()
         self.event("busy", {"value": True})
 
         def worker() -> None:
+            temporary = None
             try:
                 self._export_progress(10, tr("gui.external.preparing"),
                     request_id, document_epoch, context, output_format, target)
                 self._export_progress(35, tr("gui.external.writing"),
                     request_id, document_epoch, context, output_format, target)
-                result = export_rmg(export_snapshot, external_request)
-                if request_id != self._export.request_id:
-                    return
-                if document_epoch != self._document_epoch:
-                    self._export_failed(i18n.tr('ui.winui_engine.worker.bcd13e5ccc'),
-                        request_id, document_epoch, context, output_format, target)
-                    return
-                self.event("externalExportDone", {
-                    **metadata, "directory": str(result.directory),
-                    "warnings": list(result.warnings), "kind": kind,
-                    "exportedLineCount": sum(path.name.endswith(".rmg.json") for path in result.files),
-                    "skippedLineCount": result.skipped_line_count,
-                })
-                self._clear_export()
-            except Exception as exc:  # noqa: BLE001 - 工程导出器会报告可恢复失败
-                traceback.print_exc(file=sys.stderr)
-                self._export_failed(exc, request_id, document_epoch,
-                                    context, output_format, target)
-            finally:
+                target_dir.mkdir(parents=True, exist_ok=True)
+                temporary = tempfile.TemporaryDirectory(prefix=".csl-rmg-", dir=target_dir)
+                result = export_rmg(export_snapshot, replace(external_request, output_root=Path(temporary.name)),
+                                    check_cancel=stop.is_set)
+                error = None
+            except Exception as exc:
+                error = exc
+
+            def finish():
                 self._external_busy = False
-                self.event("busy", {"value": bool(getattr(backend, "busy", False))})
+                try:
+                    if stop.is_set():
+                        self._export_cancelled(metadata)
+                    elif error is not None:
+                        raise error
+                    else:
+                        folder = target_dir / result.directory.name
+                        suffix = 2
+                        while folder.exists():
+                            folder = target_dir / f"{result.directory.name}-{suffix}"
+                            suffix += 1
+                        result.directory.rename(folder)
+                        self.event("externalExportDone", {**metadata, "directory": str(folder),
+                            "warnings": list(result.warnings), "kind": kind,
+                            "exportedLineCount": sum(path.name.endswith(".rmg.json") for path in result.files),
+                            "skippedLineCount": result.skipped_line_count})
+                        self._clear_export()
+                except Exception as exc:
+                    self._export_failed(exc, request_id, document_epoch, context, output_format, target)
+                finally:
+                    if temporary is not None:
+                        temporary.cleanup()
+                    self.event("busy", {"value": bool(backend.busy)})
+            self.scheduler.call_soon(finish)
         threading.Thread(target=worker, name=f"external-{kind}", daemon=True).start()
         return True
 
@@ -1689,6 +1692,7 @@ class EngineServer:
         self._artwork_active = True
         self._artwork_stop = threading.Event()
         backend = self.backend
+        backend._suspended_artwork_session = backend.session
         self._artwork_preview_thread = backend._suspend_preview_compile(backend._callbacks)
         backend._busy = backend._local_png_active = True
         backend._emit('busy', True)
@@ -1714,8 +1718,9 @@ class EngineServer:
             backend._local_render_thread = None
             backend._busy = backend._local_png_active = False
             backend._emit('busy', False)
+            owner, backend._suspended_artwork_session = backend._suspended_artwork_session, None
             pending, backend._pending_preview = backend._pending_preview, None
-            if pending is not None:
+            if pending is not None and owner is backend.session:
                 cb, style, force, diagnostics, opening = pending
                 backend.compile_preview_scene(cb, style, force=force, _diagnostics=diagnostics, _opening=opening)
             return
@@ -2018,18 +2023,6 @@ class EngineServer:
                     self.event('artworkExported', {**metadata, 'path': future.result()})
             result.add_done_callback(completed)
             return {'started': True}
-        if (self._external_busy or self._saving_export or
-                (self._export.request_id and self._export.format == "HTML")) and method in {
-            "openDocument", "setTheme", "setLayerVisibility", "applySatelliteRecommendations", "setField", "resetLayer",
-            "setLabelChild", "setTransitOption", "setTransitType", "setTransitLines",
-            "setMetroOutline", "renderMetro", "resetMetroGenerationOptions",
-            "commitThemeDraft", "setMergeOverride", "setFacilitySelection",
-            "savePoiMapping", "renderInterchanges", "setRegionSelection",
-            "setOutputOption", "setTextIconSettings", "setPoiDensity", "setPoiVisibility", "setDecorativePoiVisibility", "resetFields",
-            "resetProfileFields", "setRangeSelection", "compilePreview", "refreshPreview", "setPreviewOutsideTerrain",
-            "export", "openBrowserPreview", "clearCache", "setInspectorField", "resetInspectorGroup", "undoInspector", "redoInspector",
-        }:
-            raise RuntimeError(i18n.tr('ui.winui_engine.dispatch.dfeec4838c'))
         if method == "hello":
             if params.get("protocolVersion") != PROTOCOL_VERSION:
                 raise ValueError("incompatible protocol version")
@@ -2056,7 +2049,7 @@ class EngineServer:
             if not enabled:
                 backend.invalidate_preview_compile()
                 backend._pending_preview = None
-            return {"enabled": enabled}
+            return {"enabled": enabled, "hasDocument": backend.has_document}
         if method == "setPreviewOutsideTerrain":
             self._require_document_epoch(params)
             enabled = params["enabled"]
@@ -2068,6 +2061,9 @@ class EngineServer:
             if method == "setRegionSelection" and "documentEpoch" in params:
                 self._require_document_epoch(params)
             return self.workflows.dispatch(method, params)
+        if method == "getMapStatistics":
+            self._request_statistics()
+            return self._stats_cache or {"available": False}
         if method == "getSnapshot":
             return self.snapshot()
         if method in {"getBuildingCatalog", "getBuildingSelection", "getBuildingHighlight"}:
@@ -2336,16 +2332,14 @@ class EngineServer:
             backend.clear_cache()
             return {"cleared": True}
         if method == "openDocument":
-            if self._document_open_pending:
-                return {"started": False}
             path = str(params["path"])
-            if params.get("deferReplacement") is True:
-                self._document_open_pending = backend.open_file(
-                    path, self.callbacks, before_replace=self._begin_document_replacement,
-                    on_read_error=self._document_read_failed)
-                return {"started": self._document_open_pending}
             self._begin_document_replacement()
-            return {"started": backend.open_file(path, self.callbacks)}
+            self._document_open_pending = True
+            try:
+                return {"started": backend.open_file(path, self.callbacks, on_read_error=self._document_read_failed)}
+            except Exception as error:
+                self._document_read_failed(error)
+                return {"started": False}
         if method == "cancelDocumentOpen":
             if not self._document_open_pending:
                 return {"cancelled": False}
@@ -2522,8 +2516,6 @@ class EngineServer:
         if method == "previewPresented":
             name = str(params["bundleId"])
             if backend._preview_server.acknowledge_bundle(name):
-                if params.get("completion") == "base":
-                    backend.acknowledge_preview_base(int(params["revision"]))
                 if params.get("completion") == "complete":
                     backend.complete_preview_diagnostics(int(params["revision"]), params.get("performance"))
                 elif int(params["revision"]) in backend._preview_diagnostics:
@@ -2827,10 +2819,10 @@ class EngineServer:
                                          else output_path.parent)
             self._export.request_id = export_id
             self._export.document_epoch = self._document_epoch
+            self._export.document = backend.document
             self._export.context = context_name
             self._export.format = output_format
             self._export.requested_target = str(requested_target)
-            export_epoch = self._document_epoch
             request = replace(request, target=str(requested_target))
             if output_format in {"RMG", "RMP"}:
                 try:
@@ -2843,18 +2835,7 @@ class EngineServer:
                     self._clear_export()
                 return {"started": started}
 
-            callbacks = {
-                **self.callbacks,
-                "cancelled": lambda metadata=self._export_event_metadata(): self._export_cancelled(metadata),
-                "progress": lambda percent, message: self._export_progress(
-                    percent, message, export_id, export_epoch,
-                    context_name, output_format, str(requested_target)),
-                "error": lambda error: self._export_failed(
-                    error, export_id, export_epoch,
-                    context_name, output_format, str(requested_target)),
-                "web_done": lambda path: self._export_completed(path, export_id),
-                "web_result": lambda path, report: self._export_completed(path, export_id, road_order=report),
-            }
+            callbacks = self._file_export_callbacks()
             try:
                 region = self._normalize_output_region(params.get("region"))
                 render_snapshot, theme_data, layer_snapshot = self._capture_output_snapshot(
@@ -2877,7 +2858,6 @@ class EngineServer:
                         request.output_dir or backend.output_dir, callbacks,
                         region=region, target=request.target, request=request)
                 else:
-                    self._export.target = str(request.target)
                     started = backend.render_png_export(
                         request, callbacks, transit_options=transit_options,
                         metro_options=self.metro_options(), file_result=True)
@@ -2889,6 +2869,10 @@ class EngineServer:
             return {"started": started}
 
         if method == "cancel":
+            if params.get("preview"):
+                backend.invalidate_preview_compile()
+                backend._pending_preview = None
+                return {"cancelled": True, "previewRevision": backend._preview_revision}
             pending = getattr(self, "_rmp_pending", None)
             if "rmpRequestId" in params and (self._render_mode != "rmp" or not pending
                     or pending[2] != params["rmpRequestId"] or pending[3] != self._document_epoch):
@@ -2902,10 +2886,9 @@ class EngineServer:
             if backend._local_png_active:
                 backend.cancel()
                 return {"cancelled": False, "cancelRequested": True, "message": i18n.tr('ui.winui_engine.dispatch.e8e08b0f61')}
-            if self._saving_export:
-                return {"cancelled": False, "message": i18n.tr('ui.winui_engine.dispatch.e668d01e2c')}
             if self._external_busy:
-                return {"cancelled": False, "message": i18n.tr('ui.winui_engine.dispatch.19bb4eb8a9')}
+                self._external_stop.set()
+                return {"cancelled": False, "cancelRequested": True}
             if self._render_mode == "rmp" and pending:
                 backend.cancel_rmp_generation()
                 self._rmp_pending = None
@@ -2920,7 +2903,9 @@ class EngineServer:
             self._render_mode = None
             return {"cancelled": True}
         if method == "close":
+            self._external_stop.set()
             self.cancel_artwork()
+            self._compatibility_stop.set()
             self.running = False
             return {"closed": True}
         raise ValueError(f"unknown method: {method}")

@@ -112,7 +112,7 @@ public sealed partial class MainWindow
             var info = _snapshot.GetProperty("cityInfo");
             // 统计由引擎算好下发；未装城市时不编数字。
             var stats = _snapshot.TryGetProperty("stats", out var node) ? node : default;
-            var ready = stats.ValueKind == JsonValueKind.Object
+            var ready = CurrentDocumentAvailable && stats.ValueKind == JsonValueKind.Object
                         && stats.TryGetProperty("available", out var flag) && flag.GetBoolean();
             foreach (var (key, control) in _overviewStats)
             {

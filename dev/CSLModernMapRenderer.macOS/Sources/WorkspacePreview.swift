@@ -9,7 +9,9 @@ struct PreviewSceneIdentity: Equatable {
         guard !scene.isEmpty, frame["sceneId"] as? String == scene,
               frame["revision"] as? Int == revision else { return false }
         switch frame["type"] as? String {
-        case "sceneLoaded": return object(frame["performance"])["completion"] as? String == "idle"
+        case "sceneLoaded":
+            let completion = object(frame["performance"])["completion"] as? String
+            return completion == "applied" || completion == "idle"
         case "scenePresentationReady": return true
         default: return false
         }

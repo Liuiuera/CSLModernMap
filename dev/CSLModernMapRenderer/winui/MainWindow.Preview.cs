@@ -13,14 +13,13 @@ public sealed partial class MainWindow
     private string? _previewFailure;
     private CancellationTokenSource? _previewWait;
     private bool _fullSceneCompiled, _previewWaitDismissed, _previewNoticeDismissed;
-    private bool PreviewInteractive => _viewerReady && _mapTask.HasMap && !_loadingDocument &&
-        (!_mapTask.Active || _mapTask.Background);
+    private bool PreviewInteractive => _viewerReady && _mapTask.HasMap && !_loadingDocument;
 
     private bool IsCurrentPreview(int instance) => !_closing && instance == _previewInstance;
 
     private async Task InitializePreviewAsync(bool recovering = false)
     {
-        if (_closing || _engineUnavailable || _previewStarting) return;
+        if (_closing || _engineUnavailable) return;
         var instance = recovering ? ResetPreview() : ++_previewInstance;
         _previewNoticeDismissed = false;
         _viewerReady = false; _previewStarting = true; _previewFailure = null; _previewSlow = false;
@@ -36,12 +35,6 @@ public sealed partial class MainWindow
         ApplyMapTaskState();
         try
         {
-            if (recovering)
-            {
-                // 先让引擎作废旧编译，再启用本次预览。
-                await _engine.RequestAsync("setPreviewEnabled", new { enabled = false });
-                if (!IsCurrentPreview(instance)) return;
-            }
             var preview = await _engine.RequestAsync("startPreview");
             if (!IsCurrentPreview(instance)) return;
             if (_previewClosed)
@@ -105,8 +98,9 @@ public sealed partial class MainWindow
         _viewerReady = _previewStarting = _previewRecovering = _previewSlow = false;
         _previewWait?.Cancel();
         _fullSceneCompiled = false;
-        _awaitingScene = _waitingSceneReady = false;
-        _discardSceneResults = true;
+        _awaitingScene = false;
+        _pendingViewerScene = null;
+        _completeScene = null;
         _previewLayerWrites.Clear();
         if (!_previewClosed) { MapView.Close(); _previewClosed = true; }
         if (!_loadingDocument) _mapTask.Reset(false);
@@ -120,7 +114,6 @@ public sealed partial class MainWindow
         try
         {
             await _engine.RequestAsync("setPreviewEnabled", new { enabled = false });
-            if (IsCurrentPreview(instance)) await RefreshSnapshotCoreAsync(instance);
         }
         catch (Exception error) when (!IsCurrentPreview(instance))
         {
@@ -135,21 +128,16 @@ public sealed partial class MainWindow
         _previewFailure = UiLanguage.Text("Preview_Failed");
         var failure = TaskError.FromException(error, UiLanguage.Text("Preview_Failed"), stage);
         StartupTrace.Write($"Preview failed: instance={_previewInstance}, scene={_sceneId}, revision={_revision}, documentEpoch={_engineDocumentEpoch}\n{failure.Details}");
-        var instance = ResetPreview();
         OperationError.Severity = InfoBarSeverity.Error;
         OperationError.Message = _previewFailure;
         OperationError.Content = ErrorFeedback.Actions(failure, Root);
         OperationError.IsOpen = true;
-        SetDocumentEnabled(_snapshot.ValueKind == JsonValueKind.Object &&
-            _snapshot.GetProperty("hasDocument").GetBoolean() && !_engineBusy);
-        ApplyMapTaskState();
-        try { await _engine.RequestAsync("setPreviewEnabled", new { enabled = false }); }
-        catch (Exception stopError) { StartupTrace.Write($"Preview cleanup failed: instance={instance}\n{stopError}"); }
+        await EnableCompatibilityPreviewAsync();
     }
 
     private async Task RetryPreviewAsync()
     {
-        if (_closing || _engineUnavailable || _previewStarting || _previewRecovering) return;
+        if (_closing || _engineUnavailable) return;
         _compatibilityPreview = false;
         ResetCompatibilityImage();
         await InitializePreviewAsync(recovering: true);
@@ -159,18 +147,16 @@ public sealed partial class MainWindow
     {
         try
         {
-            await _engine.RequestAsync("setPreviewEnabled", new { enabled = true });
+            var state = await _engine.RequestAsync("setPreviewEnabled", new { enabled = true });
             if (!IsCurrentPreview(instance)) return;
-            await RefreshSnapshotCoreAsync(instance);
-            if (!IsCurrentPreview(instance)) return;
-            if (_loadingDocument)
+            if (_pendingViewerScene is { } scene)
             {
-                _discardSceneResults = false;
+                _pendingViewerScene = null;
+                HandleEngineEvent("sceneReady", scene);
                 return;
             }
-            if (!_snapshot.GetProperty("hasDocument").GetBoolean())
+            if (!state.GetProperty("hasDocument").GetBoolean())
             {
-                if (_mapTask.Phase == MapTaskPhase.Loading && !_awaitingScene) _mapTask.Reset(false);
                 _previewRecovering = false;
                 return;
             }
@@ -180,7 +166,7 @@ public sealed partial class MainWindow
                 await _engine.RequestAsync("restoreCityArtworkPreview", new { documentEpoch = _engineDocumentEpoch });
                 if (IsCurrentPreview(instance)) _restoreCityArtworkPreview = false;
             }
-            else await CompilePreviewCoreAsync();
+            else await CompilePreviewCoreAsync(force: false);
         }
         catch (Exception error)
         {
@@ -228,12 +214,12 @@ public sealed partial class MainWindow
         RefreshPreviewQualitySection();
         var available = _snapshot.ValueKind == JsonValueKind.Object &&
             _snapshot.GetProperty("hasDocument").GetBoolean() && !_loadingDocument && !_engineUnavailable;
-        var stopped = !_viewerReady && !_previewStarting;
+        var stopped = !_viewerReady;
         var show = _context != "metro" && !_compatibilityPreview && !_previewNoticeDismissed && (stopped || _previewSlow);
         PreviewActions.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
-        PreviewCompatibility.IsEnabled = available && !_engineBusy;
-        PreviewRetry.IsEnabled = !_previewStarting && !_previewRecovering && !_engineUnavailable && !_engineBusy;
-        PreviewHtml.IsEnabled = available && !_engineBusy;
+        PreviewCompatibility.IsEnabled = available;
+        PreviewRetry.IsEnabled = !_engineUnavailable;
+        PreviewHtml.IsEnabled = available;
         if (show && !_loadingDocument)
         {
             MapOverlay.Visibility = Visibility.Collapsed;

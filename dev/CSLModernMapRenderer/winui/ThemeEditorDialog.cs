@@ -40,6 +40,7 @@ internal sealed partial class ThemeEditorDialog : IDisposable
     private bool _isNew, _isBuiltin;
     private string? _settingsRevision;
     private int _documentEpoch;
+    private TaskCompletionSource? _currentAction;
     private bool _applied, _invalidated, _building, _busy, _flushingPreviewInputs;
     private string _section = "__basic__", _labelType = "road", _selectedRoad = "highway";
     private readonly Stack<string> _undoStack = new(), _redoStack = new();
@@ -106,7 +107,8 @@ internal sealed partial class ThemeEditorDialog : IDisposable
     {
         if (_invalidated) return true;
         FlushInputs();
-        if (_busy) return false;
+        if (!HasUnsavedChanges && _errors.Count == 0) return true;
+        if (_currentAction is { } action) await action.Task;
         if (_invalidated || (!HasUnsavedChanges && _errors.Count == 0)) return true;
         SetBusy(true);
         ContentDialogResult result;

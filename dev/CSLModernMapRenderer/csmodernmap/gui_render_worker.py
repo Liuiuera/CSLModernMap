@@ -633,11 +633,32 @@ def _render_transit_base(job, document, session, canvas_size, region, *, progres
     return image, renderer
 
 
+def run_interchanges_task(job, *, session, progress, check_cancel):
+    from .interchanges import render_interchange_request
+    from .i18n import tr
+    from PIL import Image
+
+    def render_region(region, size):
+        check_cancel()
+        renderer = _build_normal_renderer(job["ui"], job["style"], job["layers"],
+            int(size) * (2 if job["aa"] else 1), preview=False, job_kind="normal")
+        image = renderer.render(session.document, region=region, final_size=int(size), session=session)
+        if job["aa"] and image.size != (int(size), int(size)):
+            image = image.resize((int(size), int(size)), Image.LANCZOS)
+        return image
+
+    image, interchanges = render_interchange_request(session._legacy_view(), render_region, job["request"], progress=progress)
+    if not interchanges:
+        raise RuntimeError(tr("gui.error.no_interchange"))
+    return {"image": image, "stats": {"interchange_count": len(interchanges)}}
+
+
 def run_transit_task(
     job: dict,
     *,
     progress: Callable[[float, str], None] | None = None,
     mapdata_cache: dict | None = None,
+    session=None,
 ) -> dict:
     """分两段渲染公共交通底图和线路。"""
     t0 = time.time()
@@ -672,11 +693,11 @@ def run_transit_task(
     p_transit.supports_stage_progress = True
 
     cache = mapdata_cache if mapdata_cache is not None else {}
-    document = cache.get(file)
+    document = session.document if session is not None else cache.get(file)
     if document is None:
         document = _parse_for_render(file, p_parse)
         cache[file] = document
-    session = _session_for(document)
+    session = session if session is not None else _session_for(document)
     mapdata = session._legacy_view()
     present_types = {
         transit.normalize_type(item.type) for item in mapdata.transports

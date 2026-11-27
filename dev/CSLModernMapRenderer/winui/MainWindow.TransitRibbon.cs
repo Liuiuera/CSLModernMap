@@ -149,7 +149,7 @@ public sealed partial class MainWindow
             if (delay is not null)
             {
                 try { await Task.Delay(300, cancellation); }
-                catch (OperationCanceledException) when (cancellation.IsCancellationRequested) { return; }
+                catch (OperationCanceledException) when (cancellation.IsCancellationRequested) { await previous; return; }
             }
             await previous;
             if (version != _contextWriteVersion) return;
@@ -175,13 +175,13 @@ public sealed partial class MainWindow
                             _snapshot = await _engine.RequestAsync("getSnapshot");
                             refresh |= item.Refresh;
                         }
-                        if (refresh && Current())
+                        if (refresh && Current() && !_leavingContextWrites)
                         {
                             if (metro) MarkMetroGenerationChanged();
                             else { await RefreshLivePreviewAsync(); if (Current()) await ApplyContextAsync(); }
                         }
                     }
-                    finally { if (Current()) await RefreshSnapshotAsync(); }
+                    finally { if (Current() && !_leavingContextWrites) await RefreshSnapshotAsync(); }
                 });
             }
             finally
@@ -193,14 +193,20 @@ public sealed partial class MainWindow
         return _contextWriteTail = Execute();
     }
 
-    private async Task FlushContextWritesAsync()
+    private bool _leavingContextWrites;
+    private async Task FlushContextWritesAsync(bool leaving = false)
     {
-        do
+        if (leaving) _leavingContextWrites = true;
+        try
         {
-            if (_pendingContextWrites.Count > 0 && _documentEnabled)
-                await QueueContextWriteAsync(_context == "metro", () => Task.CompletedTask, refreshPreview: false);
-            else await _contextWriteTail;
-        } while (ContextWritesPending);
+            do
+            {
+                if (_pendingContextWrites.Count > 0 && _documentEnabled)
+                    await QueueContextWriteAsync(_context == "metro", () => Task.CompletedTask, refreshPreview: false);
+                else await _contextWriteTail;
+            } while (ContextWritesPending);
+        }
+        finally { if (leaving) _leavingContextWrites = false; }
     }
 
     private async Task ShowContextParametersAsync(bool metro)

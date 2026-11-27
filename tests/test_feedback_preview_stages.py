@@ -205,6 +205,25 @@ def test_open_and_refresh_have_separate_monotonic_progress(monkeypatch, tmp_path
     assert not [e for e in events if e[0] == "error"]
 
 
+@pytest.mark.parametrize("fail_detail", [False, True])
+def test_full_result_or_detail_error_delivered_without_base_ack(progress_backend, monkeypatch, fail_detail):
+    backend, events, callbacks, drain = progress_backend
+    backend.document = progress_document()
+    backend.session = DocumentSession(backend.document)
+    callbacks["scene_detail_error"] = lambda base, error: events.append(("detail", str(error)))
+    compile_scene = PreviewSceneCompiler.compile_full
+    def compile_stage(*args, **kwargs):
+        if fail_detail and kwargs["options"]["phase"] == "full":
+            raise ValueError("detail failed")
+        return compile_scene(*args, **kwargs)
+    monkeypatch.setattr(PreviewSceneCompiler, "compile_full", compile_stage)
+    assert backend.compile_preview_scene(callbacks)
+    join_worker(backend._preview_compile_thread)
+    drain()
+    result = [event for event in events if event[0] in {"scene", "detail"}]
+    assert result == [("scene", "base"), ("detail", "detail failed") if fail_detail else ("scene", "complete")]
+
+
 def test_cold_refresh_reserves_base_and_final_presentation(progress_backend):
     backend, events, callbacks, drain = progress_backend
     backend.document = progress_document()

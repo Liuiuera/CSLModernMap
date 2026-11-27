@@ -40,6 +40,14 @@ internal sealed class PoiMappingDialog
         _libraries = data.GetProperty("libraries").Clone();
         _token = data.GetProperty("token").GetString()!;
         _window = new EditorWindow(Text("Title"), "map-pin", 1080, 740);
+        _window.CanCloseAsync = async () =>
+        {
+            if (_dirty.Count == 0) return true;
+            var choice = await new ContentDialog { XamlRoot = _window.Root.XamlRoot, Title = Text("Title"),
+                Content = UiLanguage.Text("RmpEditor_UnsavedPrompt"), PrimaryButtonText = Text("Save"),
+                SecondaryButtonText = UiLanguage.Text("RmpEditor_Discard"), CloseButtonText = Text("Cancel") }.ShowAsync();
+            return choice == ContentDialogResult.Secondary || choice == ContentDialogResult.Primary && await SaveAsync();
+        };
         _window.AddAction(Text("Save"), async () => { if (await SaveAsync()) await _window.RequestCloseAsync(); });
         _window.AddAction(Text("Restore"), () => { RestoreDefaults(); return Task.CompletedTask; });
         _window.AddAction(Text("Cancel"), async () => { await _window.RequestCloseAsync(); });

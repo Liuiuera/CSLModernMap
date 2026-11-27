@@ -13,7 +13,8 @@ namespace CSLModernMapWinUI;
 internal sealed class EditorWindow : Window
 {
     private readonly TaskCompletionSource _completion = new(TaskCreationOptions.RunContinuationsAsynchronously);
-    private bool _allowClose, _checkingClose;
+    private bool _allowClose;
+    private Task<bool>? _closeRequest;
     public Grid Root { get; }
     public Grid Actions { get; } = new() { ColumnSpacing = 8, RowSpacing = 8 };
     public Func<Task<bool>>? CanCloseAsync { get; set; }
@@ -105,15 +106,15 @@ internal sealed class EditorWindow : Window
     public async Task<bool> RequestCloseAsync()
     {
         if (_allowClose) return true;
-        if (_checkingClose) return false;
-        _checkingClose = true;
-        try
-        {
-            if (CanCloseAsync is not null && !await CanCloseAsync()) return false;
-            ForceClose();
-            return true;
-        }
-        finally { _checkingClose = false; }
+        var request = _closeRequest ??= ConfirmAndCloseAsync();
+        try { return await request; }
+        finally { if (_closeRequest == request) _closeRequest = null; }
+    }
+    private async Task<bool> ConfirmAndCloseAsync()
+    {
+        if (CanCloseAsync is not null && !await CanCloseAsync()) return false;
+        ForceClose();
+        return true;
     }
     public void ForceClose() { _allowClose = true; Close(); }
 }

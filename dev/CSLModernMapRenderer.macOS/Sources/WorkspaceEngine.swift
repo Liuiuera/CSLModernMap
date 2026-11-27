@@ -134,15 +134,17 @@ extension InterfaceController {
             default: break
             }
         }
+        activeExport?.event(name, payload)
         rmp.engineEvent(name, payload)
         if let value = payload["documentEpoch"] as? Int, name != "documentOpening", value != epoch { return }
         previewOutput(name, payload)
         cityDraft?.engineEvent(name, payload)
-        activeExport?.event(name, payload); themeEditor?.event(name, payload)
+        themeEditor?.event(name, payload)
         switch name {
         case "documentOpening":
             closeApprovedEditors(pendingCityEditors ?? [])
-            pendingCityEditors = nil
+            pendingCityEditors = []
+            if !staticMode, let url = viewer.view.url { viewer.load(url) }
             rmp.hasProject = false; rmp.dirty = false; rmp.path = nil; rmp.state = [:]; rmp.projectID = UUID().uuidString
             metroAppliedFingerprint = nil; sidebarNavigation.requestID = UUID()
             sidebarNavigation.positions.removeAll()
@@ -153,6 +155,7 @@ extension InterfaceController {
             buildingList?.window.close(); staticRefreshPending = false; staticPreviewID = nil; staticPreview.removeFromSuperview(); cityDraft = nil; presentedScene = nil; epoch = payload["documentEpoch"] as? Int ?? epoch; sceneID = ""; revision = 0; previewLayerWrites.removeAll(); selectedBounds = nil; selectedObject = nil; buildInspector(); updateCommands()
         case "documentOpenFailed":
             finishCityRead()
+            showMapState(.empty("尚未打开城市"))
             showError(AppFailure(payload: payload))
         case "busy": engineBusy = payload["value"] as? Bool ?? false; updateCommands(); drainFieldQueue()
         case "progress":
@@ -163,7 +166,13 @@ extension InterfaceController {
                 showStatus("\(Int(percent))%  \(stage)", kind: .progress)
             } else if !stage.isEmpty { showStatus(stage, kind: .progress) }
         case "exportDone", "externalExportDone": run { try await self.refreshSnapshot(); try await self.applySceneState() }
+        case "mapStatistics":
+            run { try await self.refreshSnapshot() }
         case "meta", "themeThumbnailReady":
+            if name == "meta", textValue(payload["source"]) == "open" {
+                finishCityRead()
+                run { _ = try await self.engine.request("getMapStatistics") }
+            }
             if name == "meta", textValue(payload["source"]) == "open",
                let warnings = object(payload["info"])["fileWarnings"] as? [String], !warnings.isEmpty {
                 showTextWindow("文件读取提示", warnings.joined(separator: "\n\n"))
@@ -254,7 +263,8 @@ extension InterfaceController {
         case "requestLayerVisibility": requestPreviewLayer(frame)
         case "requestMapRotation": requestMapRotation(frame)
         case "renderError":
-            guard textValue(frame["sceneId"]) == sceneID, frame["revision"] as? Int == revision else { return }
+            if frame["sceneId"] != nil && (textValue(frame["sceneId"]) != sceneID || frame["revision"] as? Int != revision) { return }
+            if frame["fatal"] as? Bool == false { showStatus(textValue(frame["message"])); return }
             let error = AppFailure(payload: frame)
             if staticMode { showError(error) }
             else { showPreviewError(error) }
@@ -402,7 +412,8 @@ extension InterfaceController {
         }
     }
     func openCity(_ url: URL) async throws {
-        guard !busy, !fieldWriting, !rmp.busy, !rmp.placing, let editors = editorsPermittingReplacement() else { return }
+        if fieldWriting || !fieldQueue.isEmpty { try await flushFieldWrites() }
+        guard let editors = editorsPermittingReplacement() else { return }
         pendingCityEditors = editors
         var started = false
         defer { if !started { finishCityRead() } }
@@ -410,7 +421,7 @@ extension InterfaceController {
         rmp.syncHost()
         updateCommands()
         showStatus(localized("正在读取城市…") + " " + url.lastPathComponent, kind: .progress)
-        let result = try await engine.request("openDocument", ["path":url.path, "deferReplacement":true])
+        let result = try await engine.request("openDocument", ["path":url.path])
         guard result["started"] as? Bool == true else { throw AppFailure(message: "未能开始加载城市") }
         started = true
     }

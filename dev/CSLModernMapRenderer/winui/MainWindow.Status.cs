@@ -8,17 +8,15 @@ namespace CSLModernMapWinUI;
 public sealed partial class MainWindow
 {
     private readonly MapTaskState _mapTask = new();
-    private bool _waitingSceneReady, _discardSceneResults, _externalExporting;
+    private bool _externalExporting;
 
     private int BeginMapTask(MapTaskPhase phase, string title, bool canCancel = true, string? requestId = null, bool waitForScene = true, bool background = false)
     {
-        _discardSceneResults = false;
-        _waitingSceneReady = waitForScene;
         _awaitingScene = waitForScene;
         var generation = _mapTask.Begin(phase, title, canCancel, requestId, background);
         _previewWait?.Cancel();
         _fullSceneCompiled = _previewWaitDismissed = _previewSlow = false;
-        SetDocumentEnabled(false);
+        if (!_mapTask.HasMap) SetDocumentEnabled(false);
         ApplyMapTaskState();
         return generation;
     }
@@ -77,8 +75,8 @@ public sealed partial class MainWindow
         _previewWait?.Cancel();
         _previewSlow = false;
         _fullSceneCompiled = false;
-        _awaitingScene = _waitingSceneReady = false;
-        SetDocumentEnabled(_snapshot.ValueKind == JsonValueKind.Object && _snapshot.GetProperty("hasDocument").GetBoolean() && !_engineBusy);
+        _awaitingScene = false;
+        SetDocumentEnabled(_snapshot.ValueKind == JsonValueKind.Object && _snapshot.GetProperty("hasDocument").GetBoolean());
         ApplyMapTaskState();
     }
 
@@ -91,8 +89,8 @@ public sealed partial class MainWindow
 
     private void UpdateMapProgress(JsonElement payload)
     {
-        if (_exportWindow?.IsBusy == true || _externalExporting ||
-            _previewRecovering && _discardSceneResults && !_loadingDocument) return;
+        if (payload.TryGetProperty("format", out _) ||
+            payload.TryGetProperty("documentEpoch", out var epoch) && epoch.GetInt32() != _engineDocumentEpoch) return;
         var requestId = payload.TryGetProperty("requestId", out var id) && id.ValueKind == JsonValueKind.String ? id.GetString() : null;
         double? percent = payload.TryGetProperty("percent", out var raw) && raw.TryGetDouble(out var value) ? value : null;
         if (_mapTask.Progress(percent, payload.GetProperty("message").GetString() ?? "", requestId)) ApplyMapTaskState();
@@ -101,22 +99,15 @@ public sealed partial class MainWindow
     private Task CompilePreviewAsync() =>
         _previewStarting || _previewRecovering ? Task.CompletedTask : CompilePreviewCoreAsync();
 
-    private async Task CompilePreviewCoreAsync()
+    private async Task CompilePreviewCoreAsync(bool force = true)
     {
         if (_compatibilityPreview) { QueueCompatibilityPreview(); return; }
         if (!_viewerReady) { await RetryPreviewAsync(); return; }
-        if (_engineBusy)
-        {
-            var message = UiLanguage.Text("MainWindow_Status_CompilePreviewAsync_2A55669135");
-            if (_previewRecovering) await FailPreviewAsync(new InvalidOperationException(message), "sceneCompile");
-            else ShowNotice(message);
-            return;
-        }
         var generation = BeginMapTask(MapTaskPhase.Generating, _context == "transit" ? UiLanguage.Text("MainWindow_Status_CompilePreviewAsync_058E698B71") : UiLanguage.Text("MainWindow_Status_CompilePreviewAsync_A8A3F1C48A"));
         var instance = _previewInstance;
         try
         {
-            var result = await _engine.RequestAsync("compilePreview", new { force = true });
+            var result = await _engine.RequestAsync("compilePreview", new { force });
             if (generation != _mapTask.Generation || result.GetProperty("started").GetBoolean()) return;
             var message = UiLanguage.Text("MainWindow_Status_CompilePreviewAsync_BA6C957739");
             if (_previewRecovering) await FailPreviewAsync(new InvalidOperationException(message), "sceneCompile");

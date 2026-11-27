@@ -136,13 +136,12 @@ public sealed partial class MainWindow
     {
         _fileRecentMenu.Items.Clear();
         if (_snapshot.ValueKind != System.Text.Json.JsonValueKind.Object) return;
-        var busy = _snapshot.GetProperty("busy").GetBoolean();
         foreach (var item in _snapshot.GetProperty("recentFiles").EnumerateArray())
         {
             var path = item.GetString();
             if (string.IsNullOrWhiteSpace(path)) continue;
             var exists = File.Exists(path);
-            var command = new MenuFlyoutItem { Text = Path.GetFileName(path), IsEnabled = exists && !busy };
+            var command = new MenuFlyoutItem { Text = Path.GetFileName(path), IsEnabled = !_engineUnavailable };
             ToolTipService.SetToolTip(command, exists ? path : UiLanguage.Text("MainWindow_File_RefreshFileRecent_95D7E39D01") + path);
             command.Click += async (_, _) => await RunAsync(() => OpenPathAsync(path));
             _fileRecentMenu.Items.Add(command);

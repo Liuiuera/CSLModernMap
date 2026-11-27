@@ -44,10 +44,10 @@ def test_open_announces_epoch_before_synchronous_load_failure(tmp_path):
     server = EngineServer(io.StringIO(), io.StringIO(), backend)
     events = []
     server.event = lambda name, payload: events.append((name, payload))
-    def fail_open(path, callbacks):
+    def fail_open(path, callbacks, *, on_read_error):
         diagnostic = capture_error(ValueError("catalog failed"), stage="openDocument")
         diagnostic["operation"] = "open"
-        callbacks["error"](TaskFailure(diagnostic))
+        on_read_error(TaskFailure(diagnostic))
         return True
     backend.open_file = fail_open
     try:
@@ -55,7 +55,7 @@ def test_open_announces_epoch_before_synchronous_load_failure(tmp_path):
             events.clear()
             assert server.dispatch("openDocument", {"path": "city.cmm"})["started"]
             assert events[0] == ("documentOpening", {"documentEpoch": epoch})
-            error = next(payload for name, payload in events if name == "error")
+            error = next(payload for name, payload in events if name == "documentOpenFailed")
             assert error["documentEpoch"] == epoch
             assert error["operation"] == "open"
     finally:
@@ -796,31 +796,22 @@ def test_html_export_uses_its_own_quality_and_shared_rotation(tmp_path):
         server._preview_files.cleanup()
 
 
-def test_stale_export_completion_is_gated_by_document_epoch():
-    backend = _Backend()
+def test_local_error_during_export_keeps_its_request(tmp_path):
+    backend = _guir_backend(tmp_path)
     server = EngineServer(io.StringIO(), io.StringIO(), backend)
     events = []
     server.event = lambda name, payload: events.append((name, payload))
-    server._document_epoch = 2
-    server._export.request_id = "old-request"
-    server._export.document_epoch = 1
-    server._export.context = "normal"
-    server._export.format = "PNG"
-    server._export.requested_target = "old-city.png"
-    server._export.target = "old-city.png"
-    backend.save_png_async = lambda *_args, **_kwargs: pytest.fail(
-        "a stale render must not be saved after a document switch")
     try:
-        server._render_done(object(), 2048, {}, 1.0, False, None, {})
-        assert [name for name, _payload in events] == ["error", "busy"]
-        assert {key: events[0][1][key] for key in ("requestId", "documentEpoch", "context", "format", "target", "exceptionMessage")} == {
-            "requestId": "old-request", "documentEpoch": 1,
-            "context": "normal", "format": "PNG", "target": "old-city.png",
-            "exceptionMessage": "城市已切换，旧文档的导出结果已丢弃",
-        }
-        assert server._export.request_id is None
-        assert server._export.target is None
+        server._export.request_id = "old-export"
+        server._export.document_epoch = 1
+        server._document_epoch = 2
+        server._backend_error(ValueError("setting failed"))
+        assert server._export.request_id == "old-export"
+        server._export_completed("already-written.png", "old-export", stats={})
+        done = next(payload for name, payload in events if name == "exportDone")
+        assert (done["requestId"], done["documentEpoch"], done["path"]) == ("old-export", 1, "already-written.png")
     finally:
+        backend.close()
         server._preview_files.cleanup()
 
 
@@ -1020,7 +1011,11 @@ def test_interchange_completion_uses_current_document_for_winui_request(tmp_path
     server = EngineServer(io.StringIO(), io.StringIO(), backend)
     try:
         server._document_epoch = 4
-        server.backend.render_interchanges = lambda *_args, **_kwargs: True
+        captured = {}
+        def render(callbacks, *, request, target):
+            captured.update(callbacks)
+            return True
+        server.backend.render_interchanges = render
         events = []
         server.event = lambda name, payload: events.append((name, payload))
 
@@ -1034,7 +1029,7 @@ def test_interchange_completion_uses_current_document_for_winui_request(tmp_path
         request_id = server._export.request_id
         assert request_id
 
-        server._render_done(object(), 786, {}, 1.0, True, None, {})
+        captured["file_done"](target, {})
 
         assert not any(name == "error" for name, _ in events)
         payload = next(payload for name, payload in events if name == "exportDone")
