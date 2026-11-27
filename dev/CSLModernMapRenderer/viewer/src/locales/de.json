@@ -223,5 +223,10 @@
   "controls_actions": "Ansicht",
   "preview3d_title": "3D-Vorschau",
   "preview3d_help": "Mittlere Maustaste halten: seitlich zum Drehen, auf/ab zum Neigen ziehen.",
-  "preview3d_missing": "Keine Gebäudehöhen erkannt. Exportieren Sie die Karte erneut mit der aktuellen Version der Export-Mod."
+  "preview3d_missing": "Keine Gebäudehöhen erkannt. Exportieren Sie die Karte erneut mit der aktuellen Version der Export-Mod.",
+  "controls_poi_text": "Symbolbeschriftungen",
+  "controls_road_text": "Straßennamen",
+  "controls_district_text": "Bezirksnamen",
+  "controls_rotateCounterclockwise": "90° gegen den Uhrzeigersinn",
+  "controls_rotateClockwise": "90° im Uhrzeigersinn"
 }

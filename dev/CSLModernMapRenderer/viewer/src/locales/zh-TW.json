@@ -223,5 +223,10 @@
   "controls_actions": "操作",
   "preview3d_title": "3D 預覽",
   "preview3d_help": "按住滑鼠中鍵：左右旋轉，上下調整傾斜。",
-  "preview3d_missing": "未偵測到建築高度。請嘗試用最新版匯出模組重新匯出地圖。"
+  "preview3d_missing": "未偵測到建築高度。請嘗試用最新版匯出模組重新匯出地圖。",
+  "controls_poi_text": "圖示文字",
+  "controls_road_text": "道路文字",
+  "controls_district_text": "區劃文字",
+  "controls_rotateCounterclockwise": "逆時針 90°",
+  "controls_rotateClockwise": "順時針 90°"
 }

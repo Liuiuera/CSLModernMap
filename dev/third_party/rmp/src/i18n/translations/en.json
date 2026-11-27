@@ -62,7 +62,6 @@
     "close": "Close",
     "noShowAgain": "Don't show me again",
     "rmtPromotion": "The all-in-one toolkit you definitely do not want to miss!",
-
     "panel": {
         "tools": {
             "showLess": "Show less",
@@ -807,7 +806,6 @@
             }
         }
     },
-
     "header": {
         "popoverHeader": "You're on <1>{{environment}}</1> environment!",
         "popoverBody": "We are currently testing the latest RMP. If you have any suggestions, feel free to raise at https://github.com/railmapgen/rmp/issues",
@@ -1068,7 +1066,6 @@
             "zulipContent": "Join our community on Zulip!"
         }
     },
-
     "contextMenu": {
         "refresh": "Refresh",
         "cut": "Cut",
@@ -1087,7 +1084,6 @@
         "flipDiagonal135": "Flip across 135° line",
         "reconcile": "Reconcile"
     },
-
     "clipboard": {
         "errors": {
             "readText": "Failed to read the clipboard. Check browser permissions and try again.",
@@ -1095,23 +1091,22 @@
             "cannotPasteSpecificAttrs": "Unable to paste specific attributes. Make sure compatible targets are selected and the clipboard contains valid specific-attribute data."
         }
     },
-
     "localStorageQuotaExceeded": "Local storage limit reached. Unable to save new changes.",
     "cmm": {
-    "transfer": "Transfer",
-    "properties": "Properties",
-    "otherProperties": "Other properties",
-    "moreActions": "More actions",
-    "station": "Station",
-    "lineSegment": "Line segment",
-    "textObject": "Text",
-    "facilityObject": "Facility",
-    "objectProperties": "Object properties",
-    "selectedObjects": "{{count}} objects selected",
-    "stationStyle": "Station style",
-    "appearanceAndTransfer": "Appearance and interchange",
-    "duplicateObject": "Duplicate",
-    "openDetails": "Open details",
+        "transfer": "Transfer",
+        "properties": "Properties",
+        "otherProperties": "Other properties",
+        "moreActions": "More actions",
+        "station": "Station",
+        "lineSegment": "Line segment",
+        "textObject": "Text",
+        "facilityObject": "Facility",
+        "objectProperties": "Object properties",
+        "selectedObjects": "{{count}} objects selected",
+        "stationStyle": "Station style",
+        "appearanceAndTransfer": "Appearance and interchange",
+        "duplicateObject": "Duplicate",
+        "openDetails": "Open details",
         "style": "Style {{number}}",
         "chooseStyle": "Station style",
         "stationNames": "Station labels",
@@ -1208,5 +1203,34 @@
     },
     "confirm": "Confirm",
     "Color": "Color",
-    "Confirm": "Confirm"
+    "Confirm": "Confirm",
+    "editor": {
+        "drawLine": "Draw line",
+        "facilityPicker": "Facility icon…",
+        "tools": "Editing tools",
+        "view": "View",
+        "move": "Move and select",
+        "select": "Box select",
+        "stations": "Add station",
+        "elements": "Add element",
+        "paths": "Line path",
+        "styles": "Line style",
+        "insert": "Insert",
+        "title": "Title",
+        "undo": "Undo",
+        "redo": "Redo",
+        "fit": "Fit map",
+        "rotateLeft": "Rotate left 90°",
+        "rotateRight": "Rotate right 90°",
+        "details": "Object details",
+        "gridLines": "Grid",
+        "snapLines": "Snap",
+        "detailsVisible": "Object details",
+        "showWaterControls": "Water controls",
+        "cancel": "Cancel placement",
+        "placeHint": "Click to place · Esc to cancel",
+        "lineHint": "Drag between nodes to draw a line · Esc to cancel",
+        "nodeHint": "Click to place · Esc to cancel",
+        "selection": "Selected: {{count}}"
+    }
 }

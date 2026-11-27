@@ -84,6 +84,7 @@ def editor():
                 while not page.evaluate("window.events.some(e=>e.type==='ready')"):
                     assert time.monotonic() < deadline, errors
                     page.wait_for_timeout(50)
+                assert page.get_by_test_id("editor-toolbar").count() == 0, "WebView2 uses the native WinUI toolbar"
                 yield page
                 assert not external, external
                 assert not errors, errors

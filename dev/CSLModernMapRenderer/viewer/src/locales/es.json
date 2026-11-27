@@ -223,5 +223,10 @@
   "controls_actions": "Vista",
   "preview3d_title": "Vista previa 3D",
   "preview3d_help": "Mantén pulsado el botón central: arrastra de lado para girar y arriba/abajo para inclinar.",
-  "preview3d_missing": "No se detectaron alturas de edificios. Intenta exportar el mapa de nuevo con la última versión del exportador."
+  "preview3d_missing": "No se detectaron alturas de edificios. Intenta exportar el mapa de nuevo con la última versión del exportador.",
+  "controls_poi_text": "Etiquetas de iconos",
+  "controls_road_text": "Nombres de vías",
+  "controls_district_text": "Nombres de distritos",
+  "controls_rotateCounterclockwise": "90° en sentido antihorario",
+  "controls_rotateClockwise": "90° en sentido horario"
 }

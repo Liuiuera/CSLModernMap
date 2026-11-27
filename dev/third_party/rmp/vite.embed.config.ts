@@ -18,5 +18,5 @@ export default defineConfig({
         copyFileSync('node_modules/@fontsource/noto-sans-sc/LICENSE', 'dist-embed/licenses/Noto-Sans-SC-LICENSE.txt');
     } }],
     resolve: { alias: [{ find: /^@railmapgen\/rmg-runtime$/, replacement: fileURLToPath(new URL('./src/embed/runtime.ts', import.meta.url)) }] },
-    build: { outDir: 'dist-embed', rollupOptions: { input: 'embed.html' } },
+    build: { target: process.env.CSLMM_MACOS_BUILD ? 'safari16' : 'es2022', outDir: 'dist-embed', rollupOptions: { input: 'embed.html' } },
 });

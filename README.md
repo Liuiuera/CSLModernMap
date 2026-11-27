@@ -10,7 +10,7 @@ CSLModernMap 渲染器用于查看和绘制《城市：天际线》和《城市�
 
 两代游戏的导出模组源码见 [CSLModernMap-CodeMod](https://github.com/Liuiuera/CSLModernMap-CodeMod)。模组负责导出城市数据，本仓库的查看器与渲染器负责读取数据、显示地图和导出结果。
 
-Windows 查看器使用 WinUI，支持 `.cmm`、`.cmm.gz` 及历史 `.mmap`、`.mmap.gz` 文件。可以导出 PNG 图片、HTML 网页地图、RMG 和 RMP 线路项目；内嵌的 Rail Map Painter（RMP）用于编辑线路图。
+Windows 查看器使用 WinUI，macOS 查看器使用 AppKit 和 WKWebView。两端共用渲染引擎，支持 `.cmm`、`.cmm.gz` 及历史 `.mmap`、`.mmap.gz` 文件。可以导出 PNG 图片、HTML 网页地图、RMG 和 RMP 线路项目；内嵌的 Rail Map Painter（RMP）用于编辑线路图。
 
 本项目包含由 OpenAI Codex 辅助生成的代码。
 
@@ -22,6 +22,8 @@ Windows 查看器使用 WinUI，支持 `.cmm`、`.cmm.gz` 及历史 `.mmap`、`.
 
 使用说明见[入门指南](docs/wiki/Home.md)。
 
+macOS 构建及运行说明见 [macOS 查看器](dev/CSLModernMapRenderer.macOS/README.md)。
+
 自行编译请参阅[构建说明](docs/构建说明.md)。Windows 查看器支持 x64、Windows 10 19041 及以上版本。
 
 ### 项目构造与构建
@@ -29,6 +31,7 @@ Windows 查看器使用 WinUI，支持 `.cmm`、`.cmm.gz` 及历史 `.mmap`、`.
 | 目录 | 内容 |
 | --- | --- |
 | `dev/CSLModernMapRenderer/winui/` | Windows 查看器 |
+| `dev/CSLModernMapRenderer.macOS/` | Intel macOS 13+ 查看器（AppKit 和 WKWebView） |
 | `dev/CSLModernMapRenderer/csmodernmap/` | Python 数据读取、地图渲染与导出引擎 |
 | `dev/CSLModernMapRenderer/viewer/` | MapLibre 网页预览 |
 | `dev/third_party/rmp/` | 固定版本的 RMP 源码及本地修改 |
@@ -36,6 +39,8 @@ Windows 查看器使用 WinUI，支持 `.cmm`、`.cmm.gz` 及历史 `.mmap`、`.
 | `tools/` | 构建、打包、翻译与资源生成工具 |
 
 构建使用 Python 3.13、Node.js 24 和 .NET SDK 10。WinUI 功能区使用 RibbonSpace。依赖许可见[许可说明](LICENSING.md)。
+
+单仓库维护两个平台客户端。Windows 使用 .NET SDK、WinUI 和 Windows 打包工具；macOS 使用 Xcode 命令行工具、AppKit、WKWebView 及 DMG 打包工具。网页预览与线路编辑器从同一份源码构建，macOS 构建设置 `CSLMM_MACOS_BUILD=1` 以兼容 Safari 16；Windows 使用默认构建目标。
 
 ### 版权与许可
 
@@ -57,7 +62,7 @@ The CSLModernMap renderer displays and renders city maps exported from Cities: S
 
 The source for both in-game export mods is maintained in [CSLModernMap-CodeMod](https://github.com/Liuiuera/CSLModernMap-CodeMod). The mod exports city data; the viewer and renderer in this repository read that data, display maps and export the results.
 
-The Windows viewer uses WinUI and reads `.cmm`, `.cmm.gz`, and legacy `.mmap` and `.mmap.gz` files. Outputs include PNG images, HTML web maps, and RMG and RMP transit projects. An embedded Rail Map Painter (RMP) editor lets you edit transit diagrams.
+The Windows viewer uses WinUI; the macOS viewer uses AppKit and WKWebView. Both share the rendering engine and read `.cmm`, `.cmm.gz`, and legacy `.mmap` and `.mmap.gz` files. Outputs include PNG images, HTML web maps, and RMG and RMP transit projects. An embedded Rail Map Painter (RMP) editor lets you edit transit diagrams.
 
 This project contains code generated with assistance from OpenAI Codex.
 
@@ -76,6 +81,7 @@ See [Build instructions](docs/构建说明.md) (Chinese) to compile the applicat
 | Directory | Contents |
 | --- | --- |
 | `dev/CSLModernMapRenderer/winui/` | Windows viewer |
+| `dev/CSLModernMapRenderer.macOS/` | Intel macOS 13+ viewer (AppKit and WKWebView) |
 | `dev/CSLModernMapRenderer/csmodernmap/` | Python data reader, map renderer and export engine |
 | `dev/CSLModernMapRenderer/viewer/` | MapLibre web preview |
 | `dev/third_party/rmp/` | Pinned RMP source and local modifications |
@@ -83,6 +89,8 @@ See [Build instructions](docs/构建说明.md) (Chinese) to compile the applicat
 | `tools/` | Build, packaging, translation and resource generation tools |
 
 Building uses Python 3.13, Node.js 24 and .NET SDK 10. The WinUI ribbon uses RibbonSpace. See [Licensing](LICENSING.md) for dependency terms.
+
+Both platform clients are maintained in this repository. Windows uses WinUI and the Windows packaging tools; macOS uses Xcode command-line tools, AppKit, WKWebView and DMG packaging. Both build the same web preview and editor sources; set `CSLMM_MACOS_BUILD=1` for the macOS Safari 16 target, and use the default target for Windows.
 
 ### Copyright and licensing
 

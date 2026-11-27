@@ -23,8 +23,8 @@ export default function StationTypeSection() {
             </Heading>
             <StationStylePicker
                 value={type}
-                onChange={next => {
-                    if (next === type || !confirmStationTypeChange([id], next)) return;
+                onChange={async next => {
+                    if (next === type || !(await confirmStationTypeChange([id], next))) return;
                     changeStationType(window.graph, id, next, populateTransfer);
                     dispatch(saveGraph(window.graph.export()));
                     dispatch(refreshNodesThunk());

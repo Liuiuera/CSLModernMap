@@ -242,6 +242,8 @@ def test_cropped_offline_3d_zoom(navigation_page, navigation_bundle, tmp_path):
 @pytest.mark.parametrize('initial_region', [True, False])
 def test_camera_buttons_animate_without_snapping_and_allow_interrupts(navigation_page, navigation_bundle, navigation_server, initial_region):
     page = navigation_page
+    page.emulate_media(reduced_motion='no-preference')
+    page.clock.install()
     buildings(navigation_bundle)
     if not initial_region:
         navigation_bundle.manifest.pop('initialRegion')
@@ -252,34 +254,53 @@ def test_camera_buttons_animate_without_snapping_and_allow_interrupts(navigation
     page.evaluate("window.cslPreview.dispatch({type:'fitBounds'})")
     target = page.evaluate('({ ...__testMap.getCenter(), zoom:__testMap.getZoom() })')
     toggle = page.get_by_role('button', name='3D 预览', exact=True)
-    toggle.click()
-    page.wait_for_function('()=>__testMap.getPitch()>0 && __testMap.getPitch()<52')
-    settle_camera(page, 52)
-    toggle.click()
-    page.wait_for_function('()=>__testMap.getPitch()>0 && __testMap.getPitch()<52')
-    toggle.click()
-    settle_camera(page, 52)
+    fit = page.get_by_role('button', name='显示全图', exact=True)
+    # Pause after loading so a slow frame cannot skip the animation sample.
+    page.clock.pause_at(page.evaluate('Date.now() / 1000') + 10)
+
+    def click(control):
+        control.evaluate('button => button.click()')
+
+    for start, end in [(0, 52), (52, 0)]:
+        click(toggle)
+        assert camera(page)['pitch'] == pytest.approx(start)
+        page.clock.run_for(160)
+        assert 0 < camera(page)['pitch'] < 52
+        page.clock.run_for(300)
+        assert camera(page)['pitch'] == pytest.approx(end)
+        assert not page.evaluate('__testMap.isMoving()')
+
+    click(toggle)
+    page.clock.run_for(160)
+    interrupted = camera(page)
+    click(toggle)
+    assert camera(page) == pytest.approx(interrupted)
+    click(toggle)
+    page.clock.run_for(80)
+    assert page.evaluate('__testMap.isMoving()')
     # A middle drag interrupts the transition and keeps its resulting camera.
-    toggle.click()
-    toggle.click()
     drag(page, 20, -20)
     stopped = camera(page)
-    page.wait_for_timeout(500)
+    assert not page.evaluate('__testMap.isMoving()')
+    page.clock.run_for(500)
     assert camera(page) == stopped
     page.evaluate('__testMap.jumpTo({center:[.0005,.0007],zoom:17,pitch:45,bearing:25})')
-    start_pitch = page.get_by_role('button', name='显示全图', exact=True).evaluate('button=>{button.click();return __testMap.getPitch()}')
-    assert start_pitch == pytest.approx(45)
-    page.wait_for_function('()=>__testMap.getPitch()>0 && __testMap.getPitch()<45')
-    settle_camera(page, 0)
+    click(fit)
+    assert camera(page)['pitch'] == pytest.approx(45)
+    page.clock.run_for(160)
+    assert 0 < camera(page)['pitch'] < 45
+    page.clock.run_for(300)
+    assert camera(page)['pitch'] == pytest.approx(0)
+    assert not page.evaluate('__testMap.isMoving()')
     assert camera(page)['bearing'] == pytest.approx(-90)
     assert camera(page)['zoom'] == pytest.approx(target['zoom'])
     center = page.evaluate('({...__testMap.getCenter()})')
     assert center == pytest.approx({key: target[key] for key in ['lng', 'lat']})
     expect(toggle).to_have_attribute('aria-pressed', 'false')
     page.emulate_media(reduced_motion='reduce')
-    toggle.click()
+    click(toggle)
     assert camera(page)['pitch'] == pytest.approx(52) and not page.evaluate('__testMap.isMoving()')
-    page.get_by_role('button', name='显示全图', exact=True).click()
+    click(fit)
     assert camera(page)['pitch'] == 0 and not page.evaluate('__testMap.isMoving()')
 
 

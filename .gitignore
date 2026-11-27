@@ -79,3 +79,7 @@ dev/CSLModernMapRenderer/custom_fonts/
 
 # Local CI and release output
 /artifacts/
+/outputs/
+/work/
+/.venv-native/
+dev/CSLModernMapRenderer/views.json

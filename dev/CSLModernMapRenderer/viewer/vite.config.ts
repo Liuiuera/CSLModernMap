@@ -13,7 +13,7 @@ export default defineConfig({
     outDir: 'dist',
     emptyOutDir: true,
     sourcemap: false,
-    target: 'es2022',
+    target: process.env.CSLMM_MACOS_BUILD ? 'safari16' : 'es2022',
   },
   plugins: [{
     name: 'check-transit-badge-layout',

@@ -273,7 +273,7 @@ export const ChangeTypeModal = (props: {
         }
     }, [isOpen]);
 
-    const handleChange = () => {
+    const handleChange = async () => {
         const stations = filter?.includes('station')
             ? ([...selected].filter(node => node.startsWith('stn')) as StnId[])
             : isSelect
@@ -288,7 +288,7 @@ export const ChangeTypeModal = (props: {
             ? ([...selected].filter(edge => edge.startsWith('line')) as LineId[])
             : (graph.current.edges() as LineId[]);
         if ((!filter || filter.includes('station')) && isStationTypeSwitch) {
-            if (!confirmStationTypeChange(stations.filter(id => currentStationType === 'any' || graph.current.getNodeAttribute(id, 'type') === currentStationType), newStationType)) return;
+            if (!(await confirmStationTypeChange(stations.filter(id => currentStationType === 'any' || graph.current.getNodeAttribute(id, 'type') === currentStationType), newStationType))) return;
             changeStationsTypeInBatch(graph.current, currentStationType, newStationType, stations, autoChangeStationType);
 
         }

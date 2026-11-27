@@ -24,12 +24,23 @@ def build_transit_artwork(job, document, *, document_epoch, revision,
     from .layers.watermark_layer import WatermarkLayer
     started = time.perf_counter()
 
+    def report(fraction, message, stage):
+        if progress is None:
+            return
+        percent = fraction * 100
+        if getattr(progress, 'supports_stage_progress', False):
+            progress(percent, message, stage=stage)
+        else:
+            progress(percent, message)
+
     if job["kind"] != "transit" or job["opts"].get("abstract") or job["opts"].get("pure"):
         raise ValueError("Artwork requires a geographic transit job")
     if job.get("region") is None or job.get("region_policy"):
         raise ValueError("Resolve the draft region before building artwork")
     if type(job['size']) is not int or not 1 <= job['size'] <= MAX_EDGE:
         raise ValueError('Invalid artwork base long edge')
+    if draft:
+        report(0, 'prepare artwork', 'layout')
     request = copy.deepcopy(job)
     if 'preview_sizing' in request['ui']:
         raise ValueError('preview_sizing is retired; use elementScale')
@@ -59,13 +70,6 @@ def build_transit_artwork(job, document, *, document_epoch, revision,
     sizing_record = prepare_style(overlay.style, document, size, sizing=sizing, session=session,
                                   element_scale=artwork_job.derive_params['elementScale'])
     prepared = time.perf_counter()
-
-    def report(fraction, message, stage):
-        percent = fraction * 100
-        if getattr(progress, 'supports_stage_progress', False):
-            progress(percent, message, stage=stage)
-        else:
-            progress(percent, message)
 
     def base_tiles():
         capture = ArtworkCapture()
@@ -141,9 +145,13 @@ def build_transit_artwork(job, document, *, document_epoch, revision,
         overlay_key = {**common, 'mapping': mapping, 'transports': overlay.style.get('transports'),
                        'poi': overlay.style.get('poi_icons'), 'types': types,
                        'palette': palette(overlay.style.get('canvas.background', 'white'))}
+    if draft:
+        report(0, 'prepare transit base', 'layout')
     (base_objects, base_resources, _), base_reused = component('base', base_key, base_tiles)
     base_finished = time.perf_counter()
     (objects, resources, metrics), overlay_reused = component('symbols', overlay_key, transport_objects)
+    if draft:
+        report(1, 'transit objects ready', 'transport')
     capture = ArtworkCapture()
     capture.objects = [*base_objects, *objects]
     capture.resources = {**base_resources, **resources}

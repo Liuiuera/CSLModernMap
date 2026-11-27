@@ -22,6 +22,7 @@ class Backend:
         self.options = {"pure": True, "types": ["Metro"], "stations": True, "line_ids": [1]}
         self.job = None
         self.last_diagnostics = {}
+        self.rmp_cancel_calls = 0
 
     def transit_options(self, metro):
         assert metro
@@ -34,6 +35,9 @@ class Backend:
     def generate_rmp_in_engine(self, job, callbacks):
         self.job = job
         return True
+
+    def cancel_rmp_generation(self):
+        self.rmp_cancel_calls += 1
 
     def cancel(self):
         pass
@@ -131,9 +135,14 @@ def test_cancelled_and_stale_rmp_requests_resolve_with_error(tmp_path):
     server = EngineServer(io.StringIO(), stream, backend)
     try:
         server.dispatch("prepareRmpProject", {"requestId": "cancelled"})
+        assert server.dispatch("cancel", {"rmpRequestId": "previous"}) == {"cancelled": False}
+        assert backend.rmp_cancel_calls == 0
         assert server.dispatch("cancel", {})["cancelled"]
-        assert events(stream)[-1]["event"] == "rmpProjectError"
-        assert events(stream)[-1]["payload"]["requestId"] == "cancelled"
+        assert backend.rmp_cancel_calls == 1
+        frame = events(stream)[-1]
+        assert frame["event"] == "rmpProjectError"
+        assert frame["payload"]["requestId"] == "cancelled"
+        assert frame["payload"]["cancelled"] is True
         server.dispatch("prepareRmpProject", {"requestId": "stale"})
         server._document_epoch += 1
         server._rmp_done()

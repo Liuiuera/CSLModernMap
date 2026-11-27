@@ -223,5 +223,10 @@
   "controls_actions": "Visualização",
   "preview3d_title": "Prévia 3D",
   "preview3d_help": "Segure o botão do meio: arraste para os lados para girar, para cima/baixo para inclinar.",
-  "preview3d_missing": "Nenhuma altura de edifício foi detectada. Tente exportar o mapa novamente com a versão mais recente do exportador."
+  "preview3d_missing": "Nenhuma altura de edifício foi detectada. Tente exportar o mapa novamente com a versão mais recente do exportador.",
+  "controls_poi_text": "Rótulos de ícones",
+  "controls_road_text": "Nomes de vias",
+  "controls_district_text": "Nomes de distritos",
+  "controls_rotateCounterclockwise": "90° no sentido anti-horário",
+  "controls_rotateClockwise": "90° no sentido horário"
 }

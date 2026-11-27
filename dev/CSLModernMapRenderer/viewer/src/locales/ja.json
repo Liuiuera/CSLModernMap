@@ -223,5 +223,10 @@
   "controls_actions": "表示",
   "preview3d_title": "3D プレビュー",
   "preview3d_help": "マウスの中ボタンを押したまま、左右にドラッグして回転、上下にドラッグして傾斜を調整します。",
-  "preview3d_missing": "建物の高さが見つかりません。最新版のエクスポートModでもう一度地図を出力してください。"
+  "preview3d_missing": "建物の高さが見つかりません。最新版のエクスポートModでもう一度地図を出力してください。",
+  "controls_poi_text": "アイコンの名称",
+  "controls_road_text": "道路名",
+  "controls_district_text": "地区名",
+  "controls_rotateCounterclockwise": "反時計回りに90°",
+  "controls_rotateClockwise": "時計回りに90°"
 }

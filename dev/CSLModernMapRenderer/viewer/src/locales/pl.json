@@ -223,5 +223,10 @@
   "controls_actions": "Widok",
   "preview3d_title": "Podgląd 3D",
   "preview3d_help": "Przytrzymaj środkowy przycisk: przeciągnij w bok, aby obracać, w górę/dół, aby pochylać.",
-  "preview3d_missing": "Nie wykryto wysokości budynków. Spróbuj ponownie wyeksportować mapę najnowszą wersją modułu eksportu."
+  "preview3d_missing": "Nie wykryto wysokości budynków. Spróbuj ponownie wyeksportować mapę najnowszą wersją modułu eksportu.",
+  "controls_poi_text": "Etykiety ikon",
+  "controls_road_text": "Nazwy dróg",
+  "controls_district_text": "Nazwy dzielnic",
+  "controls_rotateCounterclockwise": "90° przeciwnie do wskazówek zegara",
+  "controls_rotateClockwise": "90° zgodnie ze wskazówkami zegara"
 }

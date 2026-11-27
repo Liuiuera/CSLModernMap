@@ -1,5 +1,5 @@
 import { validateNameMetadata, validateNameDisplay } from '../util/station-label';
-import { Button, Flex, Input, LightMode, useColorMode, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay } from '@chakra-ui/react';
+import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, Flex, Input, LightMode, useColorMode, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay } from '@chakra-ui/react';
 import { RmgThemeProvider } from '@railmapgen/rmg-components';
 import { MultiDirectedGraph } from 'graphology';
 import React from 'react';
@@ -31,10 +31,14 @@ import { rotateMap, validateMapRotation } from '../util/map-rotation';
 import { materializeDraft } from './generated-draft';
 import { toolCatalog, validateMode } from './host-tools';
 import { buildInsertion, insertedSelection, InsertRequest, positionInsertion, validateInsertion } from './insert-elements';
+import EditorToolbar from './toolbar';
+import type { StationStyleConfirmation } from '../util/station-style-change';
 import './style.css';
 
-declare global { interface Window { chrome?: { webview: { postMessage(value: unknown): void; addEventListener(type: string, cb: (event: MessageEvent) => void): void } }; cslRmp: { dispatch(message: Command): Promise<void> } } }
-type Command = { protocolVersion: number; type: string; requestId?: string; projectId: string; project?: RMPSave; format?: 'svg' | 'png'; scale?: number; transparent?: boolean; svgVersion?: 1.1 | 2; fit?: boolean; delta?: number; enabled?: boolean; theme?: 'light' | 'dark'; highContrast?: boolean; mode?: string; insertion?: InsertRequest; options?: { gridLines?: boolean; snapLines?: boolean; detailsVisible?: boolean; showWaterControls?: boolean; showNames?: boolean; showDefaultNames?: boolean } };
+declare global { interface Window { webkit?: { messageHandlers?: { cslRmp?: { postMessage(value: unknown): void } } }; chrome?: { webview: { postMessage(value: unknown): void; addEventListener(type: string, cb: (event: MessageEvent) => void): void } }; cslRmp: { dispatch(message: Command): Promise<void> } } }
+type Command = { protocolVersion: number; type: string; requestId?: string; projectId: string; project?: RMPSave; format?: 'svg' | 'png'; scale?: number; transparent?: boolean; svgVersion?: 1.1 | 2; fit?: boolean; delta?: number; enabled?: boolean; language?: string; theme?: 'light' | 'dark'; highContrast?: boolean; mode?: string; insertion?: InsertRequest; direction?: 'undo' | 'redo'; options?: { gridLines?: boolean; snapLines?: boolean; detailsVisible?: boolean; showWaterControls?: boolean; showNames?: boolean; showDefaultNames?: boolean } };
+const textControls = 'input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="textbox"]';
+const popoverControls = '[role="dialog"], [role="alertdialog"], [role="menu"]';
 let projectId = '';
 let revision = 0;
 let loading = false;
@@ -44,7 +48,11 @@ let showWaterControls = false;
 let hostTheme: 'light' | 'dark' = 'light';
 let pendingInsertion: InsertRequest | null = null;
 let placing = false;
-const post = (type: string, payload: object = {}) => window.chrome?.webview.postMessage({ channel: 'rmp', protocolVersion: 1, type, projectId, revision, ...payload });
+const post = (type: string, payload: object = {}) => {
+    const message = { channel: 'rmp', protocolVersion: 1, type, projectId, revision, ...payload };
+    if (window.chrome?.webview) window.chrome.webview.postMessage(message);
+    else window.webkit?.messageHandlers?.cslRmp?.postMessage(message);
+};
 window.graph = new MultiDirectedGraph();
 store.dispatch(setRandomStationsNames('empty'));
 
@@ -53,7 +61,31 @@ function Palette() {
     const dispatch = useRootDispatch();
     const [color, setColor] = React.useState('#0078D4');
     React.useEffect(() => { if (input) setColor(input[2]); }, [input]);
-    return <Modal isOpen={!!input} onClose={() => dispatch(closePaletteAppClip())}><ModalOverlay/><ModalContent><ModalHeader>{i18n.t('Color')}</ModalHeader><ModalBody><Input type="color" value={color} onChange={e => setColor(e.target.value)} /></ModalBody><ModalFooter><Button onClick={() => dispatch(onPaletteAppClipEmit(['other', 'other', color, '#FFFFFF'] as never))}>{i18n.t('Confirm')}</Button></ModalFooter></ModalContent></Modal>;
+    const containerRef = React.useRef(document.getElementById('root'));
+    return <Modal isOpen={!!input} portalProps={{ containerRef }} onClose={() => dispatch(closePaletteAppClip())}><ModalOverlay/><ModalContent><ModalHeader>{i18n.t('Color')}</ModalHeader><ModalBody><Input type="color" value={color} onChange={e => setColor(e.target.value)} /></ModalBody><ModalFooter><Button onClick={() => dispatch(onPaletteAppClipEmit(['other', 'other', color, '#FFFFFF'] as never))}>{i18n.t('Confirm')}</Button></ModalFooter></ModalContent></Modal>;
+}
+function StyleConfirmation() {
+    const [request, setRequest] = React.useState<StationStyleConfirmation | null>(null);
+    const current = React.useRef<StationStyleConfirmation | null>(null);
+    const cancelRef = React.useRef<HTMLButtonElement>(null);
+    const containerRef = React.useRef(document.getElementById('root'));
+    const finish = (accepted: boolean) => { current.current?.resolve(accepted); current.current = null; setRequest(null); };
+    React.useEffect(() => {
+        const open = (event: Event) => { current.current?.resolve(false); current.current = (event as CustomEvent<StationStyleConfirmation>).detail; setRequest(current.current); };
+        const cancel = () => finish(false);
+        const disabled = () => { if (!hostEnabled) finish(false); };
+        document.addEventListener('rmpConfirmStationStyle', open);
+        document.addEventListener('rmpLoaded', cancel);
+        document.addEventListener('rmpHostState', disabled);
+        return () => { document.removeEventListener('rmpConfirmStationStyle', open); document.removeEventListener('rmpLoaded', cancel); document.removeEventListener('rmpHostState', disabled); current.current?.resolve(false); };
+    }, []);
+    return <AlertDialog isOpen={!!request} leastDestructiveRef={cancelRef} onClose={() => finish(false)} portalProps={{ containerRef }}>
+        <AlertDialogOverlay/><AlertDialogContent><AlertDialogHeader>{i18n.t('cmm.stationStyle')}</AlertDialogHeader>
+            <AlertDialogBody>{request?.message}</AlertDialogBody><AlertDialogFooter>
+                <Button ref={cancelRef} onClick={() => finish(false)}>{i18n.t('Cancel')}</Button>
+                <Button ml={2} onClick={() => finish(true)}>{i18n.t('Confirm')}</Button>
+            </AlertDialogFooter></AlertDialogContent>
+    </AlertDialog>;
 }
 function HostTheme() {
     const { setColorMode } = useColorMode();
@@ -97,10 +129,14 @@ function App() {
         return () => observer.disconnect();
     }, []);
     React.useEffect(() => { const update = () => { setEnabled(hostEnabled); setWaterControls(showWaterControls); }; document.addEventListener('rmpHostState', update); return () => document.removeEventListener('rmpHostState', update); }, []);
+    const [, updateState] = React.useReducer(value => value + 1, 0);
+    React.useEffect(() => { document.addEventListener('rmpEditorState', updateState); return () => document.removeEventListener('rmpEditorState', updateState); }, []);
     React.useEffect(() => { const update = () => setKey(renderRevision); document.addEventListener('rmpLoaded', update); return () => document.removeEventListener('rmpLoaded', update); }, []);
     const canvasSize = embeddedWorkspaceSize(size.width, size.height, detailsVisible);
     return <RmgThemeProvider><HostTheme/>
         <Flex className="cmm-editor" height="100vh" direction="column">
+            {window.webkit?.messageHandlers?.cslRmp && <EditorToolbar enabled={enabled && !loading && !placing}
+                state={editorState()} execute={executeEditorCommand} onPickFacility={() => post('commandRequested', { command: 'pickFacility' })}/>}
             <Flex ref={workspace} minHeight={0} flex={1} overflow="hidden" position="relative"
                 inert={!enabled} className={waterControls ? undefined : 'cmm-hide-water-controls'}>
                 <CanvasSizeContext.Provider value={canvasSize}>
@@ -110,7 +146,7 @@ function App() {
                 </CanvasSizeContext.Provider>
             </Flex>
         </Flex>
-        <Palette/><ToastContainer/>
+        <Palette/><StyleConfirmation/><ToastContainer/>
     </RmgThemeProvider>;
 }
 createRoot(document.getElementById('root')!).render(<Provider store={store}><I18nextProvider i18n={i18n}><App/></I18nextProvider></Provider>);
@@ -121,14 +157,14 @@ const editorState = () => {
         showNames: param.present.attributes?.cmmNameDisplay?.showNames ?? true,
         showDefaultNames: param.present.attributes?.cmmNameDisplay?.showDefaultNames ?? true,
         gridLines: app.preference.gridLines, snapLines: app.preference.snapLines, detailsVisible, showWaterControls,
-        insertion: pendingInsertion, placing };
+        insertion: pendingInsertion, placing, textFocused: !!document.activeElement?.closest(textControls) };
 };
 let lastState = '';
 const publishState = (requestId?: string) => {
     document.documentElement.classList.toggle('cmm-inserting', pendingInsertion !== null);
     const state = editorState();
     const serialized = JSON.stringify(state);
-    if (requestId || serialized !== lastState) { lastState = serialized; post('editorState', { requestId, state }); }
+    if (requestId || serialized !== lastState) { lastState = serialized; post('editorState', { requestId, state }); document.dispatchEvent(new Event('rmpEditorState')); }
 };
 let lastGraph = store.getState().param.present;
 store.subscribe(() => {
@@ -136,6 +172,11 @@ store.subscribe(() => {
     if (graph !== lastGraph) { lastGraph = graph; if (!loading) { revision++; post('changed'); } }
     if (!loading) publishState();
 });
+const updateKeyboardFocus = () => queueMicrotask(() => {
+    if (hostEnabled && !loading) publishState();
+});
+document.addEventListener('focusin', updateKeyboardFocus);
+document.addEventListener('focusout', updateKeyboardFocus);
 const fit = () => {
     if (!window.graph.order) return;
     const { xMin, yMin, xMax, yMax } = calculateCanvasSize(window.graph);
@@ -171,13 +212,14 @@ const validateCurrent = (save: RMPSave) => {
     }
 };
 async function dispatch(message: Command) {
-    if (message.type !== 'loadProject' && message.projectId !== projectId) return;
+    if (!['loadProject', 'hostState', 'setTheme', 'setLanguage'].includes(message.type) && message.projectId !== projectId) return;
     try {
         if (message.protocolVersion !== 1) throw new Error('Unsupported RMP bridge protocol');
         if (message.type === 'hostState') {
             hostEnabled = message.enabled === true;
+            if (!hostEnabled) store.dispatch(closePaletteAppClip());
             document.getElementById('root')!.inert = !hostEnabled;
-            document.dispatchEvent(new Event('rmpHostState'));
+            flushSync(() => document.dispatchEvent(new Event('rmpHostState')));
         } else if (message.type === 'setTheme') {
             if (!['light', 'dark'].includes(message.theme!) || typeof message.highContrast !== 'boolean') throw new Error('Invalid editor theme');
             hostTheme = message.theme!;
@@ -185,6 +227,12 @@ async function dispatch(message: Command) {
             document.documentElement.dataset.cmmHighContrast = String(message.highContrast);
             document.dispatchEvent(new Event('rmpHostState'));
             post('themeApplied', { requestId: message.requestId });
+        } else if (message.type === 'setLanguage') {
+            await i18n.changeLanguage(message.language ?? 'en');
+            post('tools', { requestId: message.requestId, tools: toolCatalog() });
+        } else if (message.type === 'focusEditor') {
+            if (hostEnabled && !loading && !placing) document.getElementById('canvas')?.focus({ preventScroll: true });
+            post('focused', { requestId: message.requestId });
         } else if (message.type === 'getTools') {
             post('tools', { requestId: message.requestId, tools: toolCatalog() });
         } else if (message.type === 'setMode') {
@@ -225,8 +273,8 @@ async function dispatch(message: Command) {
             validate(save);
             validateCurrent(save);
             const checked = MultiDirectedGraph.from(save.graph);
+            const previous = { projectId, revision, pendingInsertion, param: store.getState().param, runtime: store.getState().runtime, graph: window.graph.export() };
             pendingInsertion = null;
-            const previous = { projectId, revision, param: store.getState().param, runtime: store.getState().runtime, graph: window.graph.export() };
             const root = document.getElementById('root')!;
             loading = true;
             root.inert = true;
@@ -237,18 +285,28 @@ async function dispatch(message: Command) {
                 store.dispatch(setFullState({ present: save.graph, past: [], future: [], svgViewBoxZoom: save.svgViewBoxZoom, svgViewBoxMin: save.svgViewBoxMin }));
                 store.dispatch(refreshNodesThunk()); store.dispatch(refreshEdgesThunk());
                 renderRevision++; document.dispatchEvent(new Event('rmpLoaded'));
-                await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
-                await Promise.all([...document.querySelectorAll<SVGImageElement>('#canvas image')].map(async element => {
-                    const image = new Image(); image.src = element.href.baseVal; await image.decode();
-                }));
-                await document.fonts.ready;
-                await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+                let timer: number | undefined;
+                try {
+                    await Promise.race([
+                        (async () => {
+                            await frame(); await frame();
+                            await Promise.all([...document.querySelectorAll<SVGImageElement>('#canvas image')].map(async element => {
+                                const image = new Image(); image.src = element.href.baseVal; await image.decode();
+                            }));
+                            await document.fonts.ready;
+                            await frame();
+                        })(),
+                        new Promise<never>((_, reject) => {
+                            timer = window.setTimeout(() => reject(new Error('Timed out rendering the RMP project')), 45000);
+                        }),
+                    ]);
+                } finally { window.clearTimeout(timer); }
                 if (message.fit) fit();
-                post('loaded', { requestId: message.requestId });
+                post('loaded', { requestId: message.requestId, state: editorState() });
                 publishState();
             } catch (error) {
                 window.graph.clear(); window.graph.import(previous.graph);
-                projectId = previous.projectId; revision = previous.revision;
+                projectId = previous.projectId; revision = previous.revision; pendingInsertion = previous.pendingInsertion;
                 store.dispatch(setFullState(previous.param));
                 store.dispatch(refreshNodesThunk()); store.dispatch(refreshEdgesThunk());
                 store.dispatch(setSelected(previous.runtime.selected));
@@ -257,7 +315,7 @@ async function dispatch(message: Command) {
                 renderRevision++; document.dispatchEvent(new Event('rmpLoaded'));
                 publishState();
                 throw error;
-            } finally { loading = false; root.inert = !hostEnabled; }
+            } finally { loading = false; root.inert = !hostEnabled; flushSync(() => document.dispatchEvent(new Event('rmpEditorState'))); }
         } else if (message.type === 'rotateMap') {
             if (rotateMap(window.graph, message.delta!)) {
                 // Finish the DOM update before acknowledging; hidden WebViews may suspend animation frames.
@@ -271,6 +329,18 @@ async function dispatch(message: Command) {
             fit(); post('fitted', { requestId: message.requestId });
         } else if (message.type === 'saveProject') {
             post('project', { requestId: message.requestId, project: JSON.parse(stringifyParam({ ...store.getState().param, present: window.graph.export() })) });
+        } else if (message.type === 'focusedHistory') {
+            if (message.direction !== 'undo' && message.direction !== 'redo') throw new Error('Invalid history direction');
+            // Send the shortcut through the editor first so field-specific handlers
+            // (such as undoing a station-name translation) can handle it.
+            if (hostEnabled && !loading && !placing) {
+                const target = document.activeElement ?? document.body;
+                const unhandled = target.dispatchEvent(new KeyboardEvent('keydown', {
+                    key: 'z', metaKey: true, shiftKey: message.direction === 'redo', bubbles: true, cancelable: true,
+                }));
+                if (unhandled && target.closest(textControls)) document.execCommand(message.direction);
+            }
+            post('historyChanged', { requestId: message.requestId });
         } else if (message.type === 'undo' || message.type === 'redo') {
             store.dispatch(message.type === 'undo' ? undoAction() : redoAction());
             store.dispatch(refreshNodesThunk()); store.dispatch(refreshEdgesThunk());
@@ -301,6 +371,10 @@ async function dispatch(message: Command) {
             }
         } else throw new Error(`Unknown RMP command: ${message.type}`);
     } catch (error) { loading = false; post('error', { projectId: message.projectId, requestId: message.requestId, message: String(error) }); }
+}
+function executeEditorCommand(command: { type: string } & Partial<Command>) {
+    if (!hostEnabled || loading || placing) return;
+    void window.cslRmp.dispatch({ protocolVersion: 1, projectId, ...command });
 }
 let commands = Promise.resolve();
 window.cslRmp = { dispatch(message) { commands = commands.then(() => dispatch(message)); return commands; } };
@@ -355,18 +429,24 @@ document.addEventListener('pointerdown', event => {
     });
 }, true);
 window.addEventListener('keydown', event => {
-    if (hostEnabled && pendingInsertion && event.key === 'Escape') {
-        event.preventDefault(); event.stopImmediatePropagation(); pendingInsertion = null; publishState(); return;
-    }
-    if (hostEnabled && event.target instanceof Element && event.target.closest('#canvas')) {
+    const target = event.target instanceof Element ? event.target : null;
+    const escape = event.key === 'Escape' && !event.ctrlKey && !event.metaKey && !event.altKey && !event.shiftKey;
+    if (hostEnabled && !loading && !placing && target && !target.closest(popoverControls)) {
+        if (escape && (pendingInsertion || /^(station-|line-|misc-node-)/.test(store.getState().runtime.mode))) {
+            event.preventDefault(); event.stopImmediatePropagation();
+            pendingInsertion = null;
+            store.dispatch(setMode('free'));
+            publishState();
+            return;
+        }
         const key = event.key.toLowerCase();
         const history = (event.ctrlKey || event.metaKey) && !event.altKey && (key === 'z' || key === 'y');
-        if (event.key === 'Escape' || history) {
+        if (!target.closest(textControls) && (escape || history)) {
             event.preventDefault(); event.stopImmediatePropagation();
             if (history) {
                 store.dispatch(key === 'y' || event.shiftKey ? redoAction() : undoAction());
                 store.dispatch(refreshNodesThunk()); store.dispatch(refreshEdgesThunk());
-            } else { store.dispatch(clearSelected()); store.dispatch(setMode('free')); }
+            } else { store.dispatch(clearSelected()); store.dispatch(setMode('free')); document.getElementById('canvas')?.focus({ preventScroll: true }); }
             return;
         }
     }
@@ -374,6 +454,6 @@ window.addEventListener('keydown', event => {
     const key = event.key.toLowerCase();
     const command = key === 's' ? (event.shiftKey ? 'saveAs' : 'save') :
         key === 'o' && !event.shiftKey ? 'open' : key === 'e' && event.shiftKey ? 'export' : undefined;
-    if (command) { event.preventDefault(); event.stopImmediatePropagation(); if (hostEnabled) post('commandRequested', { command }); }
+    if (command) { event.preventDefault(); event.stopImmediatePropagation(); if (hostEnabled && !loading && !placing) post('commandRequested', { command }); }
 }, true);
 post('ready');

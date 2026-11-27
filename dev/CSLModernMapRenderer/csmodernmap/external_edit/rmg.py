@@ -176,6 +176,7 @@ def export_rmg(snapshot: ExportSnapshot, request: ExternalExportRequest) -> Exte
         path.write_text(json.dumps(param, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         files.append(path)
         records.append({"line_id": line.id, "name": line.name, "file": filename})
+    skipped_line_count = len(warnings)
     if not records:
         warnings.append("没有可导出的轨道线路；查看 manifest.json 中的逐线原因")
     manifest = {
@@ -190,4 +191,5 @@ def export_rmg(snapshot: ExportSnapshot, request: ExternalExportRequest) -> Exte
     manifest_path = directory / "manifest.json"
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     files.append(manifest_path)
-    return ExternalExportResult(directory, tuple(files), tuple(warnings))
+    return ExternalExportResult(directory, tuple(files), tuple(warnings),
+                                skipped_line_count=skipped_line_count)

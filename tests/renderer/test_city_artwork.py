@@ -144,7 +144,9 @@ def test_city_export_pins_accepted_revision_during_later_edit(city_job, tmp_path
         job['region'] = (-8000, -4000, 8000, 4000)
         engine.submit_artwork(job)
         release.set()
-        pump(engine, lambda: not engine._artwork_active)
+        # This case builds two real layouts and renders the pinned PNG;
+        # slower machines can legitimately take longer than the mocked cases.
+        pump(engine, lambda: not engine._artwork_active, timeout=60)
         with Image.open(output.result()) as image:
             assert image.size == (512, 512)
         latest = engine.artwork_state.freeze()

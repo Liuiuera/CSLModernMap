@@ -74,7 +74,7 @@ type SceneManifest = { performanceDiagnostics?: boolean; schemaVersion: number; 
     builtArea?: SurfaceDistanceSpec & { url: string; color?: string; bufferMeters?: number; edgeMeters?: number };
   };
   layers: Record<string, boolean>; renderStack?: string[]; theme: FullTheme };
-type PreviewCommand = { type: string; sceneId?: string; revision?: number; manifestUrl?: string;
+type PreviewCommand = { type: string; sceneId?: string; revision?: number; manifestUrl?: string; preserveArtwork?: boolean;
   artwork?: ArtworkDelivery; documentEpoch?: number; artworkRevision?: number;
   observation?: {scale?: number; x?: number; y?: number};
   tool?: ArtworkTool; action?: ArtworkObserveAction;
@@ -84,7 +84,8 @@ type PreviewCommand = { type: string; sceneId?: string; revision?: number; manif
   options?: Record<string, any>; performanceRequestId?: string; appearance?: 'light' | 'dark';
   text?: string; language?: string; rotation?: number; worldBounds?: [number, number, number, number];
   featureId?: string; selection?: any; locate?: boolean; data?: GeoJSON.FeatureCollection;
-  layers?: Record<string, boolean>; enabled?: boolean; guideAvailable?: boolean; pendingLayers?: string[];
+  layers?: Record<string, boolean>; symbolLayers?: Record<string, boolean>;
+  enabled?: boolean; rotationEnabled?: boolean; guideAvailable?: boolean; pendingLayers?: string[];
   immersive?: boolean };
 // 单文件导出：整份场景内联数据的结构（与 web_export_v2.py 的 payload 对应）
 type EmbeddedPayload = {
@@ -104,7 +105,8 @@ declare global { interface Window { cslPreview: { dispatch: (command: PreviewCom
     addEventListener: (name: string, listener: (event: MessageEvent) => void) => void } };
   webkit?: { messageHandlers?: { cslPreview?: { postMessage: (message: unknown) => void } } };
   __CSL_SCENE__?: EmbeddedPayload; __CSL_SCENE_WORKER_SRC__?: string;
-  __CSL_PREVIEW_QUALITY__?: PreviewQuality } }
+  __CSL_PREVIEW_QUALITY__?: PreviewQuality;
+  __CSL_NATIVE_CAMERA__?: () => {enabled: boolean; pitch: number; bearing: number; moving: boolean; extrusion: boolean} } }
 
 const MPP0 = 156543.03392804097;
 const LOCAL_METERS_PER_DEGREE = 111195;
@@ -293,6 +295,7 @@ const navigation: NavigationControl = new NavigationControl(map,
 navigation.onNavigationOpened = () => postEvent('navigationOpened');
 preview3d.onToggle = enabled => navigation.simulation.set3DEnabled(enabled);
 let quickLayersEnabled = EMBEDDED;
+let quickSymbolLayers: Record<string, boolean> | undefined;
 let immersive = false;
 const previewControls = new PreviewControls(navigation, feature => {
   navigation.simulation.stop(); dismissHint(); locateGeometry(feature.geometry);
@@ -306,7 +309,9 @@ const previewControls = new PreviewControls(navigation, feature => {
 }, type => {
   if (type === 'mapInteractionGuideOpened') { navigation.simulation.stop(); dismissHint(); }
   postEvent(type);
-}, () => map.getCanvas().focus(), EMBEDDED);
+}, () => map.getCanvas().focus(), EMBEDDED,
+  !EMBEDDED && new URLSearchParams(location.search).get('desktopUi') === '1'
+    ? delta => postEvent('requestMapRotation', {delta}) : undefined);
 map.addControl(previewControls.viewControl, 'bottom-right');
 function updateZoomControls(): void {
   previewControls.setZoomAvailability(map.getZoom() < map.getMaxZoom(), map.getZoom() > map.getMinZoom());
@@ -328,7 +333,12 @@ function updateQuickLayers(settled = false, pending?: string[]): void {
   if (currentManifest.terrainCorners?.length) available.add('terrain');
   if (currentManifest.satelliteAvailable || sources.satellite) available.add('satellite');
   if (currentManifest.surfaceFields?.builtArea) available.add('built_area');
-  previewControls.setLayers(currentManifest.layers, available, quickLayersEnabled, settled, pending);
+  if (quickSymbolLayers) {
+    available.delete('label');
+    for (const key of ['poi_text', 'road_text', 'district_text']) available.add(key);
+  }
+  const layers = {...currentManifest.layers, ...quickSymbolLayers};
+  previewControls.setLayers(layers, available, quickLayersEnabled, settled, pending);
 }
 
 const token = (name: string): Record<string, any> => currentTheme?.[name] ?? {};
@@ -1291,6 +1301,7 @@ async function setLayerVisibility(layer: string, visible: boolean): Promise<void
   if (layer === 'poi' || layer === 'metro') applyContextStyling();
   if (layer === 'label') updateBaseTextLayers();
   if (layer === 'building') preview3d.refresh();
+  artworkView.keepOverlayLayersHidden();
   labelLayoutKey = '';
   scheduleLabels();
   updateQuickLayers();
@@ -2262,8 +2273,10 @@ function embeddedProvider(): ResourceProvider {
 }
 // 读取场景清单及资源，并把完整场景发布到预览地图。
 async function loadScene(provider: ResourceProvider, requestedRevision: number,
-  trace = new PreviewPerformance()): Promise<void> {
-  artworkSceneReady = false; artworkView.leave();
+  trace = new PreviewPerformance(), preserveArtwork = false): Promise<void> {
+  artworkSceneReady = false;
+  if (preserveArtwork) artworkView.prepareSceneChange();
+  else artworkView.leave();
   const loadStarted = trace.origin;
   const generation = ++loadGeneration;
   const manifestUrl = provider.base;
@@ -2447,6 +2460,7 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number,
     });
     const stylingStarted = performance.now();
     if (changed || needsFromData('buildings', fetched)) preview3d.setBuildings(sourceData.buildings?.features ?? [], manifest.sceneId);
+    if (preserveArtwork) artworkView.restorePaint();
     applyRenderStack();
     applyTheme(manifest.theme);
     for (const [layer, visible] of Object.entries(manifest.layers)) {
@@ -2455,11 +2469,12 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number,
     await syncTraffic();
     if (generation !== loadGeneration) return;
     applyContextStyling();
+    if (preserveArtwork && artworkView.active) artworkView.refreshBase();
     navigation.setScene(manifest.navigation?.schemaVersion === 1
       ? () => provider.json(new URL(manifest.navigation!.url, manifestUrl)) as Promise<NavigationPackage> : null,
       Boolean(manifest.navigationRouteOmitted));
     if (changed && manifest.navigationRoute && !EMBEDDED) void navigation.restoreRoute(manifest.navigationRoute);
-    if (changed) { fitBounds(); labelLayoutKey = ''; }
+    if (changed && !artworkView.active) { fitBounds(); labelLayoutKey = ''; }
     // 同场景增量更新保留用户当前的相机朝向。
     trace.record('apply.styling_camera', stylingStarted);
     const applied = performance.now();
@@ -2508,7 +2523,12 @@ async function dispatch(command: PreviewCommand): Promise<void> {
   const commandStarted = performance.now(); let outcome = 'applied';
   const loadTrace = command.type === 'loadScene' ? new PreviewPerformance() : undefined;
   try {
-  if (['beginArtwork', 'loadArtwork', 'setArtworkView', 'setArtworkTool', 'artworkObserve', 'locateArtwork', 'cancelArtworkLocate', 'leaveArtwork'].includes(command.type)) {
+  if (command.type === 'leaveArtwork') {
+    if (artworkView.matches(command.documentEpoch, command.artworkRevision)
+        || artworkView.matchesPresented(command.documentEpoch, command.artworkRevision)) artworkView.leave();
+    return;
+  }
+  if (['beginArtwork', 'loadArtwork', 'setArtworkView', 'setArtworkTool', 'artworkObserve', 'locateArtwork', 'cancelArtworkLocate'].includes(command.type)) {
     if (!artworkSceneReady || currentSceneId &&
         (command.sceneId !== currentSceneId || command.revision !== currentRevision)) return;
     if (command.type === 'beginArtwork') {
@@ -2558,7 +2578,7 @@ async function dispatch(command: PreviewCommand): Promise<void> {
         [-z/LOCAL_METERS_PER_DEGREE, x/LOCAL_METERS_PER_DEGREE]));
     } else if (command.type === 'cancelArtworkLocate' && artworkView.matches(command.documentEpoch, command.artworkRevision)) {
       artworkView.cancelPendingLocation();
-    } else if (command.type === 'leaveArtwork' && artworkView.matches(command.documentEpoch, command.artworkRevision)) artworkView.leave();
+    }
     return;
   }
   if (typeof command.revision === 'number' && command.revision < currentRevision) {
@@ -2569,9 +2589,9 @@ async function dispatch(command: PreviewCommand): Promise<void> {
   }
   if (command.type !== 'loadScene' && currentSceneId && command.sceneId &&
       (command.sceneId !== currentSceneId || command.revision !== currentRevision)) { outcome = 'stale'; return; }
-  if (command.type === 'loadScene' || artworkView.active &&
+  if (command.type !== 'loadScene' && artworkView.active &&
       !['setUiAppearance', 'setLanguage', 'setPreviewQuality', 'showHint', 'setPreviewUiState',
-        'applyTheme', 'applyRoadTheme', 'setLayerVisibility', 'setRoadVisibility', 'setOutputRotation',
+        'applyTheme', 'applyRoadTheme', 'setLayerVisibility', 'setRoadVisibility', 'setOutputRotation', 'setContextMode',
         'beginSelection', 'clearSelection', 'setSelection', 'clearObjectSelection', 'restoreObjectSelection',
         'locateObject', 'selectCatalogBuilding', 'setBuildingHighlight', 'showMapInteractionGuide'].includes(command.type)) artworkView.leave();
   if (['setZoomPreset', 'fitBounds', 'fitGeoBounds',
@@ -2595,7 +2615,8 @@ async function dispatch(command: PreviewCommand): Promise<void> {
       }
       break;
     }
-    case 'loadScene': if (command.manifestUrl && typeof command.revision === 'number') await loadScene(httpProvider(command.manifestUrl), command.revision, loadTrace); break;
+    case 'loadScene': if (command.manifestUrl && typeof command.revision === 'number')
+      await loadScene(httpProvider(command.manifestUrl), command.revision, loadTrace, command.preserveArtwork); break;
     case 'applyTheme': if (command.theme) {
       if (artworkView.active) {
         if (applyArtworkTheme(command.theme as FullTheme)) artworkView.refreshBase();
@@ -2608,10 +2629,11 @@ async function dispatch(command: PreviewCommand): Promise<void> {
       applyTheme({ ...(currentTheme ?? {}), road: command.theme as RoadTheme } as FullTheme);
       artworkView.refreshBase();
     } break;
-    case 'setLayerVisibility': if (command.layer) {
-      await setLayerVisibility(command.layer, Boolean(command.visible)); artworkView.keepOverlayLayersHidden();
-    } break;
-    case 'setContextMode': setContextMode(command.mode ?? 'map', command.options ?? {}); break;
+    case 'setLayerVisibility': if (command.layer) await setLayerVisibility(command.layer, Boolean(command.visible)); break;
+    case 'setContextMode':
+      setContextMode(command.mode ?? 'map', command.options ?? {});
+      artworkView.keepOverlayLayersHidden();
+      break;
     case 'setZoomPreset': setZoomPreset(command.preset ?? 'city'); break;
     case 'setOutputRotation': applyOutputRotation(command.rotation ?? 0); break;
     case 'setRoadVisibility': await setLayerVisibility('road', Boolean(command.visible)); break;
@@ -2639,7 +2661,10 @@ async function dispatch(command: PreviewCommand): Promise<void> {
         previewControls.setImmersive(immersive); navigation.setImmersive(immersive);
       }
       if (currentManifest && command.layers) Object.assign(currentManifest.layers, command.layers);
+      quickSymbolLayers = command.symbolLayers;
       if (typeof command.enabled === 'boolean') quickLayersEnabled = command.enabled;
+      const rotationEnabled = command.rotationEnabled ?? command.enabled;
+      if (typeof rotationEnabled === 'boolean') previewControls.setRotationAvailability(rotationEnabled);
       updateQuickLayers(true, command.pendingLayers);
       previewControls.setGuideAvailable(command.guideAvailable !== false); break;
     case 'showMapInteractionGuide': previewControls.showGuide(true); break;
@@ -2680,6 +2705,9 @@ window.cslPreview = { dispatch, artworkState: () => artworkView.snapshot(), expo
     outline: String(map.getPaintProperty('tv-station', 'circle-stroke-color')),
     badge_size: baseBadgeSize(transitLabelStyle())};
 } };
+if (import.meta.env.VITE_CSLMM_NATIVE_CHECKS === '1') {
+  window.__CSL_NATIVE_CAMERA__ = () => ({...preview3d.snapshot(), moving: map.isMoving(), extrusion: !!map.getLayer(BUILDINGS_3D)});
+}
 window.chrome?.webview?.addEventListener('message', event => { const command = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
   void dispatch(command as PreviewCommand); });
 function clearWorldSelection(report = true): void {

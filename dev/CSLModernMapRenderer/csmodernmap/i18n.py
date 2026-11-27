@@ -7,6 +7,7 @@ import gettext
 import json
 import os
 import locale
+import sys
 from ._paths import resource_dir
 
 DEFAULT_LANG = "zh-CN"
@@ -87,6 +88,25 @@ def has_translation(key: str, lang: str | None = None) -> bool:
 
 def _system_locale_lang() -> str | None:
     """将操作系统界面语言映射到受支持的语言目录。"""
+    if sys.platform == "darwin":
+        import plistlib
+        import subprocess
+
+        # Finder 启动的 Python 进程未必继承系统界面语言；读取 macOS
+        # 首选语言列表，按用户设定的顺序选择首个受支持语言。
+        try:
+            raw = subprocess.check_output(
+                ["/usr/bin/defaults", "export", "-g", "-"],
+                stderr=subprocess.DEVNULL, timeout=3,
+            )
+            preferences = plistlib.loads(raw)
+            languages = preferences.get("AppleLanguages", []) if isinstance(preferences, dict) else []
+            if isinstance(languages, list):
+                for language in languages:
+                    if isinstance(language, str) and (normalized := normalize_lang(language)):
+                        return normalized
+        except (OSError, subprocess.SubprocessError, plistlib.InvalidFileException, ValueError):
+            pass
     try:
         import ctypes
 

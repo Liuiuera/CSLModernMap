@@ -223,5 +223,10 @@
   "controls_actions": "보기",
   "preview3d_title": "3D 미리 보기",
   "preview3d_help": "가운데 버튼을 누른 채 좌우로 드래그하면 회전하고 위아래로 드래그하면 기울입니다.",
-  "preview3d_missing": "건물 높이 정보가 없습니다. 최신 내보내기 모드로 지도를 다시 내보내 보세요."
+  "preview3d_missing": "건물 높이 정보가 없습니다. 최신 내보내기 모드로 지도를 다시 내보내 보세요.",
+  "controls_poi_text": "아이콘 이름",
+  "controls_road_text": "도로 이름",
+  "controls_district_text": "구역 이름",
+  "controls_rotateCounterclockwise": "반시계 방향 90°",
+  "controls_rotateClockwise": "시계 방향 90°"
 }
