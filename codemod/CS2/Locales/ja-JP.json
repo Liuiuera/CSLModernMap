@@ -40,6 +40,8 @@
   "OptionDesc.ExportCurrentCity": "現在の都市を .cmm ファイルに保存します。ビューアーは起動しません。",
   "OptionLabel.OpenRenderer": "ビューアーを開く",
   "OptionDesc.OpenRenderer": "インストール済みのビューアーを開きます。",
+  "OptionLabel.ExportDirectory": "エクスポート先フォルダー",
+  "OptionDesc.ExportDirectory": "新しくエクスポートするマップの保存先を選びます。",
   "OptionLabel.OpenExportFolder": "エクスポート先フォルダーを開く",
   "OptionDesc.OpenExportFolder": "システムのファイルマネージャーでエクスポートフォルダーを開きます。開けない場合はパスを自動でコピーします。",
   "OptionLabel.CopyExportFolderPath": "エクスポート先フォルダーのパスをコピー",

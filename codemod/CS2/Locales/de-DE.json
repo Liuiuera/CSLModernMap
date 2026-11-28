@@ -40,6 +40,8 @@
   "OptionDesc.ExportCurrentCity": "Speichert die aktuelle Stadt als .cmm-Datei, ohne den Viewer zu öffnen.",
   "OptionLabel.OpenRenderer": "Betrachter öffnen",
   "OptionDesc.OpenRenderer": "Den installierten Betrachter öffnen.",
+  "OptionLabel.ExportDirectory": "Exportordner",
+  "OptionDesc.ExportDirectory": "Wähle den Ordner für neu exportierte Karten.",
   "OptionLabel.OpenExportFolder": "Exportordner öffnen",
   "OptionDesc.OpenExportFolder": "Öffnet den Exportordner im Dateimanager. Falls dies nicht möglich ist, wird der Pfad kopiert.",
   "OptionLabel.CopyExportFolderPath": "Exportordnerpfad kopieren",

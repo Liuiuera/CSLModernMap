@@ -293,16 +293,17 @@ namespace CSLModernMap.Systems
                     return;
                 }
 
+                var directory = ExportPaths.EnsureExportDirectory();
                 if (game.gameMode == GameMode.Game && m_ExportWithSatellite)
                 {
-                    m_SatelliteExport = RunSatelliteExport(game);
+                    m_SatelliteExport = RunSatelliteExport(game, directory);
                     game.StartCoroutine(m_SatelliteExport);
                     return;
                 }
 
                 if (m_ExportWithSatellite)
                     MarkExportStarted("CSLModernMap.UI.ExportProgress.CapturingCity");
-                var result = CaptureCmmExport(out var text);
+                var result = CaptureCmmExport(out var text, directory);
                 BeginExportWrite(result, text);
             }
             catch (Exception e)

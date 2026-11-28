@@ -40,6 +40,8 @@
   "OptionDesc.ExportCurrentCity": "Enregistre la ville actuelle dans un fichier .cmm sans ouvrir la visionneuse.",
   "OptionLabel.OpenRenderer": "Ouvrir la visionneuse",
   "OptionDesc.OpenRenderer": "Ouvre la visionneuse installée.",
+  "OptionLabel.ExportDirectory": "Dossier d’exportation",
+  "OptionDesc.ExportDirectory": "Choisissez où enregistrer les nouvelles cartes exportées.",
   "OptionLabel.OpenExportFolder": "Ouvrir le dossier d’exportation",
   "OptionDesc.OpenExportFolder": "Ouvrir le dossier d’exportation dans le gestionnaire de fichiers système. Si l’ouverture échoue, le chemin est copié automatiquement.",
   "OptionLabel.CopyExportFolderPath": "Copier le chemin du dossier d’exportation",

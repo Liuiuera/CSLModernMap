@@ -40,6 +40,8 @@
   "OptionDesc.ExportCurrentCity": "将当前城市保存为 .cmm 文件。导出后不启动查看器。",
   "OptionLabel.OpenRenderer": "打开渲染器",
   "OptionDesc.OpenRenderer": "打开已安装的渲染器。",
+  "OptionLabel.ExportDirectory": "导出目录",
+  "OptionDesc.ExportDirectory": "选择保存新导出地图的文件夹。",
   "OptionLabel.OpenExportFolder": "打开导出目录",
   "OptionDesc.OpenExportFolder": "用系统文件管理器打开导出目录。若打不开，会自动复制目录路径。",
   "OptionLabel.CopyExportFolderPath": "复制导出目录",

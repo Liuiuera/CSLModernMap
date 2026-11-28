@@ -40,6 +40,8 @@
   "OptionDesc.ExportCurrentCity": "Сохраняет текущий город в файл .cmm, не открывая программу просмотра.",
   "OptionLabel.OpenRenderer": "Открыть просмотрщик",
   "OptionDesc.OpenRenderer": "Открывает установленный просмотрщик.",
+  "OptionLabel.ExportDirectory": "Папка экспорта",
+  "OptionDesc.ExportDirectory": "Выберите папку для сохранения новых экспортируемых карт.",
   "OptionLabel.OpenExportFolder": "Открыть папку экспорта",
   "OptionDesc.OpenExportFolder": "Открывает папку экспорта в системном файловом менеджере. Если открыть её не удастся, путь будет скопирован.",
   "OptionLabel.CopyExportFolderPath": "Скопировать путь к папке экспорта",

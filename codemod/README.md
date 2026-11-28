@@ -14,6 +14,8 @@ The exporter source is in [CS1](CS1/) and [CS2](CS2/). Official mod releases inc
 - Preserves native and custom names, area ownership, and facility relationships.
 - Shows export and installation progress, with settings available in 12 languages.
 
+Cities: Skylines II saves new maps to `CSLModernMap\CS2` in your Documents folder. To choose another folder, use **Export folder** below the export buttons on the mod’s **Map Export** tab. Maps exported before upgrading stay in the original `ModsData\CSLModernMap` folder.
+
 ## Build
 
 CS1 requires Windows, .NET SDK 10 and local game/mod references;

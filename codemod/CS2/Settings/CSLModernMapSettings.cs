@@ -69,6 +69,11 @@ namespace CSLModernMap.Settings
             set => Systems.MapExportUISystem.OpenRenderer();
         }
 
+        [SettingsUISection(MainTab, ExportGroup)]
+        [SettingsUIDirectoryPicker]
+        [SettingsUIDisableByCondition(typeof(CSLModernMapSettings), nameof(IsExportBusy))]
+        public string ExportDirectory { get; set; } = Systems.ExportPaths.DefaultDirectory;
+
 #if CS2_SATELLITE_TRIALS
         [SettingsUISection(MainTab, ExportGroup)]
         [SettingsUIButton]
@@ -127,6 +132,7 @@ namespace CSLModernMap.Settings
         {
             IncludeOutsideTerrain = false;
             IncludeSatelliteImage = false;
+            ExportDirectory = Systems.ExportPaths.DefaultDirectory;
         }
     }
 }

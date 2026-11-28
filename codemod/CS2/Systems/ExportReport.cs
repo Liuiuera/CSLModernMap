@@ -256,6 +256,12 @@ global::CSLModernMap.Settings.ModText.Get("CSLModernMap.UI.ExportReport.ResultNo
                 .Replace("\n", " ")
                 .Trim();
 
+            if (e is System.IO.IOException || e is UnauthorizedAccessException)
+            {
+                var directory = ExportPaths.ExportDirectory;
+                return string.IsNullOrEmpty(directory) || message.Contains(directory) ? message : message + "\n" + directory;
+            }
+
             if (message.Length > 80)
             {
                 message = message.Substring(0, 80) + "…";
@@ -264,6 +270,15 @@ global::CSLModernMap.Settings.ModText.Get("CSLModernMap.UI.ExportReport.ResultNo
             return string.IsNullOrEmpty(message)
                 ? e.GetType().Name
                 : e.GetType().Name + ": " + message;
+        }
+
+        internal static void ResetDirectory()
+        {
+            if (!IsBusy) s_State = ExportState.Idle;
+            s_RecoverAttempted = false;
+            s_FileName = "";
+            s_Time = DateTime.MinValue;
+            s_Nodes = s_Networks = s_Buildings = s_Stops = s_Lines = 0;
         }
 
         private static void RecoverOnce()

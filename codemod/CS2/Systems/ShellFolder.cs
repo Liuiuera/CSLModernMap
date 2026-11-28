@@ -18,7 +18,7 @@ namespace CSLModernMap.Systems
 
             try
             {
-                Directory.CreateDirectory(directory);
+                directory = Directory.CreateDirectory(ExportPaths.AbsoluteDirectory(directory)).FullName;
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
                     Process.Start(new ProcessStartInfo
