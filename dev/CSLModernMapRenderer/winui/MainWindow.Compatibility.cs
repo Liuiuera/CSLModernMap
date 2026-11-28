@@ -21,7 +21,7 @@ public sealed partial class MainWindow
         _selectedBounds = null;
         _selectedRegionSource = null;
         ShowInspectorHome();
-        ApplyPreviewStatus();
+        ApplyMapTaskState();
         QueueCompatibilityPreview(immediate: true);
         return Task.CompletedTask;
     }
@@ -81,7 +81,11 @@ public sealed partial class MainWindow
                 if (Current())
                 {
                     var bitmap = await PreviewImages.LoadAsync(payload.GetProperty("url").GetString()!);
-                    if (Current()) CompatibilityImage.Source = bitmap;
+                    if (Current())
+                    {
+                        CompatibilityImage.Source = bitmap;
+                        CompleteMapTask(_mapTask.Generation);
+                    }
                 }
             }
             else if (name == "compatibilityPreviewFailed" && Current())
@@ -94,7 +98,7 @@ public sealed partial class MainWindow
             if (name == "compatibilityPreviewReady" && !_closing && !_engineUnavailable)
                 await _engine.RequestAsync("releaseCompatibilityPreview", new { requestId = request });
         }
-        ApplyPreviewStatus();
+        ApplyMapTaskState();
     }
 
     private void ShowCompatibilityError(string message)
@@ -102,5 +106,10 @@ public sealed partial class MainWindow
         OperationError.Severity = InfoBarSeverity.Error;
         OperationError.Message = UiLanguage.Text("Preview_ImageFailed") + " " + message;
         OperationError.IsOpen = true;
+        if (_mapTask.Active)
+        {
+            _mapTask.Fail(OperationError.Message, _mapTask.Generation);
+            ApplyMapTaskState();
+        }
     }
 }

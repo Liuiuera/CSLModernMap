@@ -325,10 +325,12 @@ class EngineServer:
 
     def _scene_ready(self, bundle, manifest_url: str) -> None:
         self._artwork_scene = (self._document_epoch, bundle)
+        warnings = self.backend.city_info.get("fileWarnings", []) + self._render_warnings(
+            road_order=bundle.manifest.get("roadOrder", {}), include_read_info=False)
         self.event("sceneReady", {"manifestUrl": manifest_url, "documentEpoch": self._document_epoch,
                                   "sceneId": bundle.scene_id, "revision": bundle.revision,
                                   "completion": bundle.manifest.get("completion", "complete"),
-                                  "warnings": self._render_warnings(road_order=bundle.manifest.get("roadOrder", {}), include_read_info=False),
+                                  "warnings": warnings,
                                   "theme": self.backend.preview_theme(),
                                   "layers": self.backend.map_layer_visibility()})
         waiting = getattr(self, '_city_waiting_drafts', {})

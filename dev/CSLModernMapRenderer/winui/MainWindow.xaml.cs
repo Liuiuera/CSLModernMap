@@ -573,6 +573,7 @@ public sealed partial class MainWindow : Window
         bool webPreview = !_compatibilityPreview && (_viewerReady || _previewStarting || UserData.ReadAutoPreview(_ribbonLayoutDirectory));
         ++_documentGeneration;
         _documentLoaded = false;
+        OperationError.IsOpen = false;
         ResetPreview();
         ResetCompatibilityImage();
         _exportWindow?.ForceClose();
@@ -1038,8 +1039,8 @@ public sealed partial class MainWindow : Window
                 _sceneId = payload.GetProperty("sceneId").GetString() ?? "";
                 _revision = payload.GetProperty("revision").GetInt32();
                 StartupTrace.Write($"Preview loadScene: epoch={_engineDocumentEpoch}, scene={_sceneId}, revision={_revision}, completion={payload.GetProperty("completion")}");
-                if (payload.TryGetProperty("warnings", out var poiWarnings) && poiWarnings.GetArrayLength() > 0)
-                    ShowNotice(string.Join("\n", poiWarnings.EnumerateArray().Select(warning => warning.GetString())));
+                if (payload.TryGetProperty("warnings", out var sceneWarnings) && sceneWarnings.GetArrayLength() > 0)
+                    ShowNotice(string.Join("\n", sceneWarnings.EnumerateArray().Select(warning => warning.GetString())));
                 if (payload.GetProperty("completion").GetString() != "base")
                     _mapTask.Progress(95, UiLanguage.Text("MainWindow_xaml_HandleEngineEvent_284E5114E0"));
                 ApplyMapTaskState();
