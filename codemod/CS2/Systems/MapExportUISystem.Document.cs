@@ -11,11 +11,10 @@ namespace CSLModernMap.Systems
     /// <summary>组装地图导出文档</summary>
     public sealed partial class MapExportUISystem
     {
-        private ExportResult CaptureCmmExport(out string text, string outputDirectory = null,
+        private ExportResult CaptureCmmExport(out string text, string outputDirectory,
             SatelliteCapture.Image satellite = null, string satelliteWarning = null)
         {
             var includeOutsideTerrain = Mod.Settings.IncludeOutsideTerrain;
-            outputDirectory ??= ExportPaths.EnsureExportDirectory();
 
             EntityManager.CompleteAllTrackedJobs();
             var now = DateTime.Now;

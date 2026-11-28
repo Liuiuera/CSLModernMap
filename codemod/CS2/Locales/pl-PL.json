@@ -40,6 +40,8 @@
   "OptionDesc.ExportCurrentCity": "Zapisuje bieżące miasto w pliku .cmm bez otwierania przeglądarki.",
   "OptionLabel.OpenRenderer": "Otwórz przeglądarkę",
   "OptionDesc.OpenRenderer": "Otwiera zainstalowaną przeglądarkę map.",
+  "OptionLabel.ExportDirectory": "Folder eksportu",
+  "OptionDesc.ExportDirectory": "Wybierz folder, w którym będą zapisywane nowo eksportowane mapy.",
   "OptionLabel.OpenExportFolder": "Otwórz folder eksportu",
   "OptionDesc.OpenExportFolder": "Otwórz folder eksportu w systemowym menedżerze plików. Jeśli nie uda się go otworzyć, ścieżka zostanie skopiowana.",
   "OptionLabel.CopyExportFolderPath": "Kopiuj folder eksportu",

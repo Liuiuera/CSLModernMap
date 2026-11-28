@@ -40,6 +40,8 @@
   "OptionDesc.ExportCurrentCity": "Guarda la ciudad actual en un archivo .cmm sin abrir el visor.",
   "OptionLabel.OpenRenderer": "Abrir visor",
   "OptionDesc.OpenRenderer": "Abre el visor instalado.",
+  "OptionLabel.ExportDirectory": "Carpeta de exportación",
+  "OptionDesc.ExportDirectory": "Elige dónde guardar los nuevos mapas exportados.",
   "OptionLabel.OpenExportFolder": "Abrir carpeta de exportación",
   "OptionDesc.OpenExportFolder": "Abre la carpeta de exportación en el administrador de archivos del sistema. Si no se puede abrir, se copia la ruta.",
   "OptionLabel.CopyExportFolderPath": "Copiar la ruta de la carpeta de exportación",

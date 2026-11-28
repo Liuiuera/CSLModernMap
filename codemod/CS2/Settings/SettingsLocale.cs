@@ -81,6 +81,8 @@ namespace CSLModernMap.Settings
                     ? "在同一暂停窗口对照视场角和细节层级，输出到地图目录的 satellite-trials。等待渲染稳定期间游戏画面会暂时隐藏。"
                     : "Compare field of view and level of detail during one pause. Results appear under satellite-trials in the export folder. The game view is temporarily hidden while rendering settles." },
 #endif
+                { m_Settings.GetOptionLabelLocaleID(nameof(CSLModernMapSettings.ExportDirectory)), m_Entries["OptionLabel.ExportDirectory"] },
+                { m_Settings.GetOptionDescLocaleID(nameof(CSLModernMapSettings.ExportDirectory)), m_Entries["OptionDesc.ExportDirectory"] },
                 { m_Settings.GetOptionLabelLocaleID(nameof(CSLModernMapSettings.OpenExportFolder)), m_Entries["OptionLabel.OpenExportFolder"] },
                 { m_Settings.GetOptionDescLocaleID(nameof(CSLModernMapSettings.OpenExportFolder)), m_Entries["OptionDesc.OpenExportFolder"] },
                 { m_Settings.GetOptionLabelLocaleID(nameof(CSLModernMapSettings.CopyExportFolderPath)), m_Entries["OptionLabel.CopyExportFolderPath"] },

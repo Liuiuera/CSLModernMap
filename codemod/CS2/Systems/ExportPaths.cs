@@ -1,36 +1,43 @@
 using System;
 using System.Globalization;
 using System.IO;
-using Colossal.PSI.Environment;
 
 namespace CSLModernMap.Systems
 {
     /// <summary>管理导出文件路径</summary>
     internal static class ExportPaths
     {
-        private const string ModsDataFolderName = "ModsData";
-
-        private const string RootFolderName = "CSLModernMap";
-
         private const string FileSuffix = ".cmm";
 
-
-        internal static string ExportDirectory
+        internal static string DefaultDirectory
         {
             get
             {
-                var root = EnvPath.kUserDataPath;
-                return Path.Combine(root, ModsDataFolderName, RootFolderName);
+                var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments,
+                    Environment.SpecialFolderOption.DoNotVerify);
+                return string.IsNullOrEmpty(documents) ? string.Empty : Path.Combine(documents, "CSLModernMap", "CS2");
             }
+        }
+
+        internal static string ExportDirectory => Mod.Settings.ExportDirectory;
+
+        internal static string AbsoluteDirectory(string directory)
+        {
+            var root = Path.GetPathRoot(directory);
+            if (string.IsNullOrEmpty(root) || (Path.DirectorySeparatorChar == '\\'
+                && (root.Length == 1 || root.EndsWith(":", StringComparison.Ordinal))))
+                throw new ArgumentException("Expected an absolute export directory: " + directory);
+            return Path.GetFullPath(directory);
         }
 
         internal static void RegisterExportDirectory()
         {
             try
             {
-                GameExportDirectories.Register(GameExportDirectories.RegistryDirectory, ExportGame.CS2, ExportDirectory);
+                GameExportDirectories.Register(GameExportDirectories.RegistryDirectory, ExportGame.CS2, AbsoluteDirectory(ExportDirectory));
             }
-            catch (Exception error) when (error is IOException || error is UnauthorizedAccessException || error is ArgumentException)
+            catch (Exception error) when (error is IOException || error is UnauthorizedAccessException ||
+                error is ArgumentException || error is NotSupportedException)
             {
                 Mod.log.Warn("[export] Could not register the export directory: " + error.Message);
             }
@@ -38,9 +45,7 @@ namespace CSLModernMap.Systems
 
         internal static string EnsureExportDirectory()
         {
-            var directory = ExportDirectory;
-            Directory.CreateDirectory(directory);
-            return directory;
+            return Directory.CreateDirectory(AbsoluteDirectory(ExportDirectory)).FullName;
         }
 
         internal static string BuildFileName(string cityName, DateTime localTime)
@@ -70,7 +75,7 @@ namespace CSLModernMap.Systems
         {
             try
             {
-                var directory = new DirectoryInfo(ExportDirectory);
+                var directory = new DirectoryInfo(AbsoluteDirectory(ExportDirectory));
                 if (!directory.Exists)
                 {
                     return null;

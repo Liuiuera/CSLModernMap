@@ -32,6 +32,7 @@ namespace CSLModernMap
         };
 
         internal static CSLModernMapSettings Settings { get; private set; }
+        private string m_AppliedExportDirectory;
 
         public void OnLoad(UpdateSystem updateSystem)
         {
@@ -48,12 +49,23 @@ namespace CSLModernMap
 
             Settings = new CSLModernMapSettings(this);
             AssetDatabase.global.LoadSettings(nameof(CSLModernMap), Settings, new CSLModernMapSettings(this));
+            ApplyExportDirectory(Settings);
+            Settings.onSettingsApplied += ApplyExportDirectory;
             foreach (string localeId in SupportedLocaleIds)
             {
                 GameManager.instance.localizationManager.AddSource(
                     localeId, new SettingsLocale(Settings, localeId));
             }
             Settings.RegisterInOptionsUI();
+        }
+
+        private void ApplyExportDirectory(Game.Settings.Setting setting)
+        {
+            var directory = ((CSLModernMapSettings)setting).ExportDirectory;
+            if (directory == m_AppliedExportDirectory) return;
+            m_AppliedExportDirectory = directory;
+            Systems.ExportReport.ResetDirectory();
+            if (Systems.MapExportUISystem.RendererSupported) Systems.ExportPaths.RegisterExportDirectory();
         }
 
         public void OnDispose()
@@ -63,7 +75,12 @@ namespace CSLModernMap
             Systems.MapExportUISystem.StopSatelliteTrials();
 #endif
             Systems.MapExportUISystem.CancelViewerRequests();
-            Settings?.UnregisterInOptionsUI();
+            if (Settings != null)
+            {
+                Settings.onSettingsApplied -= ApplyExportDirectory;
+                Settings.UnregisterInOptionsUI();
+            }
+            m_AppliedExportDirectory = null;
             Settings = null;
         }
     }

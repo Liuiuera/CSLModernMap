@@ -40,6 +40,8 @@
   "OptionDesc.ExportCurrentCity": "Salva a cidade atual em um arquivo .cmm sem abrir o visualizador.",
   "OptionLabel.OpenRenderer": "Abrir visualizador",
   "OptionDesc.OpenRenderer": "Abre o visualizador instalado.",
+  "OptionLabel.ExportDirectory": "Pasta de exportação",
+  "OptionDesc.ExportDirectory": "Escolha onde salvar os novos mapas exportados.",
   "OptionLabel.OpenExportFolder": "Abrir pasta de exportação",
   "OptionDesc.OpenExportFolder": "Abre a pasta de exportação no gerenciador de arquivos do sistema. Se não for possível abri-la, o caminho será copiado.",
   "OptionLabel.CopyExportFolderPath": "Copiar o caminho da pasta de exportação",

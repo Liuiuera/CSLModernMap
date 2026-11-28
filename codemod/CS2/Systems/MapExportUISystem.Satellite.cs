@@ -28,9 +28,9 @@ namespace CSLModernMap.Systems
             (run as IDisposable)?.Dispose();
         }
 
-        private IEnumerator RunSatelliteExport(GameManager game)
+        private IEnumerator RunSatelliteExport(GameManager game, string directory)
         {
-            var steps = CaptureSatelliteExport(game);
+            var steps = CaptureSatelliteExport(game, directory);
             game.onGamePreload += CancelSatelliteExportOnLoad;
             Exception failure = null;
             bool finished = false;
@@ -60,7 +60,7 @@ namespace CSLModernMap.Systems
             }
         }
 
-        private IEnumerator CaptureSatelliteExport(GameManager game)
+        private IEnumerator CaptureSatelliteExport(GameManager game, string directory)
         {
             yield return new WaitForSecondsRealtime(SatelliteDialogCloseDelaySeconds);
             MarkExportStarted("CSLModernMap.UI.ExportProgress.CapturingSatellite");
@@ -103,7 +103,7 @@ namespace CSLModernMap.Systems
                 yield return null;
                 yield return null;
 
-                result = CaptureCmmExport(out text, satellite: satellite, satelliteWarning: satelliteWarning);
+                result = CaptureCmmExport(out text, directory, satellite: satellite, satelliteWarning: satelliteWarning);
             }
             finally
             {

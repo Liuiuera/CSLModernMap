@@ -31,7 +31,6 @@ namespace CSLModernMap.Systems
         {
             s_ModDirectory = directory;
             CancelViewerRequests();
-            if (RendererSupported) ExportPaths.RegisterExportDirectory();
             RefreshRendererStatus();
         }
 

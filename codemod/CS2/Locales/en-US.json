@@ -40,6 +40,8 @@
   "OptionDesc.ExportCurrentCity": "Save the current city as a .cmm file without opening the viewer.",
   "OptionLabel.OpenRenderer": "Open Viewer",
   "OptionDesc.OpenRenderer": "Open the installed viewer.",
+  "OptionLabel.ExportDirectory": "Export folder",
+  "OptionDesc.ExportDirectory": "Choose where to save newly exported maps.",
   "OptionLabel.OpenExportFolder": "Open Export Folder",
   "OptionDesc.OpenExportFolder": "Open the export folder in the system file manager. If it cannot be opened, the path is copied instead.",
   "OptionLabel.CopyExportFolderPath": "Copy Export Folder Path",
