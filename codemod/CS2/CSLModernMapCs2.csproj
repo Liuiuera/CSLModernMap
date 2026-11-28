@@ -1,0 +1,136 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    CSLModernMap 的《城市：天际线 II》数据导出 Mod。
+
+    这个工程**不自己定义构建规则**，而是直接复用游戏自带的官方 Modding Toolchain：
+    Mod.props / Mod.targets 由 %CSII_TOOLPATH% 指向的官方模组工具链提供，
+    目标框架 net48、LangVersion 9.0、源码生成器、构建后 Burst 后处理、以及
+    自动部署到正式 Mods\<程序集名>\ 全部由它接管。
+
+    因此本文件只做三件事：程序集命名、补一个 .NET Framework 4.8 引用程序集包
+    （本机没装 VS 的 4.8 目标包，用官方 NuGet 包代替，仅编译期）、列引用。
+  -->
+
+  <PropertyGroup>
+    <AssemblyName>CSLModernMapCs2</AssemblyName>
+    <RootNamespace>CSLModernMap</RootNamespace>
+    <PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <OutputPath>bin\</OutputPath>
+    <Deterministic>false</Deterministic>
+    <!-- 与一代 Mod 保持一致：不生成 net48 子目录 -->
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(SatelliteTrials)' == 'true'">
+    <DefineConstants>$(DefineConstants);CS2_SATELLITE_TRIALS</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Cinemachine"><Private>false</Private></Reference>
+    <Reference Include="Colossal.UI"><Private>false</Private></Reference>
+    <Reference Include="Unity.RenderPipelines.Core.Runtime"><Private>false</Private></Reference>
+    <Reference Include="Unity.RenderPipelines.HighDefinition.Runtime"><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.ImageConversionModule"><Private>false</Private></Reference>
+  </ItemGroup>
+
+  <Target Name="BlockSatelliteTrialPublication" BeforeTargets="Publish" Condition="'$(SatelliteTrials)' == 'true'">
+    <Error Text="Build without SatelliteTrials before publishing." />
+  </Target>
+
+  <ItemGroup>
+    <Compile Include="../shared/WindowsRenderer.cs" Link="WindowsRenderer.cs" />
+    <Compile Include="../shared/GameExportDirectories.cs" Link="GameExportDirectories.cs" />
+    <Compile Include="../tests/cs2-satellite-trials/*.cs"
+             Condition="'$(SatelliteTrials)' == 'true'" />
+    <EmbeddedResource Include="Locales\*.json" LogicalName="CSLModernMap.Locales.%(Filename)%(Extension)" />
+    <!-- 仅编译期使用；不随 Mod 分发 -->
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="All" />
+  </ItemGroup>
+
+  <!-- Import 必须在 PropertyGroup 之后 -->
+  <PropertyGroup>
+    <CSII_TOOLPATH Condition="'$(CSII_TOOLPATH)' == ''">$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))</CSII_TOOLPATH>
+  </PropertyGroup>
+  <Import Project="$(CSII_TOOLPATH)\Mod.props" />
+  <Import Project="$(CSII_TOOLPATH)\Mod.targets" />
+
+  <ItemGroup>
+    <!-- 游戏程序集与 Unity 程序集一律由 $(ManagedPath) 解析，全部不落地 -->
+    <Reference Include="Game">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Colossal.Core">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Colossal.Logging">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Colossal.Localization">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Colossal.UI.Binding">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Colossal.IO.AssetDatabase">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Colossal.Mathematics">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Colossal.PSI.Common">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <Private>false</Private>
+    </Reference>
+    <!-- Unity 的 ZipArchive 会对 NoCompression 成员写 Deflate 封装。用游戏提供的库直接存储 PNG。 -->
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="System.IO.Compression">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <Private>false</Private>
+    </Reference>
+    <!-- 「复制导出目录」用 GUIUtility.systemCopyBuffer；这是 Unity 自带的剪贴板入口，
+         不引入任何第三方包，也不依赖 Windows 专有 API。 -->
+    <Reference Include="UnityEngine.IMGUIModule">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Unity.Burst">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Unity.Collections">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Unity.Entities">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Unity.Mathematics">
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <RendererPackageDir Condition="'$(RendererPackageDir)' == ''">$(MSBuildProjectDirectory)</RendererPackageDir>
+  </PropertyGroup>
+  <Target Name="CheckCSLModernMapPayloadForPublish" BeforeTargets="Publish">
+    <Error Condition="!Exists('$(DeployDir)\CSLModernMapRenderer.msix') Or !Exists('$(DeployDir)\renderer-package.txt')"
+           Text="Missing staged viewer MSIX or identity in DeployDir. Run tools/pack_cs2_renderer.py --msix PATH and rebuild." />
+    <Error Condition="!Exists('$(MSBuildProjectDirectory)\LICENSES\Carto-LICENSE.txt')"
+           Text="Carto 许可文件缺失：LICENSES\Carto-LICENSE.txt。" />
+  </Target>
+
+  <Target Name="DeployCSLModernMapPayload" AfterTargets="DeployWIP">
+    <Copy SourceFiles="$(RendererPackageDir)\CSLModernMapRenderer.msix;$(RendererPackageDir)\renderer-package.txt"
+          DestinationFolder="$(DeployDir)" Condition="Exists('$(RendererPackageDir)\CSLModernMapRenderer.msix')"
+          SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\LICENSES\Carto-LICENSE.txt"
+          DestinationFiles="$(DeployDir)\LICENSES\Carto-LICENSE.txt"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>
