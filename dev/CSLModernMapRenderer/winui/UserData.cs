@@ -11,22 +11,31 @@ internal static class UserData
     private static string WorkflowPath(string directory, MapWorkflow workflow) => Path.Combine(directory,
         workflow == MapWorkflow.Theme ? "theme-editor-choice.json" : "export-choice.json");
 
-    private static JsonObject? ReadObject(string path)
+    private static JsonElement ReadObject(string path)
     {
-        if (!File.Exists(path)) return null;
-        try { return JsonNode.Parse(File.ReadAllText(path)) as JsonObject; }
+        if (!File.Exists(path)) return default;
+        try
+        {
+            using var document = JsonDocument.Parse(File.ReadAllText(path));
+            return document.RootElement.Clone();
+        }
         catch (Exception error) when (error is IOException or UnauthorizedAccessException or JsonException)
         {
             StartupTrace.Write($"{path}: {error.Message}");
-            return null;
+            return default;
         }
     }
 
-    private static T Field<T>(JsonObject? data, string key, T fallback) =>
-        data?[key] is JsonValue field && field.TryGetValue<T>(out var value) ? value : fallback;
+    private static JsonValue? Field(JsonElement data, string key) =>
+        data.ValueKind == JsonValueKind.Object && data.TryGetProperty(key, out var field) &&
+        field.ValueKind is JsonValueKind.String or JsonValueKind.Number or JsonValueKind.True or JsonValueKind.False
+            ? JsonValue.Create(field) : null;
+
+    private static T Field<T>(JsonElement data, string key, T fallback) =>
+        Field(data, key) is { } field && field.TryGetValue<T>(out var value) ? value : fallback;
 
     internal static bool? ReadWorkflowChoice(string directory, MapWorkflow workflow) =>
-        ReadObject(WorkflowPath(directory, workflow))?["useDraft"] is JsonValue field &&
+        Field(ReadObject(WorkflowPath(directory, workflow)), "useDraft") is { } field &&
         field.TryGetValue<bool>(out var value) ? value : null;
 
     private static void WriteJson<T>(string path, T value)
@@ -216,7 +225,11 @@ internal static class UserData
     private static JsonObject? ReadSettings(string path)
     {
         var settings = ReadObject(path);
-        if (settings?["values"] is not JsonObject) return null;
-        return Field(settings, "version", settings["version"] is null ? 3d : 0d) is 1 or 2 or 3 or 3.1 ? settings : null;
+        if (settings.ValueKind != JsonValueKind.Object || !settings.TryGetProperty("values", out var values) ||
+            values.ValueKind != JsonValueKind.Object) return null;
+        if (settings.TryGetProperty("version", out var version) && version.ValueKind != JsonValueKind.Null &&
+            (version.ValueKind != JsonValueKind.Number || !version.TryGetDouble(out var number) ||
+             number is not (1 or 2 or 3 or 3.1))) return null;
+        return JsonObject.Create(settings);
     }
 }

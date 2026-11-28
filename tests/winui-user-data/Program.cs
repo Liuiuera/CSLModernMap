@@ -24,6 +24,14 @@ try
     UserData.WriteAutoPreview(target, false);
     Check(!UserData.ReadAutoPreview(target), "disabled preview preference");
 
+    File.WriteAllText(Path.Combine(target, "preview-quality.json"), """{"pixelScale":0.75,"pixelScale":1.25,"lineDetail":"fine","polygonDetail":[]}""");
+    quality = UserData.ReadPreviewQuality(target);
+    Check(quality.PixelScale == 1.25 && quality.LineDetail == "fine" && quality.PolygonDetail == "standard", "duplicate quality and per-field fallback");
+    File.WriteAllText(Path.Combine(target, "preview-startup.json"), """{"autoPreview":true,"autoPreview":false}""");
+    Check(!UserData.ReadAutoPreview(target), "last auto-preview key wins");
+    File.WriteAllText(Path.Combine(target, "ribbon-layout.json"), """{"displayMode":"Classic","displayMode":"Simplified","visibilityMode":"bad"}""");
+    Check(UserData.ReadRibbonLayout(target) == new UserData.RibbonLayout("Simplified", "AlwaysShow"), "last ribbon key wins");
+
     var builtin = Directory.CreateDirectory(Path.Combine(engine, "csmodernmap", "services", "poi"));
     File.WriteAllText(Path.Combine(builtin.FullName, "poi_mapping.yaml"), "bundled");
     File.WriteAllText(Path.Combine(source, "settings.json"), """{"version":3.1,"values":{"map":"city"}}""");

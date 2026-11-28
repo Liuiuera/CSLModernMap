@@ -2531,7 +2531,7 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number,
   schedule('fonts', () => loadSceneFonts(manifest, manifestUrl, current, warn));
   schedule('traffic', syncTraffic);
   // 已显示的基础图可以继续操作，完整道路或建筑替换失败只结束细化。
-  const waitFor = geometry.filter(key => pending.has(key));
+  const waitFor = geometry.filter(key => key !== 'districts' && key !== 'zones' && pending.has(key));
   const settled = Promise.allSettled(waitFor.map(key => pending.get(key)!)).then(results => {
     const failed = results.find(result => result.status === 'rejected');
     if (failed?.status === 'rejected') throw failed.reason;

@@ -3187,9 +3187,11 @@ class GuirBackend:
         self._theme_file_imports = {}
         self._theme_migration_aborted = False
         try:
-            recover(self._settings_dir)
-            self._settings = read_settings(self._settings_dir)
-            self._reload_view_settings()
+            try:
+                recover(self._settings_dir)
+                self._settings = read_settings(self._settings_dir)
+            finally:
+                self._reload_view_settings()
             records = self._settings["values"].get("user_themes", {})
             imports = self._settings["values"].get("theme_file_imports", {})
             if not isinstance(records, dict) or not isinstance(imports, dict):

@@ -96,6 +96,21 @@ def test_empty_city_finishes(tmp_path, page, server):
     wait_event(page, scene)
 
 
+def test_empty_city_finishes_while_area_layers_are_unavailable(tmp_path, page, server):
+    scene = bundle(tmp_path / 'empty')
+    scene.manifest['layers'].update(district=True, zone=True)
+    for name in ('roads', 'districts', 'zones'):
+        source(scene, name, EMPTY)
+    page.evaluate("hold.add('empty/districts.geojson'); fail.add('empty/zones.geojson')")
+    dispatch(page, server, scene)
+    page.wait_for_function("() => 'empty/districts.geojson' in release")
+    page.wait_for_function("() => events.some(e => e.type === 'sceneLoaded')", timeout=5000)
+    page.evaluate("release['empty/districts.geojson']()")
+    wait_event(page, scene, 'scenePresentationReady')
+    assert page.evaluate("events.some(e => e.type === 'renderError' && !e.fatal && e.message.includes('zones.geojson'))")
+    assert not page.evaluate("events.some(e => e.fatal)")
+
+
 def test_water_can_present_while_roads_and_buildings_are_pending(tmp_path, page, server):
     scene = bundle(tmp_path / 'water')
     scene.manifest['layers'].update(water=True, building=True)
