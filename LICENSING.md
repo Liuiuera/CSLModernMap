@@ -6,9 +6,14 @@ Copyright in CSLModernMap-owned code belongs to Liuiuera (少糖烧仙草) and i
 
 | 范围 / Scope | 许可 / License |
 | --- | --- |
+| 两代游戏的自有模组源码 / Project-owned CS1 and CS2 mod code (Copyright © 2026 Liuiuera) | [GPL-3.0-only](LICENSE) |
 | 自有查看器、Python 引擎、网页前端、构建工具和文档 / Project-owned viewer, Python engine, web frontend, build tools and documentation | GPL-3.0-only; [LICENSE](LICENSE) |
 | RMP 与其衍生资源 / RMP and derived resources | GPL-3.0-only; [dev/third_party/rmp/LICENCE](dev/third_party/rmp/LICENCE); separate image terms also apply |
 | 其他第三方依赖、字体与图标 / Other dependencies, fonts and icons | Their own licenses; [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) |
+
+合仓前以 MIT 许可发布的 CodeMod 版本保留当时的 MIT 许可。模组依赖的许可见[模组第三方声明](codemod/THIRD_PARTY_NOTICES.md)。
+
+Earlier CodeMod versions released under MIT retain that license. See the [mod third-party notices](codemod/THIRD_PARTY_NOTICES.md) for component licenses.
 
 ## Windows 功能区 / Windows ribbon
 

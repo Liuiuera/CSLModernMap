@@ -1,0 +1,20 @@
+.vs/
+*.user
+**/bin/
+**/obj/
+**/Library/
+**/node_modules/
+CS1/Libs/
+CS2/UI/build/
+CS2/Properties/PublishConfiguration.xml
+__pycache__/
+*.pyc
+*.log
+
+# Viewer payloads are supplied by official mod releases.
+*.cslmr
+*.cslmr.sha256
+renderer-version.txt
+
+/CS2/CSLModernMapRenderer.msix
+/CS2/renderer-package.txt

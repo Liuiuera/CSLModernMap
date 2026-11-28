@@ -2,6 +2,8 @@
 
 CSLModernMap includes third-party dependencies and acknowledges implementation references.
 
+See the [game mod notices](codemod/THIRD_PARTY_NOTICES.md) for the components used by the CS1 and CS2 exporters.
+
 ## Desktop and rendering dependencies
 
 - Qt for Python / PySide6: Qt Project, LGPL-3.0-only or commercial/GPL alternatives. QtCore/QtGui remain runtime geometry dependencies even though the Qt viewer is excluded. Standalone distributions must preserve Qt/PySide notices and meet the applicable replacement/relinking requirements.

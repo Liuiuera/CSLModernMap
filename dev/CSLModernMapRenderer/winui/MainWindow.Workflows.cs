@@ -76,7 +76,7 @@ public sealed partial class MainWindow
         content.Children.Add(new HyperlinkButton
         {
             Content = new TextBlock { Text = UiLanguage.Text("MainWindow_Workflows_ChangeLanguageAsync_ContributeTranslation"), TextWrapping = TextWrapping.Wrap },
-            NavigateUri = new Uri("https://github.com/Liuiuera/CSLModernMap-CodeMod/issues"),
+            NavigateUri = new Uri("https://github.com/Liuiuera/CSLModernMap/issues"),
             Padding = new Thickness(0), HorizontalAlignment = HorizontalAlignment.Stretch, HorizontalContentAlignment = HorizontalAlignment.Left,
         });
         await new ContentDialog
