@@ -783,7 +783,6 @@ class GuirBackend:
             self.scheduler.cancel)
         self._style_editor_regions: dict = {}
 
-        # 当前打开请求的解析线程
         self._open_thread = None
 
         # 中央 WebGL Preview Scene。revision 只增不减，编译线程提交前再次
@@ -1295,7 +1294,6 @@ class GuirBackend:
         return True
 
     def transit_line_headers(self):
-        """IDs and types are enough for selection and ribbon counts."""
         from .transit import normalize_type
         return [{"id": line.id, "type": kind}
                 for line in getattr(self.document, "transit_lines", ())

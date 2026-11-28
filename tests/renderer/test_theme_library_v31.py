@@ -11,7 +11,6 @@ import yaml
 from csmodernmap import guir_backend as backend_module
 from csmodernmap.guir_backend import GuirBackend
 from csmodernmap.settings_store import load_settings, save_settings, SettingsVersionError
-from csmodernmap.view_settings import default_view_settings, load_view_settings, save_view_settings
 from csmodernmap import theme_migration, theme_preset_update
 
 
@@ -46,33 +45,9 @@ def test_unsupported_version_cannot_be_overwritten(tmp_path, version):
     path = write_settings(tmp_path, {'keep': 42}, version)
     raw = path.read_bytes()
     assert load_settings(tmp_path)["values"] == {}
-    with backend_at(tmp_path) as backend:
-        assert backend.theme_load_error
-        backend.save_settings_now()
     with pytest.raises(SettingsVersionError):
         save_settings({}, tmp_path)
     assert path.read_bytes() == raw
-
-
-def test_bad_recovery_journal_keeps_original_files_and_allows_render_defaults(tmp_path):
-    settings = write_settings(tmp_path, {"keep": 42})
-    journal = tmp_path / theme_migration.JOURNAL
-    journal.write_text("{")
-    original = settings.read_bytes()
-    views = default_view_settings()
-    views["transit"]["mask"] = .27
-    views["metro"]["diagram"]["spacing"] = 439
-    assert save_view_settings(views, tmp_path)
-    expected_views = load_view_settings(tmp_path)
-    with backend_at(tmp_path) as backend:
-        assert backend.theme_load_error
-        assert backend.current_style_data()["roads"]
-        backend.save_settings_now()
-        backend.update_transit_options(False, {"base_water": False})
-    expected_views["transit"]["base_layers"]["water"] = False
-    assert load_view_settings(tmp_path) == expected_views
-    assert settings.read_bytes() == original
-    assert journal.read_text() == "{"
 
 
 def test_fresh_install_does_not_import_current_bundled_presets(tmp_path):

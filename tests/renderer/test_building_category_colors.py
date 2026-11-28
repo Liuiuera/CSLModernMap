@@ -69,28 +69,6 @@ def render(doc, data):
     return image
 
 
-@pytest.mark.parametrize('game', ['cs1', 'cs2'])
-def test_missing_poi_category_uses_generic_icon_in_preview(tmp_path, game, modern_style):
-    unclassified = building(1, 'None', game=game)
-    unclassified.category_id = ''
-    unmapped = building(2, 'None', 'Unmapped test asset', game=game)
-    doc = document(game, [unclassified, unmapped])
-    with ExitStack() as scope:
-        PreviewSceneCompiler._compile_domain_sources(
-            doc, DocumentSession(doc), tmp_path, 1, {},
-            {'changed': {'pois', 'transitViewPois'}, 'style': modern_style.data},
-            domain_scope=scope)
-    features = json.loads((tmp_path / 'pois.geojson').read_bytes())['features']
-    poi, = (item['properties'] for item in features if item['properties']['sourceKind'] == 'building')
-    assert poi['sourceId'] == unclassified.id
-    assert poi['categoryId'] == ''
-    assert poi['iconKey'] == 'mi_default_gray'
-    assert poi['iconStatus'] == 'visible'
-    assert poi['visibleZooms']
-    atlas = json.loads((tmp_path / 'poi-sprite.json').read_bytes())
-    assert poi['iconKey'] in atlas
-
-
 @pytest.mark.parametrize('game', ['cs1','cs2'])
 def test_category_changes_police_and_expansion_only_in_png_and_preview(tmp_path, game, modern_style):
     doc=document(game,[

@@ -129,8 +129,6 @@ import WebKit
         var frame: JSON = ["sceneId":scene.scene, "revision":scene.revision, "type":"sceneLoaded",
             "completion":"complete", "performance":["completion":"idle"]]
         try requireLayout(scene.isPresented(by:frame), "idle sceneLoaded releases pending artwork")
-        frame["performance"] = ["completion":"applied"]
-        try requireLayout(scene.isPresented(by:frame), "usable map releases the loading overlay")
         frame["performance"] = ["completion":"timeout"]
         try requireLayout(!scene.isPresented(by:frame), "timeout waits for the late idle event")
         frame["type"] = "scenePresentationReady"

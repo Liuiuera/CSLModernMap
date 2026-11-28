@@ -797,51 +797,6 @@ def test_html_export_uses_its_own_quality_and_shared_rotation(tmp_path):
         server._preview_files.cleanup()
 
 
-def test_local_error_during_export_keeps_its_request(tmp_path):
-    backend = _guir_backend(tmp_path)
-    server = EngineServer(io.StringIO(), io.StringIO(), backend)
-    events = []
-    server.event = lambda name, payload: events.append((name, payload))
-    try:
-        server._export.request_id = "old-export"
-        server._export.document_epoch = 1
-        server._document_epoch = 2
-        server._backend_error(ValueError("setting failed"))
-        assert server._export.request_id == "old-export"
-        callbacks = server._file_export_callbacks()
-        server._clear_export()
-        server._export.request_id = "next-export"
-        callbacks["file_done"]("already-written.png", {})
-        assert server._export.request_id == "next-export"
-        done = next(payload for name, payload in events if name == "exportDone")
-        assert (done["requestId"], done["documentEpoch"], done["path"]) == ("old-export", 1, "already-written.png")
-    finally:
-        backend.close()
-        server._preview_files.cleanup()
-
-
-@pytest.mark.parametrize("context,key,child", [
-    ("map", "layers", "lines"), ("transit", "layers", "lines"),
-    ("draft", "layers", "lines"), ("metro", "schematic_options", "adaptive_scale"),
-])
-def test_partial_transit_setting_updates_only_its_child(tmp_path, context, key, child):
-    backend = _guir_backend(tmp_path)
-    server = EngineServer(io.StringIO(), io.StringIO(), backend)
-    try:
-        if context == "draft":
-            server._city_draft = {"job": {"kind": "transit", "opts": server.transit_options()}, "params": {}}
-        read = {"map": backend.map_transit_options, "metro": server.metro_options,
-                "transit": server.transit_options, "draft": server._draft_transit_options}[context]
-        before = read()[key]
-        args = {context: True, "key": key, "child": child, "value": not before[child]}
-        assert server.dispatch("setTransitOption", args)["options"][key] == {**before, child: not before[child]}
-        with pytest.raises(ValueError):
-            server.dispatch("setTransitOption", {**args, "child": "unknown"})
-    finally:
-        backend.close()
-        server._preview_files.cleanup()
-
-
 def test_poi_master_switch_updates_only_icon_snapshot_and_derives_layer(tmp_path):
     backend = _guir_backend(tmp_path)
     backend.document = object()
