@@ -102,6 +102,14 @@
     </PropertyGroup>
     <MakeDir Directories="$(PrivateModDir)" />
     <Delete Files="$(PrivateModDir)\CSLModernMap.verified.json" />
+    <ItemGroup>
+      <ModLicense Include="..\..\LICENSE" TargetPath="LICENSE.txt" />
+      <ModLicense Include="..\THIRD_PARTY_NOTICES.md" TargetPath="THIRD_PARTY_NOTICES.md" />
+      <ModLicense Include="AlgernonCommons\LICENSE.txt" TargetPath="LICENSES\AlgernonCommons-LICENSE.txt" />
+      <ModLicense Include="Geometry\Clipper\LICENSE.txt" TargetPath="LICENSES\Clipper-LICENSE.txt" />
+      <ModLicense Include="LICENSES\Newtonsoft.Json-MIT.txt" TargetPath="LICENSES\Newtonsoft.Json-MIT.txt" />
+    </ItemGroup>
+    <Copy SourceFiles="@(ModLicense)" DestinationFiles="@(ModLicense->'$(PrivateModDir)\%(TargetPath)')" SkipUnchangedFiles="true" />
     <Exec Command="dotnet exec --runtimeconfig &quot;$(MSBuildProjectDirectory)\tools\cs1_assembly_check\ILRepack.runtimeconfig.json&quot; &quot;$(PkgILRepack)\tools\ILRepack.exe&quot; /internalize /ndebug /lib:&quot;$(CS1ManagedPath)&quot; /lib:&quot;$(TmpePath)&quot; /lib:&quot;$(ProceduralObjectsPath)&quot; /out:&quot;$(PrivateModDir)\CSLModernMap.dll&quot; /lib:&quot;$(PkgMicrosoft_NETFramework_ReferenceAssemblies_net35)\build\.NETFramework\v3.5&quot; &quot;$(TargetPath)&quot; &quot;$(JsonNet35)&quot;" />
     <Exec Command="dotnet run --project &quot;$(MSBuildProjectDirectory)\tools\cs1_assembly_check&quot; -c Release -- &quot;$(PrivateModDir)\CSLModernMap.dll&quot; &quot;$(TargetPath)&quot; &quot;$(JsonNet35)&quot;" />
   </Target>

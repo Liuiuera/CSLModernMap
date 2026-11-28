@@ -1,5 +1,9 @@
 # Third-party notices
 
+CSLModernMap game exporters are copyright © 2026 Liuiuera and licensed under GPL-3.0-only. The following components retain their own licenses.
+
+Each mod includes the GPL text in `LICENSE.txt` and its component licenses in `LICENSES/`. The paths below refer to the source tree.
+
 ## Carto
 
 The CSLModernMap code mod's network geometry and related export implementation were informed by the open-source Carto mod for Cities: Skylines II.
@@ -43,12 +47,10 @@ ILRepack 2.0.48 (Apache-2.0) is restored from NuGet as a build tool only.
 
 ## External game and mod references
 
-Game, Colossal Order, Unity, TM:PE and Procedural Objects assemblies are local
-compile-time references and are not included in this repository. Their licenses
-are not replaced by this repository's MIT License.
+The build uses local game, Colossal Order, Unity, TM:PE and Procedural Objects
+assemblies as compile-time references. Their respective licenses apply.
 
 ## Companion renderer
 
-The companion renderer source and binary payloads are not included in this
-repository. The root MIT License applies to original Code Mod source only.
-Official mod releases supply the viewer separately with its own license notices.
+Official mod releases supply the viewer with its own third-party notices. See the
+[renderer notices](https://github.com/Liuiuera/CSLModernMap/blob/main/THIRD_PARTY_NOTICES.md).

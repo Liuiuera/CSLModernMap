@@ -45,6 +45,8 @@
     <Compile Include="../tests/cs2-satellite-trials/*.cs"
              Condition="'$(SatelliteTrials)' == 'true'" />
     <EmbeddedResource Include="Locales\*.json" LogicalName="CSLModernMap.Locales.%(Filename)%(Extension)" />
+    <None Include="..\..\LICENSE" Link="LICENSE.txt" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\THIRD_PARTY_NOTICES.md" Link="THIRD_PARTY_NOTICES.md" CopyToOutputDirectory="PreserveNewest" />
     <!-- 仅编译期使用；不随 Mod 分发 -->
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="All" />
   </ItemGroup>
@@ -119,7 +121,7 @@
   </PropertyGroup>
   <Target Name="CheckCSLModernMapPayloadForPublish" BeforeTargets="Publish">
     <Error Condition="!Exists('$(DeployDir)\CSLModernMapRenderer.msix') Or !Exists('$(DeployDir)\renderer-package.txt')"
-           Text="Missing staged viewer MSIX or identity in DeployDir. Run tools/pack_cs2_renderer.py --msix PATH and rebuild." />
+           Text="Missing staged viewer MSIX or identity in DeployDir. Run python codemod/tools/pack_cs2_renderer.py --msix PATH from the repository root and rebuild." />
     <Error Condition="!Exists('$(MSBuildProjectDirectory)\LICENSES\Carto-LICENSE.txt')"
            Text="Carto 许可文件缺失：LICENSES\Carto-LICENSE.txt。" />
   </Target>

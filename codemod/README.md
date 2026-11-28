@@ -4,9 +4,7 @@
 
 The Cities: Skylines and Cities: Skylines II code mods for CSLModernMap. Both export the current city as a versioned `.cmm` map archive.
 
-This repository contains the in-game Code Mod source in `CS1/` and `CS2/`.
-Renderer source and prebuilt payloads are not included. Official mod releases
-include the companion viewer, which reads exported maps without accessing game saves.
+The exporter source is in [CS1](CS1/) and [CS2](CS2/). Official mod releases include the [companion viewer](../README.md), which reads exported maps without accessing game saves.
 
 ## Features
 
@@ -19,23 +17,24 @@ include the companion viewer, which reads exported maps without accessing game s
 ## Build
 
 CS1 requires Windows, .NET SDK 10 and local game/mod references;
-see [CS1 build setup](CS1/README.md). CS2 requires Windows, .NET SDK 8+
-and the official Cities: Skylines II modding toolchain.
+see [CS1 build setup](CS1/README.md). CS2 requires Windows, the repository's .NET SDK 10 and the official Cities: Skylines II modding toolchain.
+
+Run the commands below from the repository root.
 
 ```powershell
 # Cities: Skylines
-dotnet build CS1\CSLModernMap.csproj -c Release
+dotnet build codemod\CS1\CSLModernMap.csproj -c Release
 # Cities: Skylines II
-dotnet build CS2\CSLModernMapCs2.csproj -c Release
+dotnet build codemod\CS2\CSLModernMapCs2.csproj -c Release
 ```
 
-The CS1 build produces a verified `CS1/bin/private/CSLModernMap.dll`.
+The CS1 build produces a verified `codemod/CS1/bin/private/CSLModernMap.dll` with its license files.
 The CS2 build also deploys into the local game Mods directory; exit CS2 first.
 Game/mod assemblies and viewer payloads must be supplied separately. For Windows releases,
 stage the signed companion viewer MSIX before building CS2 or assembling the CS1 release folder.
 
-    python tools/pack_cs2_renderer.py --msix path/to/viewer.msix
-    python tools/pack_cs2_renderer.py --msix path/to/viewer.msix --target path/to/CS1-release
+    python codemod/tools/pack_cs2_renderer.py --msix path/to/viewer.msix
+    python codemod/tools/pack_cs2_renderer.py --msix path/to/viewer.msix --target path/to/CS1-release
 
 The staging command writes the MSIX and its application identity. Both export buttons offer
 installation when the viewer is missing. After you return from the installer, the mod checks again.
@@ -46,7 +45,7 @@ The mods do not download required files from the network.
 
 ## License
 
-The Code Mod source is MIT-licensed. See [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md), including the Carto notice shipped with the mod.
+The project-owned mod source is copyright © 2026 Liuiuera and licensed under [GPL-3.0-only](../LICENSE). See the [third-party notices](THIRD_PARTY_NOTICES.md) for component licenses.
 
 ## Contributors
 

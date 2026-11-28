@@ -8,7 +8,7 @@
 
 CSLModernMap 渲染器用于查看和绘制《城市：天际线》和《城市：天际线 II》导出的城市地图。
 
-两代游戏的导出模组源码见 [CSLModernMap-CodeMod](https://github.com/Liuiuera/CSLModernMap-CodeMod)。模组负责导出城市数据，本仓库的查看器与渲染器负责读取数据、显示地图和导出结果。
+两代游戏的[导出模组](codemod/README.zh-CN.md)负责从游戏中导出城市数据。查看器读取导出的地图，支持浏览和出图。
 
 Windows 查看器使用 WinUI，macOS 查看器使用 AppKit 和 WKWebView。两端共用渲染引擎，支持 `.cmm`、`.cmm.gz` 及历史 `.mmap`、`.mmap.gz` 文件。可以导出 PNG 图片、HTML 网页地图、RMG 和 RMP 线路项目；内嵌的 Rail Map Painter（RMP）用于编辑线路图。
 
@@ -30,6 +30,7 @@ macOS 构建及运行说明见 [macOS 查看器](dev/CSLModernMapRenderer.macOS/
 
 | 目录 | 内容 |
 | --- | --- |
+| `codemod/CS1/`、`codemod/CS2/` | 两代游戏的导出模组 |
 | `dev/CSLModernMapRenderer/winui/` | Windows 查看器 |
 | `dev/CSLModernMapRenderer.macOS/` | Intel macOS 13+ 查看器（AppKit 和 WKWebView） |
 | `dev/CSLModernMapRenderer/csmodernmap/` | Python 数据读取、地图渲染与导出引擎 |
@@ -44,7 +45,7 @@ macOS 构建及运行说明见 [macOS 查看器](dev/CSLModernMapRenderer.macOS/
 
 ### 版权与许可
 
-CSLModernMap 自有代码版权归 Liuiuera（少糖烧仙草）及相应贡献者所有。本仓库中的自有查看器、引擎和工具采用 GPL-3.0-only。第三方代码、字体、图标和衍生部分保留各自的版权与许可。
+CSLModernMap 自有代码版权归 Liuiuera（少糖烧仙草）及相应贡献者所有。本仓库中的自有游戏模组、查看器、引擎和工具采用 GPL-3.0-only。第三方代码、字体、图标和衍生部分保留各自的版权与许可。
 
 许可范围见 [LICENSING.md](LICENSING.md)，GPL 正文见 [LICENSE](LICENSE)，第三方说明见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。发行时需保留各组件的完整许可，并核对最终包内的实际依赖。
 
@@ -60,7 +61,7 @@ CSLModernMap 自有代码版权归 Liuiuera（少糖烧仙草）及相应贡献�
 
 The CSLModernMap renderer displays and renders city maps exported from Cities: Skylines and Cities: Skylines II.
 
-The source for both in-game export mods is maintained in [CSLModernMap-CodeMod](https://github.com/Liuiuera/CSLModernMap-CodeMod). The mod exports city data; the viewer and renderer in this repository read that data, display maps and export the results.
+The [in-game mods](codemod/README.md) export city data. The viewer reads those files to display and export maps.
 
 The Windows viewer uses WinUI; the macOS viewer uses AppKit and WKWebView. Both share the rendering engine and read `.cmm`, `.cmm.gz`, and legacy `.mmap` and `.mmap.gz` files. Outputs include PNG images, HTML web maps, and RMG and RMP transit projects. An embedded Rail Map Painter (RMP) editor lets you edit transit diagrams.
 
@@ -80,6 +81,7 @@ See [Build instructions](docs/构建说明.md) (Chinese) to compile the applicat
 
 | Directory | Contents |
 | --- | --- |
+| `codemod/CS1/`, `codemod/CS2/` | In-game map exporters for both games |
 | `dev/CSLModernMapRenderer/winui/` | Windows viewer |
 | `dev/CSLModernMapRenderer.macOS/` | Intel macOS 13+ viewer (AppKit and WKWebView) |
 | `dev/CSLModernMapRenderer/csmodernmap/` | Python data reader, map renderer and export engine |
@@ -94,7 +96,7 @@ Both platform clients are maintained in this repository. Windows uses WinUI and 
 
 ### Copyright and licensing
 
-CSLModernMap-owned code is copyright Liuiuera (少糖烧仙草) and its respective contributors. The project-owned viewer, engine and tools in this repository use GPL-3.0-only. Third-party code, fonts, icons and derived portions retain their respective copyrights and licenses.
+CSLModernMap-owned code is copyright Liuiuera (少糖烧仙草) and its respective contributors. The project-owned game mods, viewer, engine and tools in this repository use GPL-3.0-only. Third-party code, fonts, icons and derived portions retain their respective copyrights and licenses.
 
 See [LICENSING.md](LICENSING.md) for license scope, [LICENSE](LICENSE) for the GPL text, and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for third-party notices. Distributions must retain each component's full license and be checked against their actual bundled dependencies.
 

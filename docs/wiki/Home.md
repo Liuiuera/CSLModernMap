@@ -28,7 +28,7 @@ CSLModernMap 把《城市：天际线》和《城市：天际线 II》中的城�
 ## 项目入口
 
 - [渲染器源码](https://github.com/Liuiuera/CSLModernMap)
-- [CS2 游戏内模组源码](https://github.com/Liuiuera/CSLModernMap-CodeMod)
+- [CS1 和 CS2 游戏内模组源码](https://github.com/Liuiuera/CSLModernMap/tree/main/codemod)
 - [问题反馈](https://github.com/Liuiuera/CSLModernMap/issues)
 
 本组入门文档以当前 Windows WinUI 查看器为准。旧版 macOS 查看器的界面和操作路径有所不同。

@@ -13,8 +13,8 @@ from xml.etree import ElementTree
 
 PACKAGE = "CSLModernMapRenderer.msix"
 IDENTITY = "renderer-package.txt"
-ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_PACKAGE = ROOT / "build" / "local_payload" / PACKAGE
+CODEMOD = Path(__file__).resolve().parents[1]
+DEFAULT_PACKAGE = CODEMOD.parent / "build" / "local_payload" / PACKAGE
 _MANIFEST = "{http://schemas.microsoft.com/appx/manifest/foundation/windows10}"
 
 
@@ -23,7 +23,7 @@ def package_identity(source: Path) -> str:
         manifest = ElementTree.fromstring(archive.read("AppxManifest.xml"))
         archive.getinfo("CSLModernMapRenderer.exe")
         if "resources.pri" not in archive.namelist():
-            raise ValueError("Viewer MSIX is missing resources.pri; rebuild it with tools/renderer_msix.py.")
+            raise ValueError("Viewer MSIX is missing resources.pri; supply a complete viewer package.")
     identity = manifest.find(_MANIFEST + "Identity")
     app = manifest.find(f"{_MANIFEST}Applications/{_MANIFEST}Application[@Id='Renderer']")
     if identity is None or app is None or app.get("Executable") != "CSLModernMapRenderer.exe":
@@ -58,7 +58,7 @@ def main() -> None:
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--msix", type=Path, default=DEFAULT_PACKAGE)
-    parser.add_argument("--target", type=Path, default=ROOT / "CS2")
+    parser.add_argument("--target", type=Path, default=CODEMOD / "CS2")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
     if args.dry_run:

@@ -9,7 +9,7 @@ From the repository root, set the local reference paths and build:
 $env:CS1ManagedPath = 'D:\SteamLibrary\steamapps\common\Cities_Skylines\Cities_Data\Managed'
 $env:TmpePath = 'D:\SteamLibrary\steamapps\workshop\content\255710\1637663252'
 $env:ProceduralObjectsPath = 'D:\SteamLibrary\steamapps\workshop\content\255710\1094334744'
-dotnet build CS1\CSLModernMap.csproj -c Release
+dotnet build codemod\CS1\CSLModernMap.csproj -c Release
 ```
 
 将路径替换为本机游戏、TM:PE v11 STABLE 和 Procedural Objects 的安装目录。
@@ -20,4 +20,4 @@ archive, compiles the net35 profile, privately merges it and validates the resul
 Use `bin/private/CSLModernMap.dll` together with its `.verified.json` report.
 
 Viewer payloads are not included in the source repository. Official release
-packages supply `CSLModernMapRenderer.msix` and `renderer-package.txt`. Stage the signed viewer package into the CS1 release folder using the same staging tool described in the [root README](../README.md).
+packages supply `CSLModernMapRenderer.msix` and `renderer-package.txt`. Stage the signed viewer package into the CS1 release folder using the staging tool described in the [mod build instructions](../README.md#build).
