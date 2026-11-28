@@ -5424,7 +5424,13 @@ msgid "style.transport.fit_preview.desc"
 msgstr "依目前互動預覽顯示全圖時的大小輸出公共交通 PNG 的站點與路線標籤。其他圖示和名稱維持原有尺寸規則，標籤密度可能改變。沒有互動預覽時沿用原有尺寸。"
 
 msgid "gui.file.records_skipped"
-msgstr "{count} 個項目被略過：解析失敗。"
+msgstr "已略過 {count} 筆無法讀取的地圖記錄。"
+
+msgid "gui.file.edits_skipped"
+msgstr "無法讀取地圖編輯資料，已略過。"
+
+msgid "gui.file.poi_categories_missing"
+msgstr "部分建築缺少 POI 分類，已使用通用 POI 圖示。"
 
 msgid "gui.file.dependencies_skipped"
 msgstr "另有 {count} 個關聯項目因缺少必要資料被略過。"

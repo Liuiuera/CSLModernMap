@@ -70,8 +70,9 @@ def file_warnings(document) -> list[str]:
 
 
 def read_information(document) -> list[str]:
-    messages = [f"edits.json · {tr('gui.file.records_skipped', count=1)}"
-                for issue in document.issues if issue.code == "READ_EDITS_SKIPPED"]
+    messages = []
+    if any(issue.code == "READ_EDITS_SKIPPED" for issue in document.issues):
+        messages.append(tr("gui.file.edits_skipped"))
     if any(issue.code in {"READ_SATELLITE_SKIPPED", "SATELLITE_CAPTURE_FAILED"} for issue in document.issues):
         messages.append(tr("gui.file.satellite_skipped"))
     for code, key in (("READ_RECORD_SKIPPED", "records_skipped"),

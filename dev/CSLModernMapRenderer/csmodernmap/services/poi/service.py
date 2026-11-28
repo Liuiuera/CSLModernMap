@@ -10,7 +10,7 @@ from ..transit import build_transit_model
 from ..transit.name import resolve_stop_names
 from .catalog import PoiCatalogDefinition, PoiKindSpec, load_catalog
 from .mapping_registry import load_mapping_registry
-from .direct_mapping import load_mapping, entry_key, game_for
+from .direct_mapping import GENERIC_BUILDING_ICON, document_warnings, entry_key, game_for, load_mapping
 from .decorative import DECORATIVE_POI_KINDS
 from .merge import MergeProfile, merge, strong_name_key
 from .model import POIJobParams, PoiCatalog
@@ -21,6 +21,7 @@ from .facility import FacilityGroupCatalog, build_facility_groups
 
 FORMAL_SOURCES = frozenset({"building", "stop", "park"})
 CATALOG_SOURCES = frozenset({*FORMAL_SOURCES, "traffic_light", "highway_gate"})
+GENERIC_BUILDING_KIND = "other"
 
 
 def _value_text(value: Any) -> str:
@@ -302,7 +303,7 @@ def _collect_buildings(
 ) -> list[POI]:
     facility_catalog = facility_catalog or FacilityGroupCatalog()
     result: list[POI] = []
-    is_cs1 = game_for(mapdata) == "cs1"
+    game = game_for(mapdata)
     area_owners = {
         owner for park in _park_values(mapdata)
         if (owner := getattr(park, "owner_building_id", None)) is not None
@@ -324,12 +325,10 @@ def _collect_buildings(
                 and building_id not in group.root_building_ids):
             continue
         name = _building_name(building)
-        if is_cs1 and is_unresolved_building_name(name.text, name.source):
+        if game == "cs1" and is_unresolved_building_name(name.text, name.source):
             continue
         native_id = _value_text(getattr(building, "category_id", ""))
-        if not native_id:
-            continue
-        kind = entry_key(game_for(mapdata), native_id)
+        kind = entry_key(game, native_id) if native_id else GENERIC_BUILDING_KIND
         points = _building_points(building)
         semantic_level = SemanticLevel.BUILDING
         group_id = ""
@@ -364,7 +363,7 @@ def _collect_buildings(
             group_id=group_id,
             parent_poi_id=parent_poi_id,
             area_id=area_id,
-            icon_key=kind,
+            icon_key=kind if native_id else GENERIC_BUILDING_ICON,
             min_zoom=min_zoom,
         )
         if poi is not None:
@@ -778,7 +777,7 @@ def produce(
     merged = merge([*facility_parents, *buildings, *stops, *parks], profile)
 
     def included(poi):
-        if poi.source.kind == "custom":
+        if poi.source.kind == "custom" or poi.icon_key == GENERIC_BUILDING_ICON:
             return True
         entry = direct.get(poi.icon_key)
         if str(poi.semantic_level) == "AREA":
@@ -788,15 +787,12 @@ def produce(
     return PoiCatalog(
         pois=tuple(poi for poi in [*merged, *lights, *highway_gates, *custom]
                    if included(poi)),
-        kinds=tuple(direct),
+        kinds=(*direct, GENERIC_BUILDING_KIND),
         scope=params.scope,
         params_fingerprint=params.fingerprint,
         issues=tuple(facility_catalog.issues) + tuple(
             f"功能区 {poi.source.id} 缺少图标映射（{poi.icon_key or '主建筑原生条目 ID 缺失'}），未生成图标。"
             for poi in parks if poi.icon_key not in direct
-        ) + ((
-            "建筑缺少原生条目 ID，请使用新版导出器重新导出地图。",)
-            if any(not _value_text(getattr(b, "category_id", ""))
-                   for b in getattr(mapdata, "buildings", ())) else ()),
+        ) + tuple(document_warnings(mapdata)),
         facility_groups=tuple(facility_catalog.groups),
     )

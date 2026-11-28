@@ -5776,7 +5776,13 @@ msgid "style.transport.fit_preview.desc"
 msgstr "按当前交互预览适应全图时的大小输出公共交通 PNG 的站点与线路标签。其他图标和名称保持原有尺寸规则，标签密度可能改变。无交互预览时沿用原有尺寸。"
 
 msgid "gui.file.records_skipped"
-msgstr "{count} 个项目被跳过：解析失败。"
+msgstr "已跳过 {count} 条无法读取的地图记录。"
+
+msgid "gui.file.edits_skipped"
+msgstr "地图编辑数据无法读取，已跳过。"
+
+msgid "gui.file.poi_categories_missing"
+msgstr "部分建筑缺少 POI 分类，已使用通用 POI 图标。"
 
 msgid "gui.file.dependencies_skipped"
 msgstr "另有 {count} 个关联项目因缺少必要数据被跳过。"

@@ -5663,7 +5663,13 @@ msgid "style.transport.fit_preview.desc"
 msgstr "Size transit PNG station symbols and route labels to match the current full-map interactive preview. Other icons and names keep their current sizing; label density may change. Without an interactive preview, existing sizing applies."
 
 msgid "gui.file.records_skipped"
-msgstr "{count} items were skipped: parsing failed."
+msgstr "Skipped unreadable map records ({count})."
+
+msgid "gui.file.edits_skipped"
+msgstr "Saved map edits could not be read and were skipped."
+
+msgid "gui.file.poi_categories_missing"
+msgstr "Some buildings have no POI category and use a generic POI icon."
 
 msgid "gui.file.dependencies_skipped"
 msgstr "Another {count} related items were skipped because required data is missing."

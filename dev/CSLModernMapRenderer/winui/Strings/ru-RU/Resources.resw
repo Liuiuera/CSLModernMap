@@ -4407,7 +4407,9 @@ Shaotang Shaoxiancao Codex</value>
   <data name="Poi_ShowDecorative" xml:space="preserve"><value>Показывать декоративные POI</value></data>
   <data name="Poi_ShowDecorativeHint" xml:space="preserve"><value>Показывать значки и названия декораций из списка. Здания и объекты карты остаются видимыми.</value></data>
   <data name="MetroSettings_Reset" xml:space="preserve"><value>Восстановить по умолчанию</value></data>
-  <data name="Preview_Failed" xml:space="preserve"><value>Не удалось загрузить предпросмотр</value></data>
+  <data name="Preview_Failed" xml:space="preserve"><value>Не удалось загрузить интерактивный предпросмотр</value></data>
+  <data name="Preview_FellBackToImage" xml:space="preserve"><value>Не удалось загрузить интерактивный предпросмотр. Включён предпросмотр в виде изображения</value></data>
+  <data name="MapRead_NoticeTitle" xml:space="preserve"><value>Карта открыта</value></data>
   <data name="Preview_Recovering" xml:space="preserve"><value>Восстановление предпросмотра карты…</value></data>
   <data name="Preview_Slow" xml:space="preserve"><value>Предпросмотр загружается дольше обычного</value></data>
   <data name="Preview_Stopped" xml:space="preserve"><value>Просмотрщик не запущен</value></data>

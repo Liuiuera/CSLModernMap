@@ -4462,7 +4462,9 @@ Do you want to save your current changes?</value></data>
   <data name="MetroSettings_Reset" xml:space="preserve"><value>Restore defaults</value></data>
   <data name="Satellite_LayerTitle" xml:space="preserve"><value>Satellite imagery</value></data>
   <data name="Satellite_Composing" xml:space="preserve"><value>Compositing satellite imagery…</value></data>
-  <data name="Preview_Failed" xml:space="preserve"><value>Map preview could not load</value></data>
+  <data name="Preview_Failed" xml:space="preserve"><value>The interactive preview failed to load</value></data>
+  <data name="Preview_FellBackToImage" xml:space="preserve"><value>The interactive preview failed to load. Switched to image preview</value></data>
+  <data name="MapRead_NoticeTitle" xml:space="preserve"><value>Map opened</value></data>
   <data name="Preview_Recovering" xml:space="preserve"><value>Restoring map preview…</value></data>
   <data name="Preview_Slow" xml:space="preserve"><value>Map preview is taking longer</value></data>
   <data name="Preview_Stopped" xml:space="preserve"><value>Previewer is not running</value></data>

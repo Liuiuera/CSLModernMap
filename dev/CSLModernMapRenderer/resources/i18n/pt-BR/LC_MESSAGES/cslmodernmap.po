@@ -5472,7 +5472,13 @@ msgid "style.transport.fit_preview.desc"
 msgstr "Ajusta os símbolos de estações e os rótulos do PNG de transporte à prévia interativa do mapa inteiro. Outros ícones e nomes mantêm seus tamanhos; a densidade pode mudar. Sem prévia interativa, são usados os tamanhos existentes."
 
 msgid "gui.file.records_skipped"
-msgstr "{count} itens foram ignorados: falha na análise."
+msgstr "Registros ilegíveis do mapa ignorados ({count})."
+
+msgid "gui.file.edits_skipped"
+msgstr "As edições salvas do mapa não puderam ser lidas e foram ignoradas."
+
+msgid "gui.file.poi_categories_missing"
+msgstr "Alguns edifícios não têm categoria de POI e usam um ícone genérico de POI."
 
 msgid "gui.file.dependencies_skipped"
 msgstr "Outros {count} itens relacionados foram ignorados porque faltam dados necessários."

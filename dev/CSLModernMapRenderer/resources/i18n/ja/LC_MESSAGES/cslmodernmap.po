@@ -5295,7 +5295,13 @@ msgid "style.transport.fit_preview.desc"
 msgstr "交通 PNG の駅記号と路線ラベルを、現在の全体表示プレビューのサイズに合わせます。他のアイコンと名称は従来のサイズを維持し、ラベル密度は変わる場合があります。対話型プレビューがない場合は従来のサイズを使用します。"
 
 msgid "gui.file.records_skipped"
-msgstr "{count} 件の項目をスキップしました：解析に失敗しました。"
+msgstr "読み込めなかった地図データを {count} 件スキップしました。"
+
+msgid "gui.file.edits_skipped"
+msgstr "保存された地図の編集データを読み込めなかったため、スキップしました。"
+
+msgid "gui.file.poi_categories_missing"
+msgstr "一部の建物に POI 分類がないため、汎用の POI アイコンを使用しています。"
 
 msgid "gui.file.dependencies_skipped"
 msgstr "必要なデータがないため、関連する項目をさらに {count} 件スキップしました。"

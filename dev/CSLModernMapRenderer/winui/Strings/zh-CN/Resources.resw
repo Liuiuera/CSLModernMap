@@ -4462,7 +4462,9 @@ Esc  取消当前任务</value>
   <data name="MetroSettings_Reset" xml:space="preserve"><value>恢复默认</value></data>
   <data name="Satellite_LayerTitle" xml:space="preserve"><value>卫星影像</value></data>
   <data name="Satellite_Composing" xml:space="preserve"><value>正在合成卫星影像…</value></data>
-  <data name="Preview_Failed" xml:space="preserve"><value>地图预览无法加载</value></data>
+  <data name="Preview_Failed" xml:space="preserve"><value>交互预览加载失败</value></data>
+  <data name="Preview_FellBackToImage" xml:space="preserve"><value>交互预览加载失败，已切换到图片预览</value></data>
+  <data name="MapRead_NoticeTitle" xml:space="preserve"><value>地图已打开</value></data>
   <data name="Preview_Recovering" xml:space="preserve"><value>正在恢复地图预览…</value></data>
   <data name="Preview_Slow" xml:space="preserve"><value>地图预览耗时较长</value></data>
   <data name="Preview_Stopped" xml:space="preserve"><value>预览器未运行</value></data>

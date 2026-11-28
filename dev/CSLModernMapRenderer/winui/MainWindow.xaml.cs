@@ -108,6 +108,7 @@ public sealed partial class MainWindow : Window
 
         OperationError.RegisterPropertyChangedCallback(InfoBar.MessageProperty, (_, _) => OperationError.Content = null);
         OperationError.Closed += (_, _) => { TryShowSimplifiedRibbonIntro(); TryShowMapInteractionGuide(); };
+        MapReadNotice.Closed += (_, _) => { TryShowSimplifiedRibbonIntro(); TryShowMapInteractionGuide(); };
         OperationError.RegisterPropertyChangedCallback(InfoBar.SeverityProperty, (_, _) =>
         {
             if (OperationError.Severity != InfoBarSeverity.Error) OperationError.Content = null;
@@ -574,6 +575,8 @@ public sealed partial class MainWindow : Window
         ++_documentGeneration;
         _documentLoaded = false;
         OperationError.IsOpen = false;
+        MapReadNotice.IsOpen = false;
+        MapReadItems.ItemsSource = null;
         ResetPreview();
         ResetCompatibilityImage();
         _exportWindow?.ForceClose();
@@ -983,6 +986,9 @@ public sealed partial class MainWindow : Window
                 if (payload.GetProperty("source").GetString() == "open")
                 {
                     _documentLoaded = true;
+                    if (payload.TryGetProperty("warnings", out var warnings) ||
+                        payload.GetProperty("info").TryGetProperty("fileWarnings", out warnings))
+                        UpdateMapReadNotice(warnings);
                     if (_compatibilityPreview) QueueCompatibilityPreview(immediate: true);
                     _ = SafeRequestAsync("getMapStatistics");
                     if (!_viewerReady && !_previewStarting && !_previewRecovering)
@@ -992,10 +998,6 @@ public sealed partial class MainWindow : Window
                     }
                     ApplyMapTaskState();
                 }
-                if (payload.GetProperty("source").GetString() == "open" &&
-                    payload.GetProperty("info").TryGetProperty("fileWarnings", out var fileWarnings) &&
-                    fileWarnings.GetArrayLength() > 0)
-                    ShowNotice(string.Join("\n", fileWarnings.EnumerateArray().Select(warning => warning.GetString())));
                 _ = RunAsync(RefreshSnapshotAsync);
                 break;
             case "sceneCompiled":
@@ -1039,8 +1041,8 @@ public sealed partial class MainWindow : Window
                 _sceneId = payload.GetProperty("sceneId").GetString() ?? "";
                 _revision = payload.GetProperty("revision").GetInt32();
                 StartupTrace.Write($"Preview loadScene: epoch={_engineDocumentEpoch}, scene={_sceneId}, revision={_revision}, completion={payload.GetProperty("completion")}");
-                if (payload.TryGetProperty("warnings", out var sceneWarnings) && sceneWarnings.GetArrayLength() > 0)
-                    ShowNotice(string.Join("\n", sceneWarnings.EnumerateArray().Select(warning => warning.GetString())));
+                if (payload.TryGetProperty("warnings", out var sceneWarnings))
+                    UpdateMapReadNotice(sceneWarnings);
                 if (payload.GetProperty("completion").GetString() != "base")
                     _mapTask.Progress(95, UiLanguage.Text("MainWindow_xaml_HandleEngineEvent_284E5114E0"));
                 ApplyMapTaskState();

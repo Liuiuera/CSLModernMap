@@ -87,6 +87,15 @@ public sealed partial class MainWindow
         OperationError.IsOpen = true;
     }
 
+    private void UpdateMapReadNotice(JsonElement warnings)
+    {
+        var items = warnings.EnumerateArray().Select(warning => warning.GetString()).ToArray();
+        if (MapReadItems.ItemsSource is string[] previous && items.SequenceEqual(previous)) return;
+        MapReadItems.ItemsSource = items;
+        MapReadNotice.Title = UiLanguage.Text("MapRead_NoticeTitle");
+        MapReadNotice.IsOpen = items.Length > 0;
+    }
+
     private void UpdateMapProgress(JsonElement payload)
     {
         if (payload.TryGetProperty("format", out _) ||

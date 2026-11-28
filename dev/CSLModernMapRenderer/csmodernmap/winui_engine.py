@@ -42,6 +42,7 @@ from .map_extent import document_city_bounds, document_game, square_region
 from .map_overview import build_map_overview
 from .poi_editor_bridge import PoiEditorBridge
 from .regions import most_prosperous_window_by_size
+from .services.poi.direct_mapping import document_warnings
 from .transit_ui_schema import option_schema, validate_option, STYLE_FIELDS, LAYER_OPTIONS
 from .winui_workflows import WinuiWorkflows, METHODS as WORKFLOW_METHODS
 from csmodernmap.ui_contracts import (ExportRequest, ContextMode, RenderRegion,
@@ -253,7 +254,10 @@ class EngineServer:
             raise RuntimeError(i18n.tr('ui.winui_engine._require_document_epoch.8e11490207'))
 
     def _map_meta(self, info, source):
-        self.event("meta", {"info": info, "source": source, "documentEpoch": self._document_epoch})
+        payload = {"info": info, "source": source, "documentEpoch": self._document_epoch}
+        if source == "open":
+            payload["warnings"] = info.get("fileWarnings", []) + document_warnings(self.backend.document)
+        self.event("meta", payload)
 
     def _begin_document_replacement(self) -> None:
         self.backend.leave_document()
@@ -460,7 +464,6 @@ class EngineServer:
 
     def _render_warnings(self, *, road_order=None, include_read_info=True, document=None, stats=None):
         from .cmm.file_format import read_information
-        from .services.poi.direct_mapping import document_warnings
         from .schematic_water import water_warning
         from .preview_road_order import road_warning
         if stats is None:

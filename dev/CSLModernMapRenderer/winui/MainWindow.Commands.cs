@@ -182,7 +182,7 @@ public sealed partial class MainWindow
 
     private void TryShowSimplifiedRibbonIntro()
     {
-        if (!_simplifiedIntroPending || _mapGuideOpen || _draftWelcomeOpen || _closing || !_viewerReady || _mapTask.Active || _mapTask.Phase == MapTaskPhase.Error || _engineBusy || OperationError.IsOpen ||
+        if (!_simplifiedIntroPending || _mapGuideOpen || _draftWelcomeOpen || _closing || !_viewerReady || _mapTask.Active || _mapTask.Phase == MapTaskPhase.Error || _engineBusy || OperationError.IsOpen || MapReadNotice.IsOpen ||
             Ribbon.DisplayMode != RibbonDisplayMode.Classic || Root.XamlRoot is null) return;
         _simplifiedIntroPending = false;
         var tip = _simplifiedRibbonIntro = new TeachingTip

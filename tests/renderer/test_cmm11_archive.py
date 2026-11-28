@@ -103,6 +103,7 @@ def test_archive_integrity_and_optional_image_recovery(tmp_path, case):
 @pytest.mark.parametrize("broken", [b"{", b"[]", b"\xff"])
 def test_unreadable_edits_keep_city_and_satellite(tmp_path, broken):
     from csmodernmap.cmm.file_format import file_warnings
+    from csmodernmap.i18n import tr
     entries = members()
     entries["edits.json"] = broken
     path = package(tmp_path / "edits.cmm", entries)
@@ -110,7 +111,7 @@ def test_unreadable_edits_keep_city_and_satellite(tmp_path, broken):
     document = load_document(path)
     assert document._archive_edits is None
     assert document._satellite_png == entries["satellite.png"]
-    assert any("edits.json" in warning for warning in file_warnings(document))
+    assert file_warnings(document) == [tr("gui.file.edits_skipped")]
     assert path.read_bytes() == original
 
 

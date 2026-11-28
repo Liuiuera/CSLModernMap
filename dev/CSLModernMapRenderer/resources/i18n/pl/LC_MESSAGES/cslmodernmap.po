@@ -5461,7 +5461,13 @@ msgid "style.transport.fit_preview.desc"
 msgstr "Dopasowuje symbole stacji i etykiety linii w PNG transportu do interaktywnego podglądu całej mapy. Pozostałe ikony i nazwy zachowują rozmiar; gęstość etykiet może się zmienić. Bez interaktywnego podglądu stosowane są dotychczasowe rozmiary."
 
 msgid "gui.file.records_skipped"
-msgstr "Pominięto {count} elementów: błąd analizy danych."
+msgstr "Pominięto nieczytelne wpisy mapy ({count})."
+
+msgid "gui.file.edits_skipped"
+msgstr "Nie udało się odczytać zapisanych zmian mapy, więc je pominięto."
+
+msgid "gui.file.poi_categories_missing"
+msgstr "Niektóre budynki nie mają kategorii POI i korzystają z ogólnej ikony POI."
 
 msgid "gui.file.dependencies_skipped"
 msgstr "Pominięto kolejne {count} powiązanych elementów z powodu braku wymaganych danych."

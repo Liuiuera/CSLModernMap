@@ -5480,7 +5480,13 @@ msgid "style.transport.fit_preview.desc"
 msgstr "Stationssymbole und Linienbeschriftungen im ÖPNV-PNG an die interaktive Gesamtvorschau anpassen. Andere Symbole und Namen behalten ihre Größe; die Beschriftungsdichte kann sich ändern. Ohne interaktive Vorschau gilt die bisherige Größe."
 
 msgid "gui.file.records_skipped"
-msgstr "{count} Einträge wurden übersprungen: Fehler beim Einlesen."
+msgstr "Unlesbare Karteneinträge übersprungen ({count})."
+
+msgid "gui.file.edits_skipped"
+msgstr "Gespeicherte Kartenänderungen konnten nicht gelesen werden und wurden übersprungen."
+
+msgid "gui.file.poi_categories_missing"
+msgstr "Einige Gebäude haben keine POI-Kategorie und verwenden ein allgemeines POI-Symbol."
 
 msgid "gui.file.dependencies_skipped"
 msgstr "Weitere {count} verknüpfte Einträge wurden übersprungen, da erforderliche Daten fehlen."

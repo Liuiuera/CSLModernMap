@@ -84,6 +84,13 @@ public sealed partial class MainWindow
                     if (Current())
                     {
                         CompatibilityImage.Source = bitmap;
+                        if (_previewFailure is not null && OperationError.IsOpen && OperationError.Message == _previewFailure)
+                        {
+                            var actions = OperationError.Content;
+                            OperationError.Severity = InfoBarSeverity.Warning;
+                            OperationError.Message = UiLanguage.Text("Preview_FellBackToImage");
+                            OperationError.Content = actions;
+                        }
                         CompleteMapTask(_mapTask.Generation);
                     }
                 }

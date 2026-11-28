@@ -5505,7 +5505,13 @@ msgid "style.transport.fit_preview.desc"
 msgstr "Ajusta los símbolos de estación y las etiquetas del PNG de transporte a la vista previa interactiva del mapa completo. Los demás iconos y nombres conservan su tamaño; la densidad puede cambiar. Sin vista previa interactiva se usa el tamaño habitual."
 
 msgid "gui.file.records_skipped"
-msgstr "Se omitieron {count} elementos: error de análisis."
+msgstr "Se omitieron los registros del mapa que no se pudieron leer ({count})."
+
+msgid "gui.file.edits_skipped"
+msgstr "No se pudieron leer los cambios guardados del mapa y se omitieron."
+
+msgid "gui.file.poi_categories_missing"
+msgstr "Algunos edificios no tienen categoría de POI y usan un icono genérico de POI."
 
 msgid "gui.file.dependencies_skipped"
 msgstr "Se omitieron otros {count} elementos relacionados porque faltan datos necesarios."
