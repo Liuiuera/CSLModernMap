@@ -110,14 +110,15 @@ public sealed partial class MainWindow
             foreach (ComboBoxItem item in _overviewTheme.Items)
                 if (item.Tag is string id && id == _snapshot.GetProperty("theme").GetString()) _overviewTheme.SelectedItem = item;
             var info = _snapshot.GetProperty("cityInfo");
+            var available = CurrentDocumentAvailable;
             // 统计由引擎算好下发；未装城市时不编数字。
             var stats = _snapshot.TryGetProperty("stats", out var node) ? node : default;
-            var ready = stats.ValueKind == JsonValueKind.Object
+            var ready = available && stats.ValueKind == JsonValueKind.Object
                         && stats.TryGetProperty("available", out var flag) && flag.GetBoolean();
             foreach (var (key, control) in _overviewStats)
             {
                 var text = "—";
-                if (key == "name")
+                if (key == "name" && available)
                     text = info.TryGetProperty("name", out var city) && city.GetString() is { Length: > 0 } name ? name : "—";
                 else if (ready) text = key switch
                 {

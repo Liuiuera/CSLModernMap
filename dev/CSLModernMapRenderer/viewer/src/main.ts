@@ -14,7 +14,7 @@ import { Preview3D, BUILDINGS_3D, CAMERA_TRANSITION_MS } from './preview-3d';
 import { PreviewControls } from './preview-controls';
 import {ArtworkView, type ArtworkDelivery, type ArtworkTool, type ArtworkObserveAction, type ArtworkPick} from './artwork-view';
 import { trafficColor as trafficColorExpression } from './traffic-paint';
-import {applyPreviewQuality, DEFAULT_PREVIEW_QUALITY, htmlPreviewQuality, previewTolerance, readPreviewQuality,
+import {applyPreviewQuality, htmlPreviewQuality, previewTolerance, readPreviewQuality,
   type PreviewQuality} from './preview-quality';
 import type { Edge, Endpoint, NavigationPackage } from './routing/types';
 
@@ -53,7 +53,7 @@ type RoadPaint = { fill: string; border: string; lineWidth: number; borderPx: nu
 type RoadTheme = { background: string; sizeContract: 'pixel-v2'; opacity?: number; levels: Record<string, RoadPaint> };
 type FullTheme = Record<string, any> & { road: RoadTheme };
 type SceneManifest = { performanceDiagnostics?: boolean; schemaVersion: number; sceneId: string; revision: number;
-  htmlQuality?: string;
+  htmlQuality?: string; completion?: 'base' | 'complete';
   roadOrder?: {flatGroups?: unknown[]};
   world: { bounds?: [number, number, number, number]; geoBounds: [[number, number], [number, number]] }; sources: Record<string, string>;
   sourceRevisions: Record<string, number>; poiAtlas: { image: string; index: string };
@@ -165,7 +165,7 @@ const sourceIds: Record<string, string> = { roads: 'roads',
   proceduralObjects: 'procedural-objects', inspectorSelection: 'inspector-selection', searchSelection: 'search-selection',
   buildingHighlight: 'building-highlight' };
 let previewQuality = EMBEDDED ? htmlPreviewQuality(window.__CSL_SCENE__!.manifest.htmlQuality ?? 'standard')
-  : readPreviewQuality(window.__CSL_PREVIEW_QUALITY__ ?? DEFAULT_PREVIEW_QUALITY);
+  : readPreviewQuality(window.__CSL_PREVIEW_QUALITY__);
 const groups: Record<string, string[]> = {
   satellite: ['satellite'], terrain: ['terrain', 'forest'], built_area: ['built-area', 'built-area-surface'], poi_area: ['poi-area'], land_use: ['land-use'],
   water: ['water-fill', 'water-shore'], building: ['buildings'],
@@ -197,7 +197,7 @@ const customLayers: string[] = [];
 type LabelMarker = {marker: Marker; group: string; labelType: string; featureColor?: string; transitStationName?: boolean};
 const markers = new Map<string, LabelMarker>();
 let currentSceneId = '', currentRevision = -1, loadGeneration = 0;
-let artworkSceneReady = true;
+let presentedRevision = -1;
 let focusAnimationGeneration = 0;
 let sourceData: Record<string, any> = {};
 let mapPoiDisplayFeatures: any[] = [];
@@ -242,7 +242,6 @@ const areaSurfaces: Partial<Record<keyof typeof areaSources, AreaSurfaceLayer>> 
 function usesAreaSurfaces(manifest: SceneManifest | null): boolean {
   return !EMBEDDED && !QUALITY_SAMPLE && manifest?.areaSurfaces === true;
 }
-let pendingBuiltSurface: { image: ImageBitmap; spec: SurfaceDistanceSpec } | null = null;
 let inspectorSelectionId = '';
 let inspectorSelectedFeature: any | null = null;
 const watermark = document.createElement('div');
@@ -258,7 +257,7 @@ function postEvent(type: string, payload: Record<string, unknown> = {}): void {
 }
 function reportError(error: unknown, identity?: {sceneId?: string; revision?: number; stage?: string}, fatal = true): void {
   const message = error instanceof Error ? error.message : String(error);
-  setError(i18n.t("main_reportError_8a023d6da8", { p0: message }));
+  if (fatal) setError(i18n.t("main_reportError_8a023d6da8", { p0: message }));
   postEvent('renderError', { message, fatal, details: error instanceof Error ? error.stack : message, ...identity });
 }
 const map: MapLibreMap = new maplibregl.Map({ container: 'map', style: { version: 8, sources: {},
@@ -271,7 +270,8 @@ window.addEventListener('resize', () => {
   const ratio = window.devicePixelRatio * previewQuality.pixelScale;
   if (map.getPixelRatio() !== ratio) map.setPixelRatio(ratio);
 });
-map.on('error', event => reportError(event.error, undefined, false));
+let mapStarted = false;
+map.on('error', event => reportError(event.error, undefined, !mapStarted));
 map.on('webglcontextlost', () => postEvent('previewContextLost'));
 map.on('webglcontextrestored', () => postEvent('previewContextRestored'));
 const artworkView = new ArtworkView(map,
@@ -302,7 +302,7 @@ const previewControls = new PreviewControls(navigation, feature => {
   setFeatureHighlight('search-selection', feature);
 }, (layer, visible) => {
   if (EMBEDDED) {
-    void setLayerVisibility(layer, visible).catch(reportError).finally(() => updateQuickLayers(true));
+    void setLayerVisibility(layer, visible).catch(error => reportError(error, undefined, false)).finally(() => updateQuickLayers(true));
   } else postEvent('requestLayerVisibility', {layer, visible});
 }, () => fitBounds(CAMERA_TRANSITION_MS), delta => {
   navigation.simulation.stop(); map.zoomTo(map.getZoom() + delta);
@@ -318,16 +318,16 @@ function updateZoomControls(): void {
 }
 map.on('zoom', updateZoomControls); updateZoomControls();
 
+const sourceGroups: Record<string, string[]> = {
+  satellite: ['satellite'], terrain: ['terrain', 'forest'], built_area: ['builtArea'], land_use: ['landUse', 'buildings'], water: ['water'],
+  road: ['roads'], building: ['buildings'], railway: ['railway'], traffic: ['traffic'],
+  metro: ['transit', 'stations'], transit: ['transit', 'stations'], poi_area: ['buildings'],
+  label: ['labels'], poi: ['pois', 'transitViewPois'], district: ['districts'], zone: ['zones'], procedural_objects: ['proceduralObjects'],
+};
 function updateQuickLayers(settled = false, pending?: string[]): void {
   if (!currentManifest) return;
   const sources = currentManifest.sources;
   const available = new Set<string>(['label', 'watermark']);
-  const sourceGroups: Record<string, string[]> = {
-    satellite: ['satellite'], terrain: ['terrain', 'forest'], built_area: ['builtArea'], land_use: ['landUse', 'buildings'], water: ['water'],
-    road: ['roads'], building: ['buildings'], railway: ['railway'], traffic: ['traffic'],
-    metro: ['transit', 'stations'], transit: ['transit', 'stations'], poi_area: ['buildings'],
-    poi: ['pois', 'transitViewPois'], district: ['districts'], zone: ['zones'], procedural_objects: ['proceduralObjects'],
-  };
   for (const [key, names] of Object.entries(sourceGroups)) if (names.some(name => name in sources)) available.add(key);
   available.delete(contextMode === 'transit' ? 'metro' : 'transit');
   if (currentManifest.terrainCorners?.length) available.add('terrain');
@@ -952,7 +952,7 @@ async function syncTraffic(): Promise<void> {
     trafficSourceRevision = manifest.sourceRevisions.traffic;
     addTrafficLayers(); applyRenderStack(); applyContextStyling();
   } catch (error) {
-    if (!request.signal.aborted) throw error;
+    if (!request.signal.aborted) reportError(error, {sceneId: manifest.sceneId, revision: manifest.revision, stage: 'traffic'}, false);
   } finally {
     if (trafficRequest === request) trafficRequest = null;
   }
@@ -1020,14 +1020,7 @@ function addDomains(): void {
   add({ id: 'forest', type: 'circle', source: 'forest', paint: {
     'circle-color': land.forest ?? '#B8DCA0', 'circle-radius': ['interpolate', ['linear'], ['zoom'], 8, 1, 15, 7],
     'circle-opacity': .58 } });
-  if (pendingBuiltSurface) {
-    const paint = token('built_area');
-    builtSurfaceLayer = new SurfaceDistanceLayer(
-      'built-area-surface', pendingBuiltSurface.image, pendingBuiltSurface.spec,
-      { color: paint.fill ?? '#F1F0EB', opacity: Number(paint.opacity ?? 1),
-        bufferMeters: paint.includeParks ? 0 : Number(paint.bufferMeters ?? 60), edgeMeters: Number(paint.edgeMeters ?? 0) });
-    add(builtSurfaceLayer);
-  } else if (map.getSource('built-area')) add({ id: 'built-area', type: 'fill', source: 'built-area', paint: {
+  if (map.getSource('built-area')) add({ id: 'built-area', type: 'fill', source: 'built-area', paint: {
     'fill-color': token('built_area').fill ?? '#F1F0EB', 'fill-opacity': token('built_area').opacity ?? 1 } });
   addLandUseLayer();
   add({ id: 'poi-area', type: 'fill', source: 'buildings', paint: {
@@ -1268,6 +1261,18 @@ function applyTheme(theme: FullTheme): void {
 }
 let satellitePreviousLayers: Record<string, boolean> | null = null;
 async function setLayerVisibility(layer: string, visible: boolean): Promise<void> {
+  if (layer === 'satellite' && visible && currentManifest?.satelliteSize) {
+    const gl = map.getCanvas().getContext('webgl2');
+    if (gl) {
+      const limit = gl.getParameter(gl.MAX_TEXTURE_SIZE) as number;
+      const size = Math.max(...currentManifest.satelliteSize);
+      if (size > limit) {
+        currentManifest.layers.satellite = false;
+        reportError(new Error(i18n.t('satellite_texture_limit', {size, limit})), undefined, false);
+        return;
+      }
+    }
+  }
   if (EMBEDDED && layer === 'satellite' && currentManifest && visible !== currentManifest.layers.satellite) {
     if (visible) {
       satellitePreviousLayers = {...currentManifest.layers};
@@ -1293,6 +1298,7 @@ async function setLayerVisibility(layer: string, visible: boolean): Promise<void
   for (const item of markers.values()) if (item.group === layer) item.marker.getElement().style.display = visible ? '' : 'none';
   if (layer === 'watermark') watermark.style.display = visible ? '' : 'none';
   if (currentManifest) currentManifest.layers[layer] = visible;
+  if (visible) requestLayerSources?.(layer);
   if (layer === 'traffic') {
     for (const checkbox of document.querySelectorAll<HTMLInputElement>('input[data-layer="traffic"]')) checkbox.checked = visible;
     await syncTraffic();
@@ -1304,7 +1310,7 @@ async function setLayerVisibility(layer: string, visible: boolean): Promise<void
   artworkView.keepOverlayLayersHidden();
   labelLayoutKey = '';
   scheduleLabels();
-  updateQuickLayers();
+  if (presentedRevision === currentRevision) updateQuickLayers();
 }
 function applyContextStyling(): void {
   updateBaseTextLayers();
@@ -1667,7 +1673,7 @@ function clearScene(): void {
   transitStationDisplayFeatures = []; mapPoiDisplayFeatures = []; transitPoiDisplayFeatures = [];
   for (const layer of roadLayers) delete selectableObjects[layer.id];
   roadLayers = [];
-  builtSurfaceLayer = null; pendingBuiltSurface = null;
+  builtSurfaceLayer = null;
   for (const kind of areaKinds) delete areaSurfaces[kind];
 }
 function stationVisibility(): (feature: any) => boolean {
@@ -1838,7 +1844,7 @@ function updateBaseTextLayers(): void {
     map.setPaintProperty(id, 'text-halo-blur', labelHalo(labelType) ? nativeTextSize(labelType, 'blur') : 0);
   }
 }
-async function loadSceneFonts(manifest: SceneManifest, base: string): Promise<void> {
+async function loadSceneFonts(manifest: SceneManifest, base: string, current: () => boolean, warn: (error: unknown) => void): Promise<void> {
   const assets = new Map(Object.values(manifest.fonts ?? {}).map(asset => [asset.family, asset]));
   await Promise.all([...assets.values()].map(async asset => {
     if (loadedFonts.has(asset.family)) return;
@@ -1849,9 +1855,11 @@ async function loadSceneFonts(manifest: SceneManifest, base: string): Promise<vo
     const font = await new FontFace(asset.family, `url("${url}")`, {
       weight: asset.family.endsWith('-Bold') ? '700' : '400',
     }).load();
+    if (!current()) return;
     document.fonts.add(font);
     loadedFonts.add(asset.family);
-  }));
+    labelLayoutKey = ''; scheduleLabels();
+  }).map(task => task.catch(warn)));
 }
 function cancelLabelLayout(): void {
   window.clearTimeout(labelTimer); labelTimer = 0; labelDirty = false; labelLayoutTime = -Infinity;
@@ -2271,254 +2279,287 @@ function embeddedProvider(): ResourceProvider {
     },
   };
 }
-// 读取场景清单及资源，并把完整场景发布到预览地图。
+const appliedSources = new Map<string, number>();
+let requestedScene = '', requestedSceneRevision = -1;
+let requestLayerSources: ((layer: string) => void) | undefined;
+let presentationListener: (() => void) | undefined;
+
+function applySceneSource(manifest: SceneManifest, key: string, data: any): void {
+  const id = sourceIds[key];
+  sourceData[key] = data;
+  if (!id || key === 'pois' || key === 'transitViewPois') return;
+  if (usesAreaSurfaces(manifest) && (key === 'districts' || key === 'zones')) {
+    areaSurfaces[key === 'districts' ? 'district' : 'zone']?.setFeatures(data.features);
+    return;
+  }
+  if (key === 'roads') {
+    navigationRoadProperties.clear();
+    for (const feature of data.features) {
+      const properties = feature.properties, id = String(properties.roadId);
+      if (properties.geometryRole === 'road-surface' || !navigationRoadProperties.has(id))
+        navigationRoadProperties.set(id, properties);
+    }
+  }
+  const source = map.getSource(id) as maplibregl.GeoJSONSource | undefined;
+  if (source) source.setData(data);
+  else map.addSource(id, {type: 'geojson', data, maxzoom: key === 'labels' ? 14 : 18,
+    buffer: 256, tolerance: previewTolerance(key, previewQuality), promoteId: 'featureId'});
+}
+
+async function applySceneIcons(provider: ResourceProvider, manifest: SceneManifest, current: () => boolean): Promise<void> {
+  const atlasIndex = await provider.json(new URL(manifest.poiAtlas.index, provider.base));
+  if (!current()) return;
+  const atlas = await provider.image(manifest.poiAtlas.image);
+  try {
+    if (!current()) return;
+    const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d', {willReadFrequently: true})!;
+    const searchIcons = new Map<string, ImageData>();
+    for (const [id, entry] of Object.entries(atlasIndex as Record<string, any>)) {
+      canvas.width = entry.width; canvas.height = entry.height;
+      ctx.drawImage(atlas, entry.x, entry.y, entry.width, entry.height, 0, 0, entry.width, entry.height);
+      const pixels = ctx.getImageData(0, 0, entry.width, entry.height);
+      searchIcons.set(id, pixels);
+      if (map.hasImage(id)) map.updateImage(id, pixels); else map.addImage(id, pixels, {pixelRatio: entry.pixelRatio});
+      registeredIcons.add(id);
+    }
+    previewControls.setSearchIcons(searchIcons);
+  } finally { atlas.close(); }
+}
+async function applyInterchangeIcon(manifest: SceneManifest, current: () => boolean): Promise<void> {
+  const interchangeIcon = manifest.theme.transit?.interchangeIcon;
+  if (interchangeIcon && !map.hasImage('cmm-station-interchange')) {
+    const image = new Image();
+    image.src = interchangeIcon;
+    await image.decode();
+    if (!current() || map.hasImage('cmm-station-interchange')) return;
+    const canvas = document.createElement('canvas'); canvas.width = canvas.height = 64;
+    const ctx = canvas.getContext('2d')!;
+    ctx.imageSmoothingQuality = 'high'; ctx.drawImage(image, 0, 0, 64, 64);
+    map.addImage('cmm-station-interchange', ctx.getImageData(0, 0, 64, 64), {pixelRatio: 4});
+  }
+}
+
+function builtAreaFill(): void {
+  if (map.getLayer('built-area-surface')) map.removeLayer('built-area-surface');
+  builtSurfaceLayer = null;
+  if (!map.getLayer('built-area') && map.getSource('built-area'))
+    map.addLayer({id: 'built-area', type: 'fill', source: 'built-area', paint: {
+      'fill-color': token('built_area').fill ?? '#F1F0EB', 'fill-opacity': token('built_area').opacity ?? 1}},
+      map.getLayer('land-use') ? 'land-use' : undefined);
+  if (!customLayers.includes('built-area')) customLayers.push('built-area');
+}
+
 async function loadScene(provider: ResourceProvider, requestedRevision: number,
-  trace = new PreviewPerformance(), preserveArtwork = false): Promise<void> {
-  artworkSceneReady = false;
+  trace = new PreviewPerformance(), preserveArtwork = false, scene = ''): Promise<void> {
+  if (requestedRevision < requestedSceneRevision) return;
+  if (requestedScene !== scene || requestedSceneRevision !== requestedRevision) ++loadGeneration;
+  requestedScene = scene; requestedSceneRevision = requestedRevision;
+  const generation = loadGeneration;
+  const manifestUrl = provider.base;
+  let manifest: SceneManifest;
+  try { manifest = await provider.json(new URL(manifestUrl)) as SceneManifest; }
+  catch (error) { if (generation !== loadGeneration) return; throw error; }
+  const manifestReady = performance.now();
+  const completion = manifest.completion ?? 'complete';
+  const bundleId = new URL(manifestUrl).pathname.split('/').at(-2);
+  const identity = {sceneId: manifest.sceneId, revision: requestedRevision, bundleId, completion};
+  if (generation !== loadGeneration || manifest.revision !== requestedRevision || manifest.revision < currentRevision ||
+      completion === 'base' && currentManifest?.sceneId === manifest.sceneId &&
+      currentRevision === requestedRevision && currentManifest.completion === 'complete') return;
+  if (manifest.schemaVersion !== 1) throw new Error(i18n.t("main_loadScene_2197b880cc", { p0: manifest.schemaVersion }));
+  if (EMBEDDED && !('metro' in manifest.layers) && 'transit' in manifest.layers) manifest.layers.metro = manifest.layers.transit;
+  trace.enabled = !!manifest.performanceDiagnostics;
+  trace.record('manifest', trace.origin);
+  const sourceVersion = (key: string) => manifest.sourceRevisions[key === 'builtSurface' ? 'builtArea' : key] ?? requestedRevision;
+  const needs = (key: string) => currentSceneId !== manifest.sceneId ||
+    appliedSources.get(key) !== sourceVersion(key);
+  const changed = currentSceneId !== manifest.sceneId;
+  const previous = currentManifest;
+  if (changed) presentedRevision = -1;
+  const hasMap = presentedRevision >= 0;
+  const current = () => currentManifest === manifest && generation === loadGeneration;
+  const warn = (error: unknown) => {
+    if (current()) reportError(error, {...identity, stage: 'resource'}, false);
+  };
+  if (presentationListener) map.off('idle', presentationListener);
+  presentationListener = undefined;
+  requestLayerSources = undefined;
   if (preserveArtwork) artworkView.prepareSceneChange();
   else artworkView.leave();
-  const loadStarted = trace.origin;
-  const generation = ++loadGeneration;
-  const manifestUrl = provider.base;
-  const manifest = await provider.json(new URL(manifestUrl)) as SceneManifest;
-  const manifestReady = performance.now();
-  trace.enabled = !!manifest.performanceDiagnostics;
-  trace.record('manifest', loadStarted);
-  const originalProvider = provider;
-  provider = {...originalProvider,
-    json: (url, _trace, signal) => trace.async(`resource.${url.pathname.split('/').pop()}.total`,
-      () => originalProvider.json(url, trace, signal)),
-    image: url => trace.async(`resource.${url.split('?')[0]}.total`,
-      () => originalProvider.image(url, trace)),
-  };
-  if (generation !== loadGeneration || manifest.revision < currentRevision || manifest.revision !== requestedRevision) {
-    postEvent('sceneDiscarded', { sceneId: manifest.sceneId, revision: requestedRevision, outcome: 'stale' }); return;
-  }
-  if (manifest.schemaVersion !== 1) throw new Error(i18n.t("main_loadScene_2197b880cc", { p0: manifest.schemaVersion }));
-  // 早期导出只保存 transit；普通地图的交通显隐使用 metro 分组。
-  if (EMBEDDED && !('metro' in manifest.layers) && 'transit' in manifest.layers) manifest.layers.metro = manifest.layers.transit;
-  const changed = manifest.sceneId !== currentSceneId;
-  const revisionChanged = manifest.revision !== currentRevision;
-  const previousManifest = currentManifest;
-  const needs = (key: string) => changed || manifest.sourceRevisions[key] !== previousManifest?.sourceRevisions[key];
   trafficRequest?.abort();
-  if (changed || revisionChanged) {
+  if (changed || currentRevision !== requestedRevision) {
     previewControls.resetSearch(); setFeatureHighlight('search-selection', null);
   }
   if (changed) {
     ++focusAnimationGeneration; map.stop(); navigation.simulation.stop();
     clearWorldSelection(false); clearInspectorSelection(false); clearScene(); sourceData = {};
     for (const id of registeredIcons) if (map.hasImage(id)) map.removeImage(id);
-    registeredIcons.clear(); currentSceneId = ''; currentManifest = null; sceneProvider = null;
+    registeredIcons.clear(); appliedSources.clear(); previewControls.setSearchIcons(new Map());
   }
-  const entries = Object.entries(manifest.sources).filter(([key]) => key !== 'terrain' && key !== 'satellite' && key !== 'traffic' && needs(key));
-  const fetched = Object.fromEntries(await Promise.all(entries.map(async ([key, url]) => [key, await provider.json(new URL(url, manifestUrl))])));
-  let atlas: ImageBitmap | null = null, atlasIndex: Record<string, any> = {};
-  let terrainUrl: string | null = null;
-  let builtSurface: ImageBitmap | null = null;
-  const sourceStarts = new Map<string, {key: string; start: number}>();
-  const sourceReady = (event: maplibregl.MapSourceDataEvent) => {
-    const item = sourceStarts.get(event.sourceId);
-    if (item && event.isSourceLoaded) {
-      trace.record(`source_ready.${item.key}`, item.start);
-      sourceStarts.delete(event.sourceId);
+  currentSceneId = manifest.sceneId; currentRevision = manifest.revision;
+  currentManifest = manifest; currentTheme = manifest.theme; sceneProvider = provider;
+  preview3d.setAvailable(EMBEDDED || !manifest.exportRegion);
+  labelLayoutKey = '';
+  map.setMaxBounds(manifest.exportRegion ? manifest.world.geoBounds : null);
+  const landUseChanged = !changed && Boolean(manifest.sources.landUse) !== Boolean(previous?.sources.landUse);
+  if (landUseChanged && map.getLayer('land-use')) {
+    map.removeLayer('land-use'); customLayers.splice(customLayers.indexOf('land-use'), 1);
+  }
+  if (!manifest.sources.landUse && map.getSource('land-use')) {
+    map.removeSource('land-use'); delete sourceData.landUse; appliedSources.delete('landUse');
+  }
+  const mark = (key: string) => appliedSources.set(key, sourceVersion(key));
+  for (const key of Object.keys(sourceIds)) {
+    if (key === 'traffic' || key === 'landUse' && !manifest.sources.landUse) continue;
+    if (changed || previous?.sources[key] && !manifest.sources[key]) {
+      applySceneSource(manifest, key, {type:'FeatureCollection', features:[]});
+      appliedSources.delete(key);
     }
+  }
+  if (changed) addDomains();
+  if (landUseChanged) addLandUseLayer();
+  if (changed) preview3d.setBuildings([], manifest.sceneId);
+  if (preserveArtwork) artworkView.restorePaint();
+  applyRenderStack(); applyTheme(manifest.theme);
+  for (const [layer, visible] of Object.entries(manifest.layers))
+    if (layer !== 'traffic') void setLayerVisibility(layer, visible).catch(warn);
+  applyContextStyling();
+  navigation.setScene(manifest.navigation?.schemaVersion === 1
+    ? () => provider.json(new URL(manifest.navigation!.url, manifestUrl)) as Promise<NavigationPackage> : null,
+    Boolean(manifest.navigationRouteOmitted));
+  if (changed && manifest.navigationRoute && !EMBEDDED) void navigation.restoreRoute(manifest.navigationRoute).catch(warn);
+  if (changed && !artworkView.active) fitBounds();
+  let refresh = 0;
+  const refreshDetails = () => {
+    if (refresh || presentedRevision !== currentRevision) return;
+    refresh = window.setTimeout(() => {
+      refresh = 0;
+      if (!current()) return;
+      try {
+        applyContextStyling(); applyRenderStack();
+        previewControls.rebuild(sourceData, true); updateQuickLayers(true);
+        updateRoadWarning(); scheduleLabels();
+        if (preserveArtwork && artworkView.active) artworkView.refreshBase();
+      } catch (error) { warn(error); }
+    }, 0);
   };
-  if (trace.enabled) map.on('sourcedata', sourceReady);
-  try {
-    if (needs('pois') || needs('transitViewPois')) { [atlas, atlasIndex] = await Promise.all([provider.image(manifest.poiAtlas.image), provider.json(new URL(manifest.poiAtlas.index, manifestUrl))]); }
-    if (needs('terrain') && manifest.sources.terrain) {
-      terrainUrl = provider.imageUrlFor(manifest.sources.terrain);
+  const visible = Object.entries(sourceGroups)
+    .filter(([layer]) => manifest.layers[layer] ?? !['land_use', 'poi_area', 'transit'].includes(layer))
+    .flatMap(([, keys]) => keys);
+  const geometry = hasMap ? ['roads', 'buildings'] :
+    visible.filter(key => !['labels', 'pois', 'transitViewPois', 'traffic'].includes(key));
+  let showGeometry!: () => void;
+  const firstGeometry = new Promise<void>(resolve => { showGeometry = resolve; });
+  const pending = new Map<string, Promise<void>>();
+  const schedule = (key: string, action: () => Promise<void>) => {
+    if (pending.has(key)) return;
+    const task = action();
+    pending.set(key, task);
+    void task.catch(warn);
+  };
+  const loadSource = (key: string) => schedule(key, async () => {
+    const data = await provider.json(new URL(manifest.sources[key], manifestUrl), trace);
+    if (!current()) return;
+    applySceneSource(manifest, key, data); mark(key);
+    if (key === 'roads') {
+      rebuildRoadLayers();
+      await setLayerVisibility('road', manifest.layers.road !== false);
     }
-    if (needs('builtArea') && manifest.surfaceFields?.builtArea)
-      builtSurface = await provider.image(manifest.surfaceFields.builtArea.url);
-    if (needs('labelFonts')) await loadSceneFonts(manifest, manifestUrl);
-    const resourcesReady = performance.now();
-    trace.record('resources', manifestReady);
-    if (generation !== loadGeneration || manifest.revision < currentRevision) {
-      postEvent('sceneDiscarded', { sceneId: manifest.sceneId, revision: requestedRevision, outcome: 'stale' }); return;
-    }
-    const iconsStarted = performance.now();
-    if (atlas) {
-      const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d', {willReadFrequently: true})!;
-      const searchIcons = new Map<string, ImageData>();
-      for (const [id, entry] of Object.entries(atlasIndex)) {
-        canvas.width = entry.width; canvas.height = entry.height;
-        ctx.drawImage(atlas, entry.x, entry.y, entry.width, entry.height, 0, 0, entry.width, entry.height);
-        const pixels = ctx.getImageData(0, 0, entry.width, entry.height);
-        searchIcons.set(id, pixels);
-        if (map.hasImage(id)) map.updateImage(id, pixels); else map.addImage(id, pixels, {pixelRatio: entry.pixelRatio});
-        registeredIcons.add(id);
-      }
-      previewControls.setSearchIcons(searchIcons);
-    }
-    const interchangeIcon = manifest.theme.transit?.interchangeIcon;
-    if (interchangeIcon && !map.hasImage('cmm-station-interchange')) {
-      const image = new Image();
-      image.src = interchangeIcon;
-      await image.decode();
-      const canvas = document.createElement('canvas'); canvas.width = canvas.height = 64;
-      const ctx = canvas.getContext('2d')!;
-      ctx.imageSmoothingQuality = 'high'; ctx.drawImage(image, 0, 0, 64, 64);
-      map.addImage('cmm-station-interchange', ctx.getImageData(0, 0, 64, 64), {pixelRatio: 4});
-    }
-    trace.record('apply.icons', iconsStarted);
-    const surfacesStarted = performance.now();
-    currentSceneId = manifest.sceneId; currentRevision = manifest.revision;
-    currentManifest = manifest; currentTheme = manifest.theme; sceneProvider = provider;
-    preview3d.setAvailable(EMBEDDED || !manifest.exportRegion);
-    labelLayoutKey = '';
-    map.setMaxBounds(manifest.exportRegion ? manifest.world.geoBounds : null);
-    if (builtSurface && manifest.surfaceFields?.builtArea) {
-      pendingBuiltSurface = {image: builtSurface, spec: manifest.surfaceFields.builtArea};
-      if (!changed) {
-        if (map.getLayer('built-area')) map.removeLayer('built-area');
-        if (map.getLayer('built-area-surface')) map.removeLayer('built-area-surface');
-        builtSurfaceLayer = new SurfaceDistanceLayer(
-          'built-area-surface', builtSurface, manifest.surfaceFields.builtArea,
-          {color: manifest.surfaceFields.builtArea.color ?? token('built_area').fill ?? '#F1F0EB',
-            opacity: Number(token('built_area').opacity ?? 1),
-            bufferMeters: Number(manifest.surfaceFields.builtArea.bufferMeters ?? (token('built_area').includeParks ? 0 : token('built_area').bufferMeters ?? 60)),
-            edgeMeters: Number(manifest.surfaceFields.builtArea.edgeMeters ?? token('built_area').edgeMeters ?? 0)});
-        map.addLayer(builtSurfaceLayer, map.getLayer('land-use') ? 'land-use' : undefined);
-        if (!customLayers.includes('built-area-surface')) customLayers.push('built-area-surface');
-        pendingBuiltSurface = null;
-      }
-    } else if (!changed && needs('builtArea') && map.getSource('built-area')) {
+    if (key === 'buildings') preview3d.setBuildings(data.features, manifest.sceneId);
+    if (geometry.includes(key) && data.features.length) showGeometry();
+    refreshDetails();
+  });
+  const loadSurface = () => schedule('built-area-surface', async () => {
+    const spec = manifest.surfaceFields?.builtArea;
+    if (!spec || !needs('builtSurface')) return;
+    const bitmap = await provider.image(spec.url, trace);
+    try {
+      if (!current()) return;
+      const layer = new SurfaceDistanceLayer('built-area-surface', bitmap, spec, {
+        color: spec.color ?? token('built_area').fill ?? '#F1F0EB', opacity: Number(token('built_area').opacity ?? 1),
+        bufferMeters: Number(spec.bufferMeters ?? (token('built_area').includeParks ? 0 : token('built_area').bufferMeters ?? 60)),
+        edgeMeters: Number(spec.edgeMeters ?? token('built_area').edgeMeters ?? 0)});
       if (map.getLayer('built-area-surface')) map.removeLayer('built-area-surface');
-      for (const layer of roadLayers) delete selectableObjects[layer.id];
-  roadLayers = [];
-  builtSurfaceLayer = null; pendingBuiltSurface = null;
-      if (!map.getLayer('built-area')) map.addLayer({id: 'built-area', type: 'fill',
-        source: 'built-area', paint: {'fill-color': token('built_area').fill ?? '#F1F0EB',
-          'fill-opacity': token('built_area').opacity ?? 1}},
-        map.getLayer('land-use') ? 'land-use' : undefined);
-    }
-    if (needs('satellite') && manifest.sources.satellite && manifest.satelliteCorners?.length === 4) {
-      const url = provider.imageUrlFor(manifest.sources.satellite);
-      const gl = map.getCanvas().getContext('webgl2')!;
-      const limit = gl.getParameter(gl.MAX_TEXTURE_SIZE) as number;
-      if (manifest.satelliteSize && manifest.satelliteSize.some(size => size > limit))
-        throw new Error(i18n.t('satellite_texture_limit', {size: Math.max(...manifest.satelliteSize), limit}));
-      const image = {url, coordinates: manifest.satelliteCorners as [[number, number], [number, number], [number, number], [number, number]]};
-      const source = map.getSource('satellite-image') as maplibregl.ImageSource | undefined;
-      if (source) source.updateImage(image); else map.addSource('satellite-image', {type: 'image', ...image});
-      if (!changed && !map.getLayer('satellite')) {
-        map.addLayer({id: 'satellite', type: 'raster', source: 'satellite-image', paint: {'raster-fade-duration': 0}}, customLayers[0]);
-        customLayers.unshift('satellite');
-      }
-    }
-    if (terrainUrl && manifest.terrainCorners?.length === 4) {
-      // ImageSource 保持场景原点地址；MapLibre 自行读取，改为 data 地址会违反预览的连接安全策略。
-      const image = {url: terrainUrl, coordinates: manifest.terrainCorners as [[number, number], [number, number], [number, number], [number, number]]};
-      const source = map.getSource('terrain-image') as maplibregl.ImageSource | undefined;
-      if (source) source.updateImage(image); else map.addSource('terrain-image', {type: 'image', ...image});
-      if (!changed && !map.getLayer('terrain')) {
-        map.addLayer({id: 'terrain', type: 'raster', source: 'terrain-image', paint: {'raster-fade-duration': 0}}, customLayers[0]);
-        customLayers.unshift('terrain');
-      }
-    }
-    trace.record('apply.surfaces', surfacesStarted);
-    const landUseChanged = !changed && Boolean(manifest.sources.landUse) !== Boolean(previousManifest?.sources.landUse);
-    if (landUseChanged) {
-      map.removeLayer('land-use');
-      customLayers.splice(customLayers.indexOf('land-use'), 1);
-    }
-    if (!manifest.sources.landUse) {
-      delete sourceData.landUse;
-      if (map.getSource('land-use')) map.removeSource('land-use');
-    }
-    for (const [key, id] of Object.entries(sourceIds)) {
-      if (key === 'traffic') continue;
-      if (key === 'landUse' && !manifest.sources.landUse) continue;
-      if (!changed && !needsFromData(key, fetched)) continue;
-      const data = fetched[key] ?? {type: 'FeatureCollection', features: []}; sourceData[key] = data;
-      // 原始 POI 供搜索、检查和锚定使用，绘制只为 displaced 数据建立索引。
-      if (key === 'pois' || key === 'transitViewPois') continue;
-      if (usesAreaSurfaces(manifest) && (key === 'districts' || key === 'zones')) {
-        areaSurfaces[key === 'districts' ? 'district' : 'zone']?.setFeatures(data.features);
-        continue;
-      }
-      if (key === 'roads') {
-        navigationRoadProperties.clear();
-        for (const feature of data.features) {
-          const properties = feature.properties, id = String(properties.roadId);
-          if (properties.geometryRole === 'road-surface' || !navigationRoadProperties.has(id))
-            navigationRoadProperties.set(id, properties);
-        }
-      }
-      const source = map.getSource(id) as maplibregl.GeoJSONSource | undefined;
-      if (trace.enabled) sourceStarts.set(id, {key, start: performance.now()});
-      trace.sync(`apply.source.${key}`, () => {
-        if (source) source.setData(data); else map.addSource(id, {type: 'geojson', data, maxzoom: key === 'labels' ? 14 : 18, buffer: 256, tolerance: previewTolerance(key, previewQuality), promoteId: 'featureId'});
-      });
-    }
-    trace.sync('apply.layers', () => {
-      if (changed) { addDomains(); pendingBuiltSurface = null; }
-      else if (needsFromData('roads', fetched)) rebuildRoadLayers();
-      if (landUseChanged) addLandUseLayer();
-    });
-    const stylingStarted = performance.now();
-    if (changed || needsFromData('buildings', fetched)) preview3d.setBuildings(sourceData.buildings?.features ?? [], manifest.sceneId);
-    if (preserveArtwork) artworkView.restorePaint();
-    applyRenderStack();
-    applyTheme(manifest.theme);
-    for (const [layer, visible] of Object.entries(manifest.layers)) {
-      if (layer !== 'traffic') await setLayerVisibility(layer, visible);
-    }
-    await syncTraffic();
-    if (generation !== loadGeneration) return;
-    applyContextStyling();
-    if (preserveArtwork && artworkView.active) artworkView.refreshBase();
-    navigation.setScene(manifest.navigation?.schemaVersion === 1
-      ? () => provider.json(new URL(manifest.navigation!.url, manifestUrl)) as Promise<NavigationPackage> : null,
-      Boolean(manifest.navigationRouteOmitted));
-    if (changed && manifest.navigationRoute && !EMBEDDED) void navigation.restoreRoute(manifest.navigationRoute);
-    if (changed && !artworkView.active) { fitBounds(); labelLayoutKey = ''; }
-    // 同场景增量更新保留用户当前的相机朝向。
-    trace.record('apply.styling_camera', stylingStarted);
-    const applied = performance.now();
-    trace.record('apply', resourcesReady);
-    // idle 发生在工作进程处理、瓦片上传和渲染之后；两次动画帧回调可能早于 GeoJSON 处理完成。
-    const completion = await new Promise<string>(resolve => {
-      const finish = (result: string) => {
-        clearTimeout(timer); map.off('idle', idle); map.off('render', stale);
-        resolve(result);
-      };
-      const idle = () => finish('idle');
-      const stale = () => { if (generation !== loadGeneration) finish('stale'); };
-      const timer = setTimeout(() => finish('timeout'), 60000);
-      map.on('idle', idle); map.on('render', stale); map.triggerRepaint();
-    });
-    trace.record('presentation', applied, completion);
-    if (generation !== loadGeneration) {
-      postEvent('sceneDiscarded', {sceneId: manifest.sceneId, revision: requestedRevision, outcome: 'stale'}); return;
-    }
-    const presented = performance.now();
-    trace.record('total', loadStarted, completion);
-    updateRoadWarning();
-    if (changed || ['buildings', 'roads', 'districts', 'zones', 'pois', 'transitViewPois', 'stations'].some(key => needsFromData(key, fetched)))
-      previewControls.rebuild(sourceData, !changed);
-    updateQuickLayers(true);
-    artworkSceneReady = true;
-    postEvent('sceneLoaded', {bundleId: new URL(manifestUrl).pathname.split('/').at(-2),
-      completion: (manifest as any).completion ?? 'complete', performance: {
-      steps: trace.steps, completion,
-      workerCount: maplibregl.getWorkerCount(),
-      manifestMs: manifestReady - loadStarted,
-      resourcesMs: resourcesReady - manifestReady,
-      applyMs: applied - resourcesReady,
-      presentationMs: presented - applied,
-      totalMs: presented - loadStarted,
-    } });
-    if (completion === 'timeout') map.once('idle', () => {
-      if (generation === loadGeneration) postEvent('scenePresentationReady', {completion: (manifest as any).completion ?? 'complete'});
-    });
-  } finally { map.off('sourcedata', sourceReady);
-    atlas?.close(); builtSurface?.close();
+      map.addLayer(layer, map.getLayer('land-use') ? 'land-use' : undefined);
+      builtSurfaceLayer = layer;
+      if (map.getLayer('built-area')) map.removeLayer('built-area');
+      if (!customLayers.includes('built-area-surface')) customLayers.push('built-area-surface');
+      mark('builtSurface'); await setLayerVisibility('built_area', manifest.layers.built_area !== false);
+      refreshDetails();
+    } finally { bitmap.close(); }
+  });
+  if (needs('builtSurface') || !manifest.surfaceFields?.builtArea) {
+    builtAreaFill();
+    void setLayerVisibility('built_area', manifest.layers.built_area !== false).catch(warn);
   }
+  function loadRaster(key: 'satellite' | 'terrain') {
+    const url = manifest.sources[key];
+    const corners = key === 'satellite' ? manifest.satelliteCorners : manifest.terrainCorners;
+    if (!url || corners?.length !== 4) {
+      if (map.getLayer(key)) map.removeLayer(key);
+      if (map.getSource(key + '-image')) map.removeSource(key + '-image');
+      appliedSources.delete(key);
+      return;
+    }
+    if (!needs(key)) return;
+    schedule(key, async () => {
+      const id = key + '-image';
+      const image = {url: provider.imageUrlFor(url), coordinates: corners as [[number,number],[number,number],[number,number],[number,number]]};
+      const source = map.getSource(id) as maplibregl.ImageSource | undefined;
+      if (source) source.updateImage(image); else map.addSource(id, {type:'image', ...image});
+      if (!map.getLayer(key)) {
+        map.addLayer({id:key, type:'raster', source:id, paint:{'raster-fade-duration':0}}, customLayers.find(id => !!map.getLayer(id)));
+        customLayers.unshift(key);
+      }
+      mark(key); refreshDetails();
+    });
+  }
+  function loadLayer(layer?: string) {
+    for (const key of Object.keys(manifest.sources)) {
+      if (!sourceIds[key] || key === 'traffic' || !needs(key)) continue;
+      if (!(layer ? sourceGroups[layer] : visible)?.includes(key)) continue;
+      loadSource(key);
+    }
+    if (layer === 'built_area' || !layer && manifest.layers.built_area !== false) loadSurface();
+    for (const key of ['satellite', 'terrain'] as const)
+      if (key === layer || !layer && manifest.layers[key] !== false) loadRaster(key);
+  }
+  requestLayerSources = layer => { if (current()) loadLayer(layer); };
+  loadLayer();
+  if (manifest.poiAtlas && (manifest.sources.pois || manifest.sources.transitViewPois)) schedule('poi-atlas', () => applySceneIcons(provider, manifest, current).then(refreshDetails));
+  schedule('interchange-icon', () => applyInterchangeIcon(manifest, current));
+  schedule('fonts', () => loadSceneFonts(manifest, manifestUrl, current, warn));
+  schedule('traffic', syncTraffic);
+  const waitFor = geometry.filter(key => key !== 'districts' && key !== 'zones' && pending.has(key));
+  const settled = Promise.allSettled(waitFor.map(key => pending.get(key)!)).then(results => {
+    const failed = results.find(result => result.status === 'rejected');
+    if (failed?.status === 'rejected') throw failed.reason;
+  });
+  try {
+    await Promise.race([firstGeometry, settled]);
+  } catch (error) {
+    if (!current()) return;
+    if (!hasMap) throw error;
+    postEvent('sceneDetailError', {...identity, message: error instanceof Error ? error.message : String(error)});
+    return;
+  }
+  if (!current()) return;
+  presentedRevision = requestedRevision;
+  const applied = performance.now();
+  postEvent('sceneLoaded', {...identity, performance: {steps: trace.steps, completion: 'applied',
+    workerCount: maplibregl.getWorkerCount(), manifestMs: manifestReady - trace.origin,
+    resourcesMs: applied - manifestReady, totalMs: applied - trace.origin}});
+
+  refreshDetails();
+  void Promise.allSettled(pending.values()).then(() => {
+    if (!current()) return;
+    presentationListener = () => {
+      if (current()) postEvent('scenePresentationReady', {...identity, performance: {
+        completion:'idle', presentationMs: performance.now() - applied, totalMs: performance.now() - trace.origin}});
+    };
+    map.once('idle', presentationListener); map.triggerRepaint();
+  });
 }
-function needsFromData(key: string, data: Record<string, any>): boolean { return Object.prototype.hasOwnProperty.call(data, key); }
 async function dispatch(command: PreviewCommand): Promise<void> {
   const commandStarted = performance.now(); let outcome = 'applied';
   const loadTrace = command.type === 'loadScene' ? new PreviewPerformance() : undefined;
@@ -2529,7 +2570,7 @@ async function dispatch(command: PreviewCommand): Promise<void> {
     return;
   }
   if (['beginArtwork', 'loadArtwork', 'setArtworkView', 'setArtworkTool', 'artworkObserve', 'locateArtwork', 'cancelArtworkLocate'].includes(command.type)) {
-    if (!artworkSceneReady || currentSceneId &&
+    if (presentedRevision < 0 || presentedRevision !== currentRevision || currentSceneId &&
         (command.sceneId !== currentSceneId || command.revision !== currentRevision)) return;
     if (command.type === 'beginArtwork') {
       if (!artworkView.request(command.documentEpoch!, command.artworkRevision!)) outcome = 'stale';
@@ -2615,8 +2656,9 @@ async function dispatch(command: PreviewCommand): Promise<void> {
       }
       break;
     }
-    case 'loadScene': if (command.manifestUrl && typeof command.revision === 'number')
-      await loadScene(httpProvider(command.manifestUrl), command.revision, loadTrace, command.preserveArtwork); break;
+    case 'loadScene':
+      if (!command.manifestUrl || typeof command.revision !== 'number') throw new Error('Invalid loadScene command');
+      await loadScene(httpProvider(command.manifestUrl), command.revision, loadTrace, command.preserveArtwork, command.sceneId); break;
     case 'applyTheme': if (command.theme) {
       if (artworkView.active) {
         if (applyArtworkTheme(command.theme as FullTheme)) artworkView.refreshBase();
@@ -2671,15 +2713,11 @@ async function dispatch(command: PreviewCommand): Promise<void> {
     case 'dispose': ++loadGeneration; artworkView.dispose(); releaseTraffic(); previewControls.dispose(); navigation.dispose(); cancelLabelLayout(); map.remove(); break;
   }
 } catch (error) { outcome = 'error'; reportError(error, {sceneId: command.sceneId,
-    revision: command.revision, stage: command.type});
+    revision: command.revision, stage: command.type}, command.type === 'loadScene');
   if (command.type === 'loadArtwork') postEvent('artworkFailed', {
     documentEpoch: command.artwork?.documentEpoch, artworkRevision: command.artwork?.revision,
     message: error instanceof Error ? error.message : String(error)});
-  if (command.type === 'loadScene' && typeof command.revision === 'number') {
-    postEvent('sceneDiscarded', { sceneId: command.sceneId, revision: command.revision, outcome: 'error',
-      performance: {steps: loadTrace?.steps ?? [], completion: 'error'},
-      message: error instanceof Error ? error.message : String(error) });
-  }
+
 }
 finally {
   if (command.performanceRequestId) {
@@ -2824,6 +2862,7 @@ async function loadEmbeddedScene(payload: EmbeddedPayload): Promise<void> {
   if (payload.manifest.navigationRoute) await navigation.restoreRoute(payload.manifest.navigationRoute);
 }
 map.once('load', () => {
+  mapStarted = true;
   if (EMBEDDED && window.__CSL_SCENE__) {
     void loadEmbeddedScene(window.__CSL_SCENE__).catch(reportError);
   } else {

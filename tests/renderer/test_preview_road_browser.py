@@ -34,7 +34,7 @@ def test_standard_to_accurate_update_keeps_crossing_layers(tmp_path, browser_pag
             load(browser_page, server, revision)
             image = screenshot(browser_page, f'intersections-{revision}')
             expect_color(image, 0, 0, '#368cd1')
-            assert browser_page.evaluate('(r) => window.events.some(e => e.type === "sceneLoaded" && e.revision === r && e.performance.completion === "idle")', revision)
+            assert browser_page.evaluate('(r) => window.events.some(e => e.type === "sceneLoaded" && e.revision === r && e.performance.completion === "applied")', revision)
     finally:
         server.close()
 

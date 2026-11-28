@@ -182,7 +182,7 @@ public sealed partial class MainWindow
 
     private void TryShowSimplifiedRibbonIntro()
     {
-        if (!_simplifiedIntroPending || _mapGuideOpen || _draftWelcomeOpen || _closing || !_viewerReady || _mapTask.Active || _mapTask.Phase == MapTaskPhase.Error || _engineBusy || OperationError.IsOpen ||
+        if (!_simplifiedIntroPending || _mapGuideOpen || _draftWelcomeOpen || _closing || !_viewerReady || _mapTask.Active || _mapTask.Phase == MapTaskPhase.Error || _engineBusy || OperationError.IsOpen || MapReadNotice.IsOpen ||
             Ribbon.DisplayMode != RibbonDisplayMode.Classic || Root.XamlRoot is null) return;
         _simplifiedIntroPending = false;
         var tip = _simplifiedRibbonIntro = new TeachingTip
@@ -371,6 +371,7 @@ public sealed partial class MainWindow
         if (_closing) return false;
         if (id.StartsWith("editor.", StringComparison.Ordinal)) return EditorCommandEnabled(id);
         if (id == "app.cancel") return !_engineUnavailable && (_generatingRmp ? _mapTask.CanCancel && !_cancellingRmp : busy || _mapTask.Active || _cityArtwork);
+        if (id == "file.open_city" || id == "file.open" && _context != "metro") return true;
         if (RmpBlocked) return false;
         if (id == "view.metro.refresh") return _context == "metro" && _documentEnabled && !busy;
         if (id == "rmp.open") return _context == "metro" && !busy;
@@ -383,7 +384,7 @@ public sealed partial class MainWindow
             !_cityArtwork && !_openingArtwork && !_compatibilityPreview && !string.IsNullOrEmpty(_sceneId) && !busy;
         if (id is "map.rotate_counterclockwise" or "map.rotate_clockwise")
             return _documentEnabled && _context != "metro" && !busy;
-        if (id is "file.open" or "file.open_city" or "map.save_png" or "workspace.saveAs" or "workspace.export" && busy) return false;
+        if (id is "file.open" or "map.save_png" or "workspace.saveAs" or "workspace.export" && busy) return false;
         if (command.Document && !_documentEnabled) return false;
         if (id is "view.transit.lines" or "layer.poi.facilities")
             return !busy && (id != "layer.poi.facilities" || _context == "map" && HasCs2Document);

@@ -1,7 +1,6 @@
 // 生成和加载界面预览所需的图像。
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
-using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.Graphics.Imaging;
 
@@ -12,9 +11,9 @@ internal static class PreviewImages
     public static async Task<BitmapImage> LoadAsync(string url, int maxEdge = 0)
     {
         var uri = new Uri(url, UriKind.Absolute);
-        using IRandomAccessStream stream = uri.IsFile
-            ? await (await StorageFile.GetFileFromPathAsync(uri.LocalPath)).OpenReadAsync()
-            : await RandomAccessStreamReference.CreateFromUri(uri).OpenReadAsync();
+        using var file = uri.IsFile ? File.OpenRead(uri.LocalPath) : null;
+        using var stream = file?.AsRandomAccessStream()
+            ?? await RandomAccessStreamReference.CreateFromUri(uri).OpenReadAsync();
         var bitmap = new BitmapImage();
         if (maxEdge > 0)
         {

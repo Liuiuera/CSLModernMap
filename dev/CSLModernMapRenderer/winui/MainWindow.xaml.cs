@@ -18,11 +18,10 @@ namespace CSLModernMapWinUI;
 public sealed partial class MainWindow : Window
 {
     private readonly EngineClient _engine;
-    private readonly string _ribbonLayoutDirectory;
-    private readonly JsonElement? _initialMetadata;
+    private readonly string _ribbonLayoutDirectory = UserData.DirectoryPath;
     private bool _showLanguageNotice;
     private bool _initialized;
-    private readonly string[] _arguments;
+    private string[] _arguments;
     private readonly Dictionary<string, RibbonSplitButton> _layerButtons = new();
     private readonly List<Control> _documentControls = new();
     private JsonElement _snapshot;
@@ -53,16 +52,11 @@ public sealed partial class MainWindow : Window
     private string _themeLoadErrorShown = "";
     private PoiMappingDialog? _poiEditor;
 
-    public MainWindow(string[] arguments) : this(arguments, new EngineClient(), null) { }
-
-    internal MainWindow(string[] arguments, EngineClient engine, JsonElement? metadata, bool showLanguageNotice = false,
-        string? ribbonLayoutDirectory = null)
+    internal MainWindow(string[] arguments, EngineClient engine, Exception? startupError, bool showLanguageNotice = false)
     {
-        _arguments = arguments;
         _engine = engine;
-        _ribbonLayoutDirectory = ribbonLayoutDirectory ?? UserData.DirectoryPath;
+        _arguments = arguments;
         _previewQuality = UserData.ReadPreviewQuality(_ribbonLayoutDirectory);
-        _initialMetadata = metadata;
         _showLanguageNotice = showLanguageNotice;
         _ = UiLanguage.Language;
         try { InitializeComponent(); }
@@ -114,6 +108,7 @@ public sealed partial class MainWindow : Window
 
         OperationError.RegisterPropertyChangedCallback(InfoBar.MessageProperty, (_, _) => OperationError.Content = null);
         OperationError.Closed += (_, _) => { TryShowSimplifiedRibbonIntro(); TryShowMapInteractionGuide(); };
+        MapReadNotice.Closed += (_, _) => { TryShowSimplifiedRibbonIntro(); TryShowMapInteractionGuide(); };
         OperationError.RegisterPropertyChangedCallback(InfoBar.SeverityProperty, (_, _) =>
         {
             if (OperationError.Severity != InfoBarSeverity.Error) OperationError.Content = null;
@@ -133,13 +128,13 @@ public sealed partial class MainWindow : Window
             args.Cancel = true;
             _ = RunAsync(CloseEditorsAndWindowAsync);
         };
-        Closed += (_, _) => { _closing = true; CloseBuildingList(); _previewInstance++; _previewWait?.Cancel(); _compatibilityDelay?.Cancel(); _contextWriteDelay?.Cancel(); _contextWriteDelay?.Dispose(); MapView.Close(); _rmpView?.Dispose(); _ = _engine.CloseAsync(); };
+        Closed += (_, _) => { _closing = true; CloseBuildingList(); _previewInstance++; _previewWait?.Cancel(); _contextWriteDelay?.Cancel(); _contextWriteDelay?.Dispose(); MapView.Close(); _rmpView?.Dispose(); _ = _engine.CloseAsync(); };
         Root.Loaded += async (_, _) =>
         {
             Root.XamlRoot.Changed += (_, _) => UpdateScaleAndLayout();
             UpdateScaleAndLayout();
 
-            await InitializeAsync();
+            await InitializeAsync(startupError);
         };
         Root.SizeChanged += (_, _) => UpdateScaleAndLayout();
     }
@@ -391,35 +386,37 @@ public sealed partial class MainWindow : Window
 
     private static IconElement IconForLayer(string key, bool large = false) => RibbonIcons.Create("layer." + (key == "satellite" ? "terrain" : key), large);
 
-    private async Task InitializeAsync()
+    private async Task InitializeAsync(Exception? startupError)
     {
         if (_initialized || _closing) return;
         _initialized = true;
         BeginMapTask(MapTaskPhase.Loading, UiLanguage.Text("MainWindow_xaml_InitializeAsync_656C56EE98"), canCancel: false, waitForScene: false);
+        if (startupError is not null)
+        {
+            _engineUnavailable = true;
+            FinishOpenError(TaskError.FromException(startupError, "startup", "hello"));
+            return;
+        }
         try
         {
-            if (_initialMetadata is null) await _engine.StartAsync(_arguments);
-            await _engine.RequestAsync("hello", new { protocolVersion = 1 });
-            await RefreshSnapshotAsync();
-            var metadata = _initialMetadata ?? await _engine.RequestAsync("getUiMetadata");
-            if (metadata.GetProperty("language").GetString() != UiLanguage.Language)
-            {
-                await ReloadLanguageAsync(metadata, _showLanguageNotice);
-                return;
-            }
-            UiLanguage.Configure(metadata); ApplyCommandMetadata(metadata); ConfigureAppearance(metadata);
-            SendViewer(new { type = "setLanguage", language = UiLanguage.Language });
-            await BuildTransitRibbonAsync();
+            _ = Task.Run(() => RendererCleanup.Run(AppContext.BaseDirectory, StartupTrace.Write));
             _mapTask.Reset(false);
             ApplyMapTaskState();
-            if (UserData.ReadAutoPreview(_ribbonLayoutDirectory)) _ = InitializePreviewAsync();
+            var file = _arguments.FirstOrDefault(arg => !arg.Equals("gui", StringComparison.OrdinalIgnoreCase));
+            if (_openIntent == 0 && !string.IsNullOrWhiteSpace(file)) await OpenPathAsync(file);
+            else if (_openIntent == 0 && UserData.ReadAutoPreview(_ribbonLayoutDirectory)) _ = InitializePreviewAsync();
+            await RunAsync(async () =>
+            {
+                var metadata = await _engine.RequestAsync("getUiMetadata");
+                ApplyCommandMetadata(metadata);
+                ConfigureAppearance(metadata);
+            });
+            if (_closing) return;
+            await RunAsync(RefreshSnapshotAsync);
+            await RunAsync(BuildTransitRibbonAsync);
+            if (_openIntent == 0) await RunAsync(RefreshRecentExportAsync);
             await ShowLanguageNoticeAsync();
             await ShowThemeUpdateAsync();
-            var file = _arguments.FirstOrDefault(arg => !arg.Equals("gui", StringComparison.OrdinalIgnoreCase));
-            if (!string.IsNullOrWhiteSpace(file) && File.Exists(file))
-                await OpenPathAsync(file);
-            else
-                await RefreshRecentExportAsync();
             PrepareSimplifiedRibbonIntro(typeof(MainWindow).Assembly.GetName().Version!);
         }
         catch (Exception error)
@@ -435,11 +432,11 @@ public sealed partial class MainWindow : Window
     {
         var snapshot = await _engine.RequestAsync("getSnapshot");
         if (previewInstance is int instance && !IsCurrentPreview(instance)) return;
+        if (snapshot.GetProperty("documentEpoch").GetInt32() != _engineDocumentEpoch) return;
         _snapshot = snapshot;
         RefreshOutsideTerrainControls();
         ApplySharedRotation();
-        SetDocumentEnabled(_snapshot.GetProperty("hasDocument").GetBoolean() &&
-            !_engineBusy);
+        SetDocumentEnabled(_snapshot.GetProperty("hasDocument").GetBoolean());
         if (_recentMenu is not null)
         {
             _recentMenu.Items.Clear();
@@ -528,38 +525,78 @@ public sealed partial class MainWindow : Window
         if (file is not null) await OpenPathAsync(file.Path);
     }
 
+    private int _openIntent;
+    private Task<bool>? _openPreparation;
+    private JsonElement? _pendingViewerScene;
+    private (string Scene, int Revision)? _completeScene;
+    private int _cancelledBeforeRevision;
+
     private async Task OpenPathAsync(string path)
     {
-        if (_cityArtwork && !await TryLeaveArtworkEditorAsync()) return;
-        if (_previewSettingsWindow is { } quality && !await quality.RequestCloseAsync()) return;
-        if (_exportWindow is { } export && !await export.RequestCloseAsync()) return;
-        if (_themeEditor is { } theme && !await theme.RequestCloseAsync()) return;
-        if (_poiEditor is { } poi && !await poi.RequestCloseAsync()) return;
-        if (!await ReleaseRmpAsync()) return;
-        CloseBuildingList();
-        await FlushContextWritesAsync();
-        _documentGeneration++;
-        _outsideNoticeDismissed = false;
+        int intent = ++_openIntent;
+        var preparation = _openPreparation ??= PrepareCityChangeAsync();
+        bool approved;
+        try { approved = await preparation; }
+        finally { if (_openPreparation == preparation) _openPreparation = null; }
+        if (!approved || intent != _openIntent || _closing) return;
+        _arguments = [path];
+        if (_engineUnavailable) { await ReplaceWindowAsync(_arguments, intent: intent); return; }
+        try
+        {
+            await _engine.RequestAsync("openDocument", new { path });
+        }
+        catch (Exception error) { if (intent == _openIntent) FinishOpenError(TaskError.FromException(error, "open", "openDocument")); }
+    }
+
+    private async Task<bool> PrepareCityChangeAsync()
+    {
+        await FlushContextWritesAsync(leaving: true);
+        if (_cityArtwork && _artworkEditor is { } artwork)
+        {
+            if (!await artwork.ConfirmLeaveAsync()) return false;
+            await _artworkWriteTail;
+        }
+        if (_themeEditor is { } theme && !await theme.RequestCloseAsync()) return false;
+        if (_poiEditor is { } poi && !await poi.RequestCloseAsync()) return false;
+        return _rmpView is null || await _rmpView.ConfirmUnsavedAsync();
+    }
+
+    private void FinishOpenError(TaskError error)
+    {
+        _documentLoaded = null;
+        if (!_mapTask.HasMap) _mapTask.Fail(error.Message, _mapTask.Generation);
+        SetError(error);
+        ApplyMapTaskState();
+    }
+
+    private void ReplaceCity()
+    {
+        bool webPreview = !_compatibilityPreview && (_viewerReady || _previewStarting || UserData.ReadAutoPreview(_ribbonLayoutDirectory));
+        ++_documentGeneration;
+        _documentLoaded = false;
+        OperationError.IsOpen = false;
+        MapReadNotice.IsOpen = false;
+        MapReadItems.ItemsSource = null;
+        ResetPreview();
         ResetCompatibilityImage();
-        _previewNoticeDismissed = false;
-        _loadingDocument = true;
-        _sceneId = ""; _revision = 0;
+        _exportWindow?.ForceClose();
+        _rmpGeneration?.TrySetCanceled();
+        _browserPreviewRequestId = null;
+        _externalExporting = false;
         _mapTask.Reset(false);
+        BeginMapTask(MapTaskPhase.Loading, UiLanguage.Text("MainWindow_xaml_OpenPathAsync_3AD0FA9F8D"));
+        if (webPreview) _ = InitializePreviewAsync();
+        _pendingViewerScene = null; _completeScene = null;
+        _outsideNoticeDismissed = _previewNoticeDismissed = false;
+        _sceneId = ""; _revision = 0;
         _context = "map"; _generationSettingsChanged = false;
+        _rmpView?.Dispose(); _rmpView = null; RmpWorkspace.Children.Clear();
+        CloseBuildingList();
         if (_transitTab is not null) Ribbon.Tabs.Remove(_transitTab);
         if (_metroTab is not null) Ribbon.Tabs.Remove(_metroTab);
         RmpWorkspace.Visibility = Visibility.Collapsed; Ribbon.SelectedTab = Ribbon.Tabs[0];
-        ShowMapOverview();
-        ShowInspectorHome();
-        _selectedBounds = null;
-        _selectedRegionSource = null;
-        BeginMapTask(MapTaskPhase.Loading, UiLanguage.Text("MainWindow_xaml_OpenPathAsync_3AD0FA9F8D"));
-        var result = await _engine.RequestAsync("openDocument", new { path });
-        if (!result.GetProperty("started").GetBoolean())
-        {
-            _awaitingScene = false;
-            SetError(UiLanguage.Text("MainWindow_xaml_OpenPathAsync_949301A19E"));
-        }
+        ShowMapOverview(); ShowInspectorHome();
+        _selectedBounds = null; _selectedRegionSource = null;
     }
 
     private Task ToggleLayerAsync(string key)
@@ -573,7 +610,7 @@ public sealed partial class MainWindow : Window
     {
         if (RmpBlocked) return;
         if (_cityArtwork && !await TryLeaveArtworkEditorAsync()) return;
-        _awaitingScene = _waitingSceneReady = false;
+        _awaitingScene = false;
         _mapTask.Reset(!string.IsNullOrEmpty(_sceneId));
         await FlushContextWritesAsync();
         _context = "transit";
@@ -738,7 +775,15 @@ public sealed partial class MainWindow : Window
         if (_cityArtwork && !_cityArtworkExporting) { await TryLeaveArtworkEditorAsync(); return; }
         if (_generatingRmp) _cancellingRmp = true;
         var instance = _previewInstance;
-        var result = await _engine.RequestAsync("cancel");
+        if (_loadingDocument)
+        {
+            await _engine.RequestAsync("cancelDocumentOpen");
+            ++_openIntent; _documentLoaded = null;
+            if (!_mapTask.HasMap) _mapTask.Cancel(_mapTask.Generation);
+            ApplyMapTaskState();
+            return;
+        }
+        var result = await _engine.RequestAsync("cancel", new { preview = _mapTask.Active && !_generatingRmp, artwork = _cityArtworkExporting });
         if (!IsCurrentPreview(instance)) return;
         if (result.TryGetProperty("cancelRequested", out var requested) && requested.GetBoolean())
         {
@@ -750,8 +795,8 @@ public sealed partial class MainWindow : Window
             _previewWait?.Cancel();
             _fullSceneCompiled = _previewSlow = false;
             _rmpGeneration?.TrySetCanceled();
-            _awaitingScene = _waitingSceneReady = false;
-            _discardSceneResults = true;
+            _awaitingScene = false;
+            if (result.TryGetProperty("previewRevision", out var cancelled)) _cancelledBeforeRevision = cancelled.GetInt32();
             if (!_previewStarting) _previewRecovering = false;
             if (showStatus) _mapTask.Cancel(_mapTask.Generation);
             ApplyMapTaskState();
@@ -808,7 +853,6 @@ public sealed partial class MainWindow : Window
         if (_cityArtwork) { await RefreshCityArtworkCoreAsync(artworkStarted); return; }
         if (_compatibilityPreview) { QueueCompatibilityPreview(); return; }
         if (!_viewerReady) return;
-        _discardSceneResults = false;
         var previousScene = _sceneId;
         var previousRevision = _revision;
         var instance = _previewInstance;
@@ -913,11 +957,16 @@ public sealed partial class MainWindow : Window
         if (_exportWindow is { } export) _ = RunAsync(() => export.HandleEventAsync(name, payload));
         switch (name)
         {
+            case "documentOpenFailed":
+                if (payload.GetProperty("documentEpoch").GetInt32() == _engineDocumentEpoch)
+                    FinishOpenError(TaskError.FromPayload(payload));
+                break;
             case "documentOpening":
+                _engineDocumentEpoch = payload.GetProperty("documentEpoch").GetInt32();
+                ReplaceCity();
                 UnmountArtworkEditor();
                 _cityArtwork = _cityArtworkUpdating = false; _pendingCityArtwork = null;
                 _cityArtworkOperation = null;
-                _engineDocumentEpoch = payload.GetProperty("documentEpoch").GetInt32();
                 break;
             case "progress":
                 UpdateMapProgress(payload);
@@ -925,36 +974,38 @@ public sealed partial class MainWindow : Window
             case "busy":
                 if (_engineUnavailable) break;
                 _engineBusy = payload.GetProperty("value").GetBoolean();
-                if (!_engineBusy) _compatibilityRendering = false;
                 SetDocumentEnabled(_snapshot.ValueKind == JsonValueKind.Object &&
-                    _snapshot.GetProperty("hasDocument").GetBoolean() &&
-                    !payload.GetProperty("value").GetBoolean());
+                    CurrentDocumentAvailable);
                 ApplyMapTaskState();
-                if (!_engineBusy && _compatibilityPending) _ = RunAsync(StartCompatibilityPreviewAsync);
+                break;
+            case "mapStatistics":
+                if (payload.GetProperty("documentEpoch").GetInt32() == _engineDocumentEpoch) _ = RunAsync(RefreshSnapshotAsync);
                 break;
             case "meta":
+                if (payload.GetProperty("documentEpoch").GetInt32() != _engineDocumentEpoch) break;
                 if (payload.GetProperty("source").GetString() == "open")
                 {
-                    _loadingDocument = false;
-                    if (!_viewerReady && !_previewRecovering)
+                    _documentLoaded = true;
+                    if (payload.TryGetProperty("warnings", out var warnings) ||
+                        payload.GetProperty("info").TryGetProperty("fileWarnings", out warnings))
+                        UpdateMapReadNotice(warnings);
+                    if (_compatibilityPreview) QueueCompatibilityPreview(immediate: true);
+                    _ = SafeRequestAsync("getMapStatistics");
+                    if (!_viewerReady && !_previewStarting && !_previewRecovering)
                     {
-                        _awaitingScene = _waitingSceneReady = false;
+                        _awaitingScene = false;
                         _mapTask.Reset(false);
                     }
                     ApplyMapTaskState();
                 }
-                if (payload.GetProperty("source").GetString() == "open" &&
-                    payload.GetProperty("info").TryGetProperty("fileWarnings", out var fileWarnings) &&
-                    fileWarnings.GetArrayLength() > 0)
-                    ShowNotice(string.Join("\n", fileWarnings.EnumerateArray().Select(warning => warning.GetString())));
                 _ = RunAsync(RefreshSnapshotAsync);
-                if (payload.GetProperty("source").GetString() == "open" && _compatibilityPreview) QueueCompatibilityPreview();
                 break;
             case "sceneCompiled":
-                if (_discardSceneResults || !_viewerReady ||
+                if (!_viewerReady ||
                     payload.GetProperty("documentEpoch").GetInt32() != _engineDocumentEpoch) break;
+                if (_mapTask.HasMap) break;
                 if (!_mapTask.Active)
-                    BeginMapTask(MapTaskPhase.Generating, UiLanguage.Text("MainWindow_xaml_HandleEngineEvent_B02EAEF59F"), background: !string.IsNullOrEmpty(_sceneId));
+                    BeginMapTask(MapTaskPhase.Generating, UiLanguage.Text("MainWindow_xaml_HandleEngineEvent_B02EAEF59F"));
                 _fullSceneCompiled = true;
                 ObservePreviewWait();
                 ApplyMapTaskState();
@@ -965,29 +1016,33 @@ public sealed partial class MainWindow : Window
                 _ = RunAsync(() => HandleCompatibilityPreviewAsync(name, payload));
                 break;
             case "sceneDetailError":
-                if (_discardSceneResults || payload.GetProperty("documentEpoch").GetInt32() != _engineDocumentEpoch ||
+                if (payload.GetProperty("documentEpoch").GetInt32() != _engineDocumentEpoch ||
                     payload.GetProperty("sceneId").GetString() != _sceneId || payload.GetProperty("revision").GetInt32() != _revision) break;
-                CompleteMapTask(_mapTask.Generation);
+                if (_mapTask.HasMap) CompleteMapTask(_mapTask.Generation);
                 OperationError.Severity = InfoBarSeverity.Warning;
                 OperationError.Message = payload.GetProperty("notice").GetString();
                 OperationError.Content = ErrorFeedback.Actions(TaskError.FromPayload(payload), Root);
                 OperationError.IsOpen = true;
                 break;
             case "sceneReady":
-                if (_discardSceneResults || !_viewerReady) break;
+                if (payload.GetProperty("documentEpoch").GetInt32() != _engineDocumentEpoch ||
+                    payload.GetProperty("revision").GetInt32() < _cancelledBeforeRevision) break;
                 if (payload.GetProperty("sceneId").GetString() == _sceneId && payload.GetProperty("revision").GetInt32() < _revision) break;
-                if (!_mapTask.Active)
+                if (!_viewerReady)
                 {
-                    var incremental = !string.IsNullOrEmpty(_sceneId) && payload.GetProperty("sceneId").GetString() == _sceneId;
-                    BeginMapTask(MapTaskPhase.Generating, UiLanguage.Text("MainWindow_xaml_HandleEngineEvent_B02EAEF59F"),
-                        canCancel: !incremental, background: incremental);
+                    _sceneId = payload.GetProperty("sceneId").GetString() ?? "";
+                    _revision = payload.GetProperty("revision").GetInt32();
+                    _pendingViewerScene = payload.Clone();
+                    break;
                 }
-                _waitingSceneReady = false; _awaitingScene = true;
+                if (!_mapTask.HasMap && !_mapTask.Active)
+                    BeginMapTask(MapTaskPhase.Generating, UiLanguage.Text("MainWindow_xaml_HandleEngineEvent_B02EAEF59F"));
+                _awaitingScene = _mapTask.Active;
                 _sceneId = payload.GetProperty("sceneId").GetString() ?? "";
                 _revision = payload.GetProperty("revision").GetInt32();
                 StartupTrace.Write($"Preview loadScene: epoch={_engineDocumentEpoch}, scene={_sceneId}, revision={_revision}, completion={payload.GetProperty("completion")}");
-                if (payload.TryGetProperty("warnings", out var poiWarnings) && poiWarnings.GetArrayLength() > 0)
-                    ShowNotice(string.Join("\n", poiWarnings.EnumerateArray().Select(warning => warning.GetString())));
+                if (payload.TryGetProperty("warnings", out var sceneWarnings))
+                    UpdateMapReadNotice(sceneWarnings);
                 if (payload.GetProperty("completion").GetString() != "base")
                     _mapTask.Progress(95, UiLanguage.Text("MainWindow_xaml_HandleEngineEvent_284E5114E0"));
                 ApplyMapTaskState();
@@ -1041,7 +1096,7 @@ public sealed partial class MainWindow : Window
                 if (payload.TryGetProperty("requestId", out var errorId) && errorId.ValueKind == JsonValueKind.String && errorId.GetString() != _mapTask.RequestId) break;
                 if (name == "sceneError")
                 {
-                    if (_viewerReady && !_discardSceneResults)
+                    if (_viewerReady)
                         _ = FailPreviewAsync(TaskError.FromPayload(payload), "sceneCompile");
                 }
                 else SetError(TaskError.FromPayload(payload));
@@ -1159,7 +1214,7 @@ public sealed partial class MainWindow : Window
                 _ = FinishPreviewStartupAsync(instance);
                 return;
             }
-            if (name is "sceneLoaded" or "scenePresentationReady" or "selectionChanged" or "selectionCleared" or "objectSelected" or "objectSelectionCleared")
+            if (name is "sceneLoaded" or "sceneDetailError" or "scenePresentationReady" or "selectionChanged" or "selectionCleared" or "objectSelected" or "objectSelectionCleared")
             {
                 if (frame.GetProperty("sceneId").GetString() != _sceneId || frame.GetProperty("revision").GetInt32() != _revision)
                 {
@@ -1170,38 +1225,21 @@ public sealed partial class MainWindow : Window
             switch (name)
             {
                 case "sceneLoaded":
-                    if (_waitingSceneReady || _discardSceneResults || !_mapTask.Active)
-                    {
-                        StartupTrace.Write($"Ignored sceneLoaded: scene={_sceneId}, revision={_revision}, waiting={_waitingSceneReady}, discarded={_discardSceneResults}, active={_mapTask.Active}");
-                        break;
-                    }
                     StartupTrace.Write($"Preview sceneLoaded: scene={_sceneId}, revision={_revision}, presentation={frame.GetProperty("performance").GetProperty("completion")}");
                     if (frame.TryGetProperty("bundleId", out var bundleId))
                         _ = RunViewerAsync(() => _engine.RequestAsync("previewPresented", new { bundleId = bundleId.GetString(),
                             revision = frame.GetProperty("revision").GetInt32(),
                             completion = frame.GetProperty("completion").GetString(), performance = frame.GetProperty("performance").Clone() }));
+                    if (_revision < _cancelledBeforeRevision) break;
+                    bool full = frame.GetProperty("completion").GetString() != "base";
+                    if (!full && _completeScene == (_sceneId, _revision)) break;
+                    if (full) _completeScene = (_sceneId, _revision);
                     _awaitingScene = false;
-                    if (frame.GetProperty("performance").GetProperty("completion").GetString() == "timeout")
-                    {
-                        _previewRecovering = false;
-                        if (_fullSceneCompiled && !_previewWaitDismissed) _previewSlow = true;
-                        ApplyMapTaskState();
-                        break;
-                    }
                     if (_context != "metro")
                     {
-                        if (frame.GetProperty("completion").GetString() == "base")
-                        {
-                            _mapTask.PresentBase(UiLanguage.Text("MainWindow_xaml_HandleViewerEvent_4C810816D7"));
-                            SetDocumentEnabled(_snapshot.ValueKind == JsonValueKind.Object &&
-                                _snapshot.GetProperty("hasDocument").GetBoolean() && !_engineBusy && !_engineUnavailable);
-                            ApplyMapTaskState();
-                        }
-                        else CompleteMapTask(_mapTask.Generation);
+                        if (_mapTask.Active) CompleteMapTask(_mapTask.Generation);
+                        else { _mapTask.Reset(true); ApplyMapTaskState(); }
                     }
-                    if (frame.GetProperty("completion").GetString() == "complete" &&
-                        frame.GetProperty("performance").GetProperty("completion").GetString() == "idle")
-                        _presentedGuideScene = (_sceneId, _revision);
                     var presentedScene = _sceneId;
                     var presentedRevision = _revision;
                     _ = RunViewerAsync(async () => {
@@ -1213,7 +1251,6 @@ public sealed partial class MainWindow : Window
                 case "scenePresentationReady":
                     if (frame.GetProperty("completion").GetString() == "complete")
                     {
-                        if (!_discardSceneResults && _mapTask.Active) CompleteMapTask(_mapTask.Generation);
                         _presentedGuideScene = (_sceneId, _revision);
                         TryShowMapInteractionGuide();
                     }
@@ -1234,6 +1271,10 @@ public sealed partial class MainWindow : Window
                     break;
                 case "objectSelectionCleared":
                     ShowInspectorHome();
+                    break;
+                case "sceneDetailError":
+                    if (_awaitingScene && _mapTask.HasMap) CompleteMapTask(_mapTask.Generation);
+                    ShowNotice(frame.GetProperty("message").GetString()!);
                     break;
                 case "renderError":
                 case "sceneDiscarded":
@@ -1269,6 +1310,7 @@ public sealed partial class MainWindow : Window
         if (!IsCurrentPreview(instance)) return;
         var theme = await _engine.RequestAsync("getPreviewTheme");
         if (!IsCurrentPreview(instance)) return;
+        if (state.GetProperty("documentEpoch").GetInt32() != _engineDocumentEpoch) return;
         _snapshot = state;
         SendViewer(new { type = "applyTheme", theme, sceneId = _sceneId, revision = _revision });
         foreach (var item in state.GetProperty("layers").EnumerateObject())
@@ -1317,20 +1359,10 @@ public sealed partial class MainWindow : Window
 
     private void SetError(string message, string? details = null)
     {
-        _previewWait?.Cancel();
-        _fullSceneCompiled = _previewSlow = false;
-        _loadingDocument = false;
         OperationError.Content = null;
         _recentErrors.Enqueue(DateTime.Now.ToString("HH:mm:ss") + " " + (details ?? message));
         while (_recentErrors.Count > 30) _recentErrors.Dequeue();
         StartupTrace.Write("Error: " + (details ?? message));
-        _externalExporting = false;
-        _awaitingScene = _waitingSceneReady = false;
-        _discardSceneResults = true;
-        _previewRecovering = false;
-        _mapTask.Fail(message, _mapTask.Generation);
-        SetDocumentEnabled(_snapshot.ValueKind == JsonValueKind.Object && _snapshot.GetProperty("hasDocument").GetBoolean() && !_engineBusy && !_engineUnavailable);
-        ApplyMapTaskState();
         OperationError.Severity = InfoBarSeverity.Error;
         OperationError.Message = message;
         OperationError.IsOpen = true;

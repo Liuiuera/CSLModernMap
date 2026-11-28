@@ -115,6 +115,13 @@ class DocumentSession:
 
     # 常用派生服务的便捷访问入口。
 
+    def for_background_render(self):
+        """Share map records while isolating per-render, lazily generated data."""
+        from copy import copy
+        document = copy(self.document)
+        document.__dict__.pop("_session", None)
+        return DocumentSession(document)
+
     def navigation(self) -> dict:
         from ..services.navigation import compile_navigation
         return self.service_cache.get_or_compute(

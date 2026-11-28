@@ -5509,7 +5509,13 @@ msgid "style.transport.fit_preview.desc"
 msgstr "Adapte les symboles de station et les étiquettes du PNG des transports à l’aperçu interactif de la carte entière. Les autres icônes et noms gardent leur taille ; la densité peut changer. Sans aperçu interactif, les tailles habituelles sont utilisées."
 
 msgid "gui.file.records_skipped"
-msgstr "{count} éléments ont été ignorés : échec de l’analyse."
+msgstr "Les entrées de carte illisibles ont été ignorées ({count})."
+
+msgid "gui.file.edits_skipped"
+msgstr "Les modifications enregistrées de la carte n’ont pas pu être lues et ont été ignorées."
+
+msgid "gui.file.poi_categories_missing"
+msgstr "Certains bâtiments n’ont pas de catégorie de POI et utilisent une icône de POI générique."
 
 msgid "gui.file.dependencies_skipped"
 msgstr "{count} autres éléments associés ont été ignorés car des données nécessaires sont manquantes."

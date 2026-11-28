@@ -66,7 +66,7 @@ from .render_jobs import RegionPolicy
 from .renderer import Renderer
 from .ribbon_schema import normalize_terrain_mode
 from .terrain import resolve_terrain_config, terrain_ui_state
-from .settings_store import load_settings, save_settings
+from .settings_store import SETTINGS_VERSION, load_settings, read_settings, save_settings
 from .poi_profiles import PROFILE_SETTING_KEY, canonical_profile_target, normalize_poi_profiles, normalize_poi_visibility_snapshot, validate_poi_profile
 from .system_info import automatic_antialias
 from .output_profiles import (
@@ -667,18 +667,7 @@ class GuirBackend:
             and self._settings_dir.resolve() == app_support_dir().resolve()
         )
         self.poi_mapping_override = poi_mapping_override_path(self._settings_dir)
-        from .theme_migration import recover
-        recover(self._settings_dir)
-        self._settings = load_settings(self._settings_dir)
         self.split_map_symbols = os.environ.get("CSLMM_SPLIT_MAP_SYMBOLS") == "1"
-        # 交通和地铁视图设置单独持久化，切换视图不能覆盖普通地图图层快照。
-        # 迁移使用上方已加载的设置，避免二次读取及过早生成 views.json。
-        if views_path(self._settings_dir).is_file():
-            self._view_settings = load_view_settings(self._settings_dir)
-        else:
-            self._view_settings = migrate_legacy_settings(
-                self._settings)
-        self._recent_files = self._load_recent_files()
         self._settings_save_job = None
         self._output_dir = str(writable_dir())
         self.performance_diagnostics_enabled = debug_performance_enabled()
@@ -697,7 +686,6 @@ class GuirBackend:
         self._style_dirty: set[str] = set()
         self._theme_file_imports: dict[str, dict] = {}
         self.theme_migration_issues: list[str] = []
-        self._theme_scan_done = False
         self._theme_migration_aborted = False
         self.theme_load_error = ""
         self._preset_updates = None
@@ -768,6 +756,7 @@ class GuirBackend:
         self._web_export_active = False
         self._web_export_thread = None
         self._pending_preview = None
+        self._suspended_artwork_session = None
         self._poll_job = None
         self._serial = 0
         self._busy = False
@@ -794,7 +783,6 @@ class GuirBackend:
             self.scheduler.cancel)
         self._style_editor_regions: dict = {}
 
-        # 打开解析线程（防重复启动）
         self._open_thread = None
 
         # 中央 WebGL Preview Scene。revision 只增不减，编译线程提交前再次
@@ -802,9 +790,7 @@ class GuirBackend:
         self._preview_revision = 0
         self._preview_compile_thread = None
         self._open_revision = 0
-        self.preview_waits_for_presentation = False
         self.preview_enabled = True
-        self._preview_base_presentation: tuple[int, threading.Event] | None = None
         self._preview_diagnostics: dict[int, tuple[PerformanceRecorder, Path]] = {}
         self._preview_stale_tasks = 0
         self._preview_server = PreviewSceneServer(
@@ -843,32 +829,16 @@ class GuirBackend:
 
     def _record_recent(self, path: str) -> None:
         path = str(path)
-        recents = [p for p in self._recent_files if p != path]
-        recents.insert(0, path)
-        self._recent_files = recents[:RECENT_MAX]
-        vals = dict(self._settings.get("values", {}) or {})
-        for key in [k for k in vals if str(k).startswith("recent_")]:
-            vals.pop(key, None)
-        for i, p in enumerate(self._recent_files):
-            vals[f"recent_{i}"] = str(p)
-        self._settings["values"] = vals
-        save_settings(vals, self._settings_dir, self._settings["version"])
+        self._recent_files = [path, *(p for p in self._recent_files if p != path)][:RECENT_MAX]
+        self._schedule_settings_save()
         self._emit("recent", list(self._recent_files))
 
     def remove_recent(self, path: str) -> bool:
-        """移除一条最近文件路径并立即保存清理后的列表。"""
         path = str(path)
-        filtered = [p for p in self._recent_files if p != path]
-        if len(filtered) == len(self._recent_files):
+        if path not in self._recent_files:
             return False
-        self._recent_files = filtered
-        vals = dict(self._settings.get("values", {}) or {})
-        for key in [k for k in vals if str(k).startswith("recent_")]:
-            vals.pop(key, None)
-        for i, recent_path in enumerate(self._recent_files):
-            vals[f"recent_{i}"] = recent_path
-        self._settings["values"] = vals
-        save_settings(vals, self._settings_dir, self._settings["version"])
+        self._recent_files.remove(path)
+        self.save_settings_now()
         self._emit("recent", list(self._recent_files))
         return True
 
@@ -897,9 +867,8 @@ class GuirBackend:
 
     def _load_persisted_state(self) -> None:
         """把旧界面设置应用到控制器的标准状态。"""
-        if not self._theme_scan_done:
-            self._load_theme_library()
-            self._theme_scan_done = True
+        self._load_theme_library()
+        self._recent_files = self._load_recent_files()
         style_value = str(self._setting("style_var", "modern"))
         style_stem = style_value.split("·", 1)[0].strip()
         self.set_theme(style_stem, persist=False)
@@ -1324,6 +1293,12 @@ class GuirBackend:
         self._schedule_settings_save()
         return True
 
+    def transit_line_headers(self):
+        from .transit import normalize_type
+        return [{"id": line.id, "type": kind}
+                for line in getattr(self.document, "transit_lines", ())
+                if (kind := normalize_type(str(line.kind))) in TYPE_REGISTRY]
+
     def transit_line_catalog(self, *, color_mode=None, style=None) -> list[dict]:
         """按类型排列线路；几何统计按文档缓存，显示色随当前视图变化。"""
         if self.document is None or self.session is None:
@@ -1373,17 +1348,16 @@ class GuirBackend:
             and not group.parent_group_id
         ], key=lambda item: (item["name"], item["id"]))
 
+    def _regions(self):
+        if self.document is None:
+            return (), ()
+        parks = (item for item in getattr(self.document, "park_zones", ())
+                 if str(item.type_label or "").strip().lower() not in ("", "none", "0"))
+        return visible_administrative_districts(self.document), parks
+
     def region_catalog(self) -> dict:
         """返回当前城市区域弹出面板所需的元数据。"""
-        document = self.document
-        if document is None:
-            return {"districts": [], "parks": [],
-                    "district_available": False, "park_available": False}
-        districts = list(visible_administrative_districts(document))
-        parks = [item for item in
-                 list(getattr(document, "park_zones", ()) or ())
-                 if str(getattr(item, "type_label", "") or "").strip().lower()
-                 not in ("", "none", "0")]
+        districts, parks = self._regions()
 
         def entry(item, prefix: str) -> dict:
             item_id = int(getattr(item, "id", 0))
@@ -1409,9 +1383,9 @@ class GuirBackend:
     def reset_region_selection(self) -> None:
         """为新城市会话选中当前文档的全部区域。"""
         self.facility_poi_overrides = {}
-        catalog = self.region_catalog()
-        self.district_ids = {item["id"] for item in catalog["districts"]}
-        self.park_ids = {item["id"] for item in catalog["parks"]}
+        districts, parks = self._regions()
+        self.district_ids = {item.id for item in districts}
+        self.park_ids = {item.id for item in parks}
 
     def set_region_selection(self, group: str, ids) -> bool:
         """设置当前会话的行政区或功能区筛选。"""
@@ -1456,13 +1430,10 @@ class GuirBackend:
             return False
         try:
             from .pixel_sizes import validate
-            try:
-                validate(self.theme_data(stem))
-            except ValueError as error:
-                raise theme_library.ThemeReadError(str(error)) from error
-        except theme_library.ThemeReadError as error:
+            validate(self.theme_data(stem))
+        except (ValueError, TypeError, KeyError) as error:
             if persist:
-                raise
+                raise theme_library.ThemeReadError(str(error)) from error
             self.theme_load_error = str(error)
         else:
             self.theme_load_error = ""
@@ -1630,10 +1601,6 @@ class GuirBackend:
         before_replace 仅在新城市准备成功后执行；读取失败可单独通知调用方。
         """
         path = str(path)
-        if self._open_thread is not None and self._open_thread.is_alive():
-            return False
-        if before_replace is None and self._local_png_active:
-            self._local_render_stop.set()
         if callbacks is not None:
             self._callbacks = callbacks
         open_diagnostics = None
@@ -1645,19 +1612,12 @@ class GuirBackend:
             )
             open_diagnostics = (
                 recorder, default_log_path("gui-webgl-preview-open"))
-        if before_replace is None:
-            self.invalidate_preview_compile()
+        self.invalidate_preview_compile()
         self._open_revision += 1
         open_revision = self._open_revision
         callback_map = dict(self._callbacks or {})
         if on_read_error is not None:
             callback_map["read_error"] = on_read_error
-        if before_replace is None and not self._settings_dir_explicit and self.source_file is None:
-            # 单独运行时，地图选定后将用户数据写在地图旁，而非渲染器版本目录。
-            self._settings_dir = Path(path).resolve().parent
-            self.poi_mapping_override = poi_mapping_override_path(self._settings_dir)
-            self._reload_view_settings()
-
         class OpenCancelled(Exception):
             pass
 
@@ -1668,7 +1628,7 @@ class GuirBackend:
         def emit_current(name, *args):
             def deliver():
                 if open_revision == self._open_revision:
-                    if name == "read_error":
+                    if name in {"read_error", "error"}:
                         self._open_thread = None
                     fn = callback_map.get(name)
                     if fn is not None:
@@ -1697,10 +1657,6 @@ class GuirBackend:
                 check_cancel()
                 p_prepare(0, tr("gui.progress.convert_data"))
                 session = DocumentSession(document=document)
-                with perf_span(open_diagnostics[0] if open_diagnostics else None,
-                               "preview.load.transit_catalog"):
-                    transit_catalog = _build_transit_line_catalog(
-                        session, progress=p_prepare, check_cancel=check_cancel)
                 city_info = _extract_city_info(document)
             except OpenCancelled:
                 return
@@ -1725,26 +1681,21 @@ class GuirBackend:
             def on_parsed() -> None:
                 if open_revision != self._open_revision:
                     return
+                self._open_thread = None
                 if before_replace is not None:
-                    self._open_thread = None
-                    if self._local_png_active:
-                        self._local_render_stop.set()
-                    self.invalidate_preview_compile()
                     before_replace()
-                self._switch_settings_dir_for_city(path)
+                try:
+                    self._switch_settings_dir_for_city(path)
+                    self._record_recent(path)
+                except (OSError, ValueError, TypeError, KeyError) as error:
+                    city_info.setdefault("fileWarnings", []).append(str(error))
                 self.source_file = path
                 self._output_dir = str(Path(path).resolve().parent)
                 self.document = document
                 self.session = session
                 self.preview_outside_terrain = False
                 self.layer_visibility["satellite"] = False
-                self._transit_line_catalog_cache = transit_catalog
-                # 公共交通视图的线路勾选不落盘（会话级），地铁白名单则要跟
-                # 当前存档对齐；settings.json 与存档同目录共享，上一座城市
-                # 留下的 id 会让线路被整批过滤掉（PM 2026-09-11）。
-                if self._reconcile_transit_line_selection(transit_catalog):
-                    self._schedule_settings_save()
-                    self._save_view_settings()
+                self._transit_line_catalog_cache = None
                 self.result_image = None
                 self.result_thumbnail = None
                 self.result_png_path = None
@@ -1753,21 +1704,51 @@ class GuirBackend:
                 self._style_editor_regions = {}
                 self.city_info = city_info
                 self.reset_region_selection()
-                self._record_recent(path)
-                self._emit("meta", dict(self.city_info), "open")
-                self.compile_preview_scene(
-                    callback_map, _diagnostics=open_diagnostics, _opening=True)
-            self._post(on_parsed)
+                if meta := callback_map.get("meta"):
+                    meta(dict(self.city_info), "open")
+                try:
+                    self.compile_preview_scene(callback_map, _diagnostics=open_diagnostics, _opening=True)
+                except Exception as error:
+                    if failed := callback_map.get("scene_error", callback_map.get("error")):
+                        failed(error)
+
+            def deliver():
+                try:
+                    on_parsed()
+                except Exception as error:
+                    if failed := callback_map.get("read_error", callback_map.get("error")):
+                        failed(error)
+            self._post(deliver)
 
         self._open_thread = threading.Thread(
             target=worker, name="guir-open", daemon=True)
         self._open_thread.start()
         return True
 
-    def cancel_document_open(self) -> None:
+    def leave_document(self) -> None:
+        self._local_render_stop.set()
+        self.cancel_export()
+        self._serial += 1
+        self._pending_preview = None
+        self._preview_controller.cancel()
+        if not self._local_png_active and not self._web_export_active:
+            self._busy = False
+        self._preview_bundle = self._preview_bundle_session = None
+        self._preview_server.clear_bundles()
+        self.source_file = self.document = self.session = None
+        self.city_info = {}
+        self.result_image = self.result_thumbnail = self.last_rmp_snapshot = None
+        self.last_diagnostics = {}
+        self._transit_line_catalog_cache = None
+        self.discard_png_result()
+
+    def cancel_document_open(self) -> bool:
         # 读取线程可能仍在解压；通过版本号隔离其结果，允许立即重试。
+        if self._open_thread is None:
+            return False
         self._open_revision += 1
         self._open_thread = None
+        return True
 
     def _switch_settings_dir_for_city(self, path: str) -> None:
         """打开新城市时重新加载旁边的设置，避免跨城市串用。"""
@@ -1785,16 +1766,10 @@ class GuirBackend:
             self.save_settings_now()
         self._settings_dir = target
         self.poi_mapping_override = poi_mapping_override_path(target)
-        from .theme_migration import recover
-        recover(target)
-        self._settings = load_settings(target)
         self.style_overrides.clear()
         self._style_dirty.clear()
         self.theme_load_error = ""
         self.theme_migration_issues.clear()
-        self._reload_view_settings()
-        self._theme_scan_done = False
-        self._recent_files = self._load_recent_files()
         self._output_dir = str(target)
         self._load_persisted_state()
         self._transit_line_catalog_cache = None
@@ -2080,7 +2055,7 @@ class GuirBackend:
             self._local_render_stop.set()
             return
         self._cancelled = True
-        self._open_revision += 1
+        self.cancel_document_open()
         self.invalidate_preview_compile()
         self._local_render_stop.set()
         self._serial += 1
@@ -2407,9 +2382,6 @@ class GuirBackend:
     def invalidate_preview_compile(self) -> None:
         """阻止进行中的预览构建发布过期结果。"""
         self._preview_revision += 1
-        if self._preview_base_presentation is not None:
-            self._preview_base_presentation[1].set()
-            self._preview_base_presentation = None
 
     def _suspend_preview_compile(self, callbacks):
         thread = self._preview_compile_thread
@@ -2419,13 +2391,6 @@ class GuirBackend:
                 self._pending_preview = (dict(callbacks), None, True, None, False)
         return thread
 
-    def acknowledge_preview_base(self, revision: int) -> None:
-        pending = self._preview_base_presentation
-        if pending is not None and pending[0] == revision == self._preview_revision:
-            self._preview_base_presentation = None
-            pending[1].set()
-
-
     def compile_preview_scene(self, callbacks: dict | None = None,
                               style_data: dict | None = None,
                               *, force: bool = False,
@@ -2433,7 +2398,7 @@ class GuirBackend:
         """从当前 DocumentSession 异步编译版本化完整 Scene。"""
         if not self.preview_enabled:
             return False
-        if self._local_png_active or self._web_export_active:
+        if self._suspended_artwork_session is not None and self._suspended_artwork_session is self.session:
             self._pending_preview = (callbacks, copy.deepcopy(style_data), force, _diagnostics, _opening)
             return True
         if self.session is None:
@@ -2450,14 +2415,13 @@ class GuirBackend:
         if (not force and previous
                 and previous.manifest.get("sourceSignatures")
                 == source_signatures):
+            ready = (callbacks or self._callbacks or {}).get("scene_ready")
+            if ready is not None:
+                ready(previous, self._preview_server.manifest_url)
             return True
         options["force"] = bool(force)
         self.invalidate_preview_compile()
         revision = self._preview_revision
-        base_presented = (threading.Event()
-                          if previous is None and self.preview_waits_for_presentation else None)
-        if base_presented is not None:
-            self._preview_base_presentation = (revision, base_presented)
         diagnostics = _diagnostics
         if diagnostics is None and self.performance_diagnostics_enabled:
             recorder = PerformanceRecorder(
@@ -2572,8 +2536,6 @@ class GuirBackend:
                         full_progress(100, tr("gui.progress.scene.ready"))
                 self._post(lambda stage=bundle: emit("scene_compiled", stage)
                            if revision == self._preview_revision and session is self.session else None)
-                if base_presented is not None:
-                    base_presented.wait()
                 check_cancel()
                 self._post(lambda stage=bundle: publish(stage))
             except CompileCancelled:
@@ -2588,8 +2550,6 @@ class GuirBackend:
                 traceback.print_exc()
                 self._finish_preview_diagnostics(revision, "error", error=str(exc))
                 # 已排队的基础包由 publish 接管；细节失败不能先删掉它的文件。
-                if base is not None and base_presented is not None:
-                    base_presented.wait()
                 def report_failure(error=exc):
                     if revision != self._preview_revision or session is not self.session:
                         return
@@ -2676,71 +2636,11 @@ class GuirBackend:
             opts.update(self._view_section(False).get("themes", {}).get(theme, {}))
         opts["types"] = [item for item in opts["types"] if item in TYPE_REGISTRY]
         if metro:
-            for key in ("line_ids",):
-                if opts[key] is None:
-                    opts.pop(key)
-                else:
-                    opts[key] = _int_line_ids(opts[key])
+            ids = opts.pop("line_ids", None)
+            if ids is not None:
+                known = {line.id for line in getattr(self.document, "transit_lines", ())}
+                opts["line_ids"] = [i for i in _int_line_ids(ids) if not known or i in known]
         return opts
-
-    def _reconcile_transit_line_selection(self, catalog) -> bool:
-        """清理设置里不成立的线路白名单，返回是否改动了设置。
-
-        两条规矩：
-
-        1. **公共交通视图**的线路勾选是当前会话的临时筛选 —— 不持久化、
-           也不读回（PM 2026-09-11），所以历史落盘的
-           ``transit_view_line_ids`` / ``transit_view_station_line_ids``
-           一律删掉，留着只会被别的代码误当成配置读。
-        2. **地铁示意图**的白名单仍跟着设置走，但 ``settings.json`` 与存档
-           同目录、多座城市共用，很容易是**另一座城市**留下的 id —— 对不上
-           当前存档时，pure 分支的 ``enabled_line_ids`` 会把线路整批过滤掉。
-           这里按当前存档线路目录求交集，并保持既有的三态约定：缺键 = 没筛过、
-           ``[]`` = 显式清空，两者都不动；未知 ID 只移除无效项，零命中保持
-           空集，不能擅自恢复全部线路。
-        """
-        values = dict(self._settings.get("values", {}) or {})
-        changed = False
-        for stale in ("transit_view_line_ids",
-                      "transit_view_station_line_ids"):
-            if stale in values:
-                values.pop(stale, None)
-                changed = True
-        known = {int(item["id"]) for item in catalog
-                 if item.get("id") is not None}
-        if known:
-            for key in ("metro_view_line_ids",
-                        "metro_view_station_line_ids"):
-                raw = values.get(key)
-                if not isinstance(raw, list) or not raw:
-                    continue
-                current = _int_line_ids(raw)
-                kept = [line_id for line_id in current if line_id in known]
-                if kept != current:
-                    values[key] = kept
-                    changed = True
-        transit_view = self._view_section(False)
-        for stale in ("line_ids", "station_line_ids"):
-            if stale in transit_view:
-                transit_view.pop(stale)
-                changed = True
-        metro_view = self._view_section(True)
-        if "station_line_ids" in metro_view:
-            metro_view.pop("station_line_ids")
-            changed = True
-        if known:
-            for key in ("line_ids",):
-                raw = metro_view.get(key)
-                if not isinstance(raw, list) or not raw:
-                    continue
-                current = _int_line_ids(raw)
-                kept = [line_id for line_id in current if line_id in known]
-                if kept != raw:
-                    metro_view[key] = kept
-                    changed = True
-        if changed:
-            self._settings["values"] = values
-        return changed
 
     def render_transit(self, metro: bool = False, opts: dict | None = None,
                        callbacks: dict | None = None, *, png_poi_options=None) -> bool:
@@ -2923,7 +2823,7 @@ class GuirBackend:
         return copy.deepcopy(job)
 
     def render_png_export(self, request, callbacks=None, *, transit_options=None,
-                          metro_options=None, in_engine=False, file_result=False) -> bool:
+                          metro_options=None, in_engine=False, file_result=False, preview_stop=None) -> bool:
         if getattr(request.context, "value", request.context) == "metro":
             raise ValueError("请从 RMP 工程编辑器导出已编辑工程")
         job = copy.deepcopy(request.render_snapshot) if request.render_snapshot else (
@@ -2948,86 +2848,76 @@ class GuirBackend:
         if request.png_poi_options and getattr(request.context, "value", request.context) != "metro":
             job["ui"]["png_poi_options"] = dict(request.png_poi_options)
         job["final_png"] = True
-        if file_result and job.get("kind", "normal") == "normal":
-            return self._submit_png_job_in_engine(job, request.target, callbacks)
         if file_result:
-            job["png_output_dir"] = str(Path(request.target).parent if request.target else Path(self.output_dir))
+            return self._submit_png_job_in_engine(job, request.target, callbacks, preview_stop)
         return self.submit(job, callbacks)
 
-    def _submit_png_job_in_engine(self, job, target, callbacks):
-        if self._busy or self.local_render_active or self.session is None:
+    def _submit_png_job_in_engine(self, job, target, callbacks, preview_stop=None):
+        export = preview_stop is None
+        if self.session is None or (export and (self._busy or self.local_render_active)):
             return False
+        session = self.session.for_background_render()
         callbacks = dict(callbacks or {})
-        preview_callbacks = dict(self._callbacks)
-        self._serial += 1
-        serial, session = self._serial, self.session
-        stop = self._local_render_stop = threading.Event()
-        self.discard_png_result()
-        parent = Path(target).parent
-        parent.mkdir(parents=True, exist_ok=True)
-        self._png_tempdir = Path(tempfile.mkdtemp(prefix=".csl-png-", dir=parent))
-        job["png_path"] = str(self._png_tempdir / "result.png")
-        preview_thread = self._suspend_preview_compile(preview_callbacks)
-        self._callbacks = callbacks
-        self._local_png_active = self._busy = True
-        self._emit("busy", True)
+        target = Path(target)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        temporary = tempfile.TemporaryDirectory(prefix=".csl-png-", dir=target.parent)
+        output = Path(temporary.name) / "result.png"
+        stop = threading.Event() if export else preview_stop
 
         def check_cancel():
             if stop.is_set():
-                raise RuntimeError(i18n.tr('ui.guir_backend.check_cancel.e4267bce68'))
+                raise RuntimeError(tr("gui.error.export_cancelled"))
 
-        def progress(fraction, message):
+        def progress(fraction, message, stage=None):
             check_cancel()
-            fn = callbacks.get("progress")
-            if fn is not None:
-                self._post(lambda: fn(float(fraction) * 100, message) if not stop.is_set() else None)
+            if report := callbacks.get("progress"):
+                self._post(lambda: report(float(fraction) * 100, message) if not stop.is_set() else None)
 
         def run():
-            result, error = None, None
+            stats, error = {}, None
             try:
-                while preview_thread is not None and preview_thread.is_alive():
-                    check_cancel()
-                    preview_thread.join(0.05)
-                result = _render_worker.run_render_task(
-                    job, session=session, progress=progress, check_cancel=check_cancel)
+                if job.get("kind") == "interchanges":
+                    result = _render_worker.run_interchanges_task(job, session=session, progress=progress, check_cancel=check_cancel)
+                elif job.get("kind") == "transit":
+                    result = _render_worker.run_transit_task(job, session=session, progress=progress)
+                else:
+                    result = _render_worker.run_render_task(
+                        job, session=session, progress=progress, check_cancel=check_cancel)
                 check_cancel()
-                image = result.pop("image")
-                result["image_size"] = image.size
-                result["png_path"] = export_png(image, job["png_path"])
-                result.pop("thumbnail", None)
-                check_cancel()
+                export_png(result["image"], str(output))
+                stats = result.get("stats") or {}
             except Exception as exc:
                 error = exc
 
             def finish():
-                self._local_render_thread = None
-                self._local_png_active = False
-                self._busy = False
-                if stop.is_set() or serial != self._serial or session is not self.session:
-                    self.discard_png_result()
-                    fn = callbacks.get("cancelled")
-                    if fn is not None:
-                        fn()
-                elif error is not None:
-                    self.discard_png_result()
-                    fn = callbacks.get("error")
-                    if fn is not None:
-                        fn(error)
-                else:
-                    self._callbacks = callbacks
-                    self._on_worker_done(result)
-                self._callbacks = preview_callbacks
-                self._emit("busy", False)
-                pending, self._pending_preview = self._pending_preview, None
-                if pending is not None:
-                    cb, style_data, force, diagnostics, opening = pending
-                    self.compile_preview_scene(cb, style_data, force=force,
-                                               _diagnostics=diagnostics, _opening=opening)
-
+                if export:
+                    self._local_render_thread = None
+                    self._local_png_active = self._busy = False
+                try:
+                    if stop.is_set():
+                        if cancelled := callbacks.get("cancelled"):
+                            cancelled()
+                    elif error is not None:
+                        raise error
+                    else:
+                        os.replace(output, target)
+                        callbacks["file_done"](str(target), stats)
+                except Exception as exc:
+                    if failed := callbacks.get("error"):
+                        failed(exc)
+                finally:
+                    temporary.cleanup()
+                    if export:
+                        self._emit("busy", False)
             self._post(finish)
 
-        self._local_render_thread = threading.Thread(target=run, name="winui-png-render", daemon=True)
-        self._local_render_thread.start()
+        thread = threading.Thread(target=run, name="winui-png-render", daemon=True)
+        if export:
+            self._local_render_stop = stop
+            self._local_render_thread = thread
+            self._local_png_active = self._busy = True
+            self._emit("busy", True)
+        thread.start()
         return True
 
     def pick_random_preview_region(self, *, scene="overall", seed=None) -> tuple[float, float, float, float] | None:
@@ -3038,79 +2928,14 @@ class GuirBackend:
         region = closeup_region(view, scene, rng=random.Random(seed))
         return region
 
-    def _submit_local_image_task(self, build, callbacks=None) -> bool:
-        """运行复用的进程内合成器，并返回工作进程形式的结果。"""
-        if self._busy or self.document is None or self.session is None:
-            return False
-        if callbacks is not None:
-            self._callbacks = callbacks
-        self._busy = True
-        self._emit("busy", True)
-
-        def worker():
-            started = time.time()
-            try:
-                image, stats = build()
-                payload = {
-                    "image": image,
-                    "thumbnail": _render_worker._make_thumbnail(image),
-                    "size": image.width,
-                    "stats": stats or {},
-                    "elapsed": time.time() - started,
-                    "is_region": True,
-                    "context": {"city_info": dict(self.city_info)},
-                }
-                self._post(lambda: self._on_worker_done(payload))
-            except Exception as exc:  # noqa: BLE001
-                traceback.print_exc()
-                self._post(lambda err=exc: self._on_worker_error(err))
-
-        threading.Thread(target=worker, name="guir-compose", daemon=True).start()
-        return True
-
-    def _render_region_for_composer(self, region, size, layers=None, style=None, *, ui=None, aa=None):
-        selected = list(self._enabled_layers() if layers is None else layers)
-        aa = self.aa if aa is None else aa
-        selected = [key for key in selected if key != "watermark"]
-        renderer = _render_worker._build_normal_renderer(  # 共用的界面工作进程路径。
-            (self._capture_ui_state() if ui is None else ui), style or self.theme_stem, selected,
-            int(size) * (2 if aa else 1), preview=False,
-             job_kind="normal")
-        image = renderer.render(
-            self.document, region=region, final_size=int(size),
-            session=self.session)
-        if aa and image.size != (int(size), int(size)):
-            image = image.resize((int(size), int(size)), Image.LANCZOS)
-        return image
-
-    def render_interchanges(self, callbacks: dict | None = None,
-                            request: dict | None = None) -> bool:
-        """通过结构化适配器渲染一组交通枢纽。"""
-        request = copy.deepcopy(request or {})
-        captured_ui = self._capture_ui_state()
-        captured_ui["poi_names"] = bool(request.get("poi_names", captured_ui.get("poi_names", True)))
-        captured_ui["text_enabled"] = bool(request.get("labels", captured_ui.get("text_enabled", True)))
-        captured_layers = request.get("layers", self._enabled_layers())
-        captured_style = self.theme_stem
-        captured_aa = automatic_antialias()
-        def render_region(region, size):
-            return self._render_region_for_composer(region, size, captured_layers, captured_style,
-                                                   ui=captured_ui, aa=captured_aa)
-        def build():
-            from .interchanges import render_interchange_request
-            mapdata = self.session._legacy_view()
-
-            def progress(pct, msg):
-                self._emit("progress", float(pct) * 100, msg)
-
-            image, interchanges = render_interchange_request(
-                mapdata, render_region, request,
-                progress=progress)
-            if not interchanges:
-                raise RuntimeError(tr("gui.error.no_interchange"))
-            return image, {"interchange_count": len(interchanges)}
-
-        return self._submit_local_image_task(build, callbacks)
+    def render_interchanges(self, callbacks, *, request, target) -> bool:
+        ui = self._capture_ui_state()
+        ui["poi_names"] = bool(request.get("poi_names", ui.get("poi_names", True)))
+        ui["text_enabled"] = bool(request.get("labels", ui.get("text_enabled", True)))
+        job = {"kind": "interchanges", "ui": ui, "style": self.theme_stem, "aa": automatic_antialias(),
+               "layers": [key for key in request.get("layers", self._enabled_layers()) if key != "watermark"],
+               "request": copy.deepcopy(request)}
+        return self._submit_png_job_in_engine(job, target, callbacks)
 
     def update_transit_options(self, metro: bool, opts: dict, *, theme=None) -> None:
         """持久化共用的交通对话框选项协议。"""
@@ -3226,8 +3051,7 @@ class GuirBackend:
             return False
         if getattr(self, "_preview_bundle_session", None) is not self.session:
             bundle = None
-        preview_callbacks = dict(self._callbacks)
-        self._export_cancelled.clear()
+        stop = self._export_cancelled = threading.Event()
         target_dir = out_dir or self._output_dir
         # 这几项都可能在场景编译完成后被实时修改，必须与屏幕当前状态对齐
         # （旋转角度只在「导出成什么方向」上生效，所以跟着导出走，不重编译场景）。
@@ -3267,22 +3091,21 @@ class GuirBackend:
                               preview_source_signatures(source_style, source_options))
         if hasattr(bundle, "retain"):
             bundle.retain()
-        preview_thread = self._suspend_preview_compile(preview_callbacks) if needs_complete else None
+        if needs_complete:
+            export_session = export_session.for_background_render()
         revision = bundle.revision if bundle is not None else self._preview_revision
         self._web_export_active = self._busy = True
         self._emit("busy", True)
 
         def worker() -> None:
             export_bundle = bundle
+            temporary = None
             try:
                 from .web_export_v2 import export_preview_bundle
 
                 def check_cancel():
-                    if self._export_cancelled.is_set():
+                    if stop.is_set():
                         raise RuntimeError(tr("gui.error.export_cancelled"))
-                while preview_thread is not None and preview_thread.is_alive():
-                    check_cancel()
-                    preview_thread.join(0.05)
                 check_cancel()
                 if needs_complete:
                     export_bundle = PreviewSceneCompiler.compile_full(export_session, source_style,
@@ -3300,20 +3123,35 @@ class GuirBackend:
                     ch if ch not in '<>:"/\\|?*' else "_" for ch in name)
                 out = Path(target) if target else _unique_output_path(
                     Path(target_dir) / f"{safe_name}_map.html")
-                saved = export_preview_bundle(
-                    export_bundle, city, str(out), theme=theme,
+                out.parent.mkdir(parents=True, exist_ok=True)
+                temporary = tempfile.TemporaryDirectory(prefix=".csl-html-", dir=out.parent)
+                staged = Path(temporary.name) / out.name
+                export_preview_bundle(
+                    export_bundle, city, str(staged), theme=theme,
                     visibility=visibility, region=selected_region,
                     rotation=rotation, view=view, navigation_enabled=True, html_quality=html_quality)
-                if self._export_cancelled.is_set():
-                    raise RuntimeError(tr("gui.error.export_cancelled"))
-                result = gui_cb.get("web_result")
-                if result is not None:
-                    report = export_bundle.manifest.get("roadOrder", {})
-                    self._post(lambda: result(saved, report))
-                elif (done := gui_cb.get("web_done")) is not None:
-                    self._post(lambda: done(saved))
+                report = export_bundle.manifest.get("roadOrder", {})
+
+                def publish():
+                    try:
+                        if stop.is_set():
+                            if cancelled := gui_cb.get("cancelled"):
+                                cancelled()
+                            return
+                        os.replace(staged, out)
+                        if result := gui_cb.get("web_result"):
+                            result(str(out), report)
+                        elif done := gui_cb.get("web_done"):
+                            done(str(out))
+                    except Exception as error:
+                        (gui_cb.get("error") or (lambda exc: self._emit("error", exc)))(error)
+                    finally:
+                        temporary.cleanup()
+                self._post(publish)
             except Exception as exc:  # noqa: BLE001
-                if self._export_cancelled.is_set() and (cancelled := gui_cb.get("cancelled")) is not None:
+                if temporary is not None:
+                    temporary.cleanup()
+                if stop.is_set() and (cancelled := gui_cb.get("cancelled")) is not None:
                     self._post(cancelled)
                 else:
                     traceback.print_exc()
@@ -3331,11 +3169,6 @@ class GuirBackend:
                     self._web_export_active = self._busy = False
                     self._web_export_thread = None
                     self._emit("busy", False)
-                    pending, self._pending_preview = self._pending_preview, None
-                    if pending is not None:
-                        cb, style_data, force, diagnostics, opening = pending
-                        self.compile_preview_scene(cb, style_data, force=force,
-                                                   _diagnostics=diagnostics, _opening=opening)
                 self._post(finish)
 
         self._web_export_thread = threading.Thread(target=worker, name="guir-web", daemon=True)
@@ -3345,13 +3178,20 @@ class GuirBackend:
     # 样式覆盖 / 样式编辑器
 
     def _load_theme_library(self) -> None:
-        from .theme_migration import migrate as migrate_themes
-        records = self._settings["values"].get("user_themes", {})
-        imports = self._settings["values"].get("theme_file_imports", {})
+        from .theme_migration import recover, migrate as migrate_themes
+        self._settings = {"values": {}, "version": SETTINGS_VERSION}
+        self._view_settings = default_view_settings()
         self.user_themes = {}
         self._theme_file_imports = {}
         self._theme_migration_aborted = False
         try:
+            try:
+                recover(self._settings_dir)
+                self._settings = read_settings(self._settings_dir)
+            finally:
+                self._reload_view_settings()
+            records = self._settings["values"].get("user_themes", {})
+            imports = self._settings["values"].get("theme_file_imports", {})
             if not isinstance(records, dict) or not isinstance(imports, dict):
                 raise ValueError("user_themes and theme_file_imports must be objects")
             for identity, record in records.items():
@@ -3361,7 +3201,7 @@ class GuirBackend:
             self.user_themes = copy.deepcopy(records)
             self._theme_file_imports = copy.deepcopy(imports)
             migrate_themes(self)
-        except (OSError, ValueError, TypeError, KeyError) as error:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError) as error:
             self._theme_migration_aborted = True
             self._theme_migration_issue(self._settings_dir, error)
 
@@ -3738,10 +3578,16 @@ class GuirBackend:
 
     def current_style_data(self) -> dict:
         """当前主题 yaml + 覆盖合并结果（传给样式编辑器）。"""
+        if self.theme_load_error and self.theme_stem in self.user_themes:
+            return self.theme_defaults("modern")
         if self.theme_stem in self.style_overrides:
             data = copy.deepcopy(self.style_overrides[self.theme_stem])
             return Style(strip_retired_region_palette_fields(data)).data
-        return self.theme_data(self.theme_stem)
+        try:
+            return self.theme_data(self.theme_stem)
+        except (ValueError, TypeError, KeyError) as error:
+            self.theme_load_error = str(error)
+            return self.theme_defaults("modern")
 
     def style_preview_render(self, style_data: dict, size: int,
                              scene: str = "overall"):

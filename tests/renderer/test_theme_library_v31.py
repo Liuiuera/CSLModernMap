@@ -44,8 +44,7 @@ def test_decimal_version_round_trip_and_pending_version_preserved(tmp_path):
 def test_unsupported_version_cannot_be_overwritten(tmp_path, version):
     path = write_settings(tmp_path, {'keep': 42}, version)
     raw = path.read_bytes()
-    with pytest.raises(SettingsVersionError):
-        load_settings(tmp_path)
+    assert load_settings(tmp_path)["values"] == {}
     with pytest.raises(SettingsVersionError):
         save_settings({}, tmp_path)
     assert path.read_bytes() == raw

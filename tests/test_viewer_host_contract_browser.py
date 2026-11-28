@@ -42,14 +42,15 @@ def test_base_and_complete_messages_include_native_host_fields():
                         page.wait_for_function("window.events.some(e => e.type === 'ready')")
                     page.evaluate("window.events = []")
                     page.evaluate("command => window.cslPreview.dispatch(command)", {
-                        "type": "loadScene", "revision": 1, "manifestUrl": server.manifest_url})
+                        "type": "loadScene", "sceneId": bundle.scene_id, "revision": 1, "manifestUrl": server.manifest_url})
                     event = page.evaluate("window.events.find(e => e.type === 'sceneLoaded')")
                     assert event is not None, page.evaluate("window.events")
                     assert event["sceneId"] == bundle.scene_id
                     assert event["revision"] == 1
                     assert event["bundleId"] == bundle.root.name
                     assert event["completion"] == expected
-                    assert event["performance"]["completion"] == "idle"
+                    assert event["performance"]["completion"] == "applied"
+                    page.wait_for_function("id => window.events.some(e => e.type === 'scenePresentationReady' && e.bundleId===id)", arg=bundle.root.name)
                     assert not page.evaluate("window.events.filter(e => e.type === 'renderError')")
                     previous = bundle
                 assert not errors

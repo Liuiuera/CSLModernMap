@@ -52,7 +52,7 @@ def test_transit_labels_cover_selected_routes_without_relayout_on_pan(
     }""")
     assert remote.bounding_box()['x'] > 1100
     page.evaluate("""() => new Promise(resolve => {
-        __testMap.once('idle', resolve);
+        __testMap.once('idle', () => resolve());
         __testMap.jumpTo({center:[.15,0]});
     })""")
     # 横移触发常规标签工作后，线路徽章仍是原 DOM，且没有重新执行徽章绘制。

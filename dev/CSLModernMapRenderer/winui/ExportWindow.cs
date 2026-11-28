@@ -796,7 +796,7 @@ internal sealed partial class ExportWindow
         if (!_busy) return;
         try
         {
-            var result = await _engine.RequestAsync("cancel");
+            var result = await _engine.RequestAsync("cancel", new { exportRequestId = _requestId });
             if (result.GetProperty("cancelled").GetBoolean()) { SetBusy(false); _status.Text = UiLanguage.Text("ExportWindow_CancelAsync_A37778F17C"); }
             else _status.Text = result.TryGetProperty("message", out var message) ? message.GetString() : UiLanguage.Text("ExportWindow_CancelAsync_BD768D3131");
         }

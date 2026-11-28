@@ -65,6 +65,8 @@ internal sealed partial class ThemeEditorDialog
     private void SetBusy(bool value)
     {
         _busy = value;
+        if (value) _currentAction ??= new(TaskCreationOptions.RunContinuationsAsynchronously);
+        else { _currentAction?.TrySetResult(); _currentAction = null; }
         _themeChoice.IsEnabled = _embeddedProperties.IsEnabled = _navigation.IsEnabled = !value && !_invalidated;
         if (!IsEmbedded) _fieldsScroll.IsEnabled = !value && !_invalidated;
         foreach (var command in _commands.Children.OfType<Control>()) command.IsEnabled = !value;

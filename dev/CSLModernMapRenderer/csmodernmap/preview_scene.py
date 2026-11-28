@@ -2279,21 +2279,21 @@ class PreviewSceneServer:
         return True
 
 
+    def clear_bundles(self) -> None:
+        with self._lock:
+            self._bundle = None
+            retired = list(self._bundles.values())
+            self._bundles.clear()
+        for bundle in retired:
+            bundle.close()
+
     def close(self) -> None:
         server = self._server
         self._server = None
         if server is not None:
             server.shutdown()
             server.server_close()
-        with self._lock:
-            bundle = self._bundle
-            self._bundle = None
-            retired = list(self._bundles.values())
-            self._bundles.clear()
-        if bundle is not None:
-            bundle.close()
-        for item in retired:
-            item.close()
+        self.clear_bundles()
         thread = self._thread
         self._thread = None
         if thread is not None and thread.is_alive():

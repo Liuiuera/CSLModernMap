@@ -30,16 +30,14 @@ def request(engine, target):
         "requestId": "png-test", "context": "normal", "format": "PNG", "target": str(target)})
 
 
-@pytest.mark.parametrize("stage", ["waiting", "rendering", "encoding", "city", "error"])
+@pytest.mark.parametrize("stage", ["rendering", "encoding", "city", "error"])
 def test_local_png_cancel_holds_busy_and_discards_output(tmp_path, monkeypatch, stage):
     engine, events = setup_engine(tmp_path)
     backend = engine.backend
     entered, release = threading.Event(), threading.Event()
-    if stage == "waiting":
-        backend._preview_compile_thread = threading.Thread(target=lambda: (entered.set(), release.wait(10)))
-        backend._preview_compile_thread.start()
+    original = backend.session
     def render(job, *, session, progress, check_cancel):
-        assert session is backend.session or stage == "city"
+        assert session is not original and session.document.nodes is original.document.nodes
         assert job["ui"]["accurate_intersections"] is True
         if stage != "encoding":
             entered.set()
@@ -61,9 +59,13 @@ def test_local_png_cancel_holds_busy_and_discards_output(tmp_path, monkeypatch, 
         assert request(engine, target)["started"]
         assert entered.wait(5)
         if stage == "city":
-            engine._document_epoch += 1
-            backend.session = DocumentSession(_document())
-        if stage != "error":
+            from pathlib import Path
+            city = Path(__file__).parents[1] / "fixtures" / "tiny-city.cmm"
+            assert engine.dispatch("openDocument", {"path": city})["started"]
+            backend._open_thread.join(5)
+            engine.scheduler.pump()
+            assert backend.source_file == str(city)
+        elif stage != "error":
             answer = engine.dispatch("cancel", {})
             assert answer["cancelRequested"] and not answer["cancelled"]
         assert backend.busy
@@ -84,41 +86,25 @@ def test_local_png_cancel_holds_busy_and_discards_output(tmp_path, monkeypatch, 
         engine._preview_files.cleanup()
 
 
-def test_session_success_and_latest_preview_request(tmp_path, monkeypatch):
+def test_session_png_export_can_be_repeated(tmp_path, monkeypatch):
     engine, events = setup_engine(tmp_path)
     backend = engine.backend
-    backend._callbacks = engine.callbacks
-    backend.preview_enabled = True
-    entered, release = threading.Event(), threading.Event()
     def render(job, *, session, progress, check_cancel):
-        assert session is backend.session
-        entered.set()
-        assert release.wait(10)
+        assert session.document.nodes is backend.session.document.nodes
         return {"image": Image.new("RGB", (32, 24), "red"), "size": 32}
     monkeypatch.setattr(gui_render_worker, "run_render_task", render)
     try:
-        assert request(engine, tmp_path / "map.png")["started"]
-        assert entered.wait(5)
-        backend.compile_preview_scene(style_data={"first": True})
-        latest = {"latest": True}
-        backend.compile_preview_scene(style_data=latest, force=True)
-        latest["latest"] = False
-        delivered = []
-        monkeypatch.setattr(backend, "compile_preview_scene", lambda cb, style_data, *, force, **kwargs: delivered.append((style_data, force)))
-        release.set()
-        backend._local_render_thread.join(10)
-        engine.scheduler.pump()
-        assert (tmp_path / "map.png").exists()
-        assert any(name == "exportDone" for name, _ in events)
-        assert delivered == [({"latest": True}, True)]
-        assert backend._callbacks == engine.callbacks
+        for target in (tmp_path / "map.png", tmp_path / "again.png"):
+            assert request(engine, target)["started"]
+            thread = backend._local_render_thread
+            thread.join(10)
+            assert not thread.is_alive()
+            engine.scheduler.pump()
+            assert target.exists()
+        assert [data["path"] for name, data in events if name == "exportDone"] == [
+            str(tmp_path / "map.png"), str(tmp_path / "again.png")]
         assert not list(tmp_path.glob(".csl-png-*"))
-        assert request(engine, tmp_path / "again.png")["started"]
-        backend._local_render_thread.join(10)
-        engine.scheduler.pump()
-        assert (tmp_path / "again.png").exists()
     finally:
-        release.set()
         backend.close()
         engine._preview_files.cleanup()
 

@@ -8,13 +8,16 @@ from pathlib import Path
 import tempfile
 import warnings
 
+from ...i18n import tr
+
 LIBRARIES = ('cn_icons',)
 SCHEMA_VERSION = 3
-MISSING_ID_WARNING = '部分建筑缺少原生条目 ID，请使用新版导出器重新导出地图；这些建筑不绘制 POI 图标。'
+GENERIC_BUILDING_ICON = 'mi_default_gray'
 
 def document_warnings(document) -> list[str]:
-    return ([MISSING_ID_WARNING] if document is not None and
-            any(not building.category_id for building in document.buildings) else [])
+    return ([tr('gui.file.poi_categories_missing')] if document is not None and
+            any(not (getattr(building, 'category_id', '') or '').strip()
+                for building in getattr(document, 'buildings', ())) else [])
 
 def bundled_path() -> Path:
     return Path(__file__).with_name('poi_direct_mapping.json')

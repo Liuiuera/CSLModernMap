@@ -59,7 +59,7 @@ class WinuiWorkflows:
             backend.set_performance_diagnostics(bool(params["enabled"]))
             return {"enabled": backend.performance_diagnostics_enabled}
         if method == "renderInterchanges":
-            if backend.busy or self.server._external_busy or self.server._export.target or not backend.has_document:
+            if backend.busy or self.server._export.request_id or not backend.has_document:
                 return {"started": False}
             request = dict(params.get("request") or {})
             if not 1 <= int(request.get("top_count", 3)) <= 24 or not 256 <= int(request.get("tile_size", 1024)) <= 4096:
@@ -72,9 +72,10 @@ class WinuiWorkflows:
             export.document_epoch = self.server._document_epoch
             export.context = "normal"
             export.format = "PNG"
-            export.requested_target = export.target = target
+            export.requested_target = target
+            export.document = backend.document
             try:
-                started = backend.render_interchanges(self.server.callbacks, request=request)
+                started = backend.render_interchanges(self.server._file_export_callbacks(), request=request, target=target)
             except Exception:
                 self.server._clear_export()
                 raise

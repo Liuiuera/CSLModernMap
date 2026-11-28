@@ -14,19 +14,17 @@ internal sealed record RecentCmmExport(FileInfo MapFile, string Version)
 {
     internal static RecentCmmExport? FindLatest(string registry, Action<string> log)
     {
-        var candidates = GameExportDirectories
+        var file = GameExportDirectories
             .EnumerateRegisteredMaps(registry, log)
             .OrderByDescending(file => file.LastWriteTimeUtc)
-            .ThenBy(file => file.FullName, StringComparer.OrdinalIgnoreCase);
-        foreach (var file in candidates)
+            .ThenBy(file => file.FullName, StringComparer.OrdinalIgnoreCase).FirstOrDefault();
+        if (file is null) return null;
+        try { return new RecentCmmExport(file, ReadVersion(file.FullName)); }
+        catch (Exception error) when (error is IOException or UnauthorizedAccessException or InvalidDataException or JsonException)
         {
-            try { return new RecentCmmExport(file, ReadVersion(file.FullName)); }
-            catch (Exception error) when (error is IOException or UnauthorizedAccessException or InvalidDataException or JsonException)
-            {
-                log($"Cannot read CMM header: {file.FullName}: {error.Message}");
-            }
+            log($"Cannot read CMM header: {file.FullName}: {error.Message}");
+            return new RecentCmmExport(file, "");
         }
-        return null;
     }
 
     internal static string ReadVersion(string path)
@@ -60,34 +58,12 @@ internal sealed record RecentCmmExport(FileInfo MapFile, string Version)
         var json = prefix[..length];
         if (json.StartsWith("\uFEFF"u8)) json = json[3..];
         var reader = new Utf8JsonReader(json, isFinalBlock: length < prefix.Length, state: default);
-        string? version = null;
-        bool hasOrigin = false;
         while (reader.Read())
         {
-            if (reader.TokenType != JsonTokenType.PropertyName || reader.CurrentDepth != 1) continue;
-            if (reader.ValueTextEquals("schema_version"u8))
-            {
-                if (!reader.Read() || reader.TokenType != JsonTokenType.String)
-                    throw new InvalidDataException("Invalid CMM schema_version.");
-                version = reader.GetString() switch
-                {
-                    "cmm-v1" => "CMM v1",
-                    "cmm1.1" => "CMM 1.1",
-                    _ => throw new InvalidDataException("Unsupported CMM schema_version."),
-                };
-            }
-            else if (reader.ValueTextEquals("metadata"u8) && reader.Read())
-            {
-                if (!JsonDocument.TryParseValue(ref reader, out var metadata))
-                    throw new InvalidDataException("Incomplete CMM metadata.");
-                using (metadata)
-                    hasOrigin = metadata.RootElement.ValueKind == JsonValueKind.Object
-                        && metadata.RootElement.TryGetProperty("origin", out var origin)
-                        && origin.ValueKind == JsonValueKind.Object;
-            }
-
-            if (version is not null && hasOrigin) return version;
+            if (reader.TokenType == JsonTokenType.PropertyName && reader.CurrentDepth == 1 &&
+                reader.ValueTextEquals("schema_version"u8) && reader.Read() && reader.TokenType == JsonTokenType.String)
+                return reader.GetString() switch { "cmm-v1" => "CMM v1", "cmm1.1" => "CMM 1.1", _ => "" };
         }
-        throw new InvalidDataException("Missing CMM version or metadata.");
+        throw new InvalidDataException("Missing CMM version.");
     }
 }

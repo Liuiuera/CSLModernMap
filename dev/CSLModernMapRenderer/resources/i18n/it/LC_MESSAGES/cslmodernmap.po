@@ -5493,7 +5493,13 @@ msgid "style.transport.fit_preview.desc"
 msgstr "Adatta i simboli delle stazioni e le etichette del PNG dei trasporti all’anteprima interattiva dell’intera mappa. Le altre icone e i nomi mantengono le dimensioni; la densità può cambiare. Senza anteprima interattiva si usano le dimensioni abituali."
 
 msgid "gui.file.records_skipped"
-msgstr "{count} elementi saltati: analisi non riuscita."
+msgstr "Voci della mappa illeggibili ignorate ({count})."
+
+msgid "gui.file.edits_skipped"
+msgstr "Non è stato possibile leggere le modifiche salvate della mappa, che sono state ignorate."
+
+msgid "gui.file.poi_categories_missing"
+msgstr "Alcuni edifici non hanno una categoria POI e usano un’icona POI generica."
 
 msgid "gui.file.dependencies_skipped"
 msgstr "Altri {count} elementi correlati sono stati saltati perché mancano dati necessari."

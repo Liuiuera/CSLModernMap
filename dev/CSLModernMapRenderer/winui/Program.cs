@@ -11,7 +11,8 @@ public static class Program
     public static int Main(string[] args)
     {
         // CS1 和 CS2 通过 gui 加文件路径启动；旧命令行操作仍由 Python 程序处理。
-        if (args.Length > 0 && args[0] != "gui" && !File.Exists(args[0]))
+        if (args.Length > 0 && (args[0].StartsWith('-') || args[0] is "engine" or "self-check" or "parse" or
+            "render" or "transit" or "random" or "interchange" or "spot" or "list-styles" or "export-web"))
             return ForwardCli(args);
 
         WinRT.ComWrappersSupport.InitializeComWrappers();
@@ -26,27 +27,7 @@ public static class Program
 
     private static int ForwardCli(string[] args)
     {
-        string executable;
-        string directory;
-        var bundled = Path.Combine(AppContext.BaseDirectory, "engine", "CSLModernMapEngine.exe");
-        if (File.Exists(bundled))
-        {
-            executable = bundled;
-            directory = Path.GetDirectoryName(bundled)!;
-        }
-        else
-        {
-            var root = new DirectoryInfo(AppContext.BaseDirectory);
-            string? main = null;
-            for (; root != null; root = root.Parent)
-            {
-                var candidate = Path.Combine(root.FullName, "dev", "CSLModernMapRenderer", "main.py");
-                if (File.Exists(candidate)) { main = candidate; break; }
-            }
-            if (main is null) return 2;
-            executable = "python";
-            directory = Path.GetDirectoryName(main)!;
-        }
+        var (executable, engineArgs, directory) = EngineClient.FindEngine();
         using var process = new Process();
         process.StartInfo = new ProcessStartInfo(executable)
         {
@@ -58,7 +39,7 @@ public static class Program
             StandardErrorEncoding = System.Text.Encoding.UTF8,
             CreateNoWindow = true,
         };
-        if (executable == "python") process.StartInfo.ArgumentList.Add("main.py");
+        if (engineArgs.StartsWith("main.py ")) process.StartInfo.ArgumentList.Add("main.py");
         foreach (var arg in args) process.StartInfo.ArgumentList.Add(arg);
         process.Start();
         var stdout = process.StandardOutput.BaseStream.CopyToAsync(Console.OpenStandardOutput());

@@ -2090,10 +2090,12 @@ class MapDocument(_Serializable):
     @classmethod
     def from_json(cls, value: str | Path, *, recover_records: bool = False) -> "MapDocument":
         satellite = None
-        satellite_errors = []
+        archive_warnings = []
+        def warn(code, reason):
+            archive_warnings.append(MapIssue("warn", code, reason, []))
         if isinstance(value, Path):
             from .archive import read_archive
-            satellite = read_archive(value, on_satellite_error=satellite_errors.append if recover_records else None)
+            satellite = read_archive(value, on_warning=warn if recover_records else None)
             text = satellite[0] if satellite else _read_document_text(value)
         elif isinstance(value, str) and not value.lstrip().startswith(("{", "[")) and Path(value).exists():
             return cls.from_json(Path(value), recover_records=recover_records)
@@ -2109,8 +2111,8 @@ class MapDocument(_Serializable):
             document = cls.from_dict(raw, recovery=recovery)
             if recovery is not None:
                 recovery.finish(document)
-            for reason in satellite_errors:
-                document._append_issue(MapIssue("warn", "READ_SATELLITE_SKIPPED", reason, []))
+            for warning in archive_warnings:
+                document._append_issue(warning)
             if satellite:
                 document._satellite_png, document._satellite_info, document._archive_edits, document._satellite_layers = satellite[1:]
             return document

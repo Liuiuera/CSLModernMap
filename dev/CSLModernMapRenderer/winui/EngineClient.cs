@@ -70,7 +70,7 @@ internal sealed class EngineClient : IAsyncDisposable
         catch (IOException error) { if (!_closing) FailAll(error.ToString()); }
     }
 
-    private static (string executable, string arguments, string directory) FindEngine()
+    internal static (string executable, string arguments, string directory) FindEngine()
     {
         var packaged = Path.Combine(AppContext.BaseDirectory, "engine", "CSLModernMapEngine.exe");
         if (File.Exists(packaged))

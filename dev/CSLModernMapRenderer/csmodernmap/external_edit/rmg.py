@@ -157,13 +157,15 @@ def build_rmg_param(snapshot: ExportSnapshot, line) -> dict:
     }
 
 
-def export_rmg(snapshot: ExportSnapshot, request: ExternalExportRequest) -> ExternalExportResult:
+def export_rmg(snapshot: ExportSnapshot, request: ExternalExportRequest, *, check_cancel=None) -> ExternalExportResult:
     directory = unique_directory(request.output_root, snapshot.city_name + "-RailMapGen")
     files: list[Path] = []
     warnings: list[str] = []
     records: list[dict] = []
     allowed = set(request.line_ids) if request.line_ids is not None else None
     for line in sorted(snapshot.document.transit_lines, key=lambda item: item.id):
+        if check_cancel is not None and check_cancel():
+            raise InterruptedError("RMG export cancelled")
         if line.kind.value not in RAIL_KINDS or (allowed is not None and line.id not in allowed):
             continue
         try:

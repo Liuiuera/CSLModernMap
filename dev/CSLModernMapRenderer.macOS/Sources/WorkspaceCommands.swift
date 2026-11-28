@@ -7,6 +7,7 @@ extension InterfaceController {
     }
     func commandEnabled(_ title: String) -> Bool {
         if ["关于 CSLModernMap","帮助","诊断信息","打开配置文件夹"].contains(title) { return true }
+        if ["打开城市…", "最近打开"].contains(title) { return engineReady && cityDraft == nil }
         guard pendingCityEditors == nil, !draftSettingsOpen else { return false }
         if title == "重置主题编辑和导出方式" { return engineReady && !draftWorkflowOpen }
         if let draft = cityDraft {
@@ -41,7 +42,7 @@ extension InterfaceController {
             }
             if ["保存项目", "另存项目…", "保存", "另存为…", "导出…"].contains(title) { return rmp.hasProject && !rmp.busy }
         } else if ["保存项目", "另存项目…", "撤销", "重做"].contains(title) { return false }
-        if ["打开城市…","最近打开","清理缓存","界面语言…","返回地图"].contains(title) { return true }
+        if ["清理缓存","界面语言…","返回地图"].contains(title) { return true }
         return snapshot["hasDocument"] as? Bool == true
     }
     func updateCommands() {

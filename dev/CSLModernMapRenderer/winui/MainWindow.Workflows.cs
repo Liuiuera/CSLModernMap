@@ -87,16 +87,24 @@ public sealed partial class MainWindow
     }
     private async Task ReloadLanguageAsync(JsonElement metadata, bool showLanguageNotice)
     {
-        var sourceFile = _snapshot.ValueKind == JsonValueKind.Object && _snapshot.TryGetProperty("sourceFile", out var file)
-            ? file.GetString() : null;
-        var arguments = string.IsNullOrEmpty(sourceFile) ? _arguments : new[] { sourceFile };
         await FlushContextWritesAsync();
         _closing = true;
         await _engine.CloseAsync();
         UiLanguage.Configure(metadata);
         Environment.SetEnvironmentVariable("CSLMM_LANG", UiLanguage.Language);
-        // 通过资源键重建控件；XAML x:Uid 仅在构造时应用。
-        var replacement = new MainWindow(arguments, new EngineClient(), null, showLanguageNotice);
+        await ReplaceWindowAsync(_arguments, showLanguageNotice);
+    }
+
+    private async Task ReplaceWindowAsync(string[] arguments, bool showLanguageNotice = false, int? intent = null)
+    {
+        var replacement = await App.CreateMainWindowAsync(arguments, showLanguageNotice);
+        if (intent is not null && (intent != _openIntent || _closing))
+        {
+            replacement._allowMainClose = true;
+            replacement.Close();
+            return;
+        }
+        _closing = true;
         ((App)Application.Current).ShowWindow(replacement);
         _allowMainClose = true;
         Close();

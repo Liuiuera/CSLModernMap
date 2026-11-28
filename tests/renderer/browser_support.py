@@ -77,7 +77,9 @@ def load(page, server, revision):
     page.wait_for_function('(r) => window.events.some(e => e.type === "sceneLoaded" && e.revision === r)',
                            arg=revision)
     event = page.evaluate('(r) => window.events.findLast(e => e.type === "sceneLoaded" && e.revision === r)', revision)
-    assert event['performance']['completion'] == 'idle', event
+    assert event['performance']['completion'] == 'applied', event
+    page.wait_for_function("id => window.events.some(e => e.type === 'scenePresentationReady' && e.bundleId === id)",
+                           arg=event['bundleId'])
     assert not page.evaluate("window.events.filter(e => e.type === 'renderError')")
 
 

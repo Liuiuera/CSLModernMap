@@ -5301,7 +5301,13 @@ msgid "style.transport.fit_preview.desc"
 msgstr "교통 PNG의 정류장 기호와 노선 라벨 크기를 현재 전체 지도 미리보기에 맞춥니다. 다른 아이콘과 이름은 기존 크기를 유지하며 라벨 밀도는 달라질 수 있습니다. 대화형 미리보기가 없으면 기존 크기를 사용합니다."
 
 msgid "gui.file.records_skipped"
-msgstr "항목 {count}개를 건너뛰었습니다: 구문 분석 실패."
+msgstr "읽을 수 없는 지도 레코드 {count}개를 건너뛰었습니다."
+
+msgid "gui.file.edits_skipped"
+msgstr "저장된 지도 편집 데이터를 읽을 수 없어 건너뛰었습니다."
+
+msgid "gui.file.poi_categories_missing"
+msgstr "일부 건물에 POI 분류가 없어 기본 POI 아이콘을 사용합니다."
 
 msgid "gui.file.dependencies_skipped"
 msgstr "필수 데이터가 없어 관련 항목 {count}개를 추가로 건너뛰었습니다."

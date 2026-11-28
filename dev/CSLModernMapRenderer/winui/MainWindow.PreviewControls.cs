@@ -76,7 +76,7 @@ public sealed partial class MainWindow
             _ = RunAsync(ShowDraftWelcomeAsync);
             return;
         }
-        if (_mapInteractionGuideSeen || _mapGuideOffered || OperationError.IsOpen) return;
+        if (_mapInteractionGuideSeen || _mapGuideOffered || OperationError.IsOpen || MapReadNotice.IsOpen) return;
         _mapGuideOffered = _mapGuideOpen = true;
         SendViewer(new { type = "showMapInteractionGuide", sceneId = _sceneId, revision = _revision });
     }

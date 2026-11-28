@@ -54,29 +54,22 @@ def _migrate(version: int | float, values: dict) -> dict:
     return values
 
 
-def load_settings(directory=None) -> dict:
-    """读取设置。
-
-    返回配置版本和 values 字典；文件缺失/损坏/字段异常时返回空 values，
-    由调用方按首次运行默认值处理。
-    """
-    data = {"version": SETTINGS_VERSION, "values": {}}
+def read_settings(directory=None) -> dict:
     try:
-        p = settings_path(directory)
-        if not p.exists():
-            return data
-        raw = json.loads(p.read_text(encoding="utf-8"))
-        if not isinstance(raw, dict):
-            return data
-        data["version"] = settings_version(raw.get("version", 3))
-        vals = raw.get("values")
-        data["values"] = vals if isinstance(vals, dict) else {}
-        data["values"] = _migrate(data["version"], data["values"])
-    except SettingsVersionError:
-        raise
-    except (OSError, ValueError):
-        pass
-    return data
+        raw = json.loads(settings_path(directory).read_text(encoding="utf-8-sig"))
+    except FileNotFoundError:
+        return {"version": SETTINGS_VERSION, "values": {}}
+    if not isinstance(raw, dict) or not isinstance(raw.get("values"), dict):
+        raise ValueError("Invalid settings.json")
+    version = settings_version(raw.get("version", 3))
+    return {"version": version, "values": _migrate(version, raw["values"])}
+
+
+def load_settings(directory=None) -> dict:
+    try:
+        return read_settings(directory)
+    except (ValueError, OSError):
+        return {"version": SETTINGS_VERSION, "values": {}}
 
 
 def settings_bytes(values: dict, version: int | float) -> bytes:
@@ -89,7 +82,7 @@ def save_settings(values: dict, directory=None, version=None) -> bool:
     try:
         p = settings_path(directory)
         if version is None:
-            version = settings_version(json.loads(p.read_text(encoding="utf-8")).get("version", 3)) if p.exists() else SETTINGS_VERSION
+            version = read_settings(directory)["version"]
         p.parent.mkdir(parents=True, exist_ok=True)
         tmp = p.with_name(p.name + ".tmp")
         tmp.write_bytes(settings_bytes(values, version))
