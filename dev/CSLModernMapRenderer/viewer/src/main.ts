@@ -14,7 +14,7 @@ import { Preview3D, BUILDINGS_3D, CAMERA_TRANSITION_MS } from './preview-3d';
 import { PreviewControls } from './preview-controls';
 import {ArtworkView, type ArtworkDelivery, type ArtworkTool, type ArtworkObserveAction, type ArtworkPick} from './artwork-view';
 import { trafficColor as trafficColorExpression } from './traffic-paint';
-import {applyPreviewQuality, DEFAULT_PREVIEW_QUALITY, htmlPreviewQuality, previewTolerance, readPreviewQuality,
+import {applyPreviewQuality, htmlPreviewQuality, previewTolerance, readPreviewQuality,
   type PreviewQuality} from './preview-quality';
 import type { Edge, Endpoint, NavigationPackage } from './routing/types';
 
@@ -165,7 +165,7 @@ const sourceIds: Record<string, string> = { roads: 'roads',
   proceduralObjects: 'procedural-objects', inspectorSelection: 'inspector-selection', searchSelection: 'search-selection',
   buildingHighlight: 'building-highlight' };
 let previewQuality = EMBEDDED ? htmlPreviewQuality(window.__CSL_SCENE__!.manifest.htmlQuality ?? 'standard')
-  : readPreviewQuality(window.__CSL_PREVIEW_QUALITY__ ?? DEFAULT_PREVIEW_QUALITY);
+  : readPreviewQuality(window.__CSL_PREVIEW_QUALITY__);
 const groups: Record<string, string[]> = {
   satellite: ['satellite'], terrain: ['terrain', 'forest'], built_area: ['built-area', 'built-area-surface'], poi_area: ['poi-area'], land_use: ['land-use'],
   water: ['water-fill', 'water-shore'], building: ['buildings'],
@@ -197,7 +197,7 @@ const customLayers: string[] = [];
 type LabelMarker = {marker: Marker; group: string; labelType: string; featureColor?: string; transitStationName?: boolean};
 const markers = new Map<string, LabelMarker>();
 let currentSceneId = '', currentRevision = -1, loadGeneration = 0;
-let artworkSceneReady = true;
+let presentedRevision = -1;
 let focusAnimationGeneration = 0;
 let sourceData: Record<string, any> = {};
 let mapPoiDisplayFeatures: any[] = [];
@@ -302,7 +302,7 @@ const previewControls = new PreviewControls(navigation, feature => {
   setFeatureHighlight('search-selection', feature);
 }, (layer, visible) => {
   if (EMBEDDED) {
-    void setLayerVisibility(layer, visible).catch(reportError).finally(() => updateQuickLayers(true));
+    void setLayerVisibility(layer, visible).catch(error => reportError(error, undefined, false)).finally(() => updateQuickLayers(true));
   } else postEvent('requestLayerVisibility', {layer, visible});
 }, () => fitBounds(CAMERA_TRANSITION_MS), delta => {
   navigation.simulation.stop(); map.zoomTo(map.getZoom() + delta);
@@ -318,16 +318,16 @@ function updateZoomControls(): void {
 }
 map.on('zoom', updateZoomControls); updateZoomControls();
 
+const sourceGroups: Record<string, string[]> = {
+  satellite: ['satellite'], terrain: ['terrain', 'forest'], built_area: ['builtArea'], land_use: ['landUse', 'buildings'], water: ['water'],
+  road: ['roads'], building: ['buildings'], railway: ['railway'], traffic: ['traffic'],
+  metro: ['transit', 'stations'], transit: ['transit', 'stations'], poi_area: ['buildings'],
+  label: ['labels'], poi: ['pois', 'transitViewPois'], district: ['districts'], zone: ['zones'], procedural_objects: ['proceduralObjects'],
+};
 function updateQuickLayers(settled = false, pending?: string[]): void {
   if (!currentManifest) return;
   const sources = currentManifest.sources;
   const available = new Set<string>(['label', 'watermark']);
-  const sourceGroups: Record<string, string[]> = {
-    satellite: ['satellite'], terrain: ['terrain', 'forest'], built_area: ['builtArea'], land_use: ['landUse', 'buildings'], water: ['water'],
-    road: ['roads'], building: ['buildings'], railway: ['railway'], traffic: ['traffic'],
-    metro: ['transit', 'stations'], transit: ['transit', 'stations'], poi_area: ['buildings'],
-    poi: ['pois', 'transitViewPois'], district: ['districts'], zone: ['zones'], procedural_objects: ['proceduralObjects'],
-  };
   for (const [key, names] of Object.entries(sourceGroups)) if (names.some(name => name in sources)) available.add(key);
   available.delete(contextMode === 'transit' ? 'metro' : 'transit');
   if (currentManifest.terrainCorners?.length) available.add('terrain');
@@ -952,7 +952,7 @@ async function syncTraffic(): Promise<void> {
     trafficSourceRevision = manifest.sourceRevisions.traffic;
     addTrafficLayers(); applyRenderStack(); applyContextStyling();
   } catch (error) {
-    if (!request.signal.aborted) throw error;
+    if (!request.signal.aborted) reportError(error, {sceneId: manifest.sceneId, revision: manifest.revision, stage: 'traffic'}, false);
   } finally {
     if (trafficRequest === request) trafficRequest = null;
   }
@@ -1310,7 +1310,7 @@ async function setLayerVisibility(layer: string, visible: boolean): Promise<void
   artworkView.keepOverlayLayersHidden();
   labelLayoutKey = '';
   scheduleLabels();
-  updateQuickLayers();
+  if (presentedRevision === currentRevision) updateQuickLayers();
 }
 function applyContextStyling(): void {
   updateBaseTextLayers();
@@ -2363,10 +2363,9 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number,
   const completion = manifest.completion ?? 'complete';
   const bundleId = new URL(manifestUrl).pathname.split('/').at(-2);
   const identity = {sceneId: manifest.sceneId, revision: requestedRevision, bundleId, completion};
-  const wanted = () => generation === loadGeneration && manifest.revision === requestedRevision &&
-    manifest.revision >= currentRevision && !(completion === 'base' && currentManifest?.sceneId === manifest.sceneId &&
-      currentRevision === requestedRevision && currentManifest.completion === 'complete');
-  if (!wanted()) return;
+  if (generation !== loadGeneration || manifest.revision !== requestedRevision || manifest.revision < currentRevision ||
+      completion === 'base' && currentManifest?.sceneId === manifest.sceneId &&
+      currentRevision === requestedRevision && currentManifest.completion === 'complete') return;
   if (manifest.schemaVersion !== 1) throw new Error(i18n.t("main_loadScene_2197b880cc", { p0: manifest.schemaVersion }));
   if (EMBEDDED && !('metro' in manifest.layers) && 'transit' in manifest.layers) manifest.layers.metro = manifest.layers.transit;
   trace.enabled = !!manifest.performanceDiagnostics;
@@ -2374,35 +2373,10 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number,
   const sourceVersion = (key: string) => manifest.sourceRevisions[key === 'builtSurface' ? 'builtArea' : key] ?? requestedRevision;
   const needs = (key: string) => currentSceneId !== manifest.sceneId ||
     appliedSources.get(key) !== sourceVersion(key);
-  const resources = new Map<string, Promise<any>>();
-  const read = (key: string) => {
-    let resource = resources.get(key);
-    if (!resource) {
-      resource = provider.json(new URL(manifest.sources[key], manifestUrl), trace);
-      resources.set(key, resource);
-    }
-    return resource;
-  };
-  const core = ['roads', 'buildings'].filter(key => manifest.sources[key] && needs(key) &&
-    (key === 'roads' ? manifest.layers.road !== false :
-       manifest.layers.building !== false || manifest.layers.land_use || manifest.layers.poi_area));
-  const fetched = new Map<string, any>();
-  if (core.length) {
-    try {
-      await Promise.any(core.map(async key => fetched.set(key, await read(key))));
-    } catch (error) {
-      if (!wanted()) return;
-      if (currentManifest?.sceneId === manifest.sceneId && currentRevision === requestedRevision &&
-          currentManifest.completion === 'base') {
-        reportError(error, {...identity, stage: 'resource'}, false);
-        return;
-      }
-      throw error;
-    }
-  }
-  if (!wanted()) return;
   const changed = currentSceneId !== manifest.sceneId;
   const previous = currentManifest;
+  if (changed) presentedRevision = -1;
+  const hasMap = presentedRevision >= 0;
   const current = () => currentManifest === manifest && generation === loadGeneration;
   const warn = (error: unknown) => {
     if (current()) reportError(error, {...identity, stage: 'resource'}, false);
@@ -2437,17 +2411,14 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number,
   const mark = (key: string) => appliedSources.set(key, sourceVersion(key));
   for (const key of Object.keys(sourceIds)) {
     if (key === 'traffic' || key === 'landUse' && !manifest.sources.landUse) continue;
-    if (fetched.has(key)) {
-      applySceneSource(manifest, key, fetched.get(key)); mark(key);
-    } else if (changed || previous?.sources[key] && !manifest.sources[key]) {
+    if (changed || previous?.sources[key] && !manifest.sources[key]) {
       applySceneSource(manifest, key, {type:'FeatureCollection', features:[]});
       appliedSources.delete(key);
     }
   }
   if (changed) addDomains();
-  else if (fetched.has('roads')) rebuildRoadLayers();
   if (landUseChanged) addLandUseLayer();
-  if (changed || fetched.has('buildings')) preview3d.setBuildings(sourceData.buildings?.features ?? [], manifest.sceneId);
+  if (changed) preview3d.setBuildings([], manifest.sceneId);
   if (preserveArtwork) artworkView.restorePaint();
   applyRenderStack(); applyTheme(manifest.theme);
   for (const [layer, visible] of Object.entries(manifest.layers))
@@ -2458,15 +2429,9 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number,
     Boolean(manifest.navigationRouteOmitted));
   if (changed && manifest.navigationRoute && !EMBEDDED) void navigation.restoreRoute(manifest.navigationRoute).catch(warn);
   if (changed && !artworkView.active) fitBounds();
-  artworkSceneReady = true;
-  const applied = performance.now();
-  postEvent('sceneLoaded', {...identity, performance: {steps: trace.steps, completion: 'applied',
-    workerCount: maplibregl.getWorkerCount(), manifestMs: manifestReady - trace.origin,
-    resourcesMs: applied - manifestReady, totalMs: applied - trace.origin}});
-
   let refresh = 0;
   const refreshDetails = () => {
-    if (refresh) return;
+    if (refresh || presentedRevision !== currentRevision) return;
     refresh = window.setTimeout(() => {
       refresh = 0;
       if (!current()) return;
@@ -2478,14 +2443,22 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number,
       } catch (error) { warn(error); }
     }, 0);
   };
-  const owners: Record<string, string> = {forest:'terrain', builtArea:'built_area', water:'water',
-    railway:'railway', labels:'label', proceduralObjects:'procedural_objects'};
+  const visible = Object.entries(sourceGroups)
+    .filter(([layer]) => manifest.layers[layer] ?? !['land_use', 'poi_area', 'transit'].includes(layer))
+    .flatMap(([, keys]) => keys);
+  const geometry = hasMap ? ['roads', 'buildings'] :
+    visible.filter(key => !['labels', 'pois', 'transitViewPois', 'traffic'].includes(key));
+  let showGeometry!: () => void;
+  const firstGeometry = new Promise<void>(resolve => { showGeometry = resolve; });
   const pending = new Map<string, Promise<void>>();
   const schedule = (key: string, action: () => Promise<void>) => {
-    if (!pending.has(key)) pending.set(key, action().catch(warn));
+    if (pending.has(key)) return;
+    const task = action();
+    pending.set(key, task);
+    void task.catch(warn);
   };
   const loadSource = (key: string) => schedule(key, async () => {
-    const data = await read(key);
+    const data = await provider.json(new URL(manifest.sources[key], manifestUrl), trace);
     if (!current()) return;
     applySceneSource(manifest, key, data); mark(key);
     if (key === 'roads') {
@@ -2493,6 +2466,7 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number,
       await setLayerVisibility('road', manifest.layers.road !== false);
     }
     if (key === 'buildings') preview3d.setBuildings(data.features, manifest.sceneId);
+    if (geometry.includes(key) && data.features.length) showGeometry();
     refreshDetails();
   });
   const loadSurface = () => schedule('built-area-surface', async () => {
@@ -2543,7 +2517,7 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number,
   function loadLayer(layer?: string) {
     for (const key of Object.keys(manifest.sources)) {
       if (!sourceIds[key] || key === 'traffic' || !needs(key)) continue;
-      if (layer ? owners[key] !== layer : owners[key] && manifest.layers[owners[key]] === false) continue;
+      if (!(layer ? sourceGroups[layer] : visible)?.includes(key)) continue;
       loadSource(key);
     }
     if (layer === 'built_area' || !layer && manifest.layers.built_area !== false) loadSurface();
@@ -2556,8 +2530,29 @@ async function loadScene(provider: ResourceProvider, requestedRevision: number,
   schedule('interchange-icon', () => applyInterchangeIcon(manifest, current));
   schedule('fonts', () => loadSceneFonts(manifest, manifestUrl, current, warn));
   schedule('traffic', syncTraffic);
+  // 已显示的基础图可以继续操作，完整道路或建筑替换失败只结束细化。
+  const waitFor = geometry.filter(key => pending.has(key));
+  const settled = Promise.allSettled(waitFor.map(key => pending.get(key)!)).then(results => {
+    const failed = results.find(result => result.status === 'rejected');
+    if (failed?.status === 'rejected') throw failed.reason;
+  });
+  try {
+    await Promise.race([firstGeometry, settled]);
+  } catch (error) {
+    if (!current()) return;
+    if (!hasMap) throw error;
+    postEvent('sceneDetailError', {...identity, message: error instanceof Error ? error.message : String(error)});
+    return;
+  }
+  if (!current()) return;
+  presentedRevision = requestedRevision;
+  const applied = performance.now();
+  postEvent('sceneLoaded', {...identity, performance: {steps: trace.steps, completion: 'applied',
+    workerCount: maplibregl.getWorkerCount(), manifestMs: manifestReady - trace.origin,
+    resourcesMs: applied - manifestReady, totalMs: applied - trace.origin}});
+
   refreshDetails();
-  void Promise.all(pending.values()).then(() => {
+  void Promise.allSettled(pending.values()).then(() => {
     if (!current()) return;
     presentationListener = () => {
       if (current()) postEvent('scenePresentationReady', {...identity, performance: {
@@ -2576,7 +2571,7 @@ async function dispatch(command: PreviewCommand): Promise<void> {
     return;
   }
   if (['beginArtwork', 'loadArtwork', 'setArtworkView', 'setArtworkTool', 'artworkObserve', 'locateArtwork', 'cancelArtworkLocate'].includes(command.type)) {
-    if (!artworkSceneReady || currentSceneId &&
+    if (presentedRevision < 0 || presentedRevision !== currentRevision || currentSceneId &&
         (command.sceneId !== currentSceneId || command.revision !== currentRevision)) return;
     if (command.type === 'beginArtwork') {
       if (!artworkView.request(command.documentEpoch!, command.artworkRevision!)) outcome = 'stale';
@@ -2662,7 +2657,8 @@ async function dispatch(command: PreviewCommand): Promise<void> {
       }
       break;
     }
-    case 'loadScene': if (command.manifestUrl && typeof command.revision === 'number')
+    case 'loadScene':
+      if (!command.manifestUrl || typeof command.revision !== 'number') throw new Error('Invalid loadScene command');
       await loadScene(httpProvider(command.manifestUrl), command.revision, loadTrace, command.preserveArtwork, command.sceneId); break;
     case 'applyTheme': if (command.theme) {
       if (artworkView.active) {
@@ -2718,15 +2714,11 @@ async function dispatch(command: PreviewCommand): Promise<void> {
     case 'dispose': ++loadGeneration; artworkView.dispose(); releaseTraffic(); previewControls.dispose(); navigation.dispose(); cancelLabelLayout(); map.remove(); break;
   }
 } catch (error) { outcome = 'error'; reportError(error, {sceneId: command.sceneId,
-    revision: command.revision, stage: command.type});
+    revision: command.revision, stage: command.type}, command.type === 'loadScene');
   if (command.type === 'loadArtwork') postEvent('artworkFailed', {
     documentEpoch: command.artwork?.documentEpoch, artworkRevision: command.artwork?.revision,
     message: error instanceof Error ? error.message : String(error)});
-  if (command.type === 'loadScene' && typeof command.revision === 'number') {
-    postEvent('sceneDiscarded', { sceneId: command.sceneId, revision: command.revision, outcome: 'error',
-      performance: {steps: loadTrace?.steps ?? [], completion: 'error'},
-      message: error instanceof Error ? error.message : String(error) });
-  }
+
 }
 finally {
   if (command.performanceRequestId) {

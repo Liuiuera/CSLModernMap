@@ -8,7 +8,9 @@ namespace CSLModernMapWinUI;
 
 public sealed partial class MainWindow
 {
-    private bool _loadingDocument, _previewStarting, _previewRecovering, _previewClosed, _previewSlow;
+    private bool? _documentLoaded;
+    private bool _loadingDocument => _documentLoaded == false;
+    private bool _previewStarting, _previewRecovering, _previewClosed, _previewSlow;
     private int _previewInstance;
     private string? _previewFailure;
     private CancellationTokenSource? _previewWait;
@@ -184,8 +186,7 @@ public sealed partial class MainWindow
 
     private async Task OpenExternalPreviewAsync()
     {
-        _compatibilityPending = false;
-        _compatibilityDelay?.Cancel();
+        _compatibilityRequestId = null;
         if (!await StopPreviewAsync()) return;
         await OpenBrowserPreviewAsync();
     }
@@ -212,17 +213,15 @@ public sealed partial class MainWindow
     private void ApplyPreviewStatus()
     {
         RefreshPreviewQualitySection();
-        var available = _snapshot.ValueKind == JsonValueKind.Object &&
-            _snapshot.GetProperty("hasDocument").GetBoolean() && !_loadingDocument && !_engineUnavailable;
         var stopped = !_viewerReady;
         var show = _context != "metro" && !_compatibilityPreview && !_previewNoticeDismissed && (stopped || _previewSlow);
         PreviewActions.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
-        PreviewCompatibility.IsEnabled = available;
+        PreviewCompatibility.IsEnabled = !_engineUnavailable;
         PreviewRetry.IsEnabled = !_engineUnavailable;
-        PreviewHtml.IsEnabled = available;
+        PreviewHtml.IsEnabled = _documentLoaded == true && !_engineUnavailable;
         if (show && !_loadingDocument)
         {
-            MapOverlay.Visibility = Visibility.Collapsed;
+            if (!CanOpenRecentExport) MapOverlay.Visibility = Visibility.Collapsed;
             PreviewNoticeTitle.Text = UiLanguage.Text(_previewSlow ? "Preview_Slow" : "Preview_Stopped");
             PreviewNoticeDetail.Text = UiLanguage.Text("Preview_NotRunningDetail");
         }
@@ -230,11 +229,11 @@ public sealed partial class MainWindow
             MapOverlay.Visibility = Visibility.Collapsed;
         var imageMode = _compatibilityPreview && _context != "metro";
         CompatibilitySurface.Visibility = CompatibilityNotice.Visibility = imageMode ? Visibility.Visible : Visibility.Collapsed;
-        CompatibilityUpdating.Visibility = imageMode && (_compatibilityPending || _compatibilityRendering)
+        CompatibilityUpdating.Visibility = imageMode && _compatibilityRequestId is not null
             ? Visibility.Visible : Visibility.Collapsed;
         CompatibilityRetry.IsEnabled = PreviewRetry.IsEnabled;
         MapView.Visibility = _context == "metro" || _compatibilityPreview || _previewClosed ? Visibility.Collapsed : Visibility.Visible;
-        if (imageMode && !_loadingDocument) MapOverlay.Visibility = Visibility.Collapsed;
+        if (imageMode && _documentLoaded == true) MapOverlay.Visibility = Visibility.Collapsed;
         MapView.IsHitTestVisible = PreviewInteractive && !_artworkEntryPreparing && !(_cityArtworkUpdating && _cityArtworkOperation?.Kind == "initial");
     }
 

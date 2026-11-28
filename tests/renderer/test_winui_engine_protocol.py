@@ -17,6 +17,7 @@ from urllib.request import url2pathname
 
 import pytest
 
+from csmodernmap import i18n
 from csmodernmap.winui_engine import EngineServer, sanitize_theme_data
 from csmodernmap.guir_backend import GuirBackend
 from csmodernmap.ui_contracts import ContextMode
@@ -206,7 +207,7 @@ def test_cancel_does_not_wait_for_dead_worker_queue_feeder():
     backend._web_export_active = False
     backend._preview_revision = 0
     backend._open_revision = 0
-    backend._preview_base_presentation = None
+    backend._open_thread = None
     backend._png_tempdir = None
     backend._busy = True
     backend._serial = 0
@@ -423,7 +424,7 @@ def test_json_lines_hello_error_and_close() -> None:
 
     frames = [json.loads(line) for line in output_stream.getvalue().splitlines()]
     assert frames[0] == {"id": 1, "result": {
-        "protocolVersion": 1}}
+        "protocolVersion": 1, "language": i18n.LANG}}
     assert frames[1]["id"] == 2
     assert frames[1]["error"]["code"] == "ValueError"
     assert frames[2] == {"id": 3, "result": {"closed": True}}
@@ -807,9 +808,35 @@ def test_local_error_during_export_keeps_its_request(tmp_path):
         server._document_epoch = 2
         server._backend_error(ValueError("setting failed"))
         assert server._export.request_id == "old-export"
-        server._export_completed("already-written.png", "old-export", stats={})
+        callbacks = server._file_export_callbacks()
+        server._clear_export()
+        server._export.request_id = "next-export"
+        callbacks["file_done"]("already-written.png", {})
+        assert server._export.request_id == "next-export"
         done = next(payload for name, payload in events if name == "exportDone")
         assert (done["requestId"], done["documentEpoch"], done["path"]) == ("old-export", 1, "already-written.png")
+    finally:
+        backend.close()
+        server._preview_files.cleanup()
+
+
+@pytest.mark.parametrize("context,key,child", [
+    ("map", "layers", "lines"), ("transit", "layers", "lines"),
+    ("draft", "layers", "lines"), ("metro", "schematic_options", "adaptive_scale"),
+])
+def test_partial_transit_setting_updates_only_its_child(tmp_path, context, key, child):
+    backend = _guir_backend(tmp_path)
+    server = EngineServer(io.StringIO(), io.StringIO(), backend)
+    try:
+        if context == "draft":
+            server._city_draft = {"job": {"kind": "transit", "opts": server.transit_options()}, "params": {}}
+        read = {"map": backend.map_transit_options, "metro": server.metro_options,
+                "transit": server.transit_options, "draft": server._draft_transit_options}[context]
+        before = read()[key]
+        args = {context: True, "key": key, "child": child, "value": not before[child]}
+        assert server.dispatch("setTransitOption", args)["options"][key] == {**before, child: not before[child]}
+        with pytest.raises(ValueError):
+            server.dispatch("setTransitOption", {**args, "child": "unknown"})
     finally:
         backend.close()
         server._preview_files.cleanup()

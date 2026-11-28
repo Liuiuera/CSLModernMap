@@ -44,11 +44,26 @@ def test_decimal_version_round_trip_and_pending_version_preserved(tmp_path):
 def test_unsupported_version_cannot_be_overwritten(tmp_path, version):
     path = write_settings(tmp_path, {'keep': 42}, version)
     raw = path.read_bytes()
-    with pytest.raises(SettingsVersionError):
-        load_settings(tmp_path)
+    assert load_settings(tmp_path)["values"] == {}
+    with backend_at(tmp_path) as backend:
+        assert backend.theme_load_error
+        backend.save_settings_now()
     with pytest.raises(SettingsVersionError):
         save_settings({}, tmp_path)
     assert path.read_bytes() == raw
+
+
+def test_bad_recovery_journal_keeps_original_files_and_allows_render_defaults(tmp_path):
+    settings = write_settings(tmp_path, {"keep": 42})
+    journal = tmp_path / theme_migration.JOURNAL
+    journal.write_text("{")
+    original = settings.read_bytes()
+    with backend_at(tmp_path) as backend:
+        assert backend.theme_load_error
+        assert backend.current_style_data()["roads"]
+        backend.save_settings_now()
+    assert settings.read_bytes() == original
+    assert journal.read_text() == "{"
 
 
 def test_fresh_install_does_not_import_current_bundled_presets(tmp_path):

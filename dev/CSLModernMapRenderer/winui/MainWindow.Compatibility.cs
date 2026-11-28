@@ -6,10 +6,8 @@ namespace CSLModernMapWinUI;
 
 public sealed partial class MainWindow
 {
-    private bool _compatibilityPreview, _compatibilityPending, _compatibilityRendering;
-    private string? _compatibilityRequestId, _compatibilityActiveRequest, _compatibilityContext;
-    private CancellationTokenSource? _compatibilityDelay;
-    private bool _compatibilityDelayReady;
+    private bool _compatibilityPreview;
+    private string? _compatibilityRequestId, _compatibilityContext;
 
     private bool CurrentDocumentAvailable => _snapshot.ValueKind == JsonValueKind.Object &&
         _snapshot.GetProperty("documentEpoch").GetInt32() == _engineDocumentEpoch &&
@@ -23,16 +21,14 @@ public sealed partial class MainWindow
         _selectedBounds = null;
         _selectedRegionSource = null;
         ShowInspectorHome();
+        ApplyPreviewStatus();
         QueueCompatibilityPreview(immediate: true);
         return Task.CompletedTask;
     }
 
     private void ResetCompatibilityImage()
     {
-        _compatibilityDelay?.Cancel();
-        _compatibilityPending = false;
-        _compatibilityRequestId = _compatibilityActiveRequest = null;
-        _compatibilityRendering = false;
+        _compatibilityRequestId = null;
         _compatibilityContext = null;
         CompatibilityImage.Source = null;
         CompatibilitySurface.ChangeView(0, 0, 1);
@@ -40,61 +36,34 @@ public sealed partial class MainWindow
 
     private void QueueCompatibilityPreview(bool immediate = false)
     {
-        if (!_compatibilityPreview || _closing) return;
+        if (!_compatibilityPreview || _closing || _engineUnavailable || _context == "metro" || _documentLoaded != true) return;
         _compatibilityContext = _context;
-        _compatibilityRequestId = Guid.NewGuid().ToString("N");
-        _compatibilityDelayReady = immediate;
-        _compatibilityPending = _context != "metro";
-        _compatibilityDelay?.Cancel();
-        _compatibilityDelay?.Dispose();
-        _compatibilityDelay = null;
-        if (immediate) _ = RunAsync(StartCompatibilityPreviewAsync);
-        else
-        {
-            _compatibilityDelay = new CancellationTokenSource();
-            _ = DebounceCompatibilityPreviewAsync(_compatibilityDelay.Token);
-        }
+        var request = _compatibilityRequestId = Guid.NewGuid().ToString("N");
         ApplyPreviewStatus();
+        _ = RenderCompatibilityPreviewAsync(request, immediate);
     }
 
-    private async Task DebounceCompatibilityPreviewAsync(CancellationToken cancellation)
+    private async Task RenderCompatibilityPreviewAsync(string request, bool immediate)
     {
         try
         {
-            await Task.Delay(350, cancellation);
-            _compatibilityDelayReady = true;
-            await RunAsync(StartCompatibilityPreviewAsync);
-        }
-        catch (OperationCanceledException) when (cancellation.IsCancellationRequested) { }
-    }
-
-    private async Task StartCompatibilityPreviewAsync()
-    {
-        if (!_compatibilityPreview || !_compatibilityPending || !_compatibilityDelayReady ||
-            _engineUnavailable || _closing || _context == "metro") return;
-        if (!CurrentDocumentAvailable) return;
-        var request = _compatibilityRequestId;
-        _compatibilityActiveRequest = request;
-        _compatibilityPending = false;
-        _compatibilityRendering = true;
-        ApplyPreviewStatus();
-        try
-        {
+            if (!immediate) await Task.Delay(350);
+            if (_closing || request != _compatibilityRequestId) return;
             var result = await _engine.RequestAsync("renderCompatibilityPreview", new
             {
                 requestId = request, documentEpoch = _engineDocumentEpoch,
                 context = _context == "transit" ? "transit" : "normal",
             });
-            if (request == _compatibilityActiveRequest && !result.GetProperty("started").GetBoolean())
+            if (request == _compatibilityRequestId && !result.GetProperty("started").GetBoolean())
             {
-                _compatibilityRendering = false;
+                _compatibilityRequestId = null;
                 ShowCompatibilityError(UiLanguage.Text("Preview_ImageFailed"));
             }
         }
         catch (Exception error)
         {
-            if (request != _compatibilityActiveRequest) return;
-            _compatibilityRendering = false;
+            if (request != _compatibilityRequestId) return;
+            _compatibilityRequestId = null;
             ShowCompatibilityError(error.Message);
         }
         ApplyPreviewStatus();
@@ -103,7 +72,6 @@ public sealed partial class MainWindow
     private async Task HandleCompatibilityPreviewAsync(string name, JsonElement payload)
     {
         var request = payload.GetProperty("requestId").GetString();
-        if (request == _compatibilityActiveRequest) _compatibilityRendering = false;
         bool Current() => !_closing && _compatibilityPreview && request == _compatibilityRequestId &&
             payload.GetProperty("documentEpoch").GetInt32() == _engineDocumentEpoch && _context != "metro";
         try
@@ -122,11 +90,11 @@ public sealed partial class MainWindow
         catch (Exception error) { if (Current()) ShowCompatibilityError(error.Message); }
         finally
         {
+            if (request == _compatibilityRequestId) _compatibilityRequestId = null;
             if (name == "compatibilityPreviewReady" && !_closing && !_engineUnavailable)
                 await _engine.RequestAsync("releaseCompatibilityPreview", new { requestId = request });
         }
         ApplyPreviewStatus();
-        if (_compatibilityPending) await StartCompatibilityPreviewAsync();
     }
 
     private void ShowCompatibilityError(string message)

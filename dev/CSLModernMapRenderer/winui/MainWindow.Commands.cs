@@ -371,7 +371,7 @@ public sealed partial class MainWindow
         if (_closing) return false;
         if (id.StartsWith("editor.", StringComparison.Ordinal)) return EditorCommandEnabled(id);
         if (id == "app.cancel") return !_engineUnavailable && (_generatingRmp ? _mapTask.CanCancel && !_cancellingRmp : busy || _mapTask.Active || _cityArtwork);
-        if (id == "file.open_city" || id == "file.open" && _context != "metro") return !_engineUnavailable;
+        if (id == "file.open_city" || id == "file.open" && _context != "metro") return true;
         if (RmpBlocked) return false;
         if (id == "view.metro.refresh") return _context == "metro" && _documentEnabled && !busy;
         if (id == "rmp.open") return _context == "metro" && !busy;

@@ -9,7 +9,7 @@ import zlib
 from PIL import Image
 
 
-def read_archive(path, *, on_satellite_error=None):
+def read_archive(path, *, on_warning=None):
     with open(path, "rb") as source:
         if source.read(2) != b"PK":
             return None
@@ -24,17 +24,25 @@ def read_archive(path, *, on_satellite_error=None):
             for entry in archive.infolist():
                 if entry.filename not in limits:
                     continue
-                if entry.filename in entries or entry.is_dir():
-                    raise ValueError("Duplicate or invalid CMM member: " + entry.filename)
-                if entry.file_size > limits[entry.filename]:
-                    raise ValueError("CMM member exceeds size limit: " + entry.filename)
                 try:
-                    entries[entry.filename] = archive.read(entry)
-                except (zipfile.BadZipFile, zlib.error, EOFError) as error:
-                    if on_satellite_error is None or not entry.filename.startswith(("satellite/", "satellite.")):
+                    if entry.filename in entries or entry.is_dir():
+                        raise ValueError("Duplicate or invalid CMM member: " + entry.filename)
+                    if entry.file_size > limits[entry.filename]:
+                        raise ValueError("CMM member exceeds size limit: " + entry.filename)
+                    data = archive.read(entry)
+                    if entry.filename == "edits.json":
+                        data = json.loads(data.decode("utf-8-sig"))
+                        if not isinstance(data, dict):
+                            raise ValueError("Expected an edits object")
+                    entries[entry.filename] = data
+                except (ValueError, zipfile.BadZipFile, zlib.error, EOFError, RecursionError) as error:
+                    if on_warning is None or entry.filename == "city.json":
                         raise
                     entries[entry.filename] = None
-                    satellite_error = f"{entry.filename}: {error}"
+                    if entry.filename == "edits.json":
+                        on_warning("READ_EDITS_SKIPPED", f"edits.json: {error}")
+                    else:
+                        satellite_error = f"{entry.filename}: {error}"
     except (zipfile.BadZipFile, zlib.error, EOFError) as error:
         raise ValueError("Invalid CMM archive") from error
     if "city.json" not in entries:
@@ -43,21 +51,16 @@ def read_archive(path, *, on_satellite_error=None):
     raw = json.loads(text)
     if not isinstance(raw, dict) or raw.get("schema_version") != "cmm1.1":
         raise ValueError("CMM ZIP requires schema_version cmm1.1")
-    edits = None
-    if "edits.json" in entries:
-        edits = json.loads(entries["edits.json"].decode("utf-8-sig"))
-        if not isinstance(edits, dict):
-            raise ValueError("Invalid CMM edits")
     try:
         if satellite_error is not None:
             raise ValueError(satellite_error)
         png, info, layer_bytes = _satellite(raw.get("satellite"), entries)
     except (ValueError, OSError, SyntaxError, OverflowError, Image.DecompressionBombError) as error:
-        if on_satellite_error is None:
+        if on_warning is None:
             raise
-        on_satellite_error(str(error))
+        on_warning("READ_SATELLITE_SKIPPED", str(error))
         png, info, layer_bytes = None, None, {}
-    return text, png, info, edits, layer_bytes
+    return text, png, info, entries.get("edits.json"), layer_bytes
 
 
 def _satellite(info, entries):

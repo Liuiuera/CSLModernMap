@@ -13,13 +13,13 @@ internal sealed class ContextRibbonToggle
     private readonly Func<bool> _read;
 
     internal ContextRibbonToggle(string title, IconElement icon, Func<bool> read,
-        Func<Task> toggle, Action<Exception> reportError)
+        Func<bool, Task> toggle, Action<Exception> reportError)
     {
         _title = title; _read = read;
         Button = new RibbonToggleButton { Label = title, Icon = icon, Size = RibbonItemSize.Medium };
         Button.Click += async (_, _) =>
         {
-            try { await toggle(); }
+            try { await toggle(Button.IsChecked == true); }
             catch (Exception error) { reportError(error); }
             finally { Refresh(Button.IsEnabled); }
         };

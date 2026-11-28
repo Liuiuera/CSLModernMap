@@ -11,26 +11,39 @@ internal static class UserData
     private static string WorkflowPath(string directory, MapWorkflow workflow) => Path.Combine(directory,
         workflow == MapWorkflow.Theme ? "theme-editor-choice.json" : "export-choice.json");
 
-    internal static bool? ReadWorkflowChoice(string directory, MapWorkflow workflow)
+    private static JsonObject? ReadObject(string path)
     {
-        var path = WorkflowPath(directory, workflow);
         if (!File.Exists(path)) return null;
-        using var document = JsonDocument.Parse(File.ReadAllText(path));
-        return document.RootElement.GetProperty("useDraft").GetBoolean();
+        try { return JsonNode.Parse(File.ReadAllText(path)) as JsonObject; }
+        catch (Exception error) when (error is IOException or UnauthorizedAccessException or JsonException)
+        {
+            StartupTrace.Write($"{path}: {error.Message}");
+            return null;
+        }
     }
 
-    internal static void RememberWorkflowChoice(string directory, MapWorkflow workflow, bool useDraft)
+    private static T Field<T>(JsonObject? data, string key, T fallback) =>
+        data?[key] is JsonValue field && field.TryGetValue<T>(out var value) ? value : fallback;
+
+    internal static bool? ReadWorkflowChoice(string directory, MapWorkflow workflow) =>
+        ReadObject(WorkflowPath(directory, workflow))?["useDraft"] is JsonValue field &&
+        field.TryGetValue<bool>(out var value) ? value : null;
+
+    private static void WriteJson<T>(string path, T value)
     {
+        var directory = Path.GetDirectoryName(path)!;
         Directory.CreateDirectory(directory);
-        var path = WorkflowPath(directory, workflow);
         var temporary = Path.Combine(directory, Path.GetRandomFileName());
         try
         {
-            File.WriteAllText(temporary, new JsonObject { ["useDraft"] = useDraft }.ToJsonString());
+            File.WriteAllText(temporary, JsonSerializer.Serialize(value, PreviewQualitySettings.JsonOptions));
             File.Move(temporary, path, overwrite: true);
         }
         finally { File.Delete(temporary); }
     }
+
+    internal static void RememberWorkflowChoice(string directory, MapWorkflow workflow, bool useDraft) =>
+        WriteJson(WorkflowPath(directory, workflow), new { useDraft });
 
     internal static void ResetWorkflowChoices(string directory)
     {
@@ -50,64 +63,33 @@ internal static class UserData
         ? Path.GetFullPath(directory)
         : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CSLModernMap", "UserData");
 
-    internal static bool ReadAutoPreview(string directory)
-    {
-        var path = Path.Combine(directory, "preview-startup.json");
-        if (!File.Exists(path)) return true;
-        using var document = JsonDocument.Parse(File.ReadAllText(path));
-        if (document.RootElement.ValueKind != JsonValueKind.Object ||
-            !document.RootElement.TryGetProperty("autoPreview", out var enabled) ||
-            enabled.ValueKind is not (JsonValueKind.True or JsonValueKind.False))
-            throw new InvalidDataException($"Invalid preview startup settings: {path}");
-        return enabled.GetBoolean();
-    }
+    internal static bool ReadAutoPreview(string directory) =>
+        Field(ReadObject(Path.Combine(directory, "preview-startup.json")), "autoPreview", true);
 
     internal static PreviewQualitySettings ReadPreviewQuality(string directory)
     {
-        var path = Path.Combine(directory, "preview-quality.json");
-        if (!File.Exists(path)) return new();
-        var settings = JsonSerializer.Deserialize<PreviewQualitySettings>(File.ReadAllText(path), PreviewQualitySettings.JsonOptions)
-            ?? throw new InvalidDataException($"Invalid preview quality settings: {path}");
-        settings.Validate();
-        return settings;
+        var data = ReadObject(Path.Combine(directory, "preview-quality.json"));
+        var scale = Field(data, "pixelScale", 1d);
+        string Detail(string key) => Field(data, key, "standard") == "fine" ? "fine" : "standard";
+        int Percent(string key) => Field(data, key, 100) is >= 50 and <= 200 and var value ? value : 100;
+        return new(scale is .75 or 1.25 ? scale : 1, Detail("lineDetail"), Detail("polygonDetail"),
+            Percent("textPercent"), Percent("linePercent"), Percent("iconPercent"));
     }
 
     internal static void WritePreviewQuality(string directory, PreviewQualitySettings settings)
     {
         settings.Validate();
-        Directory.CreateDirectory(directory);
-        var path = Path.Combine(directory, "preview-quality.json");
-        File.WriteAllText(path + ".tmp", JsonSerializer.Serialize(settings, PreviewQualitySettings.JsonOptions));
-        File.Move(path + ".tmp", path, overwrite: true);
+        WriteJson(Path.Combine(directory, "preview-quality.json"), settings);
     }
 
-    internal static void WriteAutoPreview(string directory, bool enabled)
-    {
-        Directory.CreateDirectory(directory);
-        var path = Path.Combine(directory, "preview-startup.json");
-        File.WriteAllText(path + ".tmp", JsonSerializer.Serialize(new { autoPreview = enabled }));
-        File.Move(path + ".tmp", path, overwrite: true);
-    }
+    internal static void WriteAutoPreview(string directory, bool enabled) =>
+        WriteJson(Path.Combine(directory, "preview-startup.json"), new { autoPreview = enabled });
 
-    internal static bool ReadMapInteractionGuideSeen(string directory)
-    {
-        var path = Path.Combine(directory, "preview-ui.json");
-        if (!File.Exists(path)) return false;
-        using var document = JsonDocument.Parse(File.ReadAllText(path));
-        if (document.RootElement.ValueKind != JsonValueKind.Object ||
-            !document.RootElement.TryGetProperty("mapInteractionGuideSeen", out var seen) ||
-            seen.ValueKind is not (JsonValueKind.True or JsonValueKind.False))
-            throw new InvalidDataException($"地图操作提示配置格式无效：{path}");
-        return seen.GetBoolean();
-    }
+    internal static bool ReadMapInteractionGuideSeen(string directory) =>
+        Field(ReadObject(Path.Combine(directory, "preview-ui.json")), "mapInteractionGuideSeen", false);
 
-    internal static void WriteMapInteractionGuideSeen(string directory)
-    {
-        Directory.CreateDirectory(directory);
-        var path = Path.Combine(directory, "preview-ui.json");
-        File.WriteAllText(path + ".tmp", "{\"mapInteractionGuideSeen\":true}");
-        File.Move(path + ".tmp", path, overwrite: true);
-    }
+    internal static void WriteMapInteractionGuideSeen(string directory) =>
+        WriteJson(Path.Combine(directory, "preview-ui.json"), new { mapInteractionGuideSeen = true });
 
     internal static bool DraftWelcomeSeen(string directory) => File.Exists(Path.Combine(directory, "draft-welcome.seen"));
 
@@ -120,38 +102,15 @@ internal static class UserData
 
     internal static RibbonLayout ReadRibbonLayout(string directory)
     {
-        var path = Path.Combine(directory, "ribbon-layout.json");
-        if (!File.Exists(path)) return new("Classic", "AlwaysShow");
-        using var document = JsonDocument.Parse(File.ReadAllText(path));
-        var root = document.RootElement;
-        if (root.ValueKind != JsonValueKind.Object ||
-            !root.TryGetProperty("displayMode", out var display) || display.ValueKind != JsonValueKind.String ||
-            !root.TryGetProperty("visibilityMode", out var visibility) || visibility.ValueKind != JsonValueKind.String ||
-            display.GetString() is not ("Classic" or "Simplified") ||
-            visibility.GetString() is not ("AlwaysShow" or "TabsOnly" or "FullScreen" or "PanelButtons" or "PanelTitles"))
-            throw new InvalidDataException($"Ribbon 布局配置格式无效：{path}");
-        var seen = false;
-        if (root.TryGetProperty("simplifiedIntroSeen", out var intro))
-        {
-            if (intro.ValueKind is not (JsonValueKind.True or JsonValueKind.False))
-                throw new InvalidDataException($"Ribbon 布局配置格式无效：{path}");
-            seen = intro.GetBoolean();
-        }
-        return new(display.GetString()!, visibility.GetString()!, seen);
+        var data = ReadObject(Path.Combine(directory, "ribbon-layout.json"));
+        var visibility = Field(data, "visibilityMode", "AlwaysShow");
+        return new(Field(data, "displayMode", "Classic") == "Simplified" ? "Simplified" : "Classic",
+            visibility is "TabsOnly" or "FullScreen" or "PanelButtons" or "PanelTitles" ? visibility : "AlwaysShow",
+            Field(data, "simplifiedIntroSeen", false));
     }
 
-    internal static void WriteRibbonLayout(string directory, RibbonLayout layout)
-    {
-        Directory.CreateDirectory(directory);
-        var path = Path.Combine(directory, "ribbon-layout.json");
-        var json = new JsonObject
-        {
-            ["displayMode"] = layout.DisplayMode, ["visibilityMode"] = layout.VisibilityMode,
-            ["simplifiedIntroSeen"] = layout.SimplifiedIntroSeen,
-        };
-        File.WriteAllText(path + ".tmp", json.ToJsonString());
-        File.Move(path + ".tmp", path, overwrite: true);
-    }
+    internal static void WriteRibbonLayout(string directory, RibbonLayout layout) =>
+        WriteJson(Path.Combine(directory, "ribbon-layout.json"), layout);
 
     internal static string[] Prepare(string[] arguments, string engineDirectory)
     {
@@ -163,10 +122,15 @@ internal static class UserData
         };
         var legacySources = sources.Where(root => File.Exists(Path.Combine(root, "settings.json")))
             .Select(Path.GetFullPath).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
-        Migrate(DirectoryPath, sources, engineDirectory,
-            Path.Combine(Path.GetDirectoryName(DirectoryPath)!, "preferences"));
-        var target = ReadSettings(Path.Combine(DirectoryPath, "settings.json"));
-        return target["version"]?.GetValue<double>() == 3.1 ? [] : legacySources;
+        try
+        {
+            Migrate(DirectoryPath, sources, engineDirectory, Path.Combine(Path.GetDirectoryName(DirectoryPath)!, "preferences"));
+        }
+        catch (Exception error) when (error is IOException or UnauthorizedAccessException or InvalidDataException)
+        {
+            StartupTrace.Write($"User data migration: {error.Message}");
+        }
+        return Field(ReadObject(Path.Combine(DirectoryPath, "settings.json")), "version", 0d) == 3.1 ? [] : legacySources;
     }
 
     // 将旧用户配置搬到固定目录，并在确认目标可读取后清理旧文件。
@@ -174,47 +138,49 @@ internal static class UserData
     {
         var roots = sources.Append(engineDirectory).Select(Path.GetFullPath).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
         var settingsPath = Path.Combine(target, "settings.json");
-        if (File.Exists(settingsPath))
-        {
-            ReadSettings(settingsPath);
-            return;
-        }
+        if (File.Exists(settingsPath)) return;
 
-        var source = roots.FirstOrDefault(root => File.Exists(Path.Combine(root, "settings.json")));
-        var historicFiles = new[] { "styles", "legacy-themes" }.Any(name =>
+        var (source, settings) = roots.Select(root => (root, data: ReadSettings(Path.Combine(root, "settings.json"))))
+            .FirstOrDefault(item => item.data is not null);
+        var historicFiles = settings is null && new[] { "styles", "legacy-themes" }.Any(name =>
             Directory.Exists(Path.Combine(target, name)) && Directory.EnumerateFiles(Path.Combine(target, name), "*", SearchOption.AllDirectories)
                 .Any(path => Path.GetExtension(path).ToLowerInvariant() is ".yaml" or ".yml"));
-        var settings = source is null
-            ? new JsonObject { ["version"] = historicFiles ? 3d : 3.1d, ["values"] = new JsonObject() }
-            : ReadSettings(Path.Combine(source, "settings.json"));
+        settings ??= new JsonObject { ["version"] = historicFiles ? 3d : 3.1d, ["values"] = new JsonObject() };
         var preserveLegacy = source is not null && settings["version"]?.GetValue<double>() != 3.1;
         var oldPreferences = Path.Combine(preferences, "settings.json");
-        if (File.Exists(oldPreferences))
-        {
-            var language = ReadSettings(oldPreferences)["values"]!["language"];
-            if (language is not null) settings["values"]!["language"] = language.DeepClone();
-        }
+        var preferencesData = ReadSettings(oldPreferences);
+        if (preferencesData?["values"]?["language"] is { } language) settings["values"]!["language"] = language.DeepClone();
 
         Directory.CreateDirectory(target);
         var migrated = new List<string>();
         void Copy(string from, string to, bool removeSource)
         {
             if (!File.Exists(from) || Path.GetFullPath(from).Equals(Path.GetFullPath(to), StringComparison.OrdinalIgnoreCase)) return;
-            Directory.CreateDirectory(Path.GetDirectoryName(to)!);
-            // 上次中断的迁移可能已复制此文件。
-            if (File.Exists(to))
+            try
             {
-                if (!File.ReadAllBytes(from).AsSpan().SequenceEqual(File.ReadAllBytes(to)))
-                    throw new IOException($"配置文件已存在且内容不同：{to}");
+                if (File.Exists(to))
+                {
+                    if (!File.ReadAllBytes(from).AsSpan().SequenceEqual(File.ReadAllBytes(to))) return;
+                }
+                else
+                {
+                    var directory = Path.GetDirectoryName(to)!;
+                    Directory.CreateDirectory(directory);
+                    var temporary = Path.Combine(directory, Path.GetRandomFileName());
+                    try
+                    {
+                        using (var input = File.OpenRead(from))
+                        using (var output = File.Open(temporary, FileMode.CreateNew)) input.CopyTo(output);
+                        File.Move(temporary, to);
+                    }
+                    finally { File.Delete(temporary); }
+                }
+                if (removeSource) migrated.Add(from);
             }
-            else File.Copy(from, to);
-            if (removeSource) migrated.Add(from);
-        }
-        void CopyDirectory(string from, string to, bool removeSource)
-        {
-            if (!Directory.Exists(from)) return;
-            foreach (var path in Directory.EnumerateFiles(from, "*", SearchOption.AllDirectories))
-                Copy(path, Path.Combine(to, Path.GetRelativePath(from, path)), removeSource);
+            catch (Exception error) when (error is IOException or UnauthorizedAccessException)
+            {
+                StartupTrace.Write($"{from}: {error.Message}");
+            }
         }
 
         var configurationRoot = source ?? roots.FirstOrDefault();
@@ -223,28 +189,34 @@ internal static class UserData
                 Copy(Path.Combine(configurationRoot, name), Path.Combine(target, name), name != "views.json" || !preserveLegacy);
         foreach (var root in roots)
             foreach (var name in new[] { "custom_fonts", "user_icon_libraries" })
-                CopyDirectory(Path.Combine(root, name), Path.Combine(target, name), true);
-        var mapping = Path.Combine(engineDirectory, "csmodernmap", "services", "poi", "poi_mapping.yaml");
-        if (!File.Exists(Path.Combine(target, "poi_mapping.yaml")))
-            Copy(mapping, Path.Combine(target, "poi_mapping.yaml"), false);
+            {
+                var from = Path.Combine(root, name);
+                if (!Directory.Exists(from)) continue;
+                var options = new EnumerationOptions { RecurseSubdirectories = true, IgnoreInaccessible = true };
+                foreach (var path in Directory.EnumerateFiles(from, "*", options))
+                    Copy(path, Path.Combine(target, name, Path.GetRelativePath(from, path)), true);
+            }
 
-        var temporary = settingsPath + ".tmp";
-        File.WriteAllText(temporary, settings.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
-        ReadSettings(temporary);
-        File.Move(temporary, settingsPath);
+        var staged = Path.Combine(target, Path.GetRandomFileName());
+        try
+        {
+            File.WriteAllText(staged, settings.ToJsonString());
+            File.Move(staged, settingsPath);
+        }
+        finally { File.Delete(staged); }
         if (source is not null && !preserveLegacy) migrated.Add(Path.Combine(source, "settings.json"));
-        if (File.Exists(oldPreferences)) migrated.Add(oldPreferences);
-        foreach (var path in migrated) File.Delete(path);
+        if (preferencesData is not null) migrated.Add(oldPreferences);
+        foreach (var path in migrated)
+        {
+            try { File.Delete(path); }
+            catch (Exception error) when (error is IOException or UnauthorizedAccessException) { StartupTrace.Write($"{path}: {error.Message}"); }
+        }
     }
 
-    private static JsonObject ReadSettings(string path)
+    private static JsonObject? ReadSettings(string path)
     {
-        var settings = JsonNode.Parse(File.ReadAllText(path)) as JsonObject;
-        if (settings?["values"] is not JsonObject)
-            throw new InvalidDataException($"配置文件格式无效：{path}");
-        if (settings["version"] is { } version &&
-            (version is not JsonValue number || !number.TryGetValue<double>(out var value) || value is not (1 or 2 or 3 or 3.1)))
-            throw new InvalidDataException($"不支持的配置版本：{path}");
-        return settings;
+        var settings = ReadObject(path);
+        if (settings?["values"] is not JsonObject) return null;
+        return Field(settings, "version", settings["version"] is null ? 3d : 0d) is 1 or 2 or 3 or 3.1 ? settings : null;
     }
 }

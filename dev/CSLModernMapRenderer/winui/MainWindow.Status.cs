@@ -51,7 +51,7 @@ public sealed partial class MainWindow
         PreviewLoadingNotice.IsOpen = cityLoading && !cityPreparing || _mapTask.Active && _mapTask.Background;
         PreviewLoadingNotice.Title = cityLoading ? cityTitle : UiLanguage.Text("MainWindow_Status_ApplyMapTaskState_75306678A9");
         PreviewLoadingNotice.Severity = cityLoading ? InfoBarSeverity.Informational : InfoBarSeverity.Warning;
-        MapOverlay.Visibility = cityPreparing || _mapTask.ShowOverlay ? Visibility.Visible : Visibility.Collapsed;
+        MapOverlay.Visibility = cityPreparing || _mapTask.ShowOverlay || CanOpenRecentExport ? Visibility.Visible : Visibility.Collapsed;
         EmptyMapActions.Visibility = CanOpenRecentExport ? Visibility.Visible : Visibility.Collapsed;
         MapOverlayText.Text = cityPreparing ? cityTitle :
             _context == "metro" && !_mapTask.Active ? RmpText("EmptyWorkspace") : _mapTask.Title;

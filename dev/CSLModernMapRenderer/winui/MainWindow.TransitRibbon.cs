@@ -1,6 +1,5 @@
 // 管理交通功能区的控件与命令。
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Automation;
@@ -35,8 +34,8 @@ public sealed partial class MainWindow
             _snapshot.GetProperty(map ? "mapTransitOptions" : "transitOptions").GetProperty("line_label_enabled").GetBoolean();
         var label = UiLanguage.Text("MainWindow_PublicTransitSettings_ShowPublicTransitSettings_2035432E8A");
         var toggle = new ContextRibbonToggle(label, RibbonIcons.Create("label.transit_icon"), Read,
-            () => QueueContextWriteAsync(false, () => _engine.RequestAsync("setTransitOption",
-                new { map, draft = IsTransitDraft, key = "line_label_enabled", value = !Read() })), SetError);
+            value => QueueContextWriteAsync(false, () => _engine.RequestAsync("setTransitOption",
+                new { map, draft = IsTransitDraft, key = "line_label_enabled", value })), SetError);
         AutomationProperties.SetAutomationId(toggle.Button, context + ".line_labels");
         group.Items.Add(toggle.Button);
         _lineLabelToggles.Add((context, toggle));
@@ -52,19 +51,19 @@ public sealed partial class MainWindow
             if (!groups.TryGetValue(title, out var group)) groups[title] = group = Group(tab, title);
             return group;
         }
-        void Add(string group, string title, Func<bool> read, Func<Task> write)
+        void Add(string group, string title, Func<bool> read, Func<bool, Task> write)
         {
             var binding = new ContextRibbonToggle(title, RibbonIcons.Context(title), read,
-                () => QueueContextWriteAsync(false, write), error => SetError(error));
+                value => QueueContextWriteAsync(false, () => write(value)), SetError);
             GetGroup(group).Items.Add(binding.Button);
             _contextToggles.Add((false, binding));
             RegisterRibbonColors(binding.Button, binding.Button.Icon, "PRIMARY", selected: read);
         }
         Add(UiLanguage.Text("MainWindow_TransitRibbon_BuildTransitRibbonAsync_1AB216CC0D"), UiLanguage.Text("MainWindow_TransitRibbon_BuildTransitRibbonAsync_7EE5D33BF1"), () => ReadContextToggle(false, "stations"),
-            () => _engine.RequestAsync("setTransitOption", new { metro = false, draft = IsTransitDraft, key = "stations", value = !ReadContextToggle(false, "stations") }));
+            value => _engine.RequestAsync("setTransitOption", new { metro = false, draft = IsTransitDraft, key = "stations", value }));
         AddButton(GetGroup(UiLanguage.Text("MainWindow_TransitRibbon_BuildTransitRibbonAsync_1AB216CC0D")), UiLanguage.Text("MainWindow_TransitRibbon_BuildTransitRibbonAsync_CF2382056B"), ShowTransitStationSettingsAsync, "view.transit.station_settings");
         Add(UiLanguage.Text("MainWindow_TransitRibbon_BuildTransitRibbonAsync_1AB216CC0D"), UiLanguage.Text("MainWindow_TransitRibbon_BuildTransitRibbonAsync_ED178EDA0E"), () => ReadContextToggle(false, "merge_enabled"),
-            () => _engine.RequestAsync("setTransitOption", new { metro = false, draft = IsTransitDraft, key = "merge_enabled", value = !ReadContextToggle(false, "merge_enabled") }));
+            value => _engine.RequestAsync("setTransitOption", new { metro = false, draft = IsTransitDraft, key = "merge_enabled", value }));
         AddButton(GetGroup(UiLanguage.Text("MainWindow_TransitRibbon_BuildTransitRibbonAsync_1AB216CC0D")), UiLanguage.Text("MainWindow_TransitRibbon_BuildTransitRibbonAsync_26A0369483"), ShowTransitLinesAsync, "view.transit.lines");
         AddButton(GetGroup(UiLanguage.Text("MainWindow_TransitRibbon_BuildTransitRibbonAsync_C8FFBDF157")), UiLanguage.Text("MainWindow_TransitRibbon_BuildTransitRibbonAsync_8FB38E6289"), ShowTransitLineSettingsAsync, "view.transit.line_color");
         GetGroup(UiLanguage.Text("MainWindow_TransitRibbon_BuildTransitRibbonAsync_C8FFBDF157")).IsGroupVisible = false;
@@ -124,13 +123,8 @@ public sealed partial class MainWindow
         panel.Children.Add(label); _lineSummaryControls.Add((metro, label));
     }
 
-    private Task WriteContextChildAsync(bool metro, string key, string child, object value)
-    {
-        // 与最新快照合并，避免参数编辑撤销功能区切换。
-        var values = JsonNode.Parse(ContextOptions(metro).GetProperty(key).GetRawText())!.AsObject();
-        values[child] = JsonSerializer.SerializeToNode(value);
-        return _engine.RequestAsync("setTransitOption", new { metro, map = _context == "map", draft = IsTransitDraft, key, value = values });
-    }
+    private Task WriteContextChildAsync(bool metro, string key, string child, object value) =>
+        _engine.RequestAsync("setTransitOption", new { documentEpoch = _engineDocumentEpoch, metro, map = _context == "map", draft = IsTransitDraft, key, child, value });
 
     private Task QueueContextWriteAsync(bool metro, Func<Task> write, Func<bool>? stillCurrent = null,
         bool refreshPreview = true, string? debounceKey = null)
@@ -171,8 +165,6 @@ public sealed partial class MainWindow
                             if (!Current()) break;
                             if (item.Generation != generation || context != item.Context) continue;
                             await item.Write();
-                            // 后续嵌套选项须在最新状态上合并，避免同批修改彼此覆盖。
-                            _snapshot = await _engine.RequestAsync("getSnapshot");
                             refresh |= item.Refresh;
                         }
                         if (refresh && Current() && !_leavingContextWrites)

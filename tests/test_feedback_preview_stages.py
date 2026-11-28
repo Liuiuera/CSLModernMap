@@ -280,12 +280,13 @@ def test_cancel_during_whole_file_read_stops_before_preparation(monkeypatch, tmp
     monkeypatch.setattr("csmodernmap.guir_backend.load_document", load)
     monkeypatch.setattr("csmodernmap.guir_backend._build_transit_line_catalog", prepare)
     assert backend.open_file(city, callbacks)
+    reader = backend._open_thread
     try:
         assert started.wait(5)
         backend.cancel()
     finally:
         release.set()
-        join_worker(backend._open_thread)
+        join_worker(reader)
     drain()
     assert events == [] and backend.document is None
 

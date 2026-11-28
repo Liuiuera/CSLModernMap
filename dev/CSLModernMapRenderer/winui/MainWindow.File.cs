@@ -95,11 +95,11 @@ public sealed partial class MainWindow
     private RecentCmmExport? _recentExport;
     private bool _refreshingRecentExport;
 
-    private bool CanOpenRecentExport => _context == "map" && !_cityArtwork && _mapTask.Phase == MapTaskPhase.Empty;
+    private bool CanOpenRecentExport => _context == "map" && !_cityArtwork && !_mapTask.HasMap && !_mapTask.Active;
 
     private async Task RefreshRecentExportAsync()
     {
-        if (_closing || !CanOpenRecentExport || _refreshingRecentExport || _snapshot.ValueKind != JsonValueKind.Object) return;
+        if (_closing || !CanOpenRecentExport || _refreshingRecentExport) return;
         var generation = _mapTask.Generation;
         _refreshingRecentExport = true;
         OpenRecentExport.IsEnabled = false;
@@ -111,7 +111,7 @@ public sealed partial class MainWindow
             _recentExport = file;
             RecentExportDetails.Text = file is null
                 ? UiLanguage.Text("OpenRecentExport_NoMaps")
-                : $"{file.MapFile.Name} · {file.Version}";
+                : string.IsNullOrEmpty(file.Version) ? file.MapFile.Name : $"{file.MapFile.Name} · {file.Version}";
             OpenRecentExport.Visibility = file is null ? Visibility.Collapsed : Visibility.Visible;
         }
         finally
@@ -121,16 +121,8 @@ public sealed partial class MainWindow
         }
     }
 
-    private async Task OpenRecentExportAsync()
-    {
-        if (_recentExport is not { } export || !CanOpenRecentExport) return;
-        if (!File.Exists(export.MapFile.FullName))
-        {
-            await RefreshRecentExportAsync();
-            return;
-        }
-        await OpenPathAsync(export.MapFile.FullName);
-    }
+    private Task OpenRecentExportAsync() =>
+        _recentExport is { } export ? OpenPathAsync(export.MapFile.FullName) : Task.CompletedTask;
 
     private void RefreshFileRecent()
     {
@@ -141,7 +133,7 @@ public sealed partial class MainWindow
             var path = item.GetString();
             if (string.IsNullOrWhiteSpace(path)) continue;
             var exists = File.Exists(path);
-            var command = new MenuFlyoutItem { Text = Path.GetFileName(path), IsEnabled = !_engineUnavailable };
+            var command = new MenuFlyoutItem { Text = Path.GetFileName(path) };
             ToolTipService.SetToolTip(command, exists ? path : UiLanguage.Text("MainWindow_File_RefreshFileRecent_95D7E39D01") + path);
             command.Click += async (_, _) => await RunAsync(() => OpenPathAsync(path));
             _fileRecentMenu.Items.Add(command);

@@ -49,15 +49,19 @@ def recover(directory):
     settings = directory / 'settings.json'
     committed = settings.is_file() and hashlib.sha256(settings.read_bytes()).hexdigest() == transaction['targetDigest']
     if not committed:
+        originals = {}
         for name in ('views.json', 'settings.json'):
-            target = directory / name
-            if transaction['originals'][name]:
+            digest = transaction['originals'][name]
+            if digest:
                 raw = (backup / name).read_bytes()
-                if hashlib.sha256(raw).hexdigest() != transaction['originals'][name]:
+                if hashlib.sha256(raw).hexdigest() != digest:
                     raise ValueError(f'Theme migration backup changed: {name}')
-                _publish(target, raw)
+                originals[name] = raw
+        for name in ('views.json', 'settings.json'):
+            if name in originals:
+                _publish(directory / name, originals[name])
             elif name == 'views.json':
-                target.unlink(missing_ok=True)
+                (directory / name).unlink(missing_ok=True)
     journal.unlink()
 
 

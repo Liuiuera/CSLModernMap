@@ -195,6 +195,8 @@ extension InterfaceController {
             #endif
         case "sceneError" where textValue(payload["requestId"]).isEmpty && !staticMode:
             showPreviewError(AppFailure(payload: payload))
+        case "sceneDetailError" where textValue(payload["sceneId"]) == sceneID && payload["revision"] as? Int == revision:
+            showStatus(textValue(payload["notice"] ?? payload["message"]))
         case "error", "sceneError", "protocolError":
             if textValue(payload["requestId"]).isEmpty {
                 if case .loading = mapPlaceholder.state { showMapState(.unavailable("地图预览不可用")) }
@@ -213,13 +215,8 @@ extension InterfaceController {
         }
         if previewIdentity.isPresented(by: frame) {
             if !staticMode, cityDraft == nil, case .loading = mapPlaceholder.state { showMapState(.ready) }
-            if presentedScene != previewIdentity && pendingCityEditors == nil
-                && !staticMode && context != "metro" && mapPlaceholder.state == .ready && cityDraft?.working != true {
-                if frame["completion"] as? String == "base" {
-                    showStatus(localized("地图已显示，正在补充细节…"), kind: .progress)
-                } else {
-                    showStatus(localized("就绪"), kind: .ready)
-                }
+            if type == "sceneLoaded" && mapPlaceholder.state == .ready && !staticMode && context != "metro" && cityDraft?.working != true {
+                showStatus(localized("就绪"), kind: .ready)
             }
             presentedScene = previewIdentity
             cityDraft?.deliver()
@@ -262,9 +259,9 @@ extension InterfaceController {
             selectedObject = nil; buildInspector()
         case "requestLayerVisibility": requestPreviewLayer(frame)
         case "requestMapRotation": requestMapRotation(frame)
-        case "renderError":
+        case "sceneDetailError", "renderError":
             if frame["sceneId"] != nil && (textValue(frame["sceneId"]) != sceneID || frame["revision"] as? Int != revision) { return }
-            if frame["fatal"] as? Bool == false { showStatus(textValue(frame["message"])); return }
+            if type == "sceneDetailError" || frame["fatal"] as? Bool == false { showStatus(textValue(frame["message"])); return }
             let error = AppFailure(payload: frame)
             if staticMode { showError(error) }
             else { showPreviewError(error) }

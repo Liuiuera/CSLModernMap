@@ -66,7 +66,7 @@ from .render_jobs import RegionPolicy
 from .renderer import Renderer
 from .ribbon_schema import normalize_terrain_mode
 from .terrain import resolve_terrain_config, terrain_ui_state
-from .settings_store import load_settings, save_settings
+from .settings_store import SETTINGS_VERSION, load_settings, read_settings, save_settings
 from .poi_profiles import PROFILE_SETTING_KEY, canonical_profile_target, normalize_poi_profiles, normalize_poi_visibility_snapshot, validate_poi_profile
 from .system_info import automatic_antialias
 from .output_profiles import (
@@ -667,18 +667,7 @@ class GuirBackend:
             and self._settings_dir.resolve() == app_support_dir().resolve()
         )
         self.poi_mapping_override = poi_mapping_override_path(self._settings_dir)
-        from .theme_migration import recover
-        recover(self._settings_dir)
-        self._settings = load_settings(self._settings_dir)
         self.split_map_symbols = os.environ.get("CSLMM_SPLIT_MAP_SYMBOLS") == "1"
-        # 交通和地铁视图设置单独持久化，切换视图不能覆盖普通地图图层快照。
-        # 迁移使用上方已加载的设置，避免二次读取及过早生成 views.json。
-        if views_path(self._settings_dir).is_file():
-            self._view_settings = load_view_settings(self._settings_dir)
-        else:
-            self._view_settings = migrate_legacy_settings(
-                self._settings)
-        self._recent_files = self._load_recent_files()
         self._settings_save_job = None
         self._output_dir = str(writable_dir())
         self.performance_diagnostics_enabled = debug_performance_enabled()
@@ -697,7 +686,6 @@ class GuirBackend:
         self._style_dirty: set[str] = set()
         self._theme_file_imports: dict[str, dict] = {}
         self.theme_migration_issues: list[str] = []
-        self._theme_scan_done = False
         self._theme_migration_aborted = False
         self.theme_load_error = ""
         self._preset_updates = None
@@ -842,32 +830,16 @@ class GuirBackend:
 
     def _record_recent(self, path: str) -> None:
         path = str(path)
-        recents = [p for p in self._recent_files if p != path]
-        recents.insert(0, path)
-        self._recent_files = recents[:RECENT_MAX]
-        vals = dict(self._settings.get("values", {}) or {})
-        for key in [k for k in vals if str(k).startswith("recent_")]:
-            vals.pop(key, None)
-        for i, p in enumerate(self._recent_files):
-            vals[f"recent_{i}"] = str(p)
-        self._settings["values"] = vals
-        save_settings(vals, self._settings_dir, self._settings["version"])
+        self._recent_files = [path, *(p for p in self._recent_files if p != path)][:RECENT_MAX]
+        self._schedule_settings_save()
         self._emit("recent", list(self._recent_files))
 
     def remove_recent(self, path: str) -> bool:
-        """移除一条最近文件路径并立即保存清理后的列表。"""
         path = str(path)
-        filtered = [p for p in self._recent_files if p != path]
-        if len(filtered) == len(self._recent_files):
+        if path not in self._recent_files:
             return False
-        self._recent_files = filtered
-        vals = dict(self._settings.get("values", {}) or {})
-        for key in [k for k in vals if str(k).startswith("recent_")]:
-            vals.pop(key, None)
-        for i, recent_path in enumerate(self._recent_files):
-            vals[f"recent_{i}"] = recent_path
-        self._settings["values"] = vals
-        save_settings(vals, self._settings_dir, self._settings["version"])
+        self._recent_files.remove(path)
+        self.save_settings_now()
         self._emit("recent", list(self._recent_files))
         return True
 
@@ -896,9 +868,8 @@ class GuirBackend:
 
     def _load_persisted_state(self) -> None:
         """把旧界面设置应用到控制器的标准状态。"""
-        if not self._theme_scan_done:
-            self._load_theme_library()
-            self._theme_scan_done = True
+        self._load_theme_library()
+        self._recent_files = self._load_recent_files()
         style_value = str(self._setting("style_var", "modern"))
         style_stem = style_value.split("·", 1)[0].strip()
         self.set_theme(style_stem, persist=False)
@@ -1379,17 +1350,16 @@ class GuirBackend:
             and not group.parent_group_id
         ], key=lambda item: (item["name"], item["id"]))
 
+    def _regions(self):
+        if self.document is None:
+            return (), ()
+        parks = (item for item in getattr(self.document, "park_zones", ())
+                 if str(item.type_label or "").strip().lower() not in ("", "none", "0"))
+        return visible_administrative_districts(self.document), parks
+
     def region_catalog(self) -> dict:
         """返回当前城市区域弹出面板所需的元数据。"""
-        document = self.document
-        if document is None:
-            return {"districts": [], "parks": [],
-                    "district_available": False, "park_available": False}
-        districts = list(visible_administrative_districts(document))
-        parks = [item for item in
-                 list(getattr(document, "park_zones", ()) or ())
-                 if str(getattr(item, "type_label", "") or "").strip().lower()
-                 not in ("", "none", "0")]
+        districts, parks = self._regions()
 
         def entry(item, prefix: str) -> dict:
             item_id = int(getattr(item, "id", 0))
@@ -1415,9 +1385,9 @@ class GuirBackend:
     def reset_region_selection(self) -> None:
         """为新城市会话选中当前文档的全部区域。"""
         self.facility_poi_overrides = {}
-        catalog = self.region_catalog()
-        self.district_ids = {item["id"] for item in catalog["districts"]}
-        self.park_ids = {item["id"] for item in catalog["parks"]}
+        districts, parks = self._regions()
+        self.district_ids = {item.id for item in districts}
+        self.park_ids = {item.id for item in parks}
 
     def set_region_selection(self, group: str, ids) -> bool:
         """设置当前会话的行政区或功能区筛选。"""
@@ -1462,13 +1432,10 @@ class GuirBackend:
             return False
         try:
             from .pixel_sizes import validate
-            try:
-                validate(self.theme_data(stem))
-            except ValueError as error:
-                raise theme_library.ThemeReadError(str(error)) from error
-        except theme_library.ThemeReadError as error:
+            validate(self.theme_data(stem))
+        except (ValueError, TypeError, KeyError) as error:
             if persist:
-                raise
+                raise theme_library.ThemeReadError(str(error)) from error
             self.theme_load_error = str(error)
         else:
             self.theme_load_error = ""
@@ -1653,12 +1620,6 @@ class GuirBackend:
         callback_map = dict(self._callbacks or {})
         if on_read_error is not None:
             callback_map["read_error"] = on_read_error
-        if before_replace is None and not self._settings_dir_explicit and self.source_file is None:
-            # 单独运行时，地图选定后将用户数据写在地图旁，而非渲染器版本目录。
-            self._settings_dir = Path(path).resolve().parent
-            self.poi_mapping_override = poi_mapping_override_path(self._settings_dir)
-            self._reload_view_settings()
-
         class OpenCancelled(Exception):
             pass
 
@@ -1669,7 +1630,7 @@ class GuirBackend:
         def emit_current(name, *args):
             def deliver():
                 if open_revision == self._open_revision:
-                    if name == "read_error":
+                    if name in {"read_error", "error"}:
                         self._open_thread = None
                     fn = callback_map.get(name)
                     if fn is not None:
@@ -1725,7 +1686,11 @@ class GuirBackend:
                 self._open_thread = None
                 if before_replace is not None:
                     before_replace()
-                self._switch_settings_dir_for_city(path)
+                try:
+                    self._switch_settings_dir_for_city(path)
+                    self._record_recent(path)
+                except (OSError, ValueError, TypeError, KeyError) as error:
+                    city_info.setdefault("fileWarnings", []).append(str(error))
                 self.source_file = path
                 self._output_dir = str(Path(path).resolve().parent)
                 self.document = document
@@ -1733,12 +1698,6 @@ class GuirBackend:
                 self.preview_outside_terrain = False
                 self.layer_visibility["satellite"] = False
                 self._transit_line_catalog_cache = None
-                # 公共交通视图的线路勾选不落盘（会话级），地铁白名单则要跟
-                # 当前存档对齐；settings.json 与存档同目录共享，上一座城市
-                # 留下的 id 会让线路被整批过滤掉（PM 2026-09-11）。
-                if self._reconcile_transit_line_selection(self.transit_line_headers()):
-                    self._schedule_settings_save()
-                    self._save_view_settings()
                 self.result_image = None
                 self.result_thumbnail = None
                 self.result_png_path = None
@@ -1747,7 +1706,6 @@ class GuirBackend:
                 self._style_editor_regions = {}
                 self.city_info = city_info
                 self.reset_region_selection()
-                self._record_recent(path)
                 if meta := callback_map.get("meta"):
                     meta(dict(self.city_info), "open")
                 try:
@@ -1786,10 +1744,13 @@ class GuirBackend:
         self._transit_line_catalog_cache = None
         self.discard_png_result()
 
-    def cancel_document_open(self) -> None:
+    def cancel_document_open(self) -> bool:
         # 读取线程可能仍在解压；通过版本号隔离其结果，允许立即重试。
+        if self._open_thread is None:
+            return False
         self._open_revision += 1
         self._open_thread = None
+        return True
 
     def _switch_settings_dir_for_city(self, path: str) -> None:
         """打开新城市时重新加载旁边的设置，避免跨城市串用。"""
@@ -1807,16 +1768,10 @@ class GuirBackend:
             self.save_settings_now()
         self._settings_dir = target
         self.poi_mapping_override = poi_mapping_override_path(target)
-        from .theme_migration import recover
-        recover(target)
-        self._settings = load_settings(target)
         self.style_overrides.clear()
         self._style_dirty.clear()
         self.theme_load_error = ""
         self.theme_migration_issues.clear()
-        self._reload_view_settings()
-        self._theme_scan_done = False
-        self._recent_files = self._load_recent_files()
         self._output_dir = str(target)
         self._load_persisted_state()
         self._transit_line_catalog_cache = None
@@ -2102,7 +2057,7 @@ class GuirBackend:
             self._local_render_stop.set()
             return
         self._cancelled = True
-        self._open_revision += 1
+        self.cancel_document_open()
         self.invalidate_preview_compile()
         self._local_render_stop.set()
         self._serial += 1
@@ -2683,71 +2638,11 @@ class GuirBackend:
             opts.update(self._view_section(False).get("themes", {}).get(theme, {}))
         opts["types"] = [item for item in opts["types"] if item in TYPE_REGISTRY]
         if metro:
-            for key in ("line_ids",):
-                if opts[key] is None:
-                    opts.pop(key)
-                else:
-                    opts[key] = _int_line_ids(opts[key])
+            ids = opts.pop("line_ids", None)
+            if ids is not None:
+                known = {line.id for line in getattr(self.document, "transit_lines", ())}
+                opts["line_ids"] = [i for i in _int_line_ids(ids) if not known or i in known]
         return opts
-
-    def _reconcile_transit_line_selection(self, catalog) -> bool:
-        """清理设置里不成立的线路白名单，返回是否改动了设置。
-
-        两条规矩：
-
-        1. **公共交通视图**的线路勾选是当前会话的临时筛选 —— 不持久化、
-           也不读回（PM 2026-09-11），所以历史落盘的
-           ``transit_view_line_ids`` / ``transit_view_station_line_ids``
-           一律删掉，留着只会被别的代码误当成配置读。
-        2. **地铁示意图**的白名单仍跟着设置走，但 ``settings.json`` 与存档
-           同目录、多座城市共用，很容易是**另一座城市**留下的 id —— 对不上
-           当前存档时，pure 分支的 ``enabled_line_ids`` 会把线路整批过滤掉。
-           这里按当前存档线路目录求交集，并保持既有的三态约定：缺键 = 没筛过、
-           ``[]`` = 显式清空，两者都不动；未知 ID 只移除无效项，零命中保持
-           空集，不能擅自恢复全部线路。
-        """
-        values = dict(self._settings.get("values", {}) or {})
-        changed = False
-        for stale in ("transit_view_line_ids",
-                      "transit_view_station_line_ids"):
-            if stale in values:
-                values.pop(stale, None)
-                changed = True
-        known = {int(item["id"]) for item in catalog
-                 if item.get("id") is not None}
-        if known:
-            for key in ("metro_view_line_ids",
-                        "metro_view_station_line_ids"):
-                raw = values.get(key)
-                if not isinstance(raw, list) or not raw:
-                    continue
-                current = _int_line_ids(raw)
-                kept = [line_id for line_id in current if line_id in known]
-                if kept != current:
-                    values[key] = kept
-                    changed = True
-        transit_view = self._view_section(False)
-        for stale in ("line_ids", "station_line_ids"):
-            if stale in transit_view:
-                transit_view.pop(stale)
-                changed = True
-        metro_view = self._view_section(True)
-        if "station_line_ids" in metro_view:
-            metro_view.pop("station_line_ids")
-            changed = True
-        if known:
-            for key in ("line_ids",):
-                raw = metro_view.get(key)
-                if not isinstance(raw, list) or not raw:
-                    continue
-                current = _int_line_ids(raw)
-                kept = [line_id for line_id in current if line_id in known]
-                if kept != raw:
-                    metro_view[key] = kept
-                    changed = True
-        if changed:
-            self._settings["values"] = values
-        return changed
 
     def render_transit(self, metro: bool = False, opts: dict | None = None,
                        callbacks: dict | None = None, *, png_poi_options=None) -> bool:
@@ -3285,13 +3180,18 @@ class GuirBackend:
     # 样式覆盖 / 样式编辑器
 
     def _load_theme_library(self) -> None:
-        from .theme_migration import migrate as migrate_themes
-        records = self._settings["values"].get("user_themes", {})
-        imports = self._settings["values"].get("theme_file_imports", {})
+        from .theme_migration import recover, migrate as migrate_themes
+        self._settings = {"values": {}, "version": SETTINGS_VERSION}
+        self._view_settings = default_view_settings()
         self.user_themes = {}
         self._theme_file_imports = {}
         self._theme_migration_aborted = False
         try:
+            recover(self._settings_dir)
+            self._settings = read_settings(self._settings_dir)
+            self._reload_view_settings()
+            records = self._settings["values"].get("user_themes", {})
+            imports = self._settings["values"].get("theme_file_imports", {})
             if not isinstance(records, dict) or not isinstance(imports, dict):
                 raise ValueError("user_themes and theme_file_imports must be objects")
             for identity, record in records.items():
@@ -3301,7 +3201,7 @@ class GuirBackend:
             self.user_themes = copy.deepcopy(records)
             self._theme_file_imports = copy.deepcopy(imports)
             migrate_themes(self)
-        except (OSError, ValueError, TypeError, KeyError) as error:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError) as error:
             self._theme_migration_aborted = True
             self._theme_migration_issue(self._settings_dir, error)
 
@@ -3678,10 +3578,16 @@ class GuirBackend:
 
     def current_style_data(self) -> dict:
         """当前主题 yaml + 覆盖合并结果（传给样式编辑器）。"""
+        if self.theme_load_error and self.theme_stem in self.user_themes:
+            return self.theme_defaults("modern")
         if self.theme_stem in self.style_overrides:
             data = copy.deepcopy(self.style_overrides[self.theme_stem])
             return Style(strip_retired_region_palette_fields(data)).data
-        return self.theme_data(self.theme_stem)
+        try:
+            return self.theme_data(self.theme_stem)
+        except (ValueError, TypeError, KeyError) as error:
+            self.theme_load_error = str(error)
+            return self.theme_defaults("modern")
 
     def style_preview_render(self, style_data: dict, size: int,
                              scene: str = "overall"):
